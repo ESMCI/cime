@@ -179,7 +179,7 @@
            <div itemprop="articleBody">
             
   <h1>Source code for CIME.BuildTools.configure</h1><div class="highlight"><pre>
-<span></span><span class="ch">#!/usr/bin/env python</span>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
 
 <span class="sd">&quot;&quot;&quot;This script writes CIME build information to a directory.</span>
 
@@ -204,7 +204,7 @@
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <div class="viewcode-block" id="configure"><a class="viewcode-back" href="../../../CIME_api/CIME.BuildTools.html#CIME.BuildTools.configure.configure">[docs]</a><span class="k">def</span> <span class="nf">configure</span><span class="p">(</span><span class="n">machobj</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">,</span> <span class="n">macros_format</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">mpilib</span><span class="p">,</span> <span class="n">debug</span><span class="p">,</span>
-              <span class="n">comp_interface</span><span class="p">,</span> <span class="n">sysos</span><span class="p">,</span> <span class="n">unit_testing</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">noenv</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+              <span class="n">comp_interface</span><span class="p">,</span> <span class="n">sysos</span><span class="p">,</span> <span class="n">unit_testing</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">noenv</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">threaded</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
               <span class="n">extra_machines_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Add Macros, Depends, and env_mach_specific files to a directory.</span>
 
@@ -229,11 +229,11 @@
         <span class="n">out_file_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span><span class="s2">&quot;Macros.&quot;</span><span class="o">+</span><span class="n">suffixes</span><span class="p">[</span><span class="n">form</span><span class="p">])</span>
         <span class="n">macro_maker</span><span class="o">.</span><span class="n">write_macros_file</span><span class="p">(</span><span class="n">macros_file</span><span class="o">=</span><span class="n">out_file_name</span><span class="p">,</span> <span class="n">output_format</span><span class="o">=</span><span class="n">suffixes</span><span class="p">[</span><span class="n">form</span><span class="p">])</span>
 
-    <span class="n">_copy_depends_files</span><span class="p">(</span><span class="n">machobj</span><span class="o">.</span><span class="n">get_machine_name</span><span class="p">(),</span> <span class="n">machobj</span><span class="o">.</span><span class="n">machines_dir</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">,</span> <span class="n">compiler</span><span class="p">)</span>
-    <span class="n">_generate_env_mach_specific</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">machobj</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">mpilib</span><span class="p">,</span>
-                                <span class="n">debug</span><span class="p">,</span> <span class="n">comp_interface</span><span class="p">,</span> <span class="n">sysos</span><span class="p">,</span> <span class="n">unit_testing</span><span class="p">,</span> <span class="n">noenv</span><span class="o">=</span><span class="n">noenv</span><span class="p">)</span></div>
+    <span class="n">copy_depends_files</span><span class="p">(</span><span class="n">machobj</span><span class="o">.</span><span class="n">get_machine_name</span><span class="p">(),</span> <span class="n">machobj</span><span class="o">.</span><span class="n">machines_dir</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">,</span> <span class="n">compiler</span><span class="p">)</span>
+    <span class="n">generate_env_mach_specific</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">machobj</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">mpilib</span><span class="p">,</span>
+                               <span class="n">debug</span><span class="p">,</span> <span class="n">comp_interface</span><span class="p">,</span> <span class="n">sysos</span><span class="p">,</span> <span class="n">unit_testing</span><span class="p">,</span> <span class="n">threaded</span><span class="p">,</span> <span class="n">noenv</span><span class="o">=</span><span class="n">noenv</span><span class="p">)</span></div>
 
-<span class="k">def</span> <span class="nf">_copy_depends_files</span><span class="p">(</span><span class="n">machine_name</span><span class="p">,</span> <span class="n">machines_dir</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">,</span> <span class="n">compiler</span><span class="p">):</span>
+<div class="viewcode-block" id="copy_depends_files"><a class="viewcode-back" href="../../../CIME_api/CIME.BuildTools.html#CIME.BuildTools.configure.copy_depends_files">[docs]</a><span class="k">def</span> <span class="nf">copy_depends_files</span><span class="p">(</span><span class="n">machine_name</span><span class="p">,</span> <span class="n">machines_dir</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">,</span> <span class="n">compiler</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Copy any system or compiler Depends files if they do not exist in the output directory</span>
 <span class="sd">    If there is a match for Depends.machine_name.compiler copy that and ignore the others</span>
@@ -253,7 +253,7 @@
                 <span class="k">if</span> <span class="n">suffix</span> <span class="o">==</span> <span class="n">both</span> <span class="ow">and</span> <span class="n">extra_suffix</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
                     <span class="n">makefiles_done</span> <span class="o">=</span> <span class="kc">True</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">outputdfile</span><span class="p">):</span>
-                    <span class="n">safe_copy</span><span class="p">(</span><span class="n">dfile</span><span class="p">,</span> <span class="n">outputdfile</span><span class="p">)</span>
+                    <span class="n">safe_copy</span><span class="p">(</span><span class="n">dfile</span><span class="p">,</span> <span class="n">outputdfile</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="FakeCase"><a class="viewcode-back" href="../../../CIME_api/CIME.BuildTools.html#CIME.BuildTools.configure.FakeCase">[docs]</a><span class="k">class</span> <span class="nc">FakeCase</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
@@ -268,8 +268,8 @@
         <span class="n">expect</span><span class="p">(</span><span class="n">attrib</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vals</span><span class="p">,</span> <span class="s2">&quot;FakeCase does not support getting value of &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">attrib</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vals</span><span class="p">[</span><span class="n">attrib</span><span class="p">]</span></div></div>
 
-<span class="k">def</span> <span class="nf">_generate_env_mach_specific</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">machobj</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">mpilib</span><span class="p">,</span> <span class="n">debug</span><span class="p">,</span>
-                                <span class="n">comp_interface</span><span class="p">,</span> <span class="n">sysos</span><span class="p">,</span> <span class="n">unit_testing</span><span class="p">,</span> <span class="n">noenv</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="generate_env_mach_specific"><a class="viewcode-back" href="../../../CIME_api/CIME.BuildTools.html#CIME.BuildTools.configure.generate_env_mach_specific">[docs]</a><span class="k">def</span> <span class="nf">generate_env_mach_specific</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">machobj</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">mpilib</span><span class="p">,</span> <span class="n">debug</span><span class="p">,</span>
+                               <span class="n">comp_interface</span><span class="p">,</span> <span class="n">sysos</span><span class="p">,</span> <span class="n">unit_testing</span><span class="p">,</span> <span class="n">threaded</span><span class="p">,</span> <span class="n">noenv</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    env_mach_specific generation.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -279,7 +279,7 @@
         <span class="k">return</span>
 
     <span class="n">ems_file</span> <span class="o">=</span> <span class="n">EnvMachSpecific</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">unit_testing</span><span class="o">=</span><span class="n">unit_testing</span><span class="p">,</span> <span class="n">standalone_configure</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">ems_file</span><span class="o">.</span><span class="n">populate</span><span class="p">(</span><span class="n">machobj</span><span class="p">)</span>
+    <span class="n">ems_file</span><span class="o">.</span><span class="n">populate</span><span class="p">(</span><span class="n">machobj</span><span class="p">,</span><span class="n">attributes</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;mpilib&quot;</span><span class="p">:</span><span class="n">mpilib</span><span class="p">,</span><span class="s2">&quot;compiler&quot;</span><span class="p">:</span><span class="n">compiler</span><span class="p">,</span><span class="s2">&quot;threaded&quot;</span><span class="p">:</span><span class="n">threaded</span><span class="p">})</span>
     <span class="n">ems_file</span><span class="o">.</span><span class="n">write</span><span class="p">()</span>
 
     <span class="k">if</span> <span class="n">noenv</span><span class="p">:</span>
@@ -300,7 +300,7 @@
                 <span class="n">shell_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">setenv COMPILER </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">compiler</span><span class="p">))</span>
                 <span class="n">shell_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;setenv MPILIB </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mpilib</span><span class="p">))</span>
                 <span class="n">shell_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;setenv DEBUG </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">debug</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">()))</span>
-                <span class="n">shell_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;setenv OS </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sysos</span><span class="p">))</span>
+                <span class="n">shell_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;setenv OS </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sysos</span><span class="p">))</span></div>
 </pre></div>
 
            </div>

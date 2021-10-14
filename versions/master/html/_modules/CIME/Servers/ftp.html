@@ -229,7 +229,13 @@
         <span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;ftp login timeout!&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span>
-        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">passwd</span><span class="o">=</span><span class="n">passwd</span><span class="p">,</span> <span class="n">server</span><span class="o">=</span><span class="n">ftp</span><span class="p">)</span></div>
+        <span class="n">result</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">passwd</span><span class="o">=</span><span class="n">passwd</span><span class="p">,</span> <span class="n">server</span><span class="o">=</span><span class="n">ftp</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">all_ftp_errors</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;ftp error: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">result</span></div>
 
 <div class="viewcode-block" id="FTP.fileexists"><a class="viewcode-back" href="../../../CIME_api/CIME.Servers.html#CIME.Servers.ftp.FTP.fileexists">[docs]</a>    <span class="k">def</span> <span class="nf">fileexists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rel_path</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>

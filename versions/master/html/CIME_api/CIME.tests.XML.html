@@ -275,6 +275,137 @@ correctly in case the file is written this way.</p>
 </dd></dl>
 
 </div>
+<div class="section" id="module-CIME.tests.XML.test_grids">
+<span id="cime-tests-xml-test-grids-module"></span><h2>CIME.tests.XML.test_grids module<a class="headerlink" href="#module-CIME.tests.XML.test_grids" title="Permalink to this headline">¶</a></h2>
+<p>This module tests <em>some</em> functionality of CIME.XML.grids</p>
+<dl class="py class">
+<dt id="CIME.tests.XML.test_grids.TestComponentGrids">
+<em class="property">class </em><code class="sig-prename descclassname">CIME.tests.XML.test_grids.</code><code class="sig-name descname">TestComponentGrids</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/XML/test_grids.html#TestComponentGrids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.XML.test_grids.TestComponentGrids" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">unittest.case.TestCase</span></code></p>
+<p>Tests the _ComponentGrids helper class defined in CIME.XML.grids</p>
+<dl class="py method">
+<dt id="CIME.tests.XML.test_grids.TestComponentGrids.test_check_num_elements_right_ndomains">
+<code class="sig-name descname">test_check_num_elements_right_ndomains</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/XML/test_grids.html#TestComponentGrids.test_check_num_elements_right_ndomains"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.XML.test_grids.TestComponentGrids.test_check_num_elements_right_ndomains" title="Permalink to this definition">¶</a></dt>
+<dd><p>With the right number of domains for a component, check_num_elements should pass</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="CIME.tests.XML.test_grids.TestComponentGrids.test_check_num_elements_right_nmaps">
+<code class="sig-name descname">test_check_num_elements_right_nmaps</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/XML/test_grids.html#TestComponentGrids.test_check_num_elements_right_nmaps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.XML.test_grids.TestComponentGrids.test_check_num_elements_right_nmaps" title="Permalink to this definition">¶</a></dt>
+<dd><p>With the right number of maps between two components, check_num_elements should pass</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="CIME.tests.XML.test_grids.TestComponentGrids.test_check_num_elements_wrong_ndomains">
+<code class="sig-name descname">test_check_num_elements_wrong_ndomains</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/XML/test_grids.html#TestComponentGrids.test_check_num_elements_wrong_ndomains"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.XML.test_grids.TestComponentGrids.test_check_num_elements_wrong_ndomains" title="Permalink to this definition">¶</a></dt>
+<dd><p>With the wrong number of domains for a component, check_num_elements should fail</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="CIME.tests.XML.test_grids.TestComponentGrids.test_check_num_elements_wrong_nmaps">
+<code class="sig-name descname">test_check_num_elements_wrong_nmaps</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/XML/test_grids.html#TestComponentGrids.test_check_num_elements_wrong_nmaps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.XML.test_grids.TestComponentGrids.test_check_num_elements_wrong_nmaps" title="Permalink to this definition">¶</a></dt>
+<dd><p>With the wrong number of maps between two components, check_num_elements should fail</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="CIME.tests.XML.test_grids.TestGrids">
+<em class="property">class </em><code class="sig-prename descclassname">CIME.tests.XML.test_grids.</code><code class="sig-name descname">TestGrids</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/XML/test_grids.html#TestGrids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.XML.test_grids.TestGrids" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">unittest.case.TestCase</span></code></p>
+<p>Tests some functionality of CIME.XML.grids</p>
+<p>Note that much of the functionality of CIME.XML.grids is NOT covered here</p>
+<dl class="py method">
+<dt id="CIME.tests.XML.test_grids.TestGrids.assert_grid_info_f09_g17">
+<code class="sig-name descname">assert_grid_info_f09_g17</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">grid_info</span></em>, <em class="sig-param"><span class="n">nuopc</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/XML/test_grids.html#TestGrids.assert_grid_info_f09_g17"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.XML.test_grids.TestGrids.assert_grid_info_f09_g17" title="Permalink to this definition">¶</a></dt>
+<dd><p>Asserts that expected grid info is present and correct when using _MODEL_GRID_F09_G17</p>
+<p>If nuopc is true (the default), then assumes that we used the nuopc driver.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="CIME.tests.XML.test_grids.TestGrids.assert_grid_info_f09_g17_3glc">
+<code class="sig-name descname">assert_grid_info_f09_g17_3glc</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">grid_info</span></em>, <em class="sig-param"><span class="n">nuopc</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/XML/test_grids.html#TestGrids.assert_grid_info_f09_g17_3glc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.XML.test_grids.TestGrids.assert_grid_info_f09_g17_3glc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Asserts that all domain info is present &amp; correct for _MODEL_GRID_F09_G17_3GLC</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="CIME.tests.XML.test_grids.TestGrids.setUp">
+<code class="sig-name descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/XML/test_grids.html#TestGrids.setUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.XML.test_grids.TestGrids.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method for setting up the test fixture before exercising it.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="CIME.tests.XML.test_grids.TestGrids.tearDown">
+<code class="sig-name descname">tearDown</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/XML/test_grids.html#TestGrids.tearDown"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.XML.test_grids.TestGrids.tearDown" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method for deconstructing the test fixture after testing it.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="CIME.tests.XML.test_grids.TestGrids.test_get_grid_info_3glc">
+<code class="sig-name descname">test_get_grid_info_3glc</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/XML/test_grids.html#TestGrids.test_get_grid_info_3glc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.XML.test_grids.TestGrids.test_get_grid_info_3glc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test of get_grid_info with 3 glc grids</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="CIME.tests.XML.test_grids.TestGrids.test_get_grid_info_basic">
+<code class="sig-name descname">test_get_grid_info_basic</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/XML/test_grids.html#TestGrids.test_get_grid_info_basic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.XML.test_grids.TestGrids.test_get_grid_info_basic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Basic test of get_grid_info</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="CIME.tests.XML.test_grids.TestGrids.test_get_grid_info_extra_gridmaps">
+<code class="sig-name descname">test_get_grid_info_extra_gridmaps</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/XML/test_grids.html#TestGrids.test_get_grid_info_extra_gridmaps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.XML.test_grids.TestGrids.test_get_grid_info_extra_gridmaps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test of get_grid_info with some extra gridmaps</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="CIME.tests.XML.test_grids.TestGrids.test_get_grid_info_extra_required_gridmaps">
+<code class="sig-name descname">test_get_grid_info_extra_required_gridmaps</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/XML/test_grids.html#TestGrids.test_get_grid_info_extra_required_gridmaps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.XML.test_grids.TestGrids.test_get_grid_info_extra_required_gridmaps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test of get_grid_info with some extra required gridmaps</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="CIME.tests.XML.test_grids.TestGridsFunctions">
+<em class="property">class </em><code class="sig-prename descclassname">CIME.tests.XML.test_grids.</code><code class="sig-name descname">TestGridsFunctions</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/XML/test_grids.html#TestGridsFunctions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.XML.test_grids.TestGridsFunctions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">unittest.case.TestCase</span></code></p>
+<p>Tests helper functions defined in CIME.XML.grids</p>
+<p>These tests are in a separate class to avoid the unnecessary setUp and tearDown
+function of the main test class.</p>
+<dl class="py method">
+<dt id="CIME.tests.XML.test_grids.TestGridsFunctions.test_add_grid_info_existing">
+<code class="sig-name descname">test_add_grid_info_existing</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/XML/test_grids.html#TestGridsFunctions.test_add_grid_info_existing"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.XML.test_grids.TestGridsFunctions.test_add_grid_info_existing" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test of _add_grid_info when the given key already exists</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="CIME.tests.XML.test_grids.TestGridsFunctions.test_add_grid_info_existing_with_value_for_multiple">
+<code class="sig-name descname">test_add_grid_info_existing_with_value_for_multiple</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/XML/test_grids.html#TestGridsFunctions.test_add_grid_info_existing_with_value_for_multiple"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.XML.test_grids.TestGridsFunctions.test_add_grid_info_existing_with_value_for_multiple" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test of _add_grid_info when the given key already exists and value_for_multiple is provided</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="CIME.tests.XML.test_grids.TestGridsFunctions.test_add_grid_info_initial">
+<code class="sig-name descname">test_add_grid_info_initial</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/XML/test_grids.html#TestGridsFunctions.test_add_grid_info_initial"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.XML.test_grids.TestGridsFunctions.test_add_grid_info_initial" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test of _add_grid_info for the initial add of a given key</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="CIME.tests.XML.test_grids.TestGridsFunctions.test_strip_grid_from_name_badname">
+<code class="sig-name descname">test_strip_grid_from_name_badname</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/XML/test_grids.html#TestGridsFunctions.test_strip_grid_from_name_badname"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.XML.test_grids.TestGridsFunctions.test_strip_grid_from_name_badname" title="Permalink to this definition">¶</a></dt>
+<dd><p>_strip_grid_from_name should raise an exception for a name not ending with _grid</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="CIME.tests.XML.test_grids.TestGridsFunctions.test_strip_grid_from_name_basic">
+<code class="sig-name descname">test_strip_grid_from_name_basic</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/XML/test_grids.html#TestGridsFunctions.test_strip_grid_from_name_basic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.XML.test_grids.TestGridsFunctions.test_strip_grid_from_name_basic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Basic test of _strip_grid_from_name</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
 <div class="section" id="module-CIME.tests.XML">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-CIME.tests.XML" title="Permalink to this headline">¶</a></h2>
 </div>

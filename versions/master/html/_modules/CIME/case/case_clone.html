@@ -184,7 +184,7 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">glob</span><span class="o">,</span> <span class="nn">shutil</span>
 <span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="n">expect</span><span class="p">,</span> <span class="n">check_name</span><span class="p">,</span> <span class="n">safe_copy</span>
+<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="n">expect</span><span class="p">,</span> <span class="n">check_name</span><span class="p">,</span> <span class="n">safe_copy</span><span class="p">,</span> <span class="n">get_model</span>
 <span class="kn">from</span> <span class="nn">CIME.simple_compare</span>            <span class="kn">import</span> <span class="n">compare_files</span>
 <span class="kn">from</span> <span class="nn">CIME.locked_files</span>         <span class="kn">import</span> <span class="n">lock_file</span>
 <span class="kn">from</span> <span class="nn">CIME.user_mod_support</span> <span class="kn">import</span> <span class="n">apply_user_mods</span>
@@ -193,7 +193,7 @@
 
 <div class="viewcode-block" id="create_clone"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.create_clone">[docs]</a><span class="k">def</span> <span class="nf">create_clone</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">newcaseroot</span><span class="p">,</span> <span class="n">keepexe</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">mach_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">project</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                       <span class="n">cime_output_root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">exeroot</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rundir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                      <span class="n">user_mods_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+                      <span class="n">user_mods_dirs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create a case clone</span>
 
@@ -220,7 +220,10 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot; It is NOT recommended to clone cases from different versions of CIME.&quot;</span><span class="p">)</span>
 
     <span class="c1"># *** create case object as deepcopy of clone object ***</span>
-    <span class="n">srcroot</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">newcase_cimeroot</span><span class="p">,</span><span class="s2">&quot;..&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">newcase_cimeroot</span><span class="p">,</span><span class="s1">&#39;share&#39;</span><span class="p">))</span> <span class="ow">and</span> <span class="n">get_model</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;cesm&quot;</span><span class="p">:</span>
+        <span class="n">srcroot</span> <span class="o">=</span> <span class="n">newcase_cimeroot</span>         
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">srcroot</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">newcase_cimeroot</span><span class="p">,</span><span class="s2">&quot;..&quot;</span><span class="p">)</span>
     <span class="n">newcase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">newcasename</span><span class="p">,</span> <span class="n">newcaseroot</span><span class="p">,</span> <span class="n">newsrcroot</span><span class="o">=</span><span class="n">srcroot</span><span class="p">)</span>
     <span class="k">with</span> <span class="n">newcase</span><span class="p">:</span>
         <span class="n">newcase</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;CIMEROOT&quot;</span><span class="p">,</span> <span class="n">newcase_cimeroot</span><span class="p">)</span>
@@ -317,15 +320,16 @@
 
         <span class="c1"># apply user_mods if appropriate</span>
         <span class="n">newcase_root</span> <span class="o">=</span> <span class="n">newcase</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">user_mods_dir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">user_mods_dirs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">keepexe</span><span class="p">:</span>
                 <span class="c1"># If keepexe CANNOT change any env_build.xml variables - so make a temporary copy of</span>
                 <span class="c1"># env_build.xml and verify that it has not been modified</span>
                 <span class="n">safe_copy</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">newcaseroot</span><span class="p">,</span> <span class="s2">&quot;env_build.xml&quot;</span><span class="p">),</span>
                           <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">newcaseroot</span><span class="p">,</span> <span class="s2">&quot;LockedFiles&quot;</span><span class="p">,</span> <span class="s2">&quot;env_build.xml&quot;</span><span class="p">))</span>
 
-            <span class="c1"># Now apply contents of user_mods directory</span>
-            <span class="n">apply_user_mods</span><span class="p">(</span><span class="n">newcase_root</span><span class="p">,</span> <span class="n">user_mods_dir</span><span class="p">,</span> <span class="n">keepexe</span><span class="o">=</span><span class="n">keepexe</span><span class="p">)</span>
+            <span class="c1"># Now apply contents of all specified user_mods directories</span>
+            <span class="k">for</span> <span class="n">one_user_mods_dir</span> <span class="ow">in</span> <span class="n">user_mods_dirs</span><span class="p">:</span>
+                <span class="n">apply_user_mods</span><span class="p">(</span><span class="n">newcase_root</span><span class="p">,</span> <span class="n">one_user_mods_dir</span><span class="p">,</span> <span class="n">keepexe</span><span class="o">=</span><span class="n">keepexe</span><span class="p">)</span>
 
             <span class="c1"># Determine if env_build.xml has changed</span>
             <span class="k">if</span> <span class="n">keepexe</span><span class="p">:</span>

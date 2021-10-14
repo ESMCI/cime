@@ -183,6 +183,16 @@
 <span class="sd">Base class for CIME system tests that involve doing two runs and comparing their</span>
 <span class="sd">output.</span>
 
+<span class="sd">NOTE: Below is the flow of a multisubmit test.</span>
+<span class="sd">Non-batch:</span>
+<span class="sd">case_submit -&gt; case_run     # PHASE 1</span>
+<span class="sd">            -&gt; case_run     # PHASE 2</span>
+
+<span class="sd">batch:</span>
+<span class="sd">case_submit -&gt; case_run     # PHASE 1</span>
+<span class="sd">case_run    -&gt; case_submit</span>
+<span class="sd">case_submit -&gt; case_run     # PHASE 2</span>
+
 <span class="sd">In the __init__ method for your test, you MUST call</span>
 <span class="sd">    SystemTestsCompareTwo.__init__</span>
 <span class="sd">See the documentation of that method for details.</span>
@@ -398,8 +408,29 @@
 <span class="sd">        Runs both phases of the two-phase test and compares their results</span>
 <span class="sd">        If success_change is True, success requires some files to be different</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">is_first_run</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case1</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;IS_FIRST_RUN&quot;</span><span class="p">)</span>
+
+        <span class="n">compare_phase_name</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_</span><span class="si">{}</span><span class="s2">_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">COMPARE_PHASE</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_run_one_suffix</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_run_two_suffix</span><span class="p">)</span>
+
+        <span class="c1"># On a batch system with a multisubmit test &quot;RESUBMIT&quot; is used to track</span>
+        <span class="c1"># which phase is being ran. By the end of the test it equals 0. If the</span>
+        <span class="c1"># the test fails in a way where the RUN_PHASE is PEND then &quot;RESUBMIT&quot; </span>
+        <span class="c1"># does not get reset to 1 on a rerun and the first phase is skiped </span>
+        <span class="c1"># causing the COMPARE_PHASE to fail. This ensures that &quot;RESUBMIT&quot; will </span>
+        <span class="c1"># get reset if the test state is not correct for a rerun.</span>
+        <span class="c1"># NOTE: &quot;IS_FIRST_RUN&quot; is reset in &quot;case_submit.py&quot;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">is_first_run</span> <span class="ow">and</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_multisubmit</span> <span class="ow">and</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_case1</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RESUBMIT&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_resetup_case</span><span class="p">(</span><span class="n">RUN_PHASE</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
         <span class="n">first_phase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case1</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RESUBMIT&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="c1"># Only relevant for multi-submit tests</span>
         <span class="n">run_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case1</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUN_TYPE&quot;</span><span class="p">)</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;_multisubmit </span><span class="si">{}</span><span class="s2"> first phase </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_multisubmit</span><span class="p">,</span> <span class="n">first_phase</span><span class="p">))</span>
 
         <span class="c1"># First run</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_multisubmit</span> <span class="ow">or</span> <span class="n">first_phase</span><span class="p">:</span>
@@ -408,7 +439,9 @@
             <span class="c1"># Add a PENDing compare phase so that we&#39;ll notice if the second part of compare two</span>
             <span class="c1"># doesn&#39;t run.</span>
             <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_</span><span class="si">{}</span><span class="s2">_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">COMPARE_PHASE</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_one_suffix</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_two_suffix</span><span class="p">),</span> <span class="n">TEST_PEND_STATUS</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span>
+                    <span class="n">compare_phase_name</span><span class="p">,</span>
+                    <span class="n">TEST_PEND_STATUS</span><span class="p">)</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">_activate_case1</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_case_one_custom_prerun_action</span><span class="p">()</span>
@@ -416,7 +449,6 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_case_one_custom_postrun_action</span><span class="p">()</span>
 
         <span class="c1"># Second run</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;_multisubmit </span><span class="si">{}</span><span class="s2"> first phase </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_multisubmit</span><span class="p">,</span> <span class="n">first_phase</span><span class="p">))</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_multisubmit</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">first_phase</span><span class="p">:</span>
             <span class="c1"># Subtle issue: case1 is already in a writeable state since it tends to be opened</span>
             <span class="c1"># with a with statement in all the API entrances in CIME. case2 was created via clone,</span>

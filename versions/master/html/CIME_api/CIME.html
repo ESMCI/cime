@@ -370,6 +370,7 @@
 <li class="toctree-l3"><a class="reference internal" href="CIME.tests.XML.html">CIME.tests.XML package</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="CIME.tests.XML.html#submodules">Submodules</a></li>
 <li class="toctree-l4"><a class="reference internal" href="CIME.tests.XML.html#module-CIME.tests.XML.test_expected_fails_file">CIME.tests.XML.test_expected_fails_file module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.tests.XML.html#module-CIME.tests.XML.test_grids">CIME.tests.XML.test_grids module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="CIME.tests.XML.html#module-CIME.tests.XML">Module contents</a></li>
 </ul>
 </li>
@@ -378,12 +379,21 @@
 <li class="toctree-l2"><a class="reference internal" href="CIME.tests.html#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.tests.html#module-CIME.tests.case_fake">CIME.tests.case_fake module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.tests.html#module-CIME.tests.custom_assertions_test_status">CIME.tests.custom_assertions_test_status module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CIME.tests.html#module-CIME.tests.test_case">CIME.tests.test_case module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.tests.html#module-CIME.tests.test_case_fake">CIME.tests.test_case_fake module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CIME.tests.html#module-CIME.tests.test_case_setup">CIME.tests.test_case_setup module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CIME.tests.html#module-CIME.tests.test_compare_test_results">CIME.tests.test_compare_test_results module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.tests.html#module-CIME.tests.test_cs_status">CIME.tests.test_cs_status module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.tests.html#module-CIME.tests.test_custom_assertions_test_status">CIME.tests.test_custom_assertions_test_status module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CIME.tests.html#module-CIME.tests.test_nmlgen">CIME.tests.test_nmlgen module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CIME.tests.html#module-CIME.tests.test_provenance">CIME.tests.test_provenance module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CIME.tests.html#module-CIME.tests.test_test_scheduler">CIME.tests.test_test_scheduler module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.tests.html#module-CIME.tests.test_test_status">CIME.tests.test_test_status module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.tests.html#module-CIME.tests.test_user_mod_support">CIME.tests.test_user_mod_support module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.tests.html#module-CIME.tests.test_utils">CIME.tests.test_utils module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CIME.tests.html#module-CIME.tests.test_xml_env_batch">CIME.tests.test_xml_env_batch module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CIME.tests.html#module-CIME.tests.test_xml_namelist_definition">CIME.tests.test_xml_namelist_definition module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CIME.tests.html#module-CIME.tests.utils">CIME.tests.utils module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.tests.html#module-CIME.tests">Module contents</a></li>
 </ul>
 </li>
@@ -434,6 +444,15 @@ code to compute and assemble aprun commands.</p>
 <dt id="CIME.build.clean">
 <code class="sig-prename descclassname">CIME.build.</code><code class="sig-name descname">clean</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">case</span></em>, <em class="sig-param"><span class="n">cleanlist</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">clean_all</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">clean_depends</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/build.html#clean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.build.clean" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="py function">
+<dt id="CIME.build.generate_makefile_macro">
+<code class="sig-prename descclassname">CIME.build.</code><code class="sig-name descname">generate_makefile_macro</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">case</span></em>, <em class="sig-param"><span class="n">caseroot</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/build.html#generate_makefile_macro"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.build.generate_makefile_macro" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a flat Makefile macro file based on the CMake cache system.
+This macro is only used by certain sharedlibs since components use CMake.
+Since indirection based on comp_name is allowed for sharedlibs, each sharedlib must generate
+their own macro.</p>
+</dd></dl>
 
 <dl class="py function">
 <dt id="CIME.build.get_standard_cmake_args">
@@ -1958,6 +1977,9 @@ written to the namelist.</p>
 <dt id="CIME.nmlgen.NamelistGenerator.init_defaults">
 <code class="sig-name descname">init_defaults</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">infiles</span></em>, <em class="sig-param"><span class="n">config</span></em>, <em class="sig-param"><span class="n">skip_groups</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">skip_entry_loop</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">skip_default_for_groups</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/nmlgen.html#NamelistGenerator.init_defaults"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.nmlgen.NamelistGenerator.init_defaults" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return array of names of all definition nodes</p>
+<p>infiles should be a list of file paths, each one giving namelist settings that
+take precedence over the default values. Often there will be only one file in this
+list. If there are multiple files, earlier files take precedence over later files.</p>
 <p>If skip_default_for_groups is provided, it should be a list of namelist group
 names; the add_default call will not be done for any variables in these
 groups. This is often paired with later conditional calls to
@@ -2120,7 +2142,7 @@ phases. All other phases need to handle their own status because
 they can be run outside the context of TestScheduler.</p>
 <dl class="py class">
 <dt id="CIME.test_scheduler.TestScheduler">
-<em class="property">class </em><code class="sig-prename descclassname">CIME.test_scheduler.</code><code class="sig-name descname">TestScheduler</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">test_names</span></em>, <em class="sig-param"><span class="n">test_data</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">no_run</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">no_build</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">no_setup</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">no_batch</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">test_root</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">test_id</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">machine_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">compiler</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">baseline_root</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">baseline_cmp_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">baseline_gen_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">clean</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">namelists_only</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">project</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">parallel_jobs</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">walltime</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">proc_pool</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">use_existing</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">save_timing</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">queue</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">allow_baseline_overwrite</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">output_root</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">force_procs</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">force_threads</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">mpilib</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">input_dir</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">pesfile</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">mail_user</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">mail_type</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">allow_pnl</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">non_local</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">single_exe</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">workflow</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/test_scheduler.html#TestScheduler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.test_scheduler.TestScheduler" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">CIME.test_scheduler.</code><code class="sig-name descname">TestScheduler</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">test_names</span></em>, <em class="sig-param"><span class="n">test_data</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">no_run</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">no_build</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">no_setup</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">no_batch</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">test_root</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">test_id</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">machine_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">compiler</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">baseline_root</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">baseline_cmp_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">baseline_gen_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">clean</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">namelists_only</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">project</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">parallel_jobs</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">walltime</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">proc_pool</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">use_existing</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">save_timing</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">queue</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">allow_baseline_overwrite</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">output_root</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">force_procs</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">force_threads</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">mpilib</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">input_dir</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">pesfile</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">mail_user</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">mail_type</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">allow_pnl</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">non_local</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">single_exe</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">workflow</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">chksum</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/test_scheduler.html#TestScheduler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.test_scheduler.TestScheduler" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py method">
 <dt id="CIME.test_scheduler.TestScheduler.get_testnames">
@@ -2515,11 +2537,6 @@ capture and report errors and undefined references.</p>
 <dd></dd></dl>
 
 <dl class="py function">
-<dt id="CIME.utils.check_for_python">
-<code class="sig-prename descclassname">CIME.utils.</code><code class="sig-name descname">check_for_python</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filepath</span></em>, <em class="sig-param"><span class="n">funcname</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#check_for_python"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.check_for_python" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
 <dt id="CIME.utils.check_minimum_python_version">
 <code class="sig-prename descclassname">CIME.utils.</code><code class="sig-name descname">check_minimum_python_version</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">major</span></em>, <em class="sig-param"><span class="n">minor</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#check_minimum_python_version"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.check_minimum_python_version" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check your python version.</p>
@@ -2575,6 +2592,8 @@ estimate for a given processor pool size</p>
 <dd><p>Convert time value to seconds to HH:MM:SS</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">convert_to_babylonian_time</span><span class="p">(</span><span class="mi">3661</span><span class="p">)</span>
 <span class="go">&#39;01:01:01&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">convert_to_babylonian_time</span><span class="p">(</span><span class="mi">360000</span><span class="p">)</span>
+<span class="go">&#39;100:00:00&#39;</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -2646,6 +2665,13 @@ checking user error, not programming error.</p>
 <span class="gr">CIMEError</span>: <span class="n">ERROR: error2</span>
 </pre></div>
 </div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="CIME.utils.file_contains_python_function">
+<code class="sig-prename descclassname">CIME.utils.</code><code class="sig-name descname">file_contains_python_function</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filepath</span></em>, <em class="sig-param"><span class="n">funcname</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#file_contains_python_function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.file_contains_python_function" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks whether the given file contains a top-level definition of the function ‘funcname’</p>
+<p>Returns a boolean value (True if the file contains this function definition, False otherwise)</p>
 </dd></dl>
 
 <dl class="py function">
@@ -2799,9 +2825,20 @@ along with the submodule path and the output of git describe for the SHA-1.</p>
 
 <dl class="py function">
 <dt id="CIME.utils.get_full_test_name">
-<code class="sig-prename descclassname">CIME.utils.</code><code class="sig-name descname">get_full_test_name</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">partial_test</span></em>, <em class="sig-param"><span class="n">caseopts</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">grid</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">compset</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">machine</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">compiler</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">testmod</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#get_full_test_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.get_full_test_name" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">CIME.utils.</code><code class="sig-name descname">get_full_test_name</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">partial_test</span></em>, <em class="sig-param"><span class="n">caseopts</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">grid</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">compset</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">machine</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">compiler</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">testmods_list</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">testmods_string</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#get_full_test_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.get_full_test_name" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given a partial CIME test name, return in form TESTCASE.GRID.COMPSET.MACHINE_COMPILER[.TESTMODS]
 Use the additional args to fill out the name if needed</p>
+<p>Testmods can be provided through one of two arguments, but <em>not</em> both:
+- testmods_list: a list of one or more testmods (as would be returned by</p>
+<blockquote>
+<div><p>parse_test_name, for example)</p>
+</div></blockquote>
+<ul class="simple">
+<li><p>testmods_string: a single string containing one or more testmods; if there is more
+than one, then they should be separated by a string of two hyphens (‘–’)</p></li>
+</ul>
+<p>For both testmods_list and testmods_string, any slashes as path separators (‘/’) are
+replaced by hyphens (‘-‘).</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_full_test_name</span><span class="p">(</span><span class="s2">&quot;ERS&quot;</span><span class="p">,</span> <span class="n">grid</span><span class="o">=</span><span class="s2">&quot;ne16_fe16&quot;</span><span class="p">,</span> <span class="n">compset</span><span class="o">=</span><span class="s2">&quot;JGF&quot;</span><span class="p">,</span> <span class="n">machine</span><span class="o">=</span><span class="s2">&quot;melvin&quot;</span><span class="p">,</span> <span class="n">compiler</span><span class="o">=</span><span class="s2">&quot;gnu&quot;</span><span class="p">)</span>
 <span class="go">&#39;ERS.ne16_fe16.JGF.melvin_gnu&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">get_full_test_name</span><span class="p">(</span><span class="s2">&quot;ERS&quot;</span><span class="p">,</span> <span class="n">caseopts</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;D&quot;</span><span class="p">,</span> <span class="s2">&quot;P16&quot;</span><span class="p">],</span> <span class="n">grid</span><span class="o">=</span><span class="s2">&quot;ne16_fe16&quot;</span><span class="p">,</span> <span class="n">compset</span><span class="o">=</span><span class="s2">&quot;JGF&quot;</span><span class="p">,</span> <span class="n">machine</span><span class="o">=</span><span class="s2">&quot;melvin&quot;</span><span class="p">,</span> <span class="n">compiler</span><span class="o">=</span><span class="s2">&quot;gnu&quot;</span><span class="p">)</span>
@@ -2812,10 +2849,26 @@ Use the additional args to fill out the name if needed</p>
 <span class="go">&#39;ERS.ne16_fe16.JGF.melvin_gnu&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">get_full_test_name</span><span class="p">(</span><span class="s2">&quot;ERS.ne16_fe16.JGF.melvin_gnu.mods&quot;</span><span class="p">,</span> <span class="n">machine</span><span class="o">=</span><span class="s2">&quot;melvin&quot;</span><span class="p">,</span> <span class="n">compiler</span><span class="o">=</span><span class="s2">&quot;gnu&quot;</span><span class="p">)</span>
 <span class="go">&#39;ERS.ne16_fe16.JGF.melvin_gnu.mods&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">get_full_test_name</span><span class="p">(</span><span class="s2">&quot;ERS.ne16_fe16.JGF&quot;</span><span class="p">,</span> <span class="n">machine</span><span class="o">=</span><span class="s2">&quot;melvin&quot;</span><span class="p">,</span> <span class="n">compiler</span><span class="o">=</span><span class="s2">&quot;gnu&quot;</span><span class="p">,</span> <span class="n">testmod</span><span class="o">=</span><span class="s2">&quot;mods/test&quot;</span><span class="p">)</span>
-<span class="go">&#39;ERS.ne16_fe16.JGF.melvin_gnu.mods-test&#39;</span>
 </pre></div>
 </div>
+<p>testmods_list can be a single element:
+&gt;&gt;&gt; get_full_test_name(“ERS.ne16_fe16.JGF”, machine=”melvin”, compiler=”gnu”, testmods_list=[“mods/test”])
+‘ERS.ne16_fe16.JGF.melvin_gnu.mods-test’</p>
+<p>testmods_list can also have multiple elements, separated either by slashes or hyphens:
+&gt;&gt;&gt; get_full_test_name(“ERS.ne16_fe16.JGF”, machine=”melvin”, compiler=”gnu”, testmods_list=[“mods/test”, “mods2/test2/subdir2”, “mods3/test3/subdir3”])
+‘ERS.ne16_fe16.JGF.melvin_gnu.mods-test–mods2-test2-subdir2–mods3-test3-subdir3’
+&gt;&gt;&gt; get_full_test_name(“ERS.ne16_fe16.JGF”, machine=”melvin”, compiler=”gnu”, testmods_list=[“mods-test”, “mods2-test2-subdir2”, “mods3-test3-subdir3”])
+‘ERS.ne16_fe16.JGF.melvin_gnu.mods-test–mods2-test2-subdir2–mods3-test3-subdir3’</p>
+<p>The above testmods_list tests should also work with equivalent testmods_string arguments:
+&gt;&gt;&gt; get_full_test_name(“ERS.ne16_fe16.JGF”, machine=”melvin”, compiler=”gnu”, testmods_string=”mods/test”)
+‘ERS.ne16_fe16.JGF.melvin_gnu.mods-test’
+&gt;&gt;&gt; get_full_test_name(“ERS.ne16_fe16.JGF”, machine=”melvin”, compiler=”gnu”, testmods_string=”mods/test–mods2/test2/subdir2–mods3/test3/subdir3”)
+‘ERS.ne16_fe16.JGF.melvin_gnu.mods-test–mods2-test2-subdir2–mods3-test3-subdir3’
+&gt;&gt;&gt; get_full_test_name(“ERS.ne16_fe16.JGF”, machine=”melvin”, compiler=”gnu”, testmods_string=”mods-test–mods2-test2-subdir2–mods3-test3-subdir3”)
+‘ERS.ne16_fe16.JGF.melvin_gnu.mods-test–mods2-test2-subdir2–mods3-test3-subdir3’</p>
+<p>The following tests the consistency check between the test name and various optional arguments:
+&gt;&gt;&gt; get_full_test_name(“ERS.ne16_fe16.JGF.melvin_gnu.mods-test–mods2-test2-subdir2–mods3-test3-subdir3”, machine=”melvin”, compiler=”gnu”, testmods_list=[“mods/test”, “mods2/test2/subdir2”, “mods3/test3/subdir3”])
+‘ERS.ne16_fe16.JGF.melvin_gnu.mods-test–mods2-test2-subdir2–mods3-test3-subdir3’</p>
 </dd></dl>
 
 <dl class="py function">
@@ -2923,6 +2976,12 @@ The CIME_MODEL env variable may or may not be set</p>
 </dd></dl>
 
 <dl class="py function">
+<dt id="CIME.utils.get_src_root">
+<code class="sig-prename descclassname">CIME.utils.</code><code class="sig-name descname">get_src_root</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#get_src_root"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.get_src_root" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the absolute path to the root of SRCROOT.</p>
+</dd></dl>
+
+<dl class="py function">
 <dt id="CIME.utils.get_time_in_seconds">
 <code class="sig-prename descclassname">CIME.utils.</code><code class="sig-name descname">get_time_in_seconds</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">timeval</span></em>, <em class="sig-param"><span class="n">unit</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#get_time_in_seconds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.get_time_in_seconds" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert a time from ‘unit’ to seconds</p>
@@ -2976,6 +3035,11 @@ the zipped file.</p>
 <dl class="py function">
 <dt id="CIME.utils.id_generator">
 <code class="sig-prename descclassname">CIME.utils.</code><code class="sig-name descname">id_generator</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">size</span><span class="o">=</span><span class="default_value">6</span></em>, <em class="sig-param"><span class="n">chars</span><span class="o">=</span><span class="default_value">'abcdefghijklmnopqrstuvwxyz0123456789'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#id_generator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.id_generator" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="CIME.utils.import_from_file">
+<code class="sig-prename descclassname">CIME.utils.</code><code class="sig-name descname">import_from_file</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">file_path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#import_from_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.import_from_file" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
@@ -3059,6 +3123,19 @@ logger.error -&gt; Goes to stderr (and log if –debug)</p>
 return each component of the testname with machine and compiler split.
 Do not error if a partial testname is provided (TESTCASE or TESTCASE.GRID) instead
 parse and return the partial results.</p>
+<p>TESTMODS use hyphens in a special way:
+- A single hyphen stands for a path separator (for example, ‘test-mods’ resolves to</p>
+<blockquote>
+<div><p>the path ‘test/mods’)</p>
+</div></blockquote>
+<ul class="simple">
+<li><p>A double hyphen separates multiple test mods (for example, ‘test-mods–other-dir-path’
+indicates two test mods: ‘test/mods’ and ‘other/dir/path’)</p></li>
+</ul>
+<p>If there are one or more TESTMODS, then the testmods component of the result will be a
+list, where each element of the list is one testmod, and hyphens have been replaced by
+slashes. (If there are no TESTMODS in this test, then the TESTMODS component of the
+result is None, as for other optional components.)</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">parse_test_name</span><span class="p">(</span><span class="s1">&#39;ERS&#39;</span><span class="p">)</span>
 <span class="go">[&#39;ERS&#39;, None, None, None, None, None, None]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">parse_test_name</span><span class="p">(</span><span class="s1">&#39;ERS.fe12_123&#39;</span><span class="p">)</span>
@@ -3069,12 +3146,16 @@ parse and return the partial results.</p>
 <span class="go">[&#39;ERS&#39;, [&#39;D&#39;], &#39;fe12_123&#39;, &#39;JGF&#39;, None, None, None]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">parse_test_name</span><span class="p">(</span><span class="s1">&#39;ERS_D_P1.fe12_123.JGF&#39;</span><span class="p">)</span>
 <span class="go">[&#39;ERS&#39;, [&#39;D&#39;, &#39;P1&#39;], &#39;fe12_123&#39;, &#39;JGF&#39;, None, None, None]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">parse_test_name</span><span class="p">(</span><span class="s1">&#39;ERS_D_G2.fe12_123.JGF&#39;</span><span class="p">)</span>
+<span class="go">[&#39;ERS&#39;, [&#39;D&#39;, &#39;G2&#39;], &#39;fe12_123&#39;, &#39;JGF&#39;, None, None, None]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">parse_test_name</span><span class="p">(</span><span class="s1">&#39;SMS_D_Ln9_Mmpi-serial.f19_g16_rx1.A&#39;</span><span class="p">)</span>
 <span class="go">[&#39;SMS&#39;, [&#39;D&#39;, &#39;Ln9&#39;, &#39;Mmpi-serial&#39;], &#39;f19_g16_rx1&#39;, &#39;A&#39;, None, None, None]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">parse_test_name</span><span class="p">(</span><span class="s1">&#39;ERS.fe12_123.JGF.machine_compiler&#39;</span><span class="p">)</span>
 <span class="go">[&#39;ERS&#39;, None, &#39;fe12_123&#39;, &#39;JGF&#39;, &#39;machine&#39;, &#39;compiler&#39;, None]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">parse_test_name</span><span class="p">(</span><span class="s1">&#39;ERS.fe12_123.JGF.machine_compiler.test-mods&#39;</span><span class="p">)</span>
-<span class="go">[&#39;ERS&#39;, None, &#39;fe12_123&#39;, &#39;JGF&#39;, &#39;machine&#39;, &#39;compiler&#39;, &#39;test/mods&#39;]</span>
+<span class="go">[&#39;ERS&#39;, None, &#39;fe12_123&#39;, &#39;JGF&#39;, &#39;machine&#39;, &#39;compiler&#39;, [&#39;test/mods&#39;]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">parse_test_name</span><span class="p">(</span><span class="s1">&#39;ERS.fe12_123.JGF.machine_compiler.test-mods--other-dir-path--and-one-more&#39;</span><span class="p">)</span>
+<span class="go">[&#39;ERS&#39;, None, &#39;fe12_123&#39;, &#39;JGF&#39;, &#39;machine&#39;, &#39;compiler&#39;, [&#39;test/mods&#39;, &#39;other/dir/path&#39;, &#39;and/one/more&#39;]]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">parse_test_name</span><span class="p">(</span><span class="s1">&#39;SMS.f19_g16.2000_DATM%QI.A_XLND_SICE_SOCN_XROF_XGLC_SWAV.mach-ine_compiler.test-mods&#39;</span><span class="p">)</span> 
 <span class="gt">Traceback (most recent call last):</span>
     <span class="o">...</span>
@@ -3120,7 +3201,7 @@ parse and return the partial results.</p>
 
 <dl class="py function">
 <dt id="CIME.utils.run_and_log_case_status">
-<code class="sig-prename descclassname">CIME.utils.</code><code class="sig-name descname">run_and_log_case_status</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">func</span></em>, <em class="sig-param"><span class="n">phase</span></em>, <em class="sig-param"><span class="n">caseroot</span><span class="o">=</span><span class="default_value">'.'</span></em>, <em class="sig-param"><span class="n">custom_success_msg_functor</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#run_and_log_case_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.run_and_log_case_status" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">CIME.utils.</code><code class="sig-name descname">run_and_log_case_status</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">func</span></em>, <em class="sig-param"><span class="n">phase</span></em>, <em class="sig-param"><span class="n">caseroot</span><span class="o">=</span><span class="default_value">'.'</span></em>, <em class="sig-param"><span class="n">custom_starting_msg_functor</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">custom_success_msg_functor</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">is_batch</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#run_and_log_case_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.run_and_log_case_status" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">

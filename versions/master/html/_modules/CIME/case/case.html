@@ -179,14 +179,15 @@
            <div itemprop="articleBody">
             
   <h1>Source code for CIME.case.case</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Wrapper around all env XML for a case.</span>
 
 <span class="sd">All interaction with and between the module files in XML/ takes place</span>
 <span class="sd">through the Case module.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
-<span class="kn">import</span> <span class="nn">glob</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">shutil</span><span class="o">,</span> <span class="nn">math</span><span class="o">,</span> <span class="nn">six</span>
+<span class="kn">import</span> <span class="nn">glob</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">shutil</span><span class="o">,</span> <span class="nn">math</span><span class="o">,</span> <span class="nn">six</span><span class="o">,</span> <span class="nn">time</span><span class="o">,</span> <span class="nn">hashlib</span><span class="o">,</span> <span class="nn">socket</span><span class="o">,</span> <span class="nn">getpass</span>
 <span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="c1">#pylint: disable=import-error,redefined-builtin</span>
 <span class="kn">from</span> <span class="nn">six.moves</span> <span class="kn">import</span> <span class="nb">input</span>
@@ -261,10 +262,12 @@
     <span class="kn">from</span> <span class="nn">CIME.case.preview_namelists</span> <span class="kn">import</span> <span class="n">create_dirs</span><span class="p">,</span> <span class="n">create_namelists</span>
     <span class="kn">from</span> <span class="nn">CIME.case.check_input_data</span> <span class="kn">import</span> <span class="n">check_all_input_data</span><span class="p">,</span> <span class="n">stage_refcase</span><span class="p">,</span> <span class="n">check_input_data</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case_root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case_root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">record</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 
         <span class="k">if</span> <span class="n">case_root</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">case_root</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+        <span class="n">expect</span><span class="p">(</span><span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">case_root</span><span class="p">)</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">case_root</span><span class="p">,</span><span class="s2">&quot;env_case.xml&quot;</span><span class="p">)),</span> <span class="s2">&quot;Directory </span><span class="si">{}</span><span class="s2"> does not appear to be a valid case directory&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">case_root</span><span class="p">))</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_caseroot</span> <span class="o">=</span> <span class="n">case_root</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Initializing Case.&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_read_only_mode</span> <span class="o">=</span> <span class="kc">True</span>
@@ -277,6 +280,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_comp_interface</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">read_xml</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">record</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">record_cmd</span><span class="p">()</span>
 
         <span class="c1"># Hold arbitary values. In create_newcase we may set values</span>
         <span class="c1"># for xml files that haven&#39;t been created yet. We need a place</span>
@@ -295,6 +301,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_component_classes</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_component_description</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_is_env_loaded</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_loaded_envs</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="c1"># these are user_mods as defined in the compset</span>
         <span class="c1"># Command Line user_mods are handled seperately</span>
@@ -303,6 +310,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">thread_count</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">total_tasks</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tasks_per_node</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ngpus_per_node</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">num_nodes</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">spare_nodes</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tasks_per_numa</span> <span class="o">=</span> <span class="kc">None</span>
@@ -360,6 +368,11 @@
 
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;total_tasks </span><span class="si">{}</span><span class="s2"> thread_count </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">total_tasks</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">thread_count</span><span class="p">))</span>
 
+        <span class="n">max_gpus_per_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MAX_GPUS_PER_NODE&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">max_gpus_per_node</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ngpus_per_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;NGPUS_PER_NODE&quot;</span><span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">tasks_per_numa</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tasks_per_node</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">))</span>
         <span class="n">smt_factor</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MAX_TASKS_PER_NODE&quot;</span><span class="p">)</span> <span class="o">/</span> <span class="n">max_mpitasks_per_node</span><span class="p">))</span>
 
@@ -370,7 +383,7 @@
         <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;OMP_NUM_THREADS&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">thread_count</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">srun_binding</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">smt_factor</span><span class="o">*</span><span class="n">max_mpitasks_per_node</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">tasks_per_node</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">srun_binding</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">srun_binding</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">srun_binding</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">srun_binding</span><span class="p">))</span></div>
 
     <span class="c1"># Define __enter__ and __exit__ so that we can use this as a context manager</span>
     <span class="c1"># and force a flush on exit.</span>
@@ -446,6 +459,7 @@
         <span class="n">newcase</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">,</span><span class="n">newcaseroot</span><span class="p">)</span>
         <span class="n">newcase</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;CONTINUE_RUN&quot;</span><span class="p">,</span><span class="s2">&quot;FALSE&quot;</span><span class="p">)</span>
         <span class="n">newcase</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;RESUBMIT&quot;</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">newcase</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;CASE_HASH&quot;</span><span class="p">,</span> <span class="n">newcase</span><span class="o">.</span><span class="n">new_hash</span><span class="p">())</span>
 
         <span class="c1"># Important, and subtle: Writability should NOT be copied because</span>
         <span class="c1"># this allows the copy to be modified without needing a &quot;with&quot; statement</span>
@@ -744,6 +758,12 @@
         <span class="k">elif</span> <span class="s2">&quot;GLC&quot;</span> <span class="ow">in</span> <span class="n">progcomps</span> <span class="ow">and</span> <span class="n">progcomps</span><span class="p">[</span><span class="s2">&quot;GLC&quot;</span><span class="p">]:</span>
             <span class="c1"># This is a &quot;TG&quot; compset</span>
             <span class="n">primary_component</span> <span class="o">=</span> <span class="n">spec</span><span class="p">[</span><span class="s2">&quot;GLC&quot;</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">progcomps</span><span class="p">[</span><span class="s2">&quot;ROF&quot;</span><span class="p">]:</span>
+            <span class="c1"># This is a &quot;R&quot; compset</span>
+            <span class="n">primary_component</span> <span class="o">=</span> <span class="n">spec</span><span class="p">[</span><span class="s2">&quot;ROF&quot;</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">progcomps</span><span class="p">[</span><span class="s2">&quot;WAV&quot;</span><span class="p">]:</span>
+            <span class="c1"># This is a &quot;V&quot; compset</span>
+            <span class="n">primary_component</span> <span class="o">=</span> <span class="n">spec</span><span class="p">[</span><span class="s2">&quot;WAV&quot;</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># This is &quot;A&quot;, &quot;X&quot; or &quot;S&quot;</span>
             <span class="n">primary_component</span> <span class="o">=</span> <span class="s2">&quot;drv&quot;</span>
@@ -756,24 +776,28 @@
 <span class="sd">        &lt;comp_hash&gt; is a dictionary where each key is a supported component</span>
 <span class="sd">        (e.g., datm) and the associated value is the index in &lt;comp_classes&gt; of</span>
 <span class="sd">        that component&#39;s class (e.g., 1 for atm).</span>
-<span class="sd">        &gt;&gt;&gt; Case(read_only=False)._valid_compset_impl(&#39;2000_DATM%NYF_SLND_DICE%SSMI_DOCN%DOM_DROF%NYF_SGLC_SWAV&#39;, None, [&#39;CPL&#39;, &#39;ATM&#39;, &#39;LND&#39;, &#39;ICE&#39;, &#39;OCN&#39;, &#39;ROF&#39;, &#39;GLC&#39;, &#39;WAV&#39;, &#39;ESP&#39;], {&#39;datm&#39;:1,&#39;satm&#39;:1,&#39;dlnd&#39;:2,&#39;slnd&#39;:2,&#39;dice&#39;:3,&#39;sice&#39;:3,&#39;docn&#39;:4,&#39;socn&#39;:4,&#39;drof&#39;:5,&#39;srof&#39;:5,&#39;sglc&#39;:6,&#39;swav&#39;:7,&#39;ww3&#39;:7,&#39;sesp&#39;:8})</span>
+<span class="sd">        &gt;&gt;&gt; import os, shutil, tempfile</span>
+<span class="sd">        &gt;&gt;&gt; workdir = tempfile.mkdtemp()</span>
+<span class="sd">        &gt;&gt;&gt; caseroot = os.path.join(workdir, &#39;caseroot&#39;)  # use non-existent caseroot to avoid error about not being a valid case directory in Case __init__ method</span>
+<span class="sd">        &gt;&gt;&gt; Case(caseroot, read_only=False)._valid_compset_impl(&#39;2000_DATM%NYF_SLND_DICE%SSMI_DOCN%DOM_DROF%NYF_SGLC_SWAV&#39;, None, [&#39;CPL&#39;, &#39;ATM&#39;, &#39;LND&#39;, &#39;ICE&#39;, &#39;OCN&#39;, &#39;ROF&#39;, &#39;GLC&#39;, &#39;WAV&#39;, &#39;ESP&#39;], {&#39;datm&#39;:1,&#39;satm&#39;:1,&#39;dlnd&#39;:2,&#39;slnd&#39;:2,&#39;dice&#39;:3,&#39;sice&#39;:3,&#39;docn&#39;:4,&#39;socn&#39;:4,&#39;drof&#39;:5,&#39;srof&#39;:5,&#39;sglc&#39;:6,&#39;swav&#39;:7,&#39;ww3&#39;:7,&#39;sesp&#39;:8})</span>
 <span class="sd">        (&#39;2000_DATM%NYF_SLND_DICE%SSMI_DOCN%DOM_DROF%NYF_SGLC_SWAV_SESP&#39;, [&#39;2000&#39;, &#39;DATM%NYF&#39;, &#39;SLND&#39;, &#39;DICE%SSMI&#39;, &#39;DOCN%DOM&#39;, &#39;DROF%NYF&#39;, &#39;SGLC&#39;, &#39;SWAV&#39;, &#39;SESP&#39;])</span>
-<span class="sd">        &gt;&gt;&gt; Case(read_only=False)._valid_compset_impl(&#39;2000_DATM%NYF_DICE%SSMI_DOCN%DOM_DROF%NYF&#39;, None, [&#39;CPL&#39;, &#39;ATM&#39;, &#39;LND&#39;, &#39;ICE&#39;, &#39;OCN&#39;, &#39;ROF&#39;, &#39;GLC&#39;, &#39;WAV&#39;, &#39;ESP&#39;], {&#39;datm&#39;:1,&#39;satm&#39;:1,&#39;dlnd&#39;:2,&#39;slnd&#39;:2,&#39;dice&#39;:3,&#39;sice&#39;:3,&#39;docn&#39;:4,&#39;socn&#39;:4,&#39;drof&#39;:5,&#39;srof&#39;:5,&#39;sglc&#39;:6,&#39;swav&#39;:7,&#39;ww3&#39;:7,&#39;sesp&#39;:8})</span>
+<span class="sd">        &gt;&gt;&gt; Case(caseroot, read_only=False)._valid_compset_impl(&#39;2000_DATM%NYF_DICE%SSMI_DOCN%DOM_DROF%NYF&#39;, None, [&#39;CPL&#39;, &#39;ATM&#39;, &#39;LND&#39;, &#39;ICE&#39;, &#39;OCN&#39;, &#39;ROF&#39;, &#39;GLC&#39;, &#39;WAV&#39;, &#39;ESP&#39;], {&#39;datm&#39;:1,&#39;satm&#39;:1,&#39;dlnd&#39;:2,&#39;slnd&#39;:2,&#39;dice&#39;:3,&#39;sice&#39;:3,&#39;docn&#39;:4,&#39;socn&#39;:4,&#39;drof&#39;:5,&#39;srof&#39;:5,&#39;sglc&#39;:6,&#39;swav&#39;:7,&#39;ww3&#39;:7,&#39;sesp&#39;:8})</span>
 <span class="sd">        (&#39;2000_DATM%NYF_SLND_DICE%SSMI_DOCN%DOM_DROF%NYF_SGLC_SWAV_SESP&#39;, [&#39;2000&#39;, &#39;DATM%NYF&#39;, &#39;SLND&#39;, &#39;DICE%SSMI&#39;, &#39;DOCN%DOM&#39;, &#39;DROF%NYF&#39;, &#39;SGLC&#39;, &#39;SWAV&#39;, &#39;SESP&#39;])</span>
-<span class="sd">        &gt;&gt;&gt; Case(read_only=False)._valid_compset_impl(&#39;2000_DICE%SSMI_DOCN%DOM_DATM%NYF_DROF%NYF&#39;, None, [&#39;CPL&#39;, &#39;ATM&#39;, &#39;LND&#39;, &#39;ICE&#39;, &#39;OCN&#39;, &#39;ROF&#39;, &#39;GLC&#39;, &#39;WAV&#39;, &#39;ESP&#39;], {&#39;datm&#39;:1,&#39;satm&#39;:1,&#39;dlnd&#39;:2,&#39;slnd&#39;:2,&#39;dice&#39;:3,&#39;sice&#39;:3,&#39;docn&#39;:4,&#39;socn&#39;:4,&#39;drof&#39;:5,&#39;srof&#39;:5,&#39;sglc&#39;:6,&#39;swav&#39;:7,&#39;ww3&#39;:7,&#39;sesp&#39;:8})</span>
+<span class="sd">        &gt;&gt;&gt; Case(caseroot, read_only=False)._valid_compset_impl(&#39;2000_DICE%SSMI_DOCN%DOM_DATM%NYF_DROF%NYF&#39;, None, [&#39;CPL&#39;, &#39;ATM&#39;, &#39;LND&#39;, &#39;ICE&#39;, &#39;OCN&#39;, &#39;ROF&#39;, &#39;GLC&#39;, &#39;WAV&#39;, &#39;ESP&#39;], {&#39;datm&#39;:1,&#39;satm&#39;:1,&#39;dlnd&#39;:2,&#39;slnd&#39;:2,&#39;dice&#39;:3,&#39;sice&#39;:3,&#39;docn&#39;:4,&#39;socn&#39;:4,&#39;drof&#39;:5,&#39;srof&#39;:5,&#39;sglc&#39;:6,&#39;swav&#39;:7,&#39;ww3&#39;:7,&#39;sesp&#39;:8})</span>
 <span class="sd">        (&#39;2000_DATM%NYF_SLND_DICE%SSMI_DOCN%DOM_DROF%NYF_SGLC_SWAV_SESP&#39;, [&#39;2000&#39;, &#39;DATM%NYF&#39;, &#39;SLND&#39;, &#39;DICE%SSMI&#39;, &#39;DOCN%DOM&#39;, &#39;DROF%NYF&#39;, &#39;SGLC&#39;, &#39;SWAV&#39;, &#39;SESP&#39;])</span>
-<span class="sd">        &gt;&gt;&gt; Case(read_only=False)._valid_compset_impl(&#39;2000_DICE%SSMI_DOCN%DOM_DATM%NYF_DROF%NYF_TEST&#39;, None, [&#39;CPL&#39;, &#39;ATM&#39;, &#39;LND&#39;, &#39;ICE&#39;, &#39;OCN&#39;, &#39;ROF&#39;, &#39;GLC&#39;, &#39;WAV&#39;, &#39;ESP&#39;], {&#39;datm&#39;:1,&#39;satm&#39;:1,&#39;dlnd&#39;:2,&#39;slnd&#39;:2,&#39;dice&#39;:3,&#39;sice&#39;:3,&#39;docn&#39;:4,&#39;socn&#39;:4,&#39;drof&#39;:5,&#39;srof&#39;:5,&#39;sglc&#39;:6,&#39;swav&#39;:7,&#39;ww3&#39;:7,&#39;sesp&#39;:8})</span>
+<span class="sd">        &gt;&gt;&gt; Case(caseroot, read_only=False)._valid_compset_impl(&#39;2000_DICE%SSMI_DOCN%DOM_DATM%NYF_DROF%NYF_TEST&#39;, None, [&#39;CPL&#39;, &#39;ATM&#39;, &#39;LND&#39;, &#39;ICE&#39;, &#39;OCN&#39;, &#39;ROF&#39;, &#39;GLC&#39;, &#39;WAV&#39;, &#39;ESP&#39;], {&#39;datm&#39;:1,&#39;satm&#39;:1,&#39;dlnd&#39;:2,&#39;slnd&#39;:2,&#39;dice&#39;:3,&#39;sice&#39;:3,&#39;docn&#39;:4,&#39;socn&#39;:4,&#39;drof&#39;:5,&#39;srof&#39;:5,&#39;sglc&#39;:6,&#39;swav&#39;:7,&#39;ww3&#39;:7,&#39;sesp&#39;:8})</span>
 <span class="sd">        (&#39;2000_DATM%NYF_SLND_DICE%SSMI_DOCN%DOM_DROF%NYF_SGLC_SWAV_SESP_TEST&#39;, [&#39;2000&#39;, &#39;DATM%NYF&#39;, &#39;SLND&#39;, &#39;DICE%SSMI&#39;, &#39;DOCN%DOM&#39;, &#39;DROF%NYF&#39;, &#39;SGLC&#39;, &#39;SWAV&#39;, &#39;SESP&#39;])</span>
-<span class="sd">        &gt;&gt;&gt; Case(read_only=False)._valid_compset_impl(&#39;1850_CAM60_CLM50%BGC-CROP_CICE_POP2%ECO%ABIO-DIC_MOSART_CISM2%NOEVOLVE_WW3_BGC%BDRD&#39;, None, [&#39;CPL&#39;, &#39;ATM&#39;, &#39;LND&#39;, &#39;ICE&#39;, &#39;OCN&#39;, &#39;ROF&#39;, &#39;GLC&#39;, &#39;WAV&#39;, &#39;ESP&#39;], {&#39;datm&#39;:1,&#39;satm&#39;:1, &#39;cam&#39;:1,&#39;dlnd&#39;:2,&#39;clm&#39;:2,&#39;slnd&#39;:2,&#39;cice&#39;:3,&#39;dice&#39;:3,&#39;sice&#39;:3,&#39;pop&#39;:4,&#39;docn&#39;:4,&#39;socn&#39;:4,&#39;mosart&#39;:5,&#39;drof&#39;:5,&#39;srof&#39;:5,&#39;cism&#39;:6,&#39;sglc&#39;:6,&#39;ww&#39;:7,&#39;swav&#39;:7,&#39;ww3&#39;:7,&#39;sesp&#39;:8})</span>
+<span class="sd">        &gt;&gt;&gt; Case(caseroot, read_only=False)._valid_compset_impl(&#39;1850_CAM60_CLM50%BGC-CROP_CICE_POP2%ECO%ABIO-DIC_MOSART_CISM2%NOEVOLVE_WW3_BGC%BDRD&#39;, None, [&#39;CPL&#39;, &#39;ATM&#39;, &#39;LND&#39;, &#39;ICE&#39;, &#39;OCN&#39;, &#39;ROF&#39;, &#39;GLC&#39;, &#39;WAV&#39;, &#39;ESP&#39;], {&#39;datm&#39;:1,&#39;satm&#39;:1, &#39;cam&#39;:1,&#39;dlnd&#39;:2,&#39;clm&#39;:2,&#39;slnd&#39;:2,&#39;cice&#39;:3,&#39;dice&#39;:3,&#39;sice&#39;:3,&#39;pop&#39;:4,&#39;docn&#39;:4,&#39;socn&#39;:4,&#39;mosart&#39;:5,&#39;drof&#39;:5,&#39;srof&#39;:5,&#39;cism&#39;:6,&#39;sglc&#39;:6,&#39;ww&#39;:7,&#39;swav&#39;:7,&#39;ww3&#39;:7,&#39;sesp&#39;:8})</span>
 <span class="sd">        (&#39;1850_CAM60_CLM50%BGC-CROP_CICE_POP2%ECO%ABIO-DIC_MOSART_CISM2%NOEVOLVE_WW3_SESP_BGC%BDRD&#39;, [&#39;1850&#39;, &#39;CAM60&#39;, &#39;CLM50%BGC-CROP&#39;, &#39;CICE&#39;, &#39;POP2%ECO%ABIO-DIC&#39;, &#39;MOSART&#39;, &#39;CISM2%NOEVOLVE&#39;, &#39;WW3&#39;, &#39;SESP&#39;])</span>
-<span class="sd">        &gt;&gt;&gt; Case(read_only=False)._valid_compset_impl(&#39;1850_CAM60_CLM50%BGC-CROP_CICE_POP2%ECO%ABIO-DIC_MOSART_CISM2%NOEVOLVE_WW3_BGC%BDRD_TEST&#39;, None, [&#39;CPL&#39;, &#39;ATM&#39;, &#39;LND&#39;, &#39;ICE&#39;, &#39;OCN&#39;, &#39;ROF&#39;, &#39;GLC&#39;, &#39;WAV&#39;, &#39;IAC&#39;, &#39;ESP&#39;], {&#39;datm&#39;:1,&#39;satm&#39;:1, &#39;cam&#39;:1,&#39;dlnd&#39;:2,&#39;clm&#39;:2,&#39;slnd&#39;:2,&#39;cice&#39;:3,&#39;dice&#39;:3,&#39;sice&#39;:3,&#39;pop&#39;:4,&#39;docn&#39;:4,&#39;socn&#39;:4,&#39;mosart&#39;:5,&#39;drof&#39;:5,&#39;srof&#39;:5,&#39;cism&#39;:6,&#39;sglc&#39;:6,&#39;ww&#39;:7,&#39;swav&#39;:7,&#39;ww3&#39;:7,&#39;sesp&#39;:8})</span>
+<span class="sd">        &gt;&gt;&gt; Case(caseroot, read_only=False)._valid_compset_impl(&#39;1850_CAM60_CLM50%BGC-CROP_CICE_POP2%ECO%ABIO-DIC_MOSART_CISM2%NOEVOLVE_WW3_BGC%BDRD_TEST&#39;, None, [&#39;CPL&#39;, &#39;ATM&#39;, &#39;LND&#39;, &#39;ICE&#39;, &#39;OCN&#39;, &#39;ROF&#39;, &#39;GLC&#39;, &#39;WAV&#39;, &#39;IAC&#39;, &#39;ESP&#39;], {&#39;datm&#39;:1,&#39;satm&#39;:1, &#39;cam&#39;:1,&#39;dlnd&#39;:2,&#39;clm&#39;:2,&#39;slnd&#39;:2,&#39;cice&#39;:3,&#39;dice&#39;:3,&#39;sice&#39;:3,&#39;pop&#39;:4,&#39;docn&#39;:4,&#39;socn&#39;:4,&#39;mosart&#39;:5,&#39;drof&#39;:5,&#39;srof&#39;:5,&#39;cism&#39;:6,&#39;sglc&#39;:6,&#39;ww&#39;:7,&#39;swav&#39;:7,&#39;ww3&#39;:7,&#39;sesp&#39;:8})</span>
 <span class="sd">        (&#39;1850_CAM60_CLM50%BGC-CROP_CICE_POP2%ECO%ABIO-DIC_MOSART_CISM2%NOEVOLVE_WW3_SIAC_SESP_BGC%BDRD_TEST&#39;, [&#39;1850&#39;, &#39;CAM60&#39;, &#39;CLM50%BGC-CROP&#39;, &#39;CICE&#39;, &#39;POP2%ECO%ABIO-DIC&#39;, &#39;MOSART&#39;, &#39;CISM2%NOEVOLVE&#39;, &#39;WW3&#39;, &#39;SIAC&#39;, &#39;SESP&#39;])</span>
-<span class="sd">        &gt;&gt;&gt; Case(read_only=False)._valid_compset_impl(&#39;1850_SATM_SLND_SICE_SOCN_SGLC_SWAV&#39;, &#39;S&#39;, [&#39;CPL&#39;, &#39;ATM&#39;, &#39;LND&#39;, &#39;ICE&#39;, &#39;OCN&#39;, &#39;ROF&#39;, &#39;GLC&#39;, &#39;WAV&#39;, &#39;IAC&#39;, &#39;ESP&#39;], {&#39;datm&#39;:1,&#39;satm&#39;:1, &#39;cam&#39;:1,&#39;dlnd&#39;:2,&#39;clm&#39;:2,&#39;slnd&#39;:2,&#39;cice&#39;:3,&#39;dice&#39;:3,&#39;sice&#39;:3,&#39;pop&#39;:4,&#39;docn&#39;:4,&#39;socn&#39;:4,&#39;mosart&#39;:5,&#39;drof&#39;:5,&#39;srof&#39;:5,&#39;cism&#39;:6,&#39;sglc&#39;:6,&#39;ww&#39;:7,&#39;swav&#39;:7,&#39;ww3&#39;:7,&#39;sesp&#39;:8})</span>
+<span class="sd">        &gt;&gt;&gt; Case(caseroot, read_only=False)._valid_compset_impl(&#39;1850_SATM_SLND_SICE_SOCN_SGLC_SWAV&#39;, &#39;S&#39;, [&#39;CPL&#39;, &#39;ATM&#39;, &#39;LND&#39;, &#39;ICE&#39;, &#39;OCN&#39;, &#39;ROF&#39;, &#39;GLC&#39;, &#39;WAV&#39;, &#39;IAC&#39;, &#39;ESP&#39;], {&#39;datm&#39;:1,&#39;satm&#39;:1, &#39;cam&#39;:1,&#39;dlnd&#39;:2,&#39;clm&#39;:2,&#39;slnd&#39;:2,&#39;cice&#39;:3,&#39;dice&#39;:3,&#39;sice&#39;:3,&#39;pop&#39;:4,&#39;docn&#39;:4,&#39;socn&#39;:4,&#39;mosart&#39;:5,&#39;drof&#39;:5,&#39;srof&#39;:5,&#39;cism&#39;:6,&#39;sglc&#39;:6,&#39;ww&#39;:7,&#39;swav&#39;:7,&#39;ww3&#39;:7,&#39;sesp&#39;:8})</span>
 <span class="sd">        (&#39;1850_SATM_SLND_SICE_SOCN_SROF_SGLC_SWAV_SIAC_SESP&#39;, [&#39;1850&#39;, &#39;SATM&#39;, &#39;SLND&#39;, &#39;SICE&#39;, &#39;SOCN&#39;, &#39;SROF&#39;, &#39;SGLC&#39;, &#39;SWAV&#39;, &#39;SIAC&#39;, &#39;SESP&#39;])</span>
 
-<span class="sd">        &gt;&gt;&gt; Case(read_only=False)._valid_compset_impl(&#39;1850_SATM_SLND_SICE_SOCN_SGLC_SWAV&#39;, None, [&#39;CPL&#39;, &#39;ATM&#39;, &#39;LND&#39;, &#39;ICE&#39;, &#39;OCN&#39;, &#39;ROF&#39;, &#39;GLC&#39;, &#39;WAV&#39;, &#39;IAC&#39;, &#39;ESP&#39;], {&#39;datm&#39;:1,&#39;satm&#39;:1, &#39;cam&#39;:1,&#39;dlnd&#39;:2,&#39;clm&#39;:2,&#39;slnd&#39;:2,&#39;cice&#39;:3,&#39;dice&#39;:3,&#39;sice&#39;:3,&#39;pop&#39;:4,&#39;docn&#39;:4,&#39;socn&#39;:4,&#39;mosart&#39;:5,&#39;drof&#39;:5,&#39;srof&#39;:5,&#39;cism&#39;:6,&#39;sglc&#39;:6,&#39;ww&#39;:7,&#39;swav&#39;:7,&#39;ww3&#39;:7,&#39;sesp&#39;:8}) #doctest: +IGNORE_EXCEPTION_DETAIL</span>
+<span class="sd">        &gt;&gt;&gt; Case(caseroot, read_only=False)._valid_compset_impl(&#39;1850_SATM_SLND_SICE_SOCN_SGLC_SWAV&#39;, None, [&#39;CPL&#39;, &#39;ATM&#39;, &#39;LND&#39;, &#39;ICE&#39;, &#39;OCN&#39;, &#39;ROF&#39;, &#39;GLC&#39;, &#39;WAV&#39;, &#39;IAC&#39;, &#39;ESP&#39;], {&#39;datm&#39;:1,&#39;satm&#39;:1, &#39;cam&#39;:1,&#39;dlnd&#39;:2,&#39;clm&#39;:2,&#39;slnd&#39;:2,&#39;cice&#39;:3,&#39;dice&#39;:3,&#39;sice&#39;:3,&#39;pop&#39;:4,&#39;docn&#39;:4,&#39;socn&#39;:4,&#39;mosart&#39;:5,&#39;drof&#39;:5,&#39;srof&#39;:5,&#39;cism&#39;:6,&#39;sglc&#39;:6,&#39;ww&#39;:7,&#39;swav&#39;:7,&#39;ww3&#39;:7,&#39;sesp&#39;:8}) #doctest: +IGNORE_EXCEPTION_DETAIL</span>
 <span class="sd">        Traceback (most recent call last):</span>
 <span class="sd">        CIMEError: ERROR: Invalid compset name, 1850_SATM_SLND_SICE_SOCN_SGLC_SWAV, all stub components generated</span>
+<span class="sd">        &gt;&gt;&gt; shutil.rmtree(workdir, ignore_errors=True)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Find the models declared in the compset</span>
         <span class="n">model_set</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">comp_classes</span><span class="p">)</span>
@@ -903,7 +927,7 @@
                 <span class="k">continue</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">element_component</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;%&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
-                <span class="k">if</span> <span class="s2">&quot;ww&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">element_component</span> <span class="ow">and</span> <span class="s2">&quot;fv3&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">element_component</span><span class="p">:</span>
+                <span class="k">if</span> <span class="s2">&quot;ww&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">element_component</span> <span class="ow">and</span> <span class="s2">&quot;fv3&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">element_component</span> <span class="ow">and</span> <span class="s2">&quot;cice&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">element_component</span><span class="p">:</span>
                     <span class="n">element_component</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;[0-9]*&#39;</span><span class="p">,</span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="n">element_component</span><span class="p">)</span>
                 <span class="n">components</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">element_component</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">components</span></div>
@@ -1104,7 +1128,8 @@
                   <span class="n">walltime</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">queue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output_root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                   <span class="n">run_unsupported</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">answer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                   <span class="n">input_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">driver</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">workflowid</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">,</span>
-                  <span class="n">non_local</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">extra_machines_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+                  <span class="n">non_local</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">extra_machines_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">case_group</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                  <span class="n">ngpus_per_node</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 
         <span class="n">expect</span><span class="p">(</span><span class="n">check_name</span><span class="p">(</span><span class="n">compset_name</span><span class="p">,</span> <span class="n">additional_chars</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">),</span> <span class="s2">&quot;Invalid compset name </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">compset_name</span><span class="p">))</span>
 
@@ -1170,7 +1195,7 @@
         <span class="n">nodenames</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">nodenames</span> <span class="k">if</span>
                      <span class="s1">&#39;_system&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">x</span> <span class="ow">and</span> <span class="s1">&#39;_variables&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">x</span> <span class="ow">and</span> <span class="s1">&#39;mpirun&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">x</span> <span class="ow">and</span>\
                      <span class="s1">&#39;COMPILER&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">x</span> <span class="ow">and</span> <span class="s1">&#39;MPILIB&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">x</span> <span class="ow">and</span> <span class="s1">&#39;MAX_MPITASKS_PER_NODE&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">x</span> <span class="ow">and</span>\
-                     <span class="s1">&#39;MAX_TASKS_PER_NODE&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">x</span><span class="p">]</span>
+                     <span class="s1">&#39;MAX_TASKS_PER_NODE&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">x</span> <span class="ow">and</span> <span class="s1">&#39;MAX_GPUS_PER_NODE&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">x</span><span class="p">]</span>
 
         <span class="k">for</span> <span class="n">nodename</span> <span class="ow">in</span> <span class="n">nodenames</span><span class="p">:</span>
             <span class="n">value</span> <span class="o">=</span> <span class="n">machobj</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">nodename</span><span class="p">,</span> <span class="n">resolved</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -1194,18 +1219,21 @@
             <span class="n">expect</span><span class="p">(</span><span class="n">machobj</span><span class="o">.</span><span class="n">is_valid_MPIlib</span><span class="p">(</span><span class="n">mpilib</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;compiler&quot;</span><span class="p">:</span><span class="n">compiler</span><span class="p">}),</span>
                    <span class="s2">&quot;MPIlib </span><span class="si">{}</span><span class="s2"> is not supported on machine </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mpilib</span><span class="p">,</span> <span class="n">machine_name</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;MPILIB&quot;</span><span class="p">,</span><span class="n">mpilib</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;MAX_TASKS_PER_NODE&quot;</span><span class="p">,</span><span class="s2">&quot;MAX_MPITASKS_PER_NODE&quot;</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;MAX_TASKS_PER_NODE&quot;</span><span class="p">,</span><span class="s2">&quot;MAX_MPITASKS_PER_NODE&quot;</span><span class="p">,</span><span class="s2">&quot;MAX_GPUS_PER_NODE&quot;</span><span class="p">):</span>
             <span class="n">dmax</span> <span class="o">=</span> <span class="n">machobj</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">name</span><span class="p">,{</span><span class="s1">&#39;compiler&#39;</span><span class="p">:</span><span class="n">compiler</span><span class="p">})</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">dmax</span><span class="p">:</span>
                 <span class="n">dmax</span> <span class="o">=</span> <span class="n">machobj</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">dmax</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">dmax</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">dmax</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Variable </span><span class="si">{}</span><span class="s2"> not defined for machine </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">machine_name</span><span class="p">))</span>
 
         <span class="n">machdir</span> <span class="o">=</span> <span class="n">machobj</span><span class="o">.</span><span class="n">get_machines_dir</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;MACHDIR&quot;</span><span class="p">,</span> <span class="n">machdir</span><span class="p">)</span>
 
         <span class="c1"># Create env_mach_specific settings from machine info.</span>
         <span class="n">env_mach_specific_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_env</span><span class="p">(</span><span class="s2">&quot;mach_specific&quot;</span><span class="p">)</span>
-        <span class="n">env_mach_specific_obj</span><span class="o">.</span><span class="n">populate</span><span class="p">(</span><span class="n">machobj</span><span class="p">)</span>
+        <span class="n">env_mach_specific_obj</span><span class="o">.</span><span class="n">populate</span><span class="p">(</span><span class="n">machobj</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;mpilib&quot;</span><span class="p">:</span><span class="n">mpilib</span><span class="p">,</span> <span class="s2">&quot;compiler&quot;</span><span class="p">:</span><span class="n">compiler</span><span class="p">,</span><span class="s2">&quot;threaded&quot;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">get_build_threaded</span><span class="p">()})</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_setup_mach_pes</span><span class="p">(</span><span class="n">pecount</span><span class="p">,</span> <span class="n">multi_driver</span><span class="p">,</span> <span class="n">ninst</span><span class="p">,</span> <span class="n">machine_name</span><span class="p">,</span> <span class="n">mpilib</span><span class="p">)</span>
 
@@ -1282,6 +1310,9 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUN_TYPE&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;hybrid&#39;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;GET_REFCASE&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
 
+        <span class="k">if</span> <span class="n">case_group</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;CASE_GROUP&quot;</span><span class="p">,</span> <span class="n">case_group</span><span class="p">)</span>
+
         <span class="c1"># Turn on short term archiving as cesm default setting</span>
         <span class="n">model</span> <span class="o">=</span> <span class="n">get_model</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_model_version</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
@@ -1291,6 +1322,32 @@
 
         <span class="k">if</span> <span class="n">test</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;TEST&quot;</span><span class="p">,</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1">#----------------------------------------------------------------------------------------------------------</span>
+        <span class="c1"># Sanity check:</span>
+        <span class="c1">#     1. We assume that there is always a string &quot;gpu&quot; in the compiler name if we want to enable GPU</span>
+        <span class="c1">#     2. For compilers without the string &quot;gpu&quot; in the name:</span>
+        <span class="c1">#        2.1. the ngpus-per-node argument would not update the NGPUS_PER_NODE XML variable, as long as</span>
+        <span class="c1">#             the MAX_GPUS_PER_NODE XML variable is not defined (i.e., this argument is not in effect).</span>
+        <span class="c1">#        2.2. if the MAX_GPUS_PER_NODE XML variable is defined, then the ngpus-per-node argument</span>
+        <span class="c1">#             must be set to 0. Otherwise, an error will be triggered.</span>
+        <span class="c1">#     3. For compilers with the string &quot;gpu&quot; in the name:</span>
+        <span class="c1">#        3.1. if ngpus-per-node argument is smaller than 0, an error will be triggered.</span>
+        <span class="c1">#        3.2. if ngpus_per_node argument is larger than the value of MAX_GPUS_PER_NODE, the NGPUS_PER_NODE</span>
+        <span class="c1">#             XML variable in the env_mach_pes.xml file would be set to MAX_GPUS_PER_NODE automatically.</span>
+        <span class="c1">#        3.3. if ngpus-per-node argument is equal to 0, it will be updated to 1 automatically.</span>
+        <span class="c1">#----------------------------------------------------------------------------------------------------------</span>
+        <span class="n">max_gpus_per_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MAX_GPUS_PER_NODE&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">max_gpus_per_node</span><span class="p">:</span>
+            <span class="k">if</span>  <span class="s2">&quot;gpu&quot;</span> <span class="ow">in</span> <span class="n">compiler</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">ngpus_per_node</span><span class="p">:</span>
+                    <span class="n">ngpus_per_node</span> <span class="o">=</span> <span class="mi">1</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Setting ngpus_per_node to 1 for compiler </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">compiler</span><span class="p">))</span>
+                <span class="n">expect</span><span class="p">(</span><span class="n">ngpus_per_node</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span><span class="s2">&quot; ngpus_per_node is expected &gt; 0 for compiler </span><span class="si">{}</span><span class="s2">; current value is </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">compiler</span><span class="p">,</span> <span class="n">ngpus_per_node</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">expect</span><span class="p">(</span><span class="n">ngpus_per_node</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span><span class="s2">&quot; ngpus_per_node is expected = 0 for compiler </span><span class="si">{}</span><span class="s2">; current value is </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">compiler</span><span class="p">,</span> <span class="n">ngpus_per_node</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">ngpus_per_node</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;NGPUS_PER_NODE&quot;</span><span class="p">,</span> <span class="n">ngpus_per_node</span> <span class="k">if</span> <span class="n">ngpus_per_node</span> <span class="o">&lt;=</span> <span class="n">max_gpus_per_node</span> <span class="k">else</span> <span class="n">max_gpus_per_node</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">initialize_derived_attributes</span><span class="p">()</span>
 
@@ -1428,6 +1485,9 @@
     <span class="k">def</span> <span class="nf">_create_caseroot_sourcemods</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">components</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_compset_components</span><span class="p">()</span>
         <span class="n">components</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s1">&#39;share&#39;</span><span class="p">,</span> <span class="s1">&#39;drv&#39;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_comp_interface</span> <span class="o">==</span> <span class="s1">&#39;nuopc&#39;</span><span class="p">:</span>
+            <span class="n">components</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s1">&#39;cdeps&#39;</span><span class="p">])</span>
+
         <span class="n">readme_message</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;Put source mods for the </span><span class="si">{component}</span><span class="s2"> library in this directory.</span>
 
 <span class="s2">WARNING: SourceMods are not kept under version control, and can easily</span>
@@ -1519,10 +1579,13 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_create_caseroot_sourcemods</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_create_caseroot_tools</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Case.apply_user_mods"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.apply_user_mods">[docs]</a>    <span class="k">def</span> <span class="nf">apply_user_mods</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_mods_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Case.apply_user_mods"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.apply_user_mods">[docs]</a>    <span class="k">def</span> <span class="nf">apply_user_mods</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_mods_dirs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        User mods can be specified on the create_newcase command line (usually when called from create test)</span>
 <span class="sd">        or they can be in the compset definition, or both.</span>
+
+<span class="sd">        If user_mods_dirs is specified, it should be a list of paths giving the user mods</span>
+<span class="sd">        specified on the create_newcase command line.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">all_user_mods</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">comp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_component_classes</span><span class="p">:</span>
@@ -1536,10 +1599,10 @@
         <span class="n">comp_user_mods</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_comp_user_mods</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_primary_component</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">comp_user_mods</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">all_user_mods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">comp_user_mods</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">user_mods_dir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">all_user_mods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">user_mods_dir</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">user_mods_dirs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">all_user_mods</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">user_mods_dirs</span><span class="p">)</span>
 
-        <span class="c1"># This looping order will lead to the specified user_mods_dir taking</span>
+        <span class="c1"># This looping order will lead to the specified user_mods_dirs taking</span>
         <span class="c1"># precedence over self._user_mods, if there are any conflicts.</span>
         <span class="k">for</span> <span class="n">user_mods</span> <span class="ow">in</span> <span class="n">all_user_mods</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="n">user_mods</span><span class="p">):</span>
@@ -1624,14 +1687,15 @@
         <span class="n">mpirun_cmd_override</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MPI_RUN_COMMAND&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">mpirun_cmd_override</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;UNSET&quot;</span><span class="p">]:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_resolved_value</span><span class="p">(</span><span class="n">mpirun_cmd_override</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">run_exe</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">run_misc_suffix</span><span class="p">)</span>
+        <span class="n">queue</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;JOB_QUEUE&quot;</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="n">job</span><span class="p">)</span>
 
         <span class="c1"># Things that will have to be matched against mpirun element attributes</span>
         <span class="n">mpi_attribs</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;compiler&quot;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;COMPILER&quot;</span><span class="p">),</span>
-            <span class="s2">&quot;mpilib&quot;</span>   <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MPILIB&quot;</span><span class="p">),</span>
-            <span class="s2">&quot;threaded&quot;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_build_threaded</span><span class="p">(),</span>
-            <span class="s2">&quot;queue&quot;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;JOB_QUEUE&quot;</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="n">job</span><span class="p">),</span>
-            <span class="s2">&quot;unit_testing&quot;</span> <span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="s2">&quot;compiler&quot;</span>       <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;COMPILER&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;mpilib&quot;</span>         <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MPILIB&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;threaded&quot;</span>       <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_build_threaded</span><span class="p">(),</span>
+            <span class="s2">&quot;queue&quot;</span>          <span class="p">:</span> <span class="n">queue</span><span class="p">,</span>
+            <span class="s2">&quot;unit_testing&quot;</span>   <span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
             <span class="s2">&quot;comp_interface&quot;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_comp_interface</span>
             <span class="p">}</span>
 
@@ -1656,6 +1720,14 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;BATCH_SYSTEM&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;cobalt&quot;</span><span class="p">:</span>
             <span class="n">mpi_arg_string</span> <span class="o">+=</span> <span class="s2">&quot; : &quot;</span>
 
+        <span class="n">ngpus_per_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;NGPUS_PER_NODE&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ngpus_per_node</span> <span class="ow">and</span> <span class="n">ngpus_per_node</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cime_model</span> <span class="o">!=</span> <span class="s2">&quot;e3sm&quot;</span><span class="p">:</span>
+            <span class="c1"># 1. this setting is tested on Casper only and may not work on other machines</span>
+            <span class="c1"># 2. need to be revisited in the future for a more adaptable implementation</span>
+            <span class="n">rundir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">)</span>
+            <span class="n">output_name</span> <span class="o">=</span> <span class="n">rundir</span><span class="o">+</span><span class="s1">&#39;/set_device_rank.sh&#39;</span>
+            <span class="n">mpi_arg_string</span> <span class="o">=</span> <span class="n">mpi_arg_string</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">output_name</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span>
+
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_resolved_value</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">executable</span> <span class="k">if</span> <span class="n">executable</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">mpi_arg_string</span><span class="p">,</span> <span class="n">run_exe</span><span class="p">,</span> <span class="n">run_misc_suffix</span><span class="p">),</span> <span class="n">allow_unresolved_envvars</span><span class="o">=</span><span class="n">allow_unresolved_envvars</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Case.set_model_version"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.set_model_version">[docs]</a>    <span class="k">def</span> <span class="nf">set_model_version</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
@@ -1676,14 +1748,20 @@
                 <span class="n">job</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_primary_job</span><span class="p">()</span>
             <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;OMP_NUM_THREADS&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">thread_count</span><span class="p">)</span>
             <span class="n">env_module</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_env</span><span class="p">(</span><span class="s2">&quot;mach_specific&quot;</span><span class="p">)</span>
-            <span class="n">env_module</span><span class="o">.</span><span class="n">load_env</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job</span><span class="o">=</span><span class="n">job</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_is_env_loaded</span> <span class="o">=</span> <span class="kc">True</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_loaded_envs</span> <span class="o">=</span> <span class="n">env_module</span><span class="o">.</span><span class="n">load_env</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job</span><span class="o">=</span><span class="n">job</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_loaded_envs</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">&quot;OMP_NUM_THREADS&quot;</span><span class="p">,</span>
+                                      <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;OMP_NUM_THREADS&quot;</span><span class="p">]))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_is_env_loaded</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_loaded_envs</span></div>
 
 <div class="viewcode-block" id="Case.get_build_threaded"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.get_build_threaded">[docs]</a>    <span class="k">def</span> <span class="nf">get_build_threaded</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns True if current settings require a threaded build/run.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">force_threaded</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;FORCE_BUILD_SMP&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">thread_count</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
         <span class="n">smp_present</span> <span class="o">=</span> <span class="n">force_threaded</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">thread_count</span> <span class="o">&gt;</span> <span class="mi">1</span>
         <span class="k">return</span> <span class="n">smp_present</span></div>
 
@@ -1806,29 +1884,81 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span></div>
 
+<div class="viewcode-block" id="Case.record_cmd"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.record_cmd">[docs]</a>    <span class="k">def</span> <span class="nf">record_cmd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">caseroot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">)</span>
+        <span class="n">cimeroot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CIMEROOT&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">cmd</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">cmd</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">init</span><span class="p">:</span>
+            <span class="n">ctime</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">)</span>
+
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;#!/bin/bash</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="c1"># stop script on error, prevents `create_newcase` from failing</span>
+            <span class="c1"># and continuing to execute commands</span>
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;set -e</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;# Created </span><span class="si">{}</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ctime</span><span class="p">))</span>
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;CASEDIR=</span><span class="se">\&quot;</span><span class="si">{}</span><span class="se">\&quot;\n\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">caseroot</span><span class="p">))</span>
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;cd </span><span class="se">\&quot;</span><span class="s2">$</span><span class="si">{CASEDIR}</span><span class="se">\&quot;\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Ensure program path is absolute</span>
+            <span class="n">cmd</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;^./&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/scripts/&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cimeroot</span><span class="p">),</span> <span class="n">cmd</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">expect</span><span class="p">(</span><span class="n">caseroot</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">caseroot</span><span class="p">)</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span><span class="s2">&quot;env_case.xml&quot;</span><span class="p">)),</span> <span class="s2">&quot;Directory </span><span class="si">{}</span><span class="s2"> does not appear to be a valid case directory&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">caseroot</span><span class="p">))</span>
+
+        <span class="n">cmd</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+
+        <span class="c1"># Replace instances of caseroot with variable</span>
+        <span class="n">cmd</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\&quot;</span><span class="s2">$</span><span class="si">{CASEDIR}</span><span class="se">\&quot;</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">cmd</span><span class="p">)</span>
+
+        <span class="n">lines_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">lines_len</span><span class="o">-</span><span class="mi">1</span> <span class="k">if</span> <span class="n">init</span> <span class="k">else</span> <span class="n">lines_len</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cmd</span><span class="p">))</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="s2">&quot;replay.sh&quot;</span><span class="p">),</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
+                <span class="n">fd</span><span class="o">.</span><span class="n">writelines</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">PermissionError</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Could not write to &#39;replay.sh&#39; script&quot;</span><span class="p">)</span></div>
+
 <div class="viewcode-block" id="Case.create"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.create">[docs]</a>    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">casename</span><span class="p">,</span> <span class="n">srcroot</span><span class="p">,</span> <span class="n">compset_name</span><span class="p">,</span> <span class="n">grid_name</span><span class="p">,</span>
-               <span class="n">user_mods_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">machine_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+               <span class="n">user_mods_dirs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">machine_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                <span class="n">project</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pecount</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">compiler</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mpilib</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                <span class="n">pesfile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">gridfile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                <span class="n">multi_driver</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ninst</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                <span class="n">walltime</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">queue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output_root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                <span class="n">run_unsupported</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">answer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                <span class="n">input_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">driver</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">workflowid</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">,</span> <span class="n">non_local</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-               <span class="n">extra_machines_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+               <span class="n">extra_machines_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">case_group</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ngpus_per_node</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="c1"># Set values for env_case.xml</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">set_lookup_value</span><span class="p">(</span><span class="s2">&quot;CASE&quot;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">casename</span><span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">set_lookup_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_caseroot</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">set_lookup_value</span><span class="p">(</span><span class="s2">&quot;SRCROOT&quot;</span><span class="p">,</span> <span class="n">srcroot</span><span class="p">)</span>
-            <span class="c1"># if the top level user_mods_dir contains a config_grids.xml file and</span>
-            <span class="c1"># gridfile was not set on the command line, use it.</span>
-            <span class="k">if</span> <span class="n">user_mods_dir</span><span class="p">:</span>
-                <span class="n">um_config_grids</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">user_mods_dir</span><span class="p">,</span><span class="s2">&quot;config_grids.xml&quot;</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">um_config_grids</span><span class="p">):</span>
-                    <span class="k">if</span> <span class="n">gridfile</span><span class="p">:</span>
-                        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;A config_grids file was found in </span><span class="si">{}</span><span class="s2"> but also provided on the command line </span><span class="si">{}</span><span class="s2">, command line takes precident&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">um_config_grids</span><span class="p">,</span> <span class="n">gridfile</span><span class="p">))</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="n">gridfile</span> <span class="o">=</span> <span class="n">um_config_grids</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_lookup_value</span><span class="p">(</span><span class="s2">&quot;CASE_HASH&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_hash</span><span class="p">())</span>
+            <span class="c1"># If any of the top level user_mods_dirs contain a config_grids.xml file and</span>
+            <span class="c1"># gridfile was not set on the command line, use it. However, if there are</span>
+            <span class="c1"># multiple user_mods_dirs, it is an error for more than one of them to contain</span>
+            <span class="c1"># a config_grids.xml file, because it would be ambiguous which one we should</span>
+            <span class="c1"># use.</span>
+            <span class="k">if</span> <span class="n">user_mods_dirs</span><span class="p">:</span>
+                <span class="n">found_um_config_grids</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="k">for</span> <span class="n">this_user_mods_dir</span> <span class="ow">in</span> <span class="n">user_mods_dirs</span><span class="p">:</span>
+                    <span class="n">um_config_grids</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">this_user_mods_dir</span><span class="p">,</span><span class="s2">&quot;config_grids.xml&quot;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">um_config_grids</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="n">gridfile</span><span class="p">:</span>
+                            <span class="c1"># Either a gridfile was found in an earlier user_mods</span>
+                            <span class="c1"># directory or a gridfile was given on the command line. The</span>
+                            <span class="c1"># first case (which would set found_um_config_grids to True)</span>
+                            <span class="c1"># is an error; the second case just generates a warning.</span>
+                            <span class="n">expect</span><span class="p">(</span><span class="ow">not</span> <span class="n">found_um_config_grids</span><span class="p">,</span>
+                                   <span class="s2">&quot;Cannot handle multiple usermods directories with config_grids.xml files: </span><span class="si">{}</span><span class="s2"> and </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                       <span class="n">gridfile</span><span class="p">,</span> <span class="n">um_config_grids</span><span class="p">))</span>
+                            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;A config_grids file was found in </span><span class="si">{}</span><span class="s2"> but also provided on the command line </span><span class="si">{}</span><span class="s2">, command line takes precedence&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">um_config_grids</span><span class="p">,</span> <span class="n">gridfile</span><span class="p">))</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">gridfile</span> <span class="o">=</span> <span class="n">um_config_grids</span>
+                            <span class="n">found_um_config_grids</span> <span class="o">=</span> <span class="kc">True</span>
 
 
             <span class="c1"># Configure the Case</span>
@@ -1842,13 +1972,14 @@
                            <span class="n">run_unsupported</span><span class="o">=</span><span class="n">run_unsupported</span><span class="p">,</span> <span class="n">answer</span><span class="o">=</span><span class="n">answer</span><span class="p">,</span>
                            <span class="n">input_dir</span><span class="o">=</span><span class="n">input_dir</span><span class="p">,</span> <span class="n">driver</span><span class="o">=</span><span class="n">driver</span><span class="p">,</span>
                            <span class="n">workflowid</span><span class="o">=</span><span class="n">workflowid</span><span class="p">,</span> <span class="n">non_local</span><span class="o">=</span><span class="n">non_local</span><span class="p">,</span>
-                           <span class="n">extra_machines_dir</span><span class="o">=</span><span class="n">extra_machines_dir</span><span class="p">)</span>
+                           <span class="n">extra_machines_dir</span><span class="o">=</span><span class="n">extra_machines_dir</span><span class="p">,</span> <span class="n">case_group</span><span class="o">=</span><span class="n">case_group</span><span class="p">,</span>
+                           <span class="n">ngpus_per_node</span><span class="o">=</span><span class="n">ngpus_per_node</span><span class="p">)</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">create_caseroot</span><span class="p">()</span>
 
             <span class="c1"># Write out the case files</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">flush</span><span class="p">(</span><span class="n">flushall</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">apply_user_mods</span><span class="p">(</span><span class="n">user_mods_dir</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">apply_user_mods</span><span class="p">(</span><span class="n">user_mods_dirs</span><span class="p">)</span>
 
             <span class="c1"># Lock env_case.xml</span>
             <span class="n">lock_file</span><span class="p">(</span><span class="s2">&quot;env_case.xml&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_caseroot</span><span class="p">)</span>
@@ -1861,6 +1992,18 @@
                     <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Leaving broken case dir </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_caseroot</span><span class="p">))</span>
 
             <span class="k">raise</span></div>
+
+<div class="viewcode-block" id="Case.new_hash"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.new_hash">[docs]</a>    <span class="k">def</span> <span class="nf">new_hash</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Creates a hash</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span>
+        <span class="n">ctime</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">)</span>
+        <span class="n">hostname</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">getfqdn</span><span class="p">()</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="n">getpass</span><span class="o">.</span><span class="n">getuser</span><span class="p">()</span>
+
+        <span class="n">data</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}{}{}{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">ctime</span><span class="p">,</span> <span class="n">hostname</span><span class="p">,</span> <span class="n">user</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Case.is_save_timing_dir_project"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.is_save_timing_dir_project">[docs]</a>    <span class="k">def</span> <span class="nf">is_save_timing_dir_project</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">project</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1885,7 +2028,42 @@
 <div class="viewcode-block" id="Case.get_first_job"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.get_first_job">[docs]</a>    <span class="k">def</span> <span class="nf">get_first_job</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">env_workflow</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_env</span><span class="p">(</span><span class="s2">&quot;workflow&quot;</span><span class="p">)</span>
         <span class="n">jobs</span> <span class="o">=</span> <span class="n">env_workflow</span><span class="o">.</span><span class="n">get_jobs</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div></div>
+        <span class="k">return</span> <span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Case.preview_run"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.preview_run">[docs]</a>    <span class="k">def</span> <span class="nf">preview_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">write</span><span class="p">,</span> <span class="n">job</span><span class="p">):</span>
+        <span class="n">write</span><span class="p">(</span><span class="s2">&quot;CASE INFO:&quot;</span><span class="p">)</span>
+        <span class="n">write</span><span class="p">(</span><span class="s2">&quot;  nodes: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">))</span>
+        <span class="n">write</span><span class="p">(</span><span class="s2">&quot;  total tasks: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">total_tasks</span><span class="p">))</span>
+        <span class="n">write</span><span class="p">(</span><span class="s2">&quot;  tasks per node: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tasks_per_node</span><span class="p">))</span>
+        <span class="n">write</span><span class="p">(</span><span class="s2">&quot;  thread count: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">thread_count</span><span class="p">))</span>
+        <span class="n">write</span><span class="p">(</span><span class="s2">&quot;  ngpus per node: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ngpus_per_node</span><span class="p">))</span>
+        <span class="n">write</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+        <span class="n">write</span><span class="p">(</span><span class="s2">&quot;BATCH INFO:&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">job</span><span class="p">:</span>
+            <span class="n">job</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_first_job</span><span class="p">()</span>
+
+        <span class="n">job_id_to_cmd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">submit_jobs</span><span class="p">(</span><span class="n">dry_run</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">job</span><span class="o">=</span><span class="n">job</span><span class="p">)</span>
+        <span class="n">env_batch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_env</span><span class="p">(</span><span class="s1">&#39;batch&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">job_id</span><span class="p">,</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">job_id_to_cmd</span><span class="p">:</span>
+            <span class="n">write</span><span class="p">(</span><span class="s2">&quot;  FOR JOB: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">job_id</span><span class="p">))</span>
+            <span class="n">write</span><span class="p">(</span><span class="s2">&quot;    ENV:&quot;</span><span class="p">)</span>
+            <span class="n">loaded_envs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_env</span><span class="p">(</span><span class="n">job</span><span class="o">=</span><span class="n">job_id</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">iter</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">loaded_envs</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">])):</span>
+                <span class="n">write</span><span class="p">(</span><span class="s2">&quot;      Setting Environment </span><span class="si">{}</span><span class="s2">=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
+
+            <span class="n">write</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="n">write</span><span class="p">(</span><span class="s2">&quot;    SUBMIT CMD:&quot;</span><span class="p">)</span>
+            <span class="n">write</span><span class="p">(</span><span class="s2">&quot;      </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_resolved_value</span><span class="p">(</span><span class="n">cmd</span><span class="p">)))</span>
+            <span class="n">write</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">job_id</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;case.run&quot;</span><span class="p">,</span> <span class="s2">&quot;case.test&quot;</span><span class="p">):</span>
+                <span class="c1"># get_job_overrides must come after the case.load_env since the cmd may use</span>
+                <span class="c1"># env vars.</span>
+                <span class="n">overrides</span> <span class="o">=</span> <span class="n">env_batch</span><span class="o">.</span><span class="n">get_job_overrides</span><span class="p">(</span><span class="n">job_id</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+                <span class="n">write</span><span class="p">(</span><span class="s2">&quot;    MPIRUN (job=</span><span class="si">{}</span><span class="s2">):&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">job_id</span><span class="p">))</span>
+                <span class="n">write</span> <span class="p">(</span><span class="s2">&quot;      </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_resolved_value</span><span class="p">(</span><span class="n">overrides</span><span class="p">[</span><span class="s2">&quot;mpirun&quot;</span><span class="p">])))</span>
+                <span class="n">write</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span></div></div>
 </pre></div>
 
            </div>

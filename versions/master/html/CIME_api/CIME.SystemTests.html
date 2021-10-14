@@ -936,6 +936,26 @@ This is the subclass’ extension point if they need to define a custom run phas
 </dd></dl>
 
 <dl class="py class">
+<dt id="CIME.SystemTests.system_tests_common.TESTRUNFAILRESET">
+<em class="property">class </em><code class="sig-prename descclassname">CIME.SystemTests.system_tests_common.</code><code class="sig-name descname">TESTRUNFAILRESET</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">case</span></em>, <em class="sig-param"><span class="n">expected</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/SystemTests/system_tests_common.html#TESTRUNFAILRESET"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.SystemTests.system_tests_common.TESTRUNFAILRESET" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#CIME.SystemTests.system_tests_common.TESTRUNFAIL" title="CIME.SystemTests.system_tests_common.TESTRUNFAIL"><code class="xref py py-class docutils literal notranslate"><span class="pre">CIME.SystemTests.system_tests_common.TESTRUNFAIL</span></code></a></p>
+<p>This fake test can fail for two reasons:
+1. As in the TESTRUNFAIL test: If the environment variable TESTRUNFAIL_PASS is <em>not</em> set
+2. Even if that environment variable <em>is</em> set, it will fail if STOP_N differs from the</p>
+<blockquote>
+<div><p>original value</p>
+</div></blockquote>
+<p>The purpose of (2) is to ensure that test’s values get properly reset if the test is
+rerun after an initial failure.</p>
+<dl class="py method">
+<dt id="CIME.SystemTests.system_tests_common.TESTRUNFAILRESET.run_indv">
+<code class="sig-name descname">run_indv</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">suffix</span><span class="o">=</span><span class="default_value">'base'</span></em>, <em class="sig-param"><span class="n">st_archive</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">submit_resubmits</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/SystemTests/system_tests_common.html#TESTRUNFAILRESET.run_indv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.SystemTests.system_tests_common.TESTRUNFAILRESET.run_indv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform an individual run. Raises an EXCEPTION on fail.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt id="CIME.SystemTests.system_tests_common.TESTRUNPASS">
 <em class="property">class </em><code class="sig-prename descclassname">CIME.SystemTests.system_tests_common.</code><code class="sig-name descname">TESTRUNPASS</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">case</span></em>, <em class="sig-param"><span class="n">expected</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/SystemTests/system_tests_common.html#TESTRUNPASS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.SystemTests.system_tests_common.TESTRUNPASS" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#CIME.SystemTests.system_tests_common.FakeTest" title="CIME.SystemTests.system_tests_common.FakeTest"><code class="xref py py-class docutils literal notranslate"><span class="pre">CIME.SystemTests.system_tests_common.FakeTest</span></code></a></p>
@@ -1022,6 +1042,16 @@ This is the subclass’ extension point if they need to define a custom run phas
 <span id="cime-systemtests-system-tests-compare-two-module"></span><h2>CIME.SystemTests.system_tests_compare_two module<a class="headerlink" href="#module-CIME.SystemTests.system_tests_compare_two" title="Permalink to this headline">¶</a></h2>
 <p>Base class for CIME system tests that involve doing two runs and comparing their
 output.</p>
+<p>NOTE: Below is the flow of a multisubmit test.
+Non-batch:
+case_submit -&gt; case_run     # PHASE 1</p>
+<blockquote>
+<div><p>-&gt; case_run     # PHASE 2</p>
+</div></blockquote>
+<p>batch:
+case_submit -&gt; case_run     # PHASE 1
+case_run    -&gt; case_submit
+case_submit -&gt; case_run     # PHASE 2</p>
 <dl class="simple">
 <dt>In the __init__ method for your test, you MUST call</dt><dd><p>SystemTestsCompareTwo.__init__</p>
 </dd>

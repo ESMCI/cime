@@ -531,12 +531,15 @@
 <span class="sd">DropSiteUser:</span>
 <span class="sd">DropSitePassword:</span>
 <span class="sd">DropSiteMode:</span>
-<span class="sd">DropMethod: http</span>
+<span class="sd">DropMethod: https</span>
 <span class="sd">TriggerSite:</span>
 <span class="sd">ScpCommand: {4}</span>
 
 <span class="sd"># Dashboard start time</span>
 <span class="sd">NightlyStartTime: {5} UTC</span>
+
+<span class="sd">UseLaunchers:</span>
+<span class="sd">CurlOptions: CURLOPT_SSL_VERIFYPEER_OFF;CURLOPT_SSL_VERIFYHOST_OFF</span>
 <span class="sd">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="n">hostname</span><span class="p">,</span> <span class="n">cdash_build_name</span><span class="p">,</span> <span class="n">cdash_project</span><span class="p">,</span>
            <span class="n">find_executable</span><span class="p">(</span><span class="s2">&quot;scp&quot;</span><span class="p">),</span> <span class="n">cdash_timestamp</span><span class="p">)</span>
 
@@ -665,6 +668,7 @@
         <span class="n">test_results</span> <span class="o">=</span> <span class="n">wait_for_tests_impl</span><span class="p">(</span><span class="n">test_paths</span><span class="p">,</span> <span class="n">no_wait</span><span class="p">,</span> <span class="n">check_throughput</span><span class="p">,</span> <span class="n">check_memory</span><span class="p">,</span> <span class="n">ignore_namelists</span><span class="p">,</span> <span class="n">ignore_memleak</span><span class="p">,</span> <span class="n">no_run</span><span class="p">)</span>
 
     <span class="n">all_pass</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">env_loaded</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="k">for</span> <span class="n">test_name</span><span class="p">,</span> <span class="n">test_data</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">test_results</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
         <span class="n">test_path</span><span class="p">,</span> <span class="n">test_status</span><span class="p">,</span> <span class="n">phase</span> <span class="o">=</span> <span class="n">test_data</span>
         <span class="n">case_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">test_path</span><span class="p">)</span>
@@ -692,11 +696,23 @@
 
         <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;    Case dir: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">case_dir</span><span class="p">))</span>
 
-        <span class="k">if</span> <span class="n">update_success</span><span class="p">:</span>
-            <span class="k">with</span> <span class="n">Case</span><span class="p">(</span><span class="n">case_dir</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">as</span> <span class="n">case</span><span class="p">:</span>
-                <span class="n">srcroot</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;SRCROOT&quot;</span><span class="p">)</span>
-                <span class="n">baseline_root</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;BASELINE_ROOT&quot;</span><span class="p">)</span>
-                <span class="n">save_test_success</span><span class="p">(</span><span class="n">baseline_root</span><span class="p">,</span> <span class="n">srcroot</span><span class="p">,</span> <span class="n">test_name</span><span class="p">,</span> <span class="n">test_status</span> <span class="ow">in</span> <span class="p">[</span><span class="n">TEST_PASS_STATUS</span><span class="p">,</span> <span class="n">NAMELIST_FAIL_STATUS</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">update_success</span> <span class="ow">or</span> <span class="p">(</span><span class="n">cdash_build_name</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">env_loaded</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># This can fail if the case crashed before setup completed</span>
+                <span class="k">with</span> <span class="n">Case</span><span class="p">(</span><span class="n">case_dir</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">as</span> <span class="n">case</span><span class="p">:</span>
+                    <span class="n">srcroot</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;SRCROOT&quot;</span><span class="p">)</span>
+                    <span class="n">baseline_root</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;BASELINE_ROOT&quot;</span><span class="p">)</span>
+                    <span class="c1"># Submitting to cdash requires availability of cmake. We can&#39;t guarantee</span>
+                    <span class="c1"># that without loading the env for a case</span>
+                    <span class="k">if</span> <span class="n">cdash_build_name</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">env_loaded</span><span class="p">:</span>
+                        <span class="n">case</span><span class="o">.</span><span class="n">load_env</span><span class="p">()</span>
+                        <span class="n">env_loaded</span> <span class="o">=</span> <span class="kc">True</span>
+
+                    <span class="k">if</span> <span class="n">update_success</span><span class="p">:</span>
+                        <span class="n">save_test_success</span><span class="p">(</span><span class="n">baseline_root</span><span class="p">,</span> <span class="n">srcroot</span><span class="p">,</span> <span class="n">test_name</span><span class="p">,</span> <span class="n">test_status</span> <span class="ow">in</span> <span class="p">[</span><span class="n">TEST_PASS_STATUS</span><span class="p">,</span> <span class="n">NAMELIST_FAIL_STATUS</span><span class="p">])</span>
+
+            <span class="k">except</span> <span class="n">CIMEError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Failed to update success / load_env for Case </span><span class="si">{}</span><span class="s2">: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">case_dir</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
 
     <span class="k">if</span> <span class="n">cdash_build_name</span><span class="p">:</span>
         <span class="n">create_cdash_xml</span><span class="p">(</span><span class="n">test_results</span><span class="p">,</span> <span class="n">cdash_build_name</span><span class="p">,</span> <span class="n">cdash_project</span><span class="p">,</span> <span class="n">cdash_build_group</span><span class="p">,</span> <span class="n">force_log_upload</span><span class="p">)</span>

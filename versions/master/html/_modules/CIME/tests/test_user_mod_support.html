@@ -179,7 +179,7 @@
            <div itemprop="articleBody">
             
   <h1>Source code for CIME.tests.test_user_mod_support</h1><div class="highlight"><pre>
-<span></span><span class="ch">#!/usr/bin/env python</span>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
 
 <span class="kn">import</span> <span class="nn">unittest</span>
 <span class="kn">import</span> <span class="nn">shutil</span>
@@ -357,6 +357,9 @@
                            <span class="n">expected_shell_commands_result</span> <span class="o">=</span> <span class="n">expected_contents</span><span class="p">,</span>
                            <span class="n">expected_sourcemod</span> <span class="o">=</span> <span class="s2">&quot;derived_combo</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
                            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;test_duplicate_includes&quot;</span><span class="p">)</span></div></div>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">unittest</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
 </pre></div>
 
            </div>

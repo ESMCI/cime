@@ -360,7 +360,7 @@ COMPILER, MPILIB, and DEBUG, respectively.</p>
 
 <dl class="py function">
 <dt id="CIME.BuildTools.configure.configure">
-<code class="sig-prename descclassname">CIME.BuildTools.configure.</code><code class="sig-name descname">configure</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">machobj</span></em>, <em class="sig-param"><span class="n">output_dir</span></em>, <em class="sig-param"><span class="n">macros_format</span></em>, <em class="sig-param"><span class="n">compiler</span></em>, <em class="sig-param"><span class="n">mpilib</span></em>, <em class="sig-param"><span class="n">debug</span></em>, <em class="sig-param"><span class="n">comp_interface</span></em>, <em class="sig-param"><span class="n">sysos</span></em>, <em class="sig-param"><span class="n">unit_testing</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">noenv</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">extra_machines_dir</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/BuildTools/configure.html#configure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.BuildTools.configure.configure" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">CIME.BuildTools.configure.</code><code class="sig-name descname">configure</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">machobj</span></em>, <em class="sig-param"><span class="n">output_dir</span></em>, <em class="sig-param"><span class="n">macros_format</span></em>, <em class="sig-param"><span class="n">compiler</span></em>, <em class="sig-param"><span class="n">mpilib</span></em>, <em class="sig-param"><span class="n">debug</span></em>, <em class="sig-param"><span class="n">comp_interface</span></em>, <em class="sig-param"><span class="n">sysos</span></em>, <em class="sig-param"><span class="n">unit_testing</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">noenv</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">threaded</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">extra_machines_dir</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/BuildTools/configure.html#configure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.BuildTools.configure.configure" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add Macros, Depends, and env_mach_specific files to a directory.</p>
 <p>Arguments:
 machobj - Machines argument for this machine.
@@ -380,6 +380,19 @@ unit_testing - Boolean specifying whether we’re running unit tests (as</p>
 <dt>extra_machines_dir - String giving path to an additional directory that will be</dt><dd><p>searched for a config_compilers.xml file.</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="CIME.BuildTools.configure.copy_depends_files">
+<code class="sig-prename descclassname">CIME.BuildTools.configure.</code><code class="sig-name descname">copy_depends_files</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">machine_name</span></em>, <em class="sig-param"><span class="n">machines_dir</span></em>, <em class="sig-param"><span class="n">output_dir</span></em>, <em class="sig-param"><span class="n">compiler</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/BuildTools/configure.html#copy_depends_files"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.BuildTools.configure.copy_depends_files" title="Permalink to this definition">¶</a></dt>
+<dd><p>Copy any system or compiler Depends files if they do not exist in the output directory
+If there is a match for Depends.machine_name.compiler copy that and ignore the others</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="CIME.BuildTools.configure.generate_env_mach_specific">
+<code class="sig-prename descclassname">CIME.BuildTools.configure.</code><code class="sig-name descname">generate_env_mach_specific</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">output_dir</span></em>, <em class="sig-param"><span class="n">machobj</span></em>, <em class="sig-param"><span class="n">compiler</span></em>, <em class="sig-param"><span class="n">mpilib</span></em>, <em class="sig-param"><span class="n">debug</span></em>, <em class="sig-param"><span class="n">comp_interface</span></em>, <em class="sig-param"><span class="n">sysos</span></em>, <em class="sig-param"><span class="n">unit_testing</span></em>, <em class="sig-param"><span class="n">threaded</span></em>, <em class="sig-param"><span class="n">noenv</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/BuildTools/configure.html#generate_env_mach_specific"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.BuildTools.configure.generate_env_mach_specific" title="Permalink to this definition">¶</a></dt>
+<dd><p>env_mach_specific generation.</p>
 </dd></dl>
 
 </div>

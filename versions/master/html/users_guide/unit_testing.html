@@ -297,8 +297,12 @@ Running CTest tests for __command_line_test__/__command_line_test__.
 </div>
 <div class="section" id="how-to-add-unit-testing-support-on-your-machine">
 <span id="adding-machine-support"></span><h2><span class="section-number">9.3. </span>How to add unit testing support on your machine<a class="headerlink" href="#how-to-add-unit-testing-support-on-your-machine" title="Permalink to this headline">¶</a></h2>
-<p>The following instructions assume that you have ported CIME to your machine by following the instructions in <a class="reference internal" href="porting-cime.html"><span class="doc">Porting and validating CIME on a new platform</span></a>.
-If you have done that, you can add unit testing support by building pFUnit on your machine and then pointing to the build in your <strong>config_compilers.xml</strong> file. Those processes are described in the following sections.</p>
+<p>The following instructions assume that you have ported CIME to your
+machine by following the instructions in
+<a class="reference internal" href="porting-cime.html"><span class="doc">Porting and validating CIME on a new platform</span></a>.  If you have done that, you can add
+unit testing support by building pFUnit on your machine and then
+pointing to the build in your ** <em>MACH*_*COMPILER</em>.cmake** file. Those
+processes are described in the following sections.</p>
 <p>At a minimum, do a serial build of pFUnit (without MPI or OpenMP) using the default compiler on your machine.
 That is the default that <strong>run_tests.py</strong> and that is required for <strong>scripts_regression_tests.py</strong> to run the unit tests on your machine.</p>
 <p>Optionally, you can also provide pFUnit builds with other supported compilers on your machine.
@@ -357,11 +361,7 @@ Make sure to choose a different installation directory for each build by setting
 <div class="section" id="adding-to-the-xml-file">
 <h3><span class="section-number">9.3.2. </span>Adding to the xml file<a class="headerlink" href="#adding-to-the-xml-file" title="Permalink to this headline">¶</a></h3>
 <p>After you build pFUnit, tell CIME about your build or builds.
-To do this, specify the appropriate path(s) using the <code class="docutils literal notranslate"><span class="pre">PFUNIT_PATH</span></code> element in <strong>config_compilers.xml</strong>.
-For a serial build, your setting will look like this example:</p>
-<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;PFUNIT_PATH</span> <span class="na">MPILIB=</span><span class="s">&quot;mpi-serial&quot;</span> <span class="na">compile_threaded=</span><span class="s">&quot;FALSE&quot;</span><span class="nt">&gt;</span>$ENV{CESMDATAROOT}/tools/pFUnit/pFUnit3.2.8_cheyenne_Intel17.0.1_noMPI_noOpenMP<span class="nt">&lt;/PFUNIT_PATH&gt;</span>
-</pre></div>
-</div>
+To do this, specify the appropriate path(s) using the <code class="docutils literal notranslate"><span class="pre">PFUNIT_PATH</span></code> element in ** <em>MACH*_*COMPILER</em>.cmake** file.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">MPILIB</span></code> attribute should be either:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">mpi-serial</span></code> for a pFUnit build where <code class="docutils literal notranslate"><span class="pre">-DMPI=NO</span></code>, or</p></li>

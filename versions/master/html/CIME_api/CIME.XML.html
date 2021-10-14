@@ -666,8 +666,24 @@ and matches</p>
 
 <dl class="py method">
 <dt id="CIME.XML.entry_id.EntryID.get_value_match">
-<code class="sig-name descname">get_value_match</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">vid</span></em>, <em class="sig-param"><span class="n">attributes</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">exact_match</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">entry_node</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/entry_id.html#EntryID.get_value_match"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.entry_id.EntryID.get_value_match" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-name descname">get_value_match</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">vid</span></em>, <em class="sig-param"><span class="n">attributes</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">exact_match</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">entry_node</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">replacement_for_none</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/entry_id.html#EntryID.get_value_match"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.entry_id.EntryID.get_value_match" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handle this case:
+&lt;entry id …&gt;</p>
+<blockquote>
+<div><dl class="simple">
+<dt>&lt;values&gt;</dt><dd><p>&lt;value A=”a1”&gt;X&lt;/value&gt;
+&lt;value A=”a2”&gt;Y&lt;/value&gt;
+&lt;value A=”a3” B=”b1”&gt;Z&lt;/value&gt;</p>
+</dd>
+</dl>
+<p>&lt;/values&gt;</p>
+</div></blockquote>
+<p>&lt;/entry&gt;</p>
+<p>If replacement_for_none is provided, then: if the found text value would give a
+None value, instead replace it with the value given by the replacement_for_none
+argument. (However, still return None if no match is found.) This may or may not
+be needed, but is in place to maintain some old logic.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt id="CIME.XML.entry_id.EntryID.get_values">
@@ -1079,6 +1095,11 @@ stderr output even when things are working fine.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="CIME.XML.env_mach_specific.EnvMachSpecific.get_overrides_nodes">
+<code class="sig-name descname">get_overrides_nodes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">case</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_mach_specific.html#EnvMachSpecific.get_overrides_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_mach_specific.EnvMachSpecific.get_overrides_nodes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt id="CIME.XML.env_mach_specific.EnvMachSpecific.get_type_info">
 <code class="sig-name descname">get_type_info</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">vid</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_mach_specific.html#EnvMachSpecific.get_type_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_mach_specific.EnvMachSpecific.get_type_info" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -1106,8 +1127,9 @@ output_dir: string - path to output directory (if empty string, uses current dir
 
 <dl class="py method">
 <dt id="CIME.XML.env_mach_specific.EnvMachSpecific.populate">
-<code class="sig-name descname">populate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">machobj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_mach_specific.html#EnvMachSpecific.populate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_mach_specific.EnvMachSpecific.populate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add entries to the file using information from a Machines object.</p>
+<code class="sig-name descname">populate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">machobj</span></em>, <em class="sig-param"><span class="n">attributes</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_mach_specific.html#EnvMachSpecific.populate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_mach_specific.EnvMachSpecific.populate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add entries to the file using information from a Machines object.
+mpilib must match attributes if set</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1659,6 +1681,7 @@ This is not an abstract class - but inherits from the abstact class GenericXML</
 <dt id="CIME.XML.grids.Grids.get_grid_info">
 <code class="sig-name descname">get_grid_info</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">compset</span></em>, <em class="sig-param"><span class="n">driver</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/grids.html#Grids.get_grid_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.grids.Grids.get_grid_info" title="Permalink to this definition">¶</a></dt>
 <dd><p>Find the matching grid node</p>
+<p>Returns a dictionary containing relevant grid variables: domains, gridmaps, etc.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1693,7 +1716,7 @@ This is not an abstract class - but inherits from the abstact class GenericXML</
 <dd><p>Bases: <a class="reference internal" href="#CIME.XML.generic_xml.GenericXML" title="CIME.XML.generic_xml.GenericXML"><code class="xref py py-class docutils literal notranslate"><span class="pre">CIME.XML.generic_xml.GenericXML</span></code></a></p>
 <dl class="py method">
 <dt id="CIME.XML.inputdata.Inputdata.get_next_server">
-<code class="sig-name descname">get_next_server</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/inputdata.html#Inputdata.get_next_server"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.inputdata.Inputdata.get_next_server" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_next_server</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attributes</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/inputdata.html#Inputdata.get_next_server"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.inputdata.Inputdata.get_next_server" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1722,6 +1745,11 @@ This is not an abstract class - but inherits from the abstact class GenericXML</
 <code class="sig-name descname">get_default_compiler</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/machines.html#Machines.get_default_compiler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.machines.Machines.get_default_compiler" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the compiler to use from the list of COMPILERS</p>
 </dd></dl>
+
+<dl class="py method">
+<dt id="CIME.XML.machines.Machines.get_extra_machines_dir">
+<code class="sig-name descname">get_extra_machines_dir</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/machines.html#Machines.get_extra_machines_dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.machines.Machines.get_extra_machines_dir" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt id="CIME.XML.machines.Machines.get_field_from_list">
@@ -1911,6 +1939,12 @@ reporting when the namelist comes from a specific, known file.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="CIME.XML.namelist_definition.NamelistDefinition.get_attributes">
+<code class="sig-name descname">get_attributes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/namelist_definition.html#NamelistDefinition.get_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.namelist_definition.NamelistDefinition.get_attributes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return this object’s attributes dictionary</p>
+</dd></dl>
+
+<dl class="py method">
 <dt id="CIME.XML.namelist_definition.NamelistDefinition.get_default_value">
 <code class="sig-name descname">get_default_value</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">item</span></em>, <em class="sig-param"><span class="n">attribute</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/namelist_definition.html#NamelistDefinition.get_default_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.namelist_definition.NamelistDefinition.get_default_value" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the default value for the variable named <cite>item</cite>.</p>
@@ -1961,6 +1995,11 @@ there is no default value in the file, this returns <cite>None</cite>.</p>
 appear in the namelist (even for scalar variables, in which case the
 length of the list is always 1).</p>
 </dd></dl>
+
+<dl class="py method">
+<dt id="CIME.XML.namelist_definition.NamelistDefinition.set_node_values">
+<code class="sig-name descname">set_node_values</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">node</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/namelist_definition.html#NamelistDefinition.set_node_values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.namelist_definition.NamelistDefinition.set_node_values" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt id="CIME.XML.namelist_definition.NamelistDefinition.set_nodes">

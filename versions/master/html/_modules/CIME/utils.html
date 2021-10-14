@@ -183,7 +183,9 @@
 <span class="sd">Common functions used by cime python scripts</span>
 <span class="sd">Warning: you cannot use CIME Classes in this module as it causes circular dependencies</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">io</span><span class="o">,</span> <span class="nn">logging</span><span class="o">,</span> <span class="nn">gzip</span><span class="o">,</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">time</span><span class="o">,</span> <span class="nn">re</span><span class="o">,</span> <span class="nn">shutil</span><span class="o">,</span> <span class="nn">glob</span><span class="o">,</span> <span class="nn">string</span><span class="o">,</span> <span class="nn">random</span><span class="o">,</span> <span class="nn">imp</span><span class="o">,</span> <span class="nn">fnmatch</span>
+<span class="kn">import</span> <span class="nn">io</span><span class="o">,</span> <span class="nn">logging</span><span class="o">,</span> <span class="nn">gzip</span><span class="o">,</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">time</span><span class="o">,</span> <span class="nn">re</span><span class="o">,</span> <span class="nn">shutil</span><span class="o">,</span> <span class="nn">glob</span><span class="o">,</span> <span class="nn">string</span><span class="o">,</span> <span class="nn">random</span><span class="o">,</span> \
+    <span class="n">importlib</span><span class="p">,</span> <span class="n">fnmatch</span>
+<span class="kn">import</span> <span class="nn">importlib.util</span>
 <span class="kn">import</span> <span class="nn">errno</span><span class="o">,</span> <span class="nn">signal</span><span class="o">,</span> <span class="nn">warnings</span><span class="o">,</span> <span class="nn">filecmp</span>
 <span class="kn">import</span> <span class="nn">stat</span> <span class="k">as</span> <span class="nn">statlib</span>
 <span class="kn">import</span> <span class="nn">six</span>
@@ -195,6 +197,19 @@
 <span class="c1"># Return this error code if the scripts worked but tests failed</span>
 <span class="n">TESTS_FAILED_ERR_CODE</span> <span class="o">=</span> <span class="mi">100</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<div class="viewcode-block" id="import_from_file"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.utils.import_from_file">[docs]</a><span class="k">def</span> <span class="nf">import_from_file</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">file_path</span><span class="p">):</span>
+    <span class="n">loader</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">machinery</span><span class="o">.</span><span class="n">SourceFileLoader</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">file_path</span><span class="p">)</span>
+
+    <span class="n">spec</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">spec_from_loader</span><span class="p">(</span><span class="n">loader</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">loader</span><span class="p">)</span>
+
+    <span class="n">module</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">module_from_spec</span><span class="p">(</span><span class="n">spec</span><span class="p">)</span>
+
+    <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">module</span>
+
+    <span class="n">spec</span><span class="o">.</span><span class="n">loader</span><span class="o">.</span><span class="n">exec_module</span><span class="p">(</span><span class="n">module</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">module</span></div>
 
 <div class="viewcode-block" id="redirect_stdout"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.utils.redirect_stdout">[docs]</a><span class="nd">@contextmanager</span>
 <span class="k">def</span> <span class="nf">redirect_stdout</span><span class="p">(</span><span class="n">new_target</span><span class="p">):</span>
@@ -435,6 +450,19 @@
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span> <span class="s2">&quot;CIMEROOT is &quot;</span> <span class="o">+</span> <span class="n">cimeroot</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">cimeroot</span></div>
 
+<div class="viewcode-block" id="get_src_root"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.utils.get_src_root">[docs]</a><span class="k">def</span> <span class="nf">get_src_root</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the absolute path to the root of SRCROOT.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">get_cime_root</span><span class="p">(),</span><span class="s2">&quot;share&quot;</span><span class="p">))</span> <span class="ow">and</span> <span class="n">get_model</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;cesm&quot;</span><span class="p">:</span>
+        <span class="n">srcroot</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">get_cime_root</span><span class="p">()))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">srcroot</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">get_cime_root</span><span class="p">(),</span><span class="s2">&quot;..&quot;</span><span class="p">))</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span> <span class="s2">&quot;SRCROOT is &quot;</span> <span class="o">+</span> <span class="n">srcroot</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">srcroot</span></div>
+
 <div class="viewcode-block" id="get_cime_default_driver"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.utils.get_cime_default_driver">[docs]</a><span class="k">def</span> <span class="nf">get_cime_default_driver</span><span class="p">():</span>
     <span class="n">driver</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;CIME_DRIVER&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">driver</span><span class="p">:</span>
@@ -447,7 +475,7 @@
                 <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Setting CIME_driver=</span><span class="si">{}</span><span class="s2"> from ~/.cime/config&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">driver</span><span class="p">))</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">driver</span><span class="p">:</span>
         <span class="n">model</span> <span class="o">=</span> <span class="n">get_model</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">model</span> <span class="o">==</span> <span class="s2">&quot;ufs&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">model</span> <span class="o">==</span> <span class="s2">&quot;ufs&quot;</span> <span class="ow">or</span> <span class="n">model</span> <span class="o">==</span> <span class="s2">&quot;cesm&quot;</span><span class="p">:</span>
             <span class="n">driver</span> <span class="o">=</span> <span class="s2">&quot;nuopc&quot;</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">driver</span> <span class="o">=</span> <span class="s2">&quot;mct&quot;</span>
@@ -549,18 +577,31 @@
 
 <span class="n">_hack</span><span class="o">=</span><span class="nb">object</span><span class="p">()</span>
 
-<div class="viewcode-block" id="check_for_python"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.utils.check_for_python">[docs]</a><span class="k">def</span> <span class="nf">check_for_python</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">funcname</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="n">is_python</span> <span class="o">=</span> <span class="n">is_python_executable</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
-    <span class="n">has_function</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="k">if</span> <span class="n">funcname</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">has_function</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">fd</span><span class="o">.</span><span class="n">readlines</span><span class="p">():</span>
-                <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^def\s+</span><span class="si">{}</span><span class="s2">\(&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">funcname</span><span class="p">),</span> <span class="n">line</span><span class="p">)</span> <span class="ow">or</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^from.+import.+\s</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">funcname</span><span class="p">),</span> <span class="n">line</span><span class="p">):</span>
-                    <span class="n">has_function</span> <span class="o">=</span> <span class="kc">True</span>
-                    <span class="k">break</span>
+<span class="k">def</span> <span class="nf">_line_defines_python_function</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">funcname</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns True if the given line defines the function &#39;funcname&#39; as a top-level definition</span>
 
-    <span class="k">return</span> <span class="n">is_python</span> <span class="ow">and</span> <span class="n">has_function</span></div>
+<span class="sd">    (&quot;top-level definition&quot; means: not something like a class method; i.e., the def should</span>
+<span class="sd">    be at the start of the line, not indented)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^def\s+</span><span class="si">{}</span><span class="s2">\s*\(&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">funcname</span><span class="p">),</span> <span class="n">line</span><span class="p">)</span> <span class="ow">or</span>
+        <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^from\s.+\simport.*\s</span><span class="si">{}</span><span class="s2">(?:,|\s|$)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">funcname</span><span class="p">),</span> <span class="n">line</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">return</span> <span class="kc">False</span>
+
+<div class="viewcode-block" id="file_contains_python_function"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.utils.file_contains_python_function">[docs]</a><span class="k">def</span> <span class="nf">file_contains_python_function</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">funcname</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Checks whether the given file contains a top-level definition of the function &#39;funcname&#39;</span>
+
+<span class="sd">    Returns a boolean value (True if the file contains this function definition, False otherwise)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">has_function</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">fd</span><span class="o">.</span><span class="n">readlines</span><span class="p">():</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">_line_defines_python_function</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">funcname</span><span class="p">)):</span>
+                <span class="n">has_function</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">break</span>
+
+    <span class="k">return</span> <span class="n">has_function</span></div>
 
 <div class="viewcode-block" id="run_sub_or_cmd"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.utils.run_sub_or_cmd">[docs]</a><span class="k">def</span> <span class="nf">run_sub_or_cmd</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">cmdargs</span><span class="p">,</span> <span class="n">subname</span><span class="p">,</span> <span class="n">subargs</span><span class="p">,</span> <span class="n">logfile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">case</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                    <span class="n">from_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -570,19 +611,14 @@
 
 <span class="sd">    Raises exception on failure.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">do_run_cmd</span> <span class="o">=</span> <span class="kc">True</span>
-
-    <span class="c1"># Before attempting to load the script make sure it contains the subroutine</span>
-    <span class="c1"># we are expecting</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">fd</span><span class="o">.</span><span class="n">readlines</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^def </span><span class="si">{}</span><span class="s2">\(&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">subname</span><span class="p">),</span> <span class="n">line</span><span class="p">):</span>
-                <span class="n">do_run_cmd</span> <span class="o">=</span> <span class="kc">False</span>
-                <span class="k">break</span>
+    <span class="k">if</span> <span class="n">file_contains_python_function</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">subname</span><span class="p">):</span>
+        <span class="n">do_run_cmd</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">do_run_cmd</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">do_run_cmd</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">mod</span> <span class="o">=</span> <span class="n">imp</span><span class="o">.</span><span class="n">load_source</span><span class="p">(</span><span class="n">subname</span><span class="p">,</span> <span class="n">cmd</span><span class="p">)</span>
+            <span class="n">mod</span> <span class="o">=</span> <span class="n">import_from_file</span><span class="p">(</span><span class="n">subname</span><span class="p">,</span> <span class="n">cmd</span><span class="p">)</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;   Calling </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cmd</span><span class="p">))</span>
             <span class="c1"># Careful: logfile code is not thread safe!</span>
             <span class="k">if</span> <span class="n">logfile</span><span class="p">:</span>
@@ -666,6 +702,7 @@
         <span class="n">stdin</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">stdin</span> <span class="o">=</span> <span class="kc">None</span>
+
     <span class="k">if</span> <span class="n">timeout</span><span class="p">:</span>
         <span class="k">with</span> <span class="n">Timeout</span><span class="p">(</span><span class="n">timeout</span><span class="p">):</span>
             <span class="n">proc</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span>
@@ -815,6 +852,17 @@
 <span class="sd">    Do not error if a partial testname is provided (TESTCASE or TESTCASE.GRID) instead</span>
 <span class="sd">    parse and return the partial results.</span>
 
+<span class="sd">    TESTMODS use hyphens in a special way:</span>
+<span class="sd">    - A single hyphen stands for a path separator (for example, &#39;test-mods&#39; resolves to</span>
+<span class="sd">      the path &#39;test/mods&#39;)</span>
+<span class="sd">    - A double hyphen separates multiple test mods (for example, &#39;test-mods--other-dir-path&#39;</span>
+<span class="sd">      indicates two test mods: &#39;test/mods&#39; and &#39;other/dir/path&#39;)</span>
+
+<span class="sd">    If there are one or more TESTMODS, then the testmods component of the result will be a</span>
+<span class="sd">    list, where each element of the list is one testmod, and hyphens have been replaced by</span>
+<span class="sd">    slashes. (If there are no TESTMODS in this test, then the TESTMODS component of the</span>
+<span class="sd">    result is None, as for other optional components.)</span>
+
 <span class="sd">    &gt;&gt;&gt; parse_test_name(&#39;ERS&#39;)</span>
 <span class="sd">    [&#39;ERS&#39;, None, None, None, None, None, None]</span>
 <span class="sd">    &gt;&gt;&gt; parse_test_name(&#39;ERS.fe12_123&#39;)</span>
@@ -825,12 +873,16 @@
 <span class="sd">    [&#39;ERS&#39;, [&#39;D&#39;], &#39;fe12_123&#39;, &#39;JGF&#39;, None, None, None]</span>
 <span class="sd">    &gt;&gt;&gt; parse_test_name(&#39;ERS_D_P1.fe12_123.JGF&#39;)</span>
 <span class="sd">    [&#39;ERS&#39;, [&#39;D&#39;, &#39;P1&#39;], &#39;fe12_123&#39;, &#39;JGF&#39;, None, None, None]</span>
+<span class="sd">    &gt;&gt;&gt; parse_test_name(&#39;ERS_D_G2.fe12_123.JGF&#39;)</span>
+<span class="sd">    [&#39;ERS&#39;, [&#39;D&#39;, &#39;G2&#39;], &#39;fe12_123&#39;, &#39;JGF&#39;, None, None, None]</span>
 <span class="sd">    &gt;&gt;&gt; parse_test_name(&#39;SMS_D_Ln9_Mmpi-serial.f19_g16_rx1.A&#39;)</span>
 <span class="sd">    [&#39;SMS&#39;, [&#39;D&#39;, &#39;Ln9&#39;, &#39;Mmpi-serial&#39;], &#39;f19_g16_rx1&#39;, &#39;A&#39;, None, None, None]</span>
 <span class="sd">    &gt;&gt;&gt; parse_test_name(&#39;ERS.fe12_123.JGF.machine_compiler&#39;)</span>
 <span class="sd">    [&#39;ERS&#39;, None, &#39;fe12_123&#39;, &#39;JGF&#39;, &#39;machine&#39;, &#39;compiler&#39;, None]</span>
 <span class="sd">    &gt;&gt;&gt; parse_test_name(&#39;ERS.fe12_123.JGF.machine_compiler.test-mods&#39;)</span>
-<span class="sd">    [&#39;ERS&#39;, None, &#39;fe12_123&#39;, &#39;JGF&#39;, &#39;machine&#39;, &#39;compiler&#39;, &#39;test/mods&#39;]</span>
+<span class="sd">    [&#39;ERS&#39;, None, &#39;fe12_123&#39;, &#39;JGF&#39;, &#39;machine&#39;, &#39;compiler&#39;, [&#39;test/mods&#39;]]</span>
+<span class="sd">    &gt;&gt;&gt; parse_test_name(&#39;ERS.fe12_123.JGF.machine_compiler.test-mods--other-dir-path--and-one-more&#39;)</span>
+<span class="sd">    [&#39;ERS&#39;, None, &#39;fe12_123&#39;, &#39;JGF&#39;, &#39;machine&#39;, &#39;compiler&#39;, [&#39;test/mods&#39;, &#39;other/dir/path&#39;, &#39;and/one/more&#39;]]</span>
 <span class="sd">    &gt;&gt;&gt; parse_test_name(&#39;SMS.f19_g16.2000_DATM%QI.A_XLND_SICE_SOCN_XROF_XGLC_SWAV.mach-ine_compiler.test-mods&#39;) # doctest: +IGNORE_EXCEPTION_DETAIL</span>
 <span class="sd">    Traceback (most recent call last):</span>
 <span class="sd">        ...</span>
@@ -861,17 +913,30 @@
         <span class="n">rv</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
 
     <span class="k">if</span> <span class="p">(</span><span class="n">rv</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="n">rv</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">rv</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">)</span>
+        <span class="c1"># The last element of the return value - testmods - will be a list of testmods,</span>
+        <span class="c1"># built by separating the TESTMODS component on strings of double hyphens</span>
+        <span class="n">testmods</span> <span class="o">=</span> <span class="n">rv</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;--&#39;</span><span class="p">)</span>
+        <span class="n">rv</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">one_testmod</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">one_testmod</span> <span class="ow">in</span> <span class="n">testmods</span><span class="p">]</span>
 
     <span class="n">expect</span><span class="p">(</span><span class="n">num_dots</span> <span class="o">&lt;=</span> <span class="mi">4</span><span class="p">,</span>
            <span class="s2">&quot;&#39;</span><span class="si">{}</span><span class="s2">&#39; does not look like a CIME test name, expect TESTCASE.GRID.COMPSET[.MACHINE_COMPILER[.TESTMODS]]&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">test_name</span><span class="p">))</span>
 
     <span class="k">return</span> <span class="n">rv</span></div>
 
-<div class="viewcode-block" id="get_full_test_name"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.utils.get_full_test_name">[docs]</a><span class="k">def</span> <span class="nf">get_full_test_name</span><span class="p">(</span><span class="n">partial_test</span><span class="p">,</span> <span class="n">caseopts</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">grid</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">compset</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">machine</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">compiler</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">testmod</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="get_full_test_name"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.utils.get_full_test_name">[docs]</a><span class="k">def</span> <span class="nf">get_full_test_name</span><span class="p">(</span><span class="n">partial_test</span><span class="p">,</span> <span class="n">caseopts</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">grid</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">compset</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">machine</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">compiler</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                       <span class="n">testmods_list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">testmods_string</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Given a partial CIME test name, return in form TESTCASE.GRID.COMPSET.MACHINE_COMPILER[.TESTMODS]</span>
 <span class="sd">    Use the additional args to fill out the name if needed</span>
+
+<span class="sd">    Testmods can be provided through one of two arguments, but *not* both:</span>
+<span class="sd">    - testmods_list: a list of one or more testmods (as would be returned by</span>
+<span class="sd">      parse_test_name, for example)</span>
+<span class="sd">    - testmods_string: a single string containing one or more testmods; if there is more</span>
+<span class="sd">      than one, then they should be separated by a string of two hyphens (&#39;--&#39;)</span>
+
+<span class="sd">    For both testmods_list and testmods_string, any slashes as path separators (&#39;/&#39;) are</span>
+<span class="sd">    replaced by hyphens (&#39;-&#39;).</span>
 
 <span class="sd">    &gt;&gt;&gt; get_full_test_name(&quot;ERS&quot;, grid=&quot;ne16_fe16&quot;, compset=&quot;JGF&quot;, machine=&quot;melvin&quot;, compiler=&quot;gnu&quot;)</span>
 <span class="sd">    &#39;ERS.ne16_fe16.JGF.melvin_gnu&#39;</span>
@@ -883,10 +948,30 @@
 <span class="sd">    &#39;ERS.ne16_fe16.JGF.melvin_gnu&#39;</span>
 <span class="sd">    &gt;&gt;&gt; get_full_test_name(&quot;ERS.ne16_fe16.JGF.melvin_gnu.mods&quot;, machine=&quot;melvin&quot;, compiler=&quot;gnu&quot;)</span>
 <span class="sd">    &#39;ERS.ne16_fe16.JGF.melvin_gnu.mods&#39;</span>
-<span class="sd">    &gt;&gt;&gt; get_full_test_name(&quot;ERS.ne16_fe16.JGF&quot;, machine=&quot;melvin&quot;, compiler=&quot;gnu&quot;, testmod=&quot;mods/test&quot;)</span>
+
+<span class="sd">    testmods_list can be a single element:</span>
+<span class="sd">    &gt;&gt;&gt; get_full_test_name(&quot;ERS.ne16_fe16.JGF&quot;, machine=&quot;melvin&quot;, compiler=&quot;gnu&quot;, testmods_list=[&quot;mods/test&quot;])</span>
 <span class="sd">    &#39;ERS.ne16_fe16.JGF.melvin_gnu.mods-test&#39;</span>
+
+<span class="sd">    testmods_list can also have multiple elements, separated either by slashes or hyphens:</span>
+<span class="sd">    &gt;&gt;&gt; get_full_test_name(&quot;ERS.ne16_fe16.JGF&quot;, machine=&quot;melvin&quot;, compiler=&quot;gnu&quot;, testmods_list=[&quot;mods/test&quot;, &quot;mods2/test2/subdir2&quot;, &quot;mods3/test3/subdir3&quot;])</span>
+<span class="sd">    &#39;ERS.ne16_fe16.JGF.melvin_gnu.mods-test--mods2-test2-subdir2--mods3-test3-subdir3&#39;</span>
+<span class="sd">    &gt;&gt;&gt; get_full_test_name(&quot;ERS.ne16_fe16.JGF&quot;, machine=&quot;melvin&quot;, compiler=&quot;gnu&quot;, testmods_list=[&quot;mods-test&quot;, &quot;mods2-test2-subdir2&quot;, &quot;mods3-test3-subdir3&quot;])</span>
+<span class="sd">    &#39;ERS.ne16_fe16.JGF.melvin_gnu.mods-test--mods2-test2-subdir2--mods3-test3-subdir3&#39;</span>
+
+<span class="sd">    The above testmods_list tests should also work with equivalent testmods_string arguments:</span>
+<span class="sd">    &gt;&gt;&gt; get_full_test_name(&quot;ERS.ne16_fe16.JGF&quot;, machine=&quot;melvin&quot;, compiler=&quot;gnu&quot;, testmods_string=&quot;mods/test&quot;)</span>
+<span class="sd">    &#39;ERS.ne16_fe16.JGF.melvin_gnu.mods-test&#39;</span>
+<span class="sd">    &gt;&gt;&gt; get_full_test_name(&quot;ERS.ne16_fe16.JGF&quot;, machine=&quot;melvin&quot;, compiler=&quot;gnu&quot;, testmods_string=&quot;mods/test--mods2/test2/subdir2--mods3/test3/subdir3&quot;)</span>
+<span class="sd">    &#39;ERS.ne16_fe16.JGF.melvin_gnu.mods-test--mods2-test2-subdir2--mods3-test3-subdir3&#39;</span>
+<span class="sd">    &gt;&gt;&gt; get_full_test_name(&quot;ERS.ne16_fe16.JGF&quot;, machine=&quot;melvin&quot;, compiler=&quot;gnu&quot;, testmods_string=&quot;mods-test--mods2-test2-subdir2--mods3-test3-subdir3&quot;)</span>
+<span class="sd">    &#39;ERS.ne16_fe16.JGF.melvin_gnu.mods-test--mods2-test2-subdir2--mods3-test3-subdir3&#39;</span>
+
+<span class="sd">    The following tests the consistency check between the test name and various optional arguments:</span>
+<span class="sd">    &gt;&gt;&gt; get_full_test_name(&quot;ERS.ne16_fe16.JGF.melvin_gnu.mods-test--mods2-test2-subdir2--mods3-test3-subdir3&quot;, machine=&quot;melvin&quot;, compiler=&quot;gnu&quot;, testmods_list=[&quot;mods/test&quot;, &quot;mods2/test2/subdir2&quot;, &quot;mods3/test3/subdir3&quot;])</span>
+<span class="sd">    &#39;ERS.ne16_fe16.JGF.melvin_gnu.mods-test--mods2-test2-subdir2--mods3-test3-subdir3&#39;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">partial_testcase</span><span class="p">,</span> <span class="n">partial_caseopts</span><span class="p">,</span> <span class="n">partial_grid</span><span class="p">,</span> <span class="n">partial_compset</span><span class="p">,</span> <span class="n">partial_machine</span><span class="p">,</span> <span class="n">partial_compiler</span><span class="p">,</span> <span class="n">partial_testmod</span> <span class="o">=</span> <span class="n">parse_test_name</span><span class="p">(</span><span class="n">partial_test</span><span class="p">)</span>
+    <span class="n">partial_testcase</span><span class="p">,</span> <span class="n">partial_caseopts</span><span class="p">,</span> <span class="n">partial_grid</span><span class="p">,</span> <span class="n">partial_compset</span><span class="p">,</span> <span class="n">partial_machine</span><span class="p">,</span> <span class="n">partial_compiler</span><span class="p">,</span> <span class="n">partial_testmods</span> <span class="o">=</span> <span class="n">parse_test_name</span><span class="p">(</span><span class="n">partial_test</span><span class="p">)</span>
 
     <span class="n">required_fields</span> <span class="o">=</span> <span class="p">[</span>
         <span class="p">(</span><span class="n">partial_grid</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="s2">&quot;grid&quot;</span><span class="p">),</span>
@@ -907,15 +992,21 @@
             <span class="n">expect</span><span class="p">(</span><span class="n">arg_val</span> <span class="o">==</span> <span class="n">partial_val</span><span class="p">,</span>
                    <span class="s2">&quot;Mismatch in field </span><span class="si">{}</span><span class="s2">, partial string &#39;</span><span class="si">{}</span><span class="s2">&#39; indicated it should be &#39;</span><span class="si">{}</span><span class="s2">&#39; but you provided &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">partial_test</span><span class="p">,</span> <span class="n">partial_val</span><span class="p">,</span> <span class="n">arg_val</span><span class="p">))</span>
 
-    <span class="k">if</span> <span class="p">(</span><span class="n">partial_testmod</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">testmod</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
-            <span class="c1"># No testmod for this test and that&#39;s OK</span>
+    <span class="k">if</span> <span class="n">testmods_string</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">expect</span><span class="p">(</span><span class="n">testmods_list</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Cannot provide both testmods_list and testmods_string&quot;</span><span class="p">)</span>
+        <span class="c1"># Convert testmods_string to testmods_list; after this point, the code will work</span>
+        <span class="c1"># the same regardless of whether testmods_string or testmods_list was provided.</span>
+        <span class="n">testmods_list</span> <span class="o">=</span> <span class="n">testmods_string</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;--&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">partial_testmods</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">testmods_list</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="c1"># No testmods for this test and that&#39;s OK</span>
             <span class="k">pass</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">result</span> <span class="o">+=</span> <span class="s2">&quot;.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">testmod</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">))</span>
-    <span class="k">elif</span> <span class="p">(</span><span class="n">testmod</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="n">expect</span><span class="p">(</span><span class="n">testmod</span> <span class="o">==</span> <span class="n">partial_testmod</span><span class="p">,</span>
-               <span class="s2">&quot;Mismatch in field testmod, partial string &#39;</span><span class="si">{}</span><span class="s2">&#39; indicated it should be &#39;</span><span class="si">{}</span><span class="s2">&#39; but you provided &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">partial_test</span><span class="p">,</span> <span class="n">partial_testmod</span><span class="p">,</span> <span class="n">testmod</span><span class="p">))</span>
+            <span class="n">testmods_hyphenated</span> <span class="o">=</span> <span class="p">[</span><span class="n">one_testmod</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">one_testmod</span> <span class="ow">in</span> <span class="n">testmods_list</span><span class="p">]</span>
+            <span class="n">result</span> <span class="o">+=</span> <span class="s2">&quot;.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;--&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">testmods_hyphenated</span><span class="p">))</span>
+    <span class="k">elif</span> <span class="p">(</span><span class="n">testmods_list</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="n">expect</span><span class="p">(</span><span class="n">testmods_list</span> <span class="o">==</span> <span class="n">partial_testmods</span><span class="p">,</span>
+               <span class="s2">&quot;Mismatch in field testmods, partial string &#39;</span><span class="si">{}</span><span class="s2">&#39; indicated it should be &#39;</span><span class="si">{}</span><span class="s2">&#39; but you provided &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">partial_test</span><span class="p">,</span> <span class="n">partial_testmods</span><span class="p">,</span> <span class="n">testmods_list</span><span class="p">))</span>
 
     <span class="k">if</span> <span class="p">(</span><span class="n">partial_caseopts</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">caseopts</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -1487,6 +1578,8 @@
 
 <span class="sd">    &gt;&gt;&gt; convert_to_babylonian_time(3661)</span>
 <span class="sd">    &#39;01:01:01&#39;</span>
+<span class="sd">    &gt;&gt;&gt; convert_to_babylonian_time(360000)</span>
+<span class="sd">    &#39;100:00:00&#39;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">hours</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">seconds</span> <span class="o">/</span> <span class="mi">3600</span><span class="p">)</span>
     <span class="n">seconds</span> <span class="o">%=</span> <span class="mi">3600</span>
@@ -1957,18 +2050,40 @@
 
 <span class="n">CASE_SUCCESS</span> <span class="o">=</span> <span class="s2">&quot;success&quot;</span>
 <span class="n">CASE_FAILURE</span> <span class="o">=</span> <span class="s2">&quot;error&quot;</span>
-<div class="viewcode-block" id="run_and_log_case_status"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.utils.run_and_log_case_status">[docs]</a><span class="k">def</span> <span class="nf">run_and_log_case_status</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">caseroot</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">custom_success_msg_functor</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="n">append_case_status</span><span class="p">(</span><span class="n">phase</span><span class="p">,</span> <span class="s2">&quot;starting&quot;</span><span class="p">,</span> <span class="n">caseroot</span><span class="o">=</span><span class="n">caseroot</span><span class="p">)</span>
+<div class="viewcode-block" id="run_and_log_case_status"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.utils.run_and_log_case_status">[docs]</a><span class="k">def</span> <span class="nf">run_and_log_case_status</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">caseroot</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">,</span>
+                            <span class="n">custom_starting_msg_functor</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                            <span class="n">custom_success_msg_functor</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                            <span class="n">is_batch</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="n">starting_msg</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">if</span> <span class="n">custom_starting_msg_functor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">starting_msg</span> <span class="o">=</span> <span class="n">custom_starting_msg_functor</span><span class="p">()</span>
+
+    <span class="c1"># Delay appending &quot;starting&quot; on &quot;case.subsmit&quot; phase when batch system is</span>
+    <span class="c1"># present since we don&#39;t have the jobid yet</span>
+    <span class="k">if</span> <span class="n">phase</span> <span class="o">!=</span> <span class="s2">&quot;case.submit&quot;</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">is_batch</span><span class="p">:</span>
+        <span class="n">append_case_status</span><span class="p">(</span><span class="n">phase</span><span class="p">,</span> <span class="s2">&quot;starting&quot;</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="n">starting_msg</span><span class="p">,</span> <span class="n">caseroot</span><span class="o">=</span><span class="n">caseroot</span><span class="p">)</span>
     <span class="n">rv</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">rv</span> <span class="o">=</span> <span class="n">func</span><span class="p">()</span>
     <span class="k">except</span> <span class="ne">BaseException</span><span class="p">:</span>
+        <span class="n">custom_success_msg</span> <span class="o">=</span> <span class="n">custom_success_msg_functor</span><span class="p">(</span><span class="n">rv</span><span class="p">)</span> \
+            <span class="k">if</span> <span class="n">custom_success_msg_functor</span> <span class="ow">and</span> <span class="n">rv</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">phase</span> <span class="o">==</span> <span class="s2">&quot;case.submit&quot;</span> <span class="ow">and</span> <span class="n">is_batch</span><span class="p">:</span>
+            <span class="n">append_case_status</span><span class="p">(</span><span class="n">phase</span><span class="p">,</span> <span class="s2">&quot;starting&quot;</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="n">custom_success_msg</span><span class="p">,</span>
+                            <span class="n">caseroot</span><span class="o">=</span><span class="n">caseroot</span><span class="p">)</span>
         <span class="n">e</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span>
-        <span class="n">append_case_status</span><span class="p">(</span><span class="n">phase</span><span class="p">,</span> <span class="n">CASE_FAILURE</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">)),</span> <span class="n">caseroot</span><span class="o">=</span><span class="n">caseroot</span><span class="p">)</span>
+        <span class="n">append_case_status</span><span class="p">(</span><span class="n">phase</span><span class="p">,</span> <span class="n">CASE_FAILURE</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">)),</span>
+                           <span class="n">caseroot</span><span class="o">=</span><span class="n">caseroot</span><span class="p">)</span>
         <span class="k">raise</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">custom_success_msg</span> <span class="o">=</span> <span class="n">custom_success_msg_functor</span><span class="p">(</span><span class="n">rv</span><span class="p">)</span> <span class="k">if</span> <span class="n">custom_success_msg_functor</span> <span class="k">else</span> <span class="kc">None</span>
-        <span class="n">append_case_status</span><span class="p">(</span><span class="n">phase</span><span class="p">,</span> <span class="n">CASE_SUCCESS</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="n">custom_success_msg</span><span class="p">,</span> <span class="n">caseroot</span><span class="o">=</span><span class="n">caseroot</span><span class="p">)</span>
+        <span class="n">custom_success_msg</span> <span class="o">=</span> <span class="n">custom_success_msg_functor</span><span class="p">(</span><span class="n">rv</span><span class="p">)</span> \
+            <span class="k">if</span> <span class="n">custom_success_msg_functor</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">phase</span> <span class="o">==</span> <span class="s2">&quot;case.submit&quot;</span> <span class="ow">and</span> <span class="n">is_batch</span><span class="p">:</span>
+            <span class="n">append_case_status</span><span class="p">(</span><span class="n">phase</span><span class="p">,</span> <span class="s2">&quot;starting&quot;</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="n">custom_success_msg</span><span class="p">,</span>
+                            <span class="n">caseroot</span><span class="o">=</span><span class="n">caseroot</span><span class="p">)</span>
+        <span class="n">append_case_status</span><span class="p">(</span><span class="n">phase</span><span class="p">,</span> <span class="n">CASE_SUCCESS</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="n">custom_success_msg</span><span class="p">,</span>
+                           <span class="n">caseroot</span><span class="o">=</span><span class="n">caseroot</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">rv</span></div>
 

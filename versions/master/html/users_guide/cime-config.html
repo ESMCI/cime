@@ -236,7 +236,20 @@ MAIL_TYPE=fail
 <p>If you have a customized version of this file in the directory <code class="docutils literal notranslate"><span class="pre">$HOME/.cime</span></code>, it will <strong>append</strong> to the file in <code class="docutils literal notranslate"><span class="pre">$CIMEROOT/config/$model/machines/config_machines.xml</span></code>.</p>
 <p>For an example of a <strong>config_machines.xml</strong> file for a linux cluster, look at <strong>$CIMEROOT/config/xml_schemas/config_machines_template.xml</strong>.</p>
 </li>
-<li><p><code class="docutils literal notranslate"><span class="pre">config_compilers.xml</span></code></p>
+<li><p><code class="docutils literal notranslate"><span class="pre">cmake_macros</span></code></p>
+<p>This subdirectory contains a hierarchy of cmake macros files which
+are used to generate the flags to be used in the compilation of a
+case.  The cmake macro files are examined in the following order, with later files takeing precidence over earlier ones.</p>
+<ul class="simple">
+<li><p>universal.cmake</p></li>
+<li><p><em>COMPILER</em>.cmake</p></li>
+<li><p><em>OS</em>.cmake</p></li>
+<li><p><em>MACHINE</em>.cmake</p></li>
+<li><p><em>COMPILER*_*OS</em>.cmake</p></li>
+<li><p><em>COMPILER*_*MACHINE</em>.cmake</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">config_compilers.xml</span></code> <strong>DEPRECATED use cmake_macros</strong></p>
 <p>This file permits you to customize compiler settings for your machine and is appended to the file <strong>$CIMEROOT/config/$model/machines/config_compilers.xml</strong>.</p>
 <p>The following is an example of what would be needed for customized a ibm compiler flags on a BlueGeneQ machine.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;

@@ -116,7 +116,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#batch-system-definition">4.2. Batch system definition</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#config-batch-xml-batch-directives">4.3. config_batch.xml - batch directives</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#compiler-settings">4.4. Compiler settings</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#config-compilers-xml-compiler-paths-and-options">4.5. config_compilers.xml - compiler paths and options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#config-compilers-xml-compiler-paths-and-options-deprecated-use-cmake-macros">4.5. config_compilers.xml - compiler paths and options <strong>DEPRECATED use cmake_macros</strong></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="pes-threads.html">5. Controlling processors and threads</a></li>
@@ -298,7 +298,7 @@ These specify the arguments to the mpi executable and are dependent on your mpi 
 <span id="batchfile"></span><h2><span class="section-number">4.3. </span>config_batch.xml - batch directives<a class="headerlink" href="#config-batch-xml-batch-directives" title="Permalink to this headline">¶</a></h2>
 <p>The <strong>config_batch.xml</strong> schema is defined in <strong>$CIMEROOT/config/xml_schemas/config_batch.xsd</strong>.</p>
 <p>CIME supports these batch systems: pbs, cobalt, lsf and slurm.</p>
-<p>As is the case for <strong>config_compilers.xml</strong>, the entries in <strong>config_batch.xml</strong> are hierarchical.</p>
+<p>The entries in <strong>config_batch.xml</strong> are hierarchical.</p>
 <ol class="arabic simple">
 <li><p>General configurations for each system are provided at the top of the file.</p></li>
 <li><p>Specific modifications for a given machine are provided below.  In particular each machine should define its own queues.</p></li>
@@ -317,22 +317,20 @@ These specify the arguments to the mpi executable and are dependent on your mpi 
 </div>
 <div class="section" id="compiler-settings">
 <span id="defining-compiler-settings"></span><h2><span class="section-number">4.4. </span>Compiler settings<a class="headerlink" href="#compiler-settings" title="Permalink to this headline">¶</a></h2>
-<p>CIME looks at the xml element <code class="docutils literal notranslate"><span class="pre">COMPILERS_SPEC_FILE</span></code> in the <strong>config_files.xml</strong> file to identify supported out-of-the-box compiler details for the target model. The node has the following contents:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;entry id=&quot;COMPILERS_SPEC_FILE&quot;&gt;
+<p>CIME looks at the xml element <code class="docutils literal notranslate"><span class="pre">CMAKE_MACROS_DIR</span></code> in the <strong>config_files.xml</strong> file to identify supported out-of-the-box compiler details for the target model. The node has the following contents:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;entry id=&quot;CMAKE_MACROS_DIR&quot;&gt;
   &lt;type&gt;char&lt;/type&gt;
-  &lt;default_value&gt;$CIMEROOT/cime_config/$MODEL/machines/config_compilers.xml&lt;/default_value&gt;
+  &lt;default_value&gt;$CIMEROOT/config/$MODEL/machines/cmake_macros&lt;/default_value&gt;
   &lt;group&gt;case_last&lt;/group&gt;
   &lt;file&gt;env_case.xml&lt;/file&gt;
-  &lt;desc&gt;file containing compiler specifications for target model primary component (for documentation only - DO NOT EDIT)&lt;/desc&gt;
-  &lt;schema&gt;$CIMEROOT/cime_config/xml_schemas/config_compilers_v2.xsd&lt;/schema&gt;
+  &lt;desc&gt;Directory containing cmake macros (for documentation only - DO NOT EDIT)&lt;/desc&gt;
 &lt;/entry&gt;
 </pre></div>
 </div>
-<p>Additional compilers are made avilable by adding entries to the files pointed to by COMPILERS_SPEC_FILE or to a config_compilers.xml file
-in your CIME config directory.</p>
+<p>Additional compilers are made avilable by adding cmake macros files to the directory pointed to by CMAKE_MACROS_DIR or to your $HOME/.cime directory.</p>
 </div>
-<div class="section" id="config-compilers-xml-compiler-paths-and-options">
-<span id="compilerfile"></span><h2><span class="section-number">4.5. </span>config_compilers.xml - compiler paths and options<a class="headerlink" href="#config-compilers-xml-compiler-paths-and-options" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="config-compilers-xml-compiler-paths-and-options-deprecated-use-cmake-macros">
+<span id="compilerfile"></span><h2><span class="section-number">4.5. </span>config_compilers.xml - compiler paths and options <strong>DEPRECATED use cmake_macros</strong><a class="headerlink" href="#config-compilers-xml-compiler-paths-and-options-deprecated-use-cmake-macros" title="Permalink to this headline">¶</a></h2>
 <p>The <strong>config_compilers.xml</strong> file defines compiler flags for building CIME (and also CESM and E3SM prognostic CIME-driven components).</p>
 <ol class="arabic simple">
 <li><p>General compiler flags (e.g., for the gnu compiler) that are machine- and componen-independent are listed first.</p></li>

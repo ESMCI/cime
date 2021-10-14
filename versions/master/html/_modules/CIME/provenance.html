@@ -179,7 +179,7 @@
            <div itemprop="articleBody">
             
   <h1>Source code for CIME.provenance</h1><div class="highlight"><pre>
-<span></span><span class="ch">#!/usr/bin/env python</span>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Library for saving build/run provenance.</span>
@@ -225,6 +225,84 @@
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">target_file</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
         <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">contents</span><span class="p">)</span>
 
+<span class="k">def</span> <span class="nf">_run_git_cmd_recursively</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">srcroot</span><span class="p">,</span> <span class="n">output</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Runs a git command recursively</span>
+
+<span class="sd">    Runs the git command in srcroot then runs it on each submodule.</span>
+<span class="sd">    Then output from both commands is written to the output file.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">rc1</span><span class="p">,</span> <span class="n">output1</span><span class="p">,</span> <span class="n">err1</span> <span class="o">=</span> <span class="n">run_cmd</span><span class="p">(</span><span class="s2">&quot;git </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cmd</span><span class="p">),</span> <span class="n">from_dir</span><span class="o">=</span><span class="n">srcroot</span><span class="p">)</span>
+
+    <span class="n">rc2</span><span class="p">,</span> <span class="n">output2</span><span class="p">,</span> <span class="n">err2</span> <span class="o">=</span> <span class="n">run_cmd</span><span class="p">(</span>
+        <span class="s2">&quot;git submodule foreach --recursive </span><span class="se">\&quot;</span><span class="s2">git </span><span class="si">{}</span><span class="s2">; echo</span><span class="se">\&quot;</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cmd</span><span class="p">),</span>
+        <span class="n">from_dir</span><span class="o">=</span><span class="n">srcroot</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
+        <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">((</span><span class="n">output1</span> <span class="k">if</span> <span class="n">rc1</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">err1</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">((</span><span class="n">output2</span> <span class="k">if</span> <span class="n">rc2</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">err2</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">_parse_dot_git_path</span><span class="p">(</span><span class="n">srcroot</span><span class="p">):</span>
+    <span class="n">dot_git_pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;^(.*/\.git).*&quot;</span>
+
+    <span class="n">m</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">dot_git_pattern</span><span class="p">,</span> <span class="n">srcroot</span><span class="p">)</span>
+
+    <span class="n">expect</span><span class="p">(</span><span class="n">m</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Could not parse git path from </span><span class="si">{</span><span class="n">srcroot</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">_find_git_root</span><span class="p">(</span><span class="n">srcroot</span><span class="p">):</span>
+    <span class="n">gitroot</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">srcroot</span><span class="si">}</span><span class="s2">/.git&quot;</span>
+
+    <span class="n">expect</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">gitroot</span><span class="p">),</span>
+           <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">srcroot</span><span class="si">!r}</span><span class="s2"> is not a git repository, failed to collect provenance&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Handle normal git repositories</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">gitroot</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">gitroot</span>
+
+    <span class="c1"># Handle git worktrees</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">gitroot</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+
+    <span class="n">gitdir_pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;^gitdir:\s?(.*)$&quot;</span>
+
+    <span class="n">m</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">gitdir_pattern</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
+
+    <span class="n">expect</span><span class="p">(</span><span class="n">m</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Could not determine git root in </span><span class="si">{</span><span class="n">srcroot</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># First group is the actual gitroot</span>
+    <span class="k">return</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">_record_git_provenance</span><span class="p">(</span><span class="n">srcroot</span><span class="p">,</span> <span class="n">exeroot</span><span class="p">,</span> <span class="n">lid</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Records git provenance</span>
+
+<span class="sd">    Records git status, diff and logs for main repo and all submodules.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Git Status</span>
+    <span class="n">status_prov</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">exeroot</span><span class="p">,</span> <span class="s2">&quot;GIT_STATUS.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lid</span><span class="p">))</span>
+    <span class="n">_run_git_cmd_recursively</span><span class="p">(</span><span class="s2">&quot;status&quot;</span><span class="p">,</span> <span class="n">srcroot</span><span class="p">,</span> <span class="n">status_prov</span><span class="p">)</span>
+
+    <span class="c1"># Git Diff</span>
+    <span class="n">diff_prov</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">exeroot</span><span class="p">,</span> <span class="s2">&quot;GIT_DIFF.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lid</span><span class="p">))</span>
+    <span class="n">_run_git_cmd_recursively</span><span class="p">(</span><span class="s2">&quot;diff&quot;</span><span class="p">,</span> <span class="n">srcroot</span><span class="p">,</span> <span class="n">diff_prov</span><span class="p">)</span>
+
+    <span class="c1"># Git Log</span>
+    <span class="n">log_prov</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">exeroot</span><span class="p">,</span> <span class="s2">&quot;GIT_LOG.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lid</span><span class="p">))</span>
+    <span class="n">cmd</span> <span class="o">=</span> <span class="s2">&quot;log --first-parent --pretty=oneline -n 5&quot;</span>
+    <span class="n">_run_git_cmd_recursively</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">srcroot</span><span class="p">,</span> <span class="n">log_prov</span><span class="p">)</span>
+
+    <span class="c1"># Git remote</span>
+    <span class="n">remote_prov</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">exeroot</span><span class="p">,</span> <span class="s2">&quot;GIT_REMOTE.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lid</span><span class="p">))</span>
+    <span class="n">_run_git_cmd_recursively</span><span class="p">(</span><span class="s2">&quot;remote -v&quot;</span><span class="p">,</span> <span class="n">srcroot</span><span class="p">,</span> <span class="n">remote_prov</span><span class="p">)</span>
+
+    <span class="n">gitroot</span> <span class="o">=</span> <span class="n">_find_git_root</span><span class="p">(</span><span class="n">srcroot</span><span class="p">)</span>
+    <span class="n">gitroot</span> <span class="o">=</span> <span class="n">_parse_dot_git_path</span><span class="p">(</span><span class="n">gitroot</span><span class="p">)</span>
+
+    <span class="c1"># Git config</span>
+    <span class="n">config_src</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">gitroot</span><span class="p">,</span> <span class="s2">&quot;config&quot;</span><span class="p">)</span>
+    <span class="n">config_prov</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">exeroot</span><span class="p">,</span> <span class="s2">&quot;GIT_CONFIG.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lid</span><span class="p">))</span>
+    <span class="n">safe_copy</span><span class="p">(</span><span class="n">config_src</span><span class="p">,</span> <span class="n">config_prov</span><span class="p">,</span> <span class="n">preserve_meta</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
 <span class="k">def</span> <span class="nf">_save_build_provenance_e3sm</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">lid</span><span class="p">):</span>
     <span class="n">srcroot</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;SRCROOT&quot;</span><span class="p">)</span>
     <span class="n">exeroot</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;EXEROOT&quot;</span><span class="p">)</span>
@@ -236,8 +314,10 @@
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">describe_prov</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
         <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">desc</span><span class="p">)</span>
 
+    <span class="n">gitroot</span> <span class="o">=</span> <span class="n">_find_git_root</span><span class="p">(</span><span class="n">srcroot</span><span class="p">)</span>
+
     <span class="c1"># Save HEAD</span>
-    <span class="n">headfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">srcroot</span><span class="p">,</span> <span class="s2">&quot;.git&quot;</span><span class="p">,</span> <span class="s2">&quot;logs&quot;</span><span class="p">,</span> <span class="s2">&quot;HEAD&quot;</span><span class="p">)</span>
+    <span class="n">headfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">gitroot</span><span class="p">,</span> <span class="s2">&quot;logs&quot;</span><span class="p">,</span> <span class="s2">&quot;HEAD&quot;</span><span class="p">)</span>
     <span class="n">headfile_prov</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">exeroot</span><span class="p">,</span> <span class="s2">&quot;GIT_LOGS_HEAD.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lid</span><span class="p">))</span>
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">headfile_prov</span><span class="p">):</span>
         <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">headfile_prov</span><span class="p">)</span>
@@ -249,6 +329,8 @@
     <span class="n">subm_status</span> <span class="o">=</span> <span class="n">get_current_submodule_status</span><span class="p">(</span><span class="n">recursive</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">repo</span><span class="o">=</span><span class="n">srcroot</span><span class="p">)</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">submodule_prov</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
         <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">subm_status</span><span class="p">)</span>
+
+    <span class="n">_record_git_provenance</span><span class="p">(</span><span class="n">srcroot</span><span class="p">,</span> <span class="n">exeroot</span><span class="p">,</span> <span class="n">lid</span><span class="p">)</span>
 
     <span class="c1"># Save SourceMods</span>
     <span class="n">sourcemods</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="s2">&quot;SourceMods&quot;</span><span class="p">)</span>
@@ -277,7 +359,10 @@
 
     <span class="c1"># For all the just-created post-build provenance files, symlink a generic name</span>
     <span class="c1"># to them to indicate that these are the most recent or active.</span>
-    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;GIT_DESCRIBE&quot;</span><span class="p">,</span> <span class="s2">&quot;GIT_LOGS_HEAD&quot;</span><span class="p">,</span> <span class="s2">&quot;GIT_SUBMODULE_STATUS&quot;</span><span class="p">,</span> <span class="s2">&quot;SourceMods&quot;</span><span class="p">,</span> <span class="s2">&quot;build_environment&quot;</span><span class="p">,</span> <span class="s2">&quot;build_times&quot;</span><span class="p">]:</span>
+    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;GIT_DESCRIBE&quot;</span><span class="p">,</span> <span class="s2">&quot;GIT_LOGS_HEAD&quot;</span><span class="p">,</span> <span class="s2">&quot;GIT_SUBMODULE_STATUS&quot;</span><span class="p">,</span>
+                 <span class="s2">&quot;GIT_STATUS&quot;</span><span class="p">,</span> <span class="s2">&quot;GIT_DIFF&quot;</span><span class="p">,</span> <span class="s2">&quot;GIT_LOG&quot;</span><span class="p">,</span> <span class="s2">&quot;GIT_CONFIG&quot;</span><span class="p">,</span>
+                 <span class="s2">&quot;GIT_REMOTE&quot;</span><span class="p">,</span> <span class="s2">&quot;SourceMods&quot;</span><span class="p">,</span> <span class="s2">&quot;build_environment&quot;</span><span class="p">,</span>
+                 <span class="s2">&quot;build_times&quot;</span><span class="p">]:</span>
         <span class="n">globstr</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">.</span><span class="si">{}</span><span class="s2">*&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">exeroot</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">lid</span><span class="p">)</span>
         <span class="n">matches</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">globstr</span><span class="p">)</span>
         <span class="n">expect</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">matches</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;Multiple matches for glob </span><span class="si">{}</span><span class="s2"> should not have happened&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">globstr</span><span class="p">))</span>
@@ -409,6 +494,7 @@
     <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">case_docs</span><span class="p">)</span>
     <span class="n">globs_to_copy</span> <span class="o">=</span> <span class="p">[</span>
         <span class="s2">&quot;CaseDocs/*&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;run_script_provenance/*&quot;</span><span class="p">,</span>
         <span class="s2">&quot;*.run&quot;</span><span class="p">,</span>
         <span class="s2">&quot;.*.run&quot;</span><span class="p">,</span>
         <span class="s2">&quot;*.xml&quot;</span><span class="p">,</span>
@@ -474,6 +560,23 @@
 <span class="k">def</span> <span class="nf">_save_prerun_provenance_cesm</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">lid</span><span class="p">):</span> <span class="c1"># pylint: disable=unused-argument</span>
     <span class="k">pass</span>
 
+<span class="k">def</span> <span class="nf">_save_prerun_provenance_common</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">lid</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Saves common prerun provenance.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">run_dir</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">)</span>
+
+    <span class="n">base_preview_run</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">run_dir</span><span class="p">,</span> <span class="s2">&quot;preview_run.log&quot;</span><span class="p">)</span>
+    <span class="n">preview_run</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">base_preview_run</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">lid</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">base_preview_run</span><span class="p">):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">base_preview_run</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">base_preview_run</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
+        <span class="n">case</span><span class="o">.</span><span class="n">preview_run</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">)),</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="c1"># Create copy rather than symlink, the log is automatically gzipped</span>
+        <span class="n">safe_copy</span><span class="p">(</span><span class="n">base_preview_run</span><span class="p">,</span> <span class="n">preview_run</span><span class="p">)</span>
+
 <div class="viewcode-block" id="save_prerun_provenance"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.provenance.save_prerun_provenance">[docs]</a><span class="k">def</span> <span class="nf">save_prerun_provenance</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">lid</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="k">with</span> <span class="n">SharedArea</span><span class="p">():</span>
         <span class="c1"># Always save env</span>
@@ -483,6 +586,8 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">logdir</span><span class="p">):</span>
             <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">logdir</span><span class="p">)</span>
         <span class="n">env_module</span><span class="o">.</span><span class="n">save_all_env_info</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">logdir</span><span class="p">,</span> <span class="s2">&quot;run_environment.txt.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lid</span><span class="p">)))</span>
+
+        <span class="n">_save_prerun_provenance_common</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">lid</span><span class="p">)</span>
 
         <span class="n">model</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MODEL&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">model</span> <span class="o">==</span> <span class="s2">&quot;e3sm&quot;</span><span class="p">:</span>
@@ -515,6 +620,23 @@
         <span class="n">atm_chunk_costs_dst_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="s2">&quot;atm_chunk_costs.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lid</span><span class="p">))</span>
         <span class="n">shutil</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">atm_chunk_costs_src_path</span><span class="p">,</span> <span class="n">atm_chunk_costs_dst_path</span><span class="p">)</span>
         <span class="n">gzip_existing_file</span><span class="p">(</span><span class="n">atm_chunk_costs_dst_path</span><span class="p">)</span>
+
+    <span class="c1"># gzip memory profile log</span>
+    <span class="n">glob_to_copy</span> <span class="o">=</span> <span class="s2">&quot;memory.[0-4].*.log&quot;</span>
+    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="n">glob_to_copy</span><span class="p">)):</span>
+        <span class="n">mprof_dst_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">item</span><span class="p">),</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lid</span><span class="p">))</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">mprof_dst_path</span><span class="p">)</span>
+        <span class="n">gzip_existing_file</span><span class="p">(</span><span class="n">mprof_dst_path</span><span class="p">)</span>
+
+    <span class="c1"># Copy Scorpio I/O performance stats to a separate dir + tar + compress</span>
+    <span class="n">spio_stats_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="s2">&quot;spio_stats.&quot;</span> <span class="o">+</span> <span class="n">lid</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">spio_stats_dir</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="s2">&quot;io_perf_summary*&quot;</span><span class="p">)):</span>
+        <span class="n">safe_copy</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">spio_stats_dir</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">tarfile</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.tar.gz&quot;</span> <span class="o">%</span> <span class="n">spio_stats_dir</span><span class="p">,</span> <span class="s2">&quot;w:gz&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">tfd</span><span class="p">:</span>
+        <span class="n">tfd</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">spio_stats_dir</span><span class="p">,</span> <span class="n">arcname</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">spio_stats_dir</span><span class="p">))</span>
+
+    <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">spio_stats_dir</span><span class="p">)</span>
 
     <span class="n">gzip_existing_file</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="s2">&quot;timing&quot;</span><span class="p">,</span> <span class="s2">&quot;e3sm_timing_stats.</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">lid</span><span class="p">))</span>
 
@@ -573,8 +695,17 @@
     <span class="n">globs_to_copy</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="s2">&quot;e3sm.log.</span><span class="si">{}</span><span class="s2">.gz&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lid</span><span class="p">)))</span>
     <span class="n">globs_to_copy</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="s2">&quot;cpl.log.</span><span class="si">{}</span><span class="s2">.gz&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lid</span><span class="p">)))</span>
     <span class="n">globs_to_copy</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="s2">&quot;atm_chunk_costs.</span><span class="si">{}</span><span class="s2">.gz&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lid</span><span class="p">)))</span>
+    <span class="n">globs_to_copy</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="s2">&quot;memory.[0-4].*.log.</span><span class="si">{}</span><span class="s2">.gz&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lid</span><span class="p">)))</span>
     <span class="n">globs_to_copy</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;timing/*.</span><span class="si">{}</span><span class="s2">*&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lid</span><span class="p">))</span>
     <span class="n">globs_to_copy</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;CaseStatus&quot;</span><span class="p">)</span>
+    <span class="n">globs_to_copy</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="s2">&quot;spio_stats.</span><span class="si">{}</span><span class="s2">.tar.gz&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lid</span><span class="p">)))</span>
+    <span class="n">globs_to_copy</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="s2">&quot;replay.sh&quot;</span><span class="p">))</span>
+    <span class="c1"># Can&#39;t use a single glob, similar files e.g. {filename}.{lid} get picked up.</span>
+    <span class="n">bld_filenames</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;GIT_STATUS&quot;</span><span class="p">,</span> <span class="s2">&quot;GIT_DIFF&quot;</span><span class="p">,</span> <span class="s2">&quot;GIT_LOG&quot;</span><span class="p">,</span> <span class="s2">&quot;GIT_REMOTE&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;GIT_CONFIG&quot;</span><span class="p">,</span> <span class="s2">&quot;GIT_SUBMODULE_STATUS&quot;</span><span class="p">]</span>
+    <span class="n">bld_globs</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;bld/</span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">bld_filenames</span><span class="p">)</span>
+    <span class="n">globs_to_copy</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">bld_globs</span><span class="p">)</span>
+    <span class="n">globs_to_copy</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;run/preview_run.log&quot;</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">glob_to_copy</span> <span class="ow">in</span> <span class="n">globs_to_copy</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="n">glob_to_copy</span><span class="p">)):</span>

@@ -179,7 +179,7 @@
            <div itemprop="articleBody">
             
   <h1>Source code for CIME.tests.SystemTests.test_system_tests_compare_two</h1><div class="highlight"><pre>
-<span></span><span class="ch">#!/usr/bin/env python</span>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">This module contains unit tests of the core logic in SystemTestsCompareTwo.</span>
@@ -192,6 +192,7 @@
 
 <span class="kn">import</span> <span class="nn">unittest</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
+<span class="kn">import</span> <span class="nn">functools</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">shutil</span>
 <span class="kn">import</span> <span class="nn">tempfile</span>
@@ -666,6 +667,56 @@
         <span class="n">compare_phase_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_compare_phase_name</span><span class="p">(</span><span class="n">mytest</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">test_status</span><span class="o">.</span><span class="n">TEST_PASS_STATUS</span><span class="p">,</span>
                          <span class="n">mytest</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">get_status</span><span class="p">(</span><span class="n">compare_phase_name</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="TestSystemTestsCompareTwo.test_internal_calls_multisubmit_failed_state"><a class="viewcode-back" href="../../../../CIME_api/CIME.tests.SystemTests.html#CIME.tests.SystemTests.test_system_tests_compare_two.TestSystemTestsCompareTwo.test_internal_calls_multisubmit_failed_state">[docs]</a>    <span class="k">def</span> <span class="nf">test_internal_calls_multisubmit_failed_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">run_one_suffix</span> <span class="o">=</span> <span class="s1">&#39;base&#39;</span>
+        <span class="n">run_two_suffix</span> <span class="o">=</span> <span class="s1">&#39;run2&#39;</span>
+        <span class="n">case1root</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_caseroots</span><span class="p">()</span>
+        <span class="n">case1</span> <span class="o">=</span> <span class="n">CaseFake</span><span class="p">(</span><span class="n">case1root</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">_set_initial_test_values</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+            <span class="n">x</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s1">&#39;RESUBMIT&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">case1</span><span class="o">.</span><span class="n">set_initial_test_values</span> <span class="o">=</span> <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span>
+            <span class="n">_set_initial_test_values</span><span class="p">,</span>
+            <span class="n">case1</span><span class="p">)</span>
+
+        <span class="c1"># Standard first phase</span>
+        <span class="n">case1</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s1">&#39;IS_FIRST_RUN&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="n">case1</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s1">&#39;RESUBMIT&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">mytest</span> <span class="o">=</span> <span class="n">SystemTestsCompareTwoFake</span><span class="p">(</span>
+            <span class="n">case1</span> <span class="o">=</span> <span class="n">case1</span><span class="p">,</span>
+            <span class="n">run_one_suffix</span> <span class="o">=</span> <span class="n">run_one_suffix</span><span class="p">,</span>
+            <span class="n">run_two_suffix</span> <span class="o">=</span> <span class="n">run_two_suffix</span><span class="p">,</span>
+            <span class="n">multisubmit</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">mytest</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+
+        <span class="n">expected_calls</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">Call</span><span class="p">(</span><span class="n">METHOD_case_one_custom_prerun_action</span><span class="p">,</span> <span class="p">{}),</span>
+            <span class="n">Call</span><span class="p">(</span><span class="n">METHOD_run_indv</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;CASEROOT&#39;</span><span class="p">:</span> <span class="n">case1root</span><span class="p">,</span> <span class="s1">&#39;suffix&#39;</span><span class="p">:</span> <span class="s1">&#39;base&#39;</span><span class="p">}),</span>
+            <span class="n">Call</span><span class="p">(</span><span class="n">METHOD_case_one_custom_postrun_action</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">expected_calls</span><span class="p">,</span> <span class="n">mytest</span><span class="o">.</span><span class="n">log</span><span class="p">)</span>
+
+        <span class="c1"># Emulate a rerun ensure phase 1 still runs</span>
+        <span class="n">case1</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s1">&#39;IS_FIRST_RUN&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="n">case1</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s1">&#39;RESUBMIT&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="c1"># Reset the log</span>
+        <span class="n">mytest</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">mytest</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+
+        <span class="n">expected_calls</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">Call</span><span class="p">(</span><span class="n">METHOD_case_one_custom_prerun_action</span><span class="p">,</span> <span class="p">{}),</span>
+            <span class="n">Call</span><span class="p">(</span><span class="n">METHOD_run_indv</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;CASEROOT&#39;</span><span class="p">:</span> <span class="n">case1root</span><span class="p">,</span> <span class="s1">&#39;suffix&#39;</span><span class="p">:</span> <span class="s1">&#39;base&#39;</span><span class="p">}),</span>
+            <span class="n">Call</span><span class="p">(</span><span class="n">METHOD_case_one_custom_postrun_action</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">expected_calls</span><span class="p">,</span> <span class="n">mytest</span><span class="o">.</span><span class="n">log</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestSystemTestsCompareTwo.test_run1_fails"><a class="viewcode-back" href="../../../../CIME_api/CIME.tests.SystemTests.html#CIME.tests.SystemTests.test_system_tests_compare_two.TestSystemTestsCompareTwo.test_run1_fails">[docs]</a>    <span class="k">def</span> <span class="nf">test_run1_fails</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Make sure that a failure in run1 is reported correctly</span>

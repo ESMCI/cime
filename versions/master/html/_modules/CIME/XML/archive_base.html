@@ -265,6 +265,11 @@
         <span class="c1"># remove when component name is changed</span>
         <span class="k">if</span> <span class="n">model</span> <span class="o">==</span> <span class="s2">&quot;fv3gfs&quot;</span><span class="p">:</span>
             <span class="n">model</span> <span class="o">=</span> <span class="s2">&quot;fv3&quot;</span>
+        <span class="k">if</span> <span class="n">model</span> <span class="o">==</span> <span class="s2">&quot;cice6&quot;</span><span class="p">:</span>
+            <span class="n">model</span> <span class="o">=</span> <span class="s2">&quot;cice&quot;</span>
+        <span class="k">if</span> <span class="n">model</span> <span class="o">==</span> <span class="s2">&quot;ww3dev&quot;</span><span class="p">:</span>
+            <span class="n">model</span> <span class="o">=</span> <span class="s2">&quot;ww3&quot;</span>
+
         <span class="n">hist_files</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">extensions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_hist_file_extensions</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_entry</span><span class="p">(</span><span class="n">dmodel</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">suffix</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">suffix</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
@@ -331,6 +336,10 @@
     <span class="c1"># Remove with component namechange</span>
     <span class="k">if</span> <span class="n">model</span> <span class="o">==</span> <span class="s2">&quot;fv3gfs&quot;</span><span class="p">:</span>
         <span class="n">model</span> <span class="o">=</span> <span class="s2">&quot;fv3&quot;</span>
+    <span class="k">if</span> <span class="n">model</span> <span class="o">==</span> <span class="s2">&quot;cice6&quot;</span><span class="p">:</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="s2">&quot;cice&quot;</span>
+    <span class="k">if</span> <span class="n">model</span> <span class="o">==</span> <span class="s2">&quot;ww3dev&quot;</span><span class="p">:</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="s2">&quot;ww3&quot;</span>
     <span class="n">basename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
     <span class="n">m</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">ext_regexes</span> <span class="o">=</span> <span class="p">[]</span>

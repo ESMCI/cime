@@ -225,7 +225,11 @@
 <span class="n">NAMELIST_FAIL_STATUS</span> <span class="o">=</span> <span class="s2">&quot;NLFAIL&quot;</span> <span class="c1"># Implies a failure in the NLCOMP phase</span>
 
 <span class="c1"># Special strings that can appear in comments, indicating particular types of failures</span>
-<span class="n">TEST_NO_BASELINES_COMMENT</span> <span class="o">=</span> <span class="s2">&quot;BFAIL&quot;</span> <span class="c1"># Implies baseline directory is missing in the baseline comparison phase</span>
+<span class="n">TEST_NO_BASELINES_COMMENT</span> <span class="o">=</span> <span class="s2">&quot;BFAIL&quot;</span> <span class="c1"># Implies baseline directory is missing in the</span>
+                                    <span class="c1"># baseline comparison phase</span>
+<span class="n">TEST_RERUN_COMMENT</span>        <span class="o">=</span> <span class="s2">&quot;RERUN&quot;</span> <span class="c1"># Added to a PEND status to indicate that the test</span>
+                                    <span class="c1"># system has changed this phase to PEND in order to</span>
+                                    <span class="c1"># rerun it (e.g., to retry a failed test).</span>
 <span class="c1"># The expected and unexpected failure comments aren&#39;t used directly in this module, but</span>
 <span class="c1"># are included here for symmetry, so other modules can access them from here.</span>
 <span class="n">TEST_EXPECTED_FAILURE_COMMENT</span> <span class="o">=</span> <span class="n">expected_fails</span><span class="o">.</span><span class="n">EXPECTED_FAILURE_COMMENT</span>

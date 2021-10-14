@@ -201,7 +201,19 @@
 <span class="sd">    &quot;&#39;one two&#39;&quot;</span>
 <span class="sd">    &gt;&gt;&gt; _normalize_lists(&quot;1 2  3, 4 ,  5&quot;)</span>
 <span class="sd">    &#39;1,2,3,4,5&#39;</span>
+<span class="sd">    &gt;&gt;&gt; _normalize_lists(&quot;2, 2*13&quot;)</span>
+<span class="sd">    &#39;2,2*13&#39;</span>
+<span class="sd">    &gt;&gt;&gt; _normalize_lists(&quot;&#39;DMS -&gt; 1.0 * value.nc&#39;&quot;)</span>
+<span class="sd">    &quot;&#39;DMS -&gt; 1.0 * value.nc&#39;&quot;</span>
+<span class="sd">    &gt;&gt;&gt; _normalize_lists(&quot;1.0* value.nc&quot;)</span>
+<span class="sd">    &#39;1.0*value.nc&#39;</span>
+<span class="sd">    &gt;&gt;&gt; _normalize_lists(&quot;1.0*value.nc&quot;)</span>
+<span class="sd">    &#39;1.0*value.nc&#39;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Handle special case &quot;value * value&quot; which should not be treated as list</span>
+    <span class="n">parsed</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^([^*=-&gt;\s]*)\s*(\*)\s*(.*)$&quot;</span><span class="p">,</span> <span class="n">value_str</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">parsed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">value_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parsed</span><span class="o">.</span><span class="n">groups</span><span class="p">())</span>
     <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
     <span class="n">inside_quotes</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">idx</span> <span class="o">=</span> <span class="mi">0</span>
@@ -232,8 +244,22 @@
 <span class="c1">###############################################################################</span>
 <span class="k">def</span> <span class="nf">_interpret_value</span><span class="p">(</span><span class="n">value_str</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
 <span class="c1">###############################################################################</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    &gt;&gt;&gt; _interpret_value(&quot;one&quot;, &quot;foo&quot;)</span>
+<span class="sd">    &#39;one&#39;</span>
+<span class="sd">    &gt;&gt;&gt; _interpret_value(&quot;one, two&quot;, &quot;foo&quot;)</span>
+<span class="sd">    [&#39;one&#39;, &#39;two&#39;]</span>
+<span class="sd">    &gt;&gt;&gt; _interpret_value(&quot;3*1.0&quot;, &quot;foo&quot;)</span>
+<span class="sd">    [&#39;1.0&#39;, &#39;1.0&#39;, &#39;1.0&#39;]</span>
+<span class="sd">    &gt;&gt;&gt; _interpret_value(&quot;&#39;DMS -&gt; value.nc&#39;&quot;, &quot;foo&quot;)</span>
+<span class="sd">    OrderedDict([(&#39;DMS&#39;, &#39;value.nc&#39;)])</span>
+<span class="sd">    &gt;&gt;&gt; _interpret_value(&quot;&#39;DMS -&gt; 1.0 * value.nc&#39;&quot;, &quot;foo&quot;)</span>
+<span class="sd">    OrderedDict([(&#39;DMS&#39;, &#39;1.0*value.nc&#39;)])</span>
+<span class="sd">    &gt;&gt;&gt; _interpret_value(&quot;&#39;DMS -&gt; 1.0* value.nc&#39;&quot;, &quot;foo&quot;)</span>
+<span class="sd">    OrderedDict([(&#39;DMS&#39;, &#39;1.0*value.nc&#39;)])</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">comma_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\s*,\s*&#39;</span><span class="p">)</span>
-    <span class="n">dict_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^&#39;(\S+)\s*-&gt;\s*(\S+)\s*&#39;&quot;</span><span class="p">)</span>
+    <span class="n">dict_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^&#39;(\S+)\s*-&gt;\s*(\S+|(?:\S+\s*\*\s*\S+))\s*&#39;&quot;</span><span class="p">)</span>
 
     <span class="n">value_str</span> <span class="o">=</span> <span class="n">_normalize_lists</span><span class="p">(</span><span class="n">value_str</span><span class="p">)</span>
 
@@ -492,6 +518,13 @@
         <span class="n">items</span> <span class="o">=</span> <span class="p">[</span><span class="n">_normalize_string_value</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">case</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">]</span>
         <span class="k">return</span> <span class="s2">&quot;:&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">items</span><span class="p">)</span>
     <span class="k">elif</span> <span class="p">(</span><span class="s2">&quot;/&quot;</span> <span class="ow">in</span> <span class="n">value</span><span class="p">):</span>
+        <span class="c1"># Handle special format scale*path, normalize the path and reconstruct</span>
+        <span class="n">parsed</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^([^*]+\*)(/[^/]+)*&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">parsed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">parsed</span><span class="o">.</span><span class="n">groups</span><span class="p">())</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">items</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">parsed</span><span class="o">.</span><span class="n">groups</span><span class="p">())</span>
+            <span class="n">items</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">items</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">items</span><span class="p">)</span>
+
         <span class="c1"># File path, just return the basename unless its a seq_maps.rc mapping</span>
         <span class="c1"># mapname or maptype</span>
         <span class="k">if</span> <span class="s2">&quot;mapname&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">name</span> <span class="ow">and</span> <span class="s2">&quot;maptype&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">name</span><span class="p">:</span>
@@ -668,6 +701,30 @@
 <span class="sd">    ... /&#39;&#39;&#39;</span>
 <span class="sd">    &gt;&gt;&gt; _compare_namelists(_parse_namelists(teststr1.splitlines(), &#39;foo&#39;), _parse_namelists(teststr2.splitlines(), &#39;bar&#39;), &#39;ERB.f19_g16.B1850C5.sandiatoss3_intel&#39;)</span>
 <span class="sd">    &#39;&#39;</span>
+<span class="sd">    &gt;&gt;&gt; teststr1 = &#39;&#39;&#39;&amp;nml</span>
+<span class="sd">    ... csw_specifier = &#39;DMS -&gt; 1.0 * value.nc&#39;</span>
+<span class="sd">    ... /&#39;&#39;&#39;</span>
+<span class="sd">    &gt;&gt;&gt; _compare_namelists(_parse_namelists(teststr1.splitlines(), &#39;foo&#39;),\</span>
+<span class="sd">    _parse_namelists(teststr1.splitlines(), &#39;foo&#39;), &quot;case&quot;)</span>
+<span class="sd">    &#39;&#39;</span>
+<span class="sd">    &gt;&gt;&gt; teststr2 = &#39;&#39;&#39;&amp;nml</span>
+<span class="sd">    ... csw_specifier = &#39;DMS -&gt; 2.0 * value.nc&#39;</span>
+<span class="sd">    ... /&#39;&#39;&#39;</span>
+<span class="sd">    &gt;&gt;&gt; comments = _compare_namelists(_parse_namelists(teststr1.splitlines(), &#39;foo&#39;),\</span>
+<span class="sd">    _parse_namelists(teststr2.splitlines(), &#39;foo&#39;), &quot;case&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; print(comments)</span>
+<span class="sd">      BASE: csw_specifier dict item DMS = 1.0*value.nc</span>
+<span class="sd">      COMP: csw_specifier dict item DMS = 2.0*value.nc</span>
+<span class="sd">    &lt;BLANKLINE&gt;</span>
+<span class="sd">    &gt;&gt;&gt; teststr2 = &#39;&#39;&#39;&amp;nml</span>
+<span class="sd">    ... csw_specifier = &#39;DMS -&gt; 1.0 * other.nc&#39;</span>
+<span class="sd">    ... /&#39;&#39;&#39;</span>
+<span class="sd">    &gt;&gt;&gt; comments = _compare_namelists(_parse_namelists(teststr1.splitlines(), &#39;foo&#39;),\</span>
+<span class="sd">    _parse_namelists(teststr2.splitlines(), &#39;foo&#39;), &quot;case&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; print(comments)</span>
+<span class="sd">      BASE: csw_specifier dict item DMS = 1.0*value.nc</span>
+<span class="sd">      COMP: csw_specifier dict item DMS = 1.0*other.nc</span>
+<span class="sd">    &lt;BLANKLINE&gt;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">different_namelists</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">namelist</span><span class="p">,</span> <span class="n">gold_names</span> <span class="ow">in</span> <span class="n">gold_namelists</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>

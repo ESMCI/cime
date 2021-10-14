@@ -746,6 +746,15 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
     &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
   &lt;/test&gt;
 
+  &lt;test NAME=&quot;TESTRUNFAILRESET&quot; INFRASTRUCTURE_TEST=&quot;TRUE&quot;&gt;
+    &lt;DESC&gt;For testing infra only. Insta-fail run step, also testing that settings get reset upon rerun.&lt;/DESC&gt;
+    &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
+    &lt;STOP_OPTION&gt;ndays&lt;/STOP_OPTION&gt;
+    &lt;STOP_N&gt;11&lt;/STOP_N&gt;
+    &lt;CHECK_TIMING&gt;FALSE&lt;/CHECK_TIMING&gt;
+    &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
+  &lt;/test&gt;
+
   &lt;test NAME=&quot;TESTRUNSTARCFAIL&quot; INFRASTRUCTURE_TEST=&quot;TRUE&quot;&gt;
     &lt;DESC&gt;For testing infra only. Insta-fail st archive test with exception.&lt;/DESC&gt;
     &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
@@ -930,12 +939,12 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
     &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
     &lt;CONTINUE_RUN&gt;FALSE&lt;/CONTINUE_RUN&gt;
     &lt;STOP_OPTION&gt;nmonths&lt;/STOP_OPTION&gt;
-    &lt;STOP_N&gt;2&lt;/STOP_N&gt;
+    &lt;STOP_N&gt;14&lt;/STOP_N&gt;
     &lt;REST_OPTION&gt;$STOP_OPTION&lt;/REST_OPTION&gt;
     &lt;REST_N&gt;$STOP_N&lt;/REST_N&gt;
     &lt;HIST_OPTION&gt;$STOP_OPTION&lt;/HIST_OPTION&gt;
     &lt;HIST_N&gt;$STOP_N&lt;/HIST_N&gt;
-    &lt;RESUBMIT&gt;6&lt;/RESUBMIT&gt;
+    &lt;RESUBMIT&gt;0&lt;/RESUBMIT&gt;
   &lt;/test&gt;
 
   &lt;test NAME=&quot;NCK&quot;&gt;

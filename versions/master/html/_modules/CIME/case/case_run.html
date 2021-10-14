@@ -185,7 +185,7 @@
 <span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">CIME.utils</span>                     <span class="kn">import</span> <span class="n">gzip_existing_file</span><span class="p">,</span> <span class="n">new_lid</span><span class="p">,</span> <span class="n">run_and_log_case_status</span>
 <span class="kn">from</span> <span class="nn">CIME.utils</span>                     <span class="kn">import</span> <span class="n">run_sub_or_cmd</span><span class="p">,</span> <span class="n">append_status</span><span class="p">,</span> <span class="n">safe_copy</span><span class="p">,</span> <span class="n">model_log</span><span class="p">,</span> <span class="n">CIMEError</span>
-<span class="kn">from</span> <span class="nn">CIME.utils</span>                     <span class="kn">import</span> <span class="n">get_model</span>
+<span class="kn">from</span> <span class="nn">CIME.utils</span>                     <span class="kn">import</span> <span class="n">get_model</span><span class="p">,</span> <span class="n">batch_jobid</span>
 <span class="kn">from</span> <span class="nn">CIME.get_timing</span>                <span class="kn">import</span> <span class="n">get_timing</span>
 <span class="kn">from</span> <span class="nn">CIME.provenance</span>                <span class="kn">import</span> <span class="n">save_prerun_provenance</span><span class="p">,</span> <span class="n">save_postrun_provenance</span>
 
@@ -282,6 +282,13 @@
     <span class="k">if</span> <span class="n">node_fail_re</span><span class="p">:</span>
         <span class="n">node_fail_regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">node_fail_re</span><span class="p">))</span>
 
+    <span class="n">is_batch</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;BATCH_SYSTEM&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="n">msg_func</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">if</span> <span class="n">is_batch</span><span class="p">:</span>
+        <span class="n">jobid</span> <span class="o">=</span> <span class="n">batch_jobid</span><span class="p">()</span>
+        <span class="n">msg_func</span> <span class="o">=</span> <span class="k">lambda</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">jobid</span> <span class="k">if</span> <span class="n">jobid</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+
     <span class="n">loop</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">while</span> <span class="n">loop</span><span class="p">:</span>
         <span class="n">loop</span> <span class="o">=</span> <span class="kc">False</span>
@@ -293,8 +300,13 @@
         <span class="n">model_log</span><span class="p">(</span><span class="s2">&quot;e3sm&quot;</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> MODEL EXECUTION BEGINS HERE&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">)))</span>
         <span class="n">run_func</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">run_cmd_no_fail</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">from_dir</span><span class="o">=</span><span class="n">rundir</span><span class="p">)</span>
         <span class="n">case</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">run_and_log_case_status</span><span class="p">(</span><span class="n">run_func</span><span class="p">,</span> <span class="s2">&quot;model execution&quot;</span><span class="p">,</span> <span class="n">caseroot</span><span class="o">=</span><span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">))</span>
+            <span class="n">run_and_log_case_status</span><span class="p">(</span><span class="n">run_func</span><span class="p">,</span> <span class="s2">&quot;model execution&quot;</span><span class="p">,</span> 
+                                    <span class="n">custom_starting_msg_functor</span><span class="o">=</span><span class="n">msg_func</span><span class="p">,</span>
+                                    <span class="n">custom_success_msg_functor</span><span class="o">=</span><span class="n">msg_func</span><span class="p">,</span>
+                                    <span class="n">caseroot</span><span class="o">=</span><span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">),</span>
+                                    <span class="n">is_batch</span><span class="o">=</span><span class="n">is_batch</span><span class="p">)</span>
             <span class="n">cmd_success</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">except</span> <span class="n">CIMEError</span><span class="p">:</span>
             <span class="n">cmd_success</span> <span class="o">=</span> <span class="kc">False</span>
@@ -360,7 +372,19 @@
 <span class="k">def</span> <span class="nf">_run_model</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">lid</span><span class="p">,</span> <span class="n">skip_pnl</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">da_cycle</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="c1">###############################################################################</span>
     <span class="n">functor</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">_run_model_impl</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">lid</span><span class="p">,</span> <span class="n">skip_pnl</span><span class="o">=</span><span class="n">skip_pnl</span><span class="p">,</span> <span class="n">da_cycle</span><span class="o">=</span><span class="n">da_cycle</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">run_and_log_case_status</span><span class="p">(</span><span class="n">functor</span><span class="p">,</span> <span class="s2">&quot;case.run&quot;</span><span class="p">,</span> <span class="n">caseroot</span><span class="o">=</span><span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">))</span>
+
+    <span class="n">is_batch</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;BATCH_SYSTEM&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="n">msg_func</span> <span class="o">=</span> <span class="kc">None</span>
+    
+    <span class="k">if</span> <span class="n">is_batch</span><span class="p">:</span>
+        <span class="n">jobid</span> <span class="o">=</span> <span class="n">batch_jobid</span><span class="p">()</span>
+        <span class="n">msg_func</span> <span class="o">=</span> <span class="k">lambda</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">jobid</span> <span class="k">if</span> <span class="n">jobid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">run_and_log_case_status</span><span class="p">(</span><span class="n">functor</span><span class="p">,</span> <span class="s2">&quot;case.run&quot;</span><span class="p">,</span>
+                                   <span class="n">custom_starting_msg_functor</span><span class="o">=</span><span class="n">msg_func</span><span class="p">,</span>
+                                   <span class="n">custom_success_msg_functor</span><span class="o">=</span><span class="n">msg_func</span><span class="p">,</span>
+                                   <span class="n">caseroot</span><span class="o">=</span><span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">),</span>
+                                   <span class="n">is_batch</span><span class="o">=</span><span class="n">is_batch</span><span class="p">)</span>
 
 <span class="c1">###############################################################################</span>
 <span class="k">def</span> <span class="nf">_post_run_check</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">lid</span><span class="p">):</span>
@@ -379,7 +403,7 @@
         <span class="k">if</span> <span class="n">fv3_standalone</span><span class="p">:</span>
             <span class="n">file_prefix</span> <span class="o">=</span> <span class="n">model</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">file_prefix</span> <span class="o">=</span> <span class="s1">&#39;med&#39;</span>
+            <span class="n">file_prefix</span> <span class="o">=</span> <span class="s1">&#39;drv&#39;</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">file_prefix</span> <span class="o">=</span> <span class="s1">&#39;cpl&#39;</span>
 

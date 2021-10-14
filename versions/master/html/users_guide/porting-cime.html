@@ -301,8 +301,8 @@ All files in <strong>$HOME/.cime/</strong> are appended to the xml objects that 
 </pre></div>
 </div>
 </li>
-<li><p>If you find that you need to introduce compiler settings specific to your machine, create a <strong>$HOME/.cime/config_compilers.xml</strong> file.
-The default compiler settings are defined in <strong>$CIME/config/$model/machines/config_compilers.xml</strong>. There is no template for <strong>config_compilers.xml</strong>.</p></li>
+<li><p>If you find that you need to introduce compiler settings specific to your machine, create a <strong>$HOME/.cime/*.cmake</strong> file.
+The default compiler settings are defined in <strong>$CIME/config/$model/machines/cmake_macros/</strong>.</p></li>
 <li><p>If you have a batch system, you may also need to create a <strong>$HOME/.cime/config_batch.xml</strong> file.
 Out-of-the-box batch settings are set in <strong>$CIME/config/$model/machines/config_batch.xml</strong>.</p></li>
 <li><p>Once you have defined a basic configuration for your machine in your <strong>$HOME/.cime</strong> xml files, run <strong>scripts_regression_test.py</strong> interactively. This test is found and must be run in the directory <strong>$CIMEROOT/scripts/tests/</strong>.

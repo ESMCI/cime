@@ -26,6 +26,7 @@ and **case.setup**.
    case.submit
    case.test
    case_diff
+   casper
    check_case
    check_input_data
    check_lockedfiles

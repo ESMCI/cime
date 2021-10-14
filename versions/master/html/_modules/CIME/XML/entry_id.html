@@ -224,29 +224,45 @@
 
         <span class="k">return</span> <span class="n">val</span></div>
 
-<div class="viewcode-block" id="EntryID.get_value_match"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.entry_id.EntryID.get_value_match">[docs]</a>    <span class="k">def</span> <span class="nf">get_value_match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">exact_match</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">entry_node</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="c1"># Handle this case:</span>
-        <span class="c1"># &lt;entry id ...&gt;</span>
-        <span class="c1">#  &lt;values&gt;</span>
-        <span class="c1">#   &lt;value A=&quot;a1&quot;&gt;X&lt;/value&gt;</span>
-        <span class="c1">#   &lt;value A=&quot;a2&quot;&gt;Y&lt;/value&gt;</span>
-        <span class="c1">#   &lt;value A=&quot;a3&quot; B=&quot;b1&quot;&gt;Z&lt;/value&gt;</span>
-        <span class="c1">#  &lt;/values&gt;</span>
-        <span class="c1"># &lt;/entry&gt;</span>
+<div class="viewcode-block" id="EntryID.get_value_match"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.entry_id.EntryID.get_value_match">[docs]</a>    <span class="k">def</span> <span class="nf">get_value_match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">exact_match</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">entry_node</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                        <span class="n">replacement_for_none</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Handle this case:</span>
+<span class="sd">        &lt;entry id ...&gt;</span>
+<span class="sd">         &lt;values&gt;</span>
+<span class="sd">          &lt;value A=&quot;a1&quot;&gt;X&lt;/value&gt;</span>
+<span class="sd">          &lt;value A=&quot;a2&quot;&gt;Y&lt;/value&gt;</span>
+<span class="sd">          &lt;value A=&quot;a3&quot; B=&quot;b1&quot;&gt;Z&lt;/value&gt;</span>
+<span class="sd">         &lt;/values&gt;</span>
+<span class="sd">        &lt;/entry&gt;</span>
+
+<span class="sd">        If replacement_for_none is provided, then: if the found text value would give a</span>
+<span class="sd">        None value, instead replace it with the value given by the replacement_for_none</span>
+<span class="sd">        argument. (However, still return None if no match is found.) This may or may not</span>
+<span class="sd">        be needed, but is in place to maintain some old logic.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="n">entry_node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_value_match</span><span class="p">(</span><span class="n">entry_node</span><span class="p">,</span> <span class="n">attributes</span><span class="p">,</span> <span class="n">exact_match</span><span class="p">)</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_value_match</span><span class="p">(</span><span class="n">entry_node</span><span class="p">,</span> <span class="n">attributes</span><span class="p">,</span> <span class="n">exact_match</span><span class="p">,</span>
+                                          <span class="n">replacement_for_none</span><span class="o">=</span><span class="n">replacement_for_none</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_optional_child</span><span class="p">(</span><span class="s2">&quot;entry&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span><span class="n">vid</span><span class="p">})</span>
             <span class="n">value</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">if</span> <span class="n">node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_value_match</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">attributes</span><span class="p">,</span> <span class="n">exact_match</span><span class="p">)</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_value_match</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">attributes</span><span class="p">,</span> <span class="n">exact_match</span><span class="p">,</span>
+                                              <span class="n">replacement_for_none</span><span class="o">=</span><span class="n">replacement_for_none</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;(get_value_match) vid </span><span class="si">{}</span><span class="s2"> value </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">vid</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">value</span></div>
 
-    <span class="k">def</span> <span class="nf">_get_value_match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">exact_match</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_get_value_match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">exact_match</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                         <span class="n">replacement_for_none</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Note that the component class has a specific version of this function</span>
+
+<span class="sd">        If replacement_for_none is provided, then: if the found text value would give a</span>
+<span class="sd">        None value, instead replace it with the value given by the replacement_for_none</span>
+<span class="sd">        argument. (However, still return None if no match is found.) This may or may not</span>
+<span class="sd">        be needed, but is in place to maintain some old logic.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="c1"># if there is a &lt;values&gt; element - check to see if there is a match attribute</span>
         <span class="c1"># if there is NOT a match attribute, then set the default to &quot;first&quot;</span>
@@ -306,7 +322,12 @@
                 <span class="n">expect</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span>
                        <span class="s2">&quot;match attribute can only have a value of &#39;last&#39; or &#39;first&#39;, value is </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span><span class="n">match_type</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">mnode</span><span class="p">)</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">mnode</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">text</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># NOTE(wjs, 2021-06-03) I&#39;m not sure when (if ever) this can happen, but I&#39;m</span>
+            <span class="c1"># putting this logic here to maintain some old logic, to be safe.</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="n">replacement_for_none</span>
+        <span class="k">return</span> <span class="n">text</span>
 
 <div class="viewcode-block" id="EntryID.get_node_element_info"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.entry_id.EntryID.get_node_element_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_node_element_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">,</span> <span class="n">element_name</span><span class="p">):</span>
         <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_optional_child</span><span class="p">(</span><span class="s2">&quot;entry&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span><span class="n">vid</span><span class="p">})</span>

@@ -270,6 +270,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_group_names</span> <span class="o">=</span> <span class="n">CaseInsensitiveDict</span><span class="p">({})</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_nodes</span> <span class="o">=</span> <span class="p">{}</span>
 
+<div class="viewcode-block" id="NamelistDefinition.set_node_values"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.namelist_definition.NamelistDefinition.set_node_values">[docs]</a>    <span class="k">def</span> <span class="nf">set_node_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_entry_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_entry_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nodes</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">node</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_entry_types</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_type</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_valid_values</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_valid_values</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_group_names</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_group_name</span><span class="p">(</span><span class="n">node</span><span class="p">)</span></div>
+
 <div class="viewcode-block" id="NamelistDefinition.set_nodes"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.namelist_definition.NamelistDefinition.set_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">set_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip_groups</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        populates the object data types for all nodes that are not part of the skip_groups array</span>
@@ -280,26 +288,21 @@
             <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">)</span>
             <span class="n">skip_default_entry</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="s2">&quot;skip_default_entry&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;true&quot;</span>
             <span class="n">per_stream_entry</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="s2">&quot;per_stream_entry&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;true&quot;</span>
-            <span class="n">set_node_values</span> <span class="o">=</span> <span class="kc">False</span>
+
             <span class="k">if</span> <span class="n">skip_groups</span><span class="p">:</span>
                 <span class="n">group_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_group_name</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">group_name</span> <span class="ow">in</span> <span class="n">skip_groups</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_entry_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
-                    <span class="n">set_node_values</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">set_node_values</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
+
                     <span class="k">if</span> <span class="ow">not</span> <span class="n">skip_default_entry</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">per_stream_entry</span><span class="p">:</span>
                         <span class="n">default_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_entry_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
-                <span class="n">set_node_values</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">set_node_values</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
+
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">skip_default_entry</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">per_stream_entry</span><span class="p">:</span>
                     <span class="n">default_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">set_node_values</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_entry_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_entry_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_nodes</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">node</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_entry_types</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_type</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_valid_values</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_valid_values</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_group_names</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_group_name</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="n">default_nodes</span></div>
 
 <div class="viewcode-block" id="NamelistDefinition.get_group_name"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.namelist_definition.NamelistDefinition.get_group_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_group_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -337,6 +340,10 @@
 <div class="viewcode-block" id="NamelistDefinition.add_attributes"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.namelist_definition.NamelistDefinition.add_attributes">[docs]</a>    <span class="k">def</span> <span class="nf">add_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attributes</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span> <span class="o">=</span> <span class="n">attributes</span></div>
 
+<div class="viewcode-block" id="NamelistDefinition.get_attributes"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.namelist_definition.NamelistDefinition.get_attributes">[docs]</a>    <span class="k">def</span> <span class="nf">get_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return this object&#39;s attributes dictionary&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span></div>
+
 <div class="viewcode-block" id="NamelistDefinition.get_entry_nodes"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.namelist_definition.NamelistDefinition.get_entry_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">get_entry_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_entry_nodes</span></div>
 
@@ -355,6 +362,9 @@
         <span class="sd">&quot;&quot;&quot;This function is not implemented.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;NamelistDefinition does not support `set_value`.&quot;</span><span class="p">)</span></div>
 
+    <span class="c1"># In contrast to the entry_id version of this method, this version doesn&#39;t support the</span>
+    <span class="c1"># replacement_for_none argument, because it is hard-coded to &#39;&#39;.</span>
+    <span class="c1"># pylint: disable=arguments-differ</span>
 <div class="viewcode-block" id="NamelistDefinition.get_value_match"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.namelist_definition.NamelistDefinition.get_value_match">[docs]</a>    <span class="k">def</span> <span class="nf">get_value_match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">exact_match</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">entry_node</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return the default value for the variable named `vid`.</span>
 
@@ -371,11 +381,12 @@
 
         <span class="k">if</span> <span class="n">entry_node</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">entry_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nodes</span><span class="p">[</span><span class="n">vid</span><span class="p">]</span>
+        <span class="c1"># NOTE(wjs, 2021-06-04) In the following call, replacement_for_none=&#39;&#39; may not</span>
+        <span class="c1"># actually be needed, but I&#39;m setting it to maintain some old logic, to be safe.</span>
         <span class="n">value</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">NamelistDefinition</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_value_match</span><span class="p">(</span><span class="n">vid</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span><span class="n">attributes</span><span class="o">=</span><span class="n">all_attributes</span><span class="p">,</span> <span class="n">exact_match</span><span class="o">=</span><span class="n">exact_match</span><span class="p">,</span>
-                                                                <span class="n">entry_node</span><span class="o">=</span><span class="n">entry_node</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">value</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
-        <span class="k">else</span><span class="p">:</span>
+                                                                <span class="n">entry_node</span><span class="o">=</span><span class="n">entry_node</span><span class="p">,</span>
+                                                                <span class="n">replacement_for_none</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">value</span> <span class="o">=</span>  <span class="bp">self</span><span class="o">.</span><span class="n">_split_defaults_text</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">value</span></div>
@@ -626,7 +637,7 @@
             <span class="n">all_attributes</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">attribute</span><span class="p">)</span>
 
         <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value_match</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="n">all_attributes</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_split_defaults_text</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="n">value</span></div></div>
 </pre></div>
 
            </div>

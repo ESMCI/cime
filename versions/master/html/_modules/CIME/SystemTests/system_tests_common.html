@@ -184,6 +184,7 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">CIME.XML.env_run</span> <span class="kn">import</span> <span class="n">EnvRun</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.env_test</span> <span class="kn">import</span> <span class="n">EnvTest</span>
 <span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="n">append_testlog</span><span class="p">,</span> <span class="n">get_model</span><span class="p">,</span> <span class="n">safe_copy</span><span class="p">,</span> <span class="n">get_timestamp</span><span class="p">,</span> <span class="n">CIMEError</span><span class="p">,</span> <span class="n">expect</span><span class="p">,</span> <span class="n">get_current_commit</span><span class="p">,</span> <span class="n">SharedArea</span>
 <span class="kn">from</span> <span class="nn">CIME.test_status</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">CIME.hist_utils</span> <span class="kn">import</span> <span class="n">copy_histfiles</span><span class="p">,</span> <span class="n">compare_test</span><span class="p">,</span> <span class="n">generate_teststatus</span><span class="p">,</span> \
@@ -214,7 +215,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_init_environment</span><span class="p">(</span><span class="n">caseroot</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_init_locked_files</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="n">expected</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_skip_pnl</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_cpllog</span> <span class="o">=</span> <span class="s2">&quot;med&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;COMP_INTERFACE&quot;</span><span class="p">)</span><span class="o">==</span><span class="s2">&quot;nuopc&quot;</span> <span class="k">else</span> <span class="s2">&quot;cpl&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cpllog</span> <span class="o">=</span> <span class="s2">&quot;drv&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;COMP_INTERFACE&quot;</span><span class="p">)</span><span class="o">==</span><span class="s2">&quot;nuopc&quot;</span> <span class="k">else</span> <span class="s2">&quot;cpl&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ninja</span>     <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_dry_run</span>   <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_user_separate_builds</span> <span class="o">=</span> <span class="kc">False</span>
@@ -244,11 +245,13 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># We never want to re-setup if we&#39;re doing the resubmitted run</span>
         <span class="n">phase_status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">get_status</span><span class="p">(</span><span class="n">phase</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">reset</span> <span class="ow">or</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;IS_FIRST_RUN&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">phase_status</span> <span class="o">!=</span> <span class="n">TEST_PEND_STATUS</span><span class="p">):</span>
+        <span class="n">phase_comment</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">get_comment</span><span class="p">(</span><span class="n">phase</span><span class="p">)</span>
+        <span class="n">rerunning</span> <span class="o">=</span> <span class="p">(</span><span class="n">phase_status</span> <span class="o">!=</span> <span class="n">TEST_PEND_STATUS</span> <span class="ow">or</span>
+                     <span class="n">phase_comment</span> <span class="o">==</span> <span class="n">TEST_RERUN_COMMENT</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">reset</span> <span class="ow">or</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;IS_FIRST_RUN&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">rerunning</span><span class="p">):</span>
 
             <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Resetting case due to detected re-run of phase </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">phase</span><span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_initial_test_values</span><span class="p">()</span>
-
             <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">case_setup</span><span class="p">(</span><span class="n">reset</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">test_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <div class="viewcode-block" id="SystemTestsCommon.build"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.system_tests_common.SystemTestsCommon.build">[docs]</a>    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sharedlib_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">model_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ninja</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">dry_run</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">separate_builds</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -500,6 +503,24 @@
         <span class="n">comments</span> <span class="o">=</span> <span class="n">copy_histfiles</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="p">,</span> <span class="n">suffix</span><span class="p">)</span>
         <span class="n">append_testlog</span><span class="p">(</span><span class="n">comments</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_orig_caseroot</span><span class="p">)</span>
 
+    <span class="k">def</span> <span class="nf">_log_cprnc_output_tail</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename_pattern</span><span class="p">,</span> <span class="n">prepend</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">rundir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">&#39;RUNDIR&#39;</span><span class="p">)</span>
+
+        <span class="n">glob_pattern</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="n">filename_pattern</span><span class="p">)</span>
+
+        <span class="n">cprnc_logs</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">glob_pattern</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">output</span> <span class="ow">in</span> <span class="n">cprnc_logs</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
+                <span class="n">cprnc_log_tail</span> <span class="o">=</span> <span class="n">fin</span><span class="o">.</span><span class="n">readlines</span><span class="p">()[</span><span class="o">-</span><span class="mi">20</span><span class="p">:]</span>
+            
+            <span class="n">cprnc_log_tail</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;tail -n20 </span><span class="si">{}</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">output</span><span class="p">))</span>
+
+            <span class="k">if</span> <span class="n">prepend</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">cprnc_log_tail</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prepend</span><span class="p">))</span>
+
+            <span class="n">append_testlog</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cprnc_log_tail</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_orig_caseroot</span><span class="p">)</span>
+
     <span class="k">def</span> <span class="nf">_component_compare_test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">suffix1</span><span class="p">,</span> <span class="n">suffix2</span><span class="p">,</span>
                                 <span class="n">success_change</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                                 <span class="n">ignore_fieldlist_diffs</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -518,6 +539,12 @@
             <span class="n">success</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">success</span>
 
         <span class="n">append_testlog</span><span class="p">(</span><span class="n">comments</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_orig_caseroot</span><span class="p">)</span>
+
+        <span class="n">pattern</span> <span class="o">=</span> <span class="s2">&quot;*.nc.</span><span class="si">{}</span><span class="s2">.cprnc.out&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">suffix1</span><span class="p">)</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;compared suffixes suffix1 </span><span class="si">{!r}</span><span class="s2"> suffix2 </span><span class="si">{!r}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">suffix1</span><span class="p">,</span> <span class="n">suffix2</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log_cprnc_output_tail</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span>
+
         <span class="n">status</span> <span class="o">=</span> <span class="n">TEST_PASS_STATUS</span> <span class="k">if</span> <span class="n">success</span> <span class="k">else</span> <span class="n">TEST_FAIL_STATUS</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_</span><span class="si">{}</span><span class="s2">_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">COMPARE_PHASE</span><span class="p">,</span> <span class="n">suffix1</span><span class="p">,</span> <span class="n">suffix2</span><span class="p">),</span> <span class="n">status</span><span class="p">)</span>
@@ -729,7 +756,13 @@
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="p">:</span>
             <span class="c1"># compare baseline</span>
             <span class="n">success</span><span class="p">,</span> <span class="n">comments</span> <span class="o">=</span> <span class="n">compare_baseline</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="p">)</span>
+
             <span class="n">append_testlog</span><span class="p">(</span><span class="n">comments</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_orig_caseroot</span><span class="p">)</span>
+
+            <span class="n">pattern</span> <span class="o">=</span> <span class="s2">&quot;*.nc.cprnc.out&quot;</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_log_cprnc_output_tail</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span>
+
             <span class="n">status</span> <span class="o">=</span> <span class="n">TEST_PASS_STATUS</span> <span class="k">if</span> <span class="n">success</span> <span class="k">else</span> <span class="n">TEST_FAIL_STATUS</span>
             <span class="n">baseline_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;BASECMP_CASE&quot;</span><span class="p">)</span>
             <span class="n">ts_comments</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">baseline_name</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;: &quot;</span> <span class="o">+</span> <span class="n">get_ts_synopsis</span><span class="p">(</span><span class="n">comments</span><span class="p">)</span>
@@ -766,9 +799,20 @@
 <span class="sd">    have names beginnig with &quot;TEST&quot; this is so that the find_system_test</span>
 <span class="sd">    in utils.py will work with these classes.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">expected</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">FakeTest</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">case</span><span class="p">,</span><span class="n">expected</span><span class="o">=</span><span class="n">expected</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_script</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_requires_exe</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_original_exe</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;run_exe&quot;</span><span class="p">)</span>
+
     <span class="k">def</span> <span class="nf">_set_script</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">script</span><span class="p">,</span> <span class="n">requires_exe</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_script</span> <span class="o">=</span> <span class="n">script</span> <span class="c1"># pylint: disable=attribute-defined-outside-init</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_requires_exe</span> <span class="o">=</span> <span class="n">requires_exe</span> <span class="c1"># pylint: disable=attribute-defined-outside-init</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_script</span> <span class="o">=</span> <span class="n">script</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_requires_exe</span> <span class="o">=</span> <span class="n">requires_exe</span>
+
+    <span class="k">def</span> <span class="nf">_resetup_case</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="n">run_exe</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;run_exe&quot;</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">FakeTest</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">_resetup_case</span><span class="p">(</span><span class="n">phase</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="n">reset</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;run_exe&quot;</span><span class="p">,</span> <span class="n">run_exe</span><span class="p">)</span>
 
 <div class="viewcode-block" id="FakeTest.build_phase"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.system_tests_common.FakeTest.build_phase">[docs]</a>    <span class="k">def</span> <span class="nf">build_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sharedlib_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">model_only</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_requires_exe</span><span class="p">:</span>
@@ -776,14 +820,8 @@
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">sharedlib_only</span><span class="p">:</span>
             <span class="n">exeroot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;EXEROOT&quot;</span><span class="p">)</span>
-            <span class="n">cime_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MODEL&quot;</span><span class="p">)</span>
-            <span class="n">modelexe</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">exeroot</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">.exe&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cime_model</span><span class="p">))</span>
-            <span class="n">real_modelexe</span> <span class="o">=</span> <span class="n">modelexe</span> <span class="o">+</span> <span class="s2">&quot;.real&quot;</span>
-
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_requires_exe</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">modelexe</span><span class="p">):</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;moving </span><span class="si">{}</span><span class="s2"> to </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">modelexe</span><span class="p">,</span> <span class="n">real_modelexe</span><span class="p">))</span>
-                <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">modelexe</span><span class="p">,</span> <span class="n">real_modelexe</span><span class="p">)</span>
-                <span class="n">expect</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">real_modelexe</span><span class="p">),</span><span class="s2">&quot;Could not find expected file </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">real_modelexe</span><span class="p">))</span>
+            <span class="n">modelexe</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">exeroot</span><span class="p">,</span> <span class="s2">&quot;fake.exe&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;run_exe&quot;</span><span class="p">,</span><span class="n">modelexe</span><span class="p">)</span>
 
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">modelexe</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
                 <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;#!/bin/bash</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -892,6 +930,33 @@
         <span class="n">FakeTest</span><span class="o">.</span><span class="n">build_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                              <span class="n">sharedlib_only</span><span class="o">=</span><span class="n">sharedlib_only</span><span class="p">,</span> <span class="n">model_only</span><span class="o">=</span><span class="n">model_only</span><span class="p">)</span></div></div>
 
+<div class="viewcode-block" id="TESTRUNFAILRESET"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.system_tests_common.TESTRUNFAILRESET">[docs]</a><span class="k">class</span> <span class="nc">TESTRUNFAILRESET</span><span class="p">(</span><span class="n">TESTRUNFAIL</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;This fake test can fail for two reasons:</span>
+<span class="sd">    1. As in the TESTRUNFAIL test: If the environment variable TESTRUNFAIL_PASS is *not* set</span>
+<span class="sd">    2. Even if that environment variable *is* set, it will fail if STOP_N differs from the</span>
+<span class="sd">       original value</span>
+
+<span class="sd">    The purpose of (2) is to ensure that test&#39;s values get properly reset if the test is</span>
+<span class="sd">    rerun after an initial failure.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TESTRUNFAILRESET.run_indv"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.system_tests_common.TESTRUNFAILRESET.run_indv">[docs]</a>    <span class="k">def</span> <span class="nf">run_indv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;base&quot;</span><span class="p">,</span> <span class="n">st_archive</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">submit_resubmits</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># Make sure STOP_N matches the original value for the case. This tests that STOP_N</span>
+        <span class="c1"># has been reset properly if we are rerunning the test after a failure.</span>
+        <span class="n">env_test</span> <span class="o">=</span> <span class="n">EnvTest</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_caseroot</span><span class="p">())</span>
+        <span class="n">stop_n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;STOP_N&quot;</span><span class="p">)</span>
+        <span class="n">stop_n_test</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">env_test</span><span class="o">.</span><span class="n">get_test_parameter</span><span class="p">(</span><span class="s2">&quot;STOP_N&quot;</span><span class="p">))</span>
+        <span class="n">expect</span><span class="p">(</span><span class="n">stop_n</span> <span class="o">==</span> <span class="n">stop_n_test</span><span class="p">,</span> <span class="s2">&quot;Expect STOP_N to match original (</span><span class="si">{}</span><span class="s2"> != </span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">stop_n</span><span class="p">,</span> <span class="n">stop_n_test</span><span class="p">))</span>
+
+        <span class="c1"># Now modify STOP_N so that an error will be generated if it isn&#39;t reset properly</span>
+        <span class="c1"># upon a rerun</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;STOP_N&quot;</span><span class="p">,</span> <span class="n">stop_n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">TESTRUNFAILRESET</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">run_indv</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="n">suffix</span><span class="p">,</span>
+                                               <span class="n">st_archive</span><span class="o">=</span><span class="n">st_archive</span><span class="p">,</span>
+                                               <span class="n">submit_resubmits</span><span class="o">=</span><span class="n">submit_resubmits</span><span class="p">)</span></div></div>
+
 <div class="viewcode-block" id="TESTRUNFAILEXC"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.system_tests_common.TESTRUNFAILEXC">[docs]</a><span class="k">class</span> <span class="nc">TESTRUNFAILEXC</span><span class="p">(</span><span class="n">TESTRUNPASS</span><span class="p">):</span>
 
 <div class="viewcode-block" id="TESTRUNFAILEXC.run_phase"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.system_tests_common.TESTRUNFAILEXC.run_phase">[docs]</a>    <span class="k">def</span> <span class="nf">run_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -925,24 +990,21 @@
 <div class="viewcode-block" id="TESTRUNUSERXMLCHANGE"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.system_tests_common.TESTRUNUSERXMLCHANGE">[docs]</a><span class="k">class</span> <span class="nc">TESTRUNUSERXMLCHANGE</span><span class="p">(</span><span class="n">FakeTest</span><span class="p">):</span>
 
 <div class="viewcode-block" id="TESTRUNUSERXMLCHANGE.build_phase"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.system_tests_common.TESTRUNUSERXMLCHANGE.build_phase">[docs]</a>    <span class="k">def</span> <span class="nf">build_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sharedlib_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">model_only</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="n">exeroot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;EXEROOT&quot;</span><span class="p">)</span>
         <span class="n">caseroot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">)</span>
-        <span class="n">cime_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MODEL&quot;</span><span class="p">)</span>
-        <span class="n">modelexe</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">exeroot</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">.exe&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cime_model</span><span class="p">))</span>
+        <span class="n">modelexe</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;run_exe&quot;</span><span class="p">)</span>
         <span class="n">new_stop_n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;STOP_N&quot;</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span>
 
         <span class="n">script</span> <span class="o">=</span> \
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">cd {caseroot}</span>
+<span class="sd">./xmlchange --file env_test.xml STOP_N={stopn}</span>
 <span class="sd">./xmlchange RESUBMIT=1,STOP_N={stopn},CONTINUE_RUN=FALSE,RESUBMIT_SETS_CONTINUE_RUN=FALSE</span>
 <span class="sd">cd -</span>
-<span class="sd">{modelexe}.real &quot;$@&quot;</span>
-
-<span class="sd"># Need to remove self in order to avoid infinite loop</span>
-<span class="sd">mv {modelexe} {modelexe}.old</span>
-<span class="sd">mv {modelexe}.real {modelexe}</span>
+<span class="sd">{originalexe} &quot;$@&quot;</span>
+<span class="sd">cd {caseroot}</span>
+<span class="sd">./xmlchange run_exe={modelexe}</span>
 <span class="sd">sleep 5</span>
-<span class="sd">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">caseroot</span><span class="o">=</span><span class="n">caseroot</span><span class="p">,</span> <span class="n">modelexe</span><span class="o">=</span><span class="n">modelexe</span><span class="p">,</span> <span class="n">stopn</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">new_stop_n</span><span class="p">))</span>
+<span class="sd">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">originalexe</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_original_exe</span><span class="p">,</span> <span class="n">caseroot</span><span class="o">=</span><span class="n">caseroot</span><span class="p">,</span> <span class="n">modelexe</span><span class="o">=</span><span class="n">modelexe</span><span class="p">,</span> <span class="n">stopn</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">new_stop_n</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_script</span><span class="p">(</span><span class="n">script</span><span class="p">,</span> <span class="n">requires_exe</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">FakeTest</span><span class="o">.</span><span class="n">build_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                              <span class="n">sharedlib_only</span><span class="o">=</span><span class="n">sharedlib_only</span><span class="p">,</span> <span class="n">model_only</span><span class="o">=</span><span class="n">model_only</span><span class="p">)</span></div>

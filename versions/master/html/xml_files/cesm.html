@@ -346,7 +346,7 @@
     &lt;group&gt;case_last&lt;/group&gt;
     &lt;file&gt;env_case.xml&lt;/file&gt;
     &lt;desc&gt;file containing specification of all supported model grids, domains and mapping files (for documentation only - DO NOT EDIT)&lt;/desc&gt;
-    &lt;schema&gt;$CIMEROOT/config/xml_schemas/config_grids_v2.1.xsd&lt;/schema&gt;
+    &lt;schema&gt;$CIMEROOT/config/xml_schemas/config_grids_v2.2.xsd&lt;/schema&gt;
   &lt;/entry&gt;
 
   &lt;entry id=&quot;MACHINES_SPEC_FILE&quot;&gt;
@@ -394,6 +394,14 @@
     &lt;schema&gt;$CIMEROOT/config/xml_schemas/config_compilers_v2.xsd&lt;/schema&gt;
   &lt;/entry&gt;
 
+  &lt;entry id=&quot;CMAKE_MACROS_DIR&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;default_value&gt;$CIMEROOT/config/$MODEL/machines/cmake_macros&lt;/default_value&gt;
+    &lt;group&gt;case_last&lt;/group&gt;
+    &lt;file&gt;env_case.xml&lt;/file&gt;
+    &lt;desc&gt;Directory containing cmake macros (for documentation only - DO NOT EDIT)&lt;/desc&gt;
+  &lt;/entry&gt;
+  
   &lt;entry id=&quot;PIO_SPEC_FILE&quot;&gt;
     &lt;type&gt;char&lt;/type&gt;
     &lt;default_value&gt;$CIMEROOT/config/$MODEL/machines/config_pio.xml&lt;/default_value&gt;
@@ -424,9 +432,11 @@
     &lt;type&gt;char&lt;/type&gt;
     &lt;values&gt;
       &lt;value component=&quot;datm&quot; comp_interface=&quot;nuopc&quot; &gt;$SRCROOT/components/cdeps/datm&lt;/value&gt;
-      &lt;value component=&quot;datm&quot; comp_interface=&quot;mct&quot;   &gt;$CIMEROOT/src/components/data_comps_$COMP_INTERFACE/datm&lt;/value&gt;
-      &lt;value component=&quot;satm&quot;                        &gt;$CIMEROOT/src/components/stub_comps_$COMP_INTERFACE/satm&lt;/value&gt;
-      &lt;value component=&quot;xatm&quot;                        &gt;$CIMEROOT/src/components/xcpl_comps_$COMP_INTERFACE/xatm&lt;/value&gt;
+      &lt;value component=&quot;datm&quot; comp_interface=&quot;mct&quot;   &gt;$SRCROOT/components/cpl7/components/data_comps_$COMP_INTERFACE/datm&lt;/value&gt;
+      &lt;value component=&quot;satm&quot; comp_interface=&quot;nuopc&quot; &gt;$CIMEROOT/src/components/stub_comps_$COMP_INTERFACE/satm&lt;/value&gt;
+      &lt;value component=&quot;satm&quot; comp_interface=&quot;mct&quot;   &gt;$SRCROOT/components/cpl7/components/stub_comps_$COMP_INTERFACE/satm&lt;/value&gt;
+      &lt;value component=&quot;xatm&quot; comp_interface=&quot;nuopc&quot; &gt;$CIMEROOT/src/components/xcpl_comps_$COMP_INTERFACE/xatm&lt;/value&gt;
+      &lt;value component=&quot;xatm&quot; comp_interface=&quot;mct&quot;   &gt;$SRCROOT/components/cpl7/components/xcpl_comps_$COMP_INTERFACE/xatm&lt;/value&gt;
       &lt;value component=&quot;cam&quot;                         &gt;$SRCROOT/components/cam/&lt;/value&gt;
       &lt;value component=&quot;ufsatm&quot;                      &gt;$SRCROOT/components/fv3/&lt;/value&gt;
     &lt;/values&gt;
@@ -439,7 +449,12 @@
   &lt;entry id=&quot;COMP_ROOT_DIR_CPL&quot;&gt;
     &lt;type&gt;char&lt;/type&gt;
     &lt;values&gt;
-      &lt;value&gt;$CIMEROOT/src/drivers/$COMP_INTERFACE&lt;/value&gt;
+      &lt;value comp_interface=&quot;nuopc&quot;                 &gt;$SRCROOT/components/cmeps&lt;/value&gt; 
+      &lt;value comp_interface=&quot;nuopc&quot; component=&quot;cpl&quot; &gt;$SRCROOT/components/cmeps&lt;/value&gt; 
+      &lt;value comp_interface=&quot;nuopc&quot; component=&quot;drv&quot; &gt;$SRCROOT/components/cmeps&lt;/value&gt; 
+      &lt;value comp_interface=&quot;mct&quot;                   &gt;$SRCROOT/components/cpl7/driver&lt;/value&gt; 
+      &lt;value comp_interface=&quot;mct&quot; component=&quot;cpl&quot;   &gt;$SRCROOT/components/cpl7/driver&lt;/value&gt; 
+      &lt;value comp_interface=&quot;mct&quot; component=&quot;drv&quot;   &gt;$SRCROOT/components/cpl7/driver&lt;/value&gt; 
     &lt;/values&gt;
     &lt;group&gt;case_comps&lt;/group&gt;
     &lt;file&gt;env_case.xml&lt;/file&gt;
@@ -454,10 +469,12 @@
       &lt;value component=&quot;pop&quot;                          &gt;$SRCROOT/components/pop/&lt;/value&gt;
       &lt;value component=&quot;mom&quot;                          &gt;$SRCROOT/components/mom/&lt;/value&gt;
       &lt;value component=&quot;nemo&quot;                         &gt;$SRCROOT/components/nemo/&lt;/value&gt;
-      &lt;value component=&quot;docn&quot;  comp_interface=&quot;mct&quot;   &gt;$CIMEROOT/src/components/data_comps_$COMP_INTERFACE/docn&lt;/value&gt;
+      &lt;value component=&quot;docn&quot;  comp_interface=&quot;mct&quot;   &gt;$SRCROOT/components/cpl7/components/data_comps_$COMP_INTERFACE/docn&lt;/value&gt;
       &lt;value component=&quot;docn&quot;  comp_interface=&quot;nuopc&quot; &gt;$SRCROOT/components/cdeps/docn&lt;/value&gt;
-      &lt;value component=&quot;socn&quot;                         &gt;$CIMEROOT/src/components/stub_comps_$COMP_INTERFACE/socn&lt;/value&gt;
-      &lt;value component=&quot;xocn&quot;                         &gt;$CIMEROOT/src/components/xcpl_comps_$COMP_INTERFACE/xocn&lt;/value&gt;
+      &lt;value component=&quot;socn&quot;  comp_interface=&quot;mct&quot;   &gt;$SRCROOT/components/cpl7/components/stub_comps_$COMP_INTERFACE/socn&lt;/value&gt;
+      &lt;value component=&quot;socn&quot;  comp_interface=&quot;nuopc&quot; &gt;$CIMEROOT/src/components/stub_comps_$COMP_INTERFACE/socn&lt;/value&gt;
+      &lt;value component=&quot;xocn&quot;  comp_interface=&quot;mct&quot;   &gt;$SRCROOT/components/cpl7/components/xcpl_comps_$COMP_INTERFACE/xocn&lt;/value&gt;
+      &lt;value component=&quot;xocn&quot;  comp_interface=&quot;nuopc&quot; &gt;$CIMEROOT/src/components/xcpl_comps_$COMP_INTERFACE/xocn&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;case_comps&lt;/group&gt;
     &lt;file&gt;env_case.xml&lt;/file&gt;
@@ -469,11 +486,14 @@
     &lt;type&gt;char&lt;/type&gt;
     &lt;default_value&gt;unset&lt;/default_value&gt;
     &lt;values&gt;
+      &lt;value component=&quot;ww3dev&quot;                      &gt;$SRCROOT/components/ww3dev&lt;/value&gt;
       &lt;value component=&quot;ww3&quot;                         &gt;$SRCROOT/components/ww3/&lt;/value&gt;
-      &lt;value component=&quot;dwav&quot; comp_interface=&quot;mct&quot;   &gt;$CIMEROOT/src/components/data_comps_$COMP_INTERFACE/dwav&lt;/value&gt;
+      &lt;value component=&quot;dwav&quot; comp_interface=&quot;mct&quot;   &gt;$SRCROOT/components/cpl7/components/data_comps_$COMP_INTERFACE/dwav&lt;/value&gt;
       &lt;value component=&quot;dwav&quot; comp_interface=&quot;nuopc&quot; &gt;$SRCROOT/components/cdeps/dwav&lt;/value&gt;
-      &lt;value component=&quot;swav&quot;                        &gt;$CIMEROOT/src/components/stub_comps_$COMP_INTERFACE/swav&lt;/value&gt;
-      &lt;value component=&quot;xwav&quot;                        &gt;$CIMEROOT/src/components/xcpl_comps_$COMP_INTERFACE/xwav&lt;/value&gt;
+      &lt;value component=&quot;swav&quot; comp_interface=&quot;mct&quot;   &gt;$SRCROOT/components/cpl7/components/stub_comps_$COMP_INTERFACE/swav&lt;/value&gt;
+      &lt;value component=&quot;swav&quot; comp_interface=&quot;nuopc&quot; &gt;$CIMEROOT/src/components/stub_comps_$COMP_INTERFACE/swav&lt;/value&gt;
+      &lt;value component=&quot;xwav&quot; comp_interface=&quot;mct&quot;   &gt;$SRCROOT/components/cpl7/components/xcpl_comps_$COMP_INTERFACE/xwav&lt;/value&gt;
+      &lt;value component=&quot;xwav&quot; comp_interface=&quot;nuopc&quot; &gt;$CIMEROOT/src/components/xcpl_comps_$COMP_INTERFACE/xwav&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;case_comps&lt;/group&gt;
     &lt;file&gt;env_case.xml&lt;/file&gt;
@@ -485,10 +505,12 @@
     &lt;type&gt;char&lt;/type&gt;
     &lt;default_value&gt;unset&lt;/default_value&gt;
     &lt;values&gt;
-      &lt;value component=&quot;cism&quot; &gt;$SRCROOT/components/cism/&lt;/value&gt;
-      &lt;value component=&quot;dglc&quot; &gt;$CIMEROOT/src/components/data_comps_$COMP_INTERFACE/dglc&lt;/value&gt;
-      &lt;value component=&quot;sglc&quot; &gt;$CIMEROOT/src/components/stub_comps_$COMP_INTERFACE/sglc&lt;/value&gt;
-      &lt;value component=&quot;xglc&quot; &gt;$CIMEROOT/src/components/xcpl_comps_$COMP_INTERFACE/xglc&lt;/value&gt;
+      &lt;value component=&quot;cism&quot;                        &gt;$SRCROOT/components/cism/&lt;/value&gt;
+      &lt;value component=&quot;dglc&quot;                        &gt;$SRCROOT/components/cpl7/components/data_comps_$COMP_INTERFACE/dglc&lt;/value&gt;
+      &lt;value component=&quot;sglc&quot; comp_interface=&quot;mct&quot;   &gt;$SRCROOT/components/cpl7/components/stub_comps_$COMP_INTERFACE/sglc&lt;/value&gt;
+      &lt;value component=&quot;sglc&quot; comp_interface=&quot;nuopc&quot; &gt;$CIMEROOT/src/components/stub_comps_$COMP_INTERFACE/sglc&lt;/value&gt;
+      &lt;value component=&quot;xglc&quot; comp_interface=&quot;mct&quot;   &gt;$SRCROOT/components/cpl7/components/xcpl_comps_$COMP_INTERFACE/xglc&lt;/value&gt;
+      &lt;value component=&quot;xglc&quot; comp_interface=&quot;nuopc&quot; &gt;$CIMEROOT/src/components/xcpl_comps_$COMP_INTERFACE/xglc&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;case_comps&lt;/group&gt;
     &lt;file&gt;env_case.xml&lt;/file&gt;
@@ -500,11 +522,14 @@
     &lt;type&gt;char&lt;/type&gt;
     &lt;default_value&gt;unset&lt;/default_value&gt;
     &lt;values&gt;
+      &lt;value component=&quot;cice6&quot;                       &gt;$SRCROOT/components/cice6/&lt;/value&gt;
       &lt;value component=&quot;cice&quot;                        &gt;$SRCROOT/components/cice/&lt;/value&gt;
-      &lt;value component=&quot;dice&quot; comp_interface=&quot;mct&quot;   &gt;$CIMEROOT/src/components/data_comps_$COMP_INTERFACE/dice&lt;/value&gt;
+      &lt;value component=&quot;dice&quot; comp_interface=&quot;mct&quot;   &gt;$SRCROOT/components/cpl7/components/data_comps_$COMP_INTERFACE/dice&lt;/value&gt;
       &lt;value component=&quot;dice&quot; comp_interface=&quot;nuopc&quot; &gt;$SRCROOT/components/cdeps/dice&lt;/value&gt;
-      &lt;value component=&quot;sice&quot;                        &gt;$CIMEROOT/src/components/stub_comps_$COMP_INTERFACE/sice&lt;/value&gt;
-      &lt;value component=&quot;xice&quot;                        &gt;$CIMEROOT/src/components/xcpl_comps_$COMP_INTERFACE/xice&lt;/value&gt;
+      &lt;value component=&quot;sice&quot; comp_interface=&quot;mct&quot;   &gt;$SRCROOT/components/cpl7/components/stub_comps_$COMP_INTERFACE/sice&lt;/value&gt;
+      &lt;value component=&quot;sice&quot; comp_interface=&quot;nuopc&quot; &gt;$CIMEROOT/src/components/stub_comps_$COMP_INTERFACE/sice&lt;/value&gt;
+      &lt;value component=&quot;xice&quot; comp_interface=&quot;mct&quot;   &gt;$SRCROOT/components/cpl7/components/xcpl_comps_$COMP_INTERFACE/xice&lt;/value&gt;
+      &lt;value component=&quot;xice&quot; comp_interface=&quot;nuopc&quot; &gt;$CIMEROOT/src/components/xcpl_comps_$COMP_INTERFACE/xice&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;case_comps&lt;/group&gt;
     &lt;file&gt;env_case.xml&lt;/file&gt;
@@ -519,10 +544,12 @@
       &lt;value component=&quot;rtm&quot;                         &gt;$SRCROOT/components/rtm/&lt;/value&gt;
       &lt;value component=&quot;mosart&quot;                      &gt;$SRCROOT/components/mosart/&lt;/value&gt;
       &lt;value component=&quot;mizuroute&quot;                   &gt;$SRCROOT/components/mizuRoute/&lt;/value&gt;
-      &lt;value component=&quot;drof&quot; comp_interface=&quot;mct&quot;   &gt;$CIMEROOT/src/components/data_comps_$COMP_INTERFACE/drof&lt;/value&gt;
+      &lt;value component=&quot;drof&quot; comp_interface=&quot;mct&quot;   &gt;$SRCROOT/components/cpl7/components/data_comps_$COMP_INTERFACE/drof&lt;/value&gt;
       &lt;value component=&quot;drof&quot; comp_interface=&quot;nuopc&quot; &gt;$SRCROOT/components/cdeps/drof&lt;/value&gt;
-      &lt;value component=&quot;srof&quot;                        &gt;$CIMEROOT/src/components/stub_comps_$COMP_INTERFACE/srof&lt;/value&gt;
-      &lt;value component=&quot;xrof&quot;                        &gt;$CIMEROOT/src/components/xcpl_comps_$COMP_INTERFACE/xrof&lt;/value&gt;
+      &lt;value component=&quot;srof&quot; comp_interface=&quot;mct&quot;   &gt;$SRCROOT/components/cpl7/components/stub_comps_$COMP_INTERFACE/srof&lt;/value&gt;
+      &lt;value component=&quot;srof&quot; comp_interface=&quot;nuopc&quot; &gt;$CIMEROOT/src/components/stub_comps_$COMP_INTERFACE/srof&lt;/value&gt;
+      &lt;value component=&quot;xrof&quot; comp_interface=&quot;mct&quot;   &gt;$SRCROOT/components/cpl7/components/xcpl_comps_$COMP_INTERFACE/xrof&lt;/value&gt;
+      &lt;value component=&quot;xrof&quot; comp_interface=&quot;nuopc&quot; &gt;$CIMEROOT/src/components/xcpl_comps_$COMP_INTERFACE/xrof&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;case_comps&lt;/group&gt;
     &lt;file&gt;env_case.xml&lt;/file&gt;
@@ -535,10 +562,12 @@
     &lt;default_value&gt;unset&lt;/default_value&gt;
     &lt;values&gt;
       &lt;value component=&quot;clm&quot;                         &gt;$SRCROOT/components/clm/&lt;/value&gt;
-      &lt;value component=&quot;dlnd&quot; comp_interface=&quot;mct&quot;   &gt;$CIMEROOT/src/components/data_comps_$COMP_INTERFACE/dlnd&lt;/value&gt;
+      &lt;value component=&quot;dlnd&quot; comp_interface=&quot;mct&quot;   &gt;$SRCROOT/components/cpl7/components/data_comps_$COMP_INTERFACE/dlnd&lt;/value&gt;
       &lt;value component=&quot;dlnd&quot; comp_interface=&quot;nuopc&quot; &gt;$SRCROOT/components/cdeps/dlnd&lt;/value&gt;
-      &lt;value component=&quot;slnd&quot;                        &gt;$CIMEROOT/src/components/stub_comps_$COMP_INTERFACE/slnd&lt;/value&gt;
-      &lt;value component=&quot;xlnd&quot;                        &gt;$CIMEROOT/src/components/xcpl_comps_$COMP_INTERFACE/xlnd&lt;/value&gt;
+      &lt;value component=&quot;slnd&quot; comp_interface=&quot;mct&quot;   &gt;$SRCROOT/components/cpl7/components/stub_comps_$COMP_INTERFACE/slnd&lt;/value&gt;
+      &lt;value component=&quot;slnd&quot; comp_interface=&quot;nuopc&quot; &gt;$CIMEROOT/src/components/stub_comps_$COMP_INTERFACE/slnd&lt;/value&gt;
+      &lt;value component=&quot;xlnd&quot; comp_interface=&quot;mct&quot;   &gt;$SRCROOT/components/cpl7/components/xcpl_comps_$COMP_INTERFACE/xlnd&lt;/value&gt;
+      &lt;value component=&quot;xlnd&quot; comp_interface=&quot;nuopc&quot; &gt;$CIMEROOT/src/components/xcpl_comps_$COMP_INTERFACE/xlnd&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;case_comps&lt;/group&gt;
     &lt;file&gt;env_case.xml&lt;/file&gt;
@@ -550,8 +579,10 @@
     &lt;type&gt;char&lt;/type&gt;
     &lt;default_value&gt;unset&lt;/default_value&gt;
     &lt;values&gt;
-      &lt;value component=&quot;siac&quot;      &gt;$CIMEROOT/src/components/stub_comps_$COMP_INTERFACE/siac&lt;/value&gt;
-      &lt;value component=&quot;xiac&quot;      &gt;$CIMEROOT/src/components/xcpl_comps_$COMP_INTERFACE/xiac&lt;/value&gt;
+      &lt;value component=&quot;siac&quot; comp_interface=&quot;mct&quot;   &gt;$SRCROOT/components/cpl7/components/stub_comps_$COMP_INTERFACE/siac&lt;/value&gt;
+      &lt;value component=&quot;siac&quot; comp_interface=&quot;nuopc&quot; &gt;$CIMEROOT/src/components/stub_comps_$COMP_INTERFACE/siac&lt;/value&gt;
+      &lt;value component=&quot;xiac&quot; comp_interface=&quot;mct&quot;   &gt;$SRCROOT/components/cpl7/components/xcpl_comps_$COMP_INTERFACE/xiac&lt;/value&gt;
+      &lt;value component=&quot;xiac&quot; comp_interface=&quot;nuopc&quot; &gt;$CIMEROOT/src/components/xcpl_comps_$COMP_INTERFACE/xiac&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;case_comps&lt;/group&gt;
     &lt;file&gt;env_case.xml&lt;/file&gt;
@@ -563,8 +594,10 @@
     &lt;type&gt;char&lt;/type&gt;
     &lt;default_value&gt;unset&lt;/default_value&gt;
     &lt;values&gt;
-      &lt;value component=&quot;desp&quot;      &gt;$CIMEROOT/src/components/data_comps_$COMP_INTERFACE/desp&lt;/value&gt;
-      &lt;value component=&quot;sesp&quot;      &gt;$CIMEROOT/src/components/stub_comps_$COMP_INTERFACE/sesp&lt;/value&gt;
+      &lt;value component=&quot;desp&quot; comp_interface=&quot;mct&quot;   &gt;$SRCROOT/components/cpl7/components/data_comps_$COMP_INTERFACE/desp&lt;/value&gt;
+      &lt;value component=&quot;desp&quot; comp_interface=&quot;nuopc&quot; &gt;$CIMEROOT/src/components/data_comps_$COMP_INTERFACE/desp&lt;/value&gt;
+      &lt;value component=&quot;sesp&quot; comp_interface=&quot;mct&quot;   &gt;$SRCROOT/components/cpl7/components/stub_comps_$COMP_INTERFACE/sesp&lt;/value&gt;
+      &lt;value component=&quot;sesp&quot; comp_interface=&quot;nuopc&quot; &gt;$CIMEROOT/src/components/stub_comps_$COMP_INTERFACE/sesp&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;case_comps&lt;/group&gt;
     &lt;file&gt;env_case.xml&lt;/file&gt;
@@ -582,6 +615,7 @@
       &lt;value component=&quot;ufsatm&quot;    &gt;$COMP_ROOT_DIR_ATM/cime_config/config_compsets.xml&lt;/value&gt;
       &lt;value component=&quot;cism&quot;      &gt;$COMP_ROOT_DIR_GLC/cime_config/config_compsets.xml&lt;/value&gt;
       &lt;value component=&quot;clm&quot;       &gt;$COMP_ROOT_DIR_LND/cime_config/config_compsets.xml&lt;/value&gt;
+      &lt;value component=&quot;cice6&quot;     &gt;$COMP_ROOT_DIR_ICE/cime_config/config_compsets.xml&lt;/value&gt;
       &lt;value component=&quot;cice&quot;      &gt;$COMP_ROOT_DIR_ICE/cime_config/config_compsets.xml&lt;/value&gt;
       &lt;value component=&quot;pop&quot;       &gt;$COMP_ROOT_DIR_OCN/cime_config/config_compsets.xml&lt;/value&gt;
       &lt;value component=&quot;mom&quot;       &gt;$COMP_ROOT_DIR_OCN/cime_config/config_compsets.xml&lt;/value&gt;
@@ -603,6 +637,7 @@
       &lt;value component=&quot;ufsatm&quot;    &gt;$COMP_ROOT_DIR_ATM/cime_config/config_pes.xml&lt;/value&gt;
       &lt;value component=&quot;cism&quot;      &gt;$COMP_ROOT_DIR_GLC/cime_config/config_pes.xml&lt;/value&gt;
       &lt;value component=&quot;clm&quot;       &gt;$COMP_ROOT_DIR_LND/cime_config/config_pes.xml&lt;/value&gt;
+      &lt;value component=&quot;cice6&quot;     &gt;$COMP_ROOT_DIR_ICE/cime_config/config_pes.xml&lt;/value&gt;
       &lt;value component=&quot;cice&quot;      &gt;$COMP_ROOT_DIR_ICE/cime_config/config_pes.xml&lt;/value&gt;
       &lt;value component=&quot;pop&quot;       &gt;$COMP_ROOT_DIR_OCN/cime_config/config_pes.xml&lt;/value&gt;
       &lt;value component=&quot;mom&quot;       &gt;$COMP_ROOT_DIR_OCN/cime_config/config_pes.xml&lt;/value&gt;
@@ -630,6 +665,7 @@
       &lt;value component=&quot;cam&quot;       &gt;$COMP_ROOT_DIR_ATM/cime_config/config_archive.xml&lt;/value&gt;
       &lt;value component=&quot;cism&quot;      &gt;$COMP_ROOT_DIR_GLC/cime_config/config_archive.xml&lt;/value&gt;
       &lt;value component=&quot;clm&quot;       &gt;$COMP_ROOT_DIR_LND/cime_config/config_archive.xml&lt;/value&gt;
+      &lt;value component=&quot;cice6&quot;     &gt;$COMP_ROOT_DIR_ICE/cime_config/config_archive.xml&lt;/value&gt;
       &lt;value component=&quot;cice&quot;      &gt;$COMP_ROOT_DIR_ICE/cime_config/config_archive.xml&lt;/value&gt;
       &lt;value component=&quot;pop&quot;       &gt;$COMP_ROOT_DIR_OCN/cime_config/config_archive.xml&lt;/value&gt;
       &lt;value component=&quot;mom&quot;       &gt;$COMP_ROOT_DIR_OCN/cime_config/config_archive.xml&lt;/value&gt;
@@ -637,6 +673,7 @@
       &lt;value component=&quot;rtm&quot;       &gt;$COMP_ROOT_DIR_ROF/cime_config/config_archive.xml&lt;/value&gt;
       &lt;value component=&quot;mosart&quot;    &gt;$COMP_ROOT_DIR_ROF/cime_config/config_archive.xml&lt;/value&gt;
       &lt;value component=&quot;mizuroute&quot; &gt;$COMP_ROOT_DIR_ROF/cime_config/config_archive.xml&lt;/value&gt;
+      &lt;value component=&quot;ww3dev&quot;    &gt;$COMP_ROOT_DIR_WAV/cime_config/config_archive.xml&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;case_last&lt;/group&gt;
     &lt;file&gt;env_case.xml&lt;/file&gt;
@@ -653,6 +690,7 @@
       &lt;value component=&quot;pop&quot;       &gt;$COMP_ROOT_DIR_OCN/cime_config/SystemTests&lt;/value&gt;
       &lt;value component=&quot;mom&quot;       &gt;$COMP_ROOT_DIR_OCN/cime_config/SystemTests&lt;/value&gt;
       &lt;value component=&quot;nemo&quot;      &gt;$COMP_ROOT_DIR_OCN/cime_config/SystemTests&lt;/value&gt;
+      &lt;value component=&quot;cice6&quot;     &gt;$COMP_ROOT_DIR_ICE/cime_config/SystemTests&lt;/value&gt;
       &lt;value component=&quot;cice&quot;      &gt;$COMP_ROOT_DIR_ICE/cime_config/SystemTests&lt;/value&gt;
       &lt;value component=&quot;cism&quot;      &gt;$COMP_ROOT_DIR_GLC/cime_config/SystemTests&lt;/value&gt;
       &lt;value component=&quot;rtm&quot;       &gt;$COMP_ROOT_DIR_ROF/cime_config/SystemTests&lt;/value&gt;
@@ -673,6 +711,7 @@
       &lt;value component=&quot;cam&quot;       &gt;$COMP_ROOT_DIR_ATM/cime_config/testdefs/testlist_cam.xml&lt;/value&gt;
       &lt;value component=&quot;cism&quot;      &gt;$COMP_ROOT_DIR_GLC/cime_config/testdefs/testlist_cism.xml&lt;/value&gt;
       &lt;value component=&quot;clm&quot;       &gt;$COMP_ROOT_DIR_LND/cime_config/testdefs/testlist_clm.xml&lt;/value&gt;
+      &lt;value component=&quot;cice6&quot;     &gt;$COMP_ROOT_DIR_ICE/cime_config/testdefs/testlist_cice.xml&lt;/value&gt;
       &lt;value component=&quot;cice&quot;      &gt;$COMP_ROOT_DIR_ICE/cime_config/testdefs/testlist_cice.xml&lt;/value&gt;
       &lt;value component=&quot;pop&quot;       &gt;$COMP_ROOT_DIR_OCN/cime_config/testdefs/testlist_pop.xml&lt;/value&gt;
       &lt;value component=&quot;mom&quot;       &gt;$COMP_ROOT_DIR_OCN/cime_config/testdefs/testlist_mom.xml&lt;/value&gt;
@@ -702,6 +741,7 @@
       &lt;value component=&quot;cam&quot;       &gt;$COMP_ROOT_DIR_ATM/cime_config/testdefs/testmods_dirs&lt;/value&gt;
       &lt;value component=&quot;cism&quot;      &gt;$COMP_ROOT_DIR_GLC/cime_config/testdefs/testmods_dirs&lt;/value&gt;
       &lt;value component=&quot;clm&quot;       &gt;$COMP_ROOT_DIR_LND/cime_config/testdefs/testmods_dirs&lt;/value&gt;
+      &lt;value component=&quot;cice6&quot;     &gt;$COMP_ROOT_DIR_ICE/cime_config/testdefs/testmods_dirs&lt;/value&gt;
       &lt;value component=&quot;cice&quot;      &gt;$COMP_ROOT_DIR_ICE/cime_config/testdefs/testmods_dirs&lt;/value&gt;
       &lt;value component=&quot;rtm&quot;       &gt;$COMP_ROOT_DIR_ROF/cime_config/testdefs/testmods_dirs&lt;/value&gt;
       &lt;value component=&quot;mosart&quot;    &gt;$COMP_ROOT_DIR_ROF/cime_config/testdefs/testmods_dirs&lt;/value&gt;
@@ -730,6 +770,7 @@
       &lt;value component=&quot;cam&quot;      &gt;$COMP_ROOT_DIR_ATM/cime_config/usermods_dirs&lt;/value&gt;
       &lt;value component=&quot;cism&quot;     &gt;$COMP_ROOT_DIR_GLC/cime_config/usermods_dirs&lt;/value&gt;
       &lt;value component=&quot;clm&quot;      &gt;$COMP_ROOT_DIR_LND/cime_config/usermods_dirs&lt;/value&gt;
+      &lt;value component=&quot;cice6&quot;    &gt;$COMP_ROOT_DIR_ICE/cime_config/usermods_dirs&lt;/value&gt;
       &lt;value component=&quot;cice&quot;     &gt;$COMP_ROOT_DIR_ICE/cime_config/usermods_dirs&lt;/value&gt;
       &lt;value component=&quot;rtm&quot;      &gt;$COMP_ROOT_DIR_ROF/cime_config/usermods_dirs&lt;/value&gt;
       &lt;value component=&quot;mosart&quot;   &gt;$COMP_ROOT_DIR_ROF/cime_config/usermods_dirs&lt;/value&gt;
@@ -760,6 +801,7 @@
       &lt;!--  TODO
       &lt;value component=&quot;cam&quot;  &gt;$COMP_ROOT_DIR_ATM/bld/namelist_files/namelist_definition.xml&lt;/value&gt;
       &lt;value component=&quot;cism&quot; &gt;$COMP_ROOT_DIR_GLC/bld/namelist_files/namelist_definition_cism.xml&lt;/value&gt;
+      &lt;value component=&quot;cice6&quot;&gt;$COMP_ROOT_DIR_ICE/cime_config/namelist_definition_cice.xml&lt;/value&gt;
       &lt;value component=&quot;cice&quot; &gt;$COMP_ROOT_DIR_ICE/cime_config/namelist_definition_cice.xml&lt;/value&gt;
       &lt;value component=&quot;clm&quot;  &gt;$COMP_ROOT_DIR_LND/bld/namelist_files/namelist_definition_ctsm.xml&lt;/value&gt;
       &lt;value component=&quot;pop&quot;  &gt;$COMP_ROOT_DIR_OCN/bld/namelist_files/namelist_definition_pop.xml&lt;/value&gt;
@@ -792,7 +834,8 @@
   &lt;entry id=&quot;CONFIG_CPL_FILE_MODEL_SPECIFIC&quot;&gt;
     &lt;type&gt;char&lt;/type&gt;
     &lt;values&gt;
-      &lt;value&gt;$CIMEROOT/src/drivers/$COMP_INTERFACE/cime_config/config_component_$MODEL.xml&lt;/value&gt;
+      &lt;value comp_interface=&quot;nuopc&quot;&gt;$SRCROOT/components/cmeps/cime_config/config_component_$MODEL.xml&lt;/value&gt; --&gt; 
+      &lt;value comp_interface=&quot;mct&quot;&gt;$SRCROOT/components/cpl7/driver/cime_config/config_component_$MODEL.xml&lt;/value&gt; --&gt; 
     &lt;/values&gt;
     &lt;group&gt;case_last&lt;/group&gt;
     &lt;file&gt;env_case.xml&lt;/file&gt;
@@ -916,11 +959,12 @@
     &lt;values&gt;
       &lt;value lib=&quot;FMS&quot;&gt;$SRCROOT/libraries/FMS/buildlib&lt;/value&gt;
       &lt;value lib=&quot;CDEPS&quot;&gt;$SRCROOT/components/cdeps/cime_config/buildlib&lt;/value&gt;
-      &lt;value lib=&quot;CMEPS&quot;&gt;$CIMEROOT/src/drivers/nuopc/cime_config/buildlib&lt;/value&gt;
+      &lt;value lib=&quot;CMEPS&quot;&gt;$SRCROOT/components/cmeps/cime_config/buildlib&lt;/value&gt;
       &lt;value lib=&quot;gptl&quot;&gt;$CIMEROOT/src/build_scripts/buildlib.gptl&lt;/value&gt;
       &lt;value lib=&quot;pio&quot;&gt;$CIMEROOT/src/build_scripts/buildlib.pio&lt;/value&gt;
       &lt;value lib=&quot;mct&quot;&gt;$CIMEROOT/src/build_scripts/buildlib.mct&lt;/value&gt;
-      &lt;value lib=&quot;csm_share&quot;&gt;$CIMEROOT/src/build_scripts/buildlib.csm_share&lt;/value&gt;
+      &lt;value lib=&quot;csm_share&quot;&gt;$SRCROOT/share/buildlib.csm_share&lt;/value&gt;
+      &lt;value lib=&quot;csm_share_cpl7&quot;&gt;$SRCROOT/components/cpl7/buildlib.csm_share_cpl7&lt;/value&gt;
       &lt;value lib=&quot;mpi-serial&quot;&gt;$CIMEROOT/src/build_scripts/buildlib.mpi-serial&lt;/value&gt;
       &lt;value lib=&quot;cprnc&quot;&gt;$CIMEROOT/src/build_scripts/buildlib.cprnc&lt;/value&gt;
     &lt;/values&gt;
@@ -966,19 +1010,18 @@
       &lt;grid name=&quot;ocnice&quot;    compset=&quot;SOCN&quot;        &gt;null&lt;/grid&gt;
       &lt;grid name=&quot;rof&quot;       compset=&quot;SROF&quot;        &gt;null&lt;/grid&gt;
       &lt;grid name=&quot;rof&quot;       compset=&quot;DWAV&quot;        &gt;rx1&lt;/grid&gt;
-      &lt;grid name=&quot;rof&quot;       compset=&quot;RTM&quot;	   &gt;r05&lt;/grid&gt;
+      &lt;grid name=&quot;rof&quot;       compset=&quot;RTM&quot;         &gt;r05&lt;/grid&gt;
       &lt;grid name=&quot;rof&quot;       compset=&quot;MOSART&quot;      &gt;r05&lt;/grid&gt;
       &lt;grid name=&quot;rof&quot;       compset=&quot;MIZUROUTE&quot;   &gt;HDMA&lt;/grid&gt;
       &lt;grid name=&quot;rof&quot;       compset=&quot;DROF&quot;        &gt;rx1&lt;/grid&gt;
       &lt;grid name=&quot;rof&quot;       compset=&quot;DROF%CPLHIST&quot;&gt;r05&lt;/grid&gt;
       &lt;grid name=&quot;rof&quot;       compset=&quot;XROF&quot;        &gt;r05&lt;/grid&gt;
-      &lt;grid name=&quot;glc&quot;	     compset=&quot;SGLC&quot;        &gt;null&lt;/grid&gt;
-      &lt;grid name=&quot;glc&quot;	     compset=&quot;CISM1&quot;       &gt;gland5UM&lt;/grid&gt;
-      &lt;grid name=&quot;glc&quot;	     compset=&quot;CISM2&quot;       &gt;gland4&lt;/grid&gt;
-      &lt;grid name=&quot;glc&quot;       compset=&quot;XGLC&quot;        &gt;gland4&lt;/grid&gt;
-      &lt;grid name=&quot;wav&quot;	     compset=&quot;SWAV&quot;        &gt;null&lt;/grid&gt;
-      &lt;grid name=&quot;wav&quot;	     compset=&quot;DWAV&quot;        &gt;ww3a&lt;/grid&gt;
-      &lt;grid name=&quot;wav&quot;	     compset=&quot;WW3&quot;	   &gt;ww3a&lt;/grid&gt;
+      &lt;grid name=&quot;glc&quot;       compset=&quot;SGLC&quot;        &gt;null&lt;/grid&gt;
+      &lt;grid name=&quot;glc&quot;       compset=&quot;CISM2&quot;       &gt;gris4&lt;/grid&gt;
+      &lt;grid name=&quot;glc&quot;       compset=&quot;XGLC&quot;        &gt;gris4&lt;/grid&gt;
+      &lt;grid name=&quot;wav&quot;       compset=&quot;SWAV&quot;        &gt;null&lt;/grid&gt;
+      &lt;grid name=&quot;wav&quot;       compset=&quot;DWAV&quot;        &gt;ww3a&lt;/grid&gt;
+      &lt;grid name=&quot;wav&quot;       compset=&quot;WW3&quot;         &gt;ww3a&lt;/grid&gt;
       &lt;grid name=&quot;wav&quot;       compset=&quot;XWAV&quot;        &gt;ww3a&lt;/grid&gt;
       &lt;grid name=&quot;iac&quot;       compset=&quot;SIAC&quot;        &gt;null&lt;/grid&gt;
     &lt;/model_grid_defaults&gt;
@@ -1089,27 +1132,35 @@
       &lt;mask&gt;gx3v7&lt;/mask&gt;
     &lt;/model_grid&gt;
 
+    &lt;model_grid alias=&quot;T31_g37_gris4&quot; compset=&quot;_CISM&quot;&gt;
+      &lt;grid name=&quot;atm&quot;&gt;T31&lt;/grid&gt;
+      &lt;grid name=&quot;lnd&quot;&gt;T31&lt;/grid&gt;
+      &lt;grid name=&quot;ocnice&quot;&gt;gx3v7&lt;/grid&gt;
+      &lt;grid name=&quot;glc&quot;&gt;gris4&lt;/grid&gt;
+      &lt;mask&gt;gx3v7&lt;/mask&gt;
+    &lt;/model_grid&gt;
+    &lt;!-- Backwards compatibility with old use of _gl for Greenland grid --&gt;
     &lt;model_grid alias=&quot;T31_g37_gl4&quot; compset=&quot;_CISM&quot;&gt;
       &lt;grid name=&quot;atm&quot;&gt;T31&lt;/grid&gt;
       &lt;grid name=&quot;lnd&quot;&gt;T31&lt;/grid&gt;
       &lt;grid name=&quot;ocnice&quot;&gt;gx3v7&lt;/grid&gt;
-      &lt;grid name=&quot;glc&quot;&gt;gland4&lt;/grid&gt;
+      &lt;grid name=&quot;glc&quot;&gt;gris4&lt;/grid&gt;
       &lt;mask&gt;gx3v7&lt;/mask&gt;
     &lt;/model_grid&gt;
 
+    &lt;model_grid alias=&quot;T31_g37_gris20&quot; compset=&quot;_CISM&quot;&gt;
+      &lt;grid name=&quot;atm&quot;&gt;T31&lt;/grid&gt;
+      &lt;grid name=&quot;lnd&quot;&gt;T31&lt;/grid&gt;
+      &lt;grid name=&quot;ocnice&quot;&gt;gx3v7&lt;/grid&gt;
+      &lt;grid name=&quot;glc&quot;&gt;gris20&lt;/grid&gt;
+      &lt;mask&gt;gx3v7&lt;/mask&gt;
+    &lt;/model_grid&gt;
+    &lt;!-- Backwards compatibility with old use of _gl for Greenland grid --&gt;
     &lt;model_grid alias=&quot;T31_g37_gl20&quot; compset=&quot;_CISM&quot;&gt;
       &lt;grid name=&quot;atm&quot;&gt;T31&lt;/grid&gt;
       &lt;grid name=&quot;lnd&quot;&gt;T31&lt;/grid&gt;
       &lt;grid name=&quot;ocnice&quot;&gt;gx3v7&lt;/grid&gt;
-      &lt;grid name=&quot;glc&quot;&gt;gland20&lt;/grid&gt;
-      &lt;mask&gt;gx3v7&lt;/mask&gt;
-    &lt;/model_grid&gt;
-
-    &lt;model_grid alias=&quot;T31_g37_gl5&quot; compset=&quot;_CISM&quot;&gt;
-      &lt;grid name=&quot;atm&quot;&gt;T31&lt;/grid&gt;
-      &lt;grid name=&quot;lnd&quot;&gt;T31&lt;/grid&gt;
-      &lt;grid name=&quot;ocnice&quot;&gt;gx3v7&lt;/grid&gt;
-      &lt;grid name=&quot;glc&quot;&gt;gland5UM&lt;/grid&gt;
+      &lt;grid name=&quot;glc&quot;&gt;gris20&lt;/grid&gt;
       &lt;mask&gt;gx3v7&lt;/mask&gt;
     &lt;/model_grid&gt;
 
@@ -1219,6 +1270,15 @@
       &lt;mask&gt;gx1v7&lt;/mask&gt;
     &lt;/model_grid&gt;
 
+    &lt;model_grid alias=&quot;TL319_g17_wg17&quot; compset=&quot;DROF%JRA&quot;&gt;
+      &lt;grid name=&quot;atm&quot;&gt;TL319&lt;/grid&gt;
+      &lt;grid name=&quot;lnd&quot;&gt;TL319&lt;/grid&gt;
+      &lt;grid name=&quot;ocnice&quot;&gt;gx1v7&lt;/grid&gt;
+      &lt;grid name=&quot;rof&quot;&gt;JRA025v2&lt;/grid&gt;
+      &lt;grid name=&quot;wav&quot;&gt;gx1v7&lt;/grid&gt;
+      &lt;mask&gt;gx1v7&lt;/mask&gt;
+    &lt;/model_grid&gt;
+
     &lt;model_grid alias=&quot;TL319_g17&quot; not_compset=&quot;_CAM&quot;&gt;
       &lt;grid name=&quot;atm&quot;&gt;TL319&lt;/grid&gt;
       &lt;grid name=&quot;lnd&quot;&gt;TL319&lt;/grid&gt;
@@ -1232,6 +1292,14 @@
       &lt;grid name=&quot;lnd&quot;&gt;TL319&lt;/grid&gt;
       &lt;grid name=&quot;ocnice&quot;&gt;tx0.66v1&lt;/grid&gt;
       &lt;grid name=&quot;rof&quot;&gt;JRA025&lt;/grid&gt;
+    &lt;/model_grid&gt;
+
+    &lt;model_grid alias=&quot;TL319_t061_wt061&quot; not_compset=&quot;_CAM&quot;&gt;
+      &lt;grid name=&quot;atm&quot;&gt;TL319&lt;/grid&gt;
+      &lt;grid name=&quot;lnd&quot;&gt;TL319&lt;/grid&gt;
+      &lt;grid name=&quot;ocnice&quot;&gt;tx0.66v1&lt;/grid&gt;
+      &lt;grid name=&quot;rof&quot;&gt;JRA025&lt;/grid&gt;
+      &lt;grid name=&quot;wav&quot;&gt;tx0.66v1&lt;/grid&gt;
     &lt;/model_grid&gt;
 
     &lt;model_grid alias=&quot;TL319_t12&quot; not_compset=&quot;_CAM&quot;&gt;
@@ -1276,6 +1344,13 @@
       &lt;grid name=&quot;ocnice&quot;&gt;tx0.66v1&lt;/grid&gt;
     &lt;/model_grid&gt;
 
+    &lt;model_grid alias=&quot;T62_t061_wt061&quot; not_compset=&quot;_CAM&quot;&gt;
+      &lt;grid name=&quot;atm&quot;&gt;T62&lt;/grid&gt;
+      &lt;grid name=&quot;lnd&quot;&gt;T62&lt;/grid&gt;
+      &lt;grid name=&quot;ocnice&quot;&gt;tx0.66v1&lt;/grid&gt;
+      &lt;grid name=&quot;wav&quot;&gt;tx0.66v1&lt;/grid&gt;
+    &lt;/model_grid&gt;
+
     &lt;model_grid alias=&quot;T62_t025&quot; not_compset=&quot;_CAM&quot;&gt;
       &lt;grid name=&quot;atm&quot;&gt;T62&lt;/grid&gt;
       &lt;grid name=&quot;lnd&quot;&gt;T62&lt;/grid&gt;
@@ -1298,6 +1373,14 @@
       &lt;grid name=&quot;atm&quot;&gt;T62&lt;/grid&gt;
       &lt;grid name=&quot;lnd&quot;&gt;T62&lt;/grid&gt;
       &lt;grid name=&quot;ocnice&quot;&gt;gx1v7&lt;/grid&gt;
+      &lt;mask&gt;gx1v7&lt;/mask&gt;
+    &lt;/model_grid&gt;
+
+    &lt;model_grid alias=&quot;T62_g17_wg17&quot; not_compset=&quot;_CAM&quot;&gt;
+      &lt;grid name=&quot;atm&quot;&gt;T62&lt;/grid&gt;
+      &lt;grid name=&quot;lnd&quot;&gt;T62&lt;/grid&gt;
+      &lt;grid name=&quot;ocnice&quot;&gt;gx1v7&lt;/grid&gt;
+      &lt;grid name=&quot;wav&quot;&gt;gx1v7&lt;/grid&gt;
       &lt;mask&gt;gx1v7&lt;/mask&gt;
     &lt;/model_grid&gt;
 
@@ -1394,51 +1477,51 @@
       &lt;mask&gt;tn0.25v3&lt;/mask&gt;
     &lt;/model_grid&gt;
 
-    &lt;model_grid alias=&quot;f09_g16_gl4&quot; compset=&quot;_CISM&quot;&gt;
+    &lt;model_grid alias=&quot;f09_g17_gris4&quot; compset=&quot;_CISM&quot;&gt;
       &lt;grid name=&quot;atm&quot;&gt;0.9x1.25&lt;/grid&gt;
       &lt;grid name=&quot;lnd&quot;&gt;0.9x1.25&lt;/grid&gt;
-      &lt;grid name=&quot;ocnice&quot;&gt;gx1v6&lt;/grid&gt;
-      &lt;grid name=&quot;glc&quot;&gt;gland4&lt;/grid&gt;
-      &lt;mask&gt;gx1v6&lt;/mask&gt;
+      &lt;grid name=&quot;ocnice&quot;&gt;gx1v7&lt;/grid&gt;
+      &lt;grid name=&quot;glc&quot;&gt;gris4&lt;/grid&gt;
+      &lt;mask&gt;gx1v7&lt;/mask&gt;
     &lt;/model_grid&gt;
-
+    &lt;!-- Backwards compatibility with old use of _gl for Greenland grid --&gt;
     &lt;model_grid alias=&quot;f09_g17_gl4&quot; compset=&quot;_CISM&quot;&gt;
       &lt;grid name=&quot;atm&quot;&gt;0.9x1.25&lt;/grid&gt;
       &lt;grid name=&quot;lnd&quot;&gt;0.9x1.25&lt;/grid&gt;
       &lt;grid name=&quot;ocnice&quot;&gt;gx1v7&lt;/grid&gt;
-      &lt;grid name=&quot;glc&quot;&gt;gland4&lt;/grid&gt;
+      &lt;grid name=&quot;glc&quot;&gt;gris4&lt;/grid&gt;
       &lt;mask&gt;gx1v7&lt;/mask&gt;
     &lt;/model_grid&gt;
 
-    &lt;model_grid alias=&quot;f09_g16_gl20&quot; compset=&quot;_CISM&quot;&gt;
+    &lt;model_grid alias=&quot;f09_g17_ais8&quot; compset=&quot;_CISM&quot;&gt;
       &lt;grid name=&quot;atm&quot;&gt;0.9x1.25&lt;/grid&gt;
       &lt;grid name=&quot;lnd&quot;&gt;0.9x1.25&lt;/grid&gt;
-      &lt;grid name=&quot;ocnice&quot;&gt;gx1v6&lt;/grid&gt;
-      &lt;grid name=&quot;glc&quot;&gt;gland20&lt;/grid&gt;
-      &lt;mask&gt;gx1v6&lt;/mask&gt;
+      &lt;grid name=&quot;ocnice&quot;&gt;gx1v7&lt;/grid&gt;
+      &lt;grid name=&quot;glc&quot;&gt;ais8&lt;/grid&gt;
+      &lt;mask&gt;gx1v7&lt;/mask&gt;
     &lt;/model_grid&gt;
 
+    &lt;model_grid alias=&quot;f09_g17_ais8gris4&quot; compset=&quot;_CISM&quot;&gt;
+      &lt;grid name=&quot;atm&quot;&gt;0.9x1.25&lt;/grid&gt;
+      &lt;grid name=&quot;lnd&quot;&gt;0.9x1.25&lt;/grid&gt;
+      &lt;grid name=&quot;ocnice&quot;&gt;gx1v7&lt;/grid&gt;
+      &lt;grid name=&quot;glc&quot;&gt;ais8:gris4&lt;/grid&gt;
+      &lt;mask&gt;gx1v7&lt;/mask&gt;
+    &lt;/model_grid&gt;
+
+    &lt;model_grid alias=&quot;f09_g17_gris20&quot; compset=&quot;_CISM&quot;&gt;
+      &lt;grid name=&quot;atm&quot;&gt;0.9x1.25&lt;/grid&gt;
+      &lt;grid name=&quot;lnd&quot;&gt;0.9x1.25&lt;/grid&gt;
+      &lt;grid name=&quot;ocnice&quot;&gt;gx1v7&lt;/grid&gt;
+      &lt;grid name=&quot;glc&quot;&gt;gris20&lt;/grid&gt;
+      &lt;mask&gt;gx1v7&lt;/mask&gt;
+    &lt;/model_grid&gt;
+    &lt;!-- Backwards compatibility with old use of _gl for Greenland grid --&gt;
     &lt;model_grid alias=&quot;f09_g17_gl20&quot; compset=&quot;_CISM&quot;&gt;
       &lt;grid name=&quot;atm&quot;&gt;0.9x1.25&lt;/grid&gt;
       &lt;grid name=&quot;lnd&quot;&gt;0.9x1.25&lt;/grid&gt;
       &lt;grid name=&quot;ocnice&quot;&gt;gx1v7&lt;/grid&gt;
-      &lt;grid name=&quot;glc&quot;&gt;gland20&lt;/grid&gt;
-      &lt;mask&gt;gx1v7&lt;/mask&gt;
-    &lt;/model_grid&gt;
-
-    &lt;model_grid alias=&quot;f09_g16_gl5&quot; compset=&quot;_CISM&quot;&gt;
-      &lt;grid name=&quot;atm&quot;&gt;0.9x1.25&lt;/grid&gt;
-      &lt;grid name=&quot;lnd&quot;&gt;0.9x1.25&lt;/grid&gt;
-      &lt;grid name=&quot;ocnice&quot;&gt;gx1v6&lt;/grid&gt;
-      &lt;grid name=&quot;glc&quot;&gt;gland5UM&lt;/grid&gt;
-      &lt;mask&gt;gx1v6&lt;/mask&gt;
-    &lt;/model_grid&gt;
-
-    &lt;model_grid alias=&quot;f09_g17_gl5&quot; compset=&quot;_CISM&quot;&gt;
-      &lt;grid name=&quot;atm&quot;&gt;0.9x1.25&lt;/grid&gt;
-      &lt;grid name=&quot;lnd&quot;&gt;0.9x1.25&lt;/grid&gt;
-      &lt;grid name=&quot;ocnice&quot;&gt;gx1v7&lt;/grid&gt;
-      &lt;grid name=&quot;glc&quot;&gt;gland5UM&lt;/grid&gt;
+      &lt;grid name=&quot;glc&quot;&gt;gris20&lt;/grid&gt;
       &lt;mask&gt;gx1v7&lt;/mask&gt;
     &lt;/model_grid&gt;
 
@@ -1467,30 +1550,6 @@
       &lt;grid name=&quot;atm&quot;&gt;0.47x0.63&lt;/grid&gt;
       &lt;grid name=&quot;lnd&quot;&gt;0.47x0.63&lt;/grid&gt;
       &lt;grid name=&quot;ocnice&quot;&gt;0.47x0.63&lt;/grid&gt;
-      &lt;mask&gt;gx1v7&lt;/mask&gt;
-    &lt;/model_grid&gt;
-
-    &lt;model_grid alias=&quot;f09_f09_gl5&quot; compset=&quot;_CISM&quot; not_compset=&quot;_POP&quot;&gt;
-      &lt;grid name=&quot;atm&quot;&gt;0.9x1.25&lt;/grid&gt;
-      &lt;grid name=&quot;lnd&quot;&gt;0.9x1.25&lt;/grid&gt;
-      &lt;grid name=&quot;ocnice&quot;&gt;0.9x1.25&lt;/grid&gt;
-      &lt;grid name=&quot;glc&quot;&gt;gland5UM&lt;/grid&gt;
-      &lt;mask&gt;gx1v6&lt;/mask&gt;
-    &lt;/model_grid&gt;
-
-    &lt;model_grid alias=&quot;f09_f09_gl5_mg16&quot; compset=&quot;_CISM&quot; not_compset=&quot;_POP&quot;&gt;
-      &lt;grid name=&quot;atm&quot;&gt;0.9x1.25&lt;/grid&gt;
-      &lt;grid name=&quot;lnd&quot;&gt;0.9x1.25&lt;/grid&gt;
-      &lt;grid name=&quot;ocnice&quot;&gt;0.9x1.25&lt;/grid&gt;
-      &lt;grid name=&quot;glc&quot;&gt;gland5UM&lt;/grid&gt;
-      &lt;mask&gt;gx1v6&lt;/mask&gt;
-    &lt;/model_grid&gt;
-
-    &lt;model_grid alias=&quot;f09_f09_gl5_mg17&quot; compset=&quot;_CISM&quot; not_compset=&quot;_POP&quot;&gt;
-      &lt;grid name=&quot;atm&quot;&gt;0.9x1.25&lt;/grid&gt;
-      &lt;grid name=&quot;lnd&quot;&gt;0.9x1.25&lt;/grid&gt;
-      &lt;grid name=&quot;ocnice&quot;&gt;0.9x1.25&lt;/grid&gt;
-      &lt;grid name=&quot;glc&quot;&gt;gland5UM&lt;/grid&gt;
       &lt;mask&gt;gx1v7&lt;/mask&gt;
     &lt;/model_grid&gt;
 
@@ -1532,59 +1591,19 @@
       &lt;mask&gt;gx1v7&lt;/mask&gt;
     &lt;/model_grid&gt;
 
-    &lt;model_grid alias=&quot;f19_g16_gl4&quot; compset=&quot;_CISM&quot;&gt;
+    &lt;model_grid alias=&quot;f19_g17_gris4&quot; compset=&quot;_CISM&quot;&gt;
       &lt;grid name=&quot;atm&quot;&gt;1.9x2.5&lt;/grid&gt;
       &lt;grid name=&quot;lnd&quot;&gt;1.9x2.5&lt;/grid&gt;
-      &lt;grid name=&quot;ocnice&quot;&gt;gx1v6&lt;/grid&gt;
-      &lt;grid name=&quot;glc&quot;&gt;gland4&lt;/grid&gt;
-      &lt;mask&gt;gx1v6&lt;/mask&gt;
+      &lt;grid name=&quot;ocnice&quot;&gt;gx1v7&lt;/grid&gt;
+      &lt;grid name=&quot;glc&quot;&gt;gris4&lt;/grid&gt;
+      &lt;mask&gt;gx1v7&lt;/mask&gt;
     &lt;/model_grid&gt;
-
+    &lt;!-- Backwards compatibility with old use of _gl for Greenland grid --&gt;
     &lt;model_grid alias=&quot;f19_g17_gl4&quot; compset=&quot;_CISM&quot;&gt;
       &lt;grid name=&quot;atm&quot;&gt;1.9x2.5&lt;/grid&gt;
       &lt;grid name=&quot;lnd&quot;&gt;1.9x2.5&lt;/grid&gt;
       &lt;grid name=&quot;ocnice&quot;&gt;gx1v7&lt;/grid&gt;
-      &lt;grid name=&quot;glc&quot;&gt;gland4&lt;/grid&gt;
-      &lt;mask&gt;gx1v7&lt;/mask&gt;
-    &lt;/model_grid&gt;
-
-    &lt;model_grid alias=&quot;f19_g16_gl5&quot; compset=&quot;_CISM&quot;&gt;
-      &lt;grid name=&quot;atm&quot;&gt;1.9x2.5&lt;/grid&gt;
-      &lt;grid name=&quot;lnd&quot;&gt;1.9x2.5&lt;/grid&gt;
-      &lt;grid name=&quot;ocnice&quot;&gt;gx1v6&lt;/grid&gt;
-      &lt;grid name=&quot;glc&quot;&gt;gland5UM&lt;/grid&gt;
-      &lt;mask&gt;gx1v6&lt;/mask&gt;
-    &lt;/model_grid&gt;
-
-    &lt;model_grid alias=&quot;f19_g17_gl5&quot; compset=&quot;_CISM&quot;&gt;
-      &lt;grid name=&quot;atm&quot;&gt;1.9x2.5&lt;/grid&gt;
-      &lt;grid name=&quot;lnd&quot;&gt;1.9x2.5&lt;/grid&gt;
-      &lt;grid name=&quot;ocnice&quot;&gt;gx1v7&lt;/grid&gt;
-      &lt;grid name=&quot;glc&quot;&gt;gland5UM&lt;/grid&gt;
-      &lt;mask&gt;gx1v7&lt;/mask&gt;
-    &lt;/model_grid&gt;
-
-    &lt;model_grid alias=&quot;f19_f19_gl5&quot; compset=&quot;_CISM&quot; not_compset=&quot;_POP&quot;&gt;
-      &lt;grid name=&quot;atm&quot;&gt;1.9x2.5&lt;/grid&gt;
-      &lt;grid name=&quot;lnd&quot;&gt;1.9x2.5&lt;/grid&gt;
-      &lt;grid name=&quot;ocnice&quot;&gt;1.9x2.5&lt;/grid&gt;
-      &lt;grid name=&quot;glc&quot;&gt;gland5UM&lt;/grid&gt;
-      &lt;mask&gt;gx1v6&lt;/mask&gt;
-    &lt;/model_grid&gt;
-
-    &lt;model_grid alias=&quot;f19_f19_gl5_mg16&quot; compset=&quot;_CISM&quot; not_compset=&quot;_POP&quot;&gt;
-      &lt;grid name=&quot;atm&quot;&gt;1.9x2.5&lt;/grid&gt;
-      &lt;grid name=&quot;lnd&quot;&gt;1.9x2.5&lt;/grid&gt;
-      &lt;grid name=&quot;ocnice&quot;&gt;1.9x2.5&lt;/grid&gt;
-      &lt;grid name=&quot;glc&quot;&gt;gland5UM&lt;/grid&gt;
-      &lt;mask&gt;gx1v6&lt;/mask&gt;
-    &lt;/model_grid&gt;
-
-    &lt;model_grid alias=&quot;f19_f19_gl5_mg17&quot; compset=&quot;_CISM&quot; not_compset=&quot;_POP&quot;&gt;
-      &lt;grid name=&quot;atm&quot;&gt;1.9x2.5&lt;/grid&gt;
-      &lt;grid name=&quot;lnd&quot;&gt;1.9x2.5&lt;/grid&gt;
-      &lt;grid name=&quot;ocnice&quot;&gt;1.9x2.5&lt;/grid&gt;
-      &lt;grid name=&quot;glc&quot;&gt;gland5UM&lt;/grid&gt;
+      &lt;grid name=&quot;glc&quot;&gt;gris4&lt;/grid&gt;
       &lt;mask&gt;gx1v7&lt;/mask&gt;
     &lt;/model_grid&gt;
 
@@ -1662,6 +1681,14 @@
       &lt;grid name=&quot;atm&quot;&gt;10x15&lt;/grid&gt;
       &lt;grid name=&quot;lnd&quot;&gt;10x15&lt;/grid&gt;
       &lt;grid name=&quot;ocnice&quot;&gt;10x15&lt;/grid&gt;
+      &lt;mask&gt;gx3v7&lt;/mask&gt;
+    &lt;/model_grid&gt;
+
+    &lt;model_grid alias=&quot;f10_f10_ais8_mg37&quot; compset=&quot;_CISM&quot; not_compset=&quot;_POP&quot;&gt;
+      &lt;grid name=&quot;atm&quot;&gt;10x15&lt;/grid&gt;
+      &lt;grid name=&quot;lnd&quot;&gt;10x15&lt;/grid&gt;
+      &lt;grid name=&quot;ocnice&quot;&gt;10x15&lt;/grid&gt;
+      &lt;grid name=&quot;glc&quot;&gt;ais8&lt;/grid&gt;
       &lt;mask&gt;gx3v7&lt;/mask&gt;
     &lt;/model_grid&gt;
 
@@ -2158,7 +2185,7 @@
       &lt;grid name=&quot;atm&quot;&gt;C96&lt;/grid&gt;
       &lt;grid name=&quot;lnd&quot;&gt;C96&lt;/grid&gt;
       &lt;grid name=&quot;ocnice&quot;&gt;C96&lt;/grid&gt;
-      &lt;grid name=&quot;glc&quot;&gt;gland4&lt;/grid&gt;
+      &lt;grid name=&quot;glc&quot;&gt;gris4&lt;/grid&gt;
       &lt;mask&gt;gx1v7&lt;/mask&gt;
     &lt;/model_grid&gt;
 
@@ -2225,79 +2252,17 @@
       &lt;desc&gt;null is no grid: &lt;/desc&gt;
     &lt;/domain&gt;
 
-    &lt;!-- LND domains for single column or regional --&gt;
 
-    &lt;domain name=&quot;01col&quot;&gt;
-      &lt;nx&gt;1&lt;/nx&gt; &lt;ny&gt;1&lt;/ny&gt;
-      &lt;file&gt;domain.ocn.01col.ArcticOcean.20150824.nc&lt;/file&gt;
-      &lt;file&gt;domain.ocn.01col.ArcticOcean.20150824.nc&lt;/file&gt;
-      &lt;desc&gt;01col is a single-column grid for datm and POP:&lt;/desc&gt;
-    &lt;/domain&gt;
+    &lt;!-- ======================================================== --&gt;
+    &lt;!-- ATM/LND meshes regional and global --&gt;
+    &lt;!-- ======================================================== --&gt;
 
-    &lt;domain name=&quot;CLM_USRDAT&quot;&gt;
-      &lt;nx&gt;1&lt;/nx&gt; &lt;ny&gt;1&lt;/ny&gt;
-      &lt;file&gt;$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.${CLM_USRDAT_NAME}_navy.nc&lt;/file&gt;
-      &lt;mesh driver=&quot;nuopc&quot;&gt;create_mesh&lt;/mesh&gt;
-      &lt;desc&gt;user specified domain - only valid for DATM/CLM compset&lt;/desc&gt;
-    &lt;/domain&gt;
-
-    &lt;domain name=&quot;1x1_numaIA&quot;&gt;
-      &lt;nx&gt;1&lt;/nx&gt; &lt;ny&gt;1&lt;/ny&gt;
-      &lt;file grid=&quot;atm|lnd&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.1x1pt-numaIA_navy.110106.nc&lt;/file&gt;
-      &lt;mesh driver=&quot;nuopc&quot;&gt;create_mesh&lt;/mesh&gt;
-      &lt;desc&gt;1x1 Numa Iowa -- only valid for DATM/CLM compset&lt;/desc&gt;
-    &lt;/domain&gt;
-
-    &lt;domain name=&quot;1x1_brazil&quot;&gt;
-      &lt;nx&gt;1&lt;/nx&gt; &lt;ny&gt;1&lt;/ny&gt;
-      &lt;file grid=&quot;atm|lnd&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.1x1pt-brazil_navy.090715.nc&lt;/file&gt;
-      &lt;mesh driver=&quot;nuopc&quot;&gt;create_mesh&lt;/mesh&gt;
-      &lt;desc&gt;1x1 Brazil -- only valid for DATM/CLM compset&lt;/desc&gt;
-    &lt;/domain&gt;
-
-    &lt;domain name=&quot;1x1_smallvilleIA&quot;&gt;
-      &lt;nx&gt;1&lt;/nx&gt; &lt;ny&gt;1&lt;/ny&gt;
-      &lt;file grid=&quot;atm|lnd&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.1x1pt-smallvilleIA_test.110106.nc&lt;/file&gt;
-      &lt;mesh driver=&quot;nuopc&quot;&gt;create_mesh&lt;/mesh&gt;
-      &lt;desc&gt;1x1 Smallville Iowa Crop Test Case -- only valid for DATM/CLM compset&lt;/desc&gt;
-    &lt;/domain&gt;
-
-    &lt;domain name=&quot;1x1_camdenNJ&quot;&gt;
-      &lt;nx&gt;1&lt;/nx&gt; &lt;ny&gt;1&lt;/ny&gt;
-      &lt;file grid=&quot;atm|lnd&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.1x1pt-camdenNJ_navy.111004.nc&lt;/file&gt;
-      &lt;mesh driver=&quot;nuopc&quot;&gt;create_mesh&lt;/mesh&gt;
-      &lt;desc&gt;1x1 Camden New Jersey -- only valid for DATM/CLM compset&lt;/desc&gt;
-    &lt;/domain&gt;
-
-    &lt;domain name=&quot;1x1_mexicocityMEX&quot;&gt;
-      &lt;nx&gt;1&lt;/nx&gt; &lt;ny&gt;1&lt;/ny&gt;
-      &lt;file grid=&quot;atm|lnd&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.1x1pt-mexicocityMEX_navy.090715.nc&lt;/file&gt;
-      &lt;mesh driver=&quot;nuopc&quot;&gt;create_mesh&lt;/mesh&gt;
-      &lt;desc&gt;1x1 Mexico City Mexico -- only valid for DATM/CLM compset&lt;/desc&gt;
-    &lt;/domain&gt;
-
-    &lt;domain name=&quot;1x1_vancouverCAN&quot;&gt;
-      &lt;nx&gt;1&lt;/nx&gt; &lt;ny&gt;1&lt;/ny&gt;
-      &lt;file grid=&quot;atm|lnd&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.1x1pt-vancouverCAN_navy.090715.nc&lt;/file&gt;
-      &lt;mesh driver=&quot;nuopc&quot;&gt;create_mesh&lt;/mesh&gt;
-      &lt;desc&gt;1x1 Vancouver Canada -- only valid for DATM/CLM compset&lt;/desc&gt;
-    &lt;/domain&gt;
-
-    &lt;domain name=&quot;1x1_urbanc_alpha&quot;&gt;
-      &lt;nx&gt;1&lt;/nx&gt; &lt;ny&gt;1&lt;/ny&gt;
-      &lt;file grid=&quot;atm|lnd&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.1x1pt-urbanc_alpha_test.110201.nc&lt;/file&gt;
-      &lt;mesh driver=&quot;nuopc&quot;&gt;create_mesh&lt;/mesh&gt;
-      &lt;desc&gt;1x1 Urban C Alpha Test Case -- only valid for DATM/CLM compset&lt;/desc&gt;
-    &lt;/domain&gt;
-
+    &lt;!-- TODO: can this be deleted? --&gt;
     &lt;domain name=&quot;360x720cru&quot;&gt;
       &lt;nx&gt;720&lt;/nx&gt; &lt;ny&gt;360&lt;/ny&gt;
       &lt;file grid=&quot;atm|lnd&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.360x720_cruncep.100429.nc&lt;/file&gt;
-      &lt;mesh driver=&quot;nuopc&quot;&gt;create_mesh&lt;/mesh&gt;
       &lt;desc&gt;Exact half-degree CRUNCEP datm forcing grid with CRUNCEP land-mask -- only valid for DATM/CLM compset&lt;/desc&gt;
     &lt;/domain&gt;
-
-    &lt;!-- ATM/LND domains with mesh --&gt;
 
     &lt;domain name=&quot;5x5_amazon&quot;&gt;
       &lt;nx&gt;5&lt;/nx&gt; &lt;ny&gt;5&lt;/ny&gt;
@@ -2306,9 +2271,9 @@
       &lt;desc&gt;5x5 Amazon regional case -- only valid for DATM/CLM compset&lt;/desc&gt;
     &lt;/domain&gt;
 
-    &lt;!-- This grid is also used by ROF --&gt;
     &lt;domain name=&quot;0.125nldas2&quot;&gt;
       &lt;nx&gt;464&lt;/nx&gt; &lt;ny&gt;224&lt;/ny&gt;
+      &lt;!-- This grid is also used by ROF --&gt;
       &lt;file grid=&quot;atm|lnd&quot; mask=&quot;0.125nldas2&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.0.125nldas2_0.125nldas2.190410.nc&lt;/file&gt;
       &lt;file grid=&quot;ocnice&quot;  mask=&quot;0.125nldas2&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.clm/domain.ocn.0.125nldas2.190410.nc&lt;/file&gt;
       &lt;mesh driver=&quot;nuopc&quot;&gt;$DIN_LOC_ROOT/share/meshes/0.125nldas2_ESMFmesh_cd5_241220.nc&lt;/mesh&gt;
@@ -2385,7 +2350,7 @@
     &lt;domain name=&quot;10x15&quot;&gt;
       &lt;nx&gt;24&lt;/nx&gt;   &lt;ny&gt;19&lt;/ny&gt;
       &lt;file grid=&quot;atm|lnd&quot; mask=&quot;usgs&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.fv10x15_USGS.110713.nc&lt;/file&gt;
-      &lt;file grid=&quot;ocnice&quot;  mask=&quot;usgs&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.clm/domain.ocn.fv10x15_USGS_070807.nc&lt;/file&gt;      
+      &lt;file grid=&quot;ocnice&quot;  mask=&quot;usgs&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.clm/domain.ocn.fv10x15_USGS_070807.nc&lt;/file&gt;
       &lt;file grid=&quot;atm|lnd&quot; mask=&quot;gx3v7&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.lnd.fv10x15_gx3v7.180321.nc&lt;/file&gt;
       &lt;file grid=&quot;ocnice&quot;  mask=&quot;gx3v7&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.fv10x15_gx3v7.180321.nc&lt;/file&gt;
       &lt;mesh driver=&quot;nuopc&quot;&gt;$DIN_LOC_ROOT/share/meshes/10x15_nomask_c110308_ESMFmesh.nc&lt;/mesh&gt;
@@ -2499,6 +2464,7 @@
       &lt;nx&gt;13824&lt;/nx&gt; &lt;ny&gt;1&lt;/ny&gt;
       &lt;file grid=&quot;atm|lnd&quot; mask=&quot;gx1v7&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.lnd.ne16pg3_gx1v7.171003.nc&lt;/file&gt;
       &lt;file grid=&quot;ocnice&quot;  mask=&quot;gx1v7&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.ne16pg3_gx1v7.171003.nc&lt;/file&gt;
+      &lt;mesh driver=&quot;nuopc&quot;&gt;$DIN_LOC_ROOT/share/meshes/ne16pg3_ESMFmesh_cdf5_c20211018.nc&lt;/mesh&gt;
       &lt;desc&gt;ne16np4.pg3 is a Spectral Elem 2-deg grid with a 3x3 FVM physics grid:&lt;/desc&gt;
       &lt;support&gt;EXPERIMENTAL FVM physics grid&lt;/support&gt;
     &lt;/domain&gt;
@@ -2509,7 +2475,7 @@
       &lt;file grid=&quot;ocnice&quot;  mask=&quot;gx1v6&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.ne30np4_gx1v6_110217.nc&lt;/file&gt;
       &lt;file grid=&quot;atm|lnd&quot; mask=&quot;gx1v7&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.lnd.ne30_gx1v7.171003.nc&lt;/file&gt;
       &lt;file grid=&quot;ocnice&quot;  mask=&quot;gx1v7&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.ne30_gx1v7.171003.nc&lt;/file&gt;
-      &lt;mesh driver=&quot;nuopc&quot;&gt;$DIN_LOC_ROOT/share/meshes/ne30np4_091226_pentagons_ESMFmesh.nc&lt;/mesh&gt;
+      &lt;mesh driver=&quot;nuopc&quot;&gt;$DIN_LOC_ROOT/share/meshes/ne30np4_ESMFmesh_cdf5_c20211018.nc&lt;/mesh&gt;
       &lt;desc&gt;ne30np4 is Spectral Elem 1-deg grid:&lt;/desc&gt;
     &lt;/domain&gt;
 
@@ -2517,7 +2483,7 @@
       &lt;nx&gt;21600&lt;/nx&gt; &lt;ny&gt;1&lt;/ny&gt;
       &lt;file grid=&quot;atm|lnd&quot; mask=&quot;gx1v7&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.lnd.ne30np4.pg2_gx1v7.200626.nc&lt;/file&gt;
       &lt;file grid=&quot;ocnice&quot;  mask=&quot;gx1v7&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.ne30np4.pg2_gx1v7.200626.nc&lt;/file&gt;
-      &lt;mesh driver=&quot;nuopc&quot;&gt;$DIN_LOC_ROOT/share/meshes/ne30pg2_ESMFmesh_c20200727.nc&lt;/mesh&gt;
+      &lt;mesh driver=&quot;nuopc&quot;&gt;$DIN_LOC_ROOT/share/meshes/ne30pg2_ESMFmesh_cdf5_c20211018.nc&lt;/mesh&gt;
       &lt;desc&gt;ne30np4.pg2 is a Spectral Elem 1-deg grid with a 2x2 FVM physics grid:&lt;/desc&gt;
       &lt;support&gt;EXPERIMENTAL FVM physics grid&lt;/support&gt;
     &lt;/domain&gt;
@@ -2526,6 +2492,7 @@
       &lt;nx&gt;48600&lt;/nx&gt; &lt;ny&gt;1&lt;/ny&gt;
       &lt;file grid=&quot;atm|lnd&quot; mask=&quot;gx1v7&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.lnd.ne30np4.pg3_gx1v7.170605.nc&lt;/file&gt;
       &lt;file grid=&quot;ocnice&quot;  mask=&quot;gx1v7&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.ne30np4.pg3_gx1v7_170605.nc&lt;/file&gt;
+      &lt;mesh driver=&quot;nuopc&quot;&gt;$DIN_LOC_ROOT/share/meshes/ne30pg3_ESMFmesh_cdf5_c20211018.nc&lt;/mesh&gt;
       &lt;desc&gt;ne30np4.pg3 is a Spectral Elem ne30 grid with a 3x3 FVM physics grid:&lt;/desc&gt;
       &lt;support&gt;EXPERIMENTAL FVM physics grid&lt;/support&gt;
     &lt;/domain&gt;
@@ -2534,6 +2501,7 @@
       &lt;nx&gt;86400&lt;/nx&gt; &lt;ny&gt;1&lt;/ny&gt;
       &lt;file grid=&quot;atm|lnd&quot; mask=&quot;gx1v7&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.lnd.ne30np4.pg4_gx1v7.170628.nc&lt;/file&gt;
       &lt;file grid=&quot;ocnice&quot;  mask=&quot;gx1v7&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.ne30np4.pg4_gx1v7.170628.nc&lt;/file&gt;
+      &lt;mesh driver=&quot;nuopc&quot;&gt;$DIN_LOC_ROOT/share/meshes/ne30pg4_ESMFmesh_cdf5_c20211018.nc&lt;/mesh&gt;
       &lt;desc&gt;ne30np4.pg4 is a Spectral Elem 1-deg grid with a 4x4 FVM physics grid:&lt;/desc&gt;
       &lt;support&gt;EXPERIMENTAL FVM physics grid&lt;/support&gt;
     &lt;/domain&gt;
@@ -2542,7 +2510,7 @@
       &lt;nx&gt;194402&lt;/nx&gt; &lt;ny&gt;1&lt;/ny&gt;
       &lt;file grid=&quot;atm|lnd&quot; mask=&quot;gx1v6&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.lnd.ne60np4_gx1v6.120406.nc&lt;/file&gt;
       &lt;file grid=&quot;ocnice&quot;  mask=&quot;gx1v6&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.ne60np4_gx1v6.121113.nc&lt;/file&gt;
-      &lt;mesh driver=&quot;nuopc&quot;&gt;$DIN_LOC_ROOT/share/meshes/ne60np4_pentagons_100408_ESMFmesh.nc&lt;/mesh&gt;
+      &lt;mesh driver=&quot;nuopc&quot;&gt;$DIN_LOC_ROOT/share/meshes/ne60np4_ESMFmesh_cdf5_c20211018.nc&lt;/mesh&gt;
       &lt;desc&gt;ne60np4 is Spectral Elem 1/2-deg grid:&lt;/desc&gt;
     &lt;/domain&gt;
 
@@ -2550,6 +2518,7 @@
       &lt;nx&gt;86400&lt;/nx&gt; &lt;ny&gt;1&lt;/ny&gt;
       &lt;file grid=&quot;atm|lnd&quot; mask=&quot;gx1v7&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.lnd.ne60np4.pg2_gx1v7.170628.nc&lt;/file&gt;
       &lt;file grid=&quot;ocnice&quot;  mask=&quot;gx1v7&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.ne60np4.pg2_gx1v7.170628.nc&lt;/file&gt;
+      &lt;mesh driver=&quot;nuopc&quot;&gt;$DIN_LOC_ROOT/share/meshes/ne60pg2_ESMFmesh_cdf5_c20211018.nc&lt;/mesh&gt;
       &lt;desc&gt;ne60np4.pg2 is a Spectral Elem 0.5-deg grid with a 2x2 FVM physics grid:&lt;/desc&gt;
       &lt;support&gt;EXPERIMENTAL FVM physics grid&lt;/support&gt;
     &lt;/domain&gt;
@@ -2558,6 +2527,7 @@
       &lt;nx&gt;194400&lt;/nx&gt; &lt;ny&gt;1&lt;/ny&gt;
       &lt;file grid=&quot;atm|lnd&quot; mask=&quot;gx1v7&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.lnd.ne60np4.pg3_gx1v7.170628.nc&lt;/file&gt;
       &lt;file grid=&quot;ocnice&quot;  mask=&quot;gx1v7&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.ne60np4.pg3_gx1v7.170628.nc&lt;/file&gt;
+      &lt;mesh driver=&quot;nuopc&quot;&gt;$DIN_LOC_ROOT/share/meshes/ne60pg3_ESMFmesh_cdf5_c20211018.nc&lt;/mesh&gt;
       &lt;desc&gt;ne60np4.pg3 is a Spectral Elem 0.5-deg grid with a 3x3 FVM physics grid:&lt;/desc&gt;
       &lt;support&gt;EXPERIMENTAL FVM physics grid&lt;/support&gt;
     &lt;/domain&gt;
@@ -2566,6 +2536,7 @@
       &lt;nx&gt;345600&lt;/nx&gt; &lt;ny&gt;1&lt;/ny&gt;
       &lt;file grid=&quot;atm|lnd&quot; mask=&quot;gx1v7&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.lnd.ne60np4.pg4_gx1v7.170628.nc&lt;/file&gt;
       &lt;file grid=&quot;ocnice&quot;  mask=&quot;gx1v7&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.ne60np4.pg4_gx1v7.170628.nc&lt;/file&gt;
+      &lt;mesh driver=&quot;nuopc&quot;&gt;$DIN_LOC_ROOT/share/meshes/ne60pg4_ESMFmesh_cdf5_c20211018.nc&lt;/mesh&gt;
       &lt;desc&gt;ne60np4.pg4 is a Spectral Elem 0.5-deg grid with a 4x4 FVM physics grid:&lt;/desc&gt;
       &lt;support&gt;EXPERIMENTAL FVM physics grid&lt;/support&gt;
     &lt;/domain&gt;
@@ -2576,6 +2547,7 @@
       &lt;file grid=&quot;ocnice&quot;  mask=&quot;gx1v6&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.ne120np4_gx1v6.121113.nc&lt;/file&gt;
       &lt;file grid=&quot;atm|lnd&quot; mask=&quot;gx1v7&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.lnd.ne120np4_gx1v7.190718.nc&lt;/file&gt;
       &lt;file grid=&quot;ocnice&quot;  mask=&quot;gx1v7&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.ne120np4_gx1v7.190718.nc&lt;/file&gt;
+      &lt;mesh driver=&quot;nuopc&quot;&gt;$DIN_LOC_ROOT/share/meshes/ne120np4_ESMFmesh_cdf5_c20211018.nc&lt;/mesh&gt;
       &lt;desc&gt;ne120np4 is Spectral Elem 1/4-deg grid:&lt;/desc&gt;
     &lt;/domain&gt;
 
@@ -2585,7 +2557,7 @@
       &lt;file grid=&quot;ocnice&quot;  mask=&quot;gx1v7&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.ne120np4.pg2_gx1v7.170629.nc&lt;/file&gt;
       &lt;file grid=&quot;atm|lnd&quot; mask=&quot;tx0.1v2&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.lnd.ne120np4.pg2_tx0.1v2.200626.nc&lt;/file&gt;
       &lt;file grid=&quot;ocnice&quot;  mask=&quot;tx0.1v2&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.ne120np4.pg2_tx0.1v2.200626.nc&lt;/file&gt;
-      &lt;mesh driver=&quot;nuopc&quot;&gt;$DIN_LOC_ROOT/share/meshes/ne120np4_pentagons_100310_ESMFmesh.nc&lt;/mesh&gt;
+      &lt;mesh driver=&quot;nuopc&quot;&gt;$DIN_LOC_ROOT/share/meshes/ne120pg2_ESMFmesh_cdf5_c20211018.nc&lt;/mesh&gt;
       &lt;desc&gt;ne120np4.pg2 is a Spectral Elem 0.25-deg grid with a 2x2 FVM physics grid:&lt;/desc&gt;
       &lt;support&gt;EXPERIMENTAL FVM physics grid&lt;/support&gt;
     &lt;/domain&gt;
@@ -2596,6 +2568,7 @@
       &lt;file grid=&quot;ocnice&quot;  mask=&quot;gx1v7&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.ne120np4.pg3_gx1v7.190718.nc&lt;/file&gt;
       &lt;file grid=&quot;atm|lnd&quot; mask=&quot;tx0.1v3&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.lnd.ne120np4.pg3_tx0.1v3.190820.nc&lt;/file&gt;
       &lt;file grid=&quot;ocnice&quot;  mask=&quot;tx0.1v3&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.ne120np4.pg3_tx0.1v3.190820.nc&lt;/file&gt;
+      &lt;mesh driver=&quot;nuopc&quot;&gt;$DIN_LOC_ROOT/share/meshes/ne120pg3_ESMFmesh_cdf5_c20211018.nc&lt;/mesh&gt;
       &lt;desc&gt;ne120np4.pg3 is a Spectral Elem 0.25-deg grid with a 3x3 FVM physics grid:&lt;/desc&gt;
       &lt;support&gt;EXPERIMENTAL FVM physics grid&lt;/support&gt;
     &lt;/domain&gt;
@@ -2604,6 +2577,7 @@
       &lt;nx&gt;1382400&lt;/nx&gt; &lt;ny&gt;1&lt;/ny&gt;
       &lt;file grid=&quot;atm|lnd&quot; mask=&quot;gx1v7&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.lnd.ne120np4.pg4_gx1v7.170629.nc&lt;/file&gt;
       &lt;file grid=&quot;ocnice&quot;  mask=&quot;gx1v7&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.ne120np4.pg4_gx1v7.170629.nc&lt;/file&gt;
+      &lt;mesh driver=&quot;nuopc&quot;&gt;$DIN_LOC_ROOT/share/meshes/ne120pg4_ESMFmesh_cdf5_c20211018.nc&lt;/mesh&gt;
       &lt;desc&gt;ne120np4.pg4 is a Spectral Elem 0.25-deg grid with a 4x4 FVM physics grid:&lt;/desc&gt;
       &lt;support&gt;EXPERIMENTAL FVM physics grid&lt;/support&gt;
     &lt;/domain&gt;
@@ -2612,8 +2586,24 @@
       &lt;nx&gt;3110402&lt;/nx&gt; &lt;ny&gt;1&lt;/ny&gt;
       &lt;file grid=&quot;atm|lnd&quot; mask=&quot;gx1v6&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.lnd.ne240np4_gx1v6.111226.nc&lt;/file&gt;
       &lt;file grid=&quot;ocnice&quot;  mask=&quot;gx1v6&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.ne240np4_gx1v6.111226.nc&lt;/file&gt;
+      &lt;mesh driver=&quot;nuopc&quot;&gt;$DIN_LOC_ROOT/share/meshes/ne240np4_ESMFmesh_cdf5_c20211018.nc&lt;/mesh&gt;
       &lt;desc&gt;ne240np4 is Spectral Elem 1/8-deg grid:&lt;/desc&gt;
       &lt;support&gt;Experimental for very high resolution experiments&lt;/support&gt;
+    &lt;/domain&gt;
+    &lt;domain name=&quot;ne240np4.pg2&quot;&gt;
+      &lt;nx&gt;1382400&lt;/nx&gt; &lt;ny&gt;1&lt;/ny&gt;
+      &lt;file grid=&quot;atm|lnd&quot; mask=&quot;gx1v7&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.lnd.ne240np4.pg2_gx1v7.170629.nc&lt;/file&gt;
+      &lt;file grid=&quot;ocnice&quot;  mask=&quot;gx1v7&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.ne240np4.pg2_gx1v7.170629.nc&lt;/file&gt;
+      &lt;mesh driver=&quot;nuopc&quot;&gt;$DIN_LOC_ROOT/share/meshes/ne240pg2_ESMFmesh_cdf5_c20211018.nc&lt;/mesh&gt;
+      &lt;desc&gt;ne240np4.pg2 is a Spectral Elem 0.125-deg grid with a 2x2 FVM physics grid:&lt;/desc&gt;
+      &lt;support&gt;EXPERIMENTAL FVM physics grid&lt;/support&gt;
+    &lt;/domain&gt;
+    &lt;domain name=&quot;ne240np4.pg3&quot;&gt;
+      &lt;nx&gt;3110400&lt;/nx&gt; &lt;ny&gt;1&lt;/ny&gt;
+      &lt;file grid=&quot;atm|lnd&quot; mask=&quot;gx1v7&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.lnd.ne240np4.pg3_gx1v7.170629.nc&lt;/file&gt;
+      &lt;file grid=&quot;ocnice&quot;  mask=&quot;gx1v7&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.ne240np4.pg3_gx1v7.170629.nc&lt;/file&gt;
+      &lt;desc&gt;ne240np4.pg3 is a Spectral Elem 0.125-deg grid with a 3x3 FVM physics grid:&lt;/desc&gt;
+      &lt;support&gt;EXPERIMENTAL FVM physics grid&lt;/support&gt;
     &lt;/domain&gt;
 
     &lt;domain name=&quot;ne0np4TESTONLY.ne5x4&quot;&gt;
@@ -2655,32 +2645,27 @@
       &lt;nx&gt;2562&lt;/nx&gt; &lt;ny&gt;1&lt;/ny&gt;
       &lt;desc&gt;MPAS-A 480-km quasi-uniform mesh:&lt;/desc&gt;
     &lt;/domain&gt;
-
     &lt;domain name=&quot;mpasa120&quot;&gt;
       &lt;nx&gt;40962&lt;/nx&gt; &lt;ny&gt;1&lt;/ny&gt;
+      &lt;mesh driver=&quot;nuopc&quot;&gt;$DIN_LOC_ROOT/share/meshes/mpasa120z32_ESMFmesh_cdf5_c20210120.nc&lt;/mesh&gt;
       &lt;desc&gt;MPAS-A 120-km quasi-uniform mesh:&lt;/desc&gt;
     &lt;/domain&gt;
-
     &lt;domain name=&quot;mpasa60&quot;&gt;
       &lt;nx&gt;163842&lt;/nx&gt; &lt;ny&gt;1&lt;/ny&gt;
       &lt;desc&gt;MPAS-A 60-km quasi-uniform mesh:&lt;/desc&gt;
     &lt;/domain&gt;
-
     &lt;domain name=&quot;mpasa30&quot;&gt;
       &lt;nx&gt;655362&lt;/nx&gt; &lt;ny&gt;1&lt;/ny&gt;
       &lt;desc&gt;MPAS-A 30-km quasi-uniform mesh:&lt;/desc&gt;
     &lt;/domain&gt;
-
     &lt;domain name=&quot;mpasa15&quot;&gt;
       &lt;nx&gt;2621442&lt;/nx&gt; &lt;ny&gt;1&lt;/ny&gt;
       &lt;desc&gt;MPAS-A 15-km quasi-uniform mesh:&lt;/desc&gt;
     &lt;/domain&gt;
-
     &lt;domain name=&quot;mpasa12&quot;&gt;
       &lt;nx&gt;4096002&lt;/nx&gt; &lt;ny&gt;1&lt;/ny&gt;
       &lt;desc&gt;MPAS-A 12-km quasi-uniform mesh:&lt;/desc&gt;
     &lt;/domain&gt;
-
     &lt;domain name=&quot;mpasa15-3&quot;&gt;
       &lt;nx&gt;6488066&lt;/nx&gt; &lt;ny&gt;1&lt;/ny&gt;
       &lt;desc&gt;MPAS-A 15-3-km variable-uniform mesh:&lt;/desc&gt;
@@ -2708,188 +2693,6 @@
       &lt;file grid=&quot;ocnice&quot;  mask=&quot;tx0.66v1&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.TL639_tx0.66v1.200619.nc&lt;/file&gt;
       &lt;mesh driver=&quot;nuopc&quot;&gt;$DIN_LOC_ROOT/share/meshes/TL639_200618_ESMFmesh.nc&lt;/mesh&gt;
       &lt;desc&gt;TL639 grid for ERA5&lt;/desc&gt;
-    &lt;/domain&gt;
-
-    &lt;domain name=&quot;ne240np4.pg2&quot;&gt;
-      &lt;nx&gt;1382400&lt;/nx&gt; &lt;ny&gt;1&lt;/ny&gt;
-      &lt;file grid=&quot;atm|lnd&quot; mask=&quot;gx1v7&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.lnd.ne240np4.pg2_gx1v7.170629.nc&lt;/file&gt;
-      &lt;file grid=&quot;ocnice&quot;  mask=&quot;gx1v7&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.ne240np4.pg2_gx1v7.170629.nc&lt;/file&gt;
-      &lt;desc&gt;ne240np4.pg2 is a Spectral Elem 0.125-deg grid with a 2x2 FVM physics grid:&lt;/desc&gt;
-      &lt;support&gt;EXPERIMENTAL FVM physics grid&lt;/support&gt;
-    &lt;/domain&gt;
-
-    &lt;domain name=&quot;ne240np4.pg3&quot;&gt;
-      &lt;nx&gt;3110400&lt;/nx&gt; &lt;ny&gt;1&lt;/ny&gt;
-      &lt;file grid=&quot;atm|lnd&quot; mask=&quot;gx1v7&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.lnd.ne240np4.pg3_gx1v7.170629.nc&lt;/file&gt;
-      &lt;file grid=&quot;ocnice&quot;  mask=&quot;gx1v7&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.ne240np4.pg3_gx1v7.170629.nc&lt;/file&gt;
-      &lt;desc&gt;ne240np4.pg3 is a Spectral Elem 0.125-deg grid with a 3x3 FVM physics grid:&lt;/desc&gt;
-      &lt;support&gt;EXPERIMENTAL FVM physics grid&lt;/support&gt;
-    &lt;/domain&gt;
-
-    &lt;!-- ======================================================== --&gt;
-    &lt;!-- OCN/ICE domains --&gt;
-    &lt;!-- ======================================================== --&gt;
-
-    &lt;domain name=&quot;gx1v6&quot;&gt;
-      &lt;nx&gt;320&lt;/nx&gt;  &lt;ny&gt;384&lt;/ny&gt;
-      &lt;file grid=&quot;atm|lnd&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.gx1v6.090206.nc&lt;/file&gt;
-      &lt;file grid=&quot;ocnice&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.gx1v6.090206.nc&lt;/file&gt;
-      &lt;mesh driver=&quot;nuopc&quot;&gt;$DIN_LOC_ROOT/share/meshes/gx1v6_090205_ESMFmesh.nc&lt;/mesh&gt;
-      &lt;desc&gt;gx1v6 is displaced Greenland pole v6 1-deg grid:&lt;/desc&gt;
-    &lt;/domain&gt;
-
-    &lt;domain name=&quot;gx1v7&quot;&gt;
-      &lt;nx&gt;320&lt;/nx&gt;  &lt;ny&gt;384&lt;/ny&gt;
-      &lt;file grid=&quot;atm|lnd&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.gx1v7.151008.nc&lt;/file&gt;
-      &lt;file grid=&quot;ocnice&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.gx1v7.151008.nc&lt;/file&gt;
-      &lt;mesh driver=&quot;nuopc&quot;&gt;$DIN_LOC_ROOT/share/meshes/gx1v7_151008_ESMFmesh.nc&lt;/mesh&gt;
-      &lt;desc&gt;gx1v7 is displaced Greenland pole 1-deg grid with Caspian as a land feature:&lt;/desc&gt;
-    &lt;/domain&gt;
-
-    &lt;domain name=&quot;gx3v7&quot;&gt;
-      &lt;nx&gt;100&lt;/nx&gt; &lt;ny&gt;116&lt;/ny&gt;
-      &lt;file grid=&quot;ocnice&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.gx3v7.120323.nc&lt;/file&gt;
-      &lt;mesh driver=&quot;nuopc&quot;&gt;$DIN_LOC_ROOT/share/meshes/gx3v7_120309_ESMFmesh.nc&lt;/mesh&gt;
-      &lt;desc&gt;gx3v7 is displaced Greenland pole v7 3-deg grid:&lt;/desc&gt;
-    &lt;/domain&gt;
-
-    &lt;domain name=&quot;tx0.66v1&quot;&gt;
-      &lt;nx&gt;540&lt;/nx&gt; &lt;ny&gt;458&lt;/ny&gt;
-      &lt;file grid=&quot;ocnice&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.tx0.66v1.190425.nc&lt;/file&gt;
-      &lt;mesh driver=&quot;nuopc&quot;&gt;$DIN_LOC_ROOT/share/meshes/tx0.66v1_190314_ESMFmesh.nc&lt;/mesh&gt;
-      &lt;desc&gt;tx0.66v1 is tripole v1 0.66-deg MOM6 grid:&lt;/desc&gt;
-      &lt;support&gt;Experimental for MOM6 experiments&lt;/support&gt;
-    &lt;/domain&gt;
-
-    &lt;domain name=&quot;tx0.25v1&quot;&gt;
-      &lt;nx&gt;1440&lt;/nx&gt; &lt;ny&gt;1080&lt;/ny&gt;
-      &lt;file grid=&quot;ocnice&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.tx0.25v1.190207.nc&lt;/file&gt;
-      &lt;mesh driver=&quot;nuopc&quot;&gt;$DIN_LOC_ROOT/share/meshes/tx0.25v1_190204_ESMFmesh.nc&lt;/mesh&gt;
-      &lt;desc&gt;tx0.25v1 is tripole v1 0.25-deg MOM6 grid:&lt;/desc&gt;
-      &lt;support&gt;Experimental for MOM6 experiments&lt;/support&gt;
-    &lt;/domain&gt;
-
-    &lt;domain name=&quot;tx0.1v2&quot;&gt;
-      &lt;nx&gt;3600&lt;/nx&gt; &lt;ny&gt;2400&lt;/ny&gt;
-      &lt;file grid=&quot;ocnice&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.tx0.1v2.161014.nc&lt;/file&gt;
-      &lt;mesh driver=&quot;nuopc&quot;&gt;$DIN_LOC_ROOT/share/meshes/tx0.1v2_ESMFmesh_cd5_c20210105.nc&lt;/mesh&gt;
-      &lt;desc&gt;tx0.1v2 is tripole v2 1/10-deg grid:&lt;/desc&gt;
-      &lt;support&gt;Experimental for high resolution experiments&lt;/support&gt;
-    &lt;/domain&gt;
-
-    &lt;domain name=&quot;tx0.1v3&quot;&gt;
-      &lt;nx&gt;3600&lt;/nx&gt; &lt;ny&gt;2400&lt;/ny&gt;
-      &lt;file grid=&quot;ocnice&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.tx0.1v3.170730.nc&lt;/file&gt;
-      &lt;desc&gt;tx0.1v3 is tripole v3 1/10-deg grid:&lt;/desc&gt;
-      &lt;support&gt;Experimental for high resolution experiments&lt;/support&gt;
-    &lt;/domain&gt;
-
-    &lt;domain name=&quot;tx1v1&quot;&gt;
-      &lt;nx&gt;360&lt;/nx&gt; &lt;ny&gt;240&lt;/ny&gt;
-      &lt;file grid=&quot;ocnice&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.tx1v1.090122.nc&lt;/file&gt;
-      &lt;desc&gt;tripole v1 1-deg grid: testing proxy for high-res tripole ocean grids- do not use for scientific experiments&lt;/desc&gt;
-      &lt;support&gt;Experimental tripole ocean grid&lt;/support&gt;
-    &lt;/domain&gt;
-
-    &lt;domain name=&quot;oQU120&quot;&gt;
-      &lt;nx&gt;28574&lt;/nx&gt;  &lt;ny&gt;1&lt;/ny&gt;
-      &lt;file mask=&quot;oQU120&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.oQU120.160325.nc&lt;/file&gt;
-      &lt;desc&gt;oQU120 is a MPAS ocean grid that is roughly 1 degree resolution:&lt;/desc&gt;
-      &lt;support&gt;Experimental, under development&lt;/support&gt;
-    &lt;/domain&gt;
-
-    &lt;!-- ======================================================== --&gt;
-    &lt;!-- ROF domains --&gt;
-    &lt;!-- ======================================================== --&gt;
-
-    &lt;domain name=&quot;tn1v3&quot;&gt;
-      &lt;nx&gt;360&lt;/nx&gt; &lt;ny&gt;291&lt;/ny&gt;
-      &lt;file grid=&quot;ocnice&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.tn1v3.160414.nc&lt;/file&gt;
-      &lt;desc&gt;tn1v3 is NEMO ORCA1 tripole grid at 1 deg (reduced eORCA):&lt;/desc&gt;
-      &lt;support&gt;NEMO ORCA1 tripole ocean grid&lt;/support&gt;
-    &lt;/domain&gt;
-
-    &lt;domain name=&quot;tn0.25v3&quot;&gt;
-      &lt;nx&gt;1440&lt;/nx&gt; &lt;ny&gt;1050&lt;/ny&gt;
-      &lt;file grid=&quot;ocnice&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.tn0.25v3.160721.nc&lt;/file&gt;
-      &lt;desc&gt;tn0.25v3 is NEMO ORCA1 tripole grid at 1/4 deg (reduced eORCA):&lt;/desc&gt;
-      &lt;support&gt;NEMO ORCA1 tripole ocean grid&lt;/support&gt;
-    &lt;/domain&gt;
-
-    &lt;domain name=&quot;rx1&quot;&gt;
-      &lt;nx&gt;360&lt;/nx&gt; &lt;ny&gt;180&lt;/ny&gt;
-      &lt;mesh driver=&quot;nuopc&quot;&gt;$DIN_LOC_ROOT/share/meshes/rx1_nomask_181022_ESMFmesh.nc&lt;/mesh&gt;
-      &lt;desc&gt;rx1 is 1 degree river routing grid (only valid for DROF):&lt;/desc&gt;
-      &lt;support&gt;Can only be used by DROF&lt;/support&gt;
-    &lt;/domain&gt;
-
-    &lt;domain name=&quot;r05&quot;&gt;
-      &lt;nx&gt;720&lt;/nx&gt; &lt;ny&gt;360&lt;/ny&gt;
-      &lt;mesh driver=&quot;nuopc&quot;&gt;$DIN_LOC_ROOT/share/meshes/r05_nomask_c110308_ESMFmesh.nc&lt;/mesh&gt;
-      &lt;desc&gt;r05 is 1/2 degree river routing grid:&lt;/desc&gt;
-    &lt;/domain&gt;
-
-    &lt;domain name=&quot;r05_amazon&quot;&gt;
-      &lt;nx&gt;816&lt;/nx&gt; &lt;ny&gt;1&lt;/ny&gt;
-      &lt;mesh driver=&quot;nuopc&quot;&gt;$DIN_LOC_ROOT/rof/mizuRoute/meshes/r05_amazon_c110308_ctrcrd_cdf5_ESMFmesh_c20200624.nc&lt;/mesh&gt;
-      &lt;desc&gt;
-        r05_amazon is the regular 1/2 degree river routing grid, but over a region in the Amazon (corresponds to the 5x5_amazon region for CTSM)
-      &lt;/desc&gt;
-    &lt;/domain&gt;
-
-    &lt;domain name=&quot;HDMA&quot;&gt;
-      &lt;nx&gt;295335&lt;/nx&gt; &lt;ny&gt;1&lt;/ny&gt;
-      &lt;mesh driver=&quot;nuopc&quot;&gt;$DIN_LOC_ROOT/rof/mizuRoute/meshes/HDMA_global_ESMFmesh_c20191209.nc&lt;/mesh&gt;
-      &lt;desc&gt;HDMA is a medium resolution river routing grid for mizuRoute:&lt;/desc&gt;
-    &lt;/domain&gt;
-
-    &lt;domain name=&quot;r01&quot;&gt;
-      &lt;nx&gt;3600&lt;/nx&gt; &lt;ny&gt;1800&lt;/ny&gt;
-      &lt;!-- TODO (mvertens, 2018-12-02): create a domain file for this  --&gt;
-      &lt;desc&gt;r01 is 1/10 degree river routing grid:&lt;/desc&gt;
-      &lt;support&gt;For experimental use by high resolution grids&lt;/support&gt;
-    &lt;/domain&gt;
-
-    &lt;domain name=&quot;JRA025v2&quot;&gt;
-      &lt;nx&gt;1440&lt;/nx&gt; &lt;ny&gt;720&lt;/ny&gt;
-      &lt;desc&gt;JRA 0.25 degree runoff grid for use with JRA-55 runoff data&lt;/desc&gt;
-    &lt;/domain&gt;
-
-    &lt;domain name=&quot;JRA025&quot;&gt;
-      &lt;nx&gt;1440&lt;/nx&gt; &lt;ny&gt;720&lt;/ny&gt;
-      &lt;!-- TODO (mvertens, 2018-12-02): create a domain file for this  --&gt;
-      &lt;mesh driver=&quot;nuopc&quot;&gt;$DIN_LOC_ROOT/share/meshes/JRA025m.170209_ESMFmesh.nc&lt;/mesh&gt;
-      &lt;desc&gt;JRA is 0.25 degree runoff grid for use with JRA-55 runoff data&lt;/desc&gt;
-    &lt;/domain&gt;
-
-    &lt;!-- GLC domains --&gt;
-
-    &lt;domain name=&quot;gland20&quot;&gt;
-      &lt;nx&gt;76&lt;/nx&gt; &lt;ny&gt;141&lt;/ny&gt;
-      &lt;mesh driver=&quot;nuopc&quot;&gt;$DIN_LOC_ROOT/share/meshes/gland_20km_c150511_ESMFmesh.nc&lt;/mesh&gt;
-      &lt;desc&gt;20-km Greenland grid&lt;/desc&gt;
-    &lt;/domain&gt;
-
-    &lt;domain name=&quot;gland5UM&quot;&gt;
-      &lt;nx&gt;301&lt;/nx&gt; &lt;ny&gt;561&lt;/ny&gt;
-      &lt;desc&gt;5-km Greenland grid (new version from U. Montana)&lt;/desc&gt;
-    &lt;/domain&gt;
-
-    &lt;domain name=&quot;gland4&quot;&gt;
-      &lt;nx&gt;416&lt;/nx&gt; &lt;ny&gt;704&lt;/ny&gt;
-      &lt;mesh driver=&quot;nuopc&quot;&gt;$DIN_LOC_ROOT/share/meshes/greenland_4km_epsg3413_c170414_ESMFmesh_c20190729.nc&lt;/mesh&gt;
-      &lt;desc&gt;4-km Greenland grid, for use with the glissade dycore&lt;/desc&gt;
-    &lt;/domain&gt;
-
-    &lt;!-- WW3 domains--&gt;
-
-    &lt;domain name=&quot;ww3a&quot;&gt;
-      &lt;nx&gt;90&lt;/nx&gt;  &lt;ny&gt;50&lt;/ny&gt;
-      &lt;file mask=&quot;ww3a&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.lnd.ww3a_ww3a.120222.nc&lt;/file&gt;
-      &lt;file mask=&quot;ww3a&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.ww3a_ww3a.120222.nc&lt;/file&gt;
-      &lt;mesh driver=&quot;nuopc&quot;&gt;$DIN_LOC_ROOT/share/meshes/ww3a_120222_ESMFmesh.nc&lt;/mesh&gt;
-      &lt;desc&gt;WW3 90 x 50 global grid&lt;/desc&gt;
-      &lt;support&gt;For testing of the WAV model&lt;/support&gt;
     &lt;/domain&gt;
 
     &lt;!-- fvcubed domains--&gt;
@@ -2951,12 +2754,279 @@
       &lt;support&gt;Experimental for fv3 dycore&lt;/support&gt;
     &lt;/domain&gt;
 
+    &lt;!-- ======================================================== --&gt;
+    &lt;!-- OCN/ICE domains --&gt;
+    &lt;!-- ======================================================== --&gt;
+
+    &lt;domain name=&quot;gx1v6&quot;&gt;
+      &lt;nx&gt;320&lt;/nx&gt;  &lt;ny&gt;384&lt;/ny&gt;
+      &lt;file grid=&quot;atm|lnd&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.gx1v6.090206.nc&lt;/file&gt;
+      &lt;file grid=&quot;ocnice&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.gx1v6.090206.nc&lt;/file&gt;
+      &lt;mesh driver=&quot;nuopc&quot;&gt;$DIN_LOC_ROOT/share/meshes/gx1v6_090205_ESMFmesh.nc&lt;/mesh&gt;
+      &lt;desc&gt;gx1v6 is displaced Greenland pole v6 1-deg grid:&lt;/desc&gt;
+    &lt;/domain&gt;
+    &lt;domain name=&quot;gx1v7&quot;&gt;
+      &lt;nx&gt;320&lt;/nx&gt;  &lt;ny&gt;384&lt;/ny&gt;
+      &lt;file grid=&quot;atm|lnd&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.gx1v7.151008.nc&lt;/file&gt;
+      &lt;file grid=&quot;ocnice&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.gx1v7.151008.nc&lt;/file&gt;
+      &lt;mesh driver=&quot;nuopc&quot;&gt;$DIN_LOC_ROOT/share/meshes/gx1v7_151008_ESMFmesh.nc&lt;/mesh&gt;
+      &lt;desc&gt;gx1v7 is displaced Greenland pole 1-deg grid with Caspian as a land feature:&lt;/desc&gt;
+    &lt;/domain&gt;
+    &lt;domain name=&quot;gx3v7&quot;&gt;
+      &lt;nx&gt;100&lt;/nx&gt; &lt;ny&gt;116&lt;/ny&gt;
+      &lt;file grid=&quot;ocnice&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.gx3v7.120323.nc&lt;/file&gt;
+      &lt;mesh driver=&quot;nuopc&quot;&gt;$DIN_LOC_ROOT/share/meshes/gx3v7_120309_ESMFmesh.nc&lt;/mesh&gt;
+      &lt;desc&gt;gx3v7 is displaced Greenland pole v7 3-deg grid:&lt;/desc&gt;
+    &lt;/domain&gt;
+    &lt;domain name=&quot;tx0.66v1&quot;&gt;
+      &lt;nx&gt;540&lt;/nx&gt; &lt;ny&gt;458&lt;/ny&gt;
+      &lt;file grid=&quot;ocnice&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.tx0.66v1.190425.nc&lt;/file&gt;
+      &lt;mesh driver=&quot;nuopc&quot;&gt;$DIN_LOC_ROOT/share/meshes/tx0.66v1_190314_ESMFmesh.nc&lt;/mesh&gt;
+      &lt;desc&gt;tx0.66v1 is tripole v1 0.66-deg MOM6 grid:&lt;/desc&gt;
+      &lt;support&gt;Experimental for MOM6 experiments&lt;/support&gt;
+    &lt;/domain&gt;
+    &lt;domain name=&quot;tx0.25v1&quot;&gt;
+      &lt;nx&gt;1440&lt;/nx&gt; &lt;ny&gt;1080&lt;/ny&gt;
+      &lt;file grid=&quot;ocnice&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.tx0.25v1.190207.nc&lt;/file&gt;
+      &lt;mesh driver=&quot;nuopc&quot;&gt;$DIN_LOC_ROOT/share/meshes/tx0.25v1_190204_ESMFmesh.nc&lt;/mesh&gt;
+      &lt;desc&gt;tx0.25v1 is tripole v1 0.25-deg MOM6 grid:&lt;/desc&gt;
+      &lt;support&gt;Experimental for MOM6 experiments&lt;/support&gt;
+    &lt;/domain&gt;
+    &lt;domain name=&quot;tx0.1v2&quot;&gt;
+      &lt;nx&gt;3600&lt;/nx&gt; &lt;ny&gt;2400&lt;/ny&gt;
+      &lt;file grid=&quot;ocnice&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.tx0.1v2.161014.nc&lt;/file&gt;
+      &lt;mesh driver=&quot;nuopc&quot;&gt;$DIN_LOC_ROOT/share/meshes/tx0.1v2_ESMFmesh_cd5_c20210105.nc&lt;/mesh&gt;
+      &lt;desc&gt;tx0.1v2 is tripole v2 1/10-deg grid:&lt;/desc&gt;
+      &lt;support&gt;Experimental for high resolution experiments&lt;/support&gt;
+    &lt;/domain&gt;
+    &lt;domain name=&quot;tx0.1v3&quot;&gt;
+      &lt;nx&gt;3600&lt;/nx&gt; &lt;ny&gt;2400&lt;/ny&gt;
+      &lt;file grid=&quot;ocnice&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.tx0.1v3.170730.nc&lt;/file&gt;
+      &lt;desc&gt;tx0.1v3 is tripole v3 1/10-deg grid:&lt;/desc&gt;
+      &lt;support&gt;Experimental for high resolution experiments&lt;/support&gt;
+    &lt;/domain&gt;
+    &lt;domain name=&quot;tx1v1&quot;&gt;
+      &lt;nx&gt;360&lt;/nx&gt; &lt;ny&gt;240&lt;/ny&gt;
+      &lt;file grid=&quot;ocnice&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.tx1v1.090122.nc&lt;/file&gt;
+      &lt;mesh driver=&quot;nuopc&quot;&gt;$DIN_LOC_ROOT/share/meshes/tx1v1_ESMFMesh_cd5_c20210105.nc&lt;/mesh&gt;
+      &lt;desc&gt;tripole v1 1-deg grid: testing proxy for high-res tripole ocean grids- do not use for scientific experiments&lt;/desc&gt;
+      &lt;support&gt;Experimental tripole ocean grid&lt;/support&gt;
+    &lt;/domain&gt;
+    &lt;domain name=&quot;oQU120&quot;&gt;
+      &lt;nx&gt;28574&lt;/nx&gt;  &lt;ny&gt;1&lt;/ny&gt;
+      &lt;file mask=&quot;oQU120&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.oQU120.160325.nc&lt;/file&gt;
+      &lt;desc&gt;oQU120 is a MPAS ocean grid that is roughly 1 degree resolution:&lt;/desc&gt;
+      &lt;support&gt;Experimental, under development&lt;/support&gt;
+    &lt;/domain&gt;
+    &lt;domain name=&quot;tn1v3&quot;&gt;
+      &lt;nx&gt;360&lt;/nx&gt; &lt;ny&gt;291&lt;/ny&gt;
+      &lt;file grid=&quot;ocnice&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.tn1v3.160414.nc&lt;/file&gt;
+      &lt;desc&gt;tn1v3 is NEMO ORCA1 tripole grid at 1 deg (reduced eORCA):&lt;/desc&gt;
+      &lt;support&gt;NEMO ORCA1 tripole ocean grid&lt;/support&gt;
+    &lt;/domain&gt;
+    &lt;domain name=&quot;tn0.25v3&quot;&gt;
+      &lt;nx&gt;1440&lt;/nx&gt; &lt;ny&gt;1050&lt;/ny&gt;
+      &lt;file grid=&quot;ocnice&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.tn0.25v3.160721.nc&lt;/file&gt;
+      &lt;desc&gt;tn0.25v3 is NEMO ORCA1 tripole grid at 1/4 deg (reduced eORCA):&lt;/desc&gt;
+      &lt;support&gt;NEMO ORCA1 tripole ocean grid&lt;/support&gt;
+    &lt;/domain&gt;
+
+    &lt;!-- ======================================================== --&gt;
+    &lt;!-- ROF domains --&gt;
+    &lt;!-- ======================================================== --&gt;
+
+    &lt;domain name=&quot;rx1&quot;&gt;
+      &lt;nx&gt;360&lt;/nx&gt; &lt;ny&gt;180&lt;/ny&gt;
+      &lt;mesh driver=&quot;nuopc&quot;&gt;$DIN_LOC_ROOT/share/meshes/rx1_nomask_181022_ESMFmesh.nc&lt;/mesh&gt;
+      &lt;desc&gt;rx1 is 1 degree river routing grid (only valid for DROF):&lt;/desc&gt;
+      &lt;support&gt;Can only be used by DROF&lt;/support&gt;
+    &lt;/domain&gt;
+
+    &lt;domain name=&quot;r05&quot;&gt;
+      &lt;nx&gt;720&lt;/nx&gt; &lt;ny&gt;360&lt;/ny&gt;
+      &lt;mesh driver=&quot;nuopc&quot;&gt;$DIN_LOC_ROOT/share/meshes/r05_nomask_c110308_ESMFmesh.nc&lt;/mesh&gt;
+      &lt;desc&gt;r05 is 1/2 degree river routing grid:&lt;/desc&gt;
+    &lt;/domain&gt;
+
+    &lt;domain name=&quot;r05_amazon&quot;&gt;
+      &lt;nx&gt;816&lt;/nx&gt; &lt;ny&gt;1&lt;/ny&gt;
+      &lt;mesh driver=&quot;nuopc&quot;&gt;$DIN_LOC_ROOT/rof/mizuRoute/meshes/r05_amazon_c110308_ctrcrd_cdf5_ESMFmesh_c20200624.nc&lt;/mesh&gt;
+      &lt;desc&gt;
+        r05_amazon is the regular 1/2 degree river routing grid, but over a region in the Amazon (corresponds to the 5x5_amazon region for CTSM)
+      &lt;/desc&gt;
+    &lt;/domain&gt;
+
+    &lt;domain name=&quot;HDMA&quot;&gt;
+      &lt;nx&gt;295335&lt;/nx&gt; &lt;ny&gt;1&lt;/ny&gt;
+      &lt;mesh driver=&quot;nuopc&quot;&gt;$DIN_LOC_ROOT/rof/mizuRoute/meshes/HDMA_global_ESMFmesh_c20191209.nc&lt;/mesh&gt;
+      &lt;desc&gt;HDMA is a medium resolution river routing grid for mizuRoute:&lt;/desc&gt;
+    &lt;/domain&gt;
+
+    &lt;domain name=&quot;r01&quot;&gt;
+      &lt;nx&gt;3600&lt;/nx&gt; &lt;ny&gt;1800&lt;/ny&gt;
+      &lt;!-- TODO (mvertens, 2018-12-02): create a domain file for this  --&gt;
+      &lt;desc&gt;r01 is 1/10 degree river routing grid:&lt;/desc&gt;
+      &lt;support&gt;For experimental use by high resolution grids&lt;/support&gt;
+    &lt;/domain&gt;
+
+    &lt;domain name=&quot;JRA025v2&quot;&gt;
+      &lt;nx&gt;1440&lt;/nx&gt; &lt;ny&gt;720&lt;/ny&gt;
+      &lt;mesh driver=&quot;nuopc&quot;&gt;$DIN_LOC_ROOT/lnd/dlnd7/JRA55/JRA.v1.4.runoff.1958_ESMFmesh_cdf5_20201020.nc&lt;/mesh&gt;
+      &lt;desc&gt;JRA 0.25 degree runoff grid for use with JRA-55 runoff data&lt;/desc&gt;
+    &lt;/domain&gt;
+
+    &lt;domain name=&quot;JRA025&quot;&gt;
+      &lt;nx&gt;1440&lt;/nx&gt; &lt;ny&gt;720&lt;/ny&gt;
+      &lt;mesh driver=&quot;nuopc&quot;&gt;$DIN_LOC_ROOT/lnd/dlnd7/JRA55/JRA.v1.4.runoff.1958_ESMFmesh_cdf5_20201020.nc&lt;/mesh&gt;
+      &lt;desc&gt;JRA is 0.25 degree runoff grid for use with JRA-55 runoff data&lt;/desc&gt;
+    &lt;/domain&gt;
+
+    &lt;!-- ======================================================== --&gt;
+    &lt;!-- GLC domains --&gt;
+    &lt;!-- ======================================================== --&gt;
+
+    &lt;domain name=&quot;gris20&quot;&gt;
+      &lt;nx&gt;76&lt;/nx&gt; &lt;ny&gt;141&lt;/ny&gt;
+      &lt;mesh driver=&quot;nuopc&quot;&gt;$DIN_LOC_ROOT/share/meshes/gland_20km_c150511_ESMFmesh.nc&lt;/mesh&gt;
+      &lt;desc&gt;20-km Greenland grid&lt;/desc&gt;
+    &lt;/domain&gt;
+
+    &lt;domain name=&quot;gris4&quot;&gt;
+      &lt;nx&gt;416&lt;/nx&gt; &lt;ny&gt;704&lt;/ny&gt;
+      &lt;mesh driver=&quot;nuopc&quot;&gt;$DIN_LOC_ROOT/share/meshes/greenland_4km_epsg3413_c170414_ESMFmesh_c20190729.nc&lt;/mesh&gt;
+      &lt;desc&gt;4-km Greenland grid, for use with the glissade dycore&lt;/desc&gt;
+    &lt;/domain&gt;
+
+    &lt;domain name=&quot;ais8&quot;&gt;
+      &lt;nx&gt;704&lt;/nx&gt; &lt;ny&gt;576&lt;/ny&gt;
+      &lt;mesh driver=&quot;nuopc&quot;&gt;$DIN_LOC_ROOT/share/meshes/antarctica_8km_epsg3031_ESMFmesh_c210621.nc&lt;/mesh&gt;
+      &lt;desc&gt;8-km Antarctica grid&lt;/desc&gt;
+    &lt;/domain&gt;
+
+    &lt;!-- ======================================================== --&gt;
+    &lt;!-- WW3 domains--&gt;
+    &lt;!-- ======================================================== --&gt;
+
+    &lt;domain name=&quot;ww3a&quot;&gt;
+      &lt;nx&gt;90&lt;/nx&gt;  &lt;ny&gt;50&lt;/ny&gt;
+      &lt;file mask=&quot;ww3a&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.lnd.ww3a_ww3a.120222.nc&lt;/file&gt;
+      &lt;file mask=&quot;ww3a&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.ww3a_ww3a.120222.nc&lt;/file&gt;
+      &lt;mesh driver=&quot;nuopc&quot;&gt;$DIN_LOC_ROOT/share/meshes/ww3a_120222_ESMFmesh.nc&lt;/mesh&gt;
+      &lt;desc&gt;WW3 90 x 50 global grid&lt;/desc&gt;
+      &lt;support&gt;For testing of the WAV model&lt;/support&gt;
+    &lt;/domain&gt;
+
+  &lt;/domains&gt;
+
+  &lt;!-- ======================================================== --&gt;
+  &lt;!-- ATM/LND domains for single point mct driver --&gt;
+  &lt;!-- ======================================================== --&gt;
+
+  &lt;domains driver=&quot;mct&quot;&gt;
+    &lt;domain name=&quot;01col&quot;&gt;
+      &lt;nx&gt;1&lt;/nx&gt; &lt;ny&gt;1&lt;/ny&gt;
+      &lt;file&gt;domain.ocn.01col.ArcticOcean.20150824.nc&lt;/file&gt;
+      &lt;file&gt;domain.ocn.01col.ArcticOcean.20150824.nc&lt;/file&gt;
+      &lt;desc&gt;01col is a single-column grid for datm and POP:&lt;/desc&gt;
+    &lt;/domain&gt;
+
+    &lt;domain name=&quot;CLM_USRDAT&quot;&gt;
+      &lt;nx&gt;1&lt;/nx&gt; &lt;ny&gt;1&lt;/ny&gt;
+      &lt;file&gt;$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.${CLM_USRDAT_NAME}_navy.nc&lt;/file&gt;
+      &lt;desc&gt;user specified domain - only valid for DATM/CLM compset&lt;/desc&gt;
+    &lt;/domain&gt;
+
+    &lt;domain name=&quot;1x1_numaIA&quot;&gt;
+      &lt;nx&gt;1&lt;/nx&gt; &lt;ny&gt;1&lt;/ny&gt;
+      &lt;file grid=&quot;atm|lnd&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.1x1pt-numaIA_navy.110106.nc&lt;/file&gt;
+      &lt;desc&gt;1x1 Numa Iowa -- only valid for DATM/CLM compset&lt;/desc&gt;
+    &lt;/domain&gt;
+    &lt;domain name=&quot;1x1_brazil&quot;&gt;
+      &lt;nx&gt;1&lt;/nx&gt; &lt;ny&gt;1&lt;/ny&gt;
+      &lt;file grid=&quot;atm|lnd&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.1x1pt-brazil_navy.090715.nc&lt;/file&gt;
+      &lt;desc&gt;1x1 Brazil -- only valid for DATM/CLM compset&lt;/desc&gt;
+    &lt;/domain&gt;
+    &lt;domain name=&quot;1x1_smallvilleIA&quot;&gt;
+      &lt;nx&gt;1&lt;/nx&gt; &lt;ny&gt;1&lt;/ny&gt;
+      &lt;file grid=&quot;atm|lnd&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.1x1pt-smallvilleIA_test.110106.nc&lt;/file&gt;
+      &lt;desc&gt;1x1 Smallville Iowa Crop Test Case -- only valid for DATM/CLM compset&lt;/desc&gt;
+    &lt;/domain&gt;
+    &lt;domain name=&quot;1x1_camdenNJ&quot;&gt;
+      &lt;nx&gt;1&lt;/nx&gt; &lt;ny&gt;1&lt;/ny&gt;
+      &lt;file grid=&quot;atm|lnd&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.1x1pt-camdenNJ_navy.111004.nc&lt;/file&gt;
+      &lt;desc&gt;1x1 Camden New Jersey -- only valid for DATM/CLM compset&lt;/desc&gt;
+    &lt;/domain&gt;
+    &lt;domain name=&quot;1x1_mexicocityMEX&quot;&gt;
+      &lt;nx&gt;1&lt;/nx&gt; &lt;ny&gt;1&lt;/ny&gt;
+      &lt;file grid=&quot;atm|lnd&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.1x1pt-mexicocityMEX_navy.090715.nc&lt;/file&gt;
+      &lt;desc&gt;1x1 Mexico City Mexico -- only valid for DATM/CLM compset&lt;/desc&gt;
+    &lt;/domain&gt;
+    &lt;domain name=&quot;1x1_vancouverCAN&quot;&gt;
+      &lt;nx&gt;1&lt;/nx&gt; &lt;ny&gt;1&lt;/ny&gt;
+      &lt;file grid=&quot;atm|lnd&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.1x1pt-vancouverCAN_navy.090715.nc&lt;/file&gt;
+      &lt;desc&gt;1x1 Vancouver Canada -- only valid for DATM/CLM compset&lt;/desc&gt;
+    &lt;/domain&gt;
+    &lt;domain name=&quot;1x1_urbanc_alpha&quot;&gt;
+      &lt;nx&gt;1&lt;/nx&gt; &lt;ny&gt;1&lt;/ny&gt;
+      &lt;file grid=&quot;atm|lnd&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.1x1pt-urbanc_alpha_test.110201.nc&lt;/file&gt;
+      &lt;desc&gt;1x1 Urban C Alpha Test Case -- only valid for DATM/CLM compset&lt;/desc&gt;
+    &lt;/domain&gt;
+  &lt;/domains&gt;
+
+  &lt;!-- ======================================================== --&gt;
+  &lt;!-- ATM/LND domains for single point cmeps driver --&gt;
+  &lt;!-- ======================================================== --&gt;
+
+  &lt;domains driver=&quot;nuopc&quot;&gt;
+    &lt;domain name=&quot;01col&quot;&gt;
+      &lt;lat&gt;83.144928&lt;/lat&gt;
+      &lt;lon&gt;359.150902&lt;/lon&gt;
+      &lt;desc&gt;01col is a single-column grid for datm and POP:&lt;/desc&gt;
+    &lt;/domain&gt;
+    &lt;domain name=&quot;CLM_USRDAT&quot;&gt;
+      &lt;!-- User must specify lat and lon prior to building case--&gt;
+      &lt;desc&gt;user specified domain - only valid for DATM/CLM compset&lt;/desc&gt;
+    &lt;/domain&gt;
+    &lt;domain name=&quot;1x1_numaIA&quot;&gt;
+      &lt;lat&gt;40.6878&lt;/lat&gt;
+      &lt;lon&gt;267.0228&lt;/lon&gt;
+      &lt;desc&gt;1x1 Numa Iowa -- only valid for DATM/CLM compset&lt;/desc&gt;
+    &lt;/domain&gt;
+    &lt;domain name=&quot;1x1_brazil&quot;&gt;
+      &lt;lat&gt;-7.0&lt;/lat&gt;
+      &lt;lon&gt;305.0&lt;/lon&gt;
+      &lt;desc&gt;1x1 Brazil -- only valid for DATM/CLM compset&lt;/desc&gt;
+    &lt;/domain&gt;
+    &lt;domain name=&quot;1x1_smallvilleIA&quot;&gt;
+      &lt;lat&gt;40.6878&lt;/lat&gt;
+      &lt;lon&gt;267.0228&lt;/lon&gt;
+      &lt;desc&gt;1x1 Smallville Iowa Crop Test Case -- only valid for DATM/CLM compset&lt;/desc&gt;
+    &lt;/domain&gt;
+    &lt;domain name=&quot;1x1_camdenNJ&quot;&gt;
+      &lt;lat&gt;40.0&lt;/lat&gt;
+      &lt;lon&gt;285.0&lt;/lon&gt;
+      &lt;desc&gt;1x1 Camden New Jersey -- only valid for DATM/CLM compset&lt;/desc&gt;
+    &lt;/domain&gt;
+    &lt;domain name=&quot;1x1_mexicocityMEX&quot;&gt;
+      &lt;lat&gt;19.5&lt;/lat&gt;
+      &lt;lon&gt;260.5&lt;/lon&gt;
+      &lt;desc&gt;1x1 Mexico City Mexico -- only valid for DATM/CLM compset&lt;/desc&gt;
+    &lt;/domain&gt;
+    &lt;domain name=&quot;1x1_vancouverCAN&quot;&gt;
+      &lt;lat&gt;49.5&lt;/lat&gt;
+      &lt;lon&gt;236.5&lt;/lon&gt;
+      &lt;desc&gt;1x1 Vancouver Canada -- only valid for DATM/CLM compset&lt;/desc&gt;
+    &lt;/domain&gt;
+    &lt;domain name=&quot;1x1_urbanc_alpha&quot;&gt;
+      &lt;lat&gt;-37.7308&lt;/lat&gt;
+      &lt;lon&gt;0.0&lt;/lon&gt;
+      &lt;desc&gt;1x1 Urban C Alpha Test Case -- only valid for DATM/CLM compset&lt;/desc&gt;
+    &lt;/domain&gt;
   &lt;/domains&gt;
 
   &lt;!-- ======================================================== --&gt;
   &lt;!-- Mapping --&gt;
   &lt;!-- ======================================================== --&gt;
-
   &lt;!-- The following are the required grid maps that must not be idmap if the   --&gt;
   &lt;!-- attributes grid1 and grid2 are not equal --&gt;
 
@@ -3163,7 +3233,7 @@
       &lt;directive&gt; --nodes={{ num_nodes }}&lt;/directive&gt;
       &lt;directive&gt; --ntasks-per-node={{ tasks_per_node }}&lt;/directive&gt;
       &lt;directive&gt; --output={{ job_id }}   &lt;/directive&gt;
-      &lt;directive&gt; --exclusive                        &lt;/directive&gt;
+      &lt;directive&gt; --exclusive             &lt;/directive&gt;
     &lt;/directives&gt;
   &lt;/batch_system&gt;
 
@@ -3209,17 +3279,46 @@
     &lt;/queues&gt;
   &lt;/batch_system&gt;
 
-  &lt;batch_system type=&quot;slurm&quot; MACH=&quot;casper&quot;&gt;
-    &lt;batch_submit&gt;sbatch&lt;/batch_submit&gt;
-    &lt;submit_args&gt;
-      &lt;arg flag=&quot;--time&quot; name=&quot;$JOB_WALLCLOCK_TIME&quot;/&gt;
-      &lt;arg flag=&quot;-p&quot; name=&quot;$JOB_QUEUE&quot;/&gt;
-      &lt;arg flag=&quot;--gres=gpu:v100:4&quot;/&gt;
-      &lt;arg flag=&quot;--account&quot; name=&quot;$PROJECT&quot;/&gt;
-      &lt;arg flag=&quot;--mem=0&quot;/&gt; 
-    &lt;/submit_args&gt;
+  &lt;!-- casper pbs --&gt;
+  &lt;batch_system MACH=&quot;casper&quot; type=&quot;pbs&quot;&gt;
+    &lt;batch_submit&gt;qsub&lt;/batch_submit&gt;
+
+    &lt;directives queue=&quot;casper&quot; compiler=&quot;pgi-gpu&quot;&gt;
+      &lt;!-- Turn on MPS server manually --&gt;
+      &lt;!-- This is a temporary solution and should be removed once MPS is integrated into PBS on Casper --&gt;
+      &lt;directive default=&quot;/bin/bash&quot; &gt; -S /glade/u/apps/dav/opt/nvidia-mps/mps_bash &lt;/directive&gt;
+      &lt;directive&gt; -l select={{ num_nodes }}:ncpus={{ max_tasks_per_node }}:mpiprocs={{ tasks_per_node }}:ompthreads={{ thread_count }}:mem=700GB:ngpus={{ ngpus_per_node }} &lt;/directive&gt;
+      &lt;directive&gt; -l gpu_type=v100 &lt;/directive&gt;
+    &lt;/directives&gt;
+
+    &lt;directives queue=&quot;casper&quot; compiler=&quot;nvhpc-gpu&quot;&gt;
+      &lt;!-- Turn on MPS server manually --&gt;
+      &lt;!-- This is a temporary solution and should be removed once MPS is integrated into PBS on Casper --&gt;
+      &lt;directive default=&quot;/bin/bash&quot; &gt; -S /glade/u/apps/dav/opt/nvidia-mps/mps_bash &lt;/directive&gt;
+      &lt;directive&gt; -l select={{ num_nodes }}:ncpus={{ max_tasks_per_node }}:mpiprocs={{ tasks_per_node }}:ompthreads={{ thread_count }}:mem=700GB:ngpus={{ ngpus_per_node }} &lt;/directive&gt;
+      &lt;directive&gt; -l gpu_type=v100 &lt;/directive&gt;
+    &lt;/directives&gt;
+
+    &lt;directives queue=&quot;casper&quot; compiler=&quot;nvhpc&quot;&gt;
+      &lt;directive default=&quot;/bin/bash&quot; &gt; -S {{ shell }} &lt;/directive&gt;
+      &lt;directive&gt; -l select={{ num_nodes }}:ncpus={{ max_tasks_per_node }}:mpiprocs={{ tasks_per_node }}:ompthreads={{ thread_count }}:mem=700GB:ngpus={{ ngpus_per_node }} &lt;/directive&gt;
+    &lt;/directives&gt;
+
+    &lt;directives queue=&quot;casper&quot; compiler=&quot;pgi&quot;&gt;
+      &lt;directive default=&quot;/bin/bash&quot; &gt; -S {{ shell }} &lt;/directive&gt;
+      &lt;directive&gt; -l select={{ num_nodes }}:ncpus={{ max_tasks_per_node }}:mpiprocs={{ tasks_per_node }}:ompthreads={{ thread_count }}:mem=700GB:ngpus={{ ngpus_per_node }} &lt;/directive&gt;
+    &lt;/directives&gt;
+
+    &lt;directives queue=&quot;casper&quot; compiler=&quot;intel&quot;&gt;
+      &lt;directive default=&quot;/bin/bash&quot; &gt; -S {{ shell }} &lt;/directive&gt;
+      &lt;directive&gt; -l select={{ num_nodes }}:ncpus={{ max_tasks_per_node }}:mpiprocs={{ tasks_per_node }}:ompthreads={{ thread_count }}:mem=700GB:ngpus={{ ngpus_per_node }} &lt;/directive&gt;
+    &lt;/directives&gt;
+
+    &lt;!-- Unknown queues use the batch directives for the regular queue --&gt;
+    &lt;unknown_queue_directives&gt;casper&lt;/unknown_queue_directives&gt;
+
     &lt;queues&gt;
-      &lt;queue nodemin=&quot;1&quot; nodemax=&quot;96&quot; default=&quot;true&quot;&gt;dav&lt;/queue&gt;
+      &lt;queue walltimemax=&quot;12:00:00&quot; nodemin=&quot;1&quot; nodemax=&quot;10&quot;&gt;casper&lt;/queue&gt;
     &lt;/queues&gt;
   &lt;/batch_system&gt;
 
@@ -3390,6 +3489,27 @@
       &lt;queue walltimemax=&quot;03:59:00&quot; &gt;normal.4h&lt;/queue&gt;
     &lt;/queues&gt;
   &lt;/batch_system&gt;
+
+  &lt;batch_system MACH=&quot;frontera&quot; type=&quot;slurm&quot; &gt;
+    &lt;!-- note this form of batch_submit causes some tests to fail on the system 
+    because env variables are not forwarded --&gt;
+    &lt;batch_submit&gt;ssh login1 cd $CASEROOT ; sbatch&lt;/batch_submit&gt;
+    &lt;submit_args&gt;
+      &lt;arg flag=&quot;--time&quot; name=&quot;$JOB_WALLCLOCK_TIME&quot;/&gt;
+      &lt;arg flag=&quot;-p&quot; name=&quot;$JOB_QUEUE&quot;/&gt;
+      &lt;arg flag=&quot;--account&quot; name=&quot;$PROJECT&quot;/&gt;
+    &lt;/submit_args&gt;
+    &lt;directives&gt;
+      &lt;directive&gt; --export=ALL            &lt;/directive&gt;
+    &lt;/directives&gt;
+
+    &lt;queues&gt;
+      &lt;queue walltimemax=&quot;02:00:00&quot; nodemin=&quot;1&quot; nodemax=&quot;40&quot;&gt;development&lt;/queue&gt;
+      &lt;queue walltimemax=&quot;24:00:00&quot; nodemin=&quot;1&quot; nodemax=&quot;512&quot; default=&quot;true&quot;&gt;normal&lt;/queue&gt;
+      &lt;queue walltimemax=&quot;24:00:00&quot; nodemin=&quot;513&quot; nodemax=&quot;2048&quot; &gt;large&lt;/queue&gt;
+    &lt;/queues&gt;
+  &lt;/batch_system&gt;
+
   &lt;!-- gaea is PBS --&gt;
   &lt;batch_system MACH=&quot;gaea&quot; type=&quot;pbs&quot; &gt;
     &lt;directives&gt;
@@ -3404,6 +3524,36 @@
     &lt;queues&gt;
       &lt;queue walltimemax=&quot;01:00:00&quot; nodemin=&quot;1&quot; nodemax=&quot;35&quot;&gt;debug&lt;/queue&gt;
       &lt;queue walltimemax=&quot;24:00:00&quot; nodemin=&quot;861&quot; nodemax=&quot;4166&quot; default=&quot;true&quot;&gt;batch&lt;/queue&gt;
+    &lt;/queues&gt;
+  &lt;/batch_system&gt;
+
+  &lt;!-- GreenPlanet is SLURM --&gt;
+  &lt;batch_system type=&quot;slurm&quot; MACH=&quot;greenplanet-sib29&quot;&gt;
+    &lt;batch_submit&gt;sbatch&lt;/batch_submit&gt;
+    &lt;submit_args&gt;
+      &lt;arg flag=&quot;--time&quot; name=&quot;$JOB_WALLCLOCK_TIME&quot;/&gt;
+      &lt;arg flag=&quot;-p&quot; name=&quot;$JOB_QUEUE&quot;/&gt;
+    &lt;/submit_args&gt;
+    &lt;queues&gt;
+      &lt;!-- Want case.st_archiver to run on first available queue, but case.run to use sib2.9
+           We achieve this setting both queues as the default queue but limiting it
+           to jobs that use 8 tasks or fewer; other jobs will land in sib2.9        --&gt;
+      &lt;queue nodemin=&quot;1&quot; nodemax=&quot;45&quot;&gt;sib2.9&lt;/queue&gt;
+      &lt;queue default=&quot;true&quot; jobmin=&quot;1&quot; jobmax=&quot;8&quot;&gt;sib2.9,sky2.4&lt;/queue&gt;
+    &lt;/queues&gt;
+  &lt;/batch_system&gt;
+  &lt;batch_system type=&quot;slurm&quot; MACH=&quot;greenplanet-sky24&quot;&gt;
+    &lt;batch_submit&gt;sbatch&lt;/batch_submit&gt;
+    &lt;submit_args&gt;
+      &lt;arg flag=&quot;--time&quot; name=&quot;$JOB_WALLCLOCK_TIME&quot;/&gt;
+      &lt;arg flag=&quot;-p&quot; name=&quot;$JOB_QUEUE&quot;/&gt;
+    &lt;/submit_args&gt;
+    &lt;queues&gt;
+      &lt;!-- Want case.st_archiver to run on first available queue, but case.run to use sky2.4
+           We achieve this setting both queues as the default queue but limiting it
+           to jobs that use 8 tasks or fewer; other jobs will land in sky2.4        --&gt;
+      &lt;queue nodemin=&quot;1&quot; nodemax=&quot;13&quot;&gt;sky2.4&lt;/queue&gt;
+      &lt;queue default=&quot;true&quot; jobmin=&quot;1&quot; jobmax=&quot;8&quot;&gt;sib2.9,sky2.4&lt;/queue&gt;
     &lt;/queues&gt;
   &lt;/batch_system&gt;
 
@@ -3530,7 +3680,8 @@
       &lt;directive default=&quot;/bin/bash&quot; &gt; -S {{ shell }}  &lt;/directive&gt;
     &lt;/directives&gt;
     &lt;queues&gt;
-      &lt;queue walltimemin=&quot;&quot; walltimemax=&quot;08:00:00&quot; nodemin=&quot;0&quot; nodemax=&quot;357&quot; default=&quot;true&quot;&gt;normal&lt;/queue&gt;
+      &lt;queue walltimemin=&quot;&quot; walltimemax=&quot;08:00:00&quot; nodemin=&quot;1&quot; nodemax=&quot;5256&quot; default=&quot;true&quot;&gt;normal&lt;/queue&gt;
+      &lt;queue walltimemin=&quot;&quot; walltimemax=&quot;02:00:00&quot; nodemin=&quot;1&quot; nodemax=&quot;1800&quot; default=&quot;false&quot;&gt;devel&lt;/queue&gt;
     &lt;/queues&gt;
   &lt;/batch_system&gt;
 
@@ -3544,7 +3695,8 @@
       &lt;directive default=&quot;/bin/bash&quot; &gt; -S {{ shell }}  &lt;/directive&gt;
     &lt;/directives&gt;
     &lt;queues&gt;
-      &lt;queue walltimemin=&quot;&quot; walltimemax=&quot;08:00:00&quot; nodemin=&quot;0&quot; nodemax=&quot;357&quot; default=&quot;true&quot;&gt;normal&lt;/queue&gt;
+      &lt;queue walltimemin=&quot;&quot; walltimemax=&quot;08:00:00&quot; nodemin=&quot;1&quot; nodemax=&quot;5256&quot; default=&quot;true&quot;&gt;normal&lt;/queue&gt;
+      &lt;queue walltimemin=&quot;&quot; walltimemax=&quot;02:00:00&quot; nodemin=&quot;1&quot; nodemax=&quot;1800&quot; default=&quot;false&quot;&gt;devel&lt;/queue&gt;
     &lt;/queues&gt;
   &lt;/batch_system&gt;
 
@@ -3558,7 +3710,8 @@
       &lt;directive default=&quot;/bin/bash&quot; &gt; -S {{ shell }}  &lt;/directive&gt;
     &lt;/directives&gt;
     &lt;queues&gt;
-      &lt;queue walltimemin=&quot;&quot; walltimemax=&quot;08:00:00&quot; nodemin=&quot;0&quot; nodemax=&quot;500&quot; default=&quot;true&quot;&gt;normal&lt;/queue&gt;
+      &lt;queue walltimemin=&quot;&quot; walltimemax=&quot;08:00:00&quot; nodemin=&quot;1&quot; nodemax=&quot;5256&quot; default=&quot;true&quot;&gt;normal&lt;/queue&gt;
+      &lt;queue walltimemin=&quot;&quot; walltimemax=&quot;02:00:00&quot; nodemin=&quot;1&quot; nodemax=&quot;1800&quot; default=&quot;false&quot;&gt;devel&lt;/queue&gt;
     &lt;/queues&gt;
   &lt;/batch_system&gt;
 
@@ -3572,7 +3725,8 @@
       &lt;directive default=&quot;/bin/bash&quot; &gt; -S {{ shell }}  &lt;/directive&gt;
     &lt;/directives&gt;
     &lt;queues&gt;
-      &lt;queue walltimemin=&quot;&quot; walltimemax=&quot;08:00:00&quot; nodemin=&quot;0&quot; nodemax=&quot;624&quot; default=&quot;true&quot;&gt;normal&lt;/queue&gt;
+      &lt;queue walltimemin=&quot;&quot; walltimemax=&quot;08:00:00&quot; nodemin=&quot;1&quot; nodemax=&quot;5256&quot; default=&quot;true&quot;&gt;normal&lt;/queue&gt;
+      &lt;queue walltimemin=&quot;&quot; walltimemax=&quot;02:00:00&quot; nodemin=&quot;1&quot; nodemax=&quot;1800&quot; default=&quot;false&quot;&gt;devel&lt;/queue&gt;
     &lt;/queues&gt;
   &lt;/batch_system&gt;
 
@@ -3602,6 +3756,15 @@
     &lt;/queues&gt;
   &lt;/batch_system&gt;
 
+  &lt;batch_system MACH=&quot;swan&quot; type=&quot;pbs&quot; &gt;
+    &lt;directives&gt;
+      &lt;directive&gt;-l nodes={{ num_nodes }}&lt;/directive&gt;
+    &lt;/directives&gt;
+    &lt;queues&gt;
+      &lt;queue walltimemax=&quot;24:00:00&quot; default=&quot;true&quot; &gt;default&lt;/queue&gt;
+    &lt;/queues&gt;
+  &lt;/batch_system&gt;
+  
   &lt;batch_system MACH=&quot;theia&quot; type=&quot;slurm&quot; &gt;
     &lt;batch_submit&gt;sbatch&lt;/batch_submit&gt;
     &lt;submit_args&gt;
@@ -3637,10 +3800,27 @@
     &lt;/queues&gt;
   &lt;/batch_system&gt;      
 
+  &lt;batch_system MACH=&quot;zeus&quot; type=&quot;lsf&quot;&gt;
+    &lt;batch_env&gt;-env&lt;/batch_env&gt;
+    &lt;submit_args&gt;
+      &lt;arg flag=&quot;-q&quot; name=&quot;$JOB_QUEUE&quot;/&gt;
+      &lt;arg flag=&quot;-W&quot; name=&quot;$JOB_WALLCLOCK_TIME&quot;/&gt;
+      &lt;arg flag=&quot;-P&quot; name=&quot;$PROJECT&quot;/&gt;
+    &lt;/submit_args&gt;
+    &lt;directives&gt;
+      &lt;directive                       &gt; -R &quot;span[ptile={{ tasks_per_node }}]&quot;&lt;/directive&gt;
+    &lt;/directives&gt;
+    &lt;queues&gt;
+      &lt;queue walltimemin=&quot;00:00&quot; walltimemax=&quot;02:00&quot; default=&quot;true&quot;&gt;p_short&lt;/queue&gt;
+      &lt;queue walltimemin=&quot;02:00&quot; walltimemax=&quot;04:00&quot;&gt;p_medium&lt;/queue&gt;
+      &lt;queue walltimemin=&quot;04:00&quot; walltimemax=&quot;08:00&quot;&gt;p_long&lt;/queue&gt;
+    &lt;/queues&gt;
+  &lt;/batch_system&gt;
+
 &lt;/config_batch&gt;
 </pre></div>
 </div>
-<p>CESM XML settings for supported compilers.</p>
+<p>CESM XML settings for supported compilers.  <strong>DEPRECATED use cmake_macros</strong></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
 &lt;config_compilers version=&quot;2.0&quot;&gt;
 &lt;!--
@@ -3668,7 +3848,8 @@ CC = $SCC
 FC = $SFC
 MPICC = $SCC
 MPIFC = $SFC
-INC_MPI = $(CIMEROOT)/src/externals/mct/mpi-serial
+INC_MPI = $(CIMEROOT)/../libraries/mct/mpi-serial
+
 
 ========================================================================
 Options for including C++ code in the build
@@ -3798,6 +3979,7 @@ using a fortran linker.
 &lt;compiler COMPILER=&quot;cray&quot;&gt;
   &lt;CFLAGS&gt;
     &lt;append compile_threaded=&quot;FALSE&quot;&gt; -h noomp &lt;/append&gt;
+    &lt;append compile_threaded=&quot;TRUE&quot;&gt; -fopenmp &lt;/append&gt;
     &lt;append DEBUG=&quot;TRUE&quot;&gt; -g -O0 &lt;/append&gt;
     &lt;append DEBUG=&quot;FALSE&quot;&gt; -O2 &lt;/append&gt;
   &lt;/CFLAGS&gt;
@@ -3811,8 +3993,9 @@ using a fortran linker.
     &lt;base&gt; -s real64 &lt;/base&gt;
   &lt;/FC_AUTO_R8&gt;
   &lt;FFLAGS&gt;
-    &lt;base&gt; -f free -N 255  -h byteswapio -x dir &lt;/base&gt;
+    &lt;base&gt; -f free -N 255  -h byteswapio -x dir -ef &lt;/base&gt;
     &lt;append compile_threaded=&quot;FALSE&quot;&gt; -h noomp &lt;/append&gt;
+    &lt;append compile_threaded=&quot;TRUE&quot;&gt; -h omp &lt;/append&gt;
     &lt;append DEBUG=&quot;TRUE&quot;&gt; -g -O0 -K trap=fp  -m1 &lt;/append&gt;
     &lt;append DEBUG=&quot;FALSE&quot;&gt; -O2,ipa2 -em &lt;/append&gt;
   &lt;/FFLAGS&gt;
@@ -3822,6 +4005,7 @@ using a fortran linker.
   &lt;HAS_F2008_CONTIGUOUS&gt;TRUE&lt;/HAS_F2008_CONTIGUOUS&gt;
   &lt;LDFLAGS&gt;
     &lt;base&gt; -Wl,--allow-multiple-definition -h byteswapio &lt;/base&gt;
+    &lt;append compile_threaded=&quot;TRUE&quot;&gt; -h omp &lt;/append&gt;
   &lt;/LDFLAGS&gt;
 &lt;/compiler&gt;
 
@@ -3838,7 +4022,7 @@ using a fortran linker.
   &lt;/CPPDEFS&gt;
   &lt;CXX_LINKER&gt;FORTRAN&lt;/CXX_LINKER&gt;
   &lt;FC_AUTO_R8&gt;
-    &lt;base&gt; -fdefault-real-8 &lt;/base&gt;
+    &lt;base&gt; -fdefault-real-8 -fdefault-double-8&lt;/base&gt;
   &lt;/FC_AUTO_R8&gt;
   &lt;FFLAGS&gt;
     &lt;!-- -ffree-line-length-none and -ffixed-line-length-none need to be in FFLAGS rather than in FIXEDFLAGS/FREEFLAGS
@@ -4109,6 +4293,141 @@ using a fortran linker.
   &lt;SFC&gt; pgf95 &lt;/SFC&gt;
 &lt;/compiler&gt;
 
+&lt;compiler COMPILER=&quot;pgi-gpu&quot;&gt;
+  &lt;CFLAGS&gt;
+    &lt;base&gt; -gopt  -time &lt;/base&gt;
+    &lt;append compile_threaded=&quot;TRUE&quot;&gt; -mp &lt;/append&gt;
+  &lt;/CFLAGS&gt;
+  &lt;CPPDEFS&gt;
+    &lt;append&gt; -DFORTRANUNDERSCORE -DNO_SHR_VMATH -DNO_R16  -DCPRPGI &lt;/append&gt;
+  &lt;/CPPDEFS&gt;
+  &lt;CXX_LINKER&gt;CXX&lt;/CXX_LINKER&gt;
+  &lt;FC_AUTO_R8&gt;
+    &lt;base&gt; -r8 &lt;/base&gt;
+  &lt;/FC_AUTO_R8&gt;
+  &lt;FFLAGS&gt;
+    &lt;base&gt;  -i4 -gopt  -time -Mextend -byteswapio -Mflushz -Kieee  &lt;/base&gt;
+    &lt;append compile_threaded=&quot;TRUE&quot;&gt; -mp &lt;/append&gt;
+    &lt;append DEBUG=&quot;TRUE&quot;&gt; -O0 -g -Ktrap=fp -Mbounds -Kieee &lt;/append&gt;
+    &lt;append MODEL=&quot;datm&quot;&gt; -Mnovect &lt;/append&gt;
+    &lt;append MODEL=&quot;dlnd&quot;&gt; -Mnovect &lt;/append&gt;
+    &lt;append MODEL=&quot;drof&quot;&gt; -Mnovect &lt;/append&gt;
+    &lt;append MODEL=&quot;dwav&quot;&gt; -Mnovect &lt;/append&gt;
+    &lt;append MODEL=&quot;dice&quot;&gt; -Mnovect &lt;/append&gt;
+    &lt;append MODEL=&quot;docn&quot;&gt; -Mnovect &lt;/append&gt;
+  &lt;/FFLAGS&gt;
+  &lt;FFLAGS_NOOPT&gt;
+    &lt;base&gt; -O0 &lt;/base&gt;
+  &lt;/FFLAGS_NOOPT&gt;
+  &lt;FIXEDFLAGS&gt;
+    &lt;base&gt; -Mfixed &lt;/base&gt;
+  &lt;/FIXEDFLAGS&gt;
+  &lt;FREEFLAGS&gt;
+    &lt;base&gt; -Mfree &lt;/base&gt;
+  &lt;/FREEFLAGS&gt;
+  &lt;HAS_F2008_CONTIGUOUS&gt;FALSE&lt;/HAS_F2008_CONTIGUOUS&gt;
+  &lt;LDFLAGS&gt;
+    &lt;base&gt; -time -Wl,--allow-multiple-definition &lt;/base&gt;
+    &lt;append compile_threaded=&quot;TRUE&quot;&gt; -mp &lt;/append&gt;
+  &lt;/LDFLAGS&gt;
+  &lt;MPICC&gt; mpicc &lt;/MPICC&gt;
+  &lt;MPICXX&gt; mpicxx &lt;/MPICXX&gt;
+  &lt;MPIFC&gt; mpif90 &lt;/MPIFC&gt;
+  &lt;SCC&gt; pgcc &lt;/SCC&gt;
+  &lt;SCXX&gt; pgc++ &lt;/SCXX&gt;
+  &lt;SFC&gt; pgf95 &lt;/SFC&gt;
+&lt;/compiler&gt;
+
+&lt;compiler COMPILER=&quot;nvhpc&quot;&gt;
+  &lt;CFLAGS&gt;
+    &lt;base&gt; -gopt  -time &lt;/base&gt;
+    &lt;append compile_threaded=&quot;TRUE&quot;&gt; -mp &lt;/append&gt;
+  &lt;/CFLAGS&gt;
+  &lt;CPPDEFS&gt;
+    &lt;append&gt; -DFORTRANUNDERSCORE -DNO_SHR_VMATH -DNO_R16  -DCPRPGI &lt;/append&gt;
+  &lt;/CPPDEFS&gt;
+  &lt;CXX_LINKER&gt;CXX&lt;/CXX_LINKER&gt;
+  &lt;FC_AUTO_R8&gt;
+    &lt;base&gt; -r8 &lt;/base&gt;
+  &lt;/FC_AUTO_R8&gt;
+  &lt;FFLAGS&gt;
+    &lt;base&gt;  -i4 -gopt  -time -Mextend -byteswapio -Mflushz -Kieee  &lt;/base&gt;
+    &lt;append compile_threaded=&quot;TRUE&quot;&gt; -mp &lt;/append&gt;
+    &lt;append DEBUG=&quot;TRUE&quot;&gt; -O0 -g -Ktrap=fp -Mbounds -Kieee &lt;/append&gt;
+    &lt;append MODEL=&quot;datm&quot;&gt; -Mnovect &lt;/append&gt;
+    &lt;append MODEL=&quot;dlnd&quot;&gt; -Mnovect &lt;/append&gt;
+    &lt;append MODEL=&quot;drof&quot;&gt; -Mnovect &lt;/append&gt;
+    &lt;append MODEL=&quot;dwav&quot;&gt; -Mnovect &lt;/append&gt;
+    &lt;append MODEL=&quot;dice&quot;&gt; -Mnovect &lt;/append&gt;
+    &lt;append MODEL=&quot;docn&quot;&gt; -Mnovect &lt;/append&gt;
+  &lt;/FFLAGS&gt;
+  &lt;FFLAGS_NOOPT&gt;
+    &lt;base&gt; -O0 &lt;/base&gt;
+  &lt;/FFLAGS_NOOPT&gt;
+  &lt;FIXEDFLAGS&gt;
+    &lt;base&gt; -Mfixed &lt;/base&gt;
+  &lt;/FIXEDFLAGS&gt;
+  &lt;FREEFLAGS&gt;
+    &lt;base&gt; -Mfree &lt;/base&gt;
+  &lt;/FREEFLAGS&gt;
+  &lt;HAS_F2008_CONTIGUOUS&gt;FALSE&lt;/HAS_F2008_CONTIGUOUS&gt;
+  &lt;LDFLAGS&gt;
+    &lt;base&gt; -time -Wl,--allow-multiple-definition &lt;/base&gt;
+    &lt;append compile_threaded=&quot;TRUE&quot;&gt; -mp &lt;/append&gt;
+  &lt;/LDFLAGS&gt;
+  &lt;MPICC&gt; mpicc &lt;/MPICC&gt;
+  &lt;MPICXX&gt; mpicxx &lt;/MPICXX&gt;
+  &lt;MPIFC&gt; mpif90 &lt;/MPIFC&gt;
+  &lt;SCC&gt; nvc &lt;/SCC&gt;
+  &lt;SCXX&gt; nvc++ &lt;/SCXX&gt;
+  &lt;SFC&gt; nvfortran &lt;/SFC&gt;
+&lt;/compiler&gt;
+
+&lt;compiler COMPILER=&quot;nvhpc-gpu&quot;&gt;
+  &lt;CFLAGS&gt;
+    &lt;base&gt; -gopt  -time &lt;/base&gt;
+    &lt;append compile_threaded=&quot;TRUE&quot;&gt; -mp &lt;/append&gt;
+  &lt;/CFLAGS&gt;
+  &lt;CPPDEFS&gt;
+    &lt;append&gt; -DFORTRANUNDERSCORE -DNO_SHR_VMATH -DNO_R16  -DCPRPGI &lt;/append&gt;
+  &lt;/CPPDEFS&gt;
+  &lt;CXX_LINKER&gt;CXX&lt;/CXX_LINKER&gt;
+  &lt;FC_AUTO_R8&gt;
+    &lt;base&gt; -r8 &lt;/base&gt;
+  &lt;/FC_AUTO_R8&gt;
+  &lt;FFLAGS&gt;
+    &lt;base&gt;  -i4 -gopt  -time -Mextend -byteswapio -Mflushz -Kieee  &lt;/base&gt;
+    &lt;append compile_threaded=&quot;TRUE&quot;&gt; -mp &lt;/append&gt;
+    &lt;append DEBUG=&quot;TRUE&quot;&gt; -O0 -g -Ktrap=fp -Mbounds -Kieee &lt;/append&gt;
+    &lt;append MODEL=&quot;datm&quot;&gt; -Mnovect &lt;/append&gt;
+    &lt;append MODEL=&quot;dlnd&quot;&gt; -Mnovect &lt;/append&gt;
+    &lt;append MODEL=&quot;drof&quot;&gt; -Mnovect &lt;/append&gt;
+    &lt;append MODEL=&quot;dwav&quot;&gt; -Mnovect &lt;/append&gt;
+    &lt;append MODEL=&quot;dice&quot;&gt; -Mnovect &lt;/append&gt;
+    &lt;append MODEL=&quot;docn&quot;&gt; -Mnovect &lt;/append&gt;
+  &lt;/FFLAGS&gt;
+  &lt;FFLAGS_NOOPT&gt;
+    &lt;base&gt; -O0 &lt;/base&gt;
+  &lt;/FFLAGS_NOOPT&gt;
+  &lt;FIXEDFLAGS&gt;
+    &lt;base&gt; -Mfixed &lt;/base&gt;
+  &lt;/FIXEDFLAGS&gt;
+  &lt;FREEFLAGS&gt;
+    &lt;base&gt; -Mfree &lt;/base&gt;
+  &lt;/FREEFLAGS&gt;
+  &lt;HAS_F2008_CONTIGUOUS&gt;FALSE&lt;/HAS_F2008_CONTIGUOUS&gt;
+  &lt;LDFLAGS&gt;
+    &lt;base&gt; -time -Wl,--allow-multiple-definition &lt;/base&gt;
+    &lt;append compile_threaded=&quot;TRUE&quot;&gt; -mp &lt;/append&gt;
+  &lt;/LDFLAGS&gt;
+  &lt;MPICC&gt; mpicc &lt;/MPICC&gt;
+  &lt;MPICXX&gt; mpicxx &lt;/MPICXX&gt;
+  &lt;MPIFC&gt; mpif90 &lt;/MPIFC&gt;
+  &lt;SCC&gt; nvc &lt;/SCC&gt;
+  &lt;SCXX&gt; nvc++ &lt;/SCXX&gt;
+  &lt;SFC&gt; nvfortran &lt;/SFC&gt;
+&lt;/compiler&gt;
+
 &lt;compiler OS=&quot;AIX&quot; COMPILER=&quot;ibm&quot;&gt;
   &lt;CFLAGS&gt;
     &lt;append&gt; -qarch=auto -qtune=auto -qcache=auto &lt;/append&gt;
@@ -4183,7 +4502,7 @@ using a fortran linker.
 
 &lt;compiler MACH=&quot;aleph&quot; COMPILER=&quot;intel&quot;&gt;
   &lt;CONFIG_ARGS&gt;
-    &lt;base&gt; --host=Linux &lt;/base&gt;
+    &lt;base&gt; --host=cray &lt;/base&gt;
   &lt;/CONFIG_ARGS&gt;
   &lt;CFLAGS&gt;
     &lt;append&gt; -xCORE-AVX2 &lt;/append&gt;
@@ -4272,6 +4591,20 @@ using a fortran linker.
   &lt;SUPPORTS_CXX&gt;TRUE&lt;/SUPPORTS_CXX&gt;
 &lt;/compiler&gt;
 
+&lt;compiler MACH=&quot;container&quot;&gt;
+  &lt;CPPDEFS&gt;
+    &lt;!-- these flags enable nano timers --&gt;
+    &lt;append MODEL=&quot;gptl&quot;&gt; -DHAVE_NANOTIME -DBIT64 -DHAVE_VPRINTF -DHAVE_BACKTRACE -DHAVE_SLASHPROC -DHAVE_COMM_F2C -DHAVE_TIMES -DHAVE_GETTIMEOFDAY &lt;/append&gt;
+  &lt;/CPPDEFS&gt;
+  &lt;NETCDF_PATH&gt;/usr/local&lt;/NETCDF_PATH&gt;
+  &lt;PNETCDF_PATH&gt;/usr/local&lt;/PNETCDF_PATH&gt;
+  &lt;LDFLAGS&gt;
+  &lt;/LDFLAGS&gt;
+  &lt;SLIBS&gt;
+    &lt;append&gt; -lnetcdf -lnetcdff -llapack -lblas &lt;/append&gt;
+  &lt;/SLIBS&gt;
+&lt;/compiler&gt;
+
 &lt;compiler MACH=&quot;daint&quot; COMPILER=&quot;pgi&quot;&gt;
   &lt;FFLAGS&gt;
     &lt;append&gt; -I/project/s824/edavin/OASIS3-MCT_2.0/build.pgi/build/lib/mct -I/project/s824/edavin/OASIS3-MCT_2.0/build.pgi/build/lib/psmile.MPI1 &lt;/append&gt;
@@ -4296,21 +4629,113 @@ using a fortran linker.
   &lt;/SLIBS&gt;
 &lt;/compiler&gt;
 
+&lt;compiler MACH=&quot;greenplanet-sib29&quot; COMPILER=&quot;intel&quot;&gt;
+  &lt;NETCDF_PATH&gt;$ENV{NCDIR}&lt;/NETCDF_PATH&gt;
+  &lt;PNETCDF_PATH&gt;$ENV{PNDIR}&lt;/PNETCDF_PATH&gt;
+  &lt;SLIBS&gt;
+    &lt;append&gt; -L${NETCDF_PATH}/lib -lnetcdf -lnetcdff &lt;/append&gt;
+  &lt;/SLIBS&gt;
+&lt;/compiler&gt;
+
+&lt;compiler MACH=&quot;greenplanet-sky24&quot; COMPILER=&quot;intel&quot;&gt;
+  &lt;NETCDF_PATH&gt;$ENV{NCDIR}&lt;/NETCDF_PATH&gt;
+  &lt;PNETCDF_PATH&gt;$ENV{PNDIR}&lt;/PNETCDF_PATH&gt;
+  &lt;SLIBS&gt;
+    &lt;append&gt; -L${NETCDF_PATH}/lib -lnetcdf -lnetcdff &lt;/append&gt;
+  &lt;/SLIBS&gt;
+&lt;/compiler&gt;
+
+&lt;compiler MACH=&quot;casper&quot;&gt;
+  &lt;NETCDF_PATH&gt; $ENV{NETCDF}&lt;/NETCDF_PATH&gt;
+  &lt;PIO_FILESYSTEM_HINTS&gt;gpfs&lt;/PIO_FILESYSTEM_HINTS&gt;
+  &lt;PNETCDF_PATH&gt;$ENV{PNETCDF}&lt;/PNETCDF_PATH&gt;
+&lt;/compiler&gt;
+
 &lt;compiler MACH=&quot;casper&quot; COMPILER=&quot;pgi&quot;&gt;
+  &lt;CFLAGS&gt;
+    &lt;append DEBUG=&quot;FALSE&quot;&gt; -O -tp=skylake -Mnofma &lt;/append&gt;
+  &lt;/CFLAGS&gt;
   &lt;FFLAGS&gt;
-    &lt;append&gt; -Mnofma -acc -ta=tesla:cc70 -Minfo=accel &lt;/append&gt;
+    &lt;append DEBUG=&quot;FALSE&quot;&gt; -O -tp=skylake -Mnofma &lt;/append&gt;
     &lt;append&gt; -I$(EXEROOT)/ocn/obj/FMS &lt;/append&gt;
   &lt;/FFLAGS&gt;
-  &lt;CFLAGS&gt;
-    &lt;append&gt; -Mnofma -acc -ta=tesla:cc70 -Minfo=accel &lt;/append&gt;
-  &lt;/CFLAGS&gt;
   &lt;LDFLAGS&gt;
-    &lt;append&gt; -acc -ta=tesla:cc70 -Minfo=accel &lt;/append&gt;
+    &lt;append DEBUG=&quot;FALSE&quot;&gt; -O -tp=skylake -Mnofma &lt;/append&gt;
   &lt;/LDFLAGS&gt;
   &lt;SLIBS&gt;
-    &lt;append&gt; -llapack -lblas -ldl &lt;/append&gt;
+    &lt;append&gt; -llapack -lblas &lt;/append&gt;
     &lt;append MPILIB=&quot;mpi-serial&quot;&gt; -ldl &lt;/append&gt;
+    &lt;append&gt; -L${NETCDF_PATH}/lib -lnetcdf -lnetcdff &lt;/append&gt;
   &lt;/SLIBS&gt;
+&lt;/compiler&gt;
+
+&lt;compiler MACH=&quot;casper&quot; COMPILER=&quot;pgi-gpu&quot;&gt;
+  &lt;CFLAGS&gt;
+    &lt;append DEBUG=&quot;FALSE&quot;&gt; -O -tp=skylake -Mnofma &lt;/append&gt;
+  &lt;/CFLAGS&gt;
+  &lt;FFLAGS&gt;
+    &lt;append DEBUG=&quot;FALSE&quot;&gt; -O -tp=skylake -Mnofma &lt;/append&gt;
+    &lt;append&gt; -I$(EXEROOT)/ocn/obj/FMS &lt;/append&gt;
+  &lt;/FFLAGS&gt;
+  &lt;LDFLAGS&gt;
+    &lt;append DEBUG=&quot;FALSE&quot;&gt; -O -tp=skylake -Mnofma -acc -ta=tesla:cc70,lineinfo,nofma -Minfo=accel &lt;/append&gt;
+  &lt;/LDFLAGS&gt;
+  &lt;SLIBS&gt;
+    &lt;append&gt; -llapack -lblas &lt;/append&gt;
+    &lt;append MPILIB=&quot;mpi-serial&quot;&gt; -ldl &lt;/append&gt;
+    &lt;append&gt; -L${NETCDF_PATH}/lib -lnetcdf -lnetcdff &lt;/append&gt;
+  &lt;/SLIBS&gt;
+&lt;/compiler&gt;
+
+&lt;compiler MACH=&quot;casper&quot; COMPILER=&quot;nvhpc&quot;&gt;
+  &lt;CFLAGS&gt;
+    &lt;append DEBUG=&quot;FALSE&quot;&gt; -O -tp=skylake -Mnofma &lt;/append&gt;
+  &lt;/CFLAGS&gt;
+  &lt;FFLAGS&gt;
+    &lt;append DEBUG=&quot;FALSE&quot;&gt; -O -tp=skylake -Mnofma &lt;/append&gt;
+    &lt;append&gt; -I$(EXEROOT)/ocn/obj/FMS &lt;/append&gt;
+  &lt;/FFLAGS&gt;
+  &lt;LDFLAGS&gt;
+    &lt;append DEBUG=&quot;FALSE&quot;&gt; -O -tp=skylake -Mnofma &lt;/append&gt;
+  &lt;/LDFLAGS&gt;
+  &lt;SLIBS&gt;
+    &lt;append&gt; -llapack -lblas &lt;/append&gt;
+    &lt;append MPILIB=&quot;mpi-serial&quot;&gt; -ldl &lt;/append&gt;
+    &lt;append&gt; -L${NETCDF_PATH}/lib -lnetcdf -lnetcdff &lt;/append&gt;
+  &lt;/SLIBS&gt;
+&lt;/compiler&gt;
+
+&lt;compiler MACH=&quot;casper&quot; COMPILER=&quot;nvhpc-gpu&quot;&gt;
+  &lt;CFLAGS&gt;
+    &lt;append DEBUG=&quot;FALSE&quot;&gt; -O -tp=skylake -Mnofma &lt;/append&gt;
+  &lt;/CFLAGS&gt;
+  &lt;FFLAGS&gt;
+    &lt;append DEBUG=&quot;FALSE&quot;&gt; -O -tp=skylake -Mnofma &lt;/append&gt;
+    &lt;append&gt; -I$(EXEROOT)/ocn/obj/FMS &lt;/append&gt;
+  &lt;/FFLAGS&gt;
+  &lt;LDFLAGS&gt;
+    &lt;append DEBUG=&quot;FALSE&quot;&gt; -O -tp=skylake -Mnofma -acc -ta=tesla:cc70,lineinfo,nofma -Minfo=accel &lt;/append&gt;
+  &lt;/LDFLAGS&gt;
+  &lt;SLIBS&gt;
+    &lt;append&gt; -llapack -lblas &lt;/append&gt;
+    &lt;append MPILIB=&quot;mpi-serial&quot;&gt; -ldl &lt;/append&gt;
+    &lt;append&gt; -L${NETCDF_PATH}/lib -lnetcdf -lnetcdff &lt;/append&gt;
+  &lt;/SLIBS&gt;
+&lt;/compiler&gt;
+
+&lt;compiler MACH=&quot;casper&quot; COMPILER=&quot;intel&quot;&gt;
+  &lt;CFLAGS&gt;
+    &lt;append&gt; -qopt-report -xCORE_AVX2 -no-fma&lt;/append&gt;
+  &lt;/CFLAGS&gt;
+  &lt;FFLAGS&gt;
+    &lt;append&gt; -qopt-report -xCORE_AVX2 -no-fma&lt;/append&gt;
+  &lt;/FFLAGS&gt;
+  &lt;CMAKE_OPTS&gt;
+    &lt;append DEBUG=&quot;TRUE&quot;&gt; -DPIO_ENABLE_LOGGING=ON &lt;/append&gt;
+  &lt;/CMAKE_OPTS&gt;
+  &lt;PFUNIT_PATH MPILIB=&quot;mpi-serial&quot; compile_threaded=&quot;FALSE&quot;&gt;$ENV{CESMDATAROOT}/tools/pFUnit/pFUnit3.2.8_cheyenne_Intel17.0.1_noMPI_noOpenMP&lt;/PFUNIT_PATH&gt;
+  &lt;!-- SET to FALSE for intel 17 and 18 TRUE otherwise --&gt;
+  &lt;HAS_F2008_CONTIGUOUS&gt;TRUE&lt;/HAS_F2008_CONTIGUOUS&gt;
 &lt;/compiler&gt;
 
 &lt;compiler MACH=&quot;cheyenne&quot;&gt;
@@ -4327,6 +4752,12 @@ using a fortran linker.
   &lt;CPPDEFS&gt;
     &lt;append MODEL=&quot;pio1&quot;&gt; -DNO_MPIMOD &lt;/append&gt;
   &lt;/CPPDEFS&gt;
+  &lt;FFLAGS&gt;
+    &lt;!-- -fallow-argument-mismatch is needed for building with the mpich library with gfortran10;
+         -fallow-invalid-boz is needed for some components that have non-standard uses of BOZ literal constants with gfortran10.
+         See https://github.com/ESMCI/cime/issues/3846 for details. --&gt;
+    &lt;append&gt; -fallow-argument-mismatch -fallow-invalid-boz &lt;/append&gt;
+  &lt;/FFLAGS&gt;
   &lt;SLIBS&gt;
     &lt;append&gt; -ldl &lt;/append&gt;
   &lt;/SLIBS&gt;
@@ -4367,7 +4798,7 @@ using a fortran linker.
     &lt;append DEBUG=&quot;FALSE&quot;&gt; -O2 &lt;/append&gt;
   &lt;/CFLAGS&gt;
   &lt;CONFIG_ARGS&gt;
-    &lt;base&gt; --host=Linux &lt;/base&gt;
+    &lt;base&gt; --host=cray &lt;/base&gt;
   &lt;/CONFIG_ARGS&gt;
   &lt;CPPDEFS&gt;
     &lt;append&gt; -DLINUX &lt;/append&gt;
@@ -4387,7 +4818,7 @@ using a fortran linker.
     &lt;append DEBUG=&quot;FALSE&quot;&gt; -O2 &lt;/append&gt;
   &lt;/CFLAGS&gt;
   &lt;CONFIG_ARGS&gt;
-    &lt;base&gt; --host=Linux &lt;/base&gt;
+    &lt;base&gt; --host=cray &lt;/base&gt;
   &lt;/CONFIG_ARGS&gt;
   &lt;CPPDEFS&gt;
     &lt;append&gt; -DLINUX &lt;/append&gt;
@@ -4404,7 +4835,7 @@ using a fortran linker.
 
 &lt;compiler MACH=&quot;cori-haswell&quot; COMPILER=&quot;intel&quot;&gt;
   &lt;CONFIG_ARGS&gt;
-    &lt;base&gt; --host=Linux &lt;/base&gt;
+    &lt;base&gt; --host=cray &lt;/base&gt;
   &lt;/CONFIG_ARGS&gt;
   &lt;CFLAGS&gt;
     &lt;append&gt; -xCORE-AVX2 &lt;/append&gt;
@@ -4427,7 +4858,7 @@ using a fortran linker.
 
 &lt;compiler MACH=&quot;cori-knl&quot; COMPILER=&quot;intel&quot;&gt;
   &lt;CONFIG_ARGS&gt;
-    &lt;base&gt; --host=Linux &lt;/base&gt;
+    &lt;base&gt; --host=cray &lt;/base&gt;
   &lt;/CONFIG_ARGS&gt;
   &lt;CFLAGS&gt;
     &lt;append&gt; -xMIC-AVX512 &lt;/append&gt;
@@ -4453,7 +4884,7 @@ using a fortran linker.
     &lt;append DEBUG=&quot;FALSE&quot;&gt; -O2 &lt;/append&gt;
   &lt;/CFLAGS&gt;
   &lt;CONFIG_ARGS&gt;
-    &lt;base&gt; --host=Linux &lt;/base&gt;
+    &lt;base&gt; --host=cray &lt;/base&gt;
   &lt;/CONFIG_ARGS&gt;
   &lt;CPPDEFS&gt;
     &lt;append&gt; -DLINUX &lt;/append&gt;
@@ -4474,7 +4905,7 @@ using a fortran linker.
     &lt;append compile_threaded=&quot;FALSE&quot;&gt; -nomp &lt;/append&gt;
   &lt;/CFLAGS&gt;
   &lt;CONFIG_ARGS&gt;
-    &lt;base&gt; --host=Linux &lt;/base&gt;
+    &lt;base&gt; --host=cray &lt;/base&gt;
   &lt;/CONFIG_ARGS&gt;
   &lt;CPPDEFS&gt;
     &lt;append&gt; -DLINUX &lt;/append&gt;
@@ -4498,7 +4929,7 @@ using a fortran linker.
     &lt;append DEBUG=&quot;FALSE&quot;&gt; -O2  &lt;/append&gt;
   &lt;/CFLAGS&gt;
   &lt;CONFIG_ARGS&gt;
-    &lt;base&gt; --host=Linux &lt;/base&gt;
+    &lt;base&gt; --host=cray &lt;/base&gt;
   &lt;/CONFIG_ARGS&gt;
   &lt;CPPDEFS&gt;
     &lt;append MODEL=&quot;gptl&quot;&gt; -DHAVE_PAPI &lt;/append&gt;
@@ -4608,6 +5039,22 @@ using a fortran linker.
   &lt;FFLAGS&gt;
     &lt;append DEBUG=&quot;FALSE&quot;&gt; -O2 &lt;/append&gt;
   &lt;/FFLAGS&gt;
+&lt;/compiler&gt;
+
+&lt;compiler MACH=&quot;frontera&quot;&gt;
+  &lt;HAS_F2008_CONTIGUOUS&gt;TRUE&lt;/HAS_F2008_CONTIGUOUS&gt;
+  &lt;CPPDEFS&gt;
+    &lt;append MODEL=&quot;gptl&quot;&gt; -DHAVE_NANOTIME -DBIT64 -DHAVE_VPRINTF -DHAVE_BACKTRACE -DHAVE_SLASHPROC -DHAVE_COMM_F2C -DHAVE_TIMES -DHAVE_GETTIMEOFDAY &lt;/append&gt;
+  &lt;/CPPDEFS&gt;
+  &lt;NETCDF_PATH&gt;$ENV{TACC_NETCDF_DIR}&lt;/NETCDF_PATH&gt;
+  &lt;PIO_FILESYSTEM_HINTS&gt;lustre&lt;/PIO_FILESYSTEM_HINTS&gt;
+  &lt;PNETCDF_PATH&gt;$ENV{TACC_PNETCDF_DIR}&lt;/PNETCDF_PATH&gt;
+  &lt;LDFLAGS&gt;
+    &lt;append&gt; -Wl,-rpath,${NETCDF_PATH}/lib &lt;/append&gt;
+  &lt;/LDFLAGS&gt;
+  &lt;SLIBS&gt;
+    &lt;append&gt; -L${NETCDF_PATH}/lib -lnetcdff -lnetcdf&lt;/append&gt;
+  &lt;/SLIBS&gt;
 &lt;/compiler&gt;
 
 &lt;compiler MACH=&quot;hobart&quot;&gt;
@@ -4756,7 +5203,7 @@ using a fortran linker.
     &lt;append DEBUG=&quot;FALSE&quot;&gt; -O2  &lt;/append&gt;
   &lt;/CFLAGS&gt;
   &lt;CONFIG_ARGS&gt;
-    &lt;base&gt; --host=Linux &lt;/base&gt;
+    &lt;base&gt; --host=cray &lt;/base&gt;
   &lt;/CONFIG_ARGS&gt;
   &lt;CXX_LIBS&gt;
     &lt;base&gt;-lstdc++ -lmpi_cxx&lt;/base&gt;
@@ -4809,7 +5256,7 @@ using a fortran linker.
     &lt;append DEBUG=&quot;FALSE&quot;&gt; -O2 &lt;/append&gt;
   &lt;/CFLAGS&gt;
   &lt;CONFIG_ARGS&gt;
-    &lt;base&gt; --host=Linux &lt;/base&gt;
+    &lt;base&gt; --host=cray &lt;/base&gt;
   &lt;/CONFIG_ARGS&gt;
   &lt;CPPDEFS&gt;
     &lt;append&gt; -DLINUX &lt;/append&gt;
@@ -4825,8 +5272,14 @@ using a fortran linker.
 &lt;/compiler&gt;
 
 &lt;compiler MACH=&quot;pleiades-bro&quot;&gt;
+  &lt;CONFIG_ARGS&gt;
+    &lt;base&gt; --host=cray &lt;/base&gt;
+  &lt;/CONFIG_ARGS&gt;
+  &lt;CFLAGS&gt;
+    &lt;append&gt; -axCORE-AVX2 -xSSE4.2 -no-fma &lt;/append&gt;
+  &lt;/CFLAGS&gt;
   &lt;FFLAGS&gt;
-    &lt;append DEBUG=&quot;FALSE&quot;&gt; -O2 -xCORE-AVX2 &lt;/append&gt;
+    &lt;append&gt; -axCORE-AVX2 -xSSE4.2 -no-fma &lt;/append&gt;
   &lt;/FFLAGS&gt;
   &lt;MPICC&gt;icc&lt;/MPICC&gt;
   &lt;MPI_LIB_NAME&gt;mpi&lt;/MPI_LIB_NAME&gt;
@@ -4835,12 +5288,19 @@ using a fortran linker.
   &lt;SLIBS&gt;
     &lt;append&gt;-L$ENV{NETCDF}/lib -lnetcdff -lnetcdf&lt;/append&gt;
   &lt;/SLIBS&gt;
-  &lt;ESMF_LIBDIR&gt;/home6/fvitt/esmf_7_1_0r/esmf/lib/libO/Linux.intel.64.mpi.default&lt;/ESMF_LIBDIR&gt;
+  &lt;PNETCDF_PATH&gt;/home6/fvitt/pnetcdf-1.12.2&lt;/PNETCDF_PATH&gt;
+  &lt;ESMF_LIBDIR&gt;/home6/fvitt/esmf-8_1_1/lib/libO/Linux.intel.64.mpt.default&lt;/ESMF_LIBDIR&gt;
 &lt;/compiler&gt;
 
 &lt;compiler MACH=&quot;pleiades-has&quot;&gt;
+  &lt;CONFIG_ARGS&gt;
+    &lt;base&gt; --host=cray &lt;/base&gt;
+  &lt;/CONFIG_ARGS&gt;
+  &lt;CFLAGS&gt;
+    &lt;append&gt; -axCORE-AVX2 -xSSE4.2 -no-fma &lt;/append&gt;
+  &lt;/CFLAGS&gt;
   &lt;FFLAGS&gt;
-    &lt;append DEBUG=&quot;FALSE&quot;&gt; -O2 -xCORE-AVX2 &lt;/append&gt;
+    &lt;append&gt; -axCORE-AVX2 -xSSE4.2 -no-fma &lt;/append&gt;
   &lt;/FFLAGS&gt;
   &lt;MPICC&gt;icc&lt;/MPICC&gt;
   &lt;MPI_LIB_NAME&gt;mpi&lt;/MPI_LIB_NAME&gt;
@@ -4849,12 +5309,19 @@ using a fortran linker.
   &lt;SLIBS&gt;
     &lt;append&gt;-L$ENV{NETCDF}/lib -lnetcdff -lnetcdf&lt;/append&gt;
   &lt;/SLIBS&gt;
-  &lt;ESMF_LIBDIR&gt;/home6/fvitt/esmf_7_1_0r/esmf/lib/libO/Linux.intel.64.mpi.default&lt;/ESMF_LIBDIR&gt;
+  &lt;PNETCDF_PATH&gt;/home6/fvitt/pnetcdf-1.12.2&lt;/PNETCDF_PATH&gt;
+  &lt;ESMF_LIBDIR&gt;/home6/fvitt/esmf-8_1_1/lib/libO/Linux.intel.64.mpt.default&lt;/ESMF_LIBDIR&gt;
 &lt;/compiler&gt;
 
 &lt;compiler MACH=&quot;pleiades-ivy&quot;&gt;
+  &lt;CONFIG_ARGS&gt;
+    &lt;base&gt; --host=cray &lt;/base&gt;
+  &lt;/CONFIG_ARGS&gt;
+  &lt;CFLAGS&gt;
+    &lt;append&gt; -axCORE-AVX2 -xSSE4.2 -no-fma &lt;/append&gt;
+  &lt;/CFLAGS&gt;
   &lt;FFLAGS&gt;
-    &lt;append DEBUG=&quot;FALSE&quot;&gt; -O2 -xAVX &lt;/append&gt;
+    &lt;append&gt; -axCORE-AVX2 -xSSE4.2 -no-fma &lt;/append&gt;
   &lt;/FFLAGS&gt;
   &lt;MPICC&gt;icc&lt;/MPICC&gt;
   &lt;MPI_LIB_NAME&gt;mpi&lt;/MPI_LIB_NAME&gt;
@@ -4863,12 +5330,19 @@ using a fortran linker.
   &lt;SLIBS&gt;
     &lt;append&gt;-L$ENV{NETCDF}/lib -lnetcdff -lnetcdf&lt;/append&gt;
   &lt;/SLIBS&gt;
-  &lt;ESMF_LIBDIR&gt;/home6/fvitt/esmf_7_1_0r/esmf/lib/libO/Linux.intel.64.mpi.default&lt;/ESMF_LIBDIR&gt;
+  &lt;PNETCDF_PATH&gt;/home6/fvitt/pnetcdf-1.12.2&lt;/PNETCDF_PATH&gt;
+  &lt;ESMF_LIBDIR&gt;/home6/fvitt/esmf-8_1_1/lib/libO/Linux.intel.64.mpt.default&lt;/ESMF_LIBDIR&gt;
 &lt;/compiler&gt;
 
 &lt;compiler MACH=&quot;pleiades-san&quot;&gt;
+  &lt;CONFIG_ARGS&gt;
+    &lt;base&gt; --host=cray &lt;/base&gt;
+  &lt;/CONFIG_ARGS&gt;
+  &lt;CFLAGS&gt;
+    &lt;append&gt; -axCORE-AVX2 -xSSE4.2 -no-fma &lt;/append&gt;
+  &lt;/CFLAGS&gt;
   &lt;FFLAGS&gt;
-    &lt;append DEBUG=&quot;FALSE&quot;&gt; -O2 -xAVX &lt;/append&gt;
+    &lt;append&gt; -axCORE-AVX2 -xSSE4.2 -no-fma &lt;/append&gt;
   &lt;/FFLAGS&gt;
   &lt;MPICC&gt;icc&lt;/MPICC&gt;
   &lt;MPI_LIB_NAME&gt;mpi&lt;/MPI_LIB_NAME&gt;
@@ -4877,7 +5351,8 @@ using a fortran linker.
   &lt;SLIBS&gt;
     &lt;append&gt;-L$ENV{NETCDF}/lib -lnetcdff -lnetcdf&lt;/append&gt;
   &lt;/SLIBS&gt;
-  &lt;ESMF_LIBDIR&gt;/home6/fvitt/esmf_7_1_0r/esmf/lib/libO/Linux.intel.64.mpi.default&lt;/ESMF_LIBDIR&gt;
+  &lt;PNETCDF_PATH&gt;/home6/fvitt/pnetcdf-1.12.2&lt;/PNETCDF_PATH&gt;
+  &lt;ESMF_LIBDIR&gt;/home6/fvitt/esmf-8_1_1/lib/libO/Linux.intel.64.mpt.default&lt;/ESMF_LIBDIR&gt;
 &lt;/compiler&gt;
 
 &lt;compiler MACH=&quot;sandiatoss3&quot; COMPILER=&quot;intel&quot;&gt;
@@ -4885,7 +5360,7 @@ using a fortran linker.
     &lt;append DEBUG=&quot;FALSE&quot;&gt; -O2  &lt;/append&gt;
   &lt;/CFLAGS&gt;
   &lt;CONFIG_ARGS&gt;
-    &lt;base&gt; --host=Linux &lt;/base&gt;
+    &lt;base&gt; --host=cray &lt;/base&gt;
   &lt;/CONFIG_ARGS&gt;
   &lt;ESMF_LIBDIR&gt;/projects/ccsm/esmf-6.3.0rp1/lib/libO/Linux.intel.64.openmpi.default&lt;/ESMF_LIBDIR&gt;
   &lt;FFLAGS&gt;
@@ -4983,11 +5458,54 @@ using a fortran linker.
     &lt;append&gt; -xMIC-AVX512 &lt;/append&gt;
   &lt;/FFLAGS&gt;
     &lt;CONFIG_ARGS&gt;
-    &lt;base&gt; --host=Linux &lt;/base&gt;
+    &lt;base&gt; --host=cray &lt;/base&gt;
   &lt;/CONFIG_ARGS&gt;
   &lt;SLIBS&gt;
     &lt;append&gt;-L$(NETCDF_DIR)/lib -lnetcdff -L$(NETCDF_DIR)/lib -lnetcdf -Wl,-rpath -Wl,$(NETCDF_DIR)/lib &lt;/append&gt;
   &lt;/SLIBS&gt;
+&lt;/compiler&gt;
+
+&lt;compiler MACH=&quot;zeus&quot;&gt;
+  &lt;PIO_FILESYSTEM_HINTS&gt;gpfs&lt;/PIO_FILESYSTEM_HINTS&gt;
+  &lt;NETCDF_PATH&gt;$ENV{NETCDF}&lt;/NETCDF_PATH&gt;
+  &lt;PNETCDF_PATH&gt;$ENV{PNETCDF}&lt;/PNETCDF_PATH&gt;
+  &lt;CPPDEFS&gt;
+    &lt;!-- these flags enable nano timers --&gt;
+    &lt;append&gt; -DNO_R16 -DHAVE_NANOTIME &lt;/append&gt;
+  &lt;/CPPDEFS&gt;
+  &lt;FFLAGS&gt;
+    &lt;append MODEL=&quot;nemo&quot;&gt; $(FC_AUTO_R8) -O3 -assume norealloc_lhs &lt;/append&gt;
+  &lt;/FFLAGS&gt;
+  &lt;SLIBS&gt;
+    &lt;append&gt; $SHELL{${NETCDF_PATH}/bin/nc-config --flibs}&lt;/append&gt;
+  &lt;/SLIBS&gt;
+&lt;/compiler&gt;
+
+&lt;compiler MACH=&quot;zeus&quot; COMPILER=&quot;intel&quot;&gt;
+  &lt;AR&gt;xiar&lt;/AR&gt;
+  &lt;ARFLAGS&gt;
+    &lt;base&gt;cru&lt;/base&gt;
+  &lt;/ARFLAGS&gt;
+  &lt;FFLAGS&gt;
+    &lt;append MPILIB=&quot;impi&quot;&gt;  -mkl=cluster -xSKYLAKE-AVX512 -qopt-zmm-usage=high -no-fma &lt;/append&gt;
+    &lt;append MPILIB=&quot;mpi-serial&quot;&gt; -mcmodel medium &lt;/append&gt;
+    &lt;append MPILIB=&quot;mpi-serial&quot;&gt;  -mkl -xSKYLAKE-AVX512 -qopt-zmm-usage=high -no-fma &lt;/append&gt;
+  &lt;/FFLAGS&gt;
+  &lt;CFLAGS&gt;
+    &lt;append MPILIB=&quot;impi&quot;&gt;  -mkl=cluster -xSKYLAKE-AVX512 -qopt-zmm-usage=high -no-fma &lt;/append&gt;
+    &lt;append MPILIB=&quot;mpi-serial&quot;&gt;  -mkl -xSKYLAKE-AVX512 -qopt-zmm-usage=high -no-fma &lt;/append&gt;
+  &lt;/CFLAGS&gt;
+  &lt;LDFLAGS&gt;
+    &lt;append MPILIB=&quot;impi&quot;&gt;  -mkl=cluster &lt;/append&gt;
+    &lt;append MPILIB=&quot;mpi-serial&quot;&gt;  -mkl -lstdc++ &lt;/append&gt;
+  &lt;/LDFLAGS&gt;
+  &lt;SLIBS&gt;
+    &lt;append MPILIB=&quot;impi&quot;&gt;  -lstdc++ &lt;/append&gt;
+    &lt;append MPILIB=&quot;mpi-serial&quot;&gt;  -lstdc++ &lt;/append&gt;
+  &lt;/SLIBS&gt;
+  &lt;MPICC&gt;mpiicc&lt;/MPICC&gt;
+  &lt;MPICXX&gt;mpiicpc&lt;/MPICXX&gt;
+  &lt;MPIFC&gt;mpiifort&lt;/MPIFC&gt;
 &lt;/compiler&gt;
 
 &lt;compiler MACH=&quot;userdefined&quot;&gt;
@@ -5350,11 +5868,12 @@ This allows using a different mpirun command to launch unit tests
       &lt;cmd_path lang=&quot;csh&quot;&gt;module&lt;/cmd_path&gt;
       &lt;modules&gt;
         &lt;command name=&quot;purge&quot;/&gt;
+	&lt;command name=&quot;load&quot;&gt;lang/python/3.6.5&lt;/command&gt;
       &lt;/modules&gt;
       &lt;modules compiler=&quot;gnu&quot;&gt;
         &lt;command name=&quot;load&quot;&gt;compiler/gnu/8.2.0&lt;/command&gt;
-        &lt;command name=&quot;load&quot;&gt;mpi/3.3/gcc-8.2.0&lt;/command&gt;
-        &lt;command name=&quot;load&quot;&gt;tool/netcdf/4.6.1/gcc-8.1.0&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;mpi/3.3/gnu-8.2.0&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;tool/netcdf/4.7.4/gcc-8.2.0&lt;/command&gt;
         &lt;command name=&quot;load&quot;&gt;tool/parallel-netcdf/1.12.1/mpich&lt;/command&gt;
       &lt;/modules&gt;
     &lt;/module_system&gt;
@@ -5367,29 +5886,27 @@ This allows using a different mpirun command to launch unit tests
   &lt;/machine&gt;
 
    &lt;machine MACH=&quot;casper&quot;&gt;
-    &lt;DESC&gt;NCAR GPU platform, os is Linux, 36 pes/node, batch system is slurm&lt;/DESC&gt;
+    &lt;DESC&gt;NCAR GPU platform, os is Linux, 36 pes/node, batch system is pbs&lt;/DESC&gt;
     &lt;NODENAME_REGEX&gt;casper*&lt;/NODENAME_REGEX&gt;
-    &lt;!-- MPT sometimes timesout at model start time, the next two lines cause
-    case_run.py to detect the timeout and retry FORCE_SPARE_NODES times --&gt;
     &lt;OS&gt;LINUX&lt;/OS&gt;
-    &lt;COMPILERS&gt;pgi&lt;/COMPILERS&gt;
-    &lt;MPILIBS compiler=&quot;pgi&quot; &gt;openmpi&lt;/MPILIBS&gt;
+    &lt;COMPILERS&gt;pgi,intel,nvhpc,pgi-gpu,nvhpc-gpu&lt;/COMPILERS&gt;
+    &lt;MPILIBS&gt;openmpi&lt;/MPILIBS&gt;
     &lt;CIME_OUTPUT_ROOT&gt;/glade/scratch/$USER&lt;/CIME_OUTPUT_ROOT&gt;
     &lt;DIN_LOC_ROOT&gt;$ENV{CESMDATAROOT}/inputdata&lt;/DIN_LOC_ROOT&gt;
     &lt;DIN_LOC_ROOT_CLMFORC&gt;/glade/p/cgd/tss/CTSM_datm_forcing_data&lt;/DIN_LOC_ROOT_CLMFORC&gt;
     &lt;DOUT_S_ROOT&gt;$CIME_OUTPUT_ROOT/archive/$CASE&lt;/DOUT_S_ROOT&gt;
     &lt;BASELINE_ROOT&gt;$ENV{CESMDATAROOT}/cesm_baselines&lt;/BASELINE_ROOT&gt;
     &lt;GMAKE_J&gt;8&lt;/GMAKE_J&gt;
-    &lt;BATCH_SYSTEM&gt;slurm&lt;/BATCH_SYSTEM&gt;
-    &lt;SUPPORTED_BY&gt;CISL-STP&lt;/SUPPORTED_BY&gt;
-    &lt;!-- have not seen any performance benefit in smt --&gt;
+    &lt;BATCH_SYSTEM&gt;pbs&lt;/BATCH_SYSTEM&gt;
+    &lt;SUPPORTED_BY&gt;CISL&lt;/SUPPORTED_BY&gt;
     &lt;MAX_TASKS_PER_NODE&gt;36&lt;/MAX_TASKS_PER_NODE&gt;
+    &lt;MAX_GPUS_PER_NODE&gt;8&lt;/MAX_GPUS_PER_NODE&gt;
     &lt;MAX_MPITASKS_PER_NODE&gt;36&lt;/MAX_MPITASKS_PER_NODE&gt;
     &lt;PROJECT_REQUIRED&gt;TRUE&lt;/PROJECT_REQUIRED&gt;
     &lt;mpirun mpilib=&quot;default&quot;&gt;
       &lt;executable&gt;mpirun&lt;/executable&gt;
       &lt;arguments&gt;
-        &lt;arg name=&quot;num_tasks&quot;&gt; -np {{ total_tasks }}&lt;/arg&gt;
+        &lt;arg name=&quot;anum_tasks&quot;&gt; -np {{ total_tasks }}&lt;/arg&gt;
       &lt;/arguments&gt;
     &lt;/mpirun&gt;
     &lt;mpirun mpilib=&quot;openmpi&quot;&gt;
@@ -5409,17 +5926,74 @@ This allows using a different mpirun command to launch unit tests
       &lt;cmd_path lang=&quot;csh&quot;&gt;module&lt;/cmd_path&gt;
       &lt;modules&gt;
         &lt;command name=&quot;purge&quot;/&gt;
-      &lt;/modules&gt;
-      &lt;modules&gt;
         &lt;command name=&quot;load&quot;&gt;ncarenv/1.3&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;cmake/3.18.2&lt;/command&gt;
       &lt;/modules&gt;
       &lt;modules compiler=&quot;pgi&quot;&gt;
         &lt;command name=&quot;load&quot;&gt;pgi/20.4&lt;/command&gt;
       &lt;/modules&gt;
+      &lt;modules compiler=&quot;pgi-gpu&quot;&gt;
+        &lt;command name=&quot;load&quot;&gt;pgi/20.4&lt;/command&gt;
+      &lt;/modules&gt;
+      &lt;modules compiler=&quot;nvhpc&quot;&gt;
+        &lt;command name=&quot;load&quot;&gt;nvhpc/20.9&lt;/command&gt;
+      &lt;/modules&gt;
+      &lt;modules compiler=&quot;nvhpc-gpu&quot;&gt;
+        &lt;command name=&quot;load&quot;&gt;nvhpc/20.9&lt;/command&gt;
+      &lt;/modules&gt;
+      &lt;modules compiler=&quot;intel&quot;&gt;
+        &lt;command name=&quot;load&quot;&gt;intel/19.1.1&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;mkl/2020.0.1&lt;/command&gt;
+      &lt;/modules&gt;
+      &lt;modules compiler=&quot;pgi&quot; mpilib=&quot;openmpi&quot; DEBUG=&quot;TRUE&quot;&gt;
+        &lt;command name=&quot;use&quot;&gt;/glade/p/cesmdata/cseg/PROGS/modulefiles/esmfpkgs/pgi/20.4/&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;esmf-8.2.0b11_casper-ncdfio-openmpi-g&lt;/command&gt;
+      &lt;/modules&gt;
+      &lt;modules compiler=&quot;pgi&quot; mpilib=&quot;openmpi&quot; DEBUG=&quot;FALSE&quot;&gt;
+        &lt;command name=&quot;use&quot;&gt;/glade/p/cesmdata/cseg/PROGS/modulefiles/esmfpkgs/pgi/20.4/&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;esmf-8.2.0b11_casper-ncdfio-openmpi-O&lt;/command&gt;
+      &lt;/modules&gt;
       &lt;modules mpilib=&quot;openmpi&quot; compiler=&quot;pgi&quot;&gt;
-        &lt;command name=&quot;load&quot;&gt;openmpi/3.1.4&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;openmpi/4.1.0&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;netcdf-mpi/4.8.0&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;pnetcdf/1.12.2&lt;/command&gt;
+      &lt;/modules&gt;
+      &lt;modules mpilib=&quot;mpi-serial&quot; compiler=&quot;pgi&quot;&gt;
+        &lt;command name=&quot;load&quot;&gt;netcdf/4.8.0&lt;/command&gt;
+      &lt;/modules&gt;
+      &lt;modules mpilib=&quot;openmpi&quot; compiler=&quot;pgi-gpu&quot;&gt;
+        &lt;command name=&quot;load&quot;&gt;openmpi/4.1.0&lt;/command&gt;
         &lt;command name=&quot;load&quot;&gt;netcdf-mpi/4.7.4&lt;/command&gt;
-        &lt;command name=&quot;load&quot;&gt;pnetcdf/1.12.1&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;pnetcdf/1.12.2&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;cuda/11.0.3&lt;/command&gt;
+      &lt;/modules&gt;
+      &lt;modules mpilib=&quot;mpi-serial&quot; compiler=&quot;pgi-gpu&quot;&gt;
+        &lt;command name=&quot;load&quot;&gt;netcdf/4.7.4&lt;/command&gt;
+      &lt;/modules&gt;
+      &lt;modules mpilib=&quot;openmpi&quot; compiler=&quot;nvhpc&quot;&gt;
+        &lt;command name=&quot;load&quot;&gt;openmpi/4.1.0&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;netcdf-mpi/4.7.4&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;pnetcdf/1.12.2&lt;/command&gt;
+      &lt;/modules&gt;
+      &lt;modules mpilib=&quot;mpi-serial&quot; compiler=&quot;nvhpc&quot;&gt;
+        &lt;command name=&quot;load&quot;&gt;netcdf/4.7.4&lt;/command&gt;
+      &lt;/modules&gt;
+      &lt;modules mpilib=&quot;openmpi&quot; compiler=&quot;nvhpc-gpu&quot;&gt;
+        &lt;command name=&quot;load&quot;&gt;openmpi/4.1.0&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;netcdf-mpi/4.7.4&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;pnetcdf/1.12.2&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;cuda/11.0.3&lt;/command&gt;
+      &lt;/modules&gt;
+      &lt;modules mpilib=&quot;mpi-serial&quot; compiler=&quot;nvhpc-gpu&quot;&gt;
+        &lt;command name=&quot;load&quot;&gt;netcdf/4.7.4&lt;/command&gt;
+      &lt;/modules&gt;
+      &lt;modules mpilib=&quot;openmpi&quot; compiler=&quot;intel&quot;&gt;
+        &lt;command name=&quot;load&quot;&gt;openmpi/4.1.0&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;netcdf-mpi/4.7.4&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;pnetcdf/1.12.2&lt;/command&gt;
+      &lt;/modules&gt;
+      &lt;modules mpilib=&quot;mpi-serial&quot; compiler=&quot;intel&quot;&gt;
+        &lt;command name=&quot;load&quot;&gt;netcdf/4.7.4&lt;/command&gt;
       &lt;/modules&gt;
       &lt;modules&gt;
         &lt;command name=&quot;load&quot;&gt;ncarcompilers/0.5.0&lt;/command&gt;
@@ -5485,6 +6059,7 @@ This allows using a different mpirun command to launch unit tests
       &lt;arguments&gt;
         &lt;arg name=&quot;labelstdout&quot;&gt;-p &quot;%g:&quot;&lt;/arg&gt;
         &lt;arg name=&quot;num_tasks&quot;&gt; -np {{ total_tasks }}&lt;/arg&gt;
+        &lt;arg name=&quot;zthreadplacement&quot;&gt; omplace -tm open64 -vv&lt;/arg&gt;
       &lt;/arguments&gt;
     &lt;/mpirun&gt;
     &lt;mpirun mpilib=&quot;mpt&quot; queue=&quot;share&quot; comp_interface=&quot;nuopc&quot;&gt;
@@ -5517,84 +6092,85 @@ This allows using a different mpirun command to launch unit tests
       &lt;modules&gt;
         &lt;command name=&quot;purge&quot;/&gt;
         &lt;command name=&quot;load&quot;&gt;ncarenv/1.3&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;python/3.7.9&lt;/command&gt;
         &lt;command name=&quot;load&quot;&gt;cmake&lt;/command&gt;
       &lt;/modules&gt;
       &lt;modules compiler=&quot;intel&quot;&gt;
-        &lt;command name=&quot;load&quot;&gt;intel/19.0.5&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;intel/19.1.1&lt;/command&gt;
         &lt;command name=&quot;load&quot;&gt;esmf_libs&lt;/command&gt;
         &lt;command name=&quot;load&quot;&gt;mkl&lt;/command&gt;
       &lt;/modules&gt;
       &lt;modules compiler=&quot;gnu&quot;&gt;
-        &lt;command name=&quot;load&quot;&gt;gnu/9.1.0&lt;/command&gt;
-        &lt;command name=&quot;load&quot;&gt;openblas/0.3.6&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;gnu/10.1.0&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;openblas/0.3.9&lt;/command&gt;
       &lt;/modules&gt;
       &lt;modules compiler=&quot;pgi&quot;&gt;
         &lt;command name=&quot;load&quot;&gt;pgi/20.4&lt;/command&gt;
       &lt;/modules&gt;
       &lt;modules compiler=&quot;intel&quot; mpilib=&quot;!mpi-serial&quot; DEBUG=&quot;TRUE&quot;&gt;
-        &lt;command name=&quot;use&quot;&gt;/glade/p/cesmdata/cseg/PROGS/modulefiles/esmfpkgs/intel/19.0.5/&lt;/command&gt;
-        &lt;command name=&quot;load&quot;&gt;esmf-8.1.0b41-ncdfio-mpt-g&lt;/command&gt;
+        &lt;command name=&quot;use&quot;&gt;/glade/p/cesmdata/cseg/PROGS/modulefiles/esmfpkgs/intel/19.1.1/&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;esmf-8.2.0b13-ncdfio-mpt-g&lt;/command&gt;
       &lt;/modules&gt;
       &lt;modules compiler=&quot;intel&quot; mpilib=&quot;!mpi-serial&quot; DEBUG=&quot;FALSE&quot;&gt;
-        &lt;command name=&quot;use&quot;&gt;/glade/p/cesmdata/cseg/PROGS/modulefiles/esmfpkgs/intel/19.0.5/&lt;/command&gt;
-        &lt;command name=&quot;load&quot;&gt;esmf-8.1.0b41-ncdfio-mpt-O&lt;/command&gt;
+        &lt;command name=&quot;use&quot;&gt;/glade/p/cesmdata/cseg/PROGS/modulefiles/esmfpkgs/intel/19.1.1/&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;esmf-8.2.0b13-ncdfio-mpt-O&lt;/command&gt;
       &lt;/modules&gt;
       &lt;modules compiler=&quot;intel&quot; mpilib=&quot;mpi-serial&quot; DEBUG=&quot;TRUE&quot;&gt;
-        &lt;command name=&quot;use&quot;&gt;/glade/p/cesmdata/cseg/PROGS/modulefiles/esmfpkgs/intel/19.0.5/&lt;/command&gt;
-        &lt;command name=&quot;load&quot;&gt;esmf-8.1.0b41-ncdfio-mpiuni-g&lt;/command&gt;
+        &lt;command name=&quot;use&quot;&gt;/glade/p/cesmdata/cseg/PROGS/modulefiles/esmfpkgs/intel/19.1.1/&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;esmf-8.2.0b13-ncdfio-mpiuni-g&lt;/command&gt;
       &lt;/modules&gt;
       &lt;modules compiler=&quot;intel&quot; mpilib=&quot;mpi-serial&quot; DEBUG=&quot;FALSE&quot;&gt;
-        &lt;command name=&quot;use&quot;&gt;/glade/p/cesmdata/cseg/PROGS/modulefiles/esmfpkgs/intel/19.0.5/&lt;/command&gt;
-        &lt;command name=&quot;load&quot;&gt;esmf-8.1.0b41-ncdfio-mpiuni-O&lt;/command&gt;
+        &lt;command name=&quot;use&quot;&gt;/glade/p/cesmdata/cseg/PROGS/modulefiles/esmfpkgs/intel/19.1.1/&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;esmf-8.2.0b13-ncdfio-mpiuni-O&lt;/command&gt;
       &lt;/modules&gt;
       &lt;modules compiler=&quot;gnu&quot; mpilib=&quot;mpt&quot; DEBUG=&quot;TRUE&quot;&gt;
-        &lt;command name=&quot;use&quot;&gt;/glade/p/cesmdata/cseg/PROGS/modulefiles/esmfpkgs/gnu/9.1.0/&lt;/command&gt;
-        &lt;command name=&quot;load&quot;&gt;esmf-8.1.0b41-ncdfio-mpt-g&lt;/command&gt;
+        &lt;command name=&quot;use&quot;&gt;/glade/p/cesmdata/cseg/PROGS/modulefiles/esmfpkgs/gnu/10.1.0/&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;esmf-8.2.0b13-ncdfio-mpt-g&lt;/command&gt;
       &lt;/modules&gt;
       &lt;modules compiler=&quot;gnu&quot; mpilib=&quot;mpt&quot; DEBUG=&quot;FALSE&quot;&gt;
-        &lt;command name=&quot;use&quot;&gt;/glade/p/cesmdata/cseg/PROGS/modulefiles/esmfpkgs/gnu/9.1.0/&lt;/command&gt;
-        &lt;command name=&quot;load&quot;&gt;esmf-8.1.0b41-ncdfio-mpt-O&lt;/command&gt;
+        &lt;command name=&quot;use&quot;&gt;/glade/p/cesmdata/cseg/PROGS/modulefiles/esmfpkgs/gnu/10.1.0/&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;esmf-8.2.0b13-ncdfio-mpt-O&lt;/command&gt;
       &lt;/modules&gt;
       &lt;modules compiler=&quot;gnu&quot; mpilib=&quot;openmpi&quot; DEBUG=&quot;TRUE&quot;&gt;
-        &lt;command name=&quot;use&quot;&gt;/glade/p/cesmdata/cseg/PROGS/modulefiles/esmfpkgs/gnu/9.1.0/&lt;/command&gt;
-        &lt;command name=&quot;load&quot;&gt;esmf-8.1.0b41-ncdfio-openmpi-g&lt;/command&gt;
+        &lt;command name=&quot;use&quot;&gt;/glade/p/cesmdata/cseg/PROGS/modulefiles/esmfpkgs/gnu/10.1.0/&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;esmf-8.2.0b13-ncdfio-openmpi-g&lt;/command&gt;
       &lt;/modules&gt;
       &lt;modules compiler=&quot;gnu&quot; mpilib=&quot;openmpi&quot; DEBUG=&quot;FALSE&quot;&gt;
-        &lt;command name=&quot;use&quot;&gt;/glade/p/cesmdata/cseg/PROGS/modulefiles/esmfpkgs/gnu/9.1.0/&lt;/command&gt;
-        &lt;command name=&quot;load&quot;&gt;esmf-8.1.0b41-ncdfio-openmpi-O&lt;/command&gt;
+        &lt;command name=&quot;use&quot;&gt;/glade/p/cesmdata/cseg/PROGS/modulefiles/esmfpkgs/gnu/10.1.0/&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;esmf-8.2.0b13-ncdfio-openmpi-O&lt;/command&gt;
       &lt;/modules&gt;
       &lt;modules compiler=&quot;gnu&quot; mpilib=&quot;mpi-serial&quot; DEBUG=&quot;TRUE&quot;&gt;
-        &lt;command name=&quot;use&quot;&gt;/glade/p/cesmdata/cseg/PROGS/modulefiles/esmfpkgs/gnu/9.1.0/&lt;/command&gt;
-        &lt;command name=&quot;load&quot;&gt;esmf-8.1.0b41-ncdfio-mpiuni-g&lt;/command&gt;
+        &lt;command name=&quot;use&quot;&gt;/glade/p/cesmdata/cseg/PROGS/modulefiles/esmfpkgs/gnu/10.1.0/&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;esmf-8.2.0b13-ncdfio-mpiuni-g&lt;/command&gt;
       &lt;/modules&gt;
       &lt;modules compiler=&quot;gnu&quot; mpilib=&quot;mpi-serial&quot; DEBUG=&quot;FALSE&quot;&gt;
-        &lt;command name=&quot;use&quot;&gt;/glade/p/cesmdata/cseg/PROGS/modulefiles/esmfpkgs/gnu/9.1.0/&lt;/command&gt;
-        &lt;command name=&quot;load&quot;&gt;esmf-8.1.0b41-ncdfio-mpiuni-O&lt;/command&gt;
+        &lt;command name=&quot;use&quot;&gt;/glade/p/cesmdata/cseg/PROGS/modulefiles/esmfpkgs/gnu/10.1.0/&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;esmf-8.2.0b13-ncdfio-mpiuni-O&lt;/command&gt;
       &lt;/modules&gt;
 
       &lt;modules compiler=&quot;pgi&quot; mpilib=&quot;mpt&quot; DEBUG=&quot;TRUE&quot;&gt;
         &lt;command name=&quot;use&quot;&gt;/glade/p/cesmdata/cseg/PROGS/modulefiles/esmfpkgs/pgi/20.4/&lt;/command&gt;
-        &lt;command name=&quot;load&quot;&gt;esmf-8.1.0b41-ncdfio-mpt-g&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;esmf-8.2.0b13-ncdfio-mpt-g&lt;/command&gt;
       &lt;/modules&gt;
       &lt;modules compiler=&quot;pgi&quot; mpilib=&quot;mpt&quot; DEBUG=&quot;FALSE&quot;&gt;
         &lt;command name=&quot;use&quot;&gt;/glade/p/cesmdata/cseg/PROGS/modulefiles/esmfpkgs/pgi/20.4/&lt;/command&gt;
-        &lt;command name=&quot;load&quot;&gt;esmf-8.1.0b41-ncdfio-mpt-O&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;esmf-8.2.0b13-ncdfio-mpt-O&lt;/command&gt;
       &lt;/modules&gt;
       &lt;modules compiler=&quot;pgi&quot; mpilib=&quot;openmpi&quot; DEBUG=&quot;TRUE&quot;&gt;
         &lt;command name=&quot;use&quot;&gt;/glade/p/cesmdata/cseg/PROGS/modulefiles/esmfpkgs/pgi/20.4/&lt;/command&gt;
-        &lt;command name=&quot;load&quot;&gt;esmf-8.1.0b41-ncdfio-openmpi-g&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;esmf-8.2.0b13-ncdfio-openmpi-g&lt;/command&gt;
       &lt;/modules&gt;
       &lt;modules compiler=&quot;pgi&quot; mpilib=&quot;openmpi&quot; DEBUG=&quot;FALSE&quot;&gt;
         &lt;command name=&quot;use&quot;&gt;/glade/p/cesmdata/cseg/PROGS/modulefiles/esmfpkgs/pgi/20.4/&lt;/command&gt;
-        &lt;command name=&quot;load&quot;&gt;esmf-8.1.0b41-ncdfio-openmpi-O&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;esmf-8.2.0b13-ncdfio-openmpi-O&lt;/command&gt;
       &lt;/modules&gt;
       &lt;modules compiler=&quot;pgi&quot; mpilib=&quot;mpi-serial&quot; DEBUG=&quot;TRUE&quot;&gt;
         &lt;command name=&quot;use&quot;&gt;/glade/p/cesmdata/cseg/PROGS/modulefiles/esmfpkgs/pgi/20.4/&lt;/command&gt;
-        &lt;command name=&quot;load&quot;&gt;esmf-8.1.0b41-ncdfio-mpiuni-g&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;esmf-8.2.0b13-ncdfio-mpiuni-g&lt;/command&gt;
       &lt;/modules&gt;
       &lt;modules compiler=&quot;pgi&quot; mpilib=&quot;mpi-serial&quot; DEBUG=&quot;FALSE&quot;&gt;
         &lt;command name=&quot;use&quot;&gt;/glade/p/cesmdata/cseg/PROGS/modulefiles/esmfpkgs/pgi/20.4/&lt;/command&gt;
-        &lt;command name=&quot;load&quot;&gt;esmf-8.1.0b41-ncdfio-mpiuni-O&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;esmf-8.2.0b13-ncdfio-mpiuni-O&lt;/command&gt;
       &lt;/modules&gt;
       &lt;modules mpilib=&quot;mpt&quot; compiler=&quot;gnu&quot;&gt;
         &lt;command name=&quot;load&quot;&gt;mpt/2.21&lt;/command&gt;
@@ -5602,10 +6178,9 @@ This allows using a different mpirun command to launch unit tests
         &lt;command name=&quot;load&quot;&gt;pnetcdf/1.12.1&lt;/command&gt;
       &lt;/modules&gt;
       &lt;modules mpilib=&quot;mpt&quot; compiler=&quot;intel&quot;&gt;
-        &lt;command name=&quot;load&quot;&gt;mpt/2.21&lt;/command&gt;
-        &lt;!-- known failure in parallel netcdf with mpt, use serial --&gt;
-        &lt;command name=&quot;load&quot;&gt;netcdf/4.7.3&lt;/command&gt;
-        &lt;command name=&quot;load&quot;&gt;pnetcdf/1.12.1&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;mpt/2.22&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;netcdf-mpi/4.8.0&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;pnetcdf/1.12.2&lt;/command&gt;
       &lt;/modules&gt;
       &lt;modules mpilib=&quot;mpt&quot; compiler=&quot;pgi&quot;&gt;
         &lt;command name=&quot;load&quot;&gt;mpt/2.19&lt;/command&gt;
@@ -5617,8 +6192,8 @@ This allows using a different mpirun command to launch unit tests
         &lt;command name=&quot;load&quot;&gt;netcdf-mpi/4.7.4&lt;/command&gt;
       &lt;/modules&gt;
       &lt;modules mpilib=&quot;openmpi&quot; compiler=&quot;gnu&quot;&gt;
-        &lt;command name=&quot;load&quot;&gt;openmpi/3.1.4&lt;/command&gt;
-        &lt;command name=&quot;load&quot;&gt;netcdf/4.7.1&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;openmpi/4.1.0&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;netcdf-mpi/4.8.0&lt;/command&gt;
       &lt;/modules&gt;
       &lt;modules&gt;
         &lt;command name=&quot;load&quot;&gt;ncarcompilers/0.5.0&lt;/command&gt;
@@ -5646,16 +6221,17 @@ This allows using a different mpirun command to launch unit tests
       &lt;env name=&quot;UGCSINPUTPATH&quot;&gt;/glade/work/turuncu/FV3GFS/benchmark-inputs/2012010100/gfs/fcst&lt;/env&gt;
       &lt;env name=&quot;UGCSFIXEDFILEPATH&quot;&gt;/glade/work/turuncu/FV3GFS/fix_am&lt;/env&gt;
       &lt;env name=&quot;UGCSADDONPATH&quot;&gt;/glade/work/turuncu/FV3GFS/addon&lt;/env&gt;
+      &lt;env name=&quot;OMP_WAIT_POLICY&quot;&gt;PASSIVE&lt;/env&gt;
+      &lt;env name=&quot;MPI_DSM_VERBOSE&quot;&gt;true&lt;/env&gt;
     &lt;/environment_variables&gt;
     &lt;environment_variables unit_testing=&quot;true&quot;&gt;
       &lt;env name=&quot;MPI_USE_ARRAY&quot;&gt;false&lt;/env&gt;
     &lt;/environment_variables&gt;
     &lt;environment_variables queue=&quot;share&quot;&gt;
       &lt;env name=&quot;TMPDIR&quot;&gt;/glade/scratch/$USER&lt;/env&gt;
-      &lt;env name=&quot;MPI_USE_ARRAY&quot;&gt;false&lt;/env&gt;
     &lt;/environment_variables&gt;
     &lt;resource_limits&gt;
-      &lt;resource name=&quot;RLIMIT_STACK&quot;&gt; -1&lt;/resource&gt;
+      &lt;resource name=&quot;RLIMIT_STACK&quot;&gt;-1&lt;/resource&gt;
     &lt;/resource_limits&gt;
   &lt;/machine&gt;
 
@@ -5810,6 +6386,44 @@ This allows using a different mpirun command to launch unit tests
     &lt;/environment_variables&gt;
   &lt;/machine&gt;
 
+  &lt;machine MACH=&quot;container&quot;&gt;
+    &lt;DESC&gt;
+      Containerized development environment (Docker/Singularity) for CESM w/ GNU compilers
+    &lt;/DESC&gt;
+    &lt;OS&gt;LINUX&lt;/OS&gt;
+    &lt;COMPILERS&gt;gnu&lt;/COMPILERS&gt;
+    &lt;MPILIBS&gt;mpich&lt;/MPILIBS&gt;
+    &lt;CIME_OUTPUT_ROOT&gt;$ENV{HOME}/scratch&lt;/CIME_OUTPUT_ROOT&gt;
+    &lt;DIN_LOC_ROOT&gt;$ENV{CESMDATAROOT}/inputdata&lt;/DIN_LOC_ROOT&gt;
+    &lt;DIN_LOC_ROOT_CLMFORC&gt;$DIN_LOC_ROOT/atm/datm7&lt;/DIN_LOC_ROOT_CLMFORC&gt;
+    &lt;DOUT_S_ROOT&gt;$ENV{HOME}/archive/$CASE&lt;/DOUT_S_ROOT&gt;
+    &lt;GMAKE&gt;make&lt;/GMAKE&gt;
+    &lt;GMAKE_J&gt;4&lt;/GMAKE_J&gt;
+    &lt;BATCH_SYSTEM&gt;none&lt;/BATCH_SYSTEM&gt;
+    &lt;SUPPORTED_BY&gt;cgd&lt;/SUPPORTED_BY&gt;
+    &lt;MAX_TASKS_PER_NODE&gt;4&lt;/MAX_TASKS_PER_NODE&gt;
+    &lt;MAX_MPITASKS_PER_NODE&gt;4&lt;/MAX_MPITASKS_PER_NODE&gt;
+    &lt;PROJECT_REQUIRED&gt;FALSE&lt;/PROJECT_REQUIRED&gt;
+    &lt;mpirun mpilib=&quot;mpich&quot;&gt;
+      &lt;executable&gt;mpiexec&lt;/executable&gt;
+      &lt;arguments&gt;
+	&lt;arg name=&quot;anum_tasks&quot;&gt; -n {{ total_tasks }}&lt;/arg&gt;
+      &lt;/arguments&gt;
+    &lt;/mpirun&gt;
+    &lt;module_system type=&quot;none&quot;&gt;
+    &lt;/module_system&gt;
+    &lt;environment_variables&gt;
+      &lt;env name=&quot;NETCDF_PATH&quot;&gt;/usr/local&lt;/env&gt;
+      &lt;env name=&quot;PNETCDF_PATH&quot;&gt;/usr/local&lt;/env&gt;
+      &lt;env name=&quot;FPATH&quot;&gt;/usr/lib64&lt;/env&gt;
+      &lt;env name=&quot;CPATH&quot;&gt;/usr/lib64&lt;/env&gt;
+    &lt;/environment_variables&gt;
+    &lt;resource_limits&gt;
+      &lt;resource name=&quot;RLIMIT_STACK&quot;&gt;-1&lt;/resource&gt;
+    &lt;/resource_limits&gt;
+  &lt;/machine&gt;
+
+
   &lt;machine MACH=&quot;cori-haswell&quot;&gt;
     &lt;!-- NODENAME_REGEX makes haswell the default machine for cori --&gt;
     &lt;!-- to make knl the default comment this line and uncomment the one in cori-knl --&gt;
@@ -5868,7 +6482,7 @@ This allows using a different mpirun command to launch unit tests
 
       &lt;modules compiler=&quot;intel&quot;&gt;
         &lt;command name=&quot;load&quot;&gt;PrgEnv-intel&lt;/command&gt;
-        &lt;command name=&quot;switch&quot;&gt;intel intel/19.0.3.199&lt;/command&gt;
+        &lt;command name=&quot;switch&quot;&gt;intel intel/19.1.3.304&lt;/command&gt;
         &lt;command name=&quot;use&quot;&gt;/global/project/projectdirs/ccsm1/modulefiles/cori&lt;/command&gt;
       &lt;/modules&gt;
       &lt;modules compiler=&quot;intel&quot; mpilib=&quot;!mpi-serial&quot; &gt;
@@ -5880,33 +6494,36 @@ This allows using a different mpirun command to launch unit tests
 
       &lt;modules compiler=&quot;cray&quot;&gt;
         &lt;command name=&quot;load&quot;&gt;PrgEnv-cray&lt;/command&gt;
-        &lt;command name=&quot;switch&quot;&gt;cce cce/8.7.9&lt;/command&gt;
+        &lt;command name=&quot;switch&quot;&gt;cce cce/10.0.3&lt;/command&gt;
       &lt;/modules&gt;
       &lt;modules compiler=&quot;gnu&quot;&gt;
         &lt;command name=&quot;load&quot;&gt;PrgEnv-gnu&lt;/command&gt;
-        &lt;command name=&quot;switch&quot;&gt;gcc gcc/8.3.0&lt;/command&gt;
+        &lt;command name=&quot;switch&quot;&gt;gcc gcc/10.1.0&lt;/command&gt;
       &lt;/modules&gt;
       &lt;modules&gt;
         &lt;command name=&quot;load&quot;&gt;cray-memkind&lt;/command&gt;
-        &lt;command name=&quot;swap&quot;&gt;craype craype/2.6.2&lt;/command&gt;
+        &lt;command name=&quot;swap&quot;&gt;craype craype/2.7.2&lt;/command&gt;
       &lt;/modules&gt;
       &lt;modules&gt;
-        &lt;command name=&quot;switch&quot;&gt;cray-libsci/19.06.1&lt;/command&gt;
+        &lt;command name=&quot;switch&quot;&gt;cray-libsci/20.09.1&lt;/command&gt;
       &lt;/modules&gt;
       &lt;modules&gt;
-        &lt;command name=&quot;load&quot;&gt;cray-mpich/7.7.10&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;cray-mpich/7.7.16&lt;/command&gt;
       &lt;/modules&gt;
       &lt;modules mpilib=&quot;mpi-serial&quot;&gt;
-        &lt;command name=&quot;load&quot;&gt;cray-hdf5/1.10.5.2&lt;/command&gt;
-        &lt;command name=&quot;load&quot;&gt;cray-netcdf/4.6.3.2&lt;/command&gt;
+        &lt;command name=&quot;rm&quot;&gt;cray-netcdf-hdf5parallel&lt;/command&gt;
+        &lt;command name=&quot;rm&quot;&gt;cray-hdf5-parallel&lt;/command&gt;
+        &lt;command name=&quot;rm&quot;&gt;cray-parallel-netcdf&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;cray-hdf5/1.12.0.0&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;cray-netcdf/4.7.4.0&lt;/command&gt;
       &lt;/modules&gt;
       &lt;modules mpilib=&quot;!mpi-serial&quot;&gt;
-        &lt;command name=&quot;load&quot;&gt;cray-netcdf-hdf5parallel/4.6.3.2&lt;/command&gt;
-        &lt;command name=&quot;load&quot;&gt;cray-hdf5-parallel/1.10.5.2&lt;/command&gt;
-        &lt;command name=&quot;load&quot;&gt;cray-parallel-netcdf/1.11.1.1&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;cray-netcdf-hdf5parallel/4.7.4.0&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;cray-hdf5-parallel/1.12.0.0&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;cray-parallel-netcdf/1.12.1.0&lt;/command&gt;
       &lt;/modules&gt;
       &lt;modules&gt;
-        &lt;command name=&quot;load&quot;&gt;cmake/3.14.4&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;cmake/3.20.5&lt;/command&gt;
       &lt;/modules&gt;
     &lt;/module_system&gt;
     &lt;environment_variables&gt;
@@ -5973,7 +6590,7 @@ This allows using a different mpirun command to launch unit tests
 
       &lt;modules compiler=&quot;intel&quot;&gt;
         &lt;command name=&quot;load&quot;&gt;PrgEnv-intel&lt;/command&gt;
-        &lt;command name=&quot;switch&quot;&gt;intel intel/19.0.3.199&lt;/command&gt;
+        &lt;command name=&quot;switch&quot;&gt;intel intel/19.1.3.304&lt;/command&gt;
         &lt;command name=&quot;use&quot;&gt;/global/project/projectdirs/ccsm1/modulefiles/cori&lt;/command&gt;
       &lt;/modules&gt;
       &lt;modules compiler=&quot;intel&quot; mpilib=&quot;!mpi-serial&quot; &gt;
@@ -5985,31 +6602,34 @@ This allows using a different mpirun command to launch unit tests
 
       &lt;modules compiler=&quot;cray&quot;&gt;
         &lt;command name=&quot;load&quot;&gt;PrgEnv-cray&lt;/command&gt;
-        &lt;command name=&quot;switch&quot;&gt;cce cce/9.1.0&lt;/command&gt;
+        &lt;command name=&quot;switch&quot;&gt;cce cce/10.0.3&lt;/command&gt;
       &lt;/modules&gt;
       &lt;modules compiler=&quot;gnu&quot;&gt;
         &lt;command name=&quot;load&quot;&gt;PrgEnv-gnu&lt;/command&gt;
-        &lt;command name=&quot;switch&quot;&gt;gcc gcc/8.3.0&lt;/command&gt;
+        &lt;command name=&quot;switch&quot;&gt;gcc gcc/10.1.0&lt;/command&gt;
       &lt;/modules&gt;
       &lt;modules&gt;
         &lt;command name=&quot;load&quot;&gt;cray-memkind&lt;/command&gt;
-        &lt;command name=&quot;swap&quot;&gt;craype craype/2.6.2&lt;/command&gt;
+        &lt;command name=&quot;swap&quot;&gt;craype craype/2.7.2&lt;/command&gt;
         &lt;command name=&quot;load&quot;&gt;craype-mic-knl&lt;/command&gt;
       &lt;/modules&gt;
       &lt;modules&gt;
-        &lt;command name=&quot;switch&quot;&gt;cray-libsci/19.06.1&lt;/command&gt;
+        &lt;command name=&quot;switch&quot;&gt;cray-libsci/20.09.1&lt;/command&gt;
       &lt;/modules&gt;
       &lt;modules&gt;
-        &lt;command name=&quot;load&quot;&gt;cray-mpich/7.7.10&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;cray-mpich/7.7.16&lt;/command&gt;
       &lt;/modules&gt;
       &lt;modules mpilib=&quot;mpi-serial&quot;&gt;
-        &lt;command name=&quot;load&quot;&gt;cray-hdf5/1.10.5.2&lt;/command&gt;
-        &lt;command name=&quot;load&quot;&gt;cray-netcdf/4.6.3.2&lt;/command&gt;
+        &lt;command name=&quot;rm&quot;&gt;cray-netcdf-hdf5parallel&lt;/command&gt;
+        &lt;command name=&quot;rm&quot;&gt;cray-hdf5-parallel&lt;/command&gt;
+        &lt;command name=&quot;rm&quot;&gt;cray-parallel-netcdf&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;cray-hdf5/1.12.0.0&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;cray-netcdf/4.7.4.0&lt;/command&gt;
       &lt;/modules&gt;
       &lt;modules mpilib=&quot;!mpi-serial&quot;&gt;
-        &lt;command name=&quot;load&quot;&gt;cray-netcdf-hdf5parallel/4.6.3.2&lt;/command&gt;
-        &lt;command name=&quot;load&quot;&gt;cray-hdf5-parallel/1.10.5.2&lt;/command&gt;
-        &lt;command name=&quot;load&quot;&gt;cray-parallel-netcdf/1.11.1.1&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;cray-netcdf-hdf5parallel/4.7.4.0&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;cray-hdf5-parallel/1.12.0.0&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;cray-parallel-netcdf/1.12.1.0&lt;/command&gt;
       &lt;/modules&gt;
     &lt;/module_system&gt;
     &lt;environment_variables&gt;
@@ -6387,6 +7007,92 @@ This allows using a different mpirun command to launch unit tests
     &lt;/environment_variables&gt;
   &lt;/machine&gt;
 
+  &lt;machine MACH=&quot;frontera&quot;&gt;
+    &lt;DESC&gt;Intel Xeon Cascade Lake,56 cores, batch system is SLURM&lt;/DESC&gt;
+    &lt;NODENAME_REGEX&gt;.*frontera&lt;/NODENAME_REGEX&gt;
+    &lt;OS&gt;LINUX&lt;/OS&gt;
+    &lt;COMPILERS&gt;intel&lt;/COMPILERS&gt;
+    &lt;MPILIBS&gt;impi,mvapich&lt;/MPILIBS&gt;
+    &lt;PROJECT&gt;ATM20005&lt;/PROJECT&gt;
+    &lt;CIME_OUTPUT_ROOT&gt;$ENV{SCRATCH}&lt;/CIME_OUTPUT_ROOT&gt;
+    &lt;DIN_LOC_ROOT&gt;/work/02503/edwardsj/CESM/inputdata/&lt;/DIN_LOC_ROOT&gt;
+    &lt;DIN_LOC_ROOT_CLMFORC&gt;/work/02503/edwardsj/CESM/inputdata/lmwg&lt;/DIN_LOC_ROOT_CLMFORC&gt;
+    &lt;DOUT_S_ROOT&gt;$ENV{SCRATCH}/archive/$CASE&lt;/DOUT_S_ROOT&gt;
+    &lt;BASELINE_ROOT&gt;/work/02503/edwardsj/CESM/cesm_baselines&lt;/BASELINE_ROOT&gt;
+    &lt;CCSM_CPRNC&gt;/work/02503/edwardsj/CESM/cime/tools/cprnc/cprnc&lt;/CCSM_CPRNC&gt;
+    &lt;GMAKE_J&gt;4&lt;/GMAKE_J&gt;
+    &lt;BATCH_SYSTEM&gt;slurm&lt;/BATCH_SYSTEM&gt;
+    &lt;SUPPORTED_BY&gt;cseg&lt;/SUPPORTED_BY&gt;
+    &lt;MAX_TASKS_PER_NODE&gt;112&lt;/MAX_TASKS_PER_NODE&gt;
+    &lt;MAX_MPITASKS_PER_NODE&gt;56&lt;/MAX_MPITASKS_PER_NODE&gt;
+    &lt;mpirun mpilib=&quot;impi&quot;&gt;
+      &lt;executable&gt;sbcast ${EXEROOT}/cesm.exe /tmp/cesm.exe; ibrun&lt;/executable&gt;
+      &lt;arguments&gt;
+        &lt;arg name=&quot;ntasks&quot;&gt; -n {{ total_tasks }} &lt;/arg&gt;
+      &lt;/arguments&gt;
+      &lt;run_exe&gt;/tmp/cesm.exe&lt;/run_exe&gt;
+    &lt;/mpirun&gt;
+    &lt;mpirun mpilib=&quot;mvapich&quot;&gt;
+      &lt;executable&gt;ibrun&lt;/executable&gt;
+      &lt;arguments&gt;
+        &lt;arg name=&quot;ntasks&quot;&gt; -n {{ total_tasks }} &lt;/arg&gt;
+      &lt;/arguments&gt;
+    &lt;/mpirun&gt;
+    &lt;module_system type=&quot;module&quot; allow_error=&quot;true&quot;&gt;
+      &lt;init_path lang=&quot;perl&quot;&gt;/opt/apps/lmod/lmod/init/perl&lt;/init_path&gt;
+      &lt;init_path lang=&quot;python&quot;&gt;/opt/apps/lmod/lmod/init/env_modules_python.py&lt;/init_path&gt;
+      &lt;init_path lang=&quot;sh&quot;&gt;/opt/apps/lmod/lmod/init/sh&lt;/init_path&gt;
+      &lt;init_path lang=&quot;csh&quot;&gt;/opt/apps/lmod/lmod/init/csh&lt;/init_path&gt;
+      &lt;cmd_path lang=&quot;perl&quot;&gt;/opt/apps/lmod/lmod/libexec/lmod perl&lt;/cmd_path&gt;
+      &lt;cmd_path lang=&quot;python&quot;&gt;/opt/apps/lmod/lmod/libexec/lmod python&lt;/cmd_path&gt;
+      &lt;cmd_path lang=&quot;sh&quot;&gt;module&lt;/cmd_path&gt;
+      &lt;cmd_path lang=&quot;csh&quot;&gt;module&lt;/cmd_path&gt;
+      &lt;modules&gt;
+        &lt;command name=&quot;purge&quot;&gt;&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;TACC&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;intel/19.1.1&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;cmake/3.16.1&lt;/command&gt;
+      &lt;/modules&gt;
+      &lt;modules mpilib=&quot;impi&quot;&gt;
+        &lt;command name=&quot;load&quot;&gt;impi/19.0.9&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;pnetcdf/1.11.2&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;parallel-netcdf/4.6.2&lt;/command&gt;
+      &lt;/modules&gt;
+      &lt;modules mpilib=&quot;mvapich&quot;&gt;
+        &lt;command name=&quot;rm&quot;&gt;impi&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;mvapich2-x/2.3&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;pnetcdf/1.11.2&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;parallel-netcdf/4.6.2&lt;/command&gt;
+      &lt;/modules&gt;
+      &lt;modules mpilib=&quot;mpi-serial&quot;&gt;
+        &lt;command name=&quot;load&quot;&gt;netcdf/4.6.2&lt;/command&gt;
+      &lt;/modules&gt;
+    &lt;/module_system&gt;
+    &lt;environment_variables&gt;
+      &lt;env name=&quot;OMP_STACKSIZE&quot;&gt;256M&lt;/env&gt;
+      &lt;env name=&quot;UCX_DC_MLX5_RETRY_COUNT&quot;&gt;20&lt;/env&gt;
+    &lt;/environment_variables&gt;
+    &lt;environment_variables mpilib=&quot;impi&quot;&gt;
+      &lt;env name=&quot;MY_MPIRUN_OPTIONS&quot;&gt;-prepend-rank &lt;/env&gt;
+      &lt;env name=&quot;I_MPI_ADJUST_ALLREDUCE&quot;&gt;4&lt;/env&gt;
+      &lt;env name=&quot;I_MPI_ADJUST_GATHER&quot;&gt;3&lt;/env&gt;
+      &lt;env name=&quot;I_MPI_ADJUST_GATHERV&quot;&gt;3&lt;/env&gt;
+      &lt;env name=&quot;I_MPI_ADJUST_SCATTER&quot;&gt;3&lt;/env&gt;
+      &lt;env name=&quot;I_MPI_ADJUST_SCATTERV&quot;&gt;2&lt;/env&gt;
+      &lt;env name=&quot;I_MPI_EXTRA_FILESYSTEM&quot;&gt;enable&lt;/env&gt;
+     &lt;/environment_variables&gt;
+  &lt;environment_variables mpilib=&quot;mvapich&quot;&gt;
+    &lt;env name=&quot;MV2_HOMOGENEOUS_CLUSTER&quot;/&gt;
+    &lt;env name=&quot;MV2_HYBRID_BINDING_POLICY&quot;&gt;spread&lt;/env&gt;
+    &lt;env name=&quot;MV2_CPU_BINDING_POLICY&quot;&gt;hybrid&lt;/env&gt;
+    &lt;env name=&quot;MV2_USE_DC&quot;&gt;0&lt;/env&gt;
+    &lt;env name=&quot;MV2_HYBRID_ENABLE_THRESHOLD&quot;&gt;1&lt;/env&gt;
+    &lt;env name=&quot;MV2_UD_MAX_SEND_WQE&quot;&gt;4096&lt;/env&gt;
+    &lt;env name=&quot;MV2_UD_MAX_RECV_WQE&quot;&gt;4096&lt;/env&gt;
+    &lt;env name=&quot;TACC_MPI_GETMODE&quot;&gt;mvapich2_ssh&lt;/env&gt;
+  &lt;/environment_variables&gt;
+  &lt;/machine&gt;
+
   &lt;machine MACH=&quot;gaea&quot;&gt;
     &lt;DESC&gt;NOAA XE6, os is CNL, 24 pes/node, batch system is PBS&lt;/DESC&gt;
     &lt;OS&gt;CNL&lt;/OS&gt;
@@ -6449,6 +7155,165 @@ This allows using a different mpirun command to launch unit tests
       &lt;env name=&quot;OMP_STACKSIZE&quot;&gt;64M&lt;/env&gt;
       &lt;env name=&quot;MPICH_ENV_DISPLAY&quot;&gt;1&lt;/env&gt;
     &lt;/environment_variables&gt;
+  &lt;/machine&gt;
+
+  &lt;machine MACH=&quot;greenplanet-sib29&quot;&gt;
+    &lt;DESC&gt;UCI Linux Cluster; 16 pes/node, batch system is slurm&lt;/DESC&gt;
+    &lt;OS&gt;LINUX&lt;/OS&gt;
+    &lt;!-- PROXY: optional http proxy for access to the internet--&gt;
+    &lt;!-- &lt;PROXY&gt; https://howto.get.out &lt;/PROXY&gt; --&gt;
+    &lt;COMPILERS&gt;intel&lt;/COMPILERS&gt;
+    &lt;MPILIBS&gt;openmpi&lt;/MPILIBS&gt;
+    &lt;!-- PROJECT: A project or account number used for batch jobs
+         This value is used for directory names. If different from
+         actual accounting project id, use CHARGE_ACCOUNT
+	 can be overridden in environment or $HOME/.cime/config --&gt;
+    &lt;!-- &lt;PROJECT&gt;couldbethis&lt;/PROJECT&gt; --&gt;
+
+    &lt;!-- CHARGE_ACCOUNT: A project or account number used for batch jobs
+	 This is the actual project used for cost accounting set in
+         the batch script (ex. #PBS -A charge_account). Will default
+         to PROJECT if not set.
+	 can be overridden in environment or $HOME/.cime/config --&gt;
+    &lt;!-- &lt;CHARGE_ACCOUNT&gt;couldbethis&lt;/CHARGE_ACCOUNT&gt; --&gt;
+    &lt;CIME_OUTPUT_ROOT&gt;/DFS-L/SCRATCH/moore/$USER/cesm_runs&lt;/CIME_OUTPUT_ROOT&gt;
+    &lt;DIN_LOC_ROOT&gt;/DFS-L/DATA/moore/cesm/inputdata&lt;/DIN_LOC_ROOT&gt;
+    &lt;DIN_LOC_ROOT_CLMFORC&gt;/DFS-L/DATA/moore/cesm/inputdata&lt;/DIN_LOC_ROOT_CLMFORC&gt;
+    &lt;DOUT_S_ROOT&gt;$CIME_OUTPUT_ROOT/archive/$CASE&lt;/DOUT_S_ROOT&gt;
+    &lt;BASELINE_ROOT&gt;/DFS-L/DATA/moore/cesm/baselines&lt;/BASELINE_ROOT&gt;
+    &lt;!-- CCSM_CPRNC: location of the cprnc tool, compares model output in testing--&gt;
+    &lt;CCSM_CPRNC&gt;/DFS-L/DATA/moore/cesm/tools/cprnc/cprnc&lt;/CCSM_CPRNC&gt;
+    &lt;GMAKE&gt;gmake&lt;/GMAKE&gt;
+    &lt;GMAKE_J&gt;16&lt;/GMAKE_J&gt;
+    &lt;BATCH_SYSTEM&gt;slurm&lt;/BATCH_SYSTEM&gt;
+    &lt;SUPPORTED_BY&gt;mlevy@ucar.edu&lt;/SUPPORTED_BY&gt;
+    &lt;MAX_TASKS_PER_NODE&gt;16&lt;/MAX_TASKS_PER_NODE&gt;
+    &lt;MAX_MPITASKS_PER_NODE&gt;16&lt;/MAX_MPITASKS_PER_NODE&gt;
+    &lt;PROJECT_REQUIRED&gt;FALSE&lt;/PROJECT_REQUIRED&gt;
+
+    &lt;mpirun mpilib=&quot;default&quot;&gt;
+      &lt;!-- name of the exectuable used to launch mpi jobs --&gt;
+      &lt;executable&gt;mpirun&lt;/executable&gt;
+      &lt;arguments&gt;
+	&lt;arg name=&quot;task_count&quot;&gt;-np {{ total_tasks }}&lt;/arg&gt;
+      &lt;/arguments&gt;
+    &lt;/mpirun&gt;
+    &lt;mpirun mpilib=&quot;openmpi&quot;&gt;
+      &lt;executable&gt;mpirun&lt;/executable&gt;
+      &lt;arguments&gt;
+	&lt;arg name=&quot;task_count&quot;&gt;-np {{ total_tasks }}&lt;/arg&gt;
+      &lt;/arguments&gt;
+    &lt;/mpirun&gt;
+    &lt;module_system type=&quot;module&quot;&gt;
+      &lt;init_path lang=&quot;perl&quot;&gt;/usr/share/lmod/lmod/init/perl&lt;/init_path&gt;
+      &lt;init_path lang=&quot;python&quot;&gt;/usr/share/lmod/lmod/init/env_modules_python.py&lt;/init_path&gt;
+      &lt;init_path lang=&quot;csh&quot;&gt;/usr/share/lmod/lmod/init/csh&lt;/init_path&gt;
+      &lt;init_path lang=&quot;sh&quot;&gt;/usr/share/lmod/lmod/init/sh&lt;/init_path&gt;
+      &lt;cmd_path lang=&quot;perl&quot;&gt;/usr/share/lmod/lmod/libexec/lmod perl&lt;/cmd_path&gt;
+      &lt;cmd_path lang=&quot;python&quot;&gt;/usr/share/lmod/lmod/libexec/lmod python&lt;/cmd_path&gt;
+      &lt;cmd_path lang=&quot;sh&quot;&gt;module&lt;/cmd_path&gt;
+      &lt;cmd_path lang=&quot;csh&quot;&gt;module&lt;/cmd_path&gt;
+      &lt;modules&gt;
+	&lt;command name=&quot;purge&quot;/&gt;
+      &lt;/modules&gt;
+      &lt;modules compiler=&quot;intel&quot;&gt;
+	&lt;command name=&quot;load&quot;&gt;intel/2018.3&lt;/command&gt;
+	&lt;command name=&quot;load&quot;&gt;netcdf/4.7.0&lt;/command&gt;
+      &lt;/modules&gt;
+      &lt;modules mpilib=&quot;openmpi&quot;&gt;
+	&lt;command name=&quot;load&quot;&gt;openmpi/3.1.6&lt;/command&gt;
+	&lt;command name=&quot;load&quot;&gt;pnetcdf/1.10.0&lt;/command&gt;
+      &lt;/modules&gt;
+    &lt;/module_system&gt;
+&lt;!-- environment variables, a blank entry will unset a variable --&gt;
+    &lt;environment_variables&gt;
+      &lt;env name=&quot;OMP_STACKSIZE&quot;&gt;256M&lt;/env&gt;
+      &lt;env name=&quot;MPI_TYPE_DEPTH&quot;&gt;16&lt;/env&gt;
+    &lt;/environment_variables&gt;
+    &lt;!-- resource settings as defined in https://docs.python.org/2/library/resource.html --&gt;
+    &lt;resource_limits&gt;
+      &lt;resource name=&quot;RLIMIT_STACK&quot;&gt;-1&lt;/resource&gt;
+    &lt;/resource_limits&gt;
+  &lt;/machine&gt;
+
+  &lt;machine MACH=&quot;greenplanet-sky24&quot;&gt;
+    &lt;DESC&gt;UCI Linux Cluster; 40 pes/node, batch system is slurm&lt;/DESC&gt;
+    &lt;NODENAME_REGEX&gt;gplogin\d.gp.local&lt;/NODENAME_REGEX&gt;
+    &lt;OS&gt;LINUX&lt;/OS&gt;
+    &lt;!-- PROXY: optional http proxy for access to the internet--&gt;
+    &lt;!-- &lt;PROXY&gt; https://howto.get.out &lt;/PROXY&gt; --&gt;
+    &lt;COMPILERS&gt;intel&lt;/COMPILERS&gt;
+    &lt;MPILIBS&gt;openmpi&lt;/MPILIBS&gt;
+    &lt;!-- PROJECT: A project or account number used for batch jobs
+         This value is used for directory names. If different from
+         actual accounting project id, use CHARGE_ACCOUNT
+	 can be overridden in environment or $HOME/.cime/config --&gt;
+    &lt;!-- &lt;PROJECT&gt;couldbethis&lt;/PROJECT&gt; --&gt;
+
+    &lt;!-- CHARGE_ACCOUNT: A project or account number used for batch jobs
+	 This is the actual project used for cost accounting set in
+         the batch script (ex. #PBS -A charge_account). Will default
+         to PROJECT if not set.
+	 can be overridden in environment or $HOME/.cime/config --&gt;
+    &lt;!-- &lt;CHARGE_ACCOUNT&gt;couldbethis&lt;/CHARGE_ACCOUNT&gt; --&gt;
+    &lt;CIME_OUTPUT_ROOT&gt;/DFS-L/SCRATCH/moore/$USER/cesm_runs&lt;/CIME_OUTPUT_ROOT&gt;
+    &lt;DIN_LOC_ROOT&gt;/DFS-L/DATA/moore/cesm/inputdata&lt;/DIN_LOC_ROOT&gt;
+    &lt;DIN_LOC_ROOT_CLMFORC&gt;/DFS-L/DATA/moore/cesm/inputdata&lt;/DIN_LOC_ROOT_CLMFORC&gt;
+    &lt;DOUT_S_ROOT&gt;$CIME_OUTPUT_ROOT/archive/$CASE&lt;/DOUT_S_ROOT&gt;
+    &lt;BASELINE_ROOT&gt;/DFS-L/DATA/moore/cesm/baselines&lt;/BASELINE_ROOT&gt;
+    &lt;!-- CCSM_CPRNC: location of the cprnc tool, compares model output in testing--&gt;
+    &lt;CCSM_CPRNC&gt;/DFS-L/DATA/moore/cesm/tools/cprnc/cprnc&lt;/CCSM_CPRNC&gt;
+    &lt;GMAKE&gt;gmake&lt;/GMAKE&gt;
+    &lt;GMAKE_J&gt;16&lt;/GMAKE_J&gt;
+    &lt;BATCH_SYSTEM&gt;slurm&lt;/BATCH_SYSTEM&gt;
+    &lt;SUPPORTED_BY&gt;mlevy@ucar.edu&lt;/SUPPORTED_BY&gt;
+    &lt;MAX_TASKS_PER_NODE&gt;40&lt;/MAX_TASKS_PER_NODE&gt;
+    &lt;MAX_MPITASKS_PER_NODE&gt;40&lt;/MAX_MPITASKS_PER_NODE&gt;
+    &lt;PROJECT_REQUIRED&gt;FALSE&lt;/PROJECT_REQUIRED&gt;
+
+    &lt;mpirun mpilib=&quot;default&quot;&gt;
+      &lt;!-- name of the exectuable used to launch mpi jobs --&gt;
+      &lt;executable&gt;mpirun&lt;/executable&gt;
+      &lt;arguments&gt;
+	&lt;arg name=&quot;task_count&quot;&gt;-np {{ total_tasks }}&lt;/arg&gt;
+      &lt;/arguments&gt;
+    &lt;/mpirun&gt;
+    &lt;mpirun mpilib=&quot;openmpi&quot;&gt;
+      &lt;executable&gt;mpirun&lt;/executable&gt;
+      &lt;arguments&gt;
+	&lt;arg name=&quot;task_count&quot;&gt;-np {{ total_tasks }}&lt;/arg&gt;
+      &lt;/arguments&gt;
+    &lt;/mpirun&gt;
+    &lt;module_system type=&quot;module&quot;&gt;
+      &lt;init_path lang=&quot;perl&quot;&gt;/usr/share/lmod/lmod/init/perl&lt;/init_path&gt;
+      &lt;init_path lang=&quot;python&quot;&gt;/usr/share/lmod/lmod/init/env_modules_python.py&lt;/init_path&gt;
+      &lt;init_path lang=&quot;csh&quot;&gt;/usr/share/lmod/lmod/init/csh&lt;/init_path&gt;
+      &lt;init_path lang=&quot;sh&quot;&gt;/usr/share/lmod/lmod/init/sh&lt;/init_path&gt;
+      &lt;cmd_path lang=&quot;perl&quot;&gt;/usr/share/lmod/lmod/libexec/lmod perl&lt;/cmd_path&gt;
+      &lt;cmd_path lang=&quot;python&quot;&gt;/usr/share/lmod/lmod/libexec/lmod python&lt;/cmd_path&gt;
+      &lt;cmd_path lang=&quot;sh&quot;&gt;module&lt;/cmd_path&gt;
+      &lt;cmd_path lang=&quot;csh&quot;&gt;module&lt;/cmd_path&gt;
+      &lt;modules&gt;
+	&lt;command name=&quot;purge&quot;/&gt;
+      &lt;/modules&gt;
+      &lt;modules compiler=&quot;intel&quot;&gt;
+	&lt;command name=&quot;load&quot;&gt;intel/2018.3&lt;/command&gt;
+	&lt;command name=&quot;load&quot;&gt;netcdf/4.7.0&lt;/command&gt;
+      &lt;/modules&gt;
+      &lt;modules mpilib=&quot;openmpi&quot;&gt;
+	&lt;command name=&quot;load&quot;&gt;openmpi/3.1.6&lt;/command&gt;
+	&lt;command name=&quot;load&quot;&gt;pnetcdf/1.10.0&lt;/command&gt;
+      &lt;/modules&gt;
+    &lt;/module_system&gt;
+&lt;!-- environment variables, a blank entry will unset a variable --&gt;
+    &lt;environment_variables&gt;
+      &lt;env name=&quot;OMP_STACKSIZE&quot;&gt;256M&lt;/env&gt;
+      &lt;env name=&quot;MPI_TYPE_DEPTH&quot;&gt;16&lt;/env&gt;
+    &lt;/environment_variables&gt;
+    &lt;!-- resource settings as defined in https://docs.python.org/2/library/resource.html --&gt;
+    &lt;resource_limits&gt;
+      &lt;resource name=&quot;RLIMIT_STACK&quot;&gt;-1&lt;/resource&gt;
+    &lt;/resource_limits&gt;
   &lt;/machine&gt;
 
   &lt;machine MACH=&quot;hobart&quot;&gt;
@@ -6632,6 +7497,16 @@ This allows using a different mpirun command to launch unit tests
       &lt;modules&gt;
         &lt;command name=&quot;purge&quot;&gt;&lt;/command&gt;
       &lt;/modules&gt;
+      &lt;modules compiler=&quot;gnu&quot;&gt;
+        &lt;command name=&quot;load&quot;&gt;compiler/gnu/9.3.0&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;tool/netcdf/4.7.4/gnu/9.3.0&lt;/command&gt;
+      &lt;/modules&gt;
+      &lt;modules compiler=&quot;gnu&quot; mpilib=&quot;openmpi&quot;&gt;
+        &lt;command name=&quot;load&quot;&gt;openmpi/4.0.3/gnu/9.3.0&lt;/command&gt;
+      &lt;/modules&gt;
+      &lt;modules compiler=&quot;gnu&quot; mpilib=&quot;mvapich2&quot;&gt;
+        &lt;command name=&quot;load&quot;&gt;mpi/2.3.3/gnu/9.3.0&lt;/command&gt;
+      &lt;/modules&gt;
       &lt;modules compiler=&quot;intel&quot;&gt;
         &lt;command name=&quot;load&quot;&gt;compiler/intel/20.0.1&lt;/command&gt;
         &lt;command name=&quot;load&quot;&gt;tool/netcdf/4.7.4/intel/20.0.1&lt;/command&gt;
@@ -6650,27 +7525,79 @@ This allows using a different mpirun command to launch unit tests
       &lt;modules compiler=&quot;nag&quot; mpilib=&quot;mvapich2&quot;&gt;
         &lt;command name=&quot;load&quot;&gt;mpi/2.3.3/nag/6.2&lt;/command&gt;
       &lt;/modules&gt;
-      &lt;modules compiler=&quot;gnu&quot;&gt;
-        &lt;command name=&quot;load&quot;&gt;compiler/gnu/9.3.0&lt;/command&gt;
-        &lt;command name=&quot;load&quot;&gt;tool/netcdf/4.7.4/gnu/9.3.0&lt;/command&gt;
+      &lt;modules compiler=&quot;nag&quot; mpilib=&quot;mpi-serial&quot;&gt;
+        &lt;command name=&quot;rm&quot;&gt;mpi&lt;/command&gt;
       &lt;/modules&gt;
-      &lt;modules compiler=&quot;gnu&quot; mpilib=&quot;openmpi&quot;&gt;
-        &lt;command name=&quot;load&quot;&gt;openmpi/4.0.3/gnu/9.3.0&lt;/command&gt;
+      &lt;modules compiler=&quot;gnu&quot; mpilib=&quot;mvapich2&quot; DEBUG=&quot;FALSE&quot;&gt;
+        &lt;command name=&quot;use&quot;&gt;/fs/cgd/data0/modules/modulefiles/esmfpkgs/gfortran/9.3.0&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;esmf-8.2.0b13-ncdfio-mvapich2-O&lt;/command&gt;
       &lt;/modules&gt;
-      &lt;modules compiler=&quot;gnu&quot; mpilib=&quot;mvapich2&quot;&gt;
-        &lt;command name=&quot;load&quot;&gt;mpi/2.3.3/gnu/9.3.0&lt;/command&gt;
+      &lt;modules compiler=&quot;gnu&quot; mpilib=&quot;mvapich2&quot; DEBUG=&quot;TRUE&quot;&gt;
+        &lt;command name=&quot;use&quot;&gt;/fs/cgd/data0/modules/modulefiles/esmfpkgs/gfortran/9.3.0&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;esmf-8.2.0b13-ncdfio-mvapich2-g&lt;/command&gt;
+      &lt;/modules&gt;
+      &lt;modules compiler=&quot;gnu&quot; mpilib=&quot;mpi-serial&quot; DEBUG=&quot;FALSE&quot;&gt;
+        &lt;command name=&quot;use&quot;&gt;/fs/cgd/data0/modules/modulefiles/esmfpkgs/gfortran/9.3.0&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;esmf-8.2.0b13-ncdfio-mpiuni-O&lt;/command&gt;
+      &lt;/modules&gt;
+      &lt;modules compiler=&quot;gnu&quot; mpilib=&quot;mpi-serial&quot; DEBUG=&quot;TRUE&quot;&gt;
+        &lt;command name=&quot;use&quot;&gt;/fs/cgd/data0/modules/modulefiles/esmfpkgs/gfortran/9.3.0&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;esmf-8.2.0b13-ncdfio-mpiuni-g&lt;/command&gt;
+      &lt;/modules&gt;
+
+      &lt;modules compiler=&quot;nag&quot; mpilib=&quot;mvapich2&quot; DEBUG=&quot;FALSE&quot;&gt;
+        &lt;command name=&quot;use&quot;&gt;/fs/cgd/data0/modules/modulefiles/esmfpkgs/nag/6.2&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;esmf-8.2.0b13-ncdfio-mvapich2-O&lt;/command&gt;
+      &lt;/modules&gt;
+      &lt;modules compiler=&quot;nag&quot; mpilib=&quot;mvapich2&quot; DEBUG=&quot;TRUE&quot;&gt;
+        &lt;command name=&quot;use&quot;&gt;/fs/cgd/data0/modules/modulefiles/esmfpkgs/nag/6.2&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;esmf-8.2.0b13-ncdfio-mvapich2-g&lt;/command&gt;
+      &lt;/modules&gt;
+      &lt;modules compiler=&quot;nag&quot; mpilib=&quot;mpi-serial&quot; DEBUG=&quot;TRUE&quot;&gt;
+        &lt;command name=&quot;use&quot;&gt;/fs/cgd/data0/modules/modulefiles/esmfpkgs/nag/6.2&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;esmf-8.2.0b13-ncdfio-mpiuni-g&lt;/command&gt;
+      &lt;/modules&gt;
+      &lt;modules compiler=&quot;nag&quot; mpilib=&quot;mpi-serial&quot; DEBUG=&quot;FALSE&quot;&gt;
+        &lt;command name=&quot;use&quot;&gt;/fs/cgd/data0/modules/modulefiles/esmfpkgs/nag/6.2&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;esmf-8.2.0b13-ncdfio-mpiuni-O&lt;/command&gt;
+      &lt;/modules&gt;
+      &lt;modules compiler=&quot;intel&quot; mpilib=&quot;mpi-serial&quot; DEBUG=&quot;TRUE&quot;&gt;
+        &lt;command name=&quot;use&quot;&gt;/fs/cgd/data0/modules/modulefiles/esmfpkgs/intel/20.0.1&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;esmf-8.2.0b13-ncdfio-mpiuni-g&lt;/command&gt;
+      &lt;/modules&gt;
+      &lt;modules compiler=&quot;intel&quot; mpilib=&quot;mpi-serial&quot; DEBUG=&quot;FALSE&quot;&gt;
+        &lt;command name=&quot;use&quot;&gt;/fs/cgd/data0/modules/modulefiles/esmfpkgs/intel/20.0.1&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;esmf-8.2.0b13-ncdfio-mpiuni-O&lt;/command&gt;
+      &lt;/modules&gt;
+      &lt;modules compiler=&quot;intel&quot; mpilib=&quot;mvapich2&quot; DEBUG=&quot;TRUE&quot;&gt;
+        &lt;command name=&quot;use&quot;&gt;/fs/cgd/data0/modules/modulefiles/esmfpkgs/intel/20.0.1&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;esmf-8.2.0b13-ncdfio-mvapich2-g&lt;/command&gt;
+      &lt;/modules&gt;
+      &lt;modules compiler=&quot;intel&quot; mpilib=&quot;mvapich2&quot; DEBUG=&quot;FALSE&quot;&gt;
+        &lt;command name=&quot;use&quot;&gt;/fs/cgd/data0/modules/modulefiles/esmfpkgs/intel/20.0.1&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;esmf-8.2.0b13-ncdfio-mvapich2-O&lt;/command&gt;
+      &lt;/modules&gt;
+      &lt;modules compiler=&quot;pgi&quot; mpilib=&quot;mpi-serial&quot; DEBUG=&quot;TRUE&quot;&gt;
+        &lt;command name=&quot;use&quot;&gt;/fs/cgd/data0/modules/modulefiles/esmfpkgs/pgi/20.1&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;esmf-8.2.0b15-ncdfio-mpiuni-g&lt;/command&gt;
+      &lt;/modules&gt;
+      &lt;modules compiler=&quot;pgi&quot; mpilib=&quot;mpi-serial&quot; DEBUG=&quot;FALSE&quot;&gt;
+        &lt;command name=&quot;use&quot;&gt;/fs/cgd/data0/modules/modulefiles/esmfpkgs/pgi/20.1&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;esmf-8.2.0b15-ncdfio-mpiuni-O&lt;/command&gt;
+      &lt;/modules&gt;
+      &lt;modules compiler=&quot;pgi&quot; mpilib=&quot;mvapich2&quot; DEBUG=&quot;TRUE&quot;&gt;
+        &lt;command name=&quot;use&quot;&gt;/fs/cgd/data0/modules/modulefiles/esmfpkgs/pgi/20.1&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;esmf-8.2.0b15-ncdfio-mvapich2-g&lt;/command&gt;
+      &lt;/modules&gt;
+      &lt;modules compiler=&quot;pgi&quot; mpilib=&quot;mvapich2&quot; DEBUG=&quot;FALSE&quot;&gt;
+        &lt;command name=&quot;use&quot;&gt;/fs/cgd/data0/modules/modulefiles/esmfpkgs/pgi/20.1&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;esmf-8.2.0b15-ncdfio-mvapich2-O&lt;/command&gt;
       &lt;/modules&gt;
     &lt;/module_system&gt;
     &lt;environment_variables&gt;
       &lt;env name=&quot;OMP_STACKSIZE&quot;&gt;64M&lt;/env&gt;
       &lt;!-- The following is needed in order to run qsub from the compute nodes --&gt;
       &lt;env name=&quot;PATH&quot;&gt;$ENV{PATH}:/cluster/torque/bin&lt;/env&gt;
-    &lt;/environment_variables&gt;
-    &lt;environment_variables comp_interface=&quot;nuopc&quot; mpilib=&quot;mvapich2&quot; DEBUG=&quot;FALSE&quot;&gt;
-      &lt;env name=&quot;ESMFMKFILE&quot;&gt;/scratch/cluster/himanshu/PROGS/esmf/master/mvapich2/2.3.3/intel/20.0.1/lib/libO/Linux.intel.64.mvapich2.default/esmf.mk&lt;/env&gt;
-    &lt;/environment_variables&gt;
-    &lt;environment_variables comp_interface=&quot;nuopc&quot; mpilib=&quot;mvapich2&quot; DEBUG=&quot;TRUE&quot;&gt;
-      &lt;env name=&quot;ESMFMKFILE&quot;&gt;/scratch/cluster/himanshu/PROGS/esmf/master/mvapich2/2.3.3/intel/20.0.1/lib/libg/Linux.intel.64.mvapich2.default/esmf.mk&lt;/env&gt;
     &lt;/environment_variables&gt;
     &lt;resource_limits&gt;
       &lt;resource name=&quot;RLIMIT_STACK&quot;&gt;-1&lt;/resource&gt;
@@ -7172,8 +8099,8 @@ This allows using a different mpirun command to launch unit tests
         &lt;command name=&quot;purge&quot;/&gt;
         &lt;command name=&quot;load&quot;&gt;nas&lt;/command&gt;
         &lt;command name=&quot;load&quot;&gt;pkgsrc&lt;/command&gt;
-        &lt;command name=&quot;load&quot;&gt;comp-intel/2018.3.222&lt;/command&gt;
-        &lt;command name=&quot;load&quot;&gt;mpi-sgi/mpt.2.15r20&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;comp-intel/2020.4.304&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;mpi-hpe/mpt.2.23&lt;/command&gt;
         &lt;command name=&quot;load&quot;&gt;szip/2.1.1&lt;/command&gt;
         &lt;command name=&quot;load&quot;&gt;hdf4/4.2.12&lt;/command&gt;
         &lt;command name=&quot;load&quot;&gt;hdf5/1.8.18_mpt&lt;/command&gt;
@@ -7224,8 +8151,8 @@ This allows using a different mpirun command to launch unit tests
         &lt;command name=&quot;purge&quot;/&gt;
         &lt;command name=&quot;load&quot;&gt;nas&lt;/command&gt;
         &lt;command name=&quot;load&quot;&gt;pkgsrc&lt;/command&gt;
-        &lt;command name=&quot;load&quot;&gt;comp-intel/2018.3.222&lt;/command&gt;
-        &lt;command name=&quot;load&quot;&gt;mpi-sgi/mpt.2.15r20&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;comp-intel/2020.4.304&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;mpi-hpe/mpt.2.23&lt;/command&gt;
         &lt;command name=&quot;load&quot;&gt;szip/2.1.1&lt;/command&gt;
         &lt;command name=&quot;load&quot;&gt;hdf4/4.2.12&lt;/command&gt;
         &lt;command name=&quot;load&quot;&gt;hdf5/1.8.18_mpt&lt;/command&gt;
@@ -7276,8 +8203,8 @@ This allows using a different mpirun command to launch unit tests
         &lt;command name=&quot;purge&quot;/&gt;
         &lt;command name=&quot;load&quot;&gt;nas&lt;/command&gt;
         &lt;command name=&quot;load&quot;&gt;pkgsrc&lt;/command&gt;
-        &lt;command name=&quot;load&quot;&gt;comp-intel/2018.3.222&lt;/command&gt;
-        &lt;command name=&quot;load&quot;&gt;mpi-sgi/mpt.2.15r20&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;comp-intel/2020.4.304&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;mpi-hpe/mpt.2.23&lt;/command&gt;
         &lt;command name=&quot;load&quot;&gt;szip/2.1.1&lt;/command&gt;
         &lt;command name=&quot;load&quot;&gt;hdf4/4.2.12&lt;/command&gt;
         &lt;command name=&quot;load&quot;&gt;hdf5/1.8.18_mpt&lt;/command&gt;
@@ -7328,8 +8255,8 @@ This allows using a different mpirun command to launch unit tests
         &lt;command name=&quot;purge&quot;/&gt;
         &lt;command name=&quot;load&quot;&gt;nas&lt;/command&gt;
         &lt;command name=&quot;load&quot;&gt;pkgsrc&lt;/command&gt;
-        &lt;command name=&quot;load&quot;&gt;comp-intel/2018.3.222&lt;/command&gt;
-        &lt;command name=&quot;load&quot;&gt;mpi-sgi/mpt.2.15r20&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;comp-intel/2020.4.304&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;mpi-hpe/mpt.2.23&lt;/command&gt;
         &lt;command name=&quot;load&quot;&gt;szip/2.1.1&lt;/command&gt;
         &lt;command name=&quot;load&quot;&gt;hdf4/4.2.12&lt;/command&gt;
         &lt;command name=&quot;load&quot;&gt;hdf5/1.8.18_mpt&lt;/command&gt;
@@ -7596,6 +8523,71 @@ This allows using a different mpirun command to launch unit tests
     &lt;/environment_variables&gt;
   &lt;/machine&gt;
 
+  &lt;machine MACH=&quot;swan&quot;&gt;
+    &lt;DESC&gt;Cray test platform &lt;/DESC&gt;
+    &lt;NODENAME_REGEX&gt;swan.*&lt;/NODENAME_REGEX&gt;
+    &lt;OS&gt;CNL&lt;/OS&gt;
+    &lt;COMPILERS&gt;cray, intel&lt;/COMPILERS&gt;
+    &lt;MPILIBS&gt;mpt&lt;/MPILIBS&gt;
+&lt;!--    &lt;PROJECT&gt;&lt;/PROJECT&gt; --&gt;
+    &lt;CIME_OUTPUT_ROOT&gt;/lus/scratch/$USER&lt;/CIME_OUTPUT_ROOT&gt;
+    &lt;DIN_LOC_ROOT&gt;/lus/scratch/$USER/inputdata&lt;/DIN_LOC_ROOT&gt;
+    &lt;DIN_LOC_ROOT_CLMFORC&gt;/lus/scratch/$USER/inputdata/atm/datm7&lt;/DIN_LOC_ROOT_CLMFORC&gt;
+    &lt;DOUT_S_ROOT&gt;$CIME_OUTPUT_ROOT/archive/$CASE&lt;/DOUT_S_ROOT&gt;
+    &lt;BASELINE_ROOT&gt;/lus/scratch/$USER/cesm/baselines&lt;/BASELINE_ROOT&gt;
+    &lt;CCSM_CPRNC&gt;/lus/scratch/$USER/cesm/tools/cprnc/cprnc&lt;/CCSM_CPRNC&gt;
+    &lt;GMAKE_J&gt;8&lt;/GMAKE_J&gt;
+    &lt;BATCH_SYSTEM&gt;pbs&lt;/BATCH_SYSTEM&gt;
+    &lt;SUPPORTED_BY&gt;jedwards&lt;/SUPPORTED_BY&gt;
+    &lt;MAX_TASKS_PER_NODE&gt;64&lt;/MAX_TASKS_PER_NODE&gt;
+    &lt;MAX_MPITASKS_PER_NODE&gt;64&lt;/MAX_MPITASKS_PER_NODE&gt;
+    &lt;PROJECT_REQUIRED&gt;FALSE&lt;/PROJECT_REQUIRED&gt;
+    &lt;mpirun mpilib=&quot;default&quot;&gt;
+      &lt;executable&gt;aprun&lt;/executable&gt;
+      &lt;arguments&gt;
+	&lt;arg name=&quot;num_tasks&quot; &gt;-n {{ total_tasks }}&lt;/arg&gt;
+	&lt;arg name=&quot;tasks_per_node&quot; &gt;-N {{ tasks_per_node }} &lt;/arg&gt;
+	&lt;arg name=&quot;thread_count&quot;&gt;--cc depth -d $OMP_NUM_THREADS&lt;/arg&gt;
+	&lt;arg name=&quot;env_omp_stacksize&quot;&gt;-e OMP_STACKSIZE=64M&lt;/arg&gt;
+	&lt;arg name=&quot;env_thread_count&quot;&gt;-e OMP_NUM_THREADS=$OMP_NUM_THREADS&lt;/arg&gt;
+      &lt;/arguments&gt;
+    &lt;/mpirun&gt;
+    &lt;module_system type=&quot;module&quot;&gt;
+      &lt;init_path lang=&quot;perl&quot;&gt;/opt/modules/default/init/perl.pm&lt;/init_path&gt;
+      &lt;init_path lang=&quot;python&quot;&gt;/opt/modules/default/init/python.py&lt;/init_path&gt;
+      &lt;init_path lang=&quot;sh&quot;&gt;/opt/modules/default/init/sh&lt;/init_path&gt;
+      &lt;init_path lang=&quot;csh&quot;&gt;/opt/modules/default/init/csh&lt;/init_path&gt;
+      &lt;cmd_path lang=&quot;perl&quot;&gt;/opt/modules/default/bin/modulecmd perl&lt;/cmd_path&gt;
+      &lt;cmd_path lang=&quot;python&quot;&gt;/opt/modules/default/bin/modulecmd python&lt;/cmd_path&gt;
+      &lt;cmd_path lang=&quot;sh&quot;&gt;module&lt;/cmd_path&gt;
+      &lt;cmd_path lang=&quot;csh&quot;&gt;module&lt;/cmd_path&gt;
+      &lt;modules compiler=&quot;cray&quot;&gt;
+	&lt;command name=&quot;load&quot;&gt;PrgEnv-cray/6.0.10&lt;/command&gt;
+	&lt;command name=&quot;switch&quot;&gt;cce cce/12.0.3&lt;/command&gt;
+      &lt;/modules&gt;
+      &lt;modules&gt;
+	&lt;command name=&quot;load&quot;&gt;perftools-base&lt;/command&gt;
+	&lt;command name=&quot;swap&quot;&gt;craype craype/2.7.10&lt;/command&gt;
+      &lt;/modules&gt;
+      &lt;modules compiler=&quot;!intel&quot;&gt;
+	&lt;command name=&quot;switch&quot;&gt;cray-libsci/20.09.1&lt;/command&gt;
+      &lt;/modules&gt;
+      &lt;modules&gt;
+	&lt;command name=&quot;load&quot;&gt;cray-mpich/7.7.18&lt;/command&gt;
+      &lt;/modules&gt;
+      &lt;modules mpilib=&quot;mpt&quot;&gt;
+	&lt;command name=&quot;load&quot;&gt;cray-netcdf-hdf5parallel&lt;/command&gt;
+	&lt;command name=&quot;load&quot;&gt;cray-hdf5-parallel&lt;/command&gt;
+	&lt;command name=&quot;load&quot;&gt;cray-parallel-netcdf&lt;/command&gt;
+      &lt;/modules&gt;
+    &lt;/module_system&gt;
+    &lt;environment_variables comp_interface=&quot;nuopc&quot;&gt;
+      &lt;env name=&quot;ESMF_RUNTIME_PROFILE&quot;&gt;ON&lt;/env&gt;
+      &lt;env name=&quot;ESMF_RUNTIME_PROFILE_OUTPUT&quot;&gt;SUMMARY&lt;/env&gt;
+      &lt;env name=&quot;ESMFMKFILE&quot;&gt;/home/users/p62939/esmf/lib/libg/Unicos.cce.64.mpi.default/esmf.mk&lt;/env&gt;
+    &lt;/environment_variables&gt;
+  &lt;/machine&gt;
+  
   &lt;machine MACH=&quot;theia&quot;&gt;
     &lt;DESC&gt;theia&lt;/DESC&gt;
     &lt;NODENAME_REGEX&gt;tfe&lt;/NODENAME_REGEX&gt;
@@ -7851,12 +8843,86 @@ This allows using a different mpirun command to launch unit tests
       &lt;/arguments&gt;
     &lt;/mpirun&gt;
     &lt;module_system type=&quot;none&quot; /&gt;
+  &lt;/machine&gt;
+
+  &lt;machine MACH=&quot;zeus&quot;&gt;
+    &lt;DESC&gt; CMCC Lenovo ThinkSystem SD530, os is Linux, 36 pes/node, batch system is LSF&lt;/DESC&gt;
+    &lt;NODENAME_REGEX&gt;(login[1,2]-ib|n[0-9][0-9][0-9]-ib)&lt;/NODENAME_REGEX&gt;
+    &lt;OS&gt;LINUX&lt;/OS&gt;
+    &lt;COMPILERS&gt;intel&lt;/COMPILERS&gt;
+    &lt;MPILIBS&gt;impi,mpi-serial&lt;/MPILIBS&gt;
+    &lt;PROJECT&gt;R000&lt;/PROJECT&gt;
+    &lt;CIME_OUTPUT_ROOT&gt;/work/$ENV{DIVISION}/$ENV{USER}/CESM2&lt;/CIME_OUTPUT_ROOT&gt;
+    &lt;DIN_LOC_ROOT&gt;$ENV{CESMDATAROOT}/inputdata&lt;/DIN_LOC_ROOT&gt;
+    &lt;DIN_LOC_ROOT_CLMFORC&gt;$DIN_LOC_ROOT/atm/datm7&lt;/DIN_LOC_ROOT_CLMFORC&gt;
+    &lt;DOUT_S_ROOT&gt;$CIME_OUTPUT_ROOT/archive/$CASE&lt;/DOUT_S_ROOT&gt;
+    &lt;BASELINE_ROOT&gt;$ENV{CESMDATAROOT}/ccsm_baselines&lt;/BASELINE_ROOT&gt;
+    &lt;CCSM_CPRNC&gt;$ENV{CESMDATAROOT}/cesm2_tools/cprnc/cprnc&lt;/CCSM_CPRNC&gt;
+    &lt;PERL5LIB&gt;/usr/lib64/perl5:/usr/share/perl5&lt;/PERL5LIB&gt;
+    &lt;GMAKE_J&gt;8&lt;/GMAKE_J&gt;
+    &lt;BATCH_SYSTEM&gt;lsf&lt;/BATCH_SYSTEM&gt;
+    &lt;SUPPORTED_BY&gt;cmcc&lt;/SUPPORTED_BY&gt;
+    &lt;MAX_TASKS_PER_NODE&gt;72&lt;/MAX_TASKS_PER_NODE&gt;
+    &lt;MAX_MPITASKS_PER_NODE&gt;36&lt;/MAX_MPITASKS_PER_NODE&gt;
+    &lt;PROJECT_REQUIRED&gt;TRUE&lt;/PROJECT_REQUIRED&gt;
+    &lt;mpirun mpilib=&quot;default&quot;&gt;
+      &lt;executable&gt; mpirun &lt;/executable&gt;
+    &lt;/mpirun&gt;
+    &lt;module_system type=&quot;module&quot;&gt;
+      &lt;init_path lang=&quot;perl&quot;&gt;/usr/share/Modules/init/perl.pm&lt;/init_path&gt;
+      &lt;init_path lang=&quot;python&quot;&gt;/usr/share/Modules/init/python.py&lt;/init_path&gt;
+      &lt;init_path lang=&quot;csh&quot;&gt;/usr/share/Modules/init/csh&lt;/init_path&gt;
+      &lt;init_path lang=&quot;sh&quot;&gt;/usr/share/Modules/init/sh&lt;/init_path&gt;
+      &lt;cmd_path lang=&quot;perl&quot;&gt;/usr/bin/modulecmd perl&lt;/cmd_path&gt;
+      &lt;cmd_path lang=&quot;python&quot;&gt;/usr/bin/modulecmd python &lt;/cmd_path&gt;
+      &lt;cmd_path lang=&quot;sh&quot;&gt;module&lt;/cmd_path&gt;
+      &lt;cmd_path lang=&quot;csh&quot;&gt;module&lt;/cmd_path&gt;
+      &lt;modules&gt;
+        &lt;command name=&quot;purge&quot;/&gt;
+      &lt;/modules&gt;
+      &lt;modules compiler=&quot;intel&quot;&gt;
+        &lt;command name=&quot;load&quot;&gt;intel20.1/20.1.217&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;intel20.1/szip/2.1.1&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;cmake/3.17.3&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;curl/7.70.0&lt;/command&gt;
+      &lt;/modules&gt;
+      &lt;modules mpilib=&quot;mpi-serial&quot;&gt;
+        &lt;command name=&quot;load&quot;&gt;intel20.1/hdf5/1.12.0&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;intel20.1/netcdf/C_4.7.4-F_4.5.3_CXX_4.3.1&lt;/command&gt;
+      &lt;/modules&gt;
+      &lt;modules mpilib=&quot;!mpi-serial&quot;&gt;
+        &lt;command name=&quot;load&quot;&gt;impi20.1/19.7.217&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;impi20.1/hdf5/1.12.0&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;impi20.1/netcdf/C_4.7.4-F_4.5.3_CXX_4.3.1&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;impi20.1/parallel-netcdf/1.12.1&lt;/command&gt;
+      &lt;/modules&gt;
+      &lt;modules compiler=&quot;intel&quot; mpilib=&quot;!mpi-serial&quot; DEBUG=&quot;TRUE&quot;&gt;
+        &lt;command name=&quot;load&quot;&gt;impi20.1/esmf/8.0.1-intelmpi-64-g&lt;/command&gt;
+      &lt;/modules&gt;
+      &lt;modules compiler=&quot;intel&quot; mpilib=&quot;!mpi-serial&quot; DEBUG=&quot;FALSE&quot;&gt;
+        &lt;command name=&quot;load&quot;&gt;impi20.1/esmf/8.0.1-intelmpi-64-O&lt;/command&gt;
+      &lt;/modules&gt;
+      &lt;modules compiler=&quot;intel&quot; mpilib=&quot;mpi-serial&quot; DEBUG=&quot;TRUE&quot;&gt;
+        &lt;command name=&quot;load&quot;&gt;intel20.1/esmf/8.0.1-mpiuni-64-g&lt;/command&gt;
+      &lt;/modules&gt;
+      &lt;modules compiler=&quot;intel&quot; mpilib=&quot;mpi-serial&quot; DEBUG=&quot;FALSE&quot;&gt;
+        &lt;command name=&quot;load&quot;&gt;intel20.1/esmf/8.0.1-mpiuni-64-O&lt;/command&gt;
+      &lt;/modules&gt;
+    &lt;/module_system&gt;
     &lt;environment_variables&gt;
-      &lt;env name=&quot;OMP_STACKSIZE&quot;&gt;256M&lt;/env&gt;
+      &lt;env name=&quot;XIOS_PATH&quot;&gt;/work/csp/cmip01/csm/xios&lt;/env&gt;
     &lt;/environment_variables&gt;
-    &lt;resource_limits&gt;
-      &lt;resource name=&quot;RLIMIT_STACK&quot;&gt;-1&lt;/resource&gt;
-    &lt;/resource_limits&gt;
+    &lt;environment_variables compiler=&quot;intel&quot;&gt;
+      &lt;env name=&quot;I_MPI_EXTRA_FILESYSTEM&quot;&gt;1&lt;/env&gt;
+      &lt;env name=&quot;I_MPI_EXTRA_FILESYSTEM_FORCE&quot;&gt;gpfs&lt;/env&gt;
+      &lt;env name=&quot;GPFSMPIO_TUNEBLOCKING&quot;&gt;0&lt;/env&gt;
+      &lt;env name=&quot;I_MPI_DEBUG&quot;&gt;60&lt;/env&gt;
+      &lt;env name=&quot;I_MPI_PLATFORM&quot;&gt;skx&lt;/env&gt;
+      &lt;env name=&quot;I_MPI_SHM&quot;&gt;skx_avx512&lt;/env&gt;
+      &lt;env name=&quot;I_MPI_HYDRA_BOOTSTRAP&quot;&gt;lsf&lt;/env&gt;
+      &lt;env name=&quot;I_MPI_HYDRA_COLLECTIVE_LAUNCH&quot;&gt;1&lt;/env&gt;
+      &lt;env name=&quot;I_MPI_HYDRA_BRANCH_COUNT&quot;&gt;{{ num_nodes }}&lt;/env&gt;
+    &lt;/environment_variables&gt;
   &lt;/machine&gt;
 
 

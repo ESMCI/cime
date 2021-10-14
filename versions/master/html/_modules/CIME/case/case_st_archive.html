@@ -189,9 +189,10 @@
 
 <span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">CIME.utils</span>                     <span class="kn">import</span> <span class="n">run_and_log_case_status</span><span class="p">,</span> <span class="n">ls_sorted_by_mtime</span><span class="p">,</span> <span class="n">symlink_force</span><span class="p">,</span> <span class="n">safe_copy</span><span class="p">,</span> <span class="n">find_files</span>
+<span class="kn">from</span> <span class="nn">CIME.utils</span>                     <span class="kn">import</span> <span class="n">batch_jobid</span>
 <span class="kn">from</span> <span class="nn">CIME.date</span>                      <span class="kn">import</span> <span class="n">get_file_date</span>
-<span class="kn">from</span> <span class="nn">CIME.XML.archive</span>       <span class="kn">import</span> <span class="n">Archive</span>
-<span class="kn">from</span> <span class="nn">CIME.XML.files</span>            <span class="kn">import</span> <span class="n">Files</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.archive</span>               <span class="kn">import</span> <span class="n">Archive</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.files</span>                 <span class="kn">import</span> <span class="n">Files</span>
 <span class="kn">from</span> <span class="nn">os.path</span>                        <span class="kn">import</span> <span class="n">isdir</span><span class="p">,</span> <span class="n">join</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -583,13 +584,17 @@
     <span class="c1"># the compname is drv but the files are named cpl</span>
     <span class="k">if</span> <span class="n">compname</span> <span class="o">==</span> <span class="s1">&#39;drv&#39;</span><span class="p">:</span>
         <span class="n">compname</span> <span class="o">=</span> <span class="s1">&#39;cpl&#39;</span>
+    <span class="k">if</span> <span class="n">compname</span> <span class="o">==</span> <span class="s2">&quot;cice6&quot;</span><span class="p">:</span>
+        <span class="n">compname</span> <span class="o">=</span> <span class="s1">&#39;cice&#39;</span>
+    <span class="k">if</span> <span class="n">compname</span> <span class="o">==</span> <span class="s2">&quot;ww3dev&quot;</span><span class="p">:</span>
+        <span class="n">compname</span> <span class="o">=</span> <span class="s1">&#39;ww3&#39;</span>
 
     <span class="c1"># get file_extension suffixes</span>
     <span class="k">for</span> <span class="n">suffix</span> <span class="ow">in</span> <span class="n">archive</span><span class="o">.</span><span class="n">get_rest_file_extensions</span><span class="p">(</span><span class="n">archive_entry</span><span class="p">):</span>
 <span class="c1">#        logger.debug(&quot;suffix is {} ninst {}&quot;.format(suffix, ninst))</span>
         <span class="n">restfiles</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="k">if</span> <span class="n">compname</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;mpas&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">compname</span> <span class="o">==</span> <span class="s1">&#39;mali&#39;</span><span class="p">:</span>
-            <span class="n">pattern</span> <span class="o">=</span> <span class="n">compname</span> <span class="o">+</span> <span class="sa">r</span><span class="s1">&#39;\.&#39;</span> <span class="o">+</span> <span class="n">suffix</span> <span class="o">+</span> <span class="sa">r</span><span class="s1">&#39;\.&#39;</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">datename_str</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+            <span class="n">pattern</span> <span class="o">=</span> <span class="n">casename</span> <span class="o">+</span> <span class="sa">r</span><span class="s1">&#39;\.&#39;</span> <span class="o">+</span> <span class="n">compname</span> <span class="o">+</span> <span class="sa">r</span><span class="s1">&#39;\.&#39;</span> <span class="o">+</span> <span class="n">suffix</span> <span class="o">+</span> <span class="sa">r</span><span class="s1">&#39;\.&#39;</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">datename_str</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
             <span class="n">pfile</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span>
             <span class="n">restfiles</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">rundir</span><span class="p">)</span> <span class="k">if</span> <span class="n">pfile</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">f</span><span class="p">)]</span>
         <span class="k">elif</span> <span class="n">compname</span> <span class="o">==</span> <span class="s1">&#39;nemo&#39;</span><span class="p">:</span>
@@ -915,9 +920,20 @@
 
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;st_archive starting&quot;</span><span class="p">)</span>
 
+    <span class="n">is_batch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;BATCH_SYSTEM&quot;</span><span class="p">)</span>
+    <span class="n">msg_func</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">if</span> <span class="n">is_batch</span><span class="p">:</span>
+        <span class="n">jobid</span> <span class="o">=</span> <span class="n">batch_jobid</span><span class="p">()</span>
+        <span class="n">msg_func</span> <span class="o">=</span> <span class="k">lambda</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">jobid</span> <span class="k">if</span> <span class="n">jobid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+
     <span class="n">archive</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_env</span><span class="p">(</span><span class="s1">&#39;archive&#39;</span><span class="p">)</span>
     <span class="n">functor</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">_archive_process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">archive</span><span class="p">,</span> <span class="n">last_date</span><span class="p">,</span> <span class="n">archive_incomplete_logs</span><span class="p">,</span> <span class="n">copy_only</span><span class="p">)</span>
-    <span class="n">run_and_log_case_status</span><span class="p">(</span><span class="n">functor</span><span class="p">,</span> <span class="s2">&quot;st_archive&quot;</span><span class="p">,</span> <span class="n">caseroot</span><span class="o">=</span><span class="n">caseroot</span><span class="p">)</span>
+    <span class="n">run_and_log_case_status</span><span class="p">(</span><span class="n">functor</span><span class="p">,</span> <span class="s2">&quot;st_archive&quot;</span><span class="p">,</span>
+                            <span class="n">custom_starting_msg_functor</span><span class="o">=</span><span class="n">msg_func</span><span class="p">,</span>
+                            <span class="n">custom_success_msg_functor</span><span class="o">=</span><span class="n">msg_func</span><span class="p">,</span>
+                            <span class="n">caseroot</span><span class="o">=</span><span class="n">caseroot</span><span class="p">,</span>
+                            <span class="n">is_batch</span><span class="o">=</span><span class="n">is_batch</span><span class="p">)</span>
 
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;st_archive completed&quot;</span><span class="p">)</span>
 
