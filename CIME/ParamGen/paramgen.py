@@ -1,9 +1,7 @@
-
-from __future__ import print_function
-from collections import OrderedDict
-import os, re
-from abc import ABC, abstractmethod
+import os, sys, re
 from copy import deepcopy
+import logging
+import subprocess
 
 try:
     from paramgen_utils import is_logical_expr, is_formula, has_unexpanded_var
@@ -12,17 +10,22 @@ except ModuleNotFoundError:
     from CIME.ParamGen.paramgen_utils import is_logical_expr, is_formula, has_unexpanded_var
     from CIME.ParamGen.paramgen_utils import eval_formula
 
-class ParamGen(ABC):
+assert sys.version_info.major==3 and sys.version_info.minor>=6, "ParamGen requires Python 3.6 or later." 
+
+logger = logging.getLogger(__name__)
+
+class ParamGen():
     """
     ParamGen is a versatile, generic, lightweight base class to be used when developing namelist
     and parameter generator tools for scientific modeling applications.
 
     Attributes
     ----------
-    data : dict or OrderedDict
+    data : dict
         The data attribute to operate over. See Methods for the list of operations.
     match: str
         "first" or "last".
+
     Methods
     -------
     from_json(input_path)
@@ -33,7 +36,7 @@ class ParamGen(ABC):
 
     def __init__(self, data_dict, match='last'):
         assert isinstance(data_dict, dict), \
-            "ParamGen class requires a dict or OrderedDict as the initial data."
+            "ParamGen class requires a dict as the initial data."
         #self._validate_schema(data_dict)
         self._original_data = deepcopy(data_dict)
         self._data = deepcopy(data_dict)
@@ -97,6 +100,91 @@ class ParamGen(ABC):
         import yaml
         with open(input_path) as yaml_file:
             _data = yaml.safe_load(yaml_file)
+        return cls(_data, match)
+
+    @classmethod
+    def from_xml_nml(cls, input_path, match='last'):
+        """
+        Reads in a given xml input file and initializes a ParamGen object. The XML file must conform to the
+        nml.xsd schema that's defined within ParamGen.
+
+        Parameters
+        ----------
+        input_path: str
+            Path to xml input file containing the defaults.
+        match: str
+            "first" or "last"
+        Returns
+        -------
+        ParamGen
+            A ParamGen object with the data read from input_path.
+        """
+
+        # First check whether the given xml file conforms to the nml.xsd schema
+        from distutils.spawn import find_executable
+        xmllint = find_executable("xmllint")
+        if xmllint == None:
+            logger.warning("Couldn't find xmllint. Skipping schema check")
+        else:
+            schema_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),'xml_schema','nml.xsd')
+            xmllint_cmd = "{} --xinclude --noout --schema {} {}".format(xmllint, schema_path, input_path) 
+            stat = subprocess.run(xmllint_cmd, shell=True, capture_output=True, text=True)
+            assert stat.returncode == 0, "While checking file {} against nml schema, received following errmsg: {}"\
+                    .format(input_path, stat.stderr)
+
+        import xml.etree.ElementTree as ET
+    
+        data = {}
+        xml_tree = ET.parse(input_path)
+        root = xml_tree.getroot()
+
+        # Loop over all entries (namelist variables) 
+        for entry in list(root):
+            # where each entry corresponds to a namelist variable, i.e., parameter
+            param_name = entry.attrib['id']
+            data[param_name] = {}
+
+            # loop over child entries and attributes of the parameter
+            for child in list(entry):
+                if child.tag == 'values':
+                    data[param_name]['values'] = {}
+                    values = list(child)
+
+                    # check if the values have logical guards as propositions
+                    guarded_vals = False
+                    for value in values:
+                        if 'guard' in value.attrib:
+                            guarded_vals = True
+                            break
+                    
+                    if guarded_vals:
+                        for value in values:
+                            if 'guard' in value.attrib:
+                                # this is one the guarded values
+                                guard = value.attrib['guard']
+                                data[param_name]['values'][guard] = value.text.strip()
+                            else:
+                                # this is the default value (where the guard is inherently 'else')
+                                assert 'else' not in data[param_name]['values'], \
+                                    "In the values list of {}, there are more than one values that don't "\
+                                    "have a guard".format(param_name)
+                                data[param_name]['values']['else'] = value.text.strip()
+                    else:
+                        assert len(values) == 1, "The {} parameter has multiple alternative values defined but no "\
+                            "guards are provided".format(param_name)
+                        data[param_name]['values'] = list(values)[0].text.strip()
+                else:
+                    # a child element other than the <values> element (.e.g, type, desc, group, etc.)
+                    data[param_name][child.tag] = child.text.strip()
+
+            # now group the parameters according to their group_id's:
+            _data = {} # grouped data
+            for param_name in data:
+                param_group = data[param_name]['group']
+                if param_group not in _data:
+                    _data[param_group] = {}
+                _data[param_group][param_name] = data[param_name]
+
         return cls(_data, match)
 
     @staticmethod
@@ -375,21 +463,24 @@ class ParamGen(ABC):
 
         assert self._reduced, "The data may be written only after the reduce method is called."
 
-        # check *schema*
-        for m, v in self.data.items():
-            # k is the namelist module name, while v is a dictionary corresponding to the vars in namelist
-            assert isinstance(m,str), "Invalid data format"
-            assert isinstance(v,dict), "Invalid data format"
-            for k_, v_ in v.items():
-                # k_ is the var name, and v_ is its value
-                assert isinstance(k_, str), "Invalid data format"
+        # check *schema* after reduction
+        for grp, var in self.data.items():
+            # grp is the namelist module name, while var is a dictionary corresponding to the vars in namelist
+            assert isinstance(grp,str), "Invalid data format"
+            assert isinstance(var,dict), "Invalid data format"
+            for vnm, vls in var.items():
+                # vnm is the var name, and vls is its values element
+                assert isinstance(vls, dict), "Invalid data format"
+                for val in vls:
+                    # val is a value in the values dict
+                    assert isinstance(val, str), "Invalid data format"
 
         # write the namelist file
         with open(output_path, 'w') as nml:
             for module in self._data:
                 nml.write("&{}\n".format(module))
                 for var in self._data[module]:
-                    val = str(self._data[module][var]).strip()
+                    val = str(self._data[module][var]['values']).strip()
                     if val != None:
                         nml.write("    {} = {}\n".format(var,val))
                 nml.write("/\n\n")
