@@ -42,7 +42,7 @@
     </xs:complexType>
   </xs:element>
 
-  <xs:element name="entry_id">
+  <xs:element name="entry_id_pg">
     <xs:complexType>
       <xs:sequence>
         <xs:element ref="entry" maxOccurs="unbounded" />

@@ -108,8 +108,8 @@ class ParamGen():
     @classmethod
     def from_xml_nml(cls, input_path, match='last'):
         """
-        Reads in a given xml input file and initializes a ParamGen object. The XML file must
-        conform to the nml.xsd schema that's defined within ParamGen.
+        Reads in a given xml input file and initializes a ParamGen object. The XML file must conform to the
+        entry_id_pg.xsd schema that's defined within ParamGen.
 
         Parameters
         ----------
@@ -123,13 +123,13 @@ class ParamGen():
             A ParamGen object with the data read from input_path.
         """
 
-        # First check whether the given xml file conforms to the nml.xsd schema
+        # First check whether the given xml file conforms to the entry_id_pg.xsd schema
         from distutils.spawn import find_executable
         xmllint = find_executable("xmllint")
         if xmllint is None:
             logger.warning("Couldn't find xmllint. Skipping schema check")
         else:
-            schema_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),'xml_schema','nml.xsd')
+            schema_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),'xml_schema','entry_id_pg.xsd')
             xmllint_cmd = "{} --xinclude --noout --schema {} {}".format(xmllint, schema_path, input_path)
             stat = subprocess.run(xmllint_cmd, shell=True, capture_output=True, text=True)
             assert stat.returncode == 0, "While checking file {} against nml schema, received following errmsg: {}"\
