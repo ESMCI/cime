@@ -8,7 +8,7 @@ CIME, pronounced "SEAM", primarily consists of a Case Control System that suppor
 
 CIME does **not** contain the source code for any Earth System Model drivers or components. It is typically included alongside the source code of a host model. However, CIME does include pointers to external repositories that contain drivers, data models and other test components. These external components can be easily assembled to facilitate end-to-end system tests of the CIME infrastructure, which are defined in the CIME repository.
 
-*cime* is currently used by the
+CIME is currently used by the
 <a href="http://www2.cesm.ucar.edu">Community Earth System Model </a>
      (CESM) and the <a href="https://climatemodeling.science.energy.gov/projects/energy-exascale-earth-system-model">
 Energy Exascale Earth System Model</a> (E3SM).
