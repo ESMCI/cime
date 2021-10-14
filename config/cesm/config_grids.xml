@@ -170,11 +170,6 @@
       <mask>0.125nldas2</mask>
     </model_grid>
 
-    <model_grid alias="hcru_hcru" compset="DATM.+CLM">
-      <grid name="atm">360x720cru</grid>
-      <grid name="lnd">360x720cru</grid>
-    </model_grid>
-
     <model_grid alias="hcru_hcru_mt13" not_compset="_POP" compset="DATM.+CLM">
       <grid name="atm">360x720cru</grid>
       <grid name="lnd">360x720cru</grid>
