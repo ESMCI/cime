@@ -187,63 +187,21 @@
 <h1>What is CIME?<a class="headerlink" href="#what-is-cime" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 </div>
-<p>CIME, pronounced “SEAM”, contains the support scripts (configure,
-build, run, test), data models, essential utility libraries, a “main”
-and other tools that are needed to build a single-executable coupled
-Earth System Model.  CIME is available in a stand-alone package that
-can be compiled and tested without active prognostic components but is
-typically included in the source of a climate model. CIME does not
-contain: any active components, any intra-component coupling
-capability (such as atmosphere physics-dynamics coupling).</p>
 <div class="section" id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
-<p>CIME is comprised of:</p>
-<ol class="arabic">
-<li><p>A Case Control System to support configuration, compilation, execution, system testing and unit testing of a earth system model:</p>
-<blockquote>
-<div><ol class="lowerroman simple">
+<p>CIME, pronounced “SEAM”, primarily consists of a Case Control System that supports the configuration, compilation, execution, system testing and unit testing of an Earth System Model. The two main components of the Case Control System are:</p>
+<ol class="arabic simple">
 <li><p>Scripts to enable simple generation of model executables and associated input files for different scientific cases, component resolutions and combinations of full, data and stub components with a handful of commands.</p></li>
 <li><p>Testing utilities to run defined system tests and report results for different configurations of the coupled system.</p></li>
 </ol>
-</div></blockquote>
-</li>
-<li><p>A default coupled model architecture:</p>
-<blockquote>
-<div><ol class="lowerroman simple">
-<li><p>A programmer interface and libraries to implement a hub-and-spoke inter-component coupling architecture.</p></li>
-<li><p>An implementation of a “hub” that needs 7 components (atm, ocn, lnd, sea-ice, land-ice, river, wave). a.k.a. “the driver”.</p></li>
-<li><p>The ability to allow active and data components to be mixed in any combination as long as each component implements the coupling programmer interface.</p></li>
-</ol>
-</div></blockquote>
-</li>
-<li><p>Non-active Data and Stub components:</p>
-<blockquote>
-<div><ol class="lowerroman simple">
-<li><p>“Data-only” versions of 6 of the 7 components that can replace active components at build-time.</p></li>
-<li><p>“Stub” versions of all 7 components for building a complete system.</p></li>
-</ol>
-</div></blockquote>
-</li>
-<li><dl class="simple">
-<dt>Source code for external libraries useful in scientific applications in general and climate models in particular.</dt><dd><ol class="lowerroman simple">
-<li><p>Parallel I/O library.</p></li>
-<li><p>The Model Coupling Toolkit.</p></li>
-<li><p>Timing library.</p></li>
-</ol>
-</dd>
-</dl>
-</li>
-<li><p>Additional stand-alone tools:</p>
-<blockquote>
-<div><ol class="lowerroman simple">
+<p>CIME also contains additional stand-alone tools, including:</p>
+<ol class="arabic simple">
 <li><p>Parallel regridding weight generation program</p></li>
 <li><p>Scripts to automate off-line load-balancing.</p></li>
 <li><p>Scripts to conduct ensemble-based statistical consistency tests.</p></li>
 <li><p>Netcdf file comparison program (for bit-for-bit).</p></li>
 </ol>
-</div></blockquote>
-</li>
-</ol>
+<p>CIME does <strong>not</strong> contain the source code for any Earth System Model drivers or components. It is typically included alongside the source code of a host model. However, CIME does include pointers to external repositories that contain drivers, data models and other test components. These external components can be easily assembled to facilitate end-to-end system tests of the CIME infrastructure, which are defined in the CIME repository.</p>
 </div>
 <div class="section" id="development">
 <h2>Development<a class="headerlink" href="#development" title="Permalink to this headline">¶</a></h2>
