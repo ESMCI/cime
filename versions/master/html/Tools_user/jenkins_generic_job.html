@@ -279,8 +279,8 @@ optional arguments:
                         False)
   -g, --generate-baselines
                         Generate baselines (default: False)
-  --baseline-compare BASELINE_COMPARE
-                        Do baseline comparisons (yes/no) (default: None)
+  --baseline-compare    Do baseline comparisons. Off by default. (default:
+                        False)
   --submit-to-cdash     Send results to CDash (default: False)
   -n, --no-submit       Force us to not send results to CDash, overrides
                         --submit-to-cdash. Useful for CI (default: False)
@@ -300,7 +300,7 @@ optional arguments:
   -b BASELINE_NAME, --baseline-name BASELINE_NAME
                         Baseline name for baselines to use. Also impacts
                         dashboard job name. Useful for testing a branch other
-                        than next or master (default: master)
+                        than next or master (default: remove_some_docs)
   -B BASELINE_ROOT, --baseline-root BASELINE_ROOT
                         Baseline area for baselines to use. Default will be
                         config_machine value for machine (default: None)

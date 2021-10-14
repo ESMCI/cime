@@ -255,12 +255,15 @@ usage: create_newcase [-h] [-d] [-v] [-s] --case CASENAME --compset COMPSET
                       --res GRID [--machine MACHINE] [--compiler COMPILER]
                       [--multi-driver] [--ninst NINST] [--mpilib MPILIB]
                       [--project PROJECT] [--pecount PECOUNT]
-                      [--user-mods-dir USER_MODS_DIR] [--pesfile PESFILE]
-                      [--gridfile GRIDFILE] [--workflow WORKFLOW]
-                      [--srcroot SRCROOT] [--output-root OUTPUT_ROOT]
-                      [--run-unsupported] [--walltime WALLTIME] [-q QUEUE]
+                      [--user-mods-dirs [USER_MODS_DIRS ...]]
+                      [--pesfile PESFILE] [--gridfile GRIDFILE]
+                      [--workflow WORKFLOW] [--srcroot SRCROOT]
+                      [--output-root OUTPUT_ROOT] [--run-unsupported]
+                      [--walltime WALLTIME] [-q QUEUE]
                       [--handle-preexisting-dirs {a,r,u}] [-i INPUT_DIR] [-n]
                       [--extra-machines-dir EXTRA_MACHINES_DIR]
+                      [--case-group CASE_GROUP]
+                      [--ngpus-per-node NGPUS_PER_NODE]
 
 Script to create a new CIME Case Control System (CSS) experimental case.
 
@@ -307,11 +310,18 @@ optional arguments:
                         This is used to query the appropriate config_pes.xml file and find the 
                         optimal PE-layout for your case - if it exists there. 
                         Allowed options are  (&#39;S&#39;,&#39;M&#39;,&#39;L&#39;,&#39;X1&#39;,&#39;X2&#39;,&#39;[0-9]x[0-9]&#39;,&#39;[0-9]&#39;).
-  --user-mods-dir USER_MODS_DIR
+  --user-mods-dirs [USER_MODS_DIRS ...], --user-mods-dir [USER_MODS_DIRS ...]
                         Full pathname to a directory containing any combination of user_nl_* files 
                         and a shell_commands script (typically containing xmlchange commands). 
                         The directory can also contain an SourceMods/ directory with the same structure 
                         as would be found in a case directory.
+                        It can also contain a file named &#39;include_user_mods&#39; which gives the path to
+                        one or more other directories that should be included.
+                        Multiple directories can be given to the --user-mods-dirs argument,
+                        in which case changes from all of them are applied.
+                        (If there are conflicts, later directories take precedence.)
+                        (Care is needed if multiple directories include the same directory via &#39;include_user_mods&#39;:
+                        in this case, the included directory will be applied multiple times.)
   --pesfile PESFILE     Full pathname of an optional pes specification file. 
                         The file can follow either the config_pes.xml or the env_mach_pes.xml format.
   --gridfile GRIDFILE   Full pathname of config grid file to use. 
@@ -339,6 +349,10 @@ optional arguments:
                         config_machines.xml, config_compilers.xml, config_batch.xml.
                         If provided, the contents of these files will be appended to
                         the standard machine files (and any files in ~/.cime).
+  --case-group CASE_GROUP
+                        Add this case to a case group
+  --ngpus-per-node NGPUS_PER_NODE
+                        Specify number of GPUs used for simulation.
 </pre></div>
 </div>
 </div>

@@ -255,7 +255,7 @@ usage: case.submit [-h] [-d] [-v] [-s] [--job JOB] [--only-job ONLY_JOB]
                    [--no-batch] [--prereq PREREQ] [--prereq-allow-failure]
                    [--resubmit] [--resubmit-immediate]
                    [--skip-preview-namelist] [--mail-user MAIL_USER]
-                   [-M MAIL_TYPE] [-a BATCH_ARGS]
+                   [-M MAIL_TYPE] [-a BATCH_ARGS] [--chksum]
                    [caseroot]
 
 Submits the case to the queuing system, or runs it if there is no queueing system.
@@ -307,6 +307,7 @@ optional arguments:
                         You can specify multiple types with either comma-separated args or multiple -M flags.
   -a BATCH_ARGS, --batch-args BATCH_ARGS
                         Used to pass additional arguments to batch system.
+  --chksum              Verifies input data checksums.
 </pre></div>
 </div>
 </div>

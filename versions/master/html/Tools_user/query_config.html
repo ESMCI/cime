@@ -252,11 +252,11 @@
 </div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ ./query_config --help
 usage: query_config [-h] [-d] [-v] [-s] [--xml]
-                    [--compsets [{all,allactive,drv,cam,ufsatm,cism,clm,cice,pop,mom,nemo,allactive,drv,cam,ufsatm,cism,clm,cice,pop,mom,nemo,allactive,drv,cam,ufsatm,cism,clm,cice,pop,mom,nemo}]]
-                    [--components [{all,None,datm,datm,satm,xatm,cam,ufsatm,clm,dlnd,dlnd,slnd,xlnd,cice,dice,dice,sice,xice,pop,mom,nemo,docn,docn,socn,xocn,rtm,mosart,mizuroute,drof,drof,srof,xrof,cism,dglc,sglc,xglc,ww3,dwav,dwav,swav,xwav,siac,xiac,desp,sesp}]]
+                    [--compsets [{all,allactive,drv,cam,ufsatm,cism,clm,cice6,cice,pop,mom,nemo,allactive,drv,cam,ufsatm,cism,clm,cice6,cice,pop,mom,nemo,allactive,drv,cam,ufsatm,cism,clm,cice6,cice,pop,mom,nemo}]]
+                    [--components [{all,None,cpl,drv,None,cpl,drv,datm,datm,satm,satm,xatm,xatm,cam,ufsatm,clm,dlnd,dlnd,slnd,slnd,xlnd,xlnd,cice6,cice,dice,dice,sice,sice,xice,xice,pop,mom,nemo,docn,docn,socn,socn,xocn,xocn,rtm,mosart,mizuroute,drof,drof,srof,srof,xrof,xrof,cism,dglc,sglc,sglc,xglc,xglc,ww3dev,ww3,dwav,dwav,swav,swav,xwav,xwav,siac,siac,xiac,xiac,desp,desp,sesp,sesp,None,cpl,drv,None,cpl,drv,datm,datm,satm,satm,xatm,xatm,cam,ufsatm,clm,dlnd,dlnd,slnd,slnd,xlnd,xlnd,cice6,cice,dice,dice,sice,sice,xice,xice,pop,mom,nemo,docn,docn,socn,socn,xocn,xocn,rtm,mosart,mizuroute,drof,drof,srof,srof,xrof,xrof,cism,dglc,sglc,sglc,xglc,xglc,ww3dev,ww3,dwav,dwav,swav,swav,xwav,xwav,desp,desp,sesp,sesp,None,cpl,drv,None,cpl,drv,datm,datm,satm,satm,xatm,xatm,cam,ufsatm,clm,dlnd,dlnd,slnd,slnd,xlnd,xlnd,cice6,cice,dice,dice,sice,sice,xice,xice,pop,mom,nemo,docn,docn,socn,socn,xocn,xocn,rtm,mosart,mizuroute,drof,drof,srof,srof,xrof,xrof,cism,dglc,sglc,sglc,xglc,xglc,ww3dev,ww3,dwav,dwav,swav,swav,xwav,xwav,desp,desp,sesp,sesp}]]
                     [--grids]
-                    [--machines [{all,current,aleph,athena,bluewaters,centos7-linux,casper,cheyenne,coeus,constance,cori-haswell,cori-knl,daint,eastwind,edison,euler2,euler3,euler4,gaea,hobart,homebrew,izumi,laramie,lawrencium-lr3,lawrencium-lr2,lonestar5,melvin,mira,modex,olympus,pleiades-bro,pleiades-has,pleiades-san,pleiades-ivy,sandia-srn-sems,sandiatoss3,stampede2-skx,stampede2-knl,theia,theta,thunder,ubuntu-latest,bishorn}]]
-                    [--long] [--comp_interface {mct,moab}]
+                    [--machines [{all,current,aleph,athena,bluewaters,centos7-linux,casper,cheyenne,coeus,constance,container,cori-haswell,cori-knl,daint,eastwind,edison,euler2,euler3,euler4,frontera,gaea,greenplanet-sib29,greenplanet-sky24,hobart,homebrew,izumi,laramie,lawrencium-lr3,lawrencium-lr2,lonestar5,melvin,mira,modex,olympus,pleiades-bro,pleiades-has,pleiades-san,pleiades-ivy,sandia-srn-sems,sandiatoss3,stampede2-skx,stampede2-knl,swan,theia,theta,thunder,ubuntu-latest,zeus,bishorn}]]
+                    [--long] [--comp_interface {mct,nuopc,moab}]
 
 Displays information about available compsets, component settings, grids and/or
 machines. Typically run with one of the arguments --compsets, --settings,
@@ -269,18 +269,18 @@ optional arguments:
   -v, --verbose         Add additional context (time and file) to log messages
   -s, --silent          Print only warnings and error messages
   --xml                 Output in xml format.
-  --compsets [{all,allactive,drv,cam,ufsatm,cism,clm,cice,pop,mom,nemo,allactive,drv,cam,ufsatm,cism,clm,cice,pop,mom,nemo,allactive,drv,cam,ufsatm,cism,clm,cice,pop,mom,nemo}]
+  --compsets [{all,allactive,drv,cam,ufsatm,cism,clm,cice6,cice,pop,mom,nemo,allactive,drv,cam,ufsatm,cism,clm,cice6,cice,pop,mom,nemo,allactive,drv,cam,ufsatm,cism,clm,cice6,cice,pop,mom,nemo}]
                         Query compsets corresponding to the target component for the cesm model. If no component is given, lists compsets defined by all components
-  --components [{all,None,datm,datm,satm,xatm,cam,ufsatm,clm,dlnd,dlnd,slnd,xlnd,cice,dice,dice,sice,xice,pop,mom,nemo,docn,docn,socn,xocn,rtm,mosart,mizuroute,drof,drof,srof,xrof,cism,dglc,sglc,xglc,ww3,dwav,dwav,swav,xwav,siac,xiac,desp,sesp}]
+  --components [{all,None,cpl,drv,None,cpl,drv,datm,datm,satm,satm,xatm,xatm,cam,ufsatm,clm,dlnd,dlnd,slnd,slnd,xlnd,xlnd,cice6,cice,dice,dice,sice,sice,xice,xice,pop,mom,nemo,docn,docn,socn,socn,xocn,xocn,rtm,mosart,mizuroute,drof,drof,srof,srof,xrof,xrof,cism,dglc,sglc,sglc,xglc,xglc,ww3dev,ww3,dwav,dwav,swav,swav,xwav,xwav,siac,siac,xiac,xiac,desp,desp,sesp,sesp,None,cpl,drv,None,cpl,drv,datm,datm,satm,satm,xatm,xatm,cam,ufsatm,clm,dlnd,dlnd,slnd,slnd,xlnd,xlnd,cice6,cice,dice,dice,sice,sice,xice,xice,pop,mom,nemo,docn,docn,socn,socn,xocn,xocn,rtm,mosart,mizuroute,drof,drof,srof,srof,xrof,xrof,cism,dglc,sglc,sglc,xglc,xglc,ww3dev,ww3,dwav,dwav,swav,swav,xwav,xwav,desp,desp,sesp,sesp,None,cpl,drv,None,cpl,drv,datm,datm,satm,satm,xatm,xatm,cam,ufsatm,clm,dlnd,dlnd,slnd,slnd,xlnd,xlnd,cice6,cice,dice,dice,sice,sice,xice,xice,pop,mom,nemo,docn,docn,socn,socn,xocn,xocn,rtm,mosart,mizuroute,drof,drof,srof,srof,xrof,xrof,cism,dglc,sglc,sglc,xglc,xglc,ww3dev,ww3,dwav,dwav,swav,swav,xwav,xwav,desp,desp,sesp,sesp}]
                         Query component settings corresponding to the target component for cesm model.
                         If the option is empty, then the lists settings defined by all components is output
   --grids               Query supported model grids for cesm model.
-  --machines [{all,current,aleph,athena,bluewaters,centos7-linux,casper,cheyenne,coeus,constance,cori-haswell,cori-knl,daint,eastwind,edison,euler2,euler3,euler4,gaea,hobart,homebrew,izumi,laramie,lawrencium-lr3,lawrencium-lr2,lonestar5,melvin,mira,modex,olympus,pleiades-bro,pleiades-has,pleiades-san,pleiades-ivy,sandia-srn-sems,sandiatoss3,stampede2-skx,stampede2-knl,theia,theta,thunder,ubuntu-latest,bishorn}]
+  --machines [{all,current,aleph,athena,bluewaters,centos7-linux,casper,cheyenne,coeus,constance,container,cori-haswell,cori-knl,daint,eastwind,edison,euler2,euler3,euler4,frontera,gaea,greenplanet-sib29,greenplanet-sky24,hobart,homebrew,izumi,laramie,lawrencium-lr3,lawrencium-lr2,lonestar5,melvin,mira,modex,olympus,pleiades-bro,pleiades-has,pleiades-san,pleiades-ivy,sandia-srn-sems,sandiatoss3,stampede2-skx,stampede2-knl,swan,theia,theta,thunder,ubuntu-latest,zeus,bishorn}]
                         Query supported machines for cesm model.
                         If option is left empty then all machines are listed,
                         If the option is &#39;current&#39; then only the current machine details are listed.
   --long                Provide long output for queries
-  --comp_interface {mct,moab}
+  --comp_interface {mct,nuopc,moab}
                         Coupler/Driver interface
 </pre></div>
 </div>

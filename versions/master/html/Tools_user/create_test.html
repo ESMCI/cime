@@ -267,7 +267,7 @@ usage: create_test [-h] [-d] [-v] [-s] [--no-run] [--no-build] [--no-setup]
                    [--ignore-memleak] [--force-procs FORCE_PROCS]
                    [--force-threads FORCE_THREADS] [-i INPUT_DIR]
                    [--pesfile PESFILE] [--retry RETRY] [-N]
-                   [--workflow WORKFLOW] [--mail-user MAIL_USER]
+                   [--workflow WORKFLOW] [--chksum] [--mail-user MAIL_USER]
                    [-M MAIL_TYPE]
                    [testargs ...]
 
@@ -404,6 +404,7 @@ optional arguments:
   --retry RETRY         Automatically retry failed tests. &gt;0 implies --wait
   -N, --non-local       Use when you&#39;ve requested a machine that you aren&#39;t on. Will reduce errors for missing directories etc.
   --workflow WORKFLOW   A workflow from config_workflow.xml to apply to this case. 
+  --chksum              Verifies input data checksums.
   --mail-user MAIL_USER
                         Email to be used for batch notification.
   -M MAIL_TYPE, --mail-type MAIL_TYPE

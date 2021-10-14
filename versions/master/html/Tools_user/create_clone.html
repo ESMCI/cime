@@ -252,8 +252,9 @@
 </div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ ./create_clone --help
 usage: create_clone [-h] [-d] [-v] [-s] --case CASE --clone CLONE
-                    [--ensemble ENSEMBLE] [--user-mods-dir USER_MODS_DIR]
-                    [--keepexe] [--mach-dir MACH_DIR] [--project PROJECT]
+                    [--ensemble ENSEMBLE]
+                    [--user-mods-dirs [USER_MODS_DIRS ...]] [--keepexe]
+                    [--mach-dir MACH_DIR] [--project PROJECT]
                     [--cime-output-root CIME_OUTPUT_ROOT]
 
 optional arguments:
@@ -270,11 +271,19 @@ optional arguments:
   --ensemble ENSEMBLE   clone an ensemble of cases, the case name argument must end in an integer.
                         for example: ./create_clone --clone case.template --case case.001 --ensemble 4 
                         will create case.001, case.002, case.003, case.004 from existing case.template
-  --user-mods-dir USER_MODS_DIR
+  --user-mods-dirs [USER_MODS_DIRS ...], --user-mods-dir [USER_MODS_DIRS ...]
                         Full pathname to a directory containing any combination of user_nl_* files 
-                        and shell_commands script (typically containing xmlchange commands). 
+                        and a shell_commands script (typically containing xmlchange commands). 
                         The directory can also contain an SourceMods/ directory with the same structure 
-                        as would be found in a case directory. If this argument is used in conjunction 
+                        as would be found in a case directory.
+                        It can also contain a file named &#39;include_user_mods&#39; which gives the path to
+                        one or more other directories that should be included.
+                        Multiple directories can be given to the --user-mods-dirs argument,
+                        in which case changes from all of them are applied.
+                        (If there are conflicts, later directories take precedence.)
+                        (Care is needed if multiple directories include the same directory via &#39;include_user_mods&#39;:
+                        in this case, the included directory will be applied multiple times.)
+                        If this argument is used in conjunction 
                         with the --keepexe flag, then no changes will be permitted to the env_build.xml 
                         in the newly created case directory. 
   --keepexe, -keepexe   Sets EXEROOT to point to original build. It is HIGHLY recommended 
