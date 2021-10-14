@@ -38,15 +38,6 @@ def is_number(var):
         return False
     return True
 
-def get_str_type():
-    """Returns the base string type, which depends on the major Python version."""
-
-    try: # Python 2
-        str_type = basestring
-    except NameError: # Python 3
-        str_type = str
-    return str_type
-
 def is_logical_expr(expr):
     """
     Returns True if a string is a logical expression.
@@ -63,29 +54,20 @@ def is_logical_expr(expr):
     -------
     >>> is_logical_expr("0 > 1000")
     True
-    >>> is_logical_expr("$x in y")
-    True
     >>> is_logical_expr("3+4")
     False
     """
 
-    assert isinstance(expr,get_str_type()), "Expression passed to is_logical_expr function must be a string."
+    assert isinstance(expr,str), "Expression passed to is_logical_expr function must be a string."
 
-    expr = expr.replace('$','').strip()
-
-    if expr in ['True', 'False', 'else']:
+    # special case:
+    if expr.strip() == "else":
         return True
-    else:
-        try:
-            compile(expr, filename='', mode='exec')
-        except SyntaxError:
-            return False
-        expr_dump = ast.dump(ast.parse(expr))
-        assert expr_dump.startswith('Module(body=[Expr(value='), \
-            "Unknown expression type or incompatible AST version. Error triggered by expression: "+expr
-        return \
-            expr_dump.startswith('Module(body=[Expr(value=Compare') or \
-            expr_dump.startswith('Module(body=[Expr(value=BoolOp')
+
+    try:
+        return isinstance(eval(expr),bool)
+    except NameError:
+        return False
 
 def is_formula(expr):
     """
@@ -109,7 +91,7 @@ def is_formula(expr):
     True
     """
 
-    return (isinstance(expr, get_str_type()) and len(expr)>0 and expr.strip()[0]=='=')
+    return (isinstance(expr, str) and len(expr)>0 and expr.strip()[0]=='=')
 
 def has_unexpanded_var(expr):
     """
@@ -130,7 +112,7 @@ def has_unexpanded_var(expr):
     True
     """
 
-    if isinstance(expr,get_str_type()) and re.search(r'(\$\w+|\${\w+\})',expr):
+    if isinstance(expr,str) and re.search(r'(\$\w+|\${\w+\})',expr):
         return True
     else:
         return False
