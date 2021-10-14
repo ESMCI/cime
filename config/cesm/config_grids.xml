@@ -1911,7 +1911,7 @@
     <domain name="tx0.1v3">
       <nx>3600</nx> <ny>2400</ny>
       <file grid="ocnice">$DIN_LOC_ROOT/share/domains/domain.ocn.tx0.1v3.170730.nc</file>
-      <mesh driver="nuopc">$DIN_LOC_ROOT/share/meshes/tx0.1v3_210910_ESMFmesh.nc</mesh>
+      <mesh driver="nuopc">$DIN_LOC_ROOT/share/meshes/tx0.1v3_ESMFmesh_cdf5_c20211011.nc</mesh>
       <desc>tx0.1v3 is tripole v3 1/10-deg grid:</desc>
       <support>Experimental for high resolution experiments</support>
     </domain>
