@@ -352,6 +352,17 @@
     </queues>
   </batch_system>
 
+  <batch_system MACH="CPE" type="slurm" >
+    <batch_submit>sbatch</batch_submit>
+    <submit_args>
+      <arg flag="--time" name="$JOB_WALLCLOCK_TIME"/>
+      <arg flag="-p" name="$JOB_QUEUE"/>
+    </submit_args>
+    <queues>
+      <queue default="true">regular</queue>
+    </queues>
+  </batch_system>
+
   <batch_system MACH="daint" type="slurm" >
     <batch_submit>sbatch</batch_submit>
     <submit_args>
@@ -423,7 +434,7 @@
   </batch_system>
 
   <batch_system MACH="frontera" type="slurm" >
-    <!-- note this form of batch_submit causes some tests to fail on the system 
+    <!-- note this form of batch_submit causes some tests to fail on the system
     because env variables are not forwarded -->
     <batch_submit>ssh login1 cd $CASEROOT ; sbatch</batch_submit>
     <submit_args>
@@ -712,7 +723,7 @@
       <queue walltimemax="24:00:00" default="true" >default</queue>
     </queues>
   </batch_system>
-  
+
   <batch_system MACH="theia" type="slurm" >
     <batch_submit>sbatch</batch_submit>
     <submit_args>
@@ -746,7 +757,7 @@
     <queues>
       <queue walltimemax="02:00:00" nodemin="1" nodemax="4" default="true">regular</queue>
     </queues>
-  </batch_system>      
+  </batch_system>
 
   <batch_system MACH="zeus" type="lsf">
     <batch_env>-env</batch_env>

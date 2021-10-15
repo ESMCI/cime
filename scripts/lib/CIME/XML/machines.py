@@ -179,6 +179,7 @@ class Machines(GenericXML):
                     if not machine.startswith("$ENV"):
                         match,machine = machine.split(":")
                         if match == machine:
+                            machine = machtocheck
                             break
                 else:    
                     regex = re.compile(regex_str)

@@ -337,7 +337,7 @@ This allows using a different mpirun command to launch unit tests
       <cmd_path lang="csh">module</cmd_path>
       <modules>
         <command name="purge"/>
-	<command name="load">lang/python/3.6.5</command>
+        <command name="load">lang/python/3.6.5</command>
       </modules>
       <modules compiler="gnu">
         <command name="load">compiler/gnu/8.2.0</command>
@@ -478,6 +478,89 @@ This allows using a different mpirun command to launch unit tests
     <resource_limits>
       <resource name="RLIMIT_STACK">-1</resource>
     </resource_limits>
+  </machine>
+
+<!-- this machine needs to precede cheyenne so that NODENAME_REGEX works -->
+  <machine MACH="CPE">
+    <DESC>This is using the cray env emulator on cheyenne </DESC>
+    <NODENAME_REGEX>$ENV{CRAY_CPU_TARGET}:broadwell</NODENAME_REGEX>
+    <OS>CNL</OS>
+    <COMPILERS>gnu,cray</COMPILERS>
+    <MPILIBS>mpich</MPILIBS>
+<!--    <PROJECT></PROJECT> -->
+    <CIME_OUTPUT_ROOT>/glade/scratch/$USER/CPE</CIME_OUTPUT_ROOT>
+    <DIN_LOC_ROOT>/glade/p/cesmdata/cseg/inputdata</DIN_LOC_ROOT>
+    <DIN_LOC_ROOT_CLMFORC>/glade/p/cgd/tss/CTSM_datm_forcing_data</DIN_LOC_ROOT_CLMFORC>
+    <DOUT_S_ROOT>$CIME_OUTPUT_ROOT/archive/$CASE</DOUT_S_ROOT>
+    <BASELINE_ROOT>/glade/p/cesmdata/cseg/CPE/cesm_baselines</BASELINE_ROOT>
+    <CCSM_CPRNC>/glade/p/cesmdata/cseg/tools/CPE/cprnc</CCSM_CPRNC>
+    <GMAKE_J>8</GMAKE_J>
+    <BATCH_SYSTEM>slurm</BATCH_SYSTEM>
+    <SUPPORTED_BY>jedwards</SUPPORTED_BY>
+    <MAX_TASKS_PER_NODE>36</MAX_TASKS_PER_NODE>
+    <MAX_MPITASKS_PER_NODE>36</MAX_MPITASKS_PER_NODE>
+    <PROJECT_REQUIRED>FALSE</PROJECT_REQUIRED>
+    <mpirun mpilib="default">
+      <executable>srun</executable>
+      <arguments>
+        <arg name="num_tasks">--ntasks={{ total_tasks }}</arg>
+        <arg name="cpu_bind">--cpu_bind=sockets --cpu_bind=verbose</arg>
+        <arg name="kill-on-bad-exit">--kill-on-bad-exit</arg>
+      </arguments>
+    </mpirun>
+    <module_system type="module">
+      <init_path lang="perl">/usr/local/Modules/init/perl.pm</init_path>
+      <init_path lang="python">/usr/local/Modules/init/python.py</init_path>
+      <init_path lang="sh">/usr/local/Modules/init/sh</init_path>
+      <init_path lang="csh">/usr/local/Modules/init/csh</init_path>
+      <cmd_path lang="perl">/usr/local/Modules/bin/modulecmd perl</cmd_path>
+      <cmd_path lang="python">/usr/local/Modules/bin/modulecmd python</cmd_path>
+      <cmd_path lang="sh">module</cmd_path>
+      <cmd_path lang="csh">module</cmd_path>
+      <modules>
+        <command name="unload">cpe-cray</command>
+        <command name="unload">cpe-gnu</command>
+        <command name="unload">cray-netcdf-hdf5para</command>
+        <command name="unload">cray-netcdf</command>
+      </modules>
+      <modules compiler="cray">
+        <command name="load">cpe-cray</command>
+        <command name="switch">cce cce/11.0.2</command>
+      </modules>
+      <modules compiler="gnu">
+        <command name="load">cpe-gnu</command>
+        <command name="switch">gcc gcc/9.3.0</command>
+      </modules>
+      <modules>
+        <command name="load">perftools-base</command>
+        <command name="swap">craype craype/2.7.9</command>
+      </modules>
+      <modules compiler="!intel">
+        <command name="switch">cray-libsci/20.12.1.2</command>
+      </modules>
+      <modules>
+        <command name="unload">cray-mpich</command>
+        <command name="load">cray-mpich/8.1.6.55</command>
+      </modules>
+      <modules mpilib="mpich">
+        <command name="unload">cray-netcdf</command>
+        <command name="unload">cray-hdf5</command>
+        <command name="load">cray-netcdf-hdf5parallel</command>
+        <command name="load">cray-hdf5-parallel</command>
+        <command name="load">cray-parallel-netcdf</command>
+      </modules>
+      <modules mpilib="mpi-serial">
+        <command name="unload">cray-netcdf-hdf5parallel</command>
+        <command name="unload">cray-hdf5-parallel</command>
+        <command name="load">cray-hdf5</command>
+        <command name="load">cray-netcdf</command>
+      </modules>
+    </module_system>
+    <environment_variables comp_interface="nuopc">
+      <env name="ESMF_RUNTIME_PROFILE">ON</env>
+      <env name="ESMF_RUNTIME_PROFILE_OUTPUT">SUMMARY</env>
+      <env name="ESMFMKFILE">/home/users/p62939/esmf/lib/libg/Unicos.cce.64.mpi.default/esmf.mk</env>
+    </environment_variables>
   </machine>
 
   <machine MACH="cheyenne">
@@ -876,7 +959,7 @@ This allows using a different mpirun command to launch unit tests
     <mpirun mpilib="mpich">
       <executable>mpiexec</executable>
       <arguments>
-	<arg name="anum_tasks"> -n {{ total_tasks }}</arg>
+        <arg name="anum_tasks"> -n {{ total_tasks }}</arg>
       </arguments>
     </mpirun>
     <module_system type="none">
@@ -1636,14 +1719,14 @@ This allows using a different mpirun command to launch unit tests
     <!-- PROJECT: A project or account number used for batch jobs
          This value is used for directory names. If different from
          actual accounting project id, use CHARGE_ACCOUNT
-	 can be overridden in environment or $HOME/.cime/config -->
+         can be overridden in environment or $HOME/.cime/config -->
     <!-- <PROJECT>couldbethis</PROJECT> -->
 
     <!-- CHARGE_ACCOUNT: A project or account number used for batch jobs
-	 This is the actual project used for cost accounting set in
+         This is the actual project used for cost accounting set in
          the batch script (ex. #PBS -A charge_account). Will default
          to PROJECT if not set.
-	 can be overridden in environment or $HOME/.cime/config -->
+         can be overridden in environment or $HOME/.cime/config -->
     <!-- <CHARGE_ACCOUNT>couldbethis</CHARGE_ACCOUNT> -->
     <CIME_OUTPUT_ROOT>/DFS-L/SCRATCH/moore/$USER/cesm_runs</CIME_OUTPUT_ROOT>
     <DIN_LOC_ROOT>/DFS-L/DATA/moore/cesm/inputdata</DIN_LOC_ROOT>
@@ -1664,13 +1747,13 @@ This allows using a different mpirun command to launch unit tests
       <!-- name of the exectuable used to launch mpi jobs -->
       <executable>mpirun</executable>
       <arguments>
-	<arg name="task_count">-np {{ total_tasks }}</arg>
+        <arg name="task_count">-np {{ total_tasks }}</arg>
       </arguments>
     </mpirun>
     <mpirun mpilib="openmpi">
       <executable>mpirun</executable>
       <arguments>
-	<arg name="task_count">-np {{ total_tasks }}</arg>
+        <arg name="task_count">-np {{ total_tasks }}</arg>
       </arguments>
     </mpirun>
     <module_system type="module">
@@ -1683,15 +1766,15 @@ This allows using a different mpirun command to launch unit tests
       <cmd_path lang="sh">module</cmd_path>
       <cmd_path lang="csh">module</cmd_path>
       <modules>
-	<command name="purge"/>
+        <command name="purge"/>
       </modules>
       <modules compiler="intel">
-	<command name="load">intel/2018.3</command>
-	<command name="load">netcdf/4.7.0</command>
+        <command name="load">intel/2018.3</command>
+        <command name="load">netcdf/4.7.0</command>
       </modules>
       <modules mpilib="openmpi">
-	<command name="load">openmpi/3.1.6</command>
-	<command name="load">pnetcdf/1.10.0</command>
+        <command name="load">openmpi/3.1.6</command>
+        <command name="load">pnetcdf/1.10.0</command>
       </modules>
     </module_system>
 <!-- environment variables, a blank entry will unset a variable -->
@@ -1716,14 +1799,14 @@ This allows using a different mpirun command to launch unit tests
     <!-- PROJECT: A project or account number used for batch jobs
          This value is used for directory names. If different from
          actual accounting project id, use CHARGE_ACCOUNT
-	 can be overridden in environment or $HOME/.cime/config -->
+         can be overridden in environment or $HOME/.cime/config -->
     <!-- <PROJECT>couldbethis</PROJECT> -->
 
     <!-- CHARGE_ACCOUNT: A project or account number used for batch jobs
-	 This is the actual project used for cost accounting set in
+         This is the actual project used for cost accounting set in
          the batch script (ex. #PBS -A charge_account). Will default
          to PROJECT if not set.
-	 can be overridden in environment or $HOME/.cime/config -->
+         can be overridden in environment or $HOME/.cime/config -->
     <!-- <CHARGE_ACCOUNT>couldbethis</CHARGE_ACCOUNT> -->
     <CIME_OUTPUT_ROOT>/DFS-L/SCRATCH/moore/$USER/cesm_runs</CIME_OUTPUT_ROOT>
     <DIN_LOC_ROOT>/DFS-L/DATA/moore/cesm/inputdata</DIN_LOC_ROOT>
@@ -1744,13 +1827,13 @@ This allows using a different mpirun command to launch unit tests
       <!-- name of the exectuable used to launch mpi jobs -->
       <executable>mpirun</executable>
       <arguments>
-	<arg name="task_count">-np {{ total_tasks }}</arg>
+        <arg name="task_count">-np {{ total_tasks }}</arg>
       </arguments>
     </mpirun>
     <mpirun mpilib="openmpi">
       <executable>mpirun</executable>
       <arguments>
-	<arg name="task_count">-np {{ total_tasks }}</arg>
+        <arg name="task_count">-np {{ total_tasks }}</arg>
       </arguments>
     </mpirun>
     <module_system type="module">
@@ -1763,15 +1846,15 @@ This allows using a different mpirun command to launch unit tests
       <cmd_path lang="sh">module</cmd_path>
       <cmd_path lang="csh">module</cmd_path>
       <modules>
-	<command name="purge"/>
+        <command name="purge"/>
       </modules>
       <modules compiler="intel">
-	<command name="load">intel/2018.3</command>
-	<command name="load">netcdf/4.7.0</command>
+        <command name="load">intel/2018.3</command>
+        <command name="load">netcdf/4.7.0</command>
       </modules>
       <modules mpilib="openmpi">
-	<command name="load">openmpi/3.1.6</command>
-	<command name="load">pnetcdf/1.10.0</command>
+        <command name="load">openmpi/3.1.6</command>
+        <command name="load">pnetcdf/1.10.0</command>
       </modules>
     </module_system>
 <!-- environment variables, a blank entry will unset a variable -->
@@ -3110,11 +3193,11 @@ This allows using a different mpirun command to launch unit tests
     <mpirun mpilib="default">
       <executable>aprun</executable>
       <arguments>
-	<arg name="num_tasks" >-n {{ total_tasks }}</arg>
-	<arg name="tasks_per_node" >-N {{ tasks_per_node }} </arg>
-	<arg name="thread_count">--cc depth -d $OMP_NUM_THREADS</arg>
-	<arg name="env_omp_stacksize">-e OMP_STACKSIZE=64M</arg>
-	<arg name="env_thread_count">-e OMP_NUM_THREADS=$OMP_NUM_THREADS</arg>
+        <arg name="num_tasks" >-n {{ total_tasks }}</arg>
+        <arg name="tasks_per_node" >-N {{ tasks_per_node }} </arg>
+        <arg name="thread_count">--cc depth -d $OMP_NUM_THREADS</arg>
+        <arg name="env_omp_stacksize">-e OMP_STACKSIZE=64M</arg>
+        <arg name="env_thread_count">-e OMP_NUM_THREADS=$OMP_NUM_THREADS</arg>
       </arguments>
     </mpirun>
     <module_system type="module">
@@ -3127,23 +3210,23 @@ This allows using a different mpirun command to launch unit tests
       <cmd_path lang="sh">module</cmd_path>
       <cmd_path lang="csh">module</cmd_path>
       <modules compiler="cray">
-	<command name="load">PrgEnv-cray/6.0.10</command>
-	<command name="switch">cce cce/12.0.3</command>
+        <command name="load">PrgEnv-cray/6.0.10</command>
+        <command name="switch">cce cce/12.0.3</command>
       </modules>
       <modules>
-	<command name="load">perftools-base</command>
-	<command name="swap">craype craype/2.7.10</command>
+        <command name="load">perftools-base</command>
+        <command name="swap">craype craype/2.7.10</command>
       </modules>
       <modules compiler="!intel">
-	<command name="switch">cray-libsci/20.09.1</command>
+        <command name="switch">cray-libsci/20.09.1</command>
       </modules>
       <modules>
-	<command name="load">cray-mpich/7.7.18</command>
+        <command name="load">cray-mpich/7.7.18</command>
       </modules>
       <modules mpilib="mpt">
-	<command name="load">cray-netcdf-hdf5parallel</command>
-	<command name="load">cray-hdf5-parallel</command>
-	<command name="load">cray-parallel-netcdf</command>
+        <command name="load">cray-netcdf-hdf5parallel</command>
+        <command name="load">cray-hdf5-parallel</command>
+        <command name="load">cray-parallel-netcdf</command>
       </modules>
     </module_system>
     <environment_variables comp_interface="nuopc">
@@ -3152,7 +3235,7 @@ This allows using a different mpirun command to launch unit tests
       <env name="ESMFMKFILE">/home/users/p62939/esmf/lib/libg/Unicos.cce.64.mpi.default/esmf.mk</env>
     </environment_variables>
   </machine>
-  
+
   <machine MACH="theia">
     <DESC>theia</DESC>
     <NODENAME_REGEX>tfe</NODENAME_REGEX>
