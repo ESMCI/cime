@@ -17,6 +17,10 @@ from distutils import file_util
 TESTS_FAILED_ERR_CODE = 100
 logger = logging.getLogger(__name__)
 
+# Fix to pass user defined `srcroot` to `CIME.XML.generic_xml.GenericXML`
+# where it's used to resolve $SRCROOT in XML config files.
+GLOBAL = {}
+
 def import_from_file(name, file_path):
     loader = importlib.machinery.SourceFileLoader(name, file_path)
 
@@ -279,12 +283,22 @@ def get_src_root():
     Return the absolute path to the root of SRCROOT.
 
     """
-    if os.path.isdir(os.path.join(get_cime_root(),"share")) and get_model() == "cesm":
-        srcroot = os.path.abspath(os.path.join(get_cime_root()))
+    cime_config = get_cime_config()
+
+    if "SRCROOT" in os.environ:
+        srcroot = os.environ["SRCROOT"]
+    elif cime_config.has_option("main", "srcroot"):
+        srcroot = cime_config.get("main", "srcroot")
+    elif "SRCROOT" in GLOBAL:
+        srcroot = GLOBAL["SRCROOT"]
     else:
-        srcroot = os.path.abspath(os.path.join(get_cime_root(),".."))
+        if os.path.isdir(os.path.join(get_cime_root(),"share")) and get_model() == "cesm":
+            srcroot = os.path.abspath(os.path.join(get_cime_root()))
+        else:
+            srcroot = os.path.abspath(os.path.join(get_cime_root(),".."))
 
     logger.debug( "SRCROOT is " + srcroot)
+
     return srcroot
 
 def get_cime_default_driver():
@@ -363,11 +377,8 @@ def get_model():
 
     # One last try
     if (model is None):
-        srcroot = None
-        if cime_config.has_section('main') and cime_config.has_option('main', 'SRCROOT'):
-            srcroot = cime_config.get('main','SRCROOT')
-        if srcroot is None:
-            srcroot = os.path.dirname(os.path.abspath(get_cime_root()))
+        srcroot = get_src_root()
+
         if os.path.isfile(os.path.join(srcroot, "Externals.cfg")):
             model = 'cesm'
             with open(os.path.join(srcroot, "Externals.cfg")) as fd:

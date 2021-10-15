@@ -5,7 +5,7 @@ Script to create a new CIME Case Control System (CSS) experimental case.
 """
 
 from CIME.Tools.standard_script_setup import *
-from CIME.utils         import expect, get_model, get_cime_config, get_cime_default_driver
+from CIME.utils         import expect, get_model, get_cime_config, get_cime_default_driver, get_src_root
 from CIME.case          import Case
 from argparse           import RawTextHelpFormatter
 
@@ -113,16 +113,11 @@ def parse_command_line(args, cimeroot, description):
     else:
         model = None
 
-    if cime_config and cime_config.has_option('main','SRCROOT'):
-        srcroot_default = cime_config.get('main', 'srcroot')
-    elif os.path.isdir(os.path.join(cimeroot,"share")) and model == "cesm":
-        srcroot_default=cimeroot
-    else:
-        srcroot_default = os.path.dirname(cimeroot)
+    srcroot_default = get_src_root()
 
     parser.add_argument("--srcroot", default=srcroot_default,
                         help="Alternative pathname for source root directory. "
-                        "The default is cimeroot/../")
+                        f"The default is {srcroot_default}")
 
     parser.add_argument("--output-root",
                         help="Alternative pathname for the directory where case output is written.")

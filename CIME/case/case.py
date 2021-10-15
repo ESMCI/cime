@@ -11,6 +11,7 @@ import glob, os, shutil, math, CIME.six, time, hashlib, socket, getpass
 from CIME.XML.standard_module_setup import *
 #pylint: disable=import-error,redefined-builtin
 from CIME.six.moves import input
+from CIME                           import utils
 from CIME.utils                     import expect, get_cime_root, append_status
 from CIME.utils                     import convert_to_type, get_model, set_model
 from CIME.utils                     import get_project, get_charge_account, check_name
@@ -100,6 +101,12 @@ class Case(object):
         self._comp_interface = None
 
         self.read_xml()
+
+        srcroot = self.get_value("SRCROOT")
+
+        # Propagate `srcroot` to `GenericXML` to resolve $SRCROOT
+        if srcroot is not None:
+            utils.GLOBAL["SRCROOT"] = srcroot
 
         if record:
             self.record_cmd()
@@ -1765,6 +1772,10 @@ directory, NOT in this subdirectory."""
             self.set_lookup_value("CASEROOT", self._caseroot)
             self.set_lookup_value("SRCROOT", srcroot)
             self.set_lookup_value("CASE_HASH", self.new_hash())
+
+            # Propagate to `GenericXML` to resolve $SRCROOT
+            utils.GLOBAL["SRCROOT"] = srcroot
+            
             # If any of the top level user_mods_dirs contain a config_grids.xml file and
             # gridfile was not set on the command line, use it. However, if there are
             # multiple user_mods_dirs, it is an error for more than one of them to contain

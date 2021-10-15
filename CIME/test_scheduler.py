@@ -15,6 +15,7 @@ from collections import OrderedDict
 from CIME.XML.standard_module_setup import *
 import CIME.six
 from CIME.get_tests import get_recommended_test_time, get_build_groups
+from CIME import utils
 from CIME.utils import append_status, append_testlog, TESTS_FAILED_ERR_CODE, parse_test_name, get_full_test_name, get_model, \
     convert_to_seconds, get_cime_root, get_project, get_timestamp, get_cime_default_driver, get_template_path
 from CIME.test_status import *
@@ -455,9 +456,11 @@ class TestScheduler(object):
             machine, compiler, test_mods = parse_test_name(test)
 
         os.environ["FROM_CREATE_TEST"] = "True"
-        create_newcase_cmd = "{} --case {} --res {} --compset {}"\
-                             " --test".format(os.path.join(self._cime_root, "scripts", "create_newcase"),
-                                              test_dir, grid, compset)
+        create_newcase_cmd = "{} {} --case {} --res {} --compset {} --test".format(
+            sys.executable,
+            os.path.join(self._cime_root, "CIME", "scripts", "create_newcase.py"),
+            test_dir, grid, compset)
+
         if machine is not None:
             create_newcase_cmd += " --machine {}".format(machine)
         if compiler is not None:
@@ -472,9 +475,10 @@ class TestScheduler(object):
             create_newcase_cmd += " --non-local"
         if self._workflow:
             create_newcase_cmd += " --workflow {}".format(self._workflow)
-
         if self._pesfile is not None:
             create_newcase_cmd += " --pesfile {} ".format(self._pesfile)
+
+        create_newcase_cmd += f" --srcroot {utils.get_src_root()}"
 
         mpilib = None
         ninst = 1

@@ -692,7 +692,7 @@ CMAKE_OPTS += -Wno-dev -D CMAKE_Fortran_FLAGS:STRING="$(FFLAGS) $(EXTRA_PIO_FPPD
 	      -D GPTL_PATH:STRING=$(INSTALL_SHAREDPATH) \
 	      -D PIO_ENABLE_TESTS:BOOL=OFF \
 	      -D PIO_USE_MALLOC:BOOL=ON \
-	      -D USER_CMAKE_MODULE_PATH:LIST="$(CIMEROOT)/src/CMake;$(EXTERN_PATH)/parallelio/cmake"
+	      -D USER_CMAKE_MODULE_PATH:LIST="$(CIMEROOT)/CIME/data/CMake;$(EXTERN_PATH)/parallelio/cmake"
 
 ifeq ($(DEBUG), TRUE)
   CMAKE_OPTS += -D PIO_ENABLE_LOGGING=ON
@@ -967,7 +967,7 @@ $(COMPLIB): $(OBJS)
 	$(CXX) -c $(INCLDIR) $(INCS) $(CXXFLAGS)  $<
 
 %.F90: %.F90.in
-	$(CIMEROOT)/src/externals/genf90/genf90.pl $< > $@
+	$(CIMEROOT)/CIME/data/genf90/genf90.pl $< > $@
 
 clean_dependsatm:
 	$(RM) -f $(EXEROOT)/atm/obj/Srcfiles

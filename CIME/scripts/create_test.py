@@ -29,6 +29,7 @@ https://github.com/ESMCI/cime
 from CIME.Tools.standard_script_setup import *
 from CIME import get_tests
 from CIME.test_scheduler import TestScheduler, RUN_PHASE
+from CIME                import utils
 from CIME.utils          import expect, convert_to_seconds, compute_total_time, convert_to_babylonian_time, run_cmd_no_fail, get_cime_config
 from CIME.XML.machines   import Machines
 from CIME.case           import Case
@@ -307,6 +308,12 @@ def parse_command_line(args, description):
     parser.add_argument("--chksum", action="store_true",
                         help="Verifies input data checksums.")
 
+    srcroot_default = utils.get_src_root()
+
+    parser.add_argument("--srcroot", default=srcroot_default,
+                        help="Alternative pathname for source root directory. "
+                        f"The default is {srcroot_default}")
+
     CIME.utils.add_mail_type_args(parser)
 
     args = CIME.utils.parse_args_and_handle_standard_logging_options(args, parser)
@@ -374,6 +381,10 @@ def parse_command_line(args, description):
     if args.testfile is not None:
         with open(args.testfile, "r") as fd:
             args.testargs.extend( [line.strip() for line in fd.read().splitlines() if line.strip() and not line.startswith('#')] )
+
+    # Propagate `srcroot` to `GenericXML` to resolve $SRCROOT
+    # See call to `Machines` below
+    utils.GLOBAL["SRCROOT"] = args.srcroot
 
     # Compute list of fully-resolved test_names
     test_extra_data = {}
