@@ -545,9 +545,13 @@ This allows using a different mpirun command to launch unit tests
       <modules mpilib="mpich">
         <command name="unload">cray-netcdf</command>
         <command name="unload">cray-hdf5</command>
+<!--  Due to a bug in romio these are not working
         <command name="load">cray-netcdf-hdf5parallel</command>
         <command name="load">cray-hdf5-parallel</command>
-        <command name="load">cray-parallel-netcdf</command>
+        <command name="load">cray-parallel-netcdf</command> -->
+        <command name="load">cray-hdf5</command>
+        <command name="load">cray-netcdf</command>
+
       </modules>
       <modules mpilib="mpi-serial">
         <command name="unload">cray-netcdf-hdf5parallel</command>
