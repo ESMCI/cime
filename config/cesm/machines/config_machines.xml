@@ -563,7 +563,18 @@ This allows using a different mpirun command to launch unit tests
     <environment_variables comp_interface="nuopc">
       <env name="ESMF_RUNTIME_PROFILE">ON</env>
       <env name="ESMF_RUNTIME_PROFILE_OUTPUT">SUMMARY</env>
-      <env name="ESMFMKFILE">/home/users/p62939/esmf/lib/libg/Unicos.cce.64.mpi.default/esmf.mk</env>
+    </environment_variables>
+    <environment_variables comp_interface="nuopc" compiler="cray">
+      <env name="ESMFMKFILE">/glade/work/jedwards/CPE/lib/libg/Unicos.cce.64.mpi.default/esmf.mk</env>
+    </environment_variables>
+    <environment_variables comp_interface="nuopc" compiler="gnu">
+      <env name="ESMFMKFILE">/glade/work/jedwards/CPE/lib/libg/Unicos.gfortran.64.mpi.default/esmf.mk</env>
+    </environment_variables>
+    <environment_variables  compiler="cray">
+      <env name="PKG_CONFIG_PATH">/opt/cray/pe/mpich/8.1.6.55/ucx/cray/10.0/lib/pkgconfig/:$ENV{PKG_CONFIG_PATH}</env>
+    </environment_variables>
+    <environment_variables  compiler="gnu">
+      <env name="PKG_CONFIG_PATH">/opt/cray/pe/mpich/8.1.6.55/ucx/gnu/9.1/lib/pkgconfig/:$ENV{PKG_CONFIG_PATH}</env>
     </environment_variables>
   </machine>
 
