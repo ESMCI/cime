@@ -23,7 +23,7 @@ See <a href="http://esmci.github.io/cime">esmci.github.io/cime</a>
 Jim Edwards (NCAR), Jim Foucar (SNL)
 
 ## Also Developed by
-Alice Bertini (NCAR), Tony Craig (NCAR), Michael Deakin (SNL), Chris Fischer (NCAR), Erich Foster (SNL), Steve Goldhaber (NCAR), Robert Jacob (ANL), Mike Levy (NCAR), Bill Sacks (NCAR), Andrew Salinger (SNL), Sean Santos (NCAR), Jason Sarich (ANL), Mariana Vertenstein (NCAR), Andreas Wilke (ANL).
+Alice Bertini (NCAR), Jason Boutte (LLNL), Tony Craig (NCAR), Michael Deakin (SNL), Chris Fischer (NCAR), Erich Foster (SNL), Steve Goldhaber (NCAR), Robert Jacob (ANL), Mike Levy (NCAR), Bill Sacks (NCAR), Andrew Salinger (SNL), Sean Santos (NCAR), Jason Sarich (ANL), Mariana Vertenstein (NCAR), Andreas Wilke (ANL).
 
 # Acknowledgements
 
