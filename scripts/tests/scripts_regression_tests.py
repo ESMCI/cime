@@ -382,7 +382,7 @@ class J_TestCreateNewcase(unittest.TestCase):
         self.assertTrue(os.path.exists(os.path.join(testdir, "case.setup")))
 
         run_cmd_assert_result(self, "./case.setup", from_dir=testdir)
-        run_cmd_assert_result(self, "./case.build", from_dir=testdir)
+        run_cmd_assert_result(self, "./case.build --skip-provenance-check", from_dir=testdir)
 
         with Case(testdir, read_only=False) as case:
             ntasks = case.get_value("NTASKS_ATM")
@@ -393,12 +393,12 @@ class J_TestCreateNewcase(unittest.TestCase):
                               from_dir=testdir, expected_stat=1)
 
         run_cmd_assert_result(self, "./case.setup --reset", from_dir=testdir)
-        run_cmd_assert_result(self, "./case.build", from_dir=testdir)
+        run_cmd_assert_result(self, "./case.build --skip-provenance-check", from_dir=testdir)
         with Case(testdir, read_only=False) as case:
             case.set_value("CHARGE_ACCOUNT", "fred")
 
         # this should not fail with a locked file issue
-        run_cmd_assert_result(self, "./case.build", from_dir=testdir)
+        run_cmd_assert_result(self, "./case.build --skip-provenance-check", from_dir=testdir)
 
         run_cmd_assert_result(self, "./case.st_archive --test-all", from_dir=testdir)
 
@@ -611,7 +611,7 @@ class J_TestCreateNewcase(unittest.TestCase):
 
         run_cmd_assert_result(self, "%s/create_newcase %s"%(SCRIPT_DIR, args), from_dir=SCRIPT_DIR)
         run_cmd_assert_result(self, "./case.setup", from_dir=testdir)
-        run_cmd_assert_result(self, "./case.build", from_dir=testdir)
+        run_cmd_assert_result(self, "./case.build --skip-provenance-check", from_dir=testdir)
 
         cls._do_teardown.append(testdir)
 
@@ -2553,7 +2553,7 @@ class K_TestCimeCase(TestCreateTestCommon):
 
         run_cmd_assert_result(self, "./xmlchange CCSM_CPRNC=this_is_a_broken_cprnc",
                               from_dir=casedir)
-        run_cmd_assert_result(self, "./case.build", from_dir=casedir)
+        run_cmd_assert_result(self, "./case.build --skip-provenance-check", from_dir=casedir)
         run_cmd_assert_result(self, "./case.submit", from_dir=casedir)
 
         self._wait_for_tests(self._baseline_name, always_wait=True)
@@ -2604,7 +2604,7 @@ class G_TestBuildSystem(TestCreateTestCommon):
         run_cmd_assert_result(self, "./case.build --clean atm", from_dir=casedir)
         run_cmd_assert_result(self, "./case.build --clean gptl", from_dir=casedir)
 
-        run_cmd_assert_result(self, "./case.build", from_dir=casedir)
+        run_cmd_assert_result(self, "./case.build --skip-provanence-check", from_dir=casedir)
 
 ###############################################################################
 class L_TestSaveTimings(TestCreateTestCommon):

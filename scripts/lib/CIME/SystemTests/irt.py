@@ -7,6 +7,7 @@ This test the model's restart capability as well as the short term archiver's in
 (3) Recover first interim restart to the case2 run directory
 (4) Start case2 from restart and run to the end of case1
 (5) compare results.
+(6) this test does not save or compare history files in baselines.
 
 """
 
