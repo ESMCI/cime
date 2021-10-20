@@ -661,8 +661,8 @@ This allows using a different mpirun command to launch unit tests
         <command name="load">netcdf-mpi/4.7.4</command>
       </modules>
       <modules mpilib="openmpi" compiler="gnu">
-        <command name="load">openmpi/3.1.4</command>
-        <command name="load">netcdf/4.7.1</command>
+        <command name="load">openmpi/4.1.0</command>
+        <command name="load">netcdf-mpi/4.8.0</command>
       </modules>
       <modules>
         <command name="load">ncarcompilers/0.5.0</command>
@@ -2992,6 +2992,71 @@ This allows using a different mpirun command to launch unit tests
     </environment_variables>
   </machine>
 
+  <machine MACH="swan">
+    <DESC>Cray test platform </DESC>
+    <NODENAME_REGEX>swan.*</NODENAME_REGEX>
+    <OS>CNL</OS>
+    <COMPILERS>cray, intel</COMPILERS>
+    <MPILIBS>mpt</MPILIBS>
+<!--    <PROJECT></PROJECT> -->
+    <CIME_OUTPUT_ROOT>/lus/scratch/$USER</CIME_OUTPUT_ROOT>
+    <DIN_LOC_ROOT>/lus/scratch/$USER/inputdata</DIN_LOC_ROOT>
+    <DIN_LOC_ROOT_CLMFORC>/lus/scratch/$USER/inputdata/atm/datm7</DIN_LOC_ROOT_CLMFORC>
+    <DOUT_S_ROOT>$CIME_OUTPUT_ROOT/archive/$CASE</DOUT_S_ROOT>
+    <BASELINE_ROOT>/lus/scratch/$USER/cesm/baselines</BASELINE_ROOT>
+    <CCSM_CPRNC>/lus/scratch/$USER/cesm/tools/cprnc/cprnc</CCSM_CPRNC>
+    <GMAKE_J>8</GMAKE_J>
+    <BATCH_SYSTEM>pbs</BATCH_SYSTEM>
+    <SUPPORTED_BY>jedwards</SUPPORTED_BY>
+    <MAX_TASKS_PER_NODE>64</MAX_TASKS_PER_NODE>
+    <MAX_MPITASKS_PER_NODE>64</MAX_MPITASKS_PER_NODE>
+    <PROJECT_REQUIRED>FALSE</PROJECT_REQUIRED>
+    <mpirun mpilib="default">
+      <executable>aprun</executable>
+      <arguments>
+	<arg name="num_tasks" >-n {{ total_tasks }}</arg>
+	<arg name="tasks_per_node" >-N {{ tasks_per_node }} </arg>
+	<arg name="thread_count">--cc depth -d $OMP_NUM_THREADS</arg>
+	<arg name="env_omp_stacksize">-e OMP_STACKSIZE=64M</arg>
+	<arg name="env_thread_count">-e OMP_NUM_THREADS=$OMP_NUM_THREADS</arg>
+      </arguments>
+    </mpirun>
+    <module_system type="module">
+      <init_path lang="perl">/opt/modules/default/init/perl.pm</init_path>
+      <init_path lang="python">/opt/modules/default/init/python.py</init_path>
+      <init_path lang="sh">/opt/modules/default/init/sh</init_path>
+      <init_path lang="csh">/opt/modules/default/init/csh</init_path>
+      <cmd_path lang="perl">/opt/modules/default/bin/modulecmd perl</cmd_path>
+      <cmd_path lang="python">/opt/modules/default/bin/modulecmd python</cmd_path>
+      <cmd_path lang="sh">module</cmd_path>
+      <cmd_path lang="csh">module</cmd_path>
+      <modules compiler="cray">
+	<command name="load">PrgEnv-cray/6.0.10</command>
+	<command name="switch">cce cce/12.0.3</command>
+      </modules>
+      <modules>
+	<command name="load">perftools-base</command>
+	<command name="swap">craype craype/2.7.10</command>
+      </modules>
+      <modules compiler="!intel">
+	<command name="switch">cray-libsci/20.09.1</command>
+      </modules>
+      <modules>
+	<command name="load">cray-mpich/7.7.18</command>
+      </modules>
+      <modules mpilib="mpt">
+	<command name="load">cray-netcdf-hdf5parallel</command>
+	<command name="load">cray-hdf5-parallel</command>
+	<command name="load">cray-parallel-netcdf</command>
+      </modules>
+    </module_system>
+    <environment_variables comp_interface="nuopc">
+      <env name="ESMF_RUNTIME_PROFILE">ON</env>
+      <env name="ESMF_RUNTIME_PROFILE_OUTPUT">SUMMARY</env>
+      <env name="ESMFMKFILE">/home/users/p62939/esmf/lib/libg/Unicos.cce.64.mpi.default/esmf.mk</env>
+    </environment_variables>
+  </machine>
+  
   <machine MACH="theia">
     <DESC>theia</DESC>
     <NODENAME_REGEX>tfe</NODENAME_REGEX>

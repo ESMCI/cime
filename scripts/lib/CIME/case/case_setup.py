@@ -3,6 +3,8 @@ Library for case.setup.
 case_setup is a member of class Case from file case.py
 """
 
+import os
+
 from CIME.XML.standard_module_setup import *
 
 from CIME.XML.machines      import Machines
@@ -14,7 +16,7 @@ from CIME.utils             import transform_vars
 from CIME.test_status       import *
 from CIME.locked_files      import unlock_file, lock_file
 
-import errno, shutil
+import errno, shutil, glob
 
 logger = logging.getLogger(__name__)
 
@@ -113,12 +115,12 @@ def _get_user_nl_list(case, default_nlfile, model_dir):
         return [default_nlfile]
 
 ###############################################################################
-def _create_macros_e3sm(caseroot, srcroot, mach_obj, compiler):
+def _create_macros_cmake(caseroot, cmake_macros_dir, mach_obj, compiler, case_cmake_path):
 ###############################################################################
     if not os.path.isfile("Macros.cmake"):
-        safe_copy(os.path.join(srcroot, "cime_config/machines/cmake_macros/Macros.cmake"), caseroot)
+        safe_copy(os.path.join(cmake_macros_dir, "Macros.cmake"), caseroot)
     if not os.path.exists("cmake_macros"):
-        shutil.copytree(os.path.join(srcroot, "cime_config/machines/cmake_macros"), os.path.join(caseroot, "cmake_macros"))
+        shutil.copytree(cmake_macros_dir, case_cmake_path)
 
     copy_depends_files(mach_obj.get_machine_name(), mach_obj.machines_dir, caseroot, compiler)
 
@@ -130,8 +132,10 @@ def _create_macros(case, mach_obj, caseroot, compiler, mpilib, debug, comp_inter
     and env_mach_specific.xml if they don't already exist.
     """
     reread = not os.path.isfile("env_mach_specific.xml")
-    srcroot = case.get_value("SRCROOT")
-    new_cmake_macro = os.path.join(srcroot, "cime_config/machines/cmake_macros/Macros.cmake")
+    new_cmake_macros_dir = case.get_value("CMAKE_MACROS_DIR")
+
+    if new_cmake_macros_dir:
+        new_cmake_macro = os.path.join(new_cmake_macros_dir,"Macros.cmake")
     if reread:
         case.flush()
         generate_env_mach_specific(
@@ -139,9 +143,31 @@ def _create_macros(case, mach_obj, caseroot, compiler, mpilib, debug, comp_inter
             sysos, False, threaded=case.get_build_threaded(), noenv=True,)
         case.read_xml()
 
-    # export E3SM_NO_CMAKE_MACRO=1 to disable new macros
-    if get_model() == "e3sm" and os.path.exists(new_cmake_macro) and not "E3SM_NO_CMAKE_MACRO" in os.environ:
-        _create_macros_e3sm(caseroot, srcroot, mach_obj, compiler)
+    # export CIME_NO_CMAKE_MACRO=1 to disable new macros
+    if os.path.exists(new_cmake_macro) and not "CIME_NO_CMAKE_MACRO" in os.environ:
+        case_cmake_path = os.path.join(caseroot, "cmake_macros")
+
+        _create_macros_cmake(caseroot, new_cmake_macros_dir, mach_obj, compiler, case_cmake_path)
+        # check for macros in extra_machines_dir and in .cime
+        local_macros = []
+        extra_machdir = case.get_value("EXTRA_MACHDIR")
+        if extra_machdir: 
+            if os.path.isdir(os.path.join(extra_machdir,"cmake_macros")):
+                local_macros.extend(glob.glob(os.path.join(extra_machdir,"cmake_macros/*.cmake")))
+            elif os.path.isfile(os.path.join(extra_machdir,"config_compilers.xml")):
+                logger.warning("WARNING: Found directory {} but no cmake macros within, set env variable CIME_NO_CMAKE_MACRO to use deprecated config_compilers method".format(extra_machdir))
+        dotcime = None
+        home = os.environ.get("HOME")
+        if home:
+            dotcime = os.path.join(home,".cime")
+        if dotcime and os.path.isdir(dotcime):
+            local_macros.extend(glob.glob(dotcime+"/*.cmake"))
+
+        for macro in local_macros:
+            safe_copy(macro, case_cmake_path)
+        if dotcime and os.path.isfile(os.path.join(dotcime,"config_compilers.xml")) and not local_macros:
+            logger.warning("WARNING: Found directory {} but no cmake macros within, set env variable CIME_NO_CMAKE_MACRO to use deprecated config_compilers method".format(dotcime))
+
     else:
         if not os.path.isfile("Macros.make"):
             configure(mach_obj,
