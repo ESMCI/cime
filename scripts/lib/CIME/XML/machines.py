@@ -167,12 +167,12 @@ class Machines(GenericXML):
 
         for node in nodes:
             machtocheck = self.get(node, "MACH")
-            logger.info("machine is " + machtocheck)
+            logger.debug("machine is " + machtocheck)
             regex_str_node = self.get_optional_child("NODENAME_REGEX", root=node)
             regex_str = machtocheck if regex_str_node is None else self.text(regex_str_node)
             
             if regex_str is not None:
-                logger.info("machine regex string is " + regex_str)
+                logger.debug("machine regex string is " + regex_str)
                 # an environment variable can be used
                 if regex_str.startswith("$ENV"):
                     machine = self.get_resolved_value(regex_str, allow_unresolved_envvars=True)
