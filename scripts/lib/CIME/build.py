@@ -22,6 +22,27 @@ _CMD_ARGS_FOR_BUILD = \
      "CAM_CONFIG_OPTS", "COMP_LND", "COMPARE_TO_NUOPC", "HOMME_TARGET",
      "OCN_SUBMODEL", "CISM_USE_TRILINOS", "USE_TRILINOS", "USE_ALBANY", "USE_PETSC")
 
+def get_makefile_vars(case, caseroot, comp=None):
+    """
+    Run cmake and process output to a list of variable settings
+    """
+    cmake_args = get_standard_cmake_args(case, "DO_NOT_USE", shared_lib=True)
+    dcomp = "-DCOMP_NAME={}".format(comp) if comp else ""
+    output = run_cmd_no_fail("cmake -DCONVERT_TO_MAKE=ON {dcomp} {cmake_args} .".format(dcomp=dcomp, cmake_args=cmake_args),
+                             combine_output=True, from_dir=os.path.join(caseroot, "cmaketmp"))
+
+    lines_to_keep = []
+    for line in output.splitlines():
+        if "CIME_SET_MAKEFILE_VAR" in line and "BUILD_INTERNAL_IGNORE" not in line:
+            lines_to_keep.append(line)
+
+    output_to_keep = "\n".join(lines_to_keep) + "\n"
+    output_to_keep = output_to_keep.replace("CIME_SET_MAKEFILE_VAR ", "").\
+                     replace("CPPDEFS := ", "CPPDEFS := $(CPPDEFS) ").\
+                     replace("SLIBS := ", "SLIBS := $(SLIBS) ") + "\n"
+
+    return output_to_keep
+
 def generate_makefile_macro(case, caseroot):
     """
     Generates a flat Makefile macro file based on the CMake cache system.
@@ -42,24 +63,26 @@ def generate_makefile_macro(case, caseroot):
     cmake_macro = os.path.join(caseroot, "Macros.cmake")
     expect(os.path.exists(cmake_macro), "Cannot generate Makefile macro without {}".format(cmake_macro))
 
-    cmake_args = get_standard_cmake_args(case, "DO_NOT_USE", shared_lib=True)
     # run once with no COMP_NAME
-    output = run_cmd_no_fail("cmake -DCONVERT_TO_MAKE=ON {} . 2>&1 | grep CIME_SET_MAKEFILE_VAR | grep -v BUILD_INTERNAL_IGNORE".format(cmake_args), from_dir=os.path.join(caseroot,"cmaketmp"))
-    real_output = output.replace("CIME_SET_MAKEFILE_VAR ", "").\
-                  replace("CPPDEFS := ", "CPPDEFS := $(CPPDEFS) ").\
-                  replace("SLIBS := ", "SLIBS := $(SLIBS) ") + "\n"
-    base_output = real_output.splitlines()
+    no_comp_output = get_makefile_vars(case, caseroot)
+    all_output     = no_comp_output
+    no_comp_lines  = no_comp_output.splitlines()
+
     for comp in comps:
-        output = run_cmd_no_fail("cmake -DCOMP_NAME={comp} -DCONVERT_TO_MAKE=ON {cmake_args} . 2>&1 | grep CIME_SET_MAKEFILE_VAR | grep -v BUILD_INTERNAL_IGNORE".format(comp=comp, cmake_args=cmake_args), from_dir=os.path.join(caseroot,"cmaketmp"))
+        comp_output = get_makefile_vars(case, caseroot, comp=comp)
         # The Tools/Makefile may have already adding things to CPPDEFS and SLIBS
-        comp_output = (output.replace("CIME_SET_MAKEFILE_VAR ", "").\
-                       replace("CPPDEFS := ", "CPPDEFS := $(CPPDEFS) ").\
-                       replace("SLIBS := ", "SLIBS := $(SLIBS) ")).splitlines()
-        for line in comp_output:
-            if line not in base_output:
-                real_output += "ifeq \"$(COMP_NAME)\" \"{}\"\n".format(comp)
-                real_output += "  "+line+"\n"
-                real_output += "\nendif\n"
+        comp_lines  = comp_output.splitlines()
+        first = True
+        for comp_line in comp_lines:
+            if comp_line not in no_comp_lines:
+                if first:
+                    all_output += "ifeq \"$(COMP_NAME)\" \"{}\"\n".format(comp)
+                    first = False
+
+                all_output += "  "+comp_line+"\n"
+
+        if not first:
+            all_output += "endif\n"
 
     with open(os.path.join(caseroot, "Macros.make"), "w") as fd:
         fd.write(
@@ -69,7 +92,7 @@ def generate_makefile_macro(case, caseroot):
 # can change flags for specific sharedlibs only by checking COMP_NAME.
 
 """)
-        fd.write(real_output)
+        fd.write(all_output)
 
     shutil.rmtree(os.path.join(caseroot,"cmaketmp"))
 
