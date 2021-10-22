@@ -1,4 +1,5 @@
 import unittest
+from sys import path; path.append('..')
 from paramgen import ParamGen
 
 class TestParamGen(unittest.TestCase):

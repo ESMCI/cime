@@ -1,0 +1,9 @@
+mom.input_data_list:
+    ocean_hgrid:
+        $OCN_GRID == "gx1v6":    "${INPUTDIR}/ocean_hgrid.nc"
+        $OCN_GRID == "tx0.66v1": "${INPUTDIR}/ocean_hgrid_180829.nc"
+        $OCN_GRID == "tx0.25v1": "${INPUTDIR}/ocean_hgrid.nc"
+    tempsalt:
+        $OCN_GRID in ["gx1v6", "tx0.66v1", "tx0.25v1"]:
+            $INIT_LAYERS_FROM_Z_FILE == "True":
+                "${INPUTDIR}/${TEMP_SALT_Z_INIT_FILE}"
