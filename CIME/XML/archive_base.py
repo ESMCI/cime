@@ -48,6 +48,15 @@ class ArchiveBase(GenericXML):
         """
         return self._get_file_node_text(['hist_file_extension'],archive_entry)
 
+    def get_hist_file_ext_regexes(self, archive_entry):
+        """
+        get the xml text associated with each of the hist_file_ext_regex entries
+        based at root archive_entry (root is based on component name)
+        returns a list of text entries or
+        an empty list if no entries are found
+        """
+        return self._get_file_node_text(['hist_file_ext_regex'],archive_entry)
+
     def get_entry_value(self, name, archive_entry):
         """
         get the xml text associated with name under root archive_entry
@@ -63,10 +72,11 @@ class ArchiveBase(GenericXML):
         get the most recent history files in directory from_dir with suffix if provided
         """
         test_hists = self.get_all_hist_files(casename, model, from_dir, suffix=suffix, ref_case=ref_case)
+        ext_regexes = self.get_hist_file_ext_regexes(self.get_entry(self._get_compname(model)))
         latest_files = {}
         histlist = []
         for hist in test_hists:
-            ext = _get_extension(model, hist)
+            ext = _get_extension(model, hist, ext_regexes)
             latest_files[ext] = hist
 
         for key in latest_files.keys():
@@ -78,9 +88,7 @@ class ArchiveBase(GenericXML):
         gets all history files in directory from_dir with suffix (if provided)
         ignores files with ref_case in the name if ref_case is provided
         """
-        dmodel = model
-        if model == "cpl":
-            dmodel = "drv"
+        dmodel = self._get_compname(model)
         # remove when component name is changed
         if model == "fv3gfs":
             model = "fv3"
@@ -119,38 +127,54 @@ class ArchiveBase(GenericXML):
 
         return hist_files
 
-def _get_extension(model, filepath):
+    @staticmethod
+    def _get_compname(model):
+        """
+        Given a model name, return a possibly-modified name for use as the compname argument
+        to get_entry
+        """
+        if model == "cpl":
+            return "drv"
+        return model
+
+def _get_extension(model, filepath, ext_regexes):
     r"""
     For a hist file for the given model, return what we call the "extension"
 
     model - The component model
     filepath - The path of the hist file
-    >>> _get_extension("cpl", "cpl.hi.nc")
+    ext_regexes - A list of model-specific regexes that are matched before falling back on
+        the general-purpose regex, r'\w+'. In many cases this will be an empty list,
+        signifying that we should just use the general-purpose regex.
+
+    >>> _get_extension("cpl", "cpl.hi.nc", [])
     'hi'
-    >>> _get_extension("cpl", "cpl.h.nc")
+    >>> _get_extension("cpl", "cpl.h.nc", [])
     'h'
-    >>> _get_extension("cpl", "cpl.h1.nc.base")
+    >>> _get_extension("cpl", "cpl.h1.nc.base", [])
     'h1'
-    >>> _get_extension("cpl", "TESTRUNDIFF.cpl.hi.0.nc.base")
+    >>> _get_extension("cpl", "TESTRUNDIFF.cpl.hi.0.nc.base", [])
     'hi'
-    >>> _get_extension("cpl", "TESTRUNDIFF_Mmpi-serial.f19_g16_rx1.A.melvin_gnu.C.fake_testing_only_20160816_164150-20160816_164240.cpl.h.nc")
+    >>> _get_extension("cpl", "TESTRUNDIFF_Mmpi-serial.f19_g16_rx1.A.melvin_gnu.C.fake_testing_only_20160816_164150-20160816_164240.cpl.h.nc", [])
     'h'
-    >>> _get_extension("clm","clm2_0002.h0.1850-01-06-00000.nc")
+    >>> _get_extension("clm","clm2_0002.h0.1850-01-06-00000.nc", [])
     '0002.h0'
-    >>> _get_extension("pop","PFS.f09_g16.B1850.cheyenne_intel.allactive-default.GC.c2_0_b1f2_int.pop.h.ecosys.nday1.0001-01-02.nc")
+    >>> _get_extension("pop","PFS.f09_g16.B1850.cheyenne_intel.allactive-default.GC.c2_0_b1f2_int.pop.h.ecosys.nday1.0001-01-02.nc", [])
     'h'
-    >>> _get_extension("mom", "ga0xnw.mom6.frc._0001_001.nc")
+    >>> _get_extension("mom", "ga0xnw.mom6.frc._0001_001.nc", [])
     'frc'
-    >>> _get_extension("mom", "ga0xnw.mom6.sfc.day._0001_001.nc")
+    >>> _get_extension("mom", "ga0xnw.mom6.sfc.day._0001_001.nc", [])
     'sfc.day'
-    >>> _get_extension("mom", "bixmc5.mom6.prog._0001_01_05_84600.nc")
+    >>> _get_extension("mom", "bixmc5.mom6.prog._0001_01_05_84600.nc", [])
     'prog'
-    >>> _get_extension("mom", "bixmc5.mom6.hm._0001_01_03_42300.nc")
+    >>> _get_extension("mom", "bixmc5.mom6.hm._0001_01_03_42300.nc", [])
     'hm'
-    >>> _get_extension("mom", "bixmc5.mom6.hmz._0001_01_03_42300.nc")
+    >>> _get_extension("mom", "bixmc5.mom6.hmz._0001_01_03_42300.nc", [])
     'hmz'
-    >>> _get_extension("pop", "casename.pop.dd.0001-01-02-00000")
+    >>> _get_extension("pop", "casename.pop.dd.0001-01-02-00000", [])
     'dd'
+    >>> _get_extension("cism", "casename.cism.gris.h.0002-01-01-0000.nc", [r"\w+\.\w+"])
+    'gris.h'
     """
     # Remove with component namechange
     if model == "fv3gfs":
@@ -161,7 +185,8 @@ def _get_extension(model, filepath):
         model = "ww3"
     basename = os.path.basename(filepath)
     m = None
-    ext_regexes = []
+    if ext_regexes is None:
+        ext_regexes = []
 
     # First add any model-specific extension regexes; these will be checked before the
     # general regex
