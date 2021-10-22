@@ -1,10 +1,7 @@
 """Auxiliary functions to be used in ParamGen and derived classes"""
 
-from __future__ import print_function
-from collections import OrderedDict
 import os
 import re
-import ast
 
 def is_number(var):
     """
@@ -91,7 +88,7 @@ def is_formula(expr):
     True
     """
 
-    return (isinstance(expr, str) and len(expr)>0 and expr.strip()[0]=='=')
+    return isinstance(expr, str) and len(expr)>0 and expr.strip()[0]=='='
 
 def has_unexpanded_var(expr):
     """
@@ -112,10 +109,7 @@ def has_unexpanded_var(expr):
     True
     """
 
-    if isinstance(expr,str) and re.search(r'(\$\w+|\${\w+\})',expr):
-        return True
-    else:
-        return False
+    return isinstance(expr,str) and re.search(r'(\$\w+|\${\w+\})',expr)
 
 def get_expandable_vars(expr):
     """
@@ -176,7 +170,8 @@ def _check_comparison_types(formula):
     try:
         eval(guard_test)
     except TypeError:
-        raise TypeError("The following formula may be comparing different types of variables: "+formula)
+        raise TypeError("The following formula may be comparing different types of variables: {}"\
+            .format(formula))
     return True
 
 def eval_formula(formula):

@@ -1,4 +1,6 @@
-import os, sys, re
+import os
+import sys
+import re
 from copy import deepcopy
 import logging
 import subprocess
@@ -10,7 +12,8 @@ except ModuleNotFoundError:
     from CIME.ParamGen.paramgen_utils import is_logical_expr, is_formula, has_unexpanded_var
     from CIME.ParamGen.paramgen_utils import eval_formula
 
-assert sys.version_info.major==3 and sys.version_info.minor>=6, "ParamGen requires Python 3.6 or later." 
+assert sys.version_info.major==3 and sys.version_info.minor>=6,\
+    "ParamGen requires Python 3.6 or later."
 
 logger = logging.getLogger(__name__)
 
@@ -105,8 +108,8 @@ class ParamGen():
     @classmethod
     def from_xml_nml(cls, input_path, match='last'):
         """
-        Reads in a given xml input file and initializes a ParamGen object. The XML file must conform to the
-        nml.xsd schema that's defined within ParamGen.
+        Reads in a given xml input file and initializes a ParamGen object. The XML file must
+        conform to the nml.xsd schema that's defined within ParamGen.
 
         Parameters
         ----------
@@ -123,22 +126,22 @@ class ParamGen():
         # First check whether the given xml file conforms to the nml.xsd schema
         from distutils.spawn import find_executable
         xmllint = find_executable("xmllint")
-        if xmllint == None:
+        if xmllint is None:
             logger.warning("Couldn't find xmllint. Skipping schema check")
         else:
             schema_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),'xml_schema','nml.xsd')
-            xmllint_cmd = "{} --xinclude --noout --schema {} {}".format(xmllint, schema_path, input_path) 
+            xmllint_cmd = "{} --xinclude --noout --schema {} {}".format(xmllint, schema_path, input_path)
             stat = subprocess.run(xmllint_cmd, shell=True, capture_output=True, text=True)
             assert stat.returncode == 0, "While checking file {} against nml schema, received following errmsg: {}"\
                     .format(input_path, stat.stderr)
 
         import xml.etree.ElementTree as ET
-    
+
         data = {}
         xml_tree = ET.parse(input_path)
         root = xml_tree.getroot()
 
-        # Loop over all entries (namelist variables) 
+        # Loop over all entries (namelist variables)
         for entry in list(root):
             # where each entry corresponds to a namelist variable, i.e., parameter
             param_name = entry.attrib['id']
@@ -156,7 +159,7 @@ class ParamGen():
                         if 'guard' in value.attrib:
                             guarded_vals = True
                             break
-                    
+
                     if guarded_vals:
                         for value in values:
                             if 'guard' in value.attrib:
@@ -207,7 +210,7 @@ class ParamGen():
         '1 + 2 == 3'
         """
 
-        if expand_func==None:
+        if expand_func is None:
             return expr # No expansion function is provided, so return.
 
         assert isinstance(expr, str), "Expression passed to _expand_vars must be string."
@@ -218,7 +221,7 @@ class ParamGen():
                 replace("{","").\
                 replace("}","")
             word_expanded = expand_func(word_stripped)
-            assert word_expanded!=None, "Cannot determine the value of the variable: "+word+"."
+            assert word_expanded is not None, "Cannot determine the value of the variable: {}.".format(word)
 
             # enclose with quotes if expanded var is a string and is expression sans curly braces
             if isinstance(word_expanded, str) and word[1]!='{':
@@ -226,7 +229,7 @@ class ParamGen():
             else:
                 word_expanded = str(word_expanded)
 
-            expr = re.sub(r'(\$\b'+word_stripped+r'\b|\${'+word_stripped+'\})',  word_expanded, expr)
+            expr = re.sub(r'(\$\b'+word_stripped+r'\b|\$\{'+word_stripped+r'\})',  word_expanded, expr)
 
         return expr
 
@@ -254,11 +257,10 @@ class ParamGen():
         keys_logical = [is_logical_expr(str(key)) for key in data_dict]
         if all(keys_logical):
             return True
-        elif any(keys_logical):
+        if any(keys_logical):
             raise RuntimeError("Only subset of the following are guarded entries, i.e., logical "+
                                 "expressions as keys:\n\t"+str(data_dict))
-        else:
-            return False
+        return False
 
     def _impose_guards(self, data_dict):
 
@@ -290,30 +292,28 @@ class ParamGen():
                     "guards can be evaluated.")
 
             guard_evaluated = eval_formula(guard)
-            assert type(guard_evaluated)==type(True), "Guard is not boolean: "+guard
+            assert isinstance(guard_evaluated, bool), "Guard is not boolean: {}".format(guard)
             return guard_evaluated
 
 
         if not ParamGen._is_guarded_dict(data_dict):
             return data_dict
-        else:
 
-            guards_eval_true = [] # list of guards that evaluate to true.
-            for guard in data_dict:
-                if guard=="else" or _eval_guard(str(guard)) == True:
-                    guards_eval_true.append(guard)
+        guards_eval_true = [] # list of guards that evaluate to true.
+        for guard in data_dict:
+            if guard=="else" or _eval_guard(str(guard)) is True:
+                guards_eval_true.append(guard)
 
-            if len(guards_eval_true)>1 and "else" in guards_eval_true:
-                guards_eval_true.remove("else")
-            elif len(guards_eval_true)==0:
-                return None
+        if len(guards_eval_true)>1 and "else" in guards_eval_true:
+            guards_eval_true.remove("else")
+        elif len(guards_eval_true)==0:
+            return None
 
-            if self._match == 'first':
-                return data_dict[guards_eval_true[0]]
-            elif self._match == 'last':
-                return data_dict[guards_eval_true[-1]]
-            else:
-                raise RuntimeError("Unknown match option.")
+        if self._match == 'first':
+            return data_dict[guards_eval_true[0]]
+        if self._match == 'last':
+            return data_dict[guards_eval_true[-1]]
+        raise RuntimeError("Unknown match option.")
 
 
     def _reduce_recursive(self, data_dict, expand_func=None):
@@ -323,7 +323,7 @@ class ParamGen():
 
         # (1) Expand variables in keys, .e.g, "$OCN_GRID" to "gx1v7":
         def _expand_vars_in_keys(data_dict):
-            if expand_func!=None:
+            if expand_func is not None:
                 new_data_dict  = {}
                 for key in data_dict:
                     new_key = key
@@ -331,8 +331,8 @@ class ParamGen():
                         new_key = ParamGen._expand_vars(key, expand_func)
                     new_data_dict[new_key] = data_dict[key]
                 return new_data_dict
-            else:
-                return data_dict
+            return data_dict
+
         data_dict = _expand_vars_in_keys(data_dict)
 
         # (2) Evaluate the keys if they are all logical expressions, i.e., guards.
@@ -395,20 +395,20 @@ class ParamGen():
         'b'
         """
 
-        assert callable(expand_func) or expand_func==None, "expand_func argument must be a function"
+        assert callable(expand_func) or expand_func is None, "expand_func argument must be a function"
         assert not self.reduced, "ParamGen data already reduced."
         assert not self.is_empty, "Empty ParamGen data."
 
         self._data = self._reduce_recursive(self._data, expand_func)
         self._reduced = True
 
-    def append(self, pg):
+    def append(self, pg_obj):
         """ Adds the data of a given ParamGen instance to the self data. If a data entry already exists in self,
             the value is overriden. Otherwise, the new data entry is simply added to self.
 
         Parameters
         ----------
-        pg: ParamGen object
+        pg_obj: ParamGen object
             A ParamGen instance whose data is to be appended to the self data
 
         Example
@@ -420,8 +420,8 @@ class ParamGen():
         {'a': 1, 'b': 3, 'c': 4}
         """
 
-        assert isinstance(pg,ParamGen), "can only append ParamGen to Paramgen"
-        assert self.reduced == pg.reduced, "Cannot append reduced ParamGen instance to unreduced, and vice versa."
+        assert isinstance(pg_obj,ParamGen), "can only append ParamGen to Paramgen"
+        assert self.reduced == pg_obj.reduced, "Cannot append reduced ParamGen instance to unreduced, and vice versa."
 
         def _append_recursive(old_dict, new_dict):
             for key, val in new_dict.items():
@@ -434,7 +434,7 @@ class ParamGen():
                 else:
                     old_dict[key] = new_dict[key]
 
-        _append_recursive(self._data, pg._data)
+        _append_recursive(self._data, pg_obj._data)
 
     def reset(self):
         """ Resets the ParamGen object to its initial state, i.e., undoes the reduce method.
@@ -468,7 +468,7 @@ class ParamGen():
             # grp is the namelist module name, while var is a dictionary corresponding to the vars in namelist
             assert isinstance(grp,str), "Invalid data format"
             assert isinstance(var,dict), "Invalid data format"
-            for vnm, vls in var.items():
+            for vls in var.values():
                 # vnm is the var name, and vls is its values element
                 assert isinstance(vls, dict), "Invalid data format"
                 for val in vls:
@@ -481,6 +481,6 @@ class ParamGen():
                 nml.write("&{}\n".format(module))
                 for var in self._data[module]:
                     val = str(self._data[module][var]['values']).strip()
-                    if val != None:
+                    if val is not None:
                         nml.write("    {} = {}\n".format(var,val))
                 nml.write("/\n\n")
