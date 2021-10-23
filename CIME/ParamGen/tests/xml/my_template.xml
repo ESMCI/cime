@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+
+<entry_id_pg version="0.1">
+
+  <entry id="foo">
+    <type>string</type>
+    <group>test_nml</group>
+    <desc>a dummy parameter for testing single key=value guards</desc>
+    <values>
+      <value>alpha</value>
+      <value cice_mode="thermo_only">beta</value>
+      <value cice_mode="prescribed">gamma</value>
+    </values>
+  </entry>
+
+  <entry id="bar">
+    <type>string</type>
+    <group>test_nml</group>
+    <desc>another dummy parameter for multiple key=value guards mixed with explicit (flexible) guards</desc>
+    <values>
+      <value some_int="2" some_bool="True" some_float="3.1415">delta</value>
+      <value guard='$ICE_GRID .startswith("gx1v")'>epsilon</value>
+    </values>
+  </entry>
+
+  <entry id="baz">
+    <type>string</type>
+    <group>test_nml</group>
+    <desc>parameter to test the case where there is no match</desc>
+    <values>
+      <value some_int="-9999">zeta</value>
+      <value guard='not $ICE_GRID .startswith("gx1v")'>eta</value>
+    </values>
+  </entry>
+
+  </entry_id_pg>

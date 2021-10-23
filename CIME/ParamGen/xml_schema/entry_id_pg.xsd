@@ -15,8 +15,8 @@
   <xs:element name="value">
     <xs:complexType>
       <xs:simpleContent>
-	      <xs:extension base="xs:string">
-          <xs:attribute ref="guard"/>
+        <xs:extension base="xs:string">
+	        <xs:anyAttribute processContents="lax"/>
 	      </xs:extension>
       </xs:simpleContent>
     </xs:complexType>

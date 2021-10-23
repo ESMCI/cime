@@ -50,7 +50,6 @@ class TestYamlConstructor(unittest.TestCase):
                 'tempsalt': '/foo/inputdata/ocn/mom/tx0.66v1/woa18_04_initial_conditions.nc'}
             }
         )
-        print(input_data_list.data)
 
 if __name__ == '__main__':
     unittest.main()
