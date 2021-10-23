@@ -136,10 +136,9 @@ class ParamGen():
                     .format(input_path, stat.stderr)
 
         import xml.etree.ElementTree as ET
-
-        data = {}
         xml_tree = ET.parse(input_path)
         root = xml_tree.getroot()
+        data = {}
 
         # Loop over all entries (namelist variables)
         for entry in list(root):
@@ -154,28 +153,26 @@ class ParamGen():
                     values = list(child)
 
                     # check if the values have logical guards as propositions
-                    guarded_vals = False
+                    guards = {}
                     for value in values:
                         if 'guard' in value.attrib:
-                            guarded_vals = True
-                            break
+                            assert len(value.attrib) == 1, "If an explicit guard attribute is provided for a value,"+\
+                                "no other attribute may be provided. Check parameter {}".format(param_name)
+                            guards[value] = value.attrib['guard']
+                        elif len(value.attrib)>0:
+                            guards[value] = ' and '.join(['"${{{}}}" == "{}"'.format(str(guard_var), str(guard_val)) \
+                                for guard_var, guard_val in value.attrib.items()])
+                        else:
+                            assert "else" not in guards.values(), "Multiple values with no guards (proposition)"+\
+                                "detected in variable {}".format(param_name)
+                            guards[value] = "else"
 
-                    if guarded_vals:
-                        for value in values:
-                            if 'guard' in value.attrib:
-                                # this is one the guarded values
-                                guard = value.attrib['guard']
-                                data[param_name]['values'][guard] = value.text.strip()
-                            else:
-                                # this is the default value (where the guard is inherently 'else')
-                                assert 'else' not in data[param_name]['values'], \
-                                    "In the values list of {}, there are more than one values that don't "\
-                                    "have a guard".format(param_name)
-                                data[param_name]['values']['else'] = value.text.strip()
-                    else:
-                        assert len(values) == 1, "The {} parameter has multiple alternative values defined but no "\
-                            "guards are provided".format(param_name)
+                    if len(values) == 1 and guards[values[0]] == 'else':
                         data[param_name]['values'] = list(values)[0].text.strip()
+                    else:
+                        for value, guard in guards.items():
+                            data[param_name]['values'][guard] = value.text.strip()
+
                 else:
                     # a child element other than the <values> element (.e.g, type, desc, group, etc.)
                     data[param_name][child.tag] = child.text.strip()
