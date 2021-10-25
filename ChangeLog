@@ -1,6 +1,197 @@
 ======================================================================
 
 Originator: Chris Fischer 
+Date: 10-25-2021
+Tag: cime6.0.10
+Answer Changes: [None, Round Off, Climate Changing]
+Tests: scripts_regression_tests
+Dependencies:
+
+Brief Summary:
+    - Update to Cheyenne to use ESMF_8_2_0_beta_snapshot_23.
+    - Remove reference to Argonne from License file.
+    - Remove debug print statements.
+    - Port to nersc perlmutter and CPE on cheyenne.
+    - config_archive changes for running CISM with multiple ice sheets.
+    - wpc erio improvement.
+    - Hot fix Makefile for cesm.
+    - Fixes copying user cmake files.
+    - Remove MODEL as a setting for the build system, use COM_NAME instead.
+    - Hot fix for scripts regression tests.
+    - Merge branch 'master' of github.com:/ESMCI/cime.
+    - Update Externals
+    - Hot fix for nuopc mpi-serial tests.
+    - Remove dependency of cprnc on non-existent COMPARE_VARS target.
+    - Add cmake macros.
+    - cime_bisect: Improve robustness when using custom script.
+    - Update PGN and TSC test scripts for E3SM.
+    - Fix limited github workflow nuopc scripts regression testing.
+    - Hot fix, add another cam target that uses kokkos.
+    - Hot fix for better cmake-macro toggling.
+    - Change E3SM to use cmake macro file system.
+
+User interface changes: 
+
+PR summary: git log --oneline --first-parent [previous_tag]..master
+1a77ba628 Merge pull request #4114 from ESMCI/fischer/ESMF_update
+3708b0e26 Merge pull request #4112 from ESMCI/fischer/license
+e6fb20994 hot fix, remove debug print statements
+adc6adc3f Merge pull request #4106 from jedwards4b/perlmutter_port
+c8af27966 Merge pull request #4101 from billsacks/remove_cism_config_archive
+7eeb2c8e6 Merge pull request #4109 from ESMCI/wpc_erio_improvement
+a26c8e393 hot fix Makefile for cesm
+fb5934c63 Merge pull request #4105 from jasonb5/fixes_user_cmake
+4a6b60438 Merge pull request #4104 from ESMCI/jgfouca/remove_MODEL_from_bld
+828fd3227 hot fix for scripts regression tests
+79159c14e Merge branch 'master' of github.com:/ESMCI/cime
+ea1597e79 update externals
+d6956db5c hot fix for nuopc mpi-serial test
+3d1be0ed6 Merge pull request #4098 from bartgol/bartgol/remove-compare-vars-dep
+2b6088308 Merge pull request #4093 from jedwards4b/replace_config_compilers_with_cmake_macros
+258737591 Merge pull request #4099 from ESMCI/jgfouca/imprv_cime_bisect
+802206017 Merge pull request #4092 from ESMCI/wlin/atm_pgn_tsc_tests
+c89e85d10 Merge pull request #4094 from ESMCI/fischer/nuopc_srt
+6a2cc11fd hotfix, add another cam target that uses kokkos
+fbb407916 Hotfix for better cmake-macro toggling
+86a0db6f3 Merge pull request #4088 from ESMCI/jgfouca/e3sm_cmake_macros
+
+
+Modified files: git diff --name-status [previous_tag]
+M	.github/workflows/srt_nuopc.yml
+M	CMakeLists.txt
+M	Externals.cfg
+M	LICENSE.TXT
+M	config/cesm/config_archive.xml
+M	config/cesm/config_files.xml
+M	config/cesm/config_grids.xml
+A	config/cesm/machines/cmake_macros/CMakeLists.txt
+A	config/cesm/machines/cmake_macros/CNL.cmake
+A	config/cesm/machines/cmake_macros/Darwin.cmake
+A	config/cesm/machines/cmake_macros/Macros.cmake
+A	config/cesm/machines/cmake_macros/arm.cmake
+A	config/cesm/machines/cmake_macros/armgcc.cmake
+A	config/cesm/machines/cmake_macros/athena.cmake
+A	config/cesm/machines/cmake_macros/bluewaters.cmake
+A	config/cesm/machines/cmake_macros/casper.cmake
+A	config/cesm/machines/cmake_macros/centos7-linux.cmake
+A	config/cesm/machines/cmake_macros/cheyenne.cmake
+A	config/cesm/machines/cmake_macros/container.cmake
+A	config/cesm/machines/cmake_macros/cray.cmake
+A	config/cesm/machines/cmake_macros/cray_daint.cmake
+A	config/cesm/machines/cmake_macros/euler2.cmake
+A	config/cesm/machines/cmake_macros/euler3.cmake
+A	config/cesm/machines/cmake_macros/euler4.cmake
+A	config/cesm/machines/cmake_macros/frontera.cmake
+A	config/cesm/machines/cmake_macros/gnu.cmake
+A	config/cesm/machines/cmake_macros/gnu_cheyenne.cmake
+A	config/cesm/machines/cmake_macros/gnu_coeus.cmake
+A	config/cesm/machines/cmake_macros/gnu_hobart.cmake
+A	config/cesm/machines/cmake_macros/gnu_homebrew.cmake
+A	config/cesm/machines/cmake_macros/gnu_melvin.cmake
+A	config/cesm/machines/cmake_macros/gnu_modex.cmake
+A	config/cesm/machines/cmake_macros/hobart.cmake
+A	config/cesm/machines/cmake_macros/ibm.cmake
+A	config/cesm/machines/cmake_macros/ibm_AIX.cmake
+A	config/cesm/machines/cmake_macros/ibm_BGQ.cmake
+A	config/cesm/machines/cmake_macros/ibm_mira.cmake
+A	config/cesm/machines/cmake_macros/intel.cmake
+A	config/cesm/machines/cmake_macros/intel_Darwin.cmake
+A	config/cesm/machines/cmake_macros/intel_aleph.cmake
+A	config/cesm/machines/cmake_macros/intel_athena.cmake
+A	config/cesm/machines/cmake_macros/intel_bluewaters.cmake
+A	config/cesm/machines/cmake_macros/intel_casper.cmake
+A	config/cesm/machines/cmake_macros/intel_cheyenne.cmake
+A	config/cesm/machines/cmake_macros/intel_constance.cmake
+A	config/cesm/machines/cmake_macros/intel_cori-haswell.cmake
+A	config/cesm/machines/cmake_macros/intel_cori-knl.cmake
+A	config/cesm/machines/cmake_macros/intel_eastwind.cmake
+A	config/cesm/machines/cmake_macros/intel_edison.cmake
+A	config/cesm/machines/cmake_macros/intel_euler2.cmake
+A	config/cesm/machines/cmake_macros/intel_euler3.cmake
+A	config/cesm/machines/cmake_macros/intel_euler4.cmake
+A	config/cesm/machines/cmake_macros/intel_greenplanet-sib29.cmake
+A	config/cesm/machines/cmake_macros/intel_greenplanet-sky24.cmake
+A	config/cesm/machines/cmake_macros/intel_hobart.cmake
+A	config/cesm/machines/cmake_macros/intel_izumi.cmake
+A	config/cesm/machines/cmake_macros/intel_laramie.cmake
+A	config/cesm/machines/cmake_macros/intel_lawrencium-lr2.cmake
+A	config/cesm/machines/cmake_macros/intel_lawrencium-lr3.cmake
+A	config/cesm/machines/cmake_macros/intel_sandiatoss3.cmake
+A	config/cesm/machines/cmake_macros/intel_stampede2-knl.cmake
+A	config/cesm/machines/cmake_macros/intel_stampede2-skx.cmake
+A	config/cesm/machines/cmake_macros/intel_theia.cmake
+A	config/cesm/machines/cmake_macros/intel_zeus.cmake
+A	config/cesm/machines/cmake_macros/izumi.cmake
+A	config/cesm/machines/cmake_macros/laramie.cmake
+A	config/cesm/machines/cmake_macros/lonestar5.cmake
+A	config/cesm/machines/cmake_macros/nag.cmake
+A	config/cesm/machines/cmake_macros/nvhpc-gpu.cmake
+A	config/cesm/machines/cmake_macros/nvhpc-gpu_casper.cmake
+A	config/cesm/machines/cmake_macros/nvhpc.cmake
+A	config/cesm/machines/cmake_macros/nvhpc_casper.cmake
+A	config/cesm/machines/cmake_macros/pgi-gpu.cmake
+A	config/cesm/machines/cmake_macros/pgi-gpu_casper.cmake
+A	config/cesm/machines/cmake_macros/pgi.cmake
+A	config/cesm/machines/cmake_macros/pgi_bluewaters.cmake
+A	config/cesm/machines/cmake_macros/pgi_casper.cmake
+A	config/cesm/machines/cmake_macros/pgi_cheyenne.cmake
+A	config/cesm/machines/cmake_macros/pgi_constance.cmake
+A	config/cesm/machines/cmake_macros/pgi_daint.cmake
+A	config/cesm/machines/cmake_macros/pgi_eastwind.cmake
+A	config/cesm/machines/cmake_macros/pgi_euler2.cmake
+A	config/cesm/machines/cmake_macros/pgi_euler3.cmake
+A	config/cesm/machines/cmake_macros/pgi_euler4.cmake
+A	config/cesm/machines/cmake_macros/pgi_hobart.cmake
+A	config/cesm/machines/cmake_macros/pgi_izumi.cmake
+A	config/cesm/machines/cmake_macros/pgi_olympus.cmake
+A	config/cesm/machines/cmake_macros/pleiades-bro.cmake
+A	config/cesm/machines/cmake_macros/pleiades-has.cmake
+A	config/cesm/machines/cmake_macros/pleiades-ivy.cmake
+A	config/cesm/machines/cmake_macros/pleiades-san.cmake
+A	config/cesm/machines/cmake_macros/stampede2-knl.cmake
+A	config/cesm/machines/cmake_macros/stampede2-skx.cmake
+A	config/cesm/machines/cmake_macros/theta.cmake
+A	config/cesm/machines/cmake_macros/universal.cmake
+A	config/cesm/machines/cmake_macros/userdefined.cmake
+A	config/cesm/machines/cmake_macros/zeus.cmake
+M	config/cesm/machines/config_batch.xml
+M	config/cesm/machines/config_compilers.xml
+M	config/cesm/machines/config_machines.xml
+M	config/config_tests.xml
+M	config/e3sm/config_files.xml
+M	config/xml_schemas/config_archive.xsd
+M	doc/source/users_guide/cime-config.rst
+M	doc/source/users_guide/machine.rst
+M	doc/source/users_guide/porting-cime.rst
+M	doc/source/users_guide/troubleshooting.rst
+M	doc/source/users_guide/unit_testing.rst
+M	doc/source/xml_files/cesm.rst
+M	scripts/Tools/Makefile
+M	scripts/Tools/cime_bisect
+M	scripts/lib/CIME/BuildTools/configure.py
+M	scripts/lib/CIME/SystemTests/erio.py
+M	scripts/lib/CIME/SystemTests/pgn.py
+M	scripts/lib/CIME/SystemTests/tsc.py
+M	scripts/lib/CIME/XML/archive_base.py
+M	scripts/lib/CIME/XML/machines.py
+M	scripts/lib/CIME/build.py
+M	scripts/lib/CIME/buildlib.py
+M	scripts/lib/CIME/case/case_setup.py
+M	scripts/lib/CIME/test_scheduler.py
+A	scripts/lib/CIME/tests/test_case_setup.py
+M	scripts/lib/get_tests.py
+M	scripts/tests/scripts_regression_tests.py
+M	src/build_scripts/buildlib.gptl
+M	src/build_scripts/buildlib.mct
+M	src/build_scripts/buildlib.mpi-serial
+M	src/build_scripts/buildlib.pio
+M	tools/cprnc/CMakeLists.txt
+
+======================================================================
+
+======================================================================
+
+Originator: Chris Fischer 
 Date: 9-09-2021
 Tag: cime6.0.9
 Answer Changes: None
