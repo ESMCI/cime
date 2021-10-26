@@ -337,7 +337,7 @@ This allows using a different mpirun command to launch unit tests
       <cmd_path lang="csh">module</cmd_path>
       <modules>
         <command name="purge"/>
-        <command name="load">lang/python/3.6.5</command>
+        <command name="load">lang/python/3.7.0</command>
       </modules>
       <modules compiler="gnu">
         <command name="load">compiler/gnu/8.2.0</command>
@@ -348,6 +348,7 @@ This allows using a different mpirun command to launch unit tests
     </module_system>
     <environment_variables>
       <env name="OMP_STACKSIZE">256M</env>
+      <env name="ESMFMKFILE">$ENV{HOME}/ESMF_8_2_0b22/lib/libg/Linux.gfortran.64.mvapich2.default/esmf.mk</env>
     </environment_variables>
     <resource_limits>
       <resource name="RLIMIT_STACK">-1</resource>
