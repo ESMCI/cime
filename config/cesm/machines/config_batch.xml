@@ -448,7 +448,8 @@
 
     <queues>
       <queue walltimemax="02:00:00" nodemin="1" nodemax="40">development</queue>
-      <queue walltimemax="24:00:00" nodemin="1" nodemax="512" default="true">normal</queue>
+      <queue walltimemax="24:00:00" nodemin="1" nodemax="2" default="true">small</queue>
+      <queue walltimemax="24:00:00" nodemin="3" nodemax="512" default="true">normal</queue>
       <queue walltimemax="24:00:00" nodemin="513" nodemax="2048" >large</queue>
     </queues>
   </batch_system>
