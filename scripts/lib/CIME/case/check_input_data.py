@@ -2,7 +2,7 @@
 API for checking input for testcase
 """
 from CIME.XML.standard_module_setup import *
-from CIME.utils import SharedArea, find_files, safe_copy, expect
+from CIME.utils import SharedArea, find_files, safe_copy, expect, run_cmd_no_fail
 from CIME.XML.inputdata import Inputdata
 import CIME.Servers
 
@@ -288,6 +288,8 @@ def check_input_data(case, protocol="svn", address=None, input_data_root=None, d
     # Fill in defaults as needed
     input_data_root = case.get_value("DIN_LOC_ROOT") if input_data_root is None else input_data_root
     input_ic_root = case.get_value("DIN_LOC_IC", resolved=True)
+    din_staging_root = case.get_value("DIN_STAGING_ROOT", resolved=True)
+    
     expect(os.path.isdir(data_list_dir), "Invalid data_list_dir directory: '{}'".format(data_list_dir))
 
     data_list_files = find_files(data_list_dir, "*.input_data_list")
@@ -312,7 +314,7 @@ def check_input_data(case, protocol="svn", address=None, input_data_root=None, d
             expect(False, "Unsupported inputdata protocol: {}".format(protocol))
         if not server:
             return None
-
+    filelist = []
     for data_list_file in data_list_files:
         logger.info("Loading input file list: '{}'".format(data_list_file))
         with open(data_list_file, "r") as fd:
@@ -336,6 +338,7 @@ def check_input_data(case, protocol="svn", address=None, input_data_root=None, d
                 if(full_path):
                     # expand xml variables
                     full_path = case.get_resolved_value(full_path)
+                    filelist.append(full_path)
                     rel_path = full_path
                     if input_ic_root and input_ic_root in full_path \
                        and ic_filepath:
@@ -411,6 +414,10 @@ def check_input_data(case, protocol="svn", address=None, input_data_root=None, d
                     model = os.path.basename(data_list_file).split('.')[0]
                     logger.warning("Model {} no file specified for {}".format(model, description))
 
+            if no_files_missing and din_staging_root:
+                stage_inputdata(input_data_root, din_staging_root, filelist)
+                                
+
     return no_files_missing
 
 def verify_chksum(input_data_root, rundir, filename, isdirectory):
@@ -458,3 +465,22 @@ def md5(fname):
         for chunk in iter(lambda: f.read(4096), b""):
             hash_md5.update(chunk)
     return hash_md5.hexdigest()
+
+def stage_inputdata(src_root, dest_root, filelist):
+    """
+    On some systems it is desirable to stage the inputdata needed for a case to the scratch filesystem
+    TACC systems are an example where they don't want you to read the STOCKYARD file system from compute nodes
+    """
+    for _file in filelist:
+        outfile = _file.replace(src_root, dest_root)
+        outdir = os.path.dirname(outfile)
+        md5_input = 0
+        md5_output = 0
+        if not os.path.exists(outdir):
+            os.makedirs(outdir)
+        if os.path.isfile(outfile):
+            md5_input = md5(_file)
+            md5_output = md5(outfile)
+
+        if md5_input != md5_output:
+            safe_copy(_file, outfile)

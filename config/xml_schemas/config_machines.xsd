@@ -42,6 +42,7 @@
   <xs:element name="CIME_URL_ROOT" type="xs:string"/>
   <xs:element name="DIN_LOC_ROOT" type="xs:string"/>
   <xs:element name="DIN_LOC_ROOT_CLMFORC" type="xs:string"/>
+  <xs:element name="DIN_STAGING_ROOT" type="xs:string"/>
   <xs:element name="DOUT_S_ROOT" type="xs:string"/>
   <xs:element name="BASELINE_ROOT" type="xs:string"/>
   <xs:element name="CCSM_CPRNC" type="xs:string"/>
@@ -135,6 +136,9 @@
         <xs:element ref="DIN_LOC_ROOT" minOccurs="1" maxOccurs="1"/>
         <!-- DIN_LOC_ROOT_CLMFORC: optional input location for clm forcing data  -->
         <xs:element ref="DIN_LOC_ROOT_CLMFORC" minOccurs="0" maxOccurs="1"/>
+        <!-- DIN_STAGING_ROOT: on some systems (eg TACC) the DIN_LOC_ROOT location is not available from 
+	     compute nodes and the data must be staged to the SCRATCH file system -->
+        <xs:element ref="DIN_STAGING_ROOT" minOccurs="0" maxOccurs="1"/>
         <!-- DOUT_S_ROOT: root directory of short term archive files -->
         <xs:element ref="DOUT_S_ROOT" minOccurs="1" maxOccurs="1"/>
         <!-- BASELINE_ROOT:  Root directory for system test baseline files -->

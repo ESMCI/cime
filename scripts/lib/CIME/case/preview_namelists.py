@@ -91,6 +91,19 @@ def create_namelists(self, component=None):
 
         logger.debug("Finished creating component namelists, component {} models = {}".format(component, models))
 
+    # Some systems (eg TACC) require that we copy inputdata to a temporary staging directory
+    din_staging_root = self.get_value("DIN_STAGING_ROOT")
+    if din_staging_root and din_staging_root != "UNSET":
+        din_loc_root = self.get_value("DIN_LOC_ROOT")
+        for cpglob in ["*_in_[0-9]*", "*modelio*", "*_in", "nuopc.runconfig",
+                       "*streams*txt*", "*streams.xml", "*stxt", "*maps.rc", "*cism*.config*", "nuopc.runseq"]:
+            for file_to_edit in glob.iglob(os.path.join(rundir, cpglob)):
+                with open(file_to_edit, "r") as file:
+                    filedata = file.read()
+                filedata = filedata.replace(din_loc_root, din_staging_root)
+                with open(file_to_edit, "w") as file:
+                    file.write(filedata)
+
     # Save namelists to docdir
     if (not os.path.isdir(docdir)):
         os.makedirs(docdir)
@@ -102,7 +115,7 @@ def create_namelists(self, component=None):
 
     for cpglob in ["*_in_[0-9]*", "*modelio*", "*_in", "nuopc.runconfig",
                    "*streams*txt*", "*streams.xml", "*stxt", "*maps.rc", "*cism*.config*", "nuopc.runseq"]:
-        for file_to_copy in glob.glob(os.path.join(rundir, cpglob)):
+        for file_to_copy in glob.iglob(os.path.join(rundir, cpglob)):
             logger.debug("Copy file from '{}' to '{}'".format(file_to_copy, docdir))
             safe_copy(file_to_copy, docdir)
 

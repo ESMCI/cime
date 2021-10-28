@@ -2414,6 +2414,7 @@ This allows using a different mpirun command to launch unit tests
     <CIME_OUTPUT_ROOT>$ENV{SCRATCH}</CIME_OUTPUT_ROOT>
     <DIN_LOC_ROOT>/work/02503/edwardsj/CESM/inputdata</DIN_LOC_ROOT>
     <DIN_LOC_ROOT_CLMFORC>/work/02503/edwardsj/CESM/inputdata/lmwg</DIN_LOC_ROOT_CLMFORC>
+    <DIN_STAGING_ROOT>$CIME_OUTPUT_ROOT/cesm/inputdata</DIN_STAGING_ROOT>
     <DOUT_S_ROOT>$CIME_OUTPUT_ROOT/cesm_archive/$CASE</DOUT_S_ROOT>
     <BASELINE_ROOT>/work/02503/edwardsj/CESM/cesm_baselines</BASELINE_ROOT>
     <CCSM_CPRNC>/work/02503/edwardsj/CESM/cime/tools/cprnc/cprnc</CCSM_CPRNC>
@@ -2460,6 +2461,12 @@ This allows using a different mpirun command to launch unit tests
         <command name="load">parallel-netcdf/4.6.2</command>
       </modules>
     </module_system>
+    <environment_variables compiler="intel" DEBUG="TRUE">
+      <env name="ESMFMKFILE">/work/02503/edwardsj/ESMF/lib/libg/Linux.intel.64.intelmpi.default/esmf.mk</env>
+    </environment_variables>
+    <environment_variables compiler="intel" DEBUG="FALSE">
+      <env name="ESMFMKFILE">/work/02503/edwardsj/ESMF/lib/libO/Linux.intel.64.intelmpi.default/esmf.mk</env>
+    </environment_variables>
   </machine>
 
 
