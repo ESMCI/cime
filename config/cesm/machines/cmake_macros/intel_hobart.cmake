@@ -1,7 +1,7 @@
 string(APPEND CFLAGS " -lifcore")
 string(APPEND FFLAGS " -lifcore")
 if (MPILIB STREQUAL mpi-serial)
-  string(APPEND FFLAGS " -mcCOMP_NAME medium")
+  string(APPEND FFLAGS " -mcmodel medium")
 endif()
 string(APPEND LDFLAGS " -lquadmath")
 string(APPEND LDFLAGS " -Wl,-rpath,${NETCDF_PATH}/lib")
