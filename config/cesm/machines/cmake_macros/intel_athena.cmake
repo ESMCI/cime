@@ -1,7 +1,7 @@
 string(APPEND CFLAGS " -xHost")
 string(APPEND CPPDEFS " -DINTEL_MKL -DHAVE_SSE2")
 string(APPEND FFLAGS " -xHost")
-if (MODEL STREQUAL nemo)
+if (COMP_NAME STREQUAL nemo)
   string(APPEND FFLAGS " $(FC_AUTO_R8) -O3 -assume norealloc_lhs")
 endif()
 execute_process(COMMAND ${NETCDF_PATH}/bin/nc-config --flibs OUTPUT_VARIABLE SHELL_CMD_OUTPUT_BUILD_INTERNAL_IGNORE0 OUTPUT_STRIP_TRAILING_WHITESPACE)
