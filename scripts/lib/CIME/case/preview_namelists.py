@@ -8,6 +8,8 @@ from CIME.utils import run_sub_or_cmd, safe_copy
 import time, glob
 logger = logging.getLogger(__name__)
 
+NAMELIST_FILEPATTERNS = ["*_in_[0-9]*", "*modelio*", "*_in", "nuopc.runconfig",
+                       "*streams*txt*", "*streams.xml", "*stxt", "*maps.rc", "*cism*.config*", "nuopc.runseq"]
 def create_dirs(self):
     """
     Make necessary directories for case
@@ -95,8 +97,7 @@ def create_namelists(self, component=None):
     din_staging_root = self.get_value("DIN_STAGING_ROOT")
     if din_staging_root and din_staging_root != "UNSET":
         din_loc_root = self.get_value("DIN_LOC_ROOT")
-        for cpglob in ["*_in_[0-9]*", "*modelio*", "*_in", "nuopc.runconfig",
-                       "*streams*txt*", "*streams.xml", "*stxt", "*maps.rc", "*cism*.config*", "nuopc.runseq"]:
+        for cpglob in NAMELIST_FILEPATTERNS:
             for file_to_edit in glob.iglob(os.path.join(rundir, cpglob)):
                 with open(file_to_edit, "r") as file:
                     filedata = file.read()
@@ -113,8 +114,7 @@ def create_namelists(self, component=None):
         except (OSError, IOError) as e:
             expect(False, "Failed to write {}/README: {}".format(docdir, e))
 
-    for cpglob in ["*_in_[0-9]*", "*modelio*", "*_in", "nuopc.runconfig",
-                   "*streams*txt*", "*streams.xml", "*stxt", "*maps.rc", "*cism*.config*", "nuopc.runseq"]:
+    for cpglob in NAMELIST_FILEPATTERNS:
         for file_to_copy in glob.iglob(os.path.join(rundir, cpglob)):
             logger.debug("Copy file from '{}' to '{}'".format(file_to_copy, docdir))
             safe_copy(file_to_copy, docdir)
