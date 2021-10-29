@@ -1,7 +1,7 @@
 string(APPEND CFLAGS " -xCOMMON-AVX512 -no-fma")
 string(APPEND FFLAGS " -xCOMMON-AVX512 -no-fma")
 if (MPILIB STREQUAL mpi-serial)
-  string(APPEND FFLAGS " -mcmodel medium")
+  string(APPEND FFLAGS " -mcCOMP_NAME medium")
 endif()
 string(APPEND LDFLAGS " -L$ENV{TACC_HDF5_LIB} -lhdf5 $(MKL) -zmuldefs -xCOMMON-AVX512")
 execute_process(COMMAND ${NETCDF_PATH}/bin/nf-config --flibs OUTPUT_VARIABLE SHELL_CMD_OUTPUT_BUILD_INTERNAL_IGNORE0 OUTPUT_STRIP_TRAILING_WHITESPACE)
