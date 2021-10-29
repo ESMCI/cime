@@ -6,7 +6,7 @@ from CIME.utils import SharedArea, find_files, safe_copy, expect, run_cmd_no_fai
 from CIME.XML.inputdata import Inputdata
 import CIME.Servers
 
-import glob, hashlib, shutil
+import glob, hashlib, shutil, time, threading
 
 logger = logging.getLogger(__name__)
 # The inputdata_checksum.dat file will be read into this hash if it's available
@@ -414,8 +414,8 @@ def check_input_data(case, protocol="svn", address=None, input_data_root=None, d
                     model = os.path.basename(data_list_file).split('.')[0]
                     logger.warning("Model {} no file specified for {}".format(model, description))
 
-            if no_files_missing and din_staging_root:
-                stage_inputdata(input_data_root, din_staging_root, filelist)
+            if no_files_missing and din_staging_root and din_staging_root != "UNSET":
+                _stage_inputdata(input_data_root, din_staging_root, filelist)
                                 
 
     return no_files_missing
@@ -466,7 +466,7 @@ def md5(fname):
             hash_md5.update(chunk)
     return hash_md5.hexdigest()
 
-def stage_inputdata(src_root, dest_root, filelist):
+def _stage_inputdata(src_root, dest_root, filelist):
     """
     On some systems it is desirable to stage the inputdata needed for a case to the scratch filesystem
     TACC systems are an example where they don't want you to read the STOCKYARD file system from compute nodes
@@ -475,7 +475,7 @@ def stage_inputdata(src_root, dest_root, filelist):
         outfile = _file.replace(src_root, dest_root)
         outdir = os.path.dirname(outfile)
         md5_input = 0
-        md5_output = 0
+        md5_output = 5
         if not os.path.exists(outdir):
             os.makedirs(outdir)
         if os.path.isfile(outfile):
@@ -483,4 +483,10 @@ def stage_inputdata(src_root, dest_root, filelist):
             md5_output = md5(outfile)
 
         if md5_input != md5_output:
-            safe_copy(_file, outfile)
+            logger.info("Staging inputdata file {} to {}".format(_file, outfile))
+            t = threading.Thread(target=safe_copy, args=(_file, outfile))
+            t.start()
+            
+            #safe_copy(_file, outfile)
+    while(threading.active_count() > 1):
+        time.sleep(1)

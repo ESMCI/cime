@@ -593,8 +593,8 @@
     </submit_args>
     <queues>
       <!-- not yet available     <queue walltimemax="48:00:00" nodemin="1" nodemax="64" >flex</queue> -->
-      <queue walltimemax="48:00:00" nodemin="1" nodemax="64">normal</queue>
-      <queue walltimemax="02:00:00" nodemin="1" nodemax="4" default="true">development</queue>
+      <queue walltimemax="48:00:00" nodemin="1" nodemax="64" default="true">normal</queue>
+      <queue walltimemax="02:00:00" nodemin="1" nodemax="4" >development</queue>
       <queue walltimemax="48:00:00" nodemin="1" nodemax="256" >large</queue>
     </queues>
   </batch_system>

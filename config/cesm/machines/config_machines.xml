@@ -2255,7 +2255,7 @@ This allows using a different mpirun command to launch unit tests
     <DIN_LOC_ROOT_CLMFORC>/global/scratch/$ENV{USER}/cesm_input_datasets/atm/datm7</DIN_LOC_ROOT_CLMFORC>
     <DOUT_S_ROOT>$CIME_OUTPUT_ROOT/cesm_archive/$CASE</DOUT_S_ROOT>
     <BASELINE_ROOT>$CIME_OUTPUT_ROOT/cesm_baselines</BASELINE_ROOT>
-    <CCSM_CPRNC>/$CIME_OUTPUT_ROOT/cesm_tools/cprnc/cprnc</CCSM_CPRNC>
+    <CCSM_CPRNC>$CIME_OUTPUT_ROOT/cesm_tools/cprnc/cprnc</CCSM_CPRNC>
     <GMAKE_J>4</GMAKE_J>
     <BATCH_SYSTEM>slurm</BATCH_SYSTEM>
     <SUPPORTED_BY>rgknox at lbl dot gov</SUPPORTED_BY>
@@ -2414,10 +2414,11 @@ This allows using a different mpirun command to launch unit tests
     <CIME_OUTPUT_ROOT>$ENV{SCRATCH}</CIME_OUTPUT_ROOT>
     <DIN_LOC_ROOT>/work/02503/edwardsj/CESM/inputdata</DIN_LOC_ROOT>
     <DIN_LOC_ROOT_CLMFORC>/work/02503/edwardsj/CESM/inputdata/lmwg</DIN_LOC_ROOT_CLMFORC>
-    <DIN_STAGING_ROOT>$CIME_OUTPUT_ROOT/cesm/inputdata</DIN_STAGING_ROOT>
+    <!-- do not use CIME_OUTPUT_ROOT for this variable (it's subject to changing) -->
+    <DIN_STAGING_ROOT>$ENV{SCRATCH}/cesm/inputdata</DIN_STAGING_ROOT>
     <DOUT_S_ROOT>$CIME_OUTPUT_ROOT/cesm_archive/$CASE</DOUT_S_ROOT>
-    <BASELINE_ROOT>/work/02503/edwardsj/CESM/cesm_baselines</BASELINE_ROOT>
-    <CCSM_CPRNC>/work/02503/edwardsj/CESM/cime/tools/cprnc/cprnc</CCSM_CPRNC>
+    <BASELINE_ROOT>/work/02503/edwardsj/CESM/cesm_baselines/</BASELINE_ROOT>
+    <CCSM_CPRNC>/work/02503/edwardsj/CESM/cime/tools/cprnc/cprnc.ls6</CCSM_CPRNC>
     <GMAKE_J>16</GMAKE_J>
     <BATCH_SYSTEM>slurm</BATCH_SYSTEM>
     <SUPPORTED_BY>cseg</SUPPORTED_BY>
@@ -2425,12 +2426,13 @@ This allows using a different mpirun command to launch unit tests
     <MAX_MPITASKS_PER_NODE>128</MAX_MPITASKS_PER_NODE>
     <PROJECT_REQUIRED>FALSE</PROJECT_REQUIRED>
     <mpirun mpilib="default">
-      <executable>ibrun</executable>
+      <executable>sbcast ${EXEROOT}/cesm.exe /tmp/cesm.exe; ibrun</executable>
       <arguments>
-        <arg name="num_tasks">-n {{ total_tasks }}</arg>
+        <arg name="ntasks"> -n {{ total_tasks }} </arg>
       </arguments>
+      <run_exe>/tmp/cesm.exe</run_exe>
     </mpirun>
-    <!-- allow ls5 modules to write to stderr without cime error -->
+    <!-- allow ls6 modules to write to stderr without cime error -->
     <module_system type="module" allow_error="true">
       <init_path lang="perl">/opt/apps/lmod/lmod/init/perl</init_path>
       <init_path lang="python">/opt/apps/lmod/lmod/init/env_modules_python.py</init_path>
@@ -2461,11 +2463,17 @@ This allows using a different mpirun command to launch unit tests
         <command name="load">parallel-netcdf/4.6.2</command>
       </modules>
     </module_system>
-    <environment_variables compiler="intel" DEBUG="TRUE">
-      <env name="ESMFMKFILE">/work/02503/edwardsj/ESMF/lib/libg/Linux.intel.64.intelmpi.default/esmf.mk</env>
+    <environment_variables compiler="intel" DEBUG="TRUE" mpilib="impi">
+      <env name="ESMFMKFILE">/work/02503/edwardsj/ESMF8.2.0/lib/libg/Linux.intel.64.intelmpi.default/esmf.mk</env>
     </environment_variables>
-    <environment_variables compiler="intel" DEBUG="FALSE">
-      <env name="ESMFMKFILE">/work/02503/edwardsj/ESMF/lib/libO/Linux.intel.64.intelmpi.default/esmf.mk</env>
+    <environment_variables compiler="intel" DEBUG="FALSE" mpilib="impi">
+      <env name="ESMFMKFILE">/work/02503/edwardsj/ESMF8.2.0/lib/libO/Linux.intel.64.intelmpi.default/esmf.mk</env>
+    </environment_variables>
+    <environment_variables compiler="intel" DEBUG="TRUE" mpilib="mpi-serial">
+      <env name="ESMFMKFILE">/work/02503/edwardsj/ESMF8.2.0/lib/libg/Linux.intel.64.mpiuni.default/esmf.mk</env>
+    </environment_variables>
+    <environment_variables compiler="intel" DEBUG="FALSE" mpilib="mpi-serial">
+      <env name="ESMFMKFILE">/work/02503/edwardsj/ESMF8.2.0/lib/libO/Linux.intel.64.mpiuni.default/esmf.mk</env>
     </environment_variables>
   </machine>
 
