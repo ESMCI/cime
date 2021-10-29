@@ -2604,7 +2604,7 @@ class G_TestBuildSystem(TestCreateTestCommon):
         run_cmd_assert_result(self, "./case.build --clean atm", from_dir=casedir)
         run_cmd_assert_result(self, "./case.build --clean gptl", from_dir=casedir)
 
-        run_cmd_assert_result(self, "./case.build --skip-provenence-check", from_dir=casedir)
+        run_cmd_assert_result(self, "./case.build --skip-provenance-check", from_dir=casedir)
 
 ###############################################################################
 class L_TestSaveTimings(TestCreateTestCommon):
