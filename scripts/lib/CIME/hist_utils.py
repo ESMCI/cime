@@ -34,6 +34,8 @@ COMPARISON_COMMENT_OPTIONS = set([NO_COMPARE,
 COMPARISON_FAILURE_COMMENT_OPTIONS = (COMPARISON_COMMENT_OPTIONS
                                       - set([NO_COMPARE, FIELDLISTS_DIFFER]))
 
+NO_HIST_TESTS = ["IRT", "PFS", "TSC"]
+
 def _iter_model_file_substrs(case):
     models = case.get_compset_components()
     models.append('cpl')
@@ -273,8 +275,8 @@ def _compare_hists(case, from_dir1, from_dir2, suffix1="", suffix2="", outfile_s
                         logger.warning("Could not copy {} to {}".format(cprnc_log_file, casedir))
 
                 all_success = False
-    # PFS test may not have any history files to compare.
-    if num_compared == 0 and testcase != "PFS":
+    # Some tests don't save history files. 
+    if num_compared == 0 and testcase not in NO_HIST_TESTS:
         all_success = False
         comments += "Did not compare any hist files! Missing baselines?\n"
 
@@ -494,7 +496,7 @@ def _generate_baseline_impl(case, baseline_dir=None, allow_baseline_overwrite=Fa
     testname = case.get_value("TESTCASE")
     testopts = parse_test_name(case.get_value("CASEBASEID"))[1]
     testopts = [] if testopts is None else testopts
-    expect(num_gen > 0 or (testname in ["PFS", "TSC"] or "B" in testopts),
+    expect(num_gen > 0 or (testname in NO_HIST_TESTS or "B" in testopts),
            "Could not generate any hist files for case '{}', something is seriously wrong".format(os.path.join(rundir, testcase)))
 
     if get_model() == "e3sm":
