@@ -1,8 +1,317 @@
 import os
 import tempfile
+import signal
 import shutil
 import sys
+import time
 from collections.abc import Iterable
+
+import six
+from CIME import utils
+from CIME import test_status
+from CIME.utils import expect
+
+
+def parse_test_status(line):
+    status, test = line.split()[0:2]
+    return test, status
+
+def make_fake_teststatus(path, testname, status, phase):
+    expect(phase in test_status.CORE_PHASES, "Bad phase '%s'" % phase)
+    with test_status.TestStatus(test_dir=path, test_name=testname) as ts:
+        for core_phase in test_status.CORE_PHASES:
+            if core_phase == phase:
+                ts.set_status(core_phase, status, comments=("time=42" if phase == test_status.RUN_PHASE else ""))
+                break
+            else:
+                ts.set_status(core_phase, test_status.TEST_PASS_STATUS, comments=("time=42" if phase == test_status.RUN_PHASE else ""))
+
+class MockMachines(object):
+    """A mock version of the Machines object to simplify testing."""
+
+    def __init__(self, name, os_):
+        """Store the name."""
+        self.name = name
+        self.os = os_
+
+    def get_machine_name(self):
+        """Return the name we were given."""
+        return self.name
+
+    def get_value(self, var_name):
+        """Allow the operating system to be queried."""
+        assert var_name == "OS", "Build asked for a value not " \
+            "implemented in the testing infrastructure."
+        return self.os
+
+    def is_valid_compiler(self, _): # pylint:disable=no-self-use
+        """Assume all compilers are valid."""
+        return True
+
+    def is_valid_MPIlib(self, _):
+        """Assume all MPILIB settings are valid."""
+        return True
+
+# pragma pylint: disable=unused-argument
+    def get_default_MPIlib(self, attributes=None):
+        return "mpich2"
+
+    def get_default_compiler(self):
+        return "intel"
+
+def get_macros(macro_maker, build_xml, build_system):
+    """Generate build system ("Macros" file) output from config_compilers XML.
+
+    Arguments:
+    macro_maker - The underlying Build object.
+    build_xml - A string containing the XML to operate on.
+    build_system - Either "Makefile" or "CMake", depending on desired output.
+
+    The return value is a string containing the build system output.
+    """
+    # Build.write_macros expects file-like objects as input, so
+    # we need to wrap the strings in StringIO objects.
+    xml = six.StringIO(str(build_xml))
+    output = six.StringIO()
+    output_format = None
+    if build_system == "Makefile":
+        output_format = "make"
+    elif build_system == "CMake":
+        output_format = "cmake"
+    else:
+        output_format = build_system
+
+    macro_maker.write_macros_file(macros_file=output,
+                                  output_format=output_format, xml=xml)
+    return str(output.getvalue())
+
+
+def _wrap_config_compilers_xml(inner_string):
+    """Utility function to create a config_compilers XML string.
+
+    Pass this function a string containing <compiler> elements, and it will add
+    the necessary header/footer to the file.
+    """
+    _xml_template = """<?xml version="1.0" encoding="UTF-8"?>
+<config_compilers>
+{}
+</config_compilers>
+"""
+
+    return _xml_template.format(inner_string)
+
+class MakefileTester(object):
+
+    """Helper class for checking Makefile output.
+
+    Public methods:
+    __init__
+    query_var
+    assert_variable_equals
+    assert_variable_matches
+    """
+# Note that the following is a Makefile and the echo line must begin with a tab
+    _makefile_template = """
+include Macros
+query:
+\techo '$({})' > query.out
+"""
+
+    def __init__(self, parent, make_string):
+        """Constructor for Makefile test helper class.
+
+        Arguments:
+        parent - The TestCase object that is using this item.
+        make_string - Makefile contents to test.
+        """
+        self.parent = parent
+        self.make_string = make_string
+
+    def query_var(self, var_name, env, var):
+        """Request the value of a variable in the Makefile, as a string.
+
+        Arguments:
+        var_name - Name of the variable to query.
+        env - A dict containing extra environment variables to set when calling
+              make.
+        var - A dict containing extra make variables to set when calling make.
+              (The distinction between env and var actually matters only for
+               CMake, though.)
+        """
+        if env is None:
+            env = dict()
+        if var is None:
+            var = dict()
+
+        # Write the Makefile strings to temporary files.
+        temp_dir = tempfile.mkdtemp()
+        macros_file_name = os.path.join(temp_dir, "Macros")
+        makefile_name = os.path.join(temp_dir, "Makefile")
+        output_name = os.path.join(temp_dir, "query.out")
+
+        with open(macros_file_name, "w") as macros_file:
+            macros_file.write(self.make_string)
+        with open(makefile_name, "w") as makefile:
+            makefile.write(self._makefile_template.format(var_name))
+
+        environment = os.environ.copy()
+        environment.update(env)
+        environment.update(var)
+        gmake_exe = MACHINE.get_value("GMAKE")
+        if gmake_exe is None:
+            gmake_exe = "gmake"
+        run_cmd_assert_result(self.parent, "%s query --directory=%s 2>&1" % (gmake_exe, temp_dir), env=environment)
+
+        with open(output_name, "r") as output:
+            query_result = output.read().strip()
+
+        # Clean up the Makefiles.
+        shutil.rmtree(temp_dir)
+
+        return query_result
+
+    def assert_variable_equals(self, var_name, value, env=None, var=None):
+        """Assert that a variable in the Makefile has a given value.
+
+        Arguments:
+        var_name - Name of variable to check.
+        value - The string that the variable value should be equal to.
+        env - Optional. Dict of environment variables to set when calling make.
+        var - Optional. Dict of make variables to set when calling make.
+        """
+        self.parent.assertEqual(self.query_var(var_name, env, var), value)
+
+    def assert_variable_matches(self, var_name, regex, env=None, var=None):
+        """Assert that a variable in the Makefile matches a regex.
+
+        Arguments:
+        var_name - Name of variable to check.
+        regex - The regex to match.
+        env - Optional. Dict of environment variables to set when calling make.
+        var - Optional. Dict of make variables to set when calling make.
+        """
+        self.parent.assertRegexpMatches(self.query_var(var_name, env, var), regex)
+
+
+class CMakeTester(object):
+
+    """Helper class for checking CMake output.
+
+    Public methods:
+    __init__
+    query_var
+    assert_variable_equals
+    assert_variable_matches
+    """
+
+    _cmakelists_template = """
+include(./Macros.cmake)
+file(WRITE query.out "${{{}}}")
+"""
+
+    def __init__(self, parent, cmake_string):
+        """Constructor for CMake test helper class.
+
+        Arguments:
+        parent - The TestCase object that is using this item.
+        cmake_string - CMake contents to test.
+        """
+        self.parent = parent
+        self.cmake_string = cmake_string
+
+    def query_var(self, var_name, env, var):
+        """Request the value of a variable in Macros.cmake, as a string.
+
+        Arguments:
+        var_name - Name of the variable to query.
+        env - A dict containing extra environment variables to set when calling
+              cmake.
+        var - A dict containing extra CMake variables to set when calling cmake.
+        """
+        if env is None:
+            env = dict()
+        if var is None:
+            var = dict()
+
+        # Write the CMake strings to temporary files.
+        temp_dir = tempfile.mkdtemp()
+        macros_file_name = os.path.join(temp_dir, "Macros.cmake")
+        cmakelists_name = os.path.join(temp_dir, "CMakeLists.txt")
+        output_name = os.path.join(temp_dir, "query.out")
+
+        with open(macros_file_name, "w") as macros_file:
+            for key in var:
+                macros_file.write("set({} {})\n".format(key, var[key]))
+            macros_file.write(self.cmake_string)
+        with open(cmakelists_name, "w") as cmakelists:
+            cmakelists.write(self._cmakelists_template.format(var_name))
+
+        environment = os.environ.copy()
+        environment.update(env)
+        os_ = MACHINE.get_value("OS")
+        # cmake will not work on cray systems without this flag
+        if os_ == "CNL":
+            cmake_args = "-DCMAKE_SYSTEM_NAME=Catamount"
+        else:
+            cmake_args = ""
+
+        run_cmd_assert_result(self.parent, "cmake %s . 2>&1" % cmake_args, from_dir=temp_dir, env=environment)
+
+        with open(output_name, "r") as output:
+            query_result = output.read().strip()
+
+        # Clean up the CMake files.
+        shutil.rmtree(temp_dir)
+
+        return query_result
+
+    def assert_variable_equals(self, var_name, value, env=None, var=None):
+        """Assert that a variable in the CMakeLists has a given value.
+
+        Arguments:
+        var_name - Name of variable to check.
+        value - The string that the variable value should be equal to.
+        env - Optional. Dict of environment variables to set when calling cmake.
+        var - Optional. Dict of CMake variables to set when calling cmake.
+        """
+        self.parent.assertEqual(self.query_var(var_name, env, var), value)
+
+    def assert_variable_matches(self, var_name, regex, env=None, var=None):
+        """Assert that a variable in the CMkeLists matches a regex.
+
+        Arguments:
+        var_name - Name of variable to check.
+        regex - The regex to match.
+        env - Optional. Dict of environment variables to set when calling cmake.
+        var - Optional. Dict of CMake variables to set when calling cmake.
+        """
+        self.parent.assertRegexpMatches(self.query_var(var_name, env, var), regex)
+
+def get_macros(macro_maker, build_xml, build_system):
+    """Generate build system ("Macros" file) output from config_compilers XML.
+
+    Arguments:
+    macro_maker - The underlying Build object.
+    build_xml - A string containing the XML to operate on.
+    build_system - Either "Makefile" or "CMake", depending on desired output.
+
+    The return value is a string containing the build system output.
+    """
+    # Build.write_macros expects file-like objects as input, so
+    # we need to wrap the strings in StringIO objects.
+    xml = six.StringIO(str(build_xml))
+    output = six.StringIO()
+    output_format = None
+    if build_system == "Makefile":
+        output_format = "make"
+    elif build_system == "CMake":
+        output_format = "cmake"
+    else:
+        output_format = build_system
+
+    macro_maker.write_macros_file(macros_file=output,
+                                  output_format=output_format, xml=xml)
+    return str(output.getvalue())
 
 # TODO after dropping python 2.7 replace with tempfile.TemporaryDirectory
 class TemporaryDirectory(object):
