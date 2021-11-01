@@ -1,6 +1,67 @@
 ======================================================================
 
 Originator: Chris Fischer 
+Date: 11-1-21
+Tag: cime6.0.11
+Answer Changes: None
+Tests: scripts_regression_tests
+Dependencies:
+
+Brief Summary:
+    - Add IRT test to exceptions for generate history.
+    - Replace use of MODEL with COMP_NAME in cmake_macros directory.
+    - Improve Macro.make generation.
+    - Update centos7-linux settings.
+
+User interface changes: 
+
+PR summary: git log --oneline --first-parent [previous_tag]..master
+b763b20a9 Merge pull request #4110 from jedwards4b/fix_IRT_generate
+48f8ad154 Merge pull request #4119 from jedwards4b/cmake_MODEL_TO_COMP_NAME
+90b4e37b7 Merge pull request #4113 from ESMCI/jgfouca/improve_make_macro_generation
+5868385ad update centos7-linux settings
+
+
+Modified files: git diff --name-status [previous_tag]
+M       config/cesm/machines/cmake_macros/CNL.cmake
+M       config/cesm/machines/cmake_macros/cheyenne.cmake
+M       config/cesm/machines/cmake_macros/container.cmake
+M       config/cesm/machines/cmake_macros/cray.cmake
+M       config/cesm/machines/cmake_macros/frontera.cmake
+M       config/cesm/machines/cmake_macros/gnu_cheyenne.cmake
+M       config/cesm/machines/cmake_macros/gnu_modex.cmake
+M       config/cesm/machines/cmake_macros/hobart.cmake
+M       config/cesm/machines/cmake_macros/ibm.cmake
+M       config/cesm/machines/cmake_macros/ibm_AIX.cmake
+M       config/cesm/machines/cmake_macros/intel_aleph.cmake
+M       config/cesm/machines/cmake_macros/intel_athena.cmake
+M       config/cesm/machines/cmake_macros/intel_cori-haswell.cmake
+M       config/cesm/machines/cmake_macros/intel_cori-knl.cmake
+M       config/cesm/machines/cmake_macros/intel_edison.cmake
+M       config/cesm/machines/cmake_macros/intel_lawrencium-lr2.cmake
+M       config/cesm/machines/cmake_macros/intel_lawrencium-lr3.cmake
+M       config/cesm/machines/cmake_macros/intel_zeus.cmake
+M       config/cesm/machines/cmake_macros/izumi.cmake
+M       config/cesm/machines/cmake_macros/laramie.cmake
+M       config/cesm/machines/cmake_macros/nag.cmake
+M       config/cesm/machines/cmake_macros/nvhpc-gpu.cmake
+M       config/cesm/machines/cmake_macros/nvhpc.cmake
+M       config/cesm/machines/cmake_macros/pgi-gpu.cmake
+M       config/cesm/machines/cmake_macros/pgi.cmake
+M       config/cesm/machines/cmake_macros/universal.cmake
+M       config/cesm/machines/cmake_macros/zeus.cmake
+M       config/cesm/machines/config_machines.xml
+M       scripts/lib/CIME/SystemTests/irt.py
+M       scripts/lib/CIME/build.py
+M       scripts/lib/CIME/hist_utils.py
+M       scripts/tests/scripts_regression_tests.py
+
+
+======================================================================
+
+======================================================================
+
+Originator: Chris Fischer 
 Date: 10-25-2021
 Tag: cime6.0.10
 Answer Changes: [None, Round Off, Climate Changing]
