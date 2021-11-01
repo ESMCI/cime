@@ -10,6 +10,8 @@
   <xs:element name="type" type="xs:string"/>
   <xs:element name="desc" type="xs:string"/>
   <xs:element name="group" type="xs:NCName"/>
+  <xs:element name="category" type="xs:string"/>
+  <xs:element name="valid_values" type="xs:string"/>
 
   <!-- complex elements -->
   <xs:element name="value">
@@ -35,6 +37,8 @@
       <xs:all>
         <xs:element ref="type" minOccurs='0'/>
         <xs:element ref="desc" minOccurs='0'/>
+        <xs:element ref="category" minOccurs='0'/>
+        <xs:element ref="valid_values" minOccurs='0'/>
         <xs:element ref="group"/>
         <xs:element ref="values"/>
       </xs:all>
