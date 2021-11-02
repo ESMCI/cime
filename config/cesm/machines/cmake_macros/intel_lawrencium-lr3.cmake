@@ -1,4 +1,4 @@
-if (MODEL STREQUAL gptl)
+if (COMP_NAME STREQUAL gptl)
   string(APPEND CPPDEFS " -DHAVE_VPRINTF -DHAVE_TIMES -DHAVE_GETTIMEOFDAY")
 endif()
 string(APPEND SLIBS " -lnetcdff -lnetcdf -mkl")
