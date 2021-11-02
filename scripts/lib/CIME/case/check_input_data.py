@@ -478,15 +478,26 @@ def _stage_inputdata(src_root, dest_root, filelist):
         md5_output = 5
         if not os.path.exists(outdir):
             os.makedirs(outdir)
-        if os.path.isfile(outfile):
-            md5_input = md5(_file)
-            md5_output = md5(outfile)
+        elif os.path.isfile(outfile):
+            md5_input = md5inputdata(_file)
+            md5_output = md5inputdata(outfile)
 
         if md5_input != md5_output:
             logger.info("Staging inputdata file {} to {}".format(_file, outfile))
             t = threading.Thread(target=safe_copy, args=(_file, outfile))
             t.start()
             
-            #safe_copy(_file, outfile)
     while(threading.active_count() > 1):
         time.sleep(1)
+
+def md5inputdata(fname):
+    md5file = fname+".md5"
+    if os.path.isfile(md5file):
+        with open(md5file, "r") as fi:
+            md5sum = fi.read()
+    else:
+        md5sum = md5(fname)
+        with open(md5file, "w") as fo:
+            fo.write(md5sum)
+    return md5sum
+    
