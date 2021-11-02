@@ -1,7 +1,7 @@
 string(APPEND CFLAGS " -qarch=auto -qtune=auto -qcache=auto")
 set(CONFIG_SHELL "/usr/bin/bash")
 string(APPEND FFLAGS " -qarch=auto -qtune=auto -qcache=auto -qsclk=micro")
-if (MODEL STREQUAL cam)
+if (COMP_NAME STREQUAL cam)
   string(APPEND FFLAGS " -qspill=6000")
 endif()
 if (DEBUG)
