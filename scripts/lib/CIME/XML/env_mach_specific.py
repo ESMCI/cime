@@ -37,7 +37,8 @@ class EnvMachSpecific(EnvBase):
         """
         items = ("module_system", "environment_variables", "resource_limits", "mpirun")
         default_run_suffix = machobj.get_child("default_run_suffix", root=machobj.root)
-
+        default_env_vars = machobj.get_child("environment_variables", root=machobj.root)
+        
         group_node = self.make_child("group", {"id":"compliant_values"})
         settings = {"run_exe":None,"run_misc_suffix":None}
 
@@ -47,6 +48,7 @@ class EnvMachSpecific(EnvBase):
                 if len(nodes) == 0:
                     example_text = """This section is for the user to specify any additional machine-specific env var, or to overwite existing ones.\n  <environment_variables>\n    <env name="NAME">ARGUMENT</env>\n  </environment_variables>\n  """
                     self.make_child_comment(text = example_text)
+                nodes.append(default_env_vars)
 
             if item == "mpirun":
                 for node in nodes:

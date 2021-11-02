@@ -211,7 +211,7 @@ def _read_cime_config_file():
                               "walltime")
 
     cime_config_file = os.path.abspath(os.path.join(os.path.expanduser("~"),
-                                                  ".cime","config"))
+                                                    ".cime","config"))
     cime_config = configparser.SafeConfigParser()
     if(os.path.isfile(cime_config_file)):
         cime_config.read(cime_config_file)
@@ -225,7 +225,7 @@ def _read_cime_config_file():
                 expect(item in allowed_in_create_test,"Unknown option in config section \"test\": \"{}\"\nallowed options are {}".format(item, allowed_in_create_test))
     else:
         logger.debug("File {} not found".format(cime_config_file))
-        cime_config.add_section('main')
+        #cime_config.add_section('main')
 
     return cime_config
 
@@ -288,7 +288,7 @@ def get_cime_default_driver():
         logger.debug("Setting CIME_DRIVER={} from environment".format(driver))
     else:
         cime_config = get_cime_config()
-        if (cime_config.has_option('main','CIME_DRIVER')):
+        if (cime_config and cime_config.has_option('main','CIME_DRIVER')):
             driver = cime_config.get('main','CIME_DRIVER')
             if driver:
                 logger.debug("Setting CIME_driver={} from ~/.cime/config".format(driver))
@@ -316,7 +316,7 @@ def set_model(model):
     """
     cime_config = get_cime_config()
     cime_models = get_all_cime_models()
-    if not cime_config.has_section('main'):
+    if cime_config and not cime_config.has_section('main'):
         cime_config.add_section('main')
     expect(model in cime_models,"model {} not recognized. The acceptable values of CIME_MODEL currently are {}".format(model, cime_models))
     cime_config.set('main','CIME_MODEL',model)
@@ -356,21 +356,23 @@ def get_model():
     # One last try
     if (model is None):
         srcroot = None
-        if cime_config.has_section('main') and cime_config.has_option('main', 'SRCROOT'):
+        if cime_config and cime_config.has_section('main') and cime_config.has_option('main', 'SRCROOT'):
             srcroot = cime_config.get('main','SRCROOT')
         if srcroot is None:
-            srcroot = os.path.dirname(os.path.abspath(get_cime_root()))
-        if os.path.isfile(os.path.join(srcroot, "Externals.cfg")):
+            srcroot = os.path.abspath(os.path.join(get_cime_root(),os.pardir))
+        if os.path.isfile(os.path.join(srcroot, ".cime_model")):
+            with open(os.path.join(srcroot, ".cime_model")) as f:
+                model = f.read()
+        if not model and os.path.isfile(os.path.join(srcroot, "Externals.cfg")):
             model = 'cesm'
             with open(os.path.join(srcroot, "Externals.cfg")) as fd:
                 for line in fd:
                     if re.search('ufs', line):
                         model = 'ufs'
-        else:
+        elif not model:
             model = 'e3sm'
         # This message interfers with the correct operation of xmlquery
         # logger.debug("Guessing CIME_MODEL={}, set environment variable if this is incorrect".format(model))
-
     if model is not None:
         set_model(model)
         return model

@@ -561,10 +561,6 @@ This allows using a different mpirun command to launch unit tests
         <command name="load">cray-netcdf</command>
       </modules>
     </module_system>
-    <environment_variables comp_interface="nuopc">
-      <env name="ESMF_RUNTIME_PROFILE">ON</env>
-      <env name="ESMF_RUNTIME_PROFILE_OUTPUT">SUMMARY</env>
-    </environment_variables>
     <environment_variables comp_interface="nuopc" compiler="cray">
       <env name="ESMFMKFILE">/glade/work/jedwards/CPE/lib/libg/Unicos.cce.64.mpi.default/esmf.mk</env>
     </environment_variables>
@@ -784,8 +780,6 @@ This allows using a different mpirun command to launch unit tests
       <env name="MPI_USE_ARRAY"/>
     </environment_variables>
     <environment_variables comp_interface="nuopc">
-      <env name="ESMF_RUNTIME_PROFILE">ON</env>
-      <env name="ESMF_RUNTIME_PROFILE_OUTPUT">SUMMARY</env>
       <env name="UGCSINPUTPATH">/glade/work/turuncu/FV3GFS/benchmark-inputs/2012010100/gfs/fcst</env>
       <env name="UGCSFIXEDFILEPATH">/glade/work/turuncu/FV3GFS/fix_am</env>
       <env name="UGCSADDONPATH">/glade/work/turuncu/FV3GFS/addon</env>
@@ -3193,8 +3187,6 @@ This allows using a different mpirun command to launch unit tests
       <env name="ESMFMKFILE">/work/01118/tg803972/stampede2/ESMF-INSTALL/8.0.0bs38/lib/libO/Linux.intel.64.intelmpi.default/esmf.mk</env>
     </environment_variables>
     <environment_variables comp_interface="nuopc">
-      <env name="ESMF_RUNTIME_PROFILE">ON</env>
-      <env name="ESMF_RUNTIME_PROFILE_OUTPUT">SUMMARY</env>
       <env name="UGCSINPUTPATH">/work/06242/tg855414/stampede2/FV3GFS/benchmark-inputs/2012010100/gfs/fcst</env>
       <env name="UGCSFIXEDFILEPATH">/work/06242/tg855414/stampede2/FV3GFS/fix_am</env>
       <env name="UGCSADDONPATH">/work/06242/tg855414/stampede2/FV3GFS/addon</env>
@@ -3319,8 +3311,6 @@ This allows using a different mpirun command to launch unit tests
       </modules>
     </module_system>
     <environment_variables comp_interface="nuopc">
-      <env name="ESMF_RUNTIME_PROFILE">ON</env>
-      <env name="ESMF_RUNTIME_PROFILE_OUTPUT">SUMMARY</env>
       <env name="ESMFMKFILE">/home/users/p62939/esmf/lib/libg/Unicos.cce.64.mpi.default/esmf.mk</env>
     </environment_variables>
   </machine>
@@ -3373,8 +3363,6 @@ This allows using a different mpirun command to launch unit tests
       </modules>
     </module_system>
     <environment_variables comp_interface="nuopc">
-      <env name="ESMF_RUNTIME_PROFILE">ON</env>
-      <env name="ESMF_RUNTIME_PROFILE_OUTPUT">SUMMARY</env>
       <env name="UGCSINPUTPATH">/scratch4/NCEPDEV/nems/noscrub/Rocky.Dunlap/INPUTDATA/benchmark-inputs/2012010100/gfs/fcst</env>
       <env name="UGCSFIXEDFILEPATH">/scratch4/NCEPDEV/nems/noscrub/Rocky.Dunlap/INPUTDATA/fix_am</env>
       <env name="UGCSADDONPATH">/scratch4/NCEPDEV/nems/noscrub/Rocky.Dunlap/INPUTDATA/addon</env>
@@ -3543,10 +3531,6 @@ This allows using a different mpirun command to launch unit tests
       <env name="OMP_STACKSIZE">256M</env>
       <env name="NETCDF_PATH">$ENV{NETCDF}</env>
     </environment_variables>
-    <environment_variables comp_interface="nuopc">
-      <env name="ESMF_RUNTIME_PROFILE">ON</env>
-      <env name="ESMF_RUNTIME_PROFILE_OUTPUT">SUMMARY</env>
-    </environment_variables>
   </machine>
 
   <machine MACH="ubuntu-latest">
@@ -3667,5 +3651,10 @@ This allows using a different mpirun command to launch unit tests
     <default_run_exe>${EXEROOT}/cesm.exe </default_run_exe>
     <default_run_misc_suffix> >> cesm.log.$LID 2>&amp;1 </default_run_misc_suffix>
   </default_run_suffix>
+  <!-- default env variables set on all systems -->
+  <environment_variables comp_interface="nuopc">
+    <env name="ESMF_RUNTIME_PROFILE">ON</env>
+    <env name="ESMF_RUNTIME_PROFILE_OUTPUT">SUMMARY</env>
+  </environment_variables>
 
 </config_machines>

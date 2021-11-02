@@ -87,6 +87,7 @@
       <xs:sequence>
         <xs:element ref="machine" minOccurs="1" maxOccurs="unbounded"/>
         <xs:element ref="default_run_suffix" minOccurs="0" maxOccurs="1"/>
+        <xs:element ref="environment_variables" minOccurs="0" maxOccurs="unbounded"/>
       </xs:sequence>
       <xs:attribute ref="version"/>
     </xs:complexType>
@@ -180,12 +181,12 @@
         <!-- module_system: how and what modules to load on this system ,
              see detail below -->
         <xs:element ref="module_system" minOccurs="1" maxOccurs="1"/>
-        <!-- environment_variables: environment_variables to set on this system,
-          see detail below-->
         <xs:element ref="RUNDIR" minOccurs="0" maxOccurs="1"/>
         <xs:element ref="EXEROOT" minOccurs="0" maxOccurs="1"/>
         <xs:element ref="TEST_TPUT_TOLERANCE" minOccurs="0" maxOccurs="1"/>
         <xs:element ref="MAX_GB_OLD_TEST_DATA" minOccurs="0" maxOccurs="1"/>
+        <!-- environment_variables: environment_variables to set on this system,
+          see detail below-->
         <xs:element minOccurs="0" maxOccurs="unbounded" ref="environment_variables"/>
         <xs:element minOccurs="0" maxOccurs="unbounded" ref="resource_limits"/>
       </xs:sequence>
