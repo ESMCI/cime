@@ -51,6 +51,9 @@ def _pre_run_check(case, lid, skip_pnl=False, da_cycle=0):
 
     os.makedirs(os.path.join(rundir, "timing", "checkpoints"))
 
+    if os.path.exists(os.path.join(rundir,"ESMF_Profile.summary")):
+        os.rename(os.path.join(rundir,"ESMF_Profile.summary"),os.path.join(rundir,"ESMF_Profile.summary.")+time.strftime("%Y-%m-%d_%H:%M:%S"))
+    
     # This needs to be done everytime the LID changes in order for log files to be set up correctly
     # The following also needs to be called in case a user changes a user_nl_xxx file OR an env_run.xml
     # variable while the job is in the queue
@@ -363,6 +366,8 @@ def case_run(self, skip_pnl=False, set_continue_run=False, submit_resubmits=Fals
             model_log("e3sm", logger, "{} GET_TIMING BEGINS HERE".format(time.strftime("%Y-%m-%d %H:%M:%S")))
             get_timing(self, lid)     # Run the getTiming script
             model_log("e3sm", logger, "{} GET_TIMING HAS FINISHED".format(time.strftime("%Y-%m-%d %H:%M:%S")))
+            if os.path.exists(os.path.join(rundir,"ESMF_Profile.summary")):
+                os.rename(os.path.join(rundir,"ESMF_Profile.summary"),os.path.join(rundir,"ESMF_Profile.summary")+lid)
 
 
         if data_assimilation:

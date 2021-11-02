@@ -2457,6 +2457,21 @@ This allows using a different mpirun command to launch unit tests
         <command name="load">parallel-netcdf/4.6.2</command>
       </modules>
     </module_system>
+    <environment_variables mpilib="impi">
+      <env name="OMP_STACKSIZE">256M</env>
+      <env name="UCX_UD_MLX5_TIMEOUT">600000000.00us</env>
+      <env name="UCX_RC_MLX5_TIMEOUT"  >1200000.00us</env>
+      <env name="UCX_DC_MLX5_TIMEOUT"  >1200000.00us</env>
+      <env name="UCX_RC_MLX5_RETRY_COUNT">80</env>
+      <env name="UCX_DC_MLX5_RETRY_COUNT">80</env>
+      <env name="MY_MPIRUN_OPTIONS">-prepend-rank </env>
+      <env name="I_MPI_ADJUST_ALLREDUCE">4</env>
+      <env name="I_MPI_ADJUST_GATHER">3</env>
+      <env name="I_MPI_ADJUST_GATHERV">3</env>
+      <env name="I_MPI_ADJUST_SCATTER">3</env>
+      <env name="I_MPI_ADJUST_SCATTERV">2</env>
+      <env name="I_MPI_EXTRA_FILESYSTEM">enable</env>
+     </environment_variables>
     <environment_variables compiler="intel" DEBUG="TRUE" mpilib="impi">
       <env name="ESMFMKFILE">/work/02503/edwardsj/ESMF8.2.0/lib/libg/Linux.intel.64.intelmpi.default/esmf.mk</env>
     </environment_variables>
