@@ -186,7 +186,7 @@ class BaseTestCase(unittest.TestCase):
         if self._hasbatch or always_wait:
             timeout_arg = "--timeout={}".format(self.GLOBAL_TIMEOUT) if self.GLOBAL_TIMEOUT is not None else ""
             expected_stat = 0 if expect_works else utils.TESTS_FAILED_ERR_CODE
-            self.run_cmd_assert_result(self, "{}/wait_for_tests {} *{}/TestStatus".format(self.TOOLS_DIR, timeout_arg, test_id),
+            self.run_cmd_assert_result("{}/wait_for_tests {} *{}/TestStatus".format(self.TOOLS_DIR, timeout_arg, test_id),
                                   from_dir=self._testroot, expected_stat=expected_stat)
 
     def get_casedir(self, case_fragment, all_cases):

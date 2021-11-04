@@ -5,6 +5,9 @@ from CIME.tests import base
 
 
 class TestQueryConfig(base.BaseTestCase):
+    def setUp(self):
+        super().setUp()
+
     def test_query_compsets(self):
         utils.run_cmd_no_fail("{}/query_config --compsets".format(self.SCRIPT_DIR))
 

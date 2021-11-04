@@ -248,14 +248,14 @@ file(WRITE query.out "${{{}}}")
 
         environment = os.environ.copy()
         environment.update(env)
-        os_ = MACHINE.get_value("OS")
+        os_ = self.parent.MACHINE.get_value("OS")
         # cmake will not work on cray systems without this flag
         if os_ == "CNL":
             cmake_args = "-DCMAKE_SYSTEM_NAME=Catamount"
         else:
             cmake_args = ""
 
-        run_cmd_assert_result(self.parent, "cmake %s . 2>&1" % cmake_args, from_dir=temp_dir, env=environment)
+        self.parent.run_cmd_assert_result("cmake %s . 2>&1" % cmake_args, from_dir=temp_dir, env=environment)
 
         with open(output_name, "r") as output:
             query_result = output.read().strip()
