@@ -154,13 +154,14 @@ query:
         with open(makefile_name, "w") as makefile:
             makefile.write(self._makefile_template.format(var_name))
 
-        environment = os.environ.copy()
+        # environment = os.environ.copy()
+        environment = dict(PATH=os.environ["PATH"])
         environment.update(env)
         environment.update(var)
-        gmake_exe = MACHINE.get_value("GMAKE")
+        gmake_exe = self.parent.MACHINE.get_value("GMAKE")
         if gmake_exe is None:
             gmake_exe = "gmake"
-        run_cmd_assert_result(self.parent, "%s query --directory=%s 2>&1" % (gmake_exe, temp_dir), env=environment)
+        self.parent.run_cmd_assert_result("%s query --directory=%s 2>&1" % (gmake_exe, temp_dir), env=environment)
 
         with open(output_name, "r") as output:
             query_result = output.read().strip()
@@ -246,7 +247,8 @@ file(WRITE query.out "${{{}}}")
         with open(cmakelists_name, "w") as cmakelists:
             cmakelists.write(self._cmakelists_template.format(var_name))
 
-        environment = os.environ.copy()
+        # environment = os.environ.copy()
+        environment = dict(PATH=os.environ["PATH"])
         environment.update(env)
         os_ = self.parent.MACHINE.get_value("OS")
         # cmake will not work on cray systems without this flag

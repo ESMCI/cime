@@ -12,6 +12,8 @@ class TestManageAndQuery(base.BaseTestCase):
         if utils.get_model() == "e3sm":
             self.skipTest("Skipping XML test management tests. E3SM does not use this.")
 
+        super().setUp()
+
     def _run_and_assert_query_testlist(self, extra_args=""):
         """Ensure that query_testlist runs successfully with the given extra arguments"""
         files = Files()

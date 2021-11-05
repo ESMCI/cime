@@ -15,12 +15,13 @@ from CIME.XML.machines import Machines
 
 
 class BaseTestCase(unittest.TestCase):
+    # TODO Should we replace the use of class variables
     MACHINE = Machines(machine=os.environ.get("CIME_MACHINE", "docker"))
     SCRIPT_DIR = utils.get_scripts_root()
     TOOLS_DIR = os.path.join(SCRIPT_DIR, "Tools")
-    TEST_ROOT = os.path.join(
-        MACHINE.get_value("CIME_OUTPUT_ROOT"),
-        f"scripts_regression_test.{utils.get_timestamp()}")
+    TEST_ROOT = os.environ.get("TEST_ROOT",
+                               os.path.join(MACHINE.get_value("CIME_OUTPUT_ROOT"),
+                                            f"scripts_regression_test.{utils.get_timestamp()}"))
     TEST_COMPILER = os.environ.get("TEST_COMPILER", "gnu")
     TEST_MPILIB = os.environ.get("TEST_MPILIB", "openmpi")
     FAST_ONLY = os.environ.get("FAST_ONLY", False)

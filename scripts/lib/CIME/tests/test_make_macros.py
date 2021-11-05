@@ -23,6 +23,8 @@ class TestMakeMacros(base.BaseTestCase):
 
         self._maker = Compilers(test_utils.MockMachines(self.test_machine, self.test_os), version=2.0)
 
+        super().setUp()
+
     def xml_to_tester(self, xml_string):
         """Helper that directly converts an XML string to a MakefileTester."""
         test_xml = test_utils._wrap_config_compilers_xml(xml_string)
@@ -120,7 +122,7 @@ class TestMakeMacros(base.BaseTestCase):
         """The macro writer dies if given many defaults."""
         xml1 = """<compiler><MPI_PATH>/path/to/default</MPI_PATH></compiler>"""
         xml2 = """<compiler><MPI_PATH>/path/to/other_default</MPI_PATH></compiler>"""
-        with self.assertRaisesRegex(self,
+        with self.assertRaisesRegex(
                 utils.CIMEError,
                 "Variable MPI_PATH is set ambiguously in config_compilers.xml."):
             self.xml_to_tester(xml1+xml2)
@@ -129,7 +131,7 @@ class TestMakeMacros(base.BaseTestCase):
         """The macro writer dies if given many matches for a given configuration."""
         xml1 = """<compiler><MPI_PATH MPILIB="mpich">/path/to/mpich</MPI_PATH></compiler>"""
         xml2 = """<compiler><MPI_PATH MPILIB="mpich">/path/to/mpich2</MPI_PATH></compiler>"""
-        with self.assertRaisesRegex(self,
+        with self.assertRaisesRegex(
                 utils.CIMEError,
                 "Variable MPI_PATH is set ambiguously in config_compilers.xml."):
             self.xml_to_tester(xml1+xml2)
@@ -138,7 +140,7 @@ class TestMakeMacros(base.BaseTestCase):
         """The macro writer dies if given an ambiguous set of matches."""
         xml1 = """<compiler><MPI_PATH MPILIB="mpich">/path/to/mpich</MPI_PATH></compiler>"""
         xml2 = """<compiler><MPI_PATH DEBUG="FALSE">/path/to/mpi-debug</MPI_PATH></compiler>"""
-        with self.assertRaisesRegex(self,
+        with self.assertRaisesRegex(
                 utils.CIMEError,
                 "Variable MPI_PATH is set ambiguously in config_compilers.xml."):
             self.xml_to_tester(xml1+xml2)
