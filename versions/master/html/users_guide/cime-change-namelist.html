@@ -513,7 +513,7 @@ The namelist file for DROF is <code class="docutils literal notranslate"><span c
 <h3><span class="section-number">7.3.1. </span>CAM<a class="headerlink" href="#cam" title="Permalink to this headline">¶</a></h3>
 <p>CIME calls <strong>$SRCROOT/components/cam/cime_config/buildnml</strong> to generate the CAM’s namelist variables.</p>
 <p>CAM-specific CIME xml variables are set in <strong>$SRCROOT/components/cam/cime_config/config_component.xml</strong> and are used by CAM’s <strong>buildnml</strong> script to generate the namelist.</p>
-<p>For complete documentation of namelist settings, see <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">CAM namelist variables</a>.</p>
+<p>For complete documentation of namelist settings, see <a class="reference external" href="https://www.cesm.ucar.edu/models/cesm2/settings/current/cam_nml.html">CAM namelist variables</a>.</p>
 <p>To modify CAM namelist settings, add the appropriate keyword/value pair at the end of the <strong>$CASEROOT/user_nl_cam</strong> file. (See the documentation for each file at the top of that file.)</p>
 <p>For example, to change the solar constant to 1363.27, modify <strong>user_nl_cam</strong> file to contain the following line at the end:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">solar_const</span><span class="o">=</span><span class="mf">1363.27</span>
@@ -525,7 +525,7 @@ The namelist file for DROF is <code class="docutils literal notranslate"><span c
 <h3><span class="section-number">7.3.2. </span>CLM<a class="headerlink" href="#clm" title="Permalink to this headline">¶</a></h3>
 <p>CIME calls <strong>$SRCROOT/components/clm/cime_config/buildnml</strong> to generate the CLM namelist variables.</p>
 <p>CLM-specific CIME xml variables are set in <strong>$SRCROOT/components/clm/cime_config/config_component.xml</strong> and are used by CLM’s <strong>buildnml</strong> script to generate the namelist.</p>
-<p>For complete documentation of namelist settings, see <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">CLM namelist variables</a>.</p>
+<p>For complete documentation of namelist settings, see <a class="reference external" href="https://www.cesm.ucar.edu/models/cesm2/settings/current/clm5_0_nml.html">CLM namelist variables</a>.</p>
 <p>To modify CLM namelist settings, add the appropriate keyword/value pair at the end of the <strong>$CASEROOT/user_nl_clm</strong> file.</p>
 <p>To see the result, call <a class="reference external" href="../Tools_user/preview_namelists.html">preview_namelists</a> and verify that the changes appear correctly in <strong>CaseDocs/lnd_in</strong>.</p>
 </div>
@@ -538,28 +538,27 @@ The namelist file for DROF is <code class="docutils literal notranslate"><span c
 <div class="section" id="cice">
 <h3><span class="section-number">7.3.4. </span>CICE<a class="headerlink" href="#cice" title="Permalink to this headline">¶</a></h3>
 <p>CIME calls <strong>$SRCROOT/components/cice/cime_config/buildnml</strong> to generate the CICE namelist variables.</p>
-<p>For complete documentation of namelist settings, see <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">CICE namelist variables</a>.</p>
+<p>For complete documentation of namelist settings, see <a class="reference external" href="https://www.cesm.ucar.edu/models/cesm2/settings/current/cice_nml.html">CICE namelist variables</a>.</p>
 <p>To modify CICE namelist settings, add the appropriate keyword/value pair at the end of the <strong>$CASEROOT/user_nl_cice</strong> file.
 (See the documentation for each file at the top of that file.)
 To see the result of your change, call <a class="reference external" href="../Tools_user/preview_namelists.html">preview_namelists</a> and verify that the changes appear correctly in <strong>CaseDocs/ice_in</strong>.</p>
-<p>In addition, <a class="reference external" href="../Tools_user/case.setup.html">case.setup</a>  creates CICE’s compile time <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">block decomposition variables</a> in <strong>env_build.xml</strong> as follows:</p>
+<p>In addition, <a class="reference external" href="../Tools_user/case.setup.html">case.setup</a>  creates CICE’s compile time <a class="reference external" href="https://www.cesm.ucar.edu/models/cesm2/settings/current/cice_input.html">block decomposition variables</a> in <strong>env_build.xml</strong> as follows:</p>
 </div>
 <div class="section" id="pop2">
 <h3><span class="section-number">7.3.5. </span>POP2<a class="headerlink" href="#pop2" title="Permalink to this headline">¶</a></h3>
 <p>CIME calls <strong>$SRCROOT/components/pop2/cime_config/buildnml</strong> to generate the POP2 namelist variables.</p>
-<p>For complete documentation of namelist settings, see <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">POP2 namelist variables</a>.</p>
+<p>For complete documentation of namelist settings, see <a class="reference external" href="https://www.cesm.ucar.edu/models/cesm2/settings/current/pop2_nml.html">POP2 namelist variables</a>.</p>
 <p>To modify POP2 namelist settings, add the appropriate keyword/value pair at the end of the <strong>$CASEROOT/user_nl_pop2</strong> file.
 (See the documentation for each file at the top of that file.)
 To see the result of your change, call <a class="reference external" href="../Tools_user/preview_namelists.html">preview_namelists</a> and verify that the changes appear correctly in <strong>CaseDocs/ocn_in</strong>.</p>
-<p>In addition, <a class="reference external" href="../Tools_user/case.setup.html">case.setup</a> generates POP2’s compile-time <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">block decomposition variables</a> in <strong>env_build.xml</strong> as shown here:</p>
 </div>
 <div class="section" id="cism">
 <h3><span class="section-number">7.3.6. </span>CISM<a class="headerlink" href="#cism" title="Permalink to this headline">¶</a></h3>
-<p>See <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">CISM namelist variables</a> for a complete description of the CISM runtime namelist variables. This includes variables that appear both in <strong>cism_in</strong> and in <strong>cism.config</strong>.</p>
+<p>See <a class="reference external" href="https://www.cesm.ucar.edu/models/cesm2/settings/current/cism_nml.html">CISM namelist variables</a> for a complete description of the CISM runtime namelist variables. This includes variables that appear both in <strong>cism_in</strong> and in <strong>cism.config</strong>.</p>
 <p>To modify any of these settings, add the appropriate keyword/value pair at the end of the <strong>user_nl_cism</strong> file. (See the documentation for each file at the top of that file.)
 Note that there is no distinction between variables that will appear in <strong>cism_in</strong> and those that will appear in <strong>cism.config</strong>: simply add a new variable setting in <strong>user_nl_cism</strong>, and it will be added to the appropriate place in <strong>cism_in</strong> or <strong>cism.config</strong>.
 To see the result of your change, call <a class="reference external" href="../Tools_user/preview_namelists.html">preview_namelists</a> and verify that the changes appear correctly in <strong>CaseDocs/cism_in</strong> and <strong>CaseDocs/cism.config</strong>.</p>
-<p>Some CISM runtime settings are sets via <strong>env_run.xml</strong>, as documented in <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">CISM runtime variables</a>.</p>
+<p>Some CISM runtime settings are sets via <strong>env_run.xml</strong>, as documented in <a class="reference external" href="https://www.cesm.ucar.edu/models/cesm2/settings/current/cism_input.html">CISM runtime variables</a>.</p>
 </div>
 </div>
 </div>

@@ -349,14 +349,26 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;machine is &quot;</span> <span class="o">+</span> <span class="n">machtocheck</span><span class="p">)</span>
             <span class="n">regex_str_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_optional_child</span><span class="p">(</span><span class="s2">&quot;NODENAME_REGEX&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">node</span><span class="p">)</span>
             <span class="n">regex_str</span> <span class="o">=</span> <span class="n">machtocheck</span> <span class="k">if</span> <span class="n">regex_str_node</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">regex_str_node</span><span class="p">)</span>
-
+            
             <span class="k">if</span> <span class="n">regex_str</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;machine regex string is &quot;</span> <span class="o">+</span> <span class="n">regex_str</span><span class="p">)</span>
-                <span class="n">regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">regex_str</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">regex</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">nametomatch</span><span class="p">):</span>
-                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Found machine: </span><span class="si">{}</span><span class="s2"> matches </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">machtocheck</span><span class="p">,</span> <span class="n">nametomatch</span><span class="p">))</span>
-                    <span class="n">machine</span> <span class="o">=</span> <span class="n">machtocheck</span>
-                    <span class="k">break</span>
+                <span class="c1"># an environment variable can be used</span>
+                <span class="k">if</span> <span class="n">regex_str</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;$ENV&quot;</span><span class="p">):</span>
+                    <span class="n">machine</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_resolved_value</span><span class="p">(</span><span class="n">regex_str</span><span class="p">,</span> <span class="n">allow_unresolved_envvars</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">machine</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;$ENV&quot;</span><span class="p">):</span>
+                        <span class="k">try</span><span class="p">:</span>
+                            <span class="n">match</span><span class="p">,</span><span class="n">machine</span> <span class="o">=</span> <span class="n">machine</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
+                        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                            <span class="n">expect</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span><span class="s2">&quot;Bad formation of NODENAME_REGEX.  Expected envvar:value, found </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">regex_str</span><span class="p">))</span>
+                        <span class="k">if</span> <span class="n">match</span> <span class="o">==</span> <span class="n">machine</span><span class="p">:</span>
+                            <span class="n">machine</span> <span class="o">=</span> <span class="n">machtocheck</span>
+                            <span class="k">break</span>
+                <span class="k">else</span><span class="p">:</span>    
+                    <span class="n">regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">regex_str</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">regex</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">nametomatch</span><span class="p">):</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Found machine: </span><span class="si">{}</span><span class="s2"> matches </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">machtocheck</span><span class="p">,</span> <span class="n">nametomatch</span><span class="p">))</span>
+                        <span class="n">machine</span> <span class="o">=</span> <span class="n">machtocheck</span>
+                        <span class="k">break</span>
 
         <span class="k">return</span> <span class="n">machine</span>
 
@@ -385,7 +397,10 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get Value of fields in the config_machines.xml file</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">expect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">machine_node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Machine object has no machine defined&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">machine_node</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Machine object has no machine defined&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
         <span class="n">expect</span><span class="p">(</span><span class="n">subgroup</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;This class does not support subgroups&quot;</span><span class="p">)</span>
         <span class="n">value</span> <span class="o">=</span> <span class="kc">None</span>
 

@@ -274,7 +274,7 @@ The steps for adding a new component grid to the model system follow. This proce
 <li><p>The first step is to generate SCRIP grid files for the atmosphere, land, ocean, land-ice, river and wave component grids that will comprise your model grid.
 If you are introducing just one new grid, you can leverage SCRIP grid files that are already in place for the other components.
 There is no supported functionality for creating the SCRIP format file.</p></li>
-<li><p>Build the <strong>check_map</strong> utility by following the instructions in <strong>$CCSMROOT/mapping/check_maps/INSTALL</strong>. Also confirm that the <a class="reference external" href="http://www.cesm.ucar.edu/models2.0/external-link-here">ESMF</a> toolkit is installed on your machine.</p>
+<li><p>Build the <strong>check_map</strong> utility by following the instructions in <strong>$CCSMROOT/mapping/check_maps/INSTALL</strong>. Also confirm that the ESMF toolkit is installed on your machine.</p>
 <p>When you add new user-defined grid files, you also need to generate a set of mapping files so the coupler can send data from a component on one grid to a component on another grid.
 There is an ESMF tool that tests the mapping file by comparing a mapping of a smooth function to its true value on the destination grid.
 We have tweaked this utility to test a suite of smooth functions, as well as ensure conservation (when the map is conservative).

@@ -227,6 +227,15 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_file_node_text</span><span class="p">([</span><span class="s1">&#39;hist_file_extension&#39;</span><span class="p">],</span><span class="n">archive_entry</span><span class="p">)</span></div>
 
+<div class="viewcode-block" id="ArchiveBase.get_hist_file_ext_regexes"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.archive_base.ArchiveBase.get_hist_file_ext_regexes">[docs]</a>    <span class="k">def</span> <span class="nf">get_hist_file_ext_regexes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">archive_entry</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        get the xml text associated with each of the hist_file_ext_regex entries</span>
+<span class="sd">        based at root archive_entry (root is based on component name)</span>
+<span class="sd">        returns a list of text entries or</span>
+<span class="sd">        an empty list if no entries are found</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_file_node_text</span><span class="p">([</span><span class="s1">&#39;hist_file_ext_regex&#39;</span><span class="p">],</span><span class="n">archive_entry</span><span class="p">)</span></div>
+
 <div class="viewcode-block" id="ArchiveBase.get_entry_value"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.archive_base.ArchiveBase.get_entry_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_entry_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">archive_entry</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        get the xml text associated with name under root archive_entry</span>
@@ -242,10 +251,11 @@
 <span class="sd">        get the most recent history files in directory from_dir with suffix if provided</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">test_hists</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_all_hist_files</span><span class="p">(</span><span class="n">casename</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">from_dir</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="n">suffix</span><span class="p">,</span> <span class="n">ref_case</span><span class="o">=</span><span class="n">ref_case</span><span class="p">)</span>
+        <span class="n">ext_regexes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_hist_file_ext_regexes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_entry</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_compname</span><span class="p">(</span><span class="n">model</span><span class="p">)))</span>
         <span class="n">latest_files</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">histlist</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">hist</span> <span class="ow">in</span> <span class="n">test_hists</span><span class="p">:</span>
-            <span class="n">ext</span> <span class="o">=</span> <span class="n">_get_extension</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">hist</span><span class="p">)</span>
+            <span class="n">ext</span> <span class="o">=</span> <span class="n">_get_extension</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">hist</span><span class="p">,</span> <span class="n">ext_regexes</span><span class="p">)</span>
             <span class="n">latest_files</span><span class="p">[</span><span class="n">ext</span><span class="p">]</span> <span class="o">=</span> <span class="n">hist</span>
 
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">latest_files</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
@@ -257,9 +267,7 @@
 <span class="sd">        gets all history files in directory from_dir with suffix (if provided)</span>
 <span class="sd">        ignores files with ref_case in the name if ref_case is provided</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">dmodel</span> <span class="o">=</span> <span class="n">model</span>
-        <span class="k">if</span> <span class="n">model</span> <span class="o">==</span> <span class="s2">&quot;cpl&quot;</span><span class="p">:</span>
-            <span class="n">dmodel</span> <span class="o">=</span> <span class="s2">&quot;drv&quot;</span>
+        <span class="n">dmodel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_compname</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
         <span class="c1"># remove when component name is changed</span>
         <span class="k">if</span> <span class="n">model</span> <span class="o">==</span> <span class="s2">&quot;fv3gfs&quot;</span><span class="p">:</span>
             <span class="n">model</span> <span class="o">=</span> <span class="s2">&quot;fv3&quot;</span>
@@ -296,40 +304,56 @@
         <span class="n">hist_files</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;get_all_hist_files returns </span><span class="si">{}</span><span class="s2"> for model </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">hist_files</span><span class="p">,</span> <span class="n">model</span><span class="p">))</span>
 
-        <span class="k">return</span> <span class="n">hist_files</span></div></div>
+        <span class="k">return</span> <span class="n">hist_files</span></div>
 
-<span class="k">def</span> <span class="nf">_get_extension</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">filepath</span><span class="p">):</span>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_get_compname</span><span class="p">(</span><span class="n">model</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Given a model name, return a possibly-modified name for use as the compname argument</span>
+<span class="sd">        to get_entry</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">model</span> <span class="o">==</span> <span class="s2">&quot;cpl&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;drv&quot;</span>
+        <span class="k">return</span> <span class="n">model</span></div>
+
+<span class="k">def</span> <span class="nf">_get_extension</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">ext_regexes</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    For a hist file for the given model, return what we call the &quot;extension&quot;</span>
 
 <span class="sd">    model - The component model</span>
 <span class="sd">    filepath - The path of the hist file</span>
-<span class="sd">    &gt;&gt;&gt; _get_extension(&quot;cpl&quot;, &quot;cpl.hi.nc&quot;)</span>
+<span class="sd">    ext_regexes - A list of model-specific regexes that are matched before falling back on</span>
+<span class="sd">        the general-purpose regex, r&#39;\w+&#39;. In many cases this will be an empty list,</span>
+<span class="sd">        signifying that we should just use the general-purpose regex.</span>
+
+<span class="sd">    &gt;&gt;&gt; _get_extension(&quot;cpl&quot;, &quot;cpl.hi.nc&quot;, [])</span>
 <span class="sd">    &#39;hi&#39;</span>
-<span class="sd">    &gt;&gt;&gt; _get_extension(&quot;cpl&quot;, &quot;cpl.h.nc&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; _get_extension(&quot;cpl&quot;, &quot;cpl.h.nc&quot;, [])</span>
 <span class="sd">    &#39;h&#39;</span>
-<span class="sd">    &gt;&gt;&gt; _get_extension(&quot;cpl&quot;, &quot;cpl.h1.nc.base&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; _get_extension(&quot;cpl&quot;, &quot;cpl.h1.nc.base&quot;, [])</span>
 <span class="sd">    &#39;h1&#39;</span>
-<span class="sd">    &gt;&gt;&gt; _get_extension(&quot;cpl&quot;, &quot;TESTRUNDIFF.cpl.hi.0.nc.base&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; _get_extension(&quot;cpl&quot;, &quot;TESTRUNDIFF.cpl.hi.0.nc.base&quot;, [])</span>
 <span class="sd">    &#39;hi&#39;</span>
-<span class="sd">    &gt;&gt;&gt; _get_extension(&quot;cpl&quot;, &quot;TESTRUNDIFF_Mmpi-serial.f19_g16_rx1.A.melvin_gnu.C.fake_testing_only_20160816_164150-20160816_164240.cpl.h.nc&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; _get_extension(&quot;cpl&quot;, &quot;TESTRUNDIFF_Mmpi-serial.f19_g16_rx1.A.melvin_gnu.C.fake_testing_only_20160816_164150-20160816_164240.cpl.h.nc&quot;, [])</span>
 <span class="sd">    &#39;h&#39;</span>
-<span class="sd">    &gt;&gt;&gt; _get_extension(&quot;clm&quot;,&quot;clm2_0002.h0.1850-01-06-00000.nc&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; _get_extension(&quot;clm&quot;,&quot;clm2_0002.h0.1850-01-06-00000.nc&quot;, [])</span>
 <span class="sd">    &#39;0002.h0&#39;</span>
-<span class="sd">    &gt;&gt;&gt; _get_extension(&quot;pop&quot;,&quot;PFS.f09_g16.B1850.cheyenne_intel.allactive-default.GC.c2_0_b1f2_int.pop.h.ecosys.nday1.0001-01-02.nc&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; _get_extension(&quot;pop&quot;,&quot;PFS.f09_g16.B1850.cheyenne_intel.allactive-default.GC.c2_0_b1f2_int.pop.h.ecosys.nday1.0001-01-02.nc&quot;, [])</span>
 <span class="sd">    &#39;h&#39;</span>
-<span class="sd">    &gt;&gt;&gt; _get_extension(&quot;mom&quot;, &quot;ga0xnw.mom6.frc._0001_001.nc&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; _get_extension(&quot;mom&quot;, &quot;ga0xnw.mom6.frc._0001_001.nc&quot;, [])</span>
 <span class="sd">    &#39;frc&#39;</span>
-<span class="sd">    &gt;&gt;&gt; _get_extension(&quot;mom&quot;, &quot;ga0xnw.mom6.sfc.day._0001_001.nc&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; _get_extension(&quot;mom&quot;, &quot;ga0xnw.mom6.sfc.day._0001_001.nc&quot;, [])</span>
 <span class="sd">    &#39;sfc.day&#39;</span>
-<span class="sd">    &gt;&gt;&gt; _get_extension(&quot;mom&quot;, &quot;bixmc5.mom6.prog._0001_01_05_84600.nc&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; _get_extension(&quot;mom&quot;, &quot;bixmc5.mom6.prog._0001_01_05_84600.nc&quot;, [])</span>
 <span class="sd">    &#39;prog&#39;</span>
-<span class="sd">    &gt;&gt;&gt; _get_extension(&quot;mom&quot;, &quot;bixmc5.mom6.hm._0001_01_03_42300.nc&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; _get_extension(&quot;mom&quot;, &quot;bixmc5.mom6.hm._0001_01_03_42300.nc&quot;, [])</span>
 <span class="sd">    &#39;hm&#39;</span>
-<span class="sd">    &gt;&gt;&gt; _get_extension(&quot;mom&quot;, &quot;bixmc5.mom6.hmz._0001_01_03_42300.nc&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; _get_extension(&quot;mom&quot;, &quot;bixmc5.mom6.hmz._0001_01_03_42300.nc&quot;, [])</span>
 <span class="sd">    &#39;hmz&#39;</span>
-<span class="sd">    &gt;&gt;&gt; _get_extension(&quot;pop&quot;, &quot;casename.pop.dd.0001-01-02-00000&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; _get_extension(&quot;pop&quot;, &quot;casename.pop.dd.0001-01-02-00000&quot;, [])</span>
 <span class="sd">    &#39;dd&#39;</span>
+<span class="sd">    &gt;&gt;&gt; _get_extension(&quot;cism&quot;, &quot;casename.cism.gris.h.0002-01-01-0000.nc&quot;, [r&quot;\w+\.\w+&quot;])</span>
+<span class="sd">    &#39;gris.h&#39;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Remove with component namechange</span>
     <span class="k">if</span> <span class="n">model</span> <span class="o">==</span> <span class="s2">&quot;fv3gfs&quot;</span><span class="p">:</span>
@@ -340,7 +364,8 @@
         <span class="n">model</span> <span class="o">=</span> <span class="s2">&quot;ww3&quot;</span>
     <span class="n">basename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
     <span class="n">m</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">ext_regexes</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="n">ext_regexes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">ext_regexes</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="c1"># First add any model-specific extension regexes; these will be checked before the</span>
     <span class="c1"># general regex</span>
