@@ -18,8 +18,6 @@ Table of contents
       
    what_cime/index.rst
    users_guide/index.rst
-   data_models/index.rst
-   driver_cpl/index.rst
    build_cpl/index.rst
    misc_tools/index.rst
 
