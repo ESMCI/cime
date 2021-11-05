@@ -342,7 +342,7 @@ To modify CICE namelist settings, add the appropriate keyword/value pair at the 
 (See the documentation for each file at the top of that file.)
 To see the result of your change, call `preview_namelists <../Tools_user/preview_namelists.html>`_ and verify that the changes appear correctly in **CaseDocs/ice_in**.
 
-In addition, `case.setup <../Tools_user/case.setup.html>`_  creates CICE's compile time `block decomposition variables <https://www.cesm.ucar.edu/models/cesm2/settings/current/cice_input.html>`_ in **env_build.xml** as follows:
+In addition, `case.setup <../Tools_user/case.setup.html>`_  creates CICE's compile time `block decomposition variables <https://www.cesm.ucar.edu/models/cesm2/settings/current/cice_input.html>`_ in **env_build.xml**.
 
 POP2
 ~~~~
