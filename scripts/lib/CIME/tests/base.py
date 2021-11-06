@@ -14,22 +14,38 @@ from CIME import utils
 from CIME.XML.machines import Machines
 
 
+def typed_os_environ(key, default_value, expected_type=None):
+    # Infer type if not explicitly set
+    dst_type = expected_type or type(default_value)
+
+    value = os.environ.get(key, default_value)
+
+    if value is None and dst_type == bool:
+        # Any else is false, might want to be more strict
+        return value.lower() == "true"
+
+    if value is None:
+        return None
+
+    return dst_type(value)
+
+
 class BaseTestCase(unittest.TestCase):
     # TODO Should we replace the use of class variables
-    MACHINE = Machines(machine=os.environ.get("CIME_MACHINE", "docker"))
+    MACHINE = Machines(machine=typed_os_environ("CIME_MACHINE", "docker"))
     SCRIPT_DIR = utils.get_scripts_root()
     TOOLS_DIR = os.path.join(SCRIPT_DIR, "Tools")
     TEST_ROOT = os.environ.get("TEST_ROOT",
                                os.path.join(MACHINE.get_value("CIME_OUTPUT_ROOT"),
                                             f"scripts_regression_test.{utils.get_timestamp()}"))
-    TEST_COMPILER = os.environ.get("TEST_COMPILER", "gnu")
-    TEST_MPILIB = os.environ.get("TEST_MPILIB", "openmpi")
-    FAST_ONLY = os.environ.get("FAST_ONLY", False)
-    NO_BATCH = os.environ.get("NO_BATCH", False)
-    NO_CMAKE = os.environ.get("NO_CMAKE", False)
-    NO_TEARDOWN = os.environ.get("NO_TEARDOWN", False)
-    NO_FORTRAN_RUN = os.environ.get("NO_FORTRAN_RUN", False)
-    GLOBAL_TIMEOUT = os.environ.get("GLOBAL_TIMEOUT", None)
+    TEST_COMPILER = typed_os_environ("TEST_COMPILER", "gnu")
+    TEST_MPILIB = typed_os_environ("TEST_COMPILER", "openmpi")
+    FAST_ONLY = typed_os_environ("FAST_ONLY", False)
+    NO_BATCH = typed_os_environ("NO_BATCH", False)
+    NO_CMAKE = typed_os_environ("NO_CMAKE", False)
+    NO_TEARDOWN = typed_os_environ("NO_TEARDOWN", False)
+    NO_FORTRAN_RUN = typed_os_environ("NO_FORTRAN_RUN", False)
+    GLOBAL_TIMEOUT = typed_os_environ("GLOBAL_TIMEOUT", None, str)
 
     def setUp(self):
         self._thread_error      = None
