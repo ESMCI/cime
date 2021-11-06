@@ -39,7 +39,7 @@ class BaseTestCase(unittest.TestCase):
                                os.path.join(MACHINE.get_value("CIME_OUTPUT_ROOT"),
                                             f"scripts_regression_test.{utils.get_timestamp()}"))
     TEST_COMPILER = typed_os_environ("TEST_COMPILER", "gnu")
-    TEST_MPILIB = typed_os_environ("TEST_COMPILER", "openmpi")
+    TEST_MPILIB = typed_os_environ("TEST_MPILIB", "openmpi")
     FAST_ONLY = typed_os_environ("FAST_ONLY", False)
     NO_BATCH = typed_os_environ("NO_BATCH", False)
     NO_CMAKE = typed_os_environ("NO_CMAKE", False)
