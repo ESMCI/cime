@@ -195,7 +195,7 @@ Each data model can be runtime-configured with its own namelist.
 Data Atmosphere (DATM)
 ~~~~~~~~~~~~~~~~~~~~~~
 
-DATM is discussed in detail in :ref:`data atmosphere overview <data-atm>`.
+DATM is discussed in detail in :ref:`data atmosphere overview <data-atm>` (**link currently broken**).
 DATM can be user-customized by changing either its  *namelist input files* or its *stream files*.
 The namelist file for DATM is **datm_in** (or **datm_in_NNN** for multiple instances).
 
@@ -217,7 +217,7 @@ After calling `preview_namelists <../Tools_user/preview_namelists.html>`_ again,
 Data Ocean (DOCN)
 ~~~~~~~~~~~~~~~~~~~~~~
 
-DOCN is discussed in detail in :ref:`data ocean overview <data-ocean>`.
+DOCN is discussed in detail in :ref:`data ocean overview <data-ocean>` (**link currently broken**).
 DOCN can be user-customized by changing either its namelist input or its stream files.
 The namelist file for DOCN is **docn_in** (or **docn_in_NNN** for multiple instances).
 
@@ -239,7 +239,7 @@ After changing this file and calling `preview_namelists <../Tools_user/preview_n
 Data Sea-ice (DICE)
 ~~~~~~~~~~~~~~~~~~~~~~
 
-DICE is discussed in detail in :ref:`data sea-ice overview <data-seaice>`.
+DICE is discussed in detail in :ref:`data sea-ice overview <data-seaice>` (**link currently broken**).
 DICE can be user-customized by changing either its namelist input or its stream files.
 The namelist file for DICE is ``dice_in`` (or ``dice_in_NNN`` for multiple instances) and its values can be changed by editing the ``$CASEROOT`` file ``user_nl_dice`` (or ``user_nl_dice_NNN`` for multiple instances).
 
@@ -256,7 +256,7 @@ The namelist file for DICE is ``dice_in`` (or ``dice_in_NNN`` for multiple insta
 Data Land (DLND)
 ~~~~~~~~~~~~~~~~~~~~~~
 
-DLND is discussed in detail in :ref:`data land overview <data-lnd>`.
+DLND is discussed in detail in :ref:`data land overview <data-lnd>` (**link currently broken**).
 DLND can be user-customized by changing either its namelist input or its stream files.
 The namelist file for DLND is ``dlnd_in`` (or ``dlnd_in_NNN`` for multiple instances) and its values can be changed by editing the ``$CASEROOT`` file ``user_nl_dlnd`` (or ``user_nl_dlnd_NNN`` for multiple instances).
 
@@ -273,7 +273,7 @@ The namelist file for DLND is ``dlnd_in`` (or ``dlnd_in_NNN`` for multiple insta
 Data River (DROF)
 ~~~~~~~~~~~~~~~~~~~~~~
 
-DROF is discussed in detail in :ref:`data river overview <data-river>`.
+DROF is discussed in detail in :ref:`data river overview <data-river>` (**link currently broken**).
 DROF can be user-customized by changing either its namelist input or its stream files.
 The namelist file for DROF is ``drof_in`` (or ``drof_in_NNN`` for multiple instances) and its values can be changed by editing the ``$CASEROOT`` file ``user_nl_drof`` (or ``user_nl_drof_NNN`` for multiple instances).
 
