@@ -2,6 +2,9 @@
 *.pyc
 buildnmlc
 buildlib.*c
+CIME.egg-info/
+build/
+dist/
 
 # Ignore emacs backup files
 *~
