@@ -2,6 +2,7 @@
 Interface to the env_archive.xml file.  This class inherits from EnvBase
 """
 from CIME.XML.standard_module_setup import *
+from CIME import utils
 from CIME.XML.archive_base import ArchiveBase
 from CIME.XML.env_base import EnvBase
 
@@ -13,7 +14,7 @@ class EnvArchive(ArchiveBase,EnvBase):
         """
         initialize an object interface to file env_archive.xml in the case directory
         """
-        schema = os.path.join(get_cime_root(), "CIME", "config", "xml_schemas", "env_archive.xsd")
+        schema = os.path.join(utils.get_schema_path(), "env_archive.xsd")
         EnvBase.__init__(self, case_root, infile, schema=schema, read_only=read_only)
 
 

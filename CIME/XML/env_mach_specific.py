@@ -4,6 +4,7 @@ Interface to the env_mach_specific.xml file.  This class inherits from EnvBase
 from CIME.XML.standard_module_setup import *
 
 from CIME.XML.env_base import EnvBase
+from CIME import utils
 from CIME.utils import transform_vars, get_cime_root
 import string, resource
 from collections import OrderedDict
@@ -24,7 +25,7 @@ class EnvMachSpecific(EnvBase):
         standalone_configure: logical - whether this is being called from the standalone
             configure utility, outside of a case
         """
-        schema = os.path.join(get_cime_root(), "CIME", "config", "xml_schemas", "env_mach_specific.xsd")
+        schema = os.path.join(utils.get_schema_path(), "env_mach_specific.xsd")
         EnvBase.__init__(self, caseroot, infile, schema=schema, read_only=read_only)
         self._allowed_mpi_attributes = ("compiler", "mpilib", "threaded", "unit_testing", "queue", "comp_interface")
         self._comp_interface = comp_interface

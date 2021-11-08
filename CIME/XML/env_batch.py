@@ -4,6 +4,7 @@ Interface to the env_batch.xml file.  This class inherits from EnvBase
 
 from CIME.XML.standard_module_setup import *
 from CIME.XML.env_base import EnvBase
+from CIME import utils
 from CIME.utils import transform_vars, get_cime_root, convert_to_seconds, convert_to_babylonian_time, \
     get_cime_config, get_batch_script_for_job, get_logging_options, format_time
 from CIME.locked_files import lock_file, unlock_file
@@ -23,7 +24,7 @@ class EnvBatch(EnvBase):
         self._batchtype = None
         # This arbitrary setting should always be overwritten
         self._default_walltime = "00:20:00"
-        schema = os.path.join(get_cime_root(), "CIME", "config", "xml_schemas", "env_batch.xsd")
+        schema = os.path.join(utils.get_schema_path(), "env_batch.xsd")
         super(EnvBatch,self).__init__(case_root, infile, schema=schema, read_only=read_only)
 
     # pylint: disable=arguments-differ

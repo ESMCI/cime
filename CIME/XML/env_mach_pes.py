@@ -2,6 +2,7 @@
 Interface to the env_mach_pes.xml file.  This class inherits from EntryID
 """
 from CIME.XML.standard_module_setup import *
+from CIME import utils
 from CIME.XML.env_base import EnvBase
 import math
 
@@ -16,7 +17,7 @@ class EnvMachPes(EnvBase):
         self._components = components
         self._comp_interface = comp_interface
 
-        schema = os.path.join(get_cime_root(), "CIME", "config", "xml_schemas", "env_mach_pes.xsd")
+        schema = os.path.join(utils.get_schema_path(), "env_mach_pes.xsd")
         EnvBase.__init__(self, case_root, infile, schema=schema, read_only=read_only)
 
     def add_comment(self, comment):

@@ -44,6 +44,7 @@ parsed here). The only required elements are given by this example:
 
 from CIME.XML.standard_module_setup import *
 
+from CIME import utils
 from CIME.XML.generic_xml import GenericXML
 from CIME.expected_fails import ExpectedFails
 
@@ -52,7 +53,7 @@ logger = logging.getLogger(__name__)
 class ExpectedFailsFile(GenericXML):
 
     def __init__(self, infile):
-        schema = os.path.join(get_cime_root(), "CIME", "config", "xml_schemas", "expected_fails_file.xsd")
+        schema = os.path.join(utils.get_schema_path(), "expected_fails_file.xsd")
         GenericXML.__init__(self, infile, schema=schema)
 
     def get_expected_fails(self):

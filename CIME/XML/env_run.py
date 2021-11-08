@@ -5,6 +5,7 @@ from CIME.XML.standard_module_setup import *
 
 from CIME.XML.env_base import EnvBase
 
+from CIME import utils
 from CIME.utils import convert_to_type
 
 logger = logging.getLogger(__name__)
@@ -17,7 +18,7 @@ class EnvRun(EnvBase):
         """
         self._components = components
         self._pio_async_interface = False
-        schema = os.path.join(get_cime_root(), "CIME", "config", "xml_schemas", "env_entry_id.xsd")
+        schema = os.path.join(utils.get_schema_path(), "env_entry_id.xsd")
 
         EnvBase.__init__(self, case_root, infile, schema=schema, read_only=read_only)
 

@@ -266,7 +266,7 @@ def get_cime_root(case=None):
 def get_config_path():
     cimeroot = get_cime_root()
 
-    return os.path.join(cimeroot, "CIME", "config")
+    return os.path.join(cimeroot, "CIME", "data", "config")
 
 def get_schema_path():
     config_path = get_config_path()
@@ -276,7 +276,7 @@ def get_schema_path():
 def get_template_path():
     cimeroot = get_cime_root()
 
-    return os.path.join(cimeroot, "CIME", "templates")
+    return os.path.join(cimeroot, "CIME", "data", "templates")
 
 def get_src_root():
     """
