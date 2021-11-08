@@ -2064,6 +2064,7 @@ This allows using a different mpirun command to launch unit tests
       <cmd_path lang="sh">module</cmd_path>
       <modules>
         <command name="purge"></command>
+        <command name="load">lang/python/3.7.0</command>
       </modules>
       <modules compiler="gnu">
         <command name="load">compiler/gnu/9.3.0</command>
