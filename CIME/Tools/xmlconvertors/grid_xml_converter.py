@@ -165,7 +165,7 @@ class DomainNode(DataNode):
         for fop in ['file', 'path']:
             if fop in self.data:
                 for comp, mask, filename in self.data[fop]:
-                    attribs = {'{}_mask'.format(comp:mask)}
+                    attribs = {'{}{}_mask'.format(comp,mask)}
                     ET.SubElement(node, fop, attribs).text = filename
         return node
 
