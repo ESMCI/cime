@@ -35,4 +35,3 @@ set(FFLAGS_NOOPT "-O1,fp2,ipa0,scalar0,vector0")
 set(HAS_F2008_CONTIGUOUS "TRUE")
 set(LDFLAGS "-Wl,--allow-multiple-definition -h byteswapio")
 string(APPEND LDFLAGS " -h omp")
-

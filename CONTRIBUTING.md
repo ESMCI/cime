@@ -27,7 +27,7 @@ find useful? Have a few minutes to tackle an issue? In this guide we will get yo
 integrated into contributing to CIME!
 
 ## What Can I Do?
-* Tackle any unassigned [issues](https://github.com/ESMCI/CIME/issues) you wish!  
+* Tackle any unassigned [issues](https://github.com/ESMCI/CIME/issues) you wish!
 
 * Contribute code you already have. It doesn’t need to be perfect! We will help you clean
   things up, test it, etc.

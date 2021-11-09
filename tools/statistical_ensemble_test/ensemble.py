@@ -5,7 +5,7 @@ import random
 from single_run import process_args_dict, single_case
 
 #==============================================================================
-# set up and submit 12-month (original) or 9-time step (uf) run.  then create 
+# set up and submit 12-month (original) or 9-time step (uf) run.  then create
 # clones for a complete ensemble or a set of (3) test cases
 #==============================================================================
 
@@ -57,7 +57,7 @@ def main(argv):
     uf = opts_dict['uf']
 
     #check for run_type change (i.e., if doing ensemble instead of verify)
-    ens_size = opts_dict['ensemble'] 
+    ens_size = opts_dict['ensemble']
     if  ens_size > 0:
         run_type = 'ensemble'
         clone_count = ens_size - 1
@@ -65,7 +65,7 @@ def main(argv):
             print('Error: cannot have an ensemble size greater than 999.')
             sys.exit()
         print('STATUS: ensemble size = ' + str(ens_size))
-    
+
     #generate random pertlim(s) for verify
     if run_type == 'verify':
         if opts_dict['ect'] == 'pop':
@@ -76,7 +76,7 @@ def main(argv):
             else:
                 end_range = 150
             rand_ints = random_pick(3, end_range)
-        
+
     #now create cases
     print('STATUS: creating first case ...')
 
@@ -85,7 +85,7 @@ def main(argv):
         opts_dict['pertlim'] = get_pertlim_uf(rand_ints[0])
     else: #full ensemble
         opts_dict['pertlim'] = "0"
-   
+
     #first case
     single_case(opts_dict, case_flags, stat_dir)
 
@@ -170,7 +170,7 @@ def main(argv):
             #preview namelists
             command = './preview_namelists'
             ret = os.system(command)
-    
+
             #submit?
             if opts_dict["ns"] == False:
                 command = './case.submit'

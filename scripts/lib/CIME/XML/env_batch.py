@@ -199,7 +199,7 @@ class EnvBatch(EnvBase):
         if ext.startswith('.'):
             ext = ext[1:]
 
-        # A job name or job array name can be at most 230 characters.  It must consist only of alphabetic, numeric, plus 
+        # A job name or job array name can be at most 230 characters.  It must consist only of alphabetic, numeric, plus
         # sign ("+"), dash or minus or hyphen ("-"), underscore ("_"), and dot or period (".") characters
         # most of these are checked in utils:check_name, but % is not one of them.
 

@@ -1018,7 +1018,7 @@ def update_local_repo(case_dict, ignore_logs, ignore_timing):
                 os.makedirs('{0}/logs'.format(to_dir))
             os.chdir(os.path.join(from_dir, 'logs'))
             for filename in glob.glob('*.*'):
-                update_repo_add_file(filename, os.path.join(from_dir, 'logs'), 
+                update_repo_add_file(filename, os.path.join(from_dir, 'logs'),
                                      os.path.join(to_dir, 'logs'))
 
         if os.path.exists('{0}/postprocess/logs'.format(from_dir)):
@@ -1026,9 +1026,9 @@ def update_local_repo(case_dict, ignore_logs, ignore_timing):
                 os.makedirs('{0}/postprocess/logs'.format(to_dir))
             os.chdir(os.path.join(from_dir, 'postprocess/logs'))
             for filename in glob.glob('*.*'):
-                update_repo_add_file(filename, os.path.join(from_dir, 'postprocess', 'logs'), 
+                update_repo_add_file(filename, os.path.join(from_dir, 'postprocess', 'logs'),
                                      os.path.join(to_dir, 'postprocess', 'logs'))
-            
+
 
     # check if ignore_timing is specified
     if ignore_timing:
@@ -1054,7 +1054,7 @@ def update_local_repo(case_dict, ignore_logs, ignore_timing):
                 os.makedirs('{0}/timing'.format(to_dir))
             os.chdir(os.path.join(from_dir, 'timing'))
             for filename in glob.glob('*.*'):
-                update_repo_add_file(filename, os.path.join(from_dir, 'timing'), 
+                update_repo_add_file(filename, os.path.join(from_dir, 'timing'),
                                      os.path.join(to_dir, 'timing'))
 
 

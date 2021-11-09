@@ -11,7 +11,7 @@ import importlib
 from CIME.utils import expect
 try:
     import pulp
-except ImportError, e:
+except ImportError as e:
     sys.stderr.write("pulp library not installed or located. "
                      "Try pip install [--user] pulp\n")
     raise e

@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 from __future__ import print_function
 import configparser
-import sys, getopt, os 
-import numpy as np 
+import sys, getopt, os
+import numpy as np
 import netCDF4 as nc
 import time
 import re
 from asaptools.partition import EqualStride, Duplicate,EqualLength
-import asaptools.simplecomm as simplecomm 
+import asaptools.simplecomm as simplecomm
 import pyEnsLib
 
 #This routine creates a summary file from an ensemble of CAM
@@ -19,7 +19,7 @@ def main(argv):
     # Get command line stuff and store in a dictionary
     s = 'tag= compset= esize= tslice= res= sumfile= indir= sumfiledir= mach= verbose jsonfile= mpi_enable maxnorm gmonly popens cumul regx= startMon= endMon= fIndex= mpi_disable'
     optkeys = s.split()
-    try: 
+    try:
         opts, args = getopt.getopt(argv, "h", optkeys)
     except getopt.GetoptError:
         pyEnsLib.EnsSum_usage()
@@ -27,7 +27,7 @@ def main(argv):
 
     # Put command line options in a dictionary - also set defaults
     opts_dict={}
-    
+
     # Defaults
     opts_dict['tag'] = 'cesm2_0'
     opts_dict['compset'] = 'F2000climo'
@@ -51,7 +51,7 @@ def main(argv):
     opts_dict['endMon'] = 1
     opts_dict['fIndex'] = 151
 
-    # This creates the dictionary of input arguments 
+    # This creates the dictionary of input arguments
     opts_dict = pyEnsLib.getopt_parseconfig(opts,optkeys,'ES',opts_dict)
 
     verbose = opts_dict['verbose']
@@ -67,7 +67,7 @@ def main(argv):
     if not (opts_dict['tag'] and opts_dict['compset'] and opts_dict['mach'] or opts_dict['res']):
        print('ERROR: Please specify --tag, --compset, --mach and --res options  => EXITING....')
        sys.exit()
-       
+
     if opts_dict['mpi_disable'] == True:
         opts_dict['mpi_enable'] = False
 
@@ -82,7 +82,7 @@ def main(argv):
         me=simplecomm.create_comm()
     else:
         me=simplecomm.create_comm(not opts_dict['mpi_enable'])
-    
+
     if me.get_rank() == 0:
        print('STATUS: Running pyEnsSum.py')
 
@@ -108,7 +108,7 @@ def main(argv):
            ex_varlist=me.partition(ex_varlist,func=Duplicate(),involved=True)
         else:
            inc_varlist=me.partition(inc_varlist,func=Duplicate(),involved=True)
-        
+
     in_files=[]
     if(os.path.exists(input_dir)):
         # Get the list of files
@@ -155,7 +155,7 @@ def main(argv):
         else:
             if me.get_rank()==0:
                print("ERROR: Could not locate file ", fname , " => EXITING....")
-            sys.exit() 
+            sys.exit()
 
     #open just the first file
     first_file = nc.Dataset(full_in_files[0],"r")
@@ -187,22 +187,22 @@ def main(argv):
         elif (key == "nlat") or (key == "lat"):
             nlat = len(input_dims[key])
             latkey=key
-        
-    if (nlev == -1) : 
-        if me.get_rank()==0: 
+
+    if (nlev == -1) :
+        if me.get_rank()==0:
            print("ERROR: could not locate a valid dimension (lev) => EXITING....")
-        sys.exit() 
+        sys.exit()
 
     if (( ncol == -1) and ((nlat == -1) or (nlon == -1))):
-        if me.get_rank()==0: 
+        if me.get_rank()==0:
            print("ERROR: Need either lat/lon or ncol  => EXITING....")
-        sys.exit()            
+        sys.exit()
 
     # Check if this is SE or FV data
     if (ncol != -1):
-        is_SE = True 
+        is_SE = True
     else:
-        is_SE = False    
+        is_SE = False
 
     # output dimensions
     if me.get_rank()==0 and (verbose == True):
@@ -213,7 +213,7 @@ def main(argv):
             print('nlat = ', nlat)
             print('nlon = ', nlon)
 
-    # Get 2d vars, 3d vars and all vars (For now include all variables) 
+    # Get 2d vars, 3d vars and all vars (For now include all variables)
     vars_dict_all = first_file.variables
 
     # Remove the excluded variables (specified in json file) from variable dictionary
@@ -228,7 +228,7 @@ def main(argv):
         for k,v in vars_dict_all.items():
            if (k not in inc_varlist) and (vars_dict_all[k].typecode()=='f'):
             del vars_dict[k]
- 
+
     num_vars = len(vars_dict)
 
     str_size = 0
@@ -237,8 +237,8 @@ def main(argv):
     num_2d = 0
     num_3d = 0
 
-    # Which are 2d, which are 3d and max str_size 
-    for k,v in vars_dict.items():  
+    # Which are 2d, which are 3d and max str_size
+    for k,v in vars_dict.items():
         var = k
         vd = v.dimensions # all the variable's dimensions (names)
         vr = len(v.dimensions) # num dimension
@@ -246,24 +246,24 @@ def main(argv):
         is_2d = False
         is_3d = False
         if (is_SE == True): # (time, lev, ncol) or (time, ncol)
-            if ((vr == 2) and (vs[1] == ncol)):  
-                is_2d = True 
+            if ((vr == 2) and (vs[1] == ncol)):
+                is_2d = True
                 num_2d += 1
-            elif ((vr == 3) and (vs[2] == ncol and vs[1] == nlev )):  
-                is_3d = True 
+            elif ((vr == 3) and (vs[2] == ncol and vs[1] == nlev )):
+                is_3d = True
                 num_3d += 1
         else: # (time, lev, nlon, nlon) or (time, nlat, nlon)
-            if ((vr == 3) and (vs[1] == nlat and vs[2] == nlon)):  
-                is_2d = True 
+            if ((vr == 3) and (vs[1] == nlat and vs[2] == nlon)):
+                is_2d = True
                 num_2d += 1
-            elif ((vr == 4) and (vs[2] == nlat and vs[3] == nlon and (vs[1] == nlev or vs[1]==nilev ))):  
-                is_3d = True 
+            elif ((vr == 4) and (vs[2] == nlat and vs[3] == nlon and (vs[1] == nlev or vs[1]==nilev ))):
+                is_3d = True
                 num_3d += 1
-                    
+
         if (is_3d == True) :
             str_size = max(str_size, len(k))
             d3_var_names.append(k)
-        elif  (is_2d == True):    
+        elif  (is_2d == True):
             str_size = max(str_size, len(k))
             d2_var_names.append(k)
 
@@ -272,9 +272,9 @@ def main(argv):
         print('VERBOSE: Number of variables found:  ', num_3d+num_2d)
         print('VERBOSE: 3D variables: '+str(num_3d)+', 2D variables: '+str(num_2d))
 
-    # Now sort these and combine (this sorts caps first, then lower case - 
+    # Now sort these and combine (this sorts caps first, then lower case -
     # which is what we want)
-    d2_var_names.sort()       
+    d2_var_names.sort()
     d3_var_names.sort()
 
     if esize<num_2d+num_3d:
@@ -335,9 +335,9 @@ def main(argv):
         nc_sumfile.creation_date = now
         nc_sumfile.title = 'CAM verification ensemble summary file'
         nc_sumfile.tag = opts_dict["tag"]
-        nc_sumfile.compset = opts_dict["compset"] 
+        nc_sumfile.compset = opts_dict["compset"]
         nc_sumfile.resolution = opts_dict["res"]
-        nc_sumfile.machine =  opts_dict["mach"] 
+        nc_sumfile.machine =  opts_dict["mach"]
 
         # Create variables
         if (verbose == True):
@@ -396,12 +396,12 @@ def main(argv):
         # Time-invarient metadata
         if (verbose == True):
             print("VERBOSE: Assigning time invariant metadata .....")
-#        lev_data = np.zeros(num_lev,dtype=np.float64)     
+#        lev_data = np.zeros(num_lev,dtype=np.float64)
         lev_data = first_file.variables["lev"]
         v_lev[:] = lev_data[:]
     #end of rank=0 work
 
-    # All: 
+    # All:
     tslice = opts_dict['tslice']
     if not opts_dict['cumul']:
         # Partition the var list
@@ -428,7 +428,7 @@ def main(argv):
         if not opts_dict['cumul']:
             # Gather the 3d variable results from all processors to the master processor
             slice_index=get_stride_list(len(d3_var_names),me)
-         
+
             # Gather global means 3d results
             gm3d=gather_npArray(gm3d,me,slice_index,(len(d3_var_names),len(full_in_files)))
 
@@ -453,7 +453,7 @@ def main(argv):
             gmall_temp=np.transpose(gmall[:,:])
             gmall=gmall_temp
 
-        #PCA prep and calculation    
+        #PCA prep and calculation
         mu_gm,sigma_gm,standardized_global_mean,loadings_gm,scores_gm,b_exit=pyEnsLib.pre_PCA(gmall,all_var_names,var_list,me)
 
         #if PCA calc encounters an error, then remove the summary file and exit
@@ -483,7 +483,7 @@ def get_cumul_filelist(opts_dict,indir,regx):
    #regx='(pgi(.)*-(01|02))'
    regx_list=["mon","gnu","pgi"]
    all_files=[]
-   for prefix in regx_list: 
+   for prefix in regx_list:
        for i in range(opts_dict['fIndex'],opts_dict['fIndex']+opts_dict['esize']/3):
            for j in range(opts_dict['startMon'],opts_dict['endMon']+1):
                mon_str=str(j).zfill(2)
@@ -495,19 +495,19 @@ def get_cumul_filelist(opts_dict,indir,regx):
    #print "all_files=",all_files
    #in_files=res
    return all_files
-   
-   
-      
+
+
+
 
 #
 # Get the shape of all variable list in tuple for all processor
-# 
+#
 def get_shape(shape_tuple, shape1, rank):
     lst=list(shape_tuple)
     lst[0]=shape1
     shape_tuple=tuple(lst)
     return shape_tuple
- 
+
 #
 # Get the mpi partition list for each processor
 #
@@ -531,12 +531,12 @@ def gather_list(var_list, me):
        me.collect(var_list)
     me.sync()
     return whole_list
-# 
+#
 # Gather arrays from each processor by the var_list to the master processor and make it an array
 #
 def gather_npArray(npArray, me, slice_index, array_shape):
 #    the_array=np.zeros(array_shape,dtype=np.float32)
-    the_array=np.zeros(array_shape,dtype=np.float64)     
+    the_array=np.zeros(array_shape,dtype=np.float64)
     if me.get_rank()==0:
         k=0
         for j in slice_index[me.get_rank()]:
@@ -549,11 +549,11 @@ def gather_npArray(npArray, me, slice_index, array_shape):
             for j in slice_index[rank]:
                 the_array[j,:]=npArray[k,:]
                 k=k+1
-    if me.get_rank() != 0: 
+    if me.get_rank() != 0:
         message={"from_rank":me.get_rank(),"shape":npArray.shape}
         me.collect(npArray)
     me.sync()
     return the_array
-        
+
 if __name__ == "__main__":
     main(sys.argv[1:])

@@ -236,9 +236,9 @@ class SystemTestsCompareTwo(SystemTestsCommon):
 
         # On a batch system with a multisubmit test "RESUBMIT" is used to track
         # which phase is being ran. By the end of the test it equals 0. If the
-        # the test fails in a way where the RUN_PHASE is PEND then "RESUBMIT" 
-        # does not get reset to 1 on a rerun and the first phase is skiped 
-        # causing the COMPARE_PHASE to fail. This ensures that "RESUBMIT" will 
+        # the test fails in a way where the RUN_PHASE is PEND then "RESUBMIT"
+        # does not get reset to 1 on a rerun and the first phase is skiped
+        # causing the COMPARE_PHASE to fail. This ensures that "RESUBMIT" will
         # get reset if the test state is not correct for a rerun.
         # NOTE: "IS_FIRST_RUN" is reset in "case_submit.py"
         if (is_first_run and

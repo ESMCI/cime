@@ -9,9 +9,9 @@ import shutil
 
 try:
     from Tools.standard_script_setup import *
-except ImportError, e:
-    print 'Error importing Tools.standard_script_setup'
-    print 'May need to add cime/scripts to PYTHONPATH\n'
+except ImportError as e:
+    print('Error importing Tools.standard_script_setup')
+    print('May need to add cime/scripts to PYTHONPATH\n')
     raise ImportError(e)
 
 from CIME.utils import expect, get_full_test_name
@@ -234,10 +234,10 @@ def load_balancing_submit(compset, res, pesfile, mpilib, compiler, project, mach
         test_root = machobj.get_value("CIME_OUTPUT_ROOT")
     if machine is None:
         machine = machobj.get_machine_name()
-        print "machine is {}".format(machine)
+        print("machine is {}".format(machine))
     if compiler is None:
         compiler = machobj.get_default_compiler()
-        print "compiler is {}".format(compiler)
+        print("compiler is {}".format(compiler))
     if mpilib is None:
         mpilib = machobj.get_default_MPIlib({"compiler":compiler})
 
@@ -249,7 +249,7 @@ def load_balancing_submit(compset, res, pesfile, mpilib, compiler, project, mach
         test_names.append(get_full_test_name("PFS_I{}".format(i),grid=res, compset=compset,
                                              machine=machine, compiler=compiler))
         casedir = os.path.join(test_root, test_names[-1] + "." + test_id)
-        print "casedir is {}".format(casedir)
+        print("casedir is {}".format(casedir))
         if os.path.isdir(casedir):
             if force_purge:
                 logger.info('Removing directory %s', casedir)

@@ -20,7 +20,7 @@ VERSION 3.2.0
 -------------
 
 - Migrated from Python 2 to Python 3.
-  
+
 - Added improved documentation via ReadtheDocs.
 
 
@@ -47,7 +47,7 @@ VERSION 3.0.7
 - Added web_enabled mode and pbs submission script.
 
 
-  
+
 VERSION 3.0.5
 -------------
 
@@ -87,5 +87,5 @@ VERSION 1.0.0
 - Initial release.
 
 - Includes CAM (atmosphere compnent) tools: CECT and PyEnsSum.
-   
-   
+
+

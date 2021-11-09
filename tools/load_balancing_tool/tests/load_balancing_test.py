@@ -14,15 +14,15 @@ IceLndAtmOcn:
 """
 try:
     from Tools.standard_script_setup import *
-except ImportError, e:
-    print 'Error importing Tools.standard_script_setup'
-    print 'May need to add cime/scripts to PYTHONPATH\n'
+except ImportError as e:
+    print('Error importing Tools.standard_script_setup')
+    print('May need to add cime/scripts to PYTHONPATH\n')
     raise ImportError(e)
 try:
     import optimize_model
-except ImportError, e:
-    print 'Error importing optimize_model'
-    print 'May need to add cime/tools/load_balancing_tool to PYTHONPATH\n'
+except ImportError as e:
+    print('Error importing optimize_model')
+    print('May need to add cime/tools/load_balancing_tool to PYTHONPATH\n')
     raise ImportError(e)
 
 
@@ -175,7 +175,7 @@ class LoadBalanceTests(unittest.TestCase):
     def test_pulp(self):
         try:
             import pulp
-        except ImportError, e:
+        except ImportError as e:
             self.fail("ERROR: pulp not found. Install or set PYTHONPATH")
         x = pulp.LpVariable('x')
         p = pulp.LpProblem('p', pulp.LpMinimize)
@@ -214,7 +214,7 @@ class LoadBalanceTests(unittest.TestCase):
         pes_ntasks, pes_nthrds, pes_rootpe, _, _, _ = \
                pesobj.find_pes_layout('any', 'any', 'any', '')
         self.assertTrue(pes_ntasks['NTASKS_ATM']==992)
-        
+
 
     def test_set_blocksize_atm(self):
         cmd = "./load_balancing_solve.py --timing-dir %s --total-tasks 64 --blocksize 2 --blocksize-atm 4 --layout IceLndAtmOcn" % os.path.join(TEST_DIR, "timing")
@@ -227,7 +227,7 @@ class LoadBalanceTests(unittest.TestCase):
     def test_graph_models(self):
         try:
             import matplotlib
-        except ImportError, e:
+        except ImportError as e:
             self.skipTest("matplotlib not found")
 
         with tempfile.NamedTemporaryFile('w+') as jsonfile:

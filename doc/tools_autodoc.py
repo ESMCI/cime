@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""script to auto generate rst documentation for cime/scripts/Tools 
+"""script to auto generate rst documentation for cime/scripts/Tools
    user facing utilities.
 
 """
@@ -34,7 +34,7 @@ _tool_template = Template('''
 .. _$tool_name:
 
 ####################################################
-$tool_name 
+$tool_name
 ####################################################
 
 **$tool_name** is a script in CIMEROOT/scripts/Tools.
@@ -50,7 +50,7 @@ _script_template = Template('''
 .. _$script_name:
 
 ####################################################
-$script_name 
+$script_name
 ####################################################
 
 **$script_name** is a script in CIMEROOT/scripts.
@@ -66,7 +66,7 @@ _tmpl_template = Template('''
 .. _$tmpl_name:
 
 ####################################################
-$tmpl_name 
+$tmpl_name
 ####################################################
 
 **$tmpl_name** is a script template in CIMEROOT/config/cesm/machines
@@ -133,7 +133,7 @@ def get_tools(config, doc_dir):
     # get the input tools dir
     tools_dir = config.get('tools','tools_dir')
     tools_dir = os.path.abspath(tools_dir)
-    
+
     # get list of files to exclude
     exclude_files = config.get('tools','exclude_files').split()
 
@@ -147,7 +147,7 @@ def get_tools(config, doc_dir):
     all_files = next(os.walk(tools_dir))[2]
 
     tools_files = list()
-    # exclude files 
+    # exclude files
     for f in all_files:
         f = f.strip()
         include = True
@@ -195,7 +195,7 @@ def get_scripts(config, doc_dir):
     all_files = next(os.walk(scripts_dir))[2]
 
     scripts_files = list()
-    # exclude files 
+    # exclude files
     for f in all_files:
         f = f.strip()
         include = True
@@ -226,7 +226,7 @@ def get_scripts(config, doc_dir):
 # -------------------------------------------------------------------------------
 def get_templates(config, doc_dir):
 
-    # get the input template dir 
+    # get the input template dir
     templates_dir = config.get('templates','templates_dir')
     templates_dir = os.path.abspath(templates_dir)
 
@@ -243,7 +243,7 @@ def get_templates(config, doc_dir):
     all_files = next(os.walk(templates_dir))[2]
 
     template_files = list()
-    # exclude files 
+    # exclude files
     for f in all_files:
         f = f.strip()
         include = True
@@ -279,7 +279,7 @@ def get_templates(config, doc_dir):
         tfile = os.path.join(temp_dir, tfname)
         with open(tfile, 'w') as tf:
             tf.write(content)
-        
+
         temp_files.append(tfname)
 
     for f in temp_files:

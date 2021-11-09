@@ -123,12 +123,12 @@ def get_aprun_cmd_for_case(case, run_exe, overrides=None):
     max_tasks_per_node = case.get_value("MAX_TASKS_PER_NODE")
     if overrides:
         if 'max_tasks_per_node' in overrides:
-            max_tasks_per_node = overrides['max_tasks_per_node'] 
+            max_tasks_per_node = overrides['max_tasks_per_node']
         if 'total_tasks' in overrides:
             ntasks = [overrides['total_tasks'] if x > 1 else x for x in ntasks]
         if 'thread_count' in overrides:
             nthreads = [overrides['thread_count'] if x > 1 else x for x in nthreads]
-    
+
 
 
     return _get_aprun_cmd_for_case_impl(ntasks, nthreads, rootpes, pstrids,

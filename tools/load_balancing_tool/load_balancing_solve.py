@@ -18,9 +18,9 @@ import json
 
 try:
     from Tools.standard_script_setup import *
-except ImportError, e:
-    print "Error importing Tools.standard_script_setup"
-    print "May need to add cime/scripts to PYTHONPATH\n"
+except ImportError as e:
+    print("Error importing Tools.standard_script_setup")
+    print("May need to add cime/scripts to PYTHONPATH\n")
     raise ImportError(e)
 
 from CIME.utils import expect
@@ -127,7 +127,7 @@ def _locate_timing_files(test_root, test_id, timing_dir):
             if fn.endswith(test_id):
                 fn = os.path.join(test_root, fn, "timing")
                 if os.path.isdir(fn):
-                    print "found {}".format(fn)
+                    print("found {}".format(fn))
                     timing_cases_tmp.append(fn)
         timing_dirs = sorted(timing_cases_tmp)
 
@@ -206,7 +206,7 @@ def _read_timing_file(filename):
         timing_file = open(filename, "r")
         timing_lines = timing_file.readlines()
         timing_file.close()
-    except Exception, e:
+    except Exception as e:
         logger.critical("Unable to open file %s", filename)
         raise e
     models = {}
@@ -251,7 +251,7 @@ def load_balancing_solve(test_id, test_root, timing_dir, blocksizes, total_tasks
         with open(json_input, "r") as jsonfile:
             try:
                 data = json.load(jsonfile)
-            except ValueError, e:
+            except ValueError as e:
                 logger.critical("Unable to parse json file %s", jsonfile)
                 raise e
         # layout, totaltasks, blocksizes may already be set by json file

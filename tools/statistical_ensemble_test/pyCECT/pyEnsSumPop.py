@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 from __future__ import print_function
 import configparser
-import sys, getopt, os 
-import numpy as np 
+import sys, getopt, os
+import numpy as np
 import netCDF4 as nc
 import time
 import re
 from asaptools.partition import EqualStride, Duplicate
-import asaptools.simplecomm as simplecomm 
+import asaptools.simplecomm as simplecomm
 import pyEnsLib
 
 def main(argv):
@@ -16,7 +16,7 @@ def main(argv):
     # Get command line stuff and store in a dictionary
     s = 'nyear= nmonth= npert= tag= res= mach= compset= sumfile= indir= tslice= verbose jsonfile= mpi_enable mpi_disable nrand= rand seq= jsondir= esize='
     optkeys = s.split()
-    try: 
+    try:
         opts, args = getopt.getopt(argv, "h", optkeys)
     except getopt.GetoptError:
         pyEnsLib.EnsSumPop_usage()
@@ -29,7 +29,7 @@ def main(argv):
     opts_dict['tag'] = 'cesm2_1_0'
     opts_dict['compset'] = 'G'
     opts_dict['mach'] = 'cheyenne'
-    opts_dict['tslice'] = 0 
+    opts_dict['tslice'] = 0
     opts_dict['nyear'] = 1
     opts_dict['nmonth'] = 12
     opts_dict['esize'] = 40
@@ -46,12 +46,12 @@ def main(argv):
     opts_dict['mpi_disable'] = False
     #opts_dict['zscoreonly'] = True
     opts_dict['popens'] = True
-    opts_dict['nrand'] = 40 
+    opts_dict['nrand'] = 40
     opts_dict['rand'] = False
-    opts_dict['seq'] = 0 
-    opts_dict['jsondir'] = './' 
+    opts_dict['seq'] = 0
+    opts_dict['jsondir'] = './'
 
-    # This creates the dictionary of input arguments 
+    # This creates the dictionary of input arguments
     #print "before parseconfig"
     opts_dict = pyEnsLib.getopt_parseconfig(opts,optkeys,'ESP',opts_dict)
 
@@ -62,7 +62,7 @@ def main(argv):
         opts_dict['mpi_enable'] = False
 
     #still have npert for backwards compatibility - check if it was set
-    #and override esize 
+    #and override esize
     if opts_dict['npert'] > 0:
         user_size = opts_dict['npert']
         print('WARNING: User specified value for --npert will override --esize.  Please consider using --esize instead of --npert in the future.')
@@ -90,7 +90,7 @@ def main(argv):
 
     if me.get_rank() == 0:
         print('STATUS: Running pyEnsSumPop!')
-    
+
         if verbose:
             print("VERBOSE: opts_dict = ")
             print(opts_dict)
@@ -100,7 +100,7 @@ def main(argv):
         # Pick up the 'nrand' random number of input files to generate summary files
         if opts_dict['rand']:
            in_files=pyEnsLib.Random_pickup_pop(input_dir,opts_dict,opts_dict['nrand'])
-        else:    
+        else:
            # Get the list of files
            in_files_temp = os.listdir(input_dir)
            in_files=sorted(in_files_temp)
@@ -117,12 +117,12 @@ def main(argv):
         if me.get_rank() == 0:
             print('ERROR: Input directory does not contain enough files (must be esize*nyear*nmonth = ', files_needed, ' ) and it has only ', num_files, ' files).')
         sys.exit(2)
-        
+
 
 
     #Partition the input file list (ideally we have one processor per month)
     in_file_list=me.partition(in_files,func=EqualStride(),involved=True)
-    
+
     # Check the files in the input directory
     full_in_files=[]
     if me.get_rank() == 0 and opts_dict['verbose']:
@@ -136,9 +136,9 @@ def main(argv):
             full_in_files.append(fname)
         else:
             print("ERROR: Could not locate file: "+ fname + " => EXITING....")
-            sys.exit() 
+            sys.exit()
 
-            
+
     #open just the first file (all procs)
     first_file = nc.Dataset(full_in_files[0],"r")
 
@@ -171,7 +171,7 @@ def main(argv):
         if os.path.exists(this_sumfile):
             os.unlink(this_sumfile)
 
-        if verbose: 
+        if verbose:
             print("VERBOSE: Creating ", this_sumfile, "  ...")
 
         nc_sumfile = nc.Dataset(this_sumfile, "w", format="NETCDF4_CLASSIC")
@@ -198,8 +198,8 @@ def main(argv):
         nc_sumfile.title = 'POP verification ensemble summary file'
         nc_sumfile.tag =  opts_dict["tag"]
         nc_sumfile.compset = opts_dict["compset"]
-        nc_sumfile.resolution = opts_dict["res"] 
-        nc_sumfile.machine =  opts_dict["mach"] 
+        nc_sumfile.resolution = opts_dict["res"]
+        nc_sumfile.machine =  opts_dict["mach"]
 
         # Create variables
         if verbose:
@@ -262,13 +262,13 @@ def main(argv):
         vars_dict = first_file.variables
         lev_data = vars_dict["z_t"]
         v_lev[:] = lev_data[:]
-    
+
         #end of rank 0
 
     #All:
     # Time-varient metadata
     if verbose:
-        if me.get_rank() == 0: 
+        if me.get_rank() == 0:
             print("VERBOSE: Assigning time variant metadata .....")
     vars_dict = first_file.variables
     time_value = vars_dict['time']
@@ -277,7 +277,7 @@ def main(argv):
     if me.get_rank() == 0:
         v_time[:]=time_array[:]
 
-    #Assign zero values to first time slice of RMSZ and avg and stddev for 2d & 3d 
+    #Assign zero values to first time slice of RMSZ and avg and stddev for 2d & 3d
     #in case of a calculation problem before finishing
     e_size = opts_dict['esize']
     b_size =  opts_dict['nbin']
@@ -298,11 +298,11 @@ def main(argv):
     #close file[0]
     first_file.close()
 
-    # Calculate RMSZ scores  
+    # Calculate RMSZ scores
     if (verbose == True and me.get_rank() == 0):
         print("VERBOSE: Calculating RMSZ scores .....")
 
-    zscore3d,zscore2d,ens_avg3d,ens_stddev3d,ens_avg2d,ens_stddev2d=pyEnsLib.calc_rmsz(full_in_files,Var3d,Var2d,opts_dict)    
+    zscore3d,zscore2d,ens_avg3d,ens_stddev3d,ens_avg2d,ens_stddev2d=pyEnsLib.calc_rmsz(full_in_files,Var3d,Var2d,opts_dict)
 
     if (verbose == True and me.get_rank() == 0):
         print("VERBOSE: Finished with RMSZ scores .....")

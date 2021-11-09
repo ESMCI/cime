@@ -496,4 +496,3 @@ class TestStatus(object):
                                                             ignore_namelists=ignore_namelists,
                                                             ignore_memleak=ignore_memleak,
                                                             no_run=no_run)
-

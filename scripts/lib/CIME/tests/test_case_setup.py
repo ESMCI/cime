@@ -59,8 +59,8 @@ class TestCaseSetup(unittest.TestCase):
             assert os.path.exists(os.path.join(case_path, "Macros.cmake"))
             assert os.path.exists(os.path.join(case_path, "cmake_macros", "test.cmake"))
 
-            copy_depends_files.assert_called_with("test", machines_path, case_path, "gnu-test") 
-            
+            copy_depends_files.assert_called_with("test", machines_path, case_path, "gnu-test")
+
     @mock.patch("CIME.case.case_setup._create_macros_cmake")
     def test_create_macros(self, _create_macros_cmake):
         case_mock = mock.MagicMock()
@@ -91,7 +91,7 @@ class TestCaseSetup(unittest.TestCase):
             stack.enter_context(chdir(case_path))
 
             _create_macros_cmake.assert_called_with(case_path,
-                                                    cmake_macros_path, 
+                                                    cmake_macros_path,
                                                     machine_mock,
                                                     "gnu-test",
                                                     os.path.join(case_path, "cmake_macros"))

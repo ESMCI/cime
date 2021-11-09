@@ -67,5 +67,5 @@ class TestReporter(GenericXML):
         data = urllib.parse.urlencode(params)
         data = data.encode('ascii')
         req = urllib.request.Request(url, data)
-        result = urllib.request.urlopen(req) 
+        result = urllib.request.urlopen(req)
         print(result.read())

@@ -170,7 +170,7 @@ class Machines(GenericXML):
             logger.debug("machine is " + machtocheck)
             regex_str_node = self.get_optional_child("NODENAME_REGEX", root=node)
             regex_str = machtocheck if regex_str_node is None else self.text(regex_str_node)
-            
+
             if regex_str is not None:
                 logger.debug("machine regex string is " + regex_str)
                 # an environment variable can be used
@@ -184,7 +184,7 @@ class Machines(GenericXML):
                         if match == machine:
                             machine = machtocheck
                             break
-                else:    
+                else:
                     regex = re.compile(regex_str)
                     if regex.match(nametomatch):
                         logger.debug("Found machine: {} matches {}".format(machtocheck, nametomatch))

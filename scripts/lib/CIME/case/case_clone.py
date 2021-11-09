@@ -40,7 +40,7 @@ def create_clone(self, newcaseroot, keepexe=False, mach_dir=None, project=None,
 
     # *** create case object as deepcopy of clone object ***
     if os.path.isdir(os.path.join(newcase_cimeroot,'share')) and get_model() == "cesm":
-        srcroot = newcase_cimeroot         
+        srcroot = newcase_cimeroot
     else:
         srcroot = os.path.join(newcase_cimeroot,"..")
     newcase = self.copy(newcasename, newcaseroot, newsrcroot=srcroot)

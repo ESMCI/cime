@@ -92,11 +92,11 @@ class AtmLnd(optimize_model.OptimizeModel):
         self.prob.solve()
         self.set_state(self.prob.status)
         return self.state
-    
+
 
     def write_pe_file(self, pefilename):
         """
-        Write out a pe_file that can be used to implement the 
+        Write out a pe_file that can be used to implement the
         optimized layout
         """
         natm = self.X['Natm'].varValue
@@ -113,5 +113,5 @@ class AtmLnd(optimize_model.OptimizeModel):
         nthrds = {}
         for c in ['atm', 'lnd', 'rof', 'ice', 'ocn', 'glc', 'wav', 'cpl']:
             nthrds[c] = self.models[c.upper()].nthrds
-        
+
         self.write_pe_template(pefilename, ntasks, nthrds, roots)

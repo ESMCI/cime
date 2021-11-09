@@ -32,11 +32,11 @@ class exhaustive_test(object):
 
         passed = failed = 0
         for compset in itertools.combinations(sims, runsPerTest):
-            # This block is slightly slower than manually 
+            # This block is slightly slower than manually
             # specifying the pairs, but it generalizes
             # easily.
             failsets = [dictionary[s] for s in compset]
-            # The following three lines are adapted from 
+            # The following three lines are adapted from
             # user doug's answer in
             # http://stackoverflow.com/questions/27369373/pairwise-set-intersection-in-python
             pairs = itertools.combinations(failsets, 2)

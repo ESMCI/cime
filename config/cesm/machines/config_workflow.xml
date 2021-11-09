@@ -70,7 +70,7 @@
 
   <!-- THIS CREATES THE JOB FOR THE LAUNCHING OF THE SMARTSIM ORCHESTRATOR -->
   <workflow_jobs id="smartsim_db" prepend="default">
-    <job name="smartsim_db"> <!-- name here corresponds with scripts --> 
+    <job name="smartsim_db"> <!-- name here corresponds with scripts -->
       <!-- The following should point to the launching script for the orchestrator -->
       <template>/glade/work/ashao/dev/SmartSim/tutorials/cheyenne/cime_database.sh</template>
       <prereq>1</prereq>

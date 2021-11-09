@@ -6,13 +6,13 @@
    contain the root `toctree` directive.
 
 #####################################
- What is CIME?  
+ What is CIME?
 #####################################
 
 .. toctree::
    :maxdepth: 3
    :numbered:
-      
+
 *********
 Overview
 *********
@@ -38,6 +38,3 @@ Development
 CIME is developed in an open-source, public repository hosted under the Earth
 System Model Computational Infrastructure (ESMCI) organization on
 Github at http://github.com/ESMCI/cime.
-
-
-

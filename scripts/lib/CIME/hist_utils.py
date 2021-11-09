@@ -275,7 +275,7 @@ def _compare_hists(case, from_dir1, from_dir2, suffix1="", suffix2="", outfile_s
                         logger.warning("Could not copy {} to {}".format(cprnc_log_file, casedir))
 
                 all_success = False
-    # Some tests don't save history files. 
+    # Some tests don't save history files.
     if num_compared == 0 and testcase not in NO_HIST_TESTS:
         all_success = False
         comments += "Did not compare any hist files! Missing baselines?\n"

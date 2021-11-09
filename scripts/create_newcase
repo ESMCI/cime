@@ -253,7 +253,7 @@ def _main_func(description):
                     walltime=walltime, queue=queue, output_root=output_root,
                     run_unsupported=run_unsupported, answer=answer,
                     input_dir=input_dir, driver=driver, workflowid=workflow, non_local=non_local,
-                    extra_machines_dir=extra_machines_dir, case_group=case_group, 
+                    extra_machines_dir=extra_machines_dir, case_group=case_group,
                     ngpus_per_node=ngpus_per_node)
 
         # Called after create since casedir does not exist yet

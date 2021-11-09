@@ -121,7 +121,7 @@ def _run_model_impl(case, lid, skip_pnl=False, da_cycle=0):
         case.flush()
 
         try:
-            run_and_log_case_status(run_func, "model execution", 
+            run_and_log_case_status(run_func, "model execution",
                                     custom_starting_msg_functor=msg_func,
                                     custom_success_msg_functor=msg_func,
                                     caseroot=case.get_value("CASEROOT"),
@@ -194,7 +194,7 @@ def _run_model(case, lid, skip_pnl=False, da_cycle=0):
 
     is_batch = case.get_value("BATCH_SYSTEM") is not None
     msg_func = None
-    
+
     if is_batch:
         jobid = batch_jobid()
         msg_func = lambda *args: jobid if jobid is not None else ""

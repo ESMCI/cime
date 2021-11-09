@@ -287,7 +287,7 @@ def _save_prerun_timing_e3sm(case, lid):
                 run_cmd_no_fail(cmd, arg_stdout=filename, from_dir=full_timing_dir)
                 gzip_existing_file(os.path.join(full_timing_dir, filename))
         elif mach in ["anvil", "chrysalis", "compy"]:
-            for cmd, filename in [("sinfo -l", "sinfol"), 
+            for cmd, filename in [("sinfo -l", "sinfol"),
                                   ("squeue -o '%all' --job {}".format(job_id), "squeueall_jobid"),
                                   ("squeue -o '%.10i %.10P %.15u %.20a %.2t %.6D %.8C %.12M %.12l %.20S %.20V %j'", "squeuef"),
                                   ("squeue -t R -o '%.10i %R'", "squeues")]:

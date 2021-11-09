@@ -288,5 +288,3 @@ def pes_compare():
 
 if __name__ == "__main__":
     pes_compare()
-
-

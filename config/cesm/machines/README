@@ -9,7 +9,3 @@ The current attributes that are supported are
    pecount=[S,M,L,XL]
 
 Please refer to the documentation in the config_machines.xml and config_compilers.xml files.
-
-
-
-

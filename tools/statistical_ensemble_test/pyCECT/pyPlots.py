@@ -42,7 +42,7 @@ for i, thisvar in enumerate(vars):
     p25 = np.percentile(ens_std_gm[i,:],25)
     p05 = np.percentile(ens_std_gm[i,:],0.5)
     #print p995
-    
+
     isout_995 = 0
     isout_75 = 0
     isout_25 = 0
@@ -65,7 +65,7 @@ for i, thisvar in enumerate(vars):
         two_outside99.append(i)
     elif isout_995 == 3:
         all_outside99.append(i)
-    
+
     if isout_75 == 3 or isout_25 == 3:
         all_oneside_IQR.append(i)
 
@@ -77,12 +77,12 @@ num_oneside = len(all_oneside_IQR)
 c = set(one_outside99) | set(two_outside99) | set(all_outside99) | set(all_oneside_IQR)
 uni = len(c)
 
-print "total variables = ", nvars
-print "one test outside 99th percentile = ", num_one99
-print "two tests outside 99th percentile = ", num_two99
-print "three (all) tests outside 99th percentile = ", num_all99
-print "all tests on one side of IQR =  ", num_oneside
-print "unique number of variables that fall into the above categories = ", uni
+print("total variables = ", nvars)
+print("one test outside 99th percentile = ", num_one99)
+print("two tests outside 99th percentile = ", num_two99)
+print("three (all) tests outside 99th percentile = ", num_all99)
+print("all tests on one side of IQR =  ", num_oneside)
+print("unique number of variables that fall into the above categories = ", uni)
 
 #now make plots
 ens_list_array = []
@@ -97,7 +97,7 @@ if (num_all99 > 0):
     labels = vars[all_outside99]
     f = plt.figure()
     sns.boxplot(data=ens_list_array, flierprops=flierprops, whis=[0.5,99.5])
-#    sns.boxplot(data=ens_list_array, fliersize= 2.0) 
+#    sns.boxplot(data=ens_list_array, fliersize= 2.0)
     sns.stripplot(data = test_points, jitter = True, color="r", size=3, marker="D")
     plt.title('Variables with all (three) tests outside the 99th percentile'+ ptest)
     plt.ylabel('standardized global means')
@@ -107,11 +107,11 @@ if (num_all99 > 0):
     f.clear()
     plt.close(f)
 
-#two outside 
+#two outside
 if (num_two99 > 0):
     sf_name = 'two_out99_' + test + '.png'
     ens_list_array = []
-    test_points = []                                                                                                                          
+    test_points = []
     for i in  two_outside99:
         ens_list_array.append(ens_std_gm[i,:])
         test_points.append(t_std_gm[i,:])
@@ -128,8 +128,8 @@ if (num_two99 > 0):
     f.clear()
     plt.close(f)
 
-#one outside    
-if (num_one99 > 0):                                                                                                                               
+#one outside
+if (num_one99 > 0):
     sf_name = 'one_out99_' + test + '.png'
     ens_list_array = []
     test_points = []
@@ -150,7 +150,7 @@ if (num_one99 > 0):
     plt.close(f)
 
 #oneside
-if (num_oneside > 0): 
+if (num_oneside > 0):
     sf_name = 'oneside_IQR_' + test + '.png'
     ens_list_array = []
     test_points = []

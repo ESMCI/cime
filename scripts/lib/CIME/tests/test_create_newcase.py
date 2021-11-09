@@ -532,7 +532,7 @@ class TestCreateNewcase(base.BaseTestCase):
                 macros_contents = macros_file.read()
             expected_re = re.compile("NETCDF_PATH.*/my/netcdf/path")
             self.assertTrue(expected_re.search(macros_contents))
-        del os.environ["CIME_NO_CMAKE_MACRO"] 
+        del os.environ["CIME_NO_CMAKE_MACRO"]
 
     def test_m_createnewcase_alternate_drivers(self):
         # Test that case.setup runs for nuopc and moab drivers
