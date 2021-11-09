@@ -9,7 +9,7 @@ import glob, os, re, shutil, signal, sys, tempfile, \
     threading, time, logging, unittest, getpass, \
     filecmp, time, atexit, functools
 
-CIMEROOT = os.path.abspath(os.path.join(os.getcwd(), ".."))
+CIMEROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 sys.path.insert(0, CIMEROOT)
 
 from xml.etree.ElementTree import ParseError

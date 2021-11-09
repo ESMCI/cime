@@ -11,6 +11,8 @@ from CIME import utils
 from CIME import test_status
 from CIME.utils import expect
 
+MACRO_PRESERVE_ENV = ["ADDR2LINE","AR","AS","CC","CC_FOR_BUILD","CMAKE_ARGS","CONDA_EXE","CONDA_PYTHON_EXE","CPP","CXX","CXXFILT","CXX_FOR_BUILD","ELFEDIT","F77","F90","F95","FC","GCC","GCC_AR","GCC_NM","GCC_RANLIB","GFORTRAN","GPROF","GXX","LD","LD_GOLD","NM","OBJCOPY","OBJDUMP","PATH","RANLIB","READELF","SIZE","STRINGS","STRIP"]
+
 
 def parse_test_status(line):
     status, test = line.split()[0:2]
@@ -158,6 +160,9 @@ query:
         environment = dict(PATH=os.environ["PATH"])
         environment.update(env)
         environment.update(var)
+        for x in MACRO_PRESERVE_ENV:
+            if x in os.environ:
+                environment[x] = os.environ[x]
         gmake_exe = self.parent.MACHINE.get_value("GMAKE")
         if gmake_exe is None:
             gmake_exe = "gmake"
@@ -250,6 +255,9 @@ file(WRITE query.out "${{{}}}")
         # environment = os.environ.copy()
         environment = dict(PATH=os.environ["PATH"])
         environment.update(env)
+        for x in MACRO_PRESERVE_ENV:
+            if x in os.environ:
+                environment[x] = os.environ[x]
         os_ = self.parent.MACHINE.get_value("OS")
         # cmake will not work on cray systems without this flag
         if os_ == "CNL":

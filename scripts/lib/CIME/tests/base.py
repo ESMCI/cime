@@ -40,11 +40,11 @@ class BaseTestCase(unittest.TestCase):
                                             f"scripts_regression_test.{utils.get_timestamp()}"))
     TEST_COMPILER = typed_os_environ("TEST_COMPILER", "gnu")
     TEST_MPILIB = typed_os_environ("TEST_MPILIB", "openmpi")
-    FAST_ONLY = typed_os_environ("FAST_ONLY", False)
+    NO_FORTRAN_RUN = typed_os_environ("NO_FORTRAN_RUN", False)
+    FAST_ONLY = typed_os_environ("FAST_ONLY", False) or NO_FORTRAN_RUN
     NO_BATCH = typed_os_environ("NO_BATCH", False)
     NO_CMAKE = typed_os_environ("NO_CMAKE", False)
     NO_TEARDOWN = typed_os_environ("NO_TEARDOWN", False)
-    NO_FORTRAN_RUN = typed_os_environ("NO_FORTRAN_RUN", False)
     GLOBAL_TIMEOUT = typed_os_environ("GLOBAL_TIMEOUT", None, str)
 
     def setUp(self):
