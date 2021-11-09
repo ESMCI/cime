@@ -377,6 +377,3 @@ To run the provided test suite:
 
 	$ cd $CIME_DIR/tools/load_balancing_tool
         $ ./tests/load_balancing_test.py
-
-
-
