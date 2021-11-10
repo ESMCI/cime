@@ -20,7 +20,9 @@ class TestMacrosBasic(base.BaseTestCase):
         """The test script can be called on valid output without dying."""
         # This is really more a smoke test of this script than anything else.
         maker = Compilers(test_utils.MockMachines("mymachine", "SomeOS"), version=2.0)
-        test_xml = test_utils._wrap_config_compilers_xml("<compiler><SUPPORTS_CXX>FALSE</SUPPORTS_CXX></compiler>")
+        test_xml = test_utils._wrap_config_compilers_xml(
+            "<compiler><SUPPORTS_CXX>FALSE</SUPPORTS_CXX></compiler>"
+        )
         test_utils.get_macros(maker, test_xml, "Makefile")
 
     def test_script_rejects_bad_xml(self):
@@ -34,6 +36,7 @@ class TestMacrosBasic(base.BaseTestCase):
         maker = Compilers(test_utils.MockMachines("mymachine", "SomeOS"), version=2.0)
         bad_string = "argle-bargle."
         with self.assertRaisesRegex(
-                utils.CIMEError,
-                "Unrecognized build system provided to write_macros: " + bad_string):
+            utils.CIMEError,
+            "Unrecognized build system provided to write_macros: " + bad_string,
+        ):
             test_utils.get_macros(maker, "This string is irrelevant.", bad_string)

@@ -16,7 +16,6 @@ from CIME.tests.case_fake import CaseFake
 
 
 class TestCaseFake(unittest.TestCase):
-
     def setUp(self):
         self.tempdir = tempfile.mkdtemp()
         self.test_root = os.path.join(self.tempdir, "tests")
@@ -27,7 +26,9 @@ class TestCaseFake(unittest.TestCase):
         utils.time.strftime = lambda *args: "2021-02-20"
 
         self._old_init = CaseFake.__init__
-        CaseFake.__init__ = lambda x, y, *args: self._old_init(x, y, create_case_root=False)
+        CaseFake.__init__ = lambda x, y, *args: self._old_init(
+            x, y, create_case_root=False
+        )
 
         self._old_case = compare_test_results.Case
         compare_test_results.Case = CaseFake
@@ -47,10 +48,13 @@ class TestCaseFake(unittest.TestCase):
             for x in phases:
                 status.set_status(x[0], x[1])
 
-        compare_test_results.compare_test_results(baseline, \
-                self.baseline_root, self.test_root, "gnu", test_id, **kwargs)
+        compare_test_results.compare_test_results(
+            baseline, self.baseline_root, self.test_root, "gnu", test_id, **kwargs
+        )
 
-        compare_log = os.path.join(test_status_root, "compare.log.{}.2021-02-20".format(baseline))
+        compare_log = os.path.join(
+            test_status_root, "compare.log.{}.2021-02-20".format(baseline)
+        )
 
         self.assertTrue(os.path.exists(compare_log))
 
@@ -63,7 +67,9 @@ class TestCaseFake(unittest.TestCase):
             (RUN_PHASE, "PASS"),
         ]
 
-        self._compare_test_results("test1", "test-baseline", phases, namelists_only=True)
+        self._compare_test_results(
+            "test1", "test-baseline", phases, namelists_only=True
+        )
 
     def test_hist_only(self):
         compare_test_results.compare_namelists = lambda *args: True
@@ -97,5 +103,6 @@ class TestCaseFake(unittest.TestCase):
 
         self._compare_test_results("test1", "test-baseline", phases)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

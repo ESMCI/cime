@@ -12,30 +12,52 @@ from CIME.tests import base
 class TestFullSystem(base.BaseTestCase):
     def test_full_system(self):
         # Put this inside any test that's slow
-        if (self.FAST_ONLY):
+        if self.FAST_ONLY:
             self.skipTest("Skipping slow test")
 
         driver = utils.get_cime_default_driver()
         if driver == "mct":
-            cases = self._create_test(["--walltime=0:15:00", "cime_developer"], test_id=self._baseline_name)
+            cases = self._create_test(
+                ["--walltime=0:15:00", "cime_developer"], test_id=self._baseline_name
+            )
         else:
-            cases = self._create_test(["--walltime=0:30:00", "cime_developer"], test_id=self._baseline_name)
+            cases = self._create_test(
+                ["--walltime=0:30:00", "cime_developer"], test_id=self._baseline_name
+            )
 
-        self.run_cmd_assert_result("%s/cs.status.%s" % (self._testroot, self._baseline_name),
-                              from_dir=self._testroot)
+        self.run_cmd_assert_result(
+            "%s/cs.status.%s" % (self._testroot, self._baseline_name),
+            from_dir=self._testroot,
+        )
 
         # Ensure that we can get test times
         for case_dir in cases:
             test_status = os.path.join(case_dir, "TestStatus")
             test_time = wait_for_tests.get_test_time(os.path.dirname(test_status))
-            self.assertIs(type(test_time), int, msg="get time did not return int for %s" % test_status)
-            self.assertTrue(test_time > 0, msg="test time was zero for %s" % test_status)
+            self.assertIs(
+                type(test_time),
+                int,
+                msg="get time did not return int for %s" % test_status,
+            )
+            self.assertTrue(
+                test_time > 0, msg="test time was zero for %s" % test_status
+            )
 
         # Test that re-running works
         skip_tests = None
-        if utils.get_cime_default_driver() == 'nuopc':
-            skip_tests=["SMS_Ln3.T42_T42.S","PRE.f19_f19.ADESP_TEST","PRE.f19_f19.ADESP","DAE.ww3a.ADWAV"]
-        tests = get_tests.get_test_suite("cime_developer", machine=self._machine, compiler=self._compiler,skip_tests=skip_tests)
+        if utils.get_cime_default_driver() == "nuopc":
+            skip_tests = [
+                "SMS_Ln3.T42_T42.S",
+                "PRE.f19_f19.ADESP_TEST",
+                "PRE.f19_f19.ADESP",
+                "DAE.ww3a.ADWAV",
+            ]
+        tests = get_tests.get_test_suite(
+            "cime_developer",
+            machine=self._machine,
+            compiler=self._compiler,
+            skip_tests=skip_tests,
+        )
 
         for test in tests:
             casedir = self.get_casedir(test, cases)
@@ -50,8 +72,12 @@ class TestFullSystem(base.BaseTestCase):
             # case settings.
             if self._hasbatch:
                 with test_status.TestStatus(test_dir=casedir) as ts:
-                    ts.set_status(test_status.MEMLEAK_PHASE, test_status.TEST_PEND_STATUS)
+                    ts.set_status(
+                        test_status.MEMLEAK_PHASE, test_status.TEST_PEND_STATUS
+                    )
 
-            self.run_cmd_assert_result("./case.submit --skip-preview-namelist", from_dir=casedir)
+            self.run_cmd_assert_result(
+                "./case.submit --skip-preview-namelist", from_dir=casedir
+            )
 
         self._wait_for_tests(self._baseline_name)

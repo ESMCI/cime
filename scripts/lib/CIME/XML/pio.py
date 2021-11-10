@@ -9,8 +9,8 @@ from collections import OrderedDict
 
 logger = logging.getLogger(__name__)
 
-class PIO(EntryID):
 
+class PIO(EntryID):
     def __init__(self, comp_classes, infile=None, files=None):
         if infile is None:
             if files is None:
@@ -25,19 +25,21 @@ class PIO(EntryID):
         comp = None
         new_vid = None
         for comp in self._components:
-            if vid.endswith('_'+comp):
-                new_vid = vid.replace('_'+comp, '', 1)
-            elif vid.startswith(comp+'_'):
-                new_vid = vid.replace(comp+'_', '', 1)
-            elif '_' + comp + '_' in vid:
-                new_vid = vid.replace(comp+'_','', 1)
+            if vid.endswith("_" + comp):
+                new_vid = vid.replace("_" + comp, "", 1)
+            elif vid.startswith(comp + "_"):
+                new_vid = vid.replace(comp + "_", "", 1)
+            elif "_" + comp + "_" in vid:
+                new_vid = vid.replace(comp + "_", "", 1)
 
             if new_vid is not None:
                 return new_vid, comp, True
 
         return vid, None, False
 
-    def get_defaults(self, grid=None, compset=None, mach=None, compiler=None, mpilib=None): # pylint: disable=unused-argument
+    def get_defaults(
+        self, grid=None, compset=None, mach=None, compiler=None, mpilib=None
+    ):  # pylint: disable=unused-argument
         # should we have a env_pio file
         defaults = OrderedDict()
         save_for_last = []
@@ -55,7 +57,7 @@ class PIO(EntryID):
                 myid = self.get(node, "id")
                 iscompvar = self.check_if_comp_var(myid)[-1]
                 if iscompvar:
-                    save_for_last.append( (myid, value) )
+                    save_for_last.append((myid, value))
                 else:
                     defaults[myid] = value
 

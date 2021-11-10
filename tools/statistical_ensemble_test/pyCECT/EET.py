@@ -4,20 +4,20 @@ import re
 import argparse
 import itertools
 
-class exhaustive_test(object):
 
+class exhaustive_test(object):
     def __init__(self):
         super(exhaustive_test, self).__init__()
 
     def file_to_sets(self, compfile):
         set_dict = {}
-        with open(compfile, 'r') as f:
+        with open(compfile, "r") as f:
             for line in f:
                 line.strip
-                key, failset = line.replace(' ', '').split(';', 1)
+                key, failset = line.replace(" ", "").split(";", 1)
 
                 try:
-                    failset = list(map(int, failset.split(',')))
+                    failset = list(map(int, failset.split(",")))
                     failset = set(failset)
 
                 except:
@@ -53,14 +53,16 @@ class exhaustive_test(object):
             else:
                 # print("this set passed")
                 # print(compset)
-                passed +=1
+                passed += 1
 
         return passed, failed
 
+
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="script to calculate all combinations of ensemble tests")
-    parser.add_argument("-f", dest="compfile",
-    help="compfile location", metavar="PATH")
+    parser = argparse.ArgumentParser(
+        description="script to calculate all combinations of ensemble tests"
+    )
+    parser.add_argument("-f", dest="compfile", help="compfile location", metavar="PATH")
 
     args = parser.parse_args()
 

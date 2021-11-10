@@ -10,10 +10,13 @@ from CIME.tests import base
 class TestUserConcurrentMods(base.BaseTestCase):
     def test_user_concurrent_mods(self):
         # Put this inside any test that's slow
-        if (self.FAST_ONLY):
+        if self.FAST_ONLY:
             self.skipTest("Skipping slow test")
 
-        casedir = self._create_test(["--walltime=0:30:00", "TESTRUNUSERXMLCHANGE_Mmpi-serial.f19_g16.X"], test_id=self._baseline_name)
+        casedir = self._create_test(
+            ["--walltime=0:30:00", "TESTRUNUSERXMLCHANGE_Mmpi-serial.f19_g16.X"],
+            test_id=self._baseline_name,
+        )
 
         with utils.Timeout(3000):
             while True:
@@ -26,7 +29,7 @@ class TestUserConcurrentMods(base.BaseTestCase):
                 time.sleep(5)
 
         rundir = utils.run_cmd_no_fail("./xmlquery RUNDIR --value", from_dir=casedir)
-        if utils.get_cime_default_driver() == 'nuopc':
+        if utils.get_cime_default_driver() == "nuopc":
             chk_file = "nuopc.runconfig"
         else:
             chk_file = "drv_in"

@@ -14,3 +14,12 @@ repos:
       - id: pylint
         args:
           - --disable=I,C,R,logging-not-lazy,wildcard-import,unused-wildcard-import,fixme,broad-except,bare-except,eval-used,exec-used,global-statement,logging-format-interpolation,no-name-in-module,arguments-renamed
+  - repo: https://github.com/PyCQA/flake8
+    rev: 4.0.1
+    hooks:
+      - id: flake8
+  - repo: https://github.com/psf/black
+    rev: 21.10b0
+    hooks:
+      - id: black
+        exclude: "config"

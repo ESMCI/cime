@@ -49,10 +49,12 @@ from CIME.expected_fails import ExpectedFails
 
 logger = logging.getLogger(__name__)
 
-class ExpectedFailsFile(GenericXML):
 
+class ExpectedFailsFile(GenericXML):
     def __init__(self, infile):
-        schema = os.path.join(get_cime_root(), "config", "xml_schemas", "expected_fails_file.xsd")
+        schema = os.path.join(
+            get_cime_root(), "config", "xml_schemas", "expected_fails_file.xsd"
+        )
         GenericXML.__init__(self, infile, schema=schema)
 
     def get_expected_fails(self):

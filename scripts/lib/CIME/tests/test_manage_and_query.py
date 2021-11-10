@@ -17,10 +17,13 @@ class TestManageAndQuery(base.BaseTestCase):
     def _run_and_assert_query_testlist(self, extra_args=""):
         """Ensure that query_testlist runs successfully with the given extra arguments"""
         files = Files()
-        testlist_drv = files.get_value("TESTS_SPEC_FILE", {"component":"drv"})
+        testlist_drv = files.get_value("TESTS_SPEC_FILE", {"component": "drv"})
 
-        self.run_cmd_assert_result("{}/query_testlists --xml-testlist {} {}".format(
-            self.SCRIPT_DIR, testlist_drv, extra_args))
+        self.run_cmd_assert_result(
+            "{}/query_testlists --xml-testlist {} {}".format(
+                self.SCRIPT_DIR, testlist_drv, extra_args
+            )
+        )
 
     def test_query_testlists_runs(self):
         """Make sure that query_testlists runs successfully

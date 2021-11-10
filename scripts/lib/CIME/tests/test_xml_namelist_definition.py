@@ -5,8 +5,8 @@ from CIME.XML.namelist_definition import NamelistDefinition
 
 # pylint: disable=protected-access
 
-class TestXMLNamelistDefinition(unittest.TestCase):
 
+class TestXMLNamelistDefinition(unittest.TestCase):
     def test_set_nodes(self):
         test_data = """<?xml version="1.0"?>
 <?xml-stylesheet type="text/xsl" href="http://www.cgd.ucar.edu/~cam/namelist/namelist_definition.xsl"?>
@@ -36,6 +36,7 @@ class TestXMLNamelistDefinition(unittest.TestCase):
             assert nmldef._entry_types == {"test1": "char", "test2": "char"}
             assert nmldef._valid_values == {"test1": None, "test2": None}
             assert nmldef._group_names == {"test1": None, "test2": None}
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -55,7 +55,9 @@ class TestProvenance(unittest.TestCase):
         run_cmd.return_value = (0, "data", None)
 
         with mock.patch("CIME.provenance.open", mock.mock_open()) as m:
-            provenance._run_git_cmd_recursively("status", "/srcroot", "/output.txt") # pylint: disable=protected-access
+            provenance._run_git_cmd_recursively(
+                "status", "/srcroot", "/output.txt"
+            )  # pylint: disable=protected-access
 
         m.assert_called_with("/output.txt", "w")
 
@@ -66,15 +68,17 @@ class TestProvenance(unittest.TestCase):
 
         run_cmd.assert_any_call("git status", from_dir="/srcroot")
         run_cmd.assert_any_call(
-            "git submodule foreach --recursive \"git status; echo\"",
-            from_dir="/srcroot")
+            'git submodule foreach --recursive "git status; echo"', from_dir="/srcroot"
+        )
 
     @mock.patch("CIME.provenance.run_cmd")
     def test_run_git_cmd_recursively_error(self, run_cmd):
         run_cmd.return_value = (1, "data", "error")
 
         with mock.patch("CIME.provenance.open", mock.mock_open()) as m:
-            provenance._run_git_cmd_recursively("status", "/srcroot", "/output.txt") # pylint: disable=protected-access
+            provenance._run_git_cmd_recursively(
+                "status", "/srcroot", "/output.txt"
+            )  # pylint: disable=protected-access
 
         m.assert_called_with("/output.txt", "w")
 
@@ -85,8 +89,8 @@ class TestProvenance(unittest.TestCase):
 
         run_cmd.assert_any_call("git status", from_dir="/srcroot")
         run_cmd.assert_any_call(
-            "git submodule foreach --recursive \"git status; echo\"",
-            from_dir="/srcroot")
+            'git submodule foreach --recursive "git status; echo"', from_dir="/srcroot"
+        )
 
     @mock.patch("CIME.provenance.safe_copy")
     @mock.patch("CIME.provenance.run_cmd")
@@ -97,7 +101,9 @@ class TestProvenance(unittest.TestCase):
             with tempfile.TemporaryDirectory() as tempdir:
                 os.makedirs(os.path.join(tempdir, ".git"))
 
-                provenance._record_git_provenance(tempdir, "/output", "5") # pylint: disable=protected-access
+                provenance._record_git_provenance(
+                    tempdir, "/output", "5"
+                )  # pylint: disable=protected-access
 
         m.assert_any_call("/output/GIT_STATUS.5", "w")
         m.assert_any_call("/output/GIT_DIFF.5", "w")
@@ -111,32 +117,30 @@ class TestProvenance(unittest.TestCase):
 
         run_cmd.assert_any_call("git status", from_dir=tempdir)
         run_cmd.assert_any_call(
-            "git submodule foreach --recursive \"git status; echo\"",
-            from_dir=tempdir)
+            'git submodule foreach --recursive "git status; echo"', from_dir=tempdir
+        )
+        run_cmd.assert_any_call("git diff", from_dir=tempdir)
         run_cmd.assert_any_call(
-            "git diff",
-            from_dir=tempdir)
+            'git submodule foreach --recursive "git diff; echo"', from_dir=tempdir
+        )
         run_cmd.assert_any_call(
-            "git submodule foreach --recursive \"git diff; echo\"",
-            from_dir=tempdir)
+            "git log --first-parent --pretty=oneline -n 5", from_dir=tempdir
+        )
         run_cmd.assert_any_call(
-            "git log --first-parent --pretty=oneline -n 5",
-            from_dir=tempdir)
+            'git submodule foreach --recursive "git log --first-parent'
+            ' --pretty=oneline -n 5; echo"',
+            from_dir=tempdir,
+        )
+        run_cmd.assert_any_call("git remote -v", from_dir=tempdir)
         run_cmd.assert_any_call(
-            "git submodule foreach --recursive \"git log --first-parent"
-            " --pretty=oneline -n 5; echo\"",
-            from_dir=tempdir)
-        run_cmd.assert_any_call(
-            "git remote -v",
-            from_dir=tempdir)
-        run_cmd.assert_any_call(
-            "git submodule foreach --recursive \"git remote -v; echo\"",
-            from_dir=tempdir)
+            'git submodule foreach --recursive "git remote -v; echo"', from_dir=tempdir
+        )
 
-        safe_copy.assert_any_call(f"{tempdir}/.git/config",
-                                  "/output/GIT_CONFIG.5",
-                                  preserve_meta=False)
+        safe_copy.assert_any_call(
+            f"{tempdir}/.git/config", "/output/GIT_CONFIG.5", preserve_meta=False
+        )
 
-if __name__ == '__main__':
-    sys.path.insert(0, os.path.abspath(os.path.join('.', '..', '..', 'lib')))
+
+if __name__ == "__main__":
+    sys.path.insert(0, os.path.abspath(os.path.join(".", "..", "..", "lib")))
     unittest.main()

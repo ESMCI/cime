@@ -12,7 +12,7 @@ class TestCimePerformance(base.BaseTestCase):
 
         num_repeat = 5
         for _ in range(num_repeat):
-            self._create_test(["cime_tiny","--no-build"])
+            self._create_test(["cime_tiny", "--no-build"])
 
         elapsed = time.time() - ts
 

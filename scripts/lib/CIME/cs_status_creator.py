@@ -7,7 +7,8 @@ import CIME.utils
 import os
 import stat
 
-def create_cs_status(test_root, test_id, extra_args='', filename=None):
+
+def create_cs_status(test_root, test_id, extra_args="", filename=None):
     """Create a test suite-specific cs.status file from the template
 
     Arguments:
@@ -28,11 +29,12 @@ def create_cs_status(test_root, test_id, extra_args='', filename=None):
     cime_root = CIME.utils.get_cime_root()
     template_file = os.path.join(python_libs_root, "cs.status.template")
     template = open(template_file, "r").read()
-    template = template.replace("<PATH>",
-                                os.path.join(cime_root,"scripts","Tools")).replace\
-                                ("<EXTRA_ARGS>", extra_args).replace\
-                                ("<TESTID>", test_id).replace\
-                                ("<TESTROOT>", test_root)
+    template = (
+        template.replace("<PATH>", os.path.join(cime_root, "scripts", "Tools"))
+        .replace("<EXTRA_ARGS>", extra_args)
+        .replace("<TESTID>", test_id)
+        .replace("<TESTROOT>", test_root)
+    )
     if not os.path.exists(test_root):
         os.makedirs(test_root)
     if filename is None:
@@ -40,4 +42,6 @@ def create_cs_status(test_root, test_id, extra_args='', filename=None):
     cs_status_file = os.path.join(test_root, filename)
     with open(cs_status_file, "w") as fd:
         fd.write(template)
-    os.chmod(cs_status_file, os.stat(cs_status_file).st_mode | stat.S_IXUSR | stat.S_IXGRP)
+    os.chmod(
+        cs_status_file, os.stat(cs_status_file).st_mode | stat.S_IXUSR | stat.S_IXGRP
+    )

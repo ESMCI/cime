@@ -8,8 +8,8 @@ from CIME.utils import expect
 
 logger = logging.getLogger(__name__)
 
-class Inputdata(GenericXML):
 
+class Inputdata(GenericXML):
     def __init__(self, infile=None, files=None):
         """
         initialize a files object given input pes specification file
@@ -27,8 +27,8 @@ class Inputdata(GenericXML):
     def get_next_server(self, attributes=None):
         protocol = None
         address = None
-        user = ''
-        passwd = ''
+        user = ""
+        passwd = ""
         chksum_file = None
         ic_filepath = None
         servernodes = self.get_children("server", attributes=attributes)
@@ -46,30 +46,30 @@ class Inputdata(GenericXML):
             else:
                 prevserver = self._servernode
                 for i, node in enumerate(servernodes):
-                    if self._servernode == node and len(servernodes)>i+1:
-                        self._servernode = servernodes[i+1]
+                    if self._servernode == node and len(servernodes) > i + 1:
+                        self._servernode = servernodes[i + 1]
                         break
                 if prevserver is not None and self._servernode == prevserver:
                     self._servernode = None
 
             if self._servernode:
-                protocol = self.text(self.get_child("protocol", root = self._servernode))
-                address =  self.text(self.get_child("address", root = self._servernode))
-                unode = self.get_optional_child("user", root = self._servernode)
+                protocol = self.text(self.get_child("protocol", root=self._servernode))
+                address = self.text(self.get_child("address", root=self._servernode))
+                unode = self.get_optional_child("user", root=self._servernode)
                 if unode:
-                    user =  self.text(unode)
-                invnode = self.get_optional_child("inventory", root = self._servernode)
+                    user = self.text(unode)
+                invnode = self.get_optional_child("inventory", root=self._servernode)
                 if invnode:
                     inventory = self.text(invnode)
 
-                pnode = self.get_optional_child("password", root = self._servernode)
+                pnode = self.get_optional_child("password", root=self._servernode)
                 if pnode:
-                    passwd =  self.text(pnode)
-                csnode = self.get_optional_child("checksum", root = self._servernode)
+                    passwd = self.text(pnode)
+                csnode = self.get_optional_child("checksum", root=self._servernode)
                 if csnode:
-                    chksum_file =  self.text(csnode)
-                icnode = self.get_optional_child("ic_filepath", root = self._servernode)
+                    chksum_file = self.text(csnode)
+                icnode = self.get_optional_child("ic_filepath", root=self._servernode)
                 if icnode:
-                    ic_filepath =  self.text(icnode)
+                    ic_filepath = self.text(icnode)
 
         return protocol, address, user, passwd, chksum_file, ic_filepath, inventory

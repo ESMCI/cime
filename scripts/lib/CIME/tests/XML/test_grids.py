@@ -21,13 +21,15 @@ import tempfile
 from CIME.XML.grids import Grids, _ComponentGrids, _add_grid_info, _strip_grid_from_name
 from CIME.utils import CIMEError
 
+
 class TestGrids(unittest.TestCase):
     """Tests some functionality of CIME.XML.grids
 
     Note that much of the functionality of CIME.XML.grids is NOT covered here
     """
 
-    _CONFIG_GRIDS_TEMPLATE = string.Template("""<?xml version="1.0"?>
+    _CONFIG_GRIDS_TEMPLATE = string.Template(
+        """<?xml version="1.0"?>
 
 <grid_data version="2.1" xmlns:xi="http://www.w3.org/2001/XInclude">
   <help>
@@ -68,7 +70,8 @@ $EXTRA_REQUIRED_GRIDMAPS
 $GRIDMAP_ENTRIES
   </gridmaps>
 </grid_data>
-""")
+"""
+    )
 
     _MODEL_GRID_F09_G17 = """
     <model_grid alias="f09_g17">
@@ -188,13 +191,22 @@ $GRIDMAP_ENTRIES
     def tearDown(self):
         shutil.rmtree(self._workdir)
 
-    def _create_grids_xml(self, model_grid_entries, domain_entries, gridmap_entries,
-                          extra_required_gridmaps=""):
-        grids_xml = self._CONFIG_GRIDS_TEMPLATE.substitute({'MODEL_GRID_ENTRIES':model_grid_entries,
-                                                            'DOMAIN_ENTRIES':domain_entries,
-                                                            'EXTRA_REQUIRED_GRIDMAPS':extra_required_gridmaps,
-                                                            'GRIDMAP_ENTRIES':gridmap_entries})
-        with open(self._xml_filepath, 'w') as xml_file:
+    def _create_grids_xml(
+        self,
+        model_grid_entries,
+        domain_entries,
+        gridmap_entries,
+        extra_required_gridmaps="",
+    ):
+        grids_xml = self._CONFIG_GRIDS_TEMPLATE.substitute(
+            {
+                "MODEL_GRID_ENTRIES": model_grid_entries,
+                "DOMAIN_ENTRIES": domain_entries,
+                "EXTRA_REQUIRED_GRIDMAPS": extra_required_gridmaps,
+                "GRIDMAP_ENTRIES": gridmap_entries,
+            }
+        )
+        with open(self._xml_filepath, "w") as xml_file:
             xml_file.write(grids_xml)
 
     def assert_grid_info_f09_g17(self, grid_info, nuopc=True):
@@ -203,68 +215,79 @@ $GRIDMAP_ENTRIES
         If nuopc is true (the default), then assumes that we used the nuopc driver.
 
         """
-        self.assertEqual(grid_info['ATM_NX'], 288)
-        self.assertEqual(grid_info['ATM_NY'], 192)
-        self.assertEqual(grid_info['ATM_GRID'], '0.9x1.25')
-        self.assertEqual(grid_info['ATM_DOMAIN_FILE'], 'domain.lnd.fv0.9x1.25_gx1v7.nc')
+        self.assertEqual(grid_info["ATM_NX"], 288)
+        self.assertEqual(grid_info["ATM_NY"], 192)
+        self.assertEqual(grid_info["ATM_GRID"], "0.9x1.25")
+        self.assertEqual(grid_info["ATM_DOMAIN_FILE"], "domain.lnd.fv0.9x1.25_gx1v7.nc")
         if nuopc:
-            self.assertEqual(grid_info['ATM_DOMAIN_MESH'], 'fv0.9x1.25_ESMFmesh.nc')
+            self.assertEqual(grid_info["ATM_DOMAIN_MESH"], "fv0.9x1.25_ESMFmesh.nc")
 
-        self.assertEqual(grid_info['LND_NX'], 288)
-        self.assertEqual(grid_info['LND_NY'], 192)
-        self.assertEqual(grid_info['LND_GRID'], '0.9x1.25')
-        self.assertEqual(grid_info['LND_DOMAIN_FILE'], 'domain.lnd.fv0.9x1.25_gx1v7.nc')
+        self.assertEqual(grid_info["LND_NX"], 288)
+        self.assertEqual(grid_info["LND_NY"], 192)
+        self.assertEqual(grid_info["LND_GRID"], "0.9x1.25")
+        self.assertEqual(grid_info["LND_DOMAIN_FILE"], "domain.lnd.fv0.9x1.25_gx1v7.nc")
         if nuopc:
-            self.assertEqual(grid_info['LND_DOMAIN_MESH'], 'fv0.9x1.25_ESMFmesh.nc')
+            self.assertEqual(grid_info["LND_DOMAIN_MESH"], "fv0.9x1.25_ESMFmesh.nc")
 
-        self.assertEqual(grid_info['OCN_NX'], 320)
-        self.assertEqual(grid_info['OCN_NY'], 384)
-        self.assertEqual(grid_info['OCN_GRID'], 'gx1v7')
-        self.assertEqual(grid_info['OCN_DOMAIN_FILE'], 'domain.ocn.gx1v7.nc')
+        self.assertEqual(grid_info["OCN_NX"], 320)
+        self.assertEqual(grid_info["OCN_NY"], 384)
+        self.assertEqual(grid_info["OCN_GRID"], "gx1v7")
+        self.assertEqual(grid_info["OCN_DOMAIN_FILE"], "domain.ocn.gx1v7.nc")
         if nuopc:
-            self.assertEqual(grid_info['OCN_DOMAIN_MESH'], 'gx1v7_ESMFmesh.nc')
+            self.assertEqual(grid_info["OCN_DOMAIN_MESH"], "gx1v7_ESMFmesh.nc")
 
-        self.assertEqual(grid_info['ICE_NX'], 320)
-        self.assertEqual(grid_info['ICE_NY'], 384)
-        self.assertEqual(grid_info['ICE_GRID'], 'gx1v7')
-        self.assertEqual(grid_info['ICE_DOMAIN_FILE'], 'domain.ocn.gx1v7.nc')
+        self.assertEqual(grid_info["ICE_NX"], 320)
+        self.assertEqual(grid_info["ICE_NY"], 384)
+        self.assertEqual(grid_info["ICE_GRID"], "gx1v7")
+        self.assertEqual(grid_info["ICE_DOMAIN_FILE"], "domain.ocn.gx1v7.nc")
         if nuopc:
-            self.assertEqual(grid_info['ICE_DOMAIN_MESH'], 'gx1v7_ESMFmesh.nc')
+            self.assertEqual(grid_info["ICE_DOMAIN_MESH"], "gx1v7_ESMFmesh.nc")
 
-        self.assertEqual(grid_info['ATM2OCN_FMAPNAME'], 'map_fv0.9x1.25_TO_gx1v7_aave.nc')
-        self.assertEqual(grid_info['OCN2ATM_FMAPNAME'], 'map_gx1v7_TO_fv0.9x1.25_aave.nc')
-        self.assertFalse('OCN2ATM_SHOULDBEABSENT' in grid_info)
+        self.assertEqual(
+            grid_info["ATM2OCN_FMAPNAME"], "map_fv0.9x1.25_TO_gx1v7_aave.nc"
+        )
+        self.assertEqual(
+            grid_info["OCN2ATM_FMAPNAME"], "map_gx1v7_TO_fv0.9x1.25_aave.nc"
+        )
+        self.assertFalse("OCN2ATM_SHOULDBEABSENT" in grid_info)
 
     def assert_grid_info_f09_g17_3glc(self, grid_info, nuopc=True):
-        """Asserts that all domain info is present & correct for _MODEL_GRID_F09_G17_3GLC
-        """
+        """Asserts that all domain info is present & correct for _MODEL_GRID_F09_G17_3GLC"""
         self.assert_grid_info_f09_g17(grid_info, nuopc=nuopc)
 
         # Note that we don't assert GLC_NX and GLC_NY here: these are unused for this
         # multi-grid case, so we don't care what arbitrary values they have.
-        self.assertEqual(grid_info['GLC_GRID'], 'ais8:gris4:lis12')
+        self.assertEqual(grid_info["GLC_GRID"], "ais8:gris4:lis12")
         if nuopc:
-            self.assertEqual(grid_info['GLC_DOMAIN_MESH'],
-                             'antarctica_8km_ESMFmesh.nc:greenland_4km_ESMFmesh.nc:laurentide_12km_ESMFmesh.nc')
+            self.assertEqual(
+                grid_info["GLC_DOMAIN_MESH"],
+                "antarctica_8km_ESMFmesh.nc:greenland_4km_ESMFmesh.nc:laurentide_12km_ESMFmesh.nc",
+            )
 
-        self.assertEqual(grid_info['GLC2OCN_LIQ_RMAPNAME'],
-                         'map_ais8_to_gx1v7_liq.nc:map_gris4_to_gx1v7_liq.nc:map_lis12_to_gx1v7_liq.nc')
-        self.assertEqual(grid_info['GLC2OCN_ICE_RMAPNAME'],
-                         'map_ais8_to_gx1v7_ice.nc:map_gris4_to_gx1v7_ice.nc:map_lis12_to_gx1v7_ice.nc')
+        self.assertEqual(
+            grid_info["GLC2OCN_LIQ_RMAPNAME"],
+            "map_ais8_to_gx1v7_liq.nc:map_gris4_to_gx1v7_liq.nc:map_lis12_to_gx1v7_liq.nc",
+        )
+        self.assertEqual(
+            grid_info["GLC2OCN_ICE_RMAPNAME"],
+            "map_ais8_to_gx1v7_ice.nc:map_gris4_to_gx1v7_ice.nc:map_lis12_to_gx1v7_ice.nc",
+        )
 
     def test_get_grid_info_basic(self):
         """Basic test of get_grid_info"""
         model_grid_entries = self._MODEL_GRID_F09_G17
         domain_entries = self._DOMAIN_F09 + self._DOMAIN_G17
         gridmap_entries = self._GRIDMAP_F09_G17
-        self._create_grids_xml(model_grid_entries=model_grid_entries,
-                               domain_entries=domain_entries,
-                               gridmap_entries=gridmap_entries)
+        self._create_grids_xml(
+            model_grid_entries=model_grid_entries,
+            domain_entries=domain_entries,
+            gridmap_entries=gridmap_entries,
+        )
 
         grids = Grids(self._xml_filepath)
-        grid_info = grids.get_grid_info(name="f09_g17",
-                                        compset="NOT_IMPORTANT",
-                                        driver="nuopc")
+        grid_info = grids.get_grid_info(
+            name="f09_g17", compset="NOT_IMPORTANT", driver="nuopc"
+        )
 
         self.assert_grid_info_f09_g17(grid_info, nuopc=True)
 
@@ -278,19 +301,21 @@ $GRIDMAP_ENTRIES
     <required_gridmap grid1="atm_grid" grid2="ocn_grid">ATM2OCN_EXTRA</required_gridmap>
     <required_gridmap grid1="ocn_grid" grid2="atm_grid">OCN2ATM_EXTRA</required_gridmap>
 """
-        self._create_grids_xml(model_grid_entries=model_grid_entries,
-                               domain_entries=domain_entries,
-                               gridmap_entries=gridmap_entries,
-                               extra_required_gridmaps=extra_required_gridmaps)
+        self._create_grids_xml(
+            model_grid_entries=model_grid_entries,
+            domain_entries=domain_entries,
+            gridmap_entries=gridmap_entries,
+            extra_required_gridmaps=extra_required_gridmaps,
+        )
 
         grids = Grids(self._xml_filepath)
-        grid_info = grids.get_grid_info(name="f09_g17",
-                                        compset="NOT_IMPORTANT",
-                                        driver="nuopc")
+        grid_info = grids.get_grid_info(
+            name="f09_g17", compset="NOT_IMPORTANT", driver="nuopc"
+        )
 
         self.assert_grid_info_f09_g17(grid_info, nuopc=True)
-        self.assertEqual(grid_info['ATM2OCN_EXTRA'], 'unset')
-        self.assertEqual(grid_info['OCN2ATM_EXTRA'], 'unset')
+        self.assertEqual(grid_info["ATM2OCN_EXTRA"], "unset")
+        self.assertEqual(grid_info["OCN2ATM_EXTRA"], "unset")
 
     def test_get_grid_info_extra_gridmaps(self):
         """Test of get_grid_info with some extra gridmaps"""
@@ -304,43 +329,57 @@ $GRIDMAP_ENTRIES
       <map name="OCN2ATM_EXTRA">map_gx1v7_TO_fv0.9x1.25_extra.nc</map>
     </gridmap>
 """
-        self._create_grids_xml(model_grid_entries=model_grid_entries,
-                               domain_entries=domain_entries,
-                               gridmap_entries=gridmap_entries)
+        self._create_grids_xml(
+            model_grid_entries=model_grid_entries,
+            domain_entries=domain_entries,
+            gridmap_entries=gridmap_entries,
+        )
 
         grids = Grids(self._xml_filepath)
-        grid_info = grids.get_grid_info(name="f09_g17",
-                                        compset="NOT_IMPORTANT",
-                                        driver="nuopc")
+        grid_info = grids.get_grid_info(
+            name="f09_g17", compset="NOT_IMPORTANT", driver="nuopc"
+        )
 
         self.assert_grid_info_f09_g17(grid_info, nuopc=True)
-        self.assertEqual(grid_info['ATM2OCN_EXTRA'], 'map_fv0.9x1.25_TO_gx1v7_extra.nc')
-        self.assertEqual(grid_info['OCN2ATM_EXTRA'], 'map_gx1v7_TO_fv0.9x1.25_extra.nc')
+        self.assertEqual(grid_info["ATM2OCN_EXTRA"], "map_fv0.9x1.25_TO_gx1v7_extra.nc")
+        self.assertEqual(grid_info["OCN2ATM_EXTRA"], "map_gx1v7_TO_fv0.9x1.25_extra.nc")
 
     def test_get_grid_info_3glc(self):
         """Test of get_grid_info with 3 glc grids"""
         model_grid_entries = self._MODEL_GRID_F09_G17_3GLC
-        domain_entries = (self._DOMAIN_F09 + self._DOMAIN_G17 +
-                          self._DOMAIN_GRIS4 + self._DOMAIN_AIS8 + self._DOMAIN_LIS12)
-        gridmap_entries = (self._GRIDMAP_F09_G17 +
-                           self._GRIDMAP_GRIS4_G17 + self._GRIDMAP_AIS8_G17 + self._GRIDMAP_LIS12_G17)
+        domain_entries = (
+            self._DOMAIN_F09
+            + self._DOMAIN_G17
+            + self._DOMAIN_GRIS4
+            + self._DOMAIN_AIS8
+            + self._DOMAIN_LIS12
+        )
+        gridmap_entries = (
+            self._GRIDMAP_F09_G17
+            + self._GRIDMAP_GRIS4_G17
+            + self._GRIDMAP_AIS8_G17
+            + self._GRIDMAP_LIS12_G17
+        )
         # Claim that a glc2atm gridmap is required in order to test the logic that handles
         # an unset required gridmap for a component with multiple grids.
         extra_required_gridmaps = """
     <required_gridmap grid1="glc_grid" grid2="atm_grid">GLC2ATM_EXTRA</required_gridmap>
 """
-        self._create_grids_xml(model_grid_entries=model_grid_entries,
-                               domain_entries=domain_entries,
-                               gridmap_entries=gridmap_entries,
-                               extra_required_gridmaps=extra_required_gridmaps)
+        self._create_grids_xml(
+            model_grid_entries=model_grid_entries,
+            domain_entries=domain_entries,
+            gridmap_entries=gridmap_entries,
+            extra_required_gridmaps=extra_required_gridmaps,
+        )
 
         grids = Grids(self._xml_filepath)
-        grid_info = grids.get_grid_info(name="f09_g17_3glc",
-                                        compset="NOT_IMPORTANT",
-                                        driver="nuopc")
+        grid_info = grids.get_grid_info(
+            name="f09_g17_3glc", compset="NOT_IMPORTANT", driver="nuopc"
+        )
 
         self.assert_grid_info_f09_g17_3glc(grid_info, nuopc=True)
-        self.assertEqual(grid_info['GLC2ATM_EXTRA'], 'unset')
+        self.assertEqual(grid_info["GLC2ATM_EXTRA"], "unset")
+
 
 class TestComponentGrids(unittest.TestCase):
     """Tests the _ComponentGrids helper class defined in CIME.XML.grids"""
@@ -362,7 +401,7 @@ class TestComponentGrids(unittest.TestCase):
     def test_check_num_elements_right_ndomains(self):
         """With the right number of domains for a component, check_num_elements should pass"""
         component_grids = _ComponentGrids(self._GRID_LONGNAME)
-        gridinfo = {'GLC_DOMAIN_MESH': 'foo:bar:baz'}
+        gridinfo = {"GLC_DOMAIN_MESH": "foo:bar:baz"}
 
         # The test passes as long as the following call doesn't generate any errors
         component_grids.check_num_elements(gridinfo)
@@ -371,15 +410,19 @@ class TestComponentGrids(unittest.TestCase):
         """With the wrong number of domains for a component, check_num_elements should fail"""
         component_grids = _ComponentGrids(self._GRID_LONGNAME)
         # In the following, there should be 3 elements, but we only specify 2
-        gridinfo = {'GLC_DOMAIN_MESH': 'foo:bar'}
+        gridinfo = {"GLC_DOMAIN_MESH": "foo:bar"}
 
-        self.assertRaisesRegex(CIMEError, "Unexpected number of colon-delimited elements",
-                               component_grids.check_num_elements, gridinfo)
+        self.assertRaisesRegex(
+            CIMEError,
+            "Unexpected number of colon-delimited elements",
+            component_grids.check_num_elements,
+            gridinfo,
+        )
 
     def test_check_num_elements_right_nmaps(self):
         """With the right number of maps between two components, check_num_elements should pass"""
         component_grids = _ComponentGrids(self._GRID_LONGNAME)
-        gridinfo = {'GLC2ROF_RMAPNAME': 'map1:map2:map3:map4:map5:map6'}
+        gridinfo = {"GLC2ROF_RMAPNAME": "map1:map2:map3:map4:map5:map6"}
 
         # The test passes as long as the following call doesn't generate any errors
         component_grids.check_num_elements(gridinfo)
@@ -388,10 +431,15 @@ class TestComponentGrids(unittest.TestCase):
         """With the wrong number of maps between two components, check_num_elements should fail"""
         component_grids = _ComponentGrids(self._GRID_LONGNAME)
         # In the following, there should be 6 elements, but we only specify 5
-        gridinfo = {'GLC2ROF_RMAPNAME': 'map1:map2:map3:map4:map5'}
+        gridinfo = {"GLC2ROF_RMAPNAME": "map1:map2:map3:map4:map5"}
 
-        self.assertRaisesRegex(CIMEError, "Unexpected number of colon-delimited elements",
-                               component_grids.check_num_elements, gridinfo)
+        self.assertRaisesRegex(
+            CIMEError,
+            "Unexpected number of colon-delimited elements",
+            component_grids.check_num_elements,
+            gridinfo,
+        )
+
 
 class TestGridsFunctions(unittest.TestCase):
     """Tests helper functions defined in CIME.XML.grids
@@ -400,27 +448,28 @@ class TestGridsFunctions(unittest.TestCase):
     function of the main test class.
 
     """
+
     # ------------------------------------------------------------------------
     # Tests of _add_grid_info
     # ------------------------------------------------------------------------
 
     def test_add_grid_info_initial(self):
         """Test of _add_grid_info for the initial add of a given key"""
-        grid_info = {'foo': 'a'}
-        _add_grid_info(grid_info, 'bar', 'b')
-        self.assertEqual(grid_info, {'foo': 'a', 'bar': 'b'})
+        grid_info = {"foo": "a"}
+        _add_grid_info(grid_info, "bar", "b")
+        self.assertEqual(grid_info, {"foo": "a", "bar": "b"})
 
     def test_add_grid_info_existing(self):
         """Test of _add_grid_info when the given key already exists"""
-        grid_info = {'foo': 'bar'}
-        _add_grid_info(grid_info, 'foo', 'baz')
-        self.assertEqual(grid_info, {'foo': 'bar:baz'})
+        grid_info = {"foo": "bar"}
+        _add_grid_info(grid_info, "foo", "baz")
+        self.assertEqual(grid_info, {"foo": "bar:baz"})
 
     def test_add_grid_info_existing_with_value_for_multiple(self):
         """Test of _add_grid_info when the given key already exists and value_for_multiple is provided"""
-        grid_info = {'foo': 1}
-        _add_grid_info(grid_info, 'foo', 2, value_for_multiple=0)
-        self.assertEqual(grid_info, {'foo': 0})
+        grid_info = {"foo": 1}
+        _add_grid_info(grid_info, "foo", 2, value_for_multiple=0)
+        self.assertEqual(grid_info, {"foo": 0})
 
     # ------------------------------------------------------------------------
     # Tests of strip_grid_from_name
@@ -433,8 +482,9 @@ class TestGridsFunctions(unittest.TestCase):
 
     def test_strip_grid_from_name_badname(self):
         """_strip_grid_from_name should raise an exception for a name not ending with _grid"""
-        self.assertRaisesRegex(CIMEError, "does not end with _grid",
-                               _strip_grid_from_name, name = "atm")
+        self.assertRaisesRegex(
+            CIMEError, "does not end with _grid", _strip_grid_from_name, name="atm"
+        )
 
     # ------------------------------------------------------------------------
     # Tests of _check_grid_info_component_counts
