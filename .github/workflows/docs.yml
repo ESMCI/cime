@@ -1,0 +1,43 @@
+name: documentation
+
+on:
+  push:
+    paths:
+      - 'docs/**'
+    branches:
+      - master
+
+jobs:
+  update_docs:
+    name: Updates documentation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          path: 'master/'
+      - uses: actions/checkout@v2
+        with:
+          path: 'gh-pages/'
+          ref: gh-pages
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+      - name: install dependencies
+        run: |
+          pip install sphinx sphinxcontrib-programoutput
+          pip install git+https://github.com/esmci/sphinx_rtd_theme.git@version-dropdown-with-fixes
+      - name: build documentation
+        run: |
+          ls -la
+          cd ${GITHUB_WORKSPACE}/master/doc
+          make BUILDDIR=${GITHUB_WORKSPACE}/gh-pages/versions/master clean
+          make BUILDDIR=${GITHUB_WORKSPACE}/gh-pages/versions/master html
+      - name: commit changes
+        run: |
+          pwd
+          cd ${GITHUB_WORKSPACE}/gh-pages/
+          git config --global user.name 'github-actions'
+          git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add .
+          git commit -m 'Updates documentation'
+          git push origin gh-pages
