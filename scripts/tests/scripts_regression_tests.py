@@ -281,6 +281,7 @@ class N_TestUnitTest(unittest.TestCase):
         cls._do_teardown = []
         cls._testroot = os.path.join(TEST_ROOT, 'TestUnitTests')
         cls._testdirs = []
+        os.environ["CIME_NO_CMAKE_MACRO"] = "ON"
 
     def _has_unit_test_support(self):
         if TEST_COMPILER is None:
@@ -331,6 +332,7 @@ class N_TestUnitTest(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         do_teardown = len(cls._do_teardown) > 0 and sys.exc_info() == (None, None, None) and not NO_TEARDOWN
+        del os.environ["CIME_NO_CMAKE_MACRO"] 
 
         teardown_root = True
         for tfile in cls._testdirs:
