@@ -372,7 +372,22 @@ def _save_prerun_timing_e3sm(case, lid):
             with open(os.path.join(rundir, "syslog_jobid.{}".format(job_id)), "w") as fd:
                 fd.write("{}\n".format(syslog_jobid))
 
+def _cleanup_spio_stats(case):
+    rundir = case.get_value("RUNDIR")
+    for item in glob.glob(os.path.join(rundir, "io_perf_summary*")):
+        os.remove(item)
+
+    spio_stats_dir = os.path.join(rundir, "spio_stats")
+    if os.path.exists(spio_stats_dir):
+        shutil.rmtree(spio_stats_dir)
+
+    try:
+        os.makedirs(spio_stats_dir)
+    except OSError:
+        logger.warning("{} could not be created. Scorpio I/O statistics will be stored in the run directory.".format(spio_stats_dir))
+
 def _save_prerun_provenance_e3sm(case, lid):
+    _cleanup_spio_stats(case)
     if case.get_value("SAVE_TIMING"):
         _save_prerun_timing_e3sm(case, lid)
 
@@ -447,15 +462,20 @@ def _save_postrun_timing_e3sm(case, lid):
         shutil.move(item, mprof_dst_path)
         gzip_existing_file(mprof_dst_path)
 
-    # Copy Scorpio I/O performance stats to a separate dir + tar + compress
-    spio_stats_dir = os.path.join(rundir, "spio_stats." + lid)
-    os.mkdir(spio_stats_dir)
+    # Copy Scorpio I/O performance stats in "spio_stats" to "spio_stats.[LID]" + tar + compress
+    spio_stats_dir = os.path.join(rundir, "spio_stats")
+    if not os.path.exists(spio_stats_dir):
+        os.mkdir(spio_stats_dir)
+
     for item in glob.glob(os.path.join(rundir, "io_perf_summary*")):
         safe_copy(item, spio_stats_dir)
-    with tarfile.open("%s.tar.gz" % spio_stats_dir, "w:gz") as tfd:
-        tfd.add(spio_stats_dir, arcname=os.path.basename(spio_stats_dir))
 
-    shutil.rmtree(spio_stats_dir)
+    spio_stats_job_dir = os.path.join(rundir, "spio_stats." + lid)
+    shutil.copytree(spio_stats_dir, spio_stats_job_dir)
+    with tarfile.open("%s.tar.gz" % spio_stats_job_dir, "w:gz") as tfd:
+        tfd.add(spio_stats_job_dir, arcname=os.path.basename(spio_stats_job_dir))
+
+    shutil.rmtree(spio_stats_job_dir)
 
     gzip_existing_file(os.path.join(caseroot, "timing", "e3sm_timing_stats.%s" % lid))
 
