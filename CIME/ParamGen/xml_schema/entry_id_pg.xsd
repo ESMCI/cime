@@ -6,11 +6,28 @@
   <xs:attribute name="version" type="xs:decimal"/>
   <xs:attribute name="guard" type="xs:string"/>
 
+  <!-- simple types -->
+  <xs:simpleType name="identifier_type">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[A-Za-z][A-Za-z0-9_]{0,63}"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="units_type">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[-+A-Za-z0-9 ]+"/>
+    </xs:restriction>
+  </xs:simpleType>
+
   <!-- simple elements -->
   <xs:element name="type" type="xs:string"/>
+  <xs:element name="kind" type="xs:string"/>
   <xs:element name="desc" type="xs:string"/>
   <xs:element name="group" type="xs:NCName"/>
   <xs:element name="category" type="xs:string"/>
+  <xs:element name="standard_name" type="identifier_type"/>
+  <xs:element name="long_name" type="xs:string"/>
+  <xs:element name="units" type="units_type"/>
   <xs:element name="valid_values" type="xs:string"/>
 
   <!-- complex elements -->
@@ -35,12 +52,17 @@
   <xs:element name="entry">
     <xs:complexType>
       <xs:all>
+        <!-- type, standard_name, and units are required for CCPP variables -->
         <xs:element ref="type" minOccurs='0'/>
         <xs:element ref="desc" minOccurs='0'/>
         <xs:element ref="category" minOccurs='0'/>
         <xs:element ref="valid_values" minOccurs='0'/>
         <xs:element ref="group"/>
         <xs:element ref="values"/>
+        <xs:element ref="standard_name" minOccurs='0'/>
+        <xs:element ref="long_name" minOccurs='0'/>
+        <xs:element ref="units" minOccurs='0'/>
+        <xs:element ref="kind" minOccurs='0'/>
       </xs:all>
       <xs:attribute ref="id" use="required"/>
     </xs:complexType>
