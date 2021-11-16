@@ -68,10 +68,14 @@ def collect_db_hosts(num_hosts):
 def launch_cluster_orc(exp, db_hosts, port):
     """Just spin up a database cluster, check the status
        and tear it down"""
-
+    ld_library_path = os.getenv("LD_LIBRARY_PATH")
+    os.environ["LD_LIBRARY_PATH"]="/glade/u/apps/ch/opt/gnu/9.1.0/lib64"
+    if ld_library_path:
+        os.environ["LD_LIBRARY_PATH"]="/glade/u/apps/ch/opt/gnu/9.1.0/lib64:{}".format(ld_library_path)
+        
     print(f"Starting Orchestrator on hosts: {db_hosts}")
     # batch = False to launch on existing allocation
-    db = PBSOrchestrator(port=port, db_nodes=len(db_hosts), batch=False,
+    db = PBSOrchestrator(port=port, db_nodes=len(db_hosts), batch=False, interface="ib0",
                           run_command="mpirun", hosts=db_hosts)
 
     # generate directories for output files

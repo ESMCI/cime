@@ -561,21 +561,23 @@ contains
     if (chkerr(rc,__LINE__,u_FILE_u)) return
     call ESMF_VMGet(vm, localPet=mytask, rc=rc)
     if (chkerr(rc,__LINE__,u_FILE_u)) return
-
-    call random_number(true_array_real_64)
-    call random_number(recv_array_real_64)
-    write(key_prefix, "(A,I6.6)") "pe_",mytask
-    if(mastertask) write(logunit, *) 'putting tensor to smartsim database '
-    call sr_client%put_tensor(key_prefix//"true_array_real_64", true_array_real_64, &
-         shape(true_array_real_64))
-    if(mastertask) write(logunit, *)  'retreveing tensor from database '
-    call sr_client%unpack_tensor(key_prefix//"true_array_real_64", recv_array_real_64,&
-         shape(recv_array_real_64))
-    if (.not. all(true_array_real_64 == recv_array_real_64)) then
-       call shr_sys_abort('true_array_real_64: FAILED')
+    
+    if (sr_client%isinitialized()) then
+       call random_number(true_array_real_64)
+       call random_number(recv_array_real_64)
+       write(key_prefix, "(A,I6.6)") "pe_",mytask
+       if(mastertask) write(logunit, *) 'putting tensor to smartsim database '
+       call sr_client%put_tensor(key_prefix//"true_array_real_64", true_array_real_64, &
+            shape(true_array_real_64))
+       if(mastertask) write(logunit, *)  'retreveing tensor from database '
+       call sr_client%unpack_tensor(key_prefix//"true_array_real_64", recv_array_real_64,&
+            shape(recv_array_real_64))
+       if (.not. all(true_array_real_64 == recv_array_real_64)) then
+          call shr_sys_abort('true_array_real_64: FAILED')
+       endif
+    else
+       call shr_sys_abort('Could not detect smartsim database')
     endif
-
-
 
   end subroutine srtest
 end module atm_comp_nuopc

@@ -14,10 +14,12 @@ do
    parent_job=$(pbs_rstat -F $rsv|awk '$1 ~ /^reserve_job/{print $3}')
    if [[ "${PBS_JOBID}" == "${parent_job}" ]] ; then
       rsvname=$rsv
+      head_host=$(pbs_rstat -F $rsv|awk '$1 ~ /^resv_nodes/{print $3}' | cut -d: -f1-1)
+      head_host="${head_host:1}"
       break
    fi
 done
-if [ -z $rsvname ]; then echo "rsv is unset"; exit -1; else echo "rsv name is set to '$rsvname'"; fi
+if [ -z $rsvname ]; then echo "rsv is unset"; exit -1; else echo "rsv name is set to '$rsvname' head_host is $head_host"; fi
 
 me=$(whoami)
 pbs_ralter -U $me $rsvname
@@ -27,22 +29,26 @@ if [[ "$NCAR_HOST" == "dav" ]]; then
 else
   gpu_type=""
 fi
-
-#db_jobid=$(qsub -q $rsvname $gpu_type -vSMARTSIM_LOG_LEVEL=debug -vRSVNAME=$rsvname launch_database_cluster.sh)
 db_jobid=$(qsub -q $rsvname $gpu_type -vRSVNAME=$rsvname launch_database_cluster.sh)
 if [ -z $db_jobid ]; then echo "db_jobid is unset"; exit -1; fi
 
-head_host=$(qstat -f $PBS_JOBID|awk '$1 ~ /^exec_host$/{print $3}'|cut -d\/ -f1-1)
+#qstat -n $PBS_JOBID
+#head_host=$(qstat -n $PBS_JOBID | awk '$1 ~ /chadmi/{print $12}'|cut -d\/ -f1-1)
+
+if [ -z $head_host ]; then echo "head_host is unset, PBS_JOBID=$PBS_JOBID"; qdel $PBS_JOBID; exit -1; fi
+
 # This gets the ib network
 if [[ "$NCAR_HOST" == "dav" ]]; then
   host_name=${head_host}-ib
 else
   host_name=${head_host}-ib0
 fi
+echo "HOST NAME is $host_name, head_host is $head_host"
 # This gets the ip over ib network and should be prefered
 SSDB="$(getent hosts ${host_name}|awk '{print $1}'):$db_port"
 # This gets the external network
 #SSDB="$(getent hosts ${head_host}.ucar.edu |awk '{print $1}'):$db_port"
+#db_jobid=$(qsub -q $rsvname $gpu_type -vSMARTSIM_LOG_LEVEL=debug -vRSVNAME=$rsvname launch_database_cluster.sh)
 
 export SSDB
 echo "gpu_type is $gpu_type, head_host is $head_host, db_jobid is $db_jobid, SSDB is $SSDB"
