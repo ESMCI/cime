@@ -225,7 +225,7 @@ ifeq ($(strip $(USE_PETSC)), TRUE)
 endif
 
 # Set MOAB info if it is being used
-ifeq ($(strip $(USE_MOAB)), TRUE)
+ifeq ($(COMP_INTERFACE), moab)
   ifdef MOAB_PATH
     CPPDEFS += -DHAVE_MOAB
     ifndef INC_MOAB
@@ -237,10 +237,6 @@ ifeq ($(strip $(USE_MOAB)), TRUE)
   else
     $(error MOAB_PATH must be defined when USE_MOAB is TRUE)
   endif
-
-  # get the "IMESH_LIBS" list as an env var
-  include $(LIB_MOAB)/iMesh-Defs.inc
-
 endif
 
 # Set HAVE_SLASHPROC on LINUX systems which are not bluegene or Darwin (OSx)
