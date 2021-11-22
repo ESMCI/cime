@@ -142,6 +142,8 @@ OR
         MACHINE = Machines(config.get("create_test", "MACHINE"))
     elif config.has_option("main", "MACHINE"):
         MACHINE = Machines(config.get("main", "MACHINE"))
+    else:
+        MACHINE = Machines()
 
     os.environ["CIME_MACHINE"] = MACHINE.get_machine_name()
 
