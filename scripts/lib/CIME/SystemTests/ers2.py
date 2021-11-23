@@ -32,7 +32,7 @@ class ERS2(SystemTestsCommon):
         stop_n      = self._case.get_value("STOP_N")
         stop_option = self._case.get_value("STOP_OPTION")
 
-        rest_n = stop_n/2 + 1
+        rest_n = int(stop_n/2 + 1)
         stop_new = rest_n
 
         self._case.set_value("REST_OPTION",stop_option)
@@ -41,7 +41,7 @@ class ERS2(SystemTestsCommon):
         logger.info("doing first part {} {} restart test".format(str(stop_new), stop_option))
         self.run_indv(suffix="intermediate")
 
-        stop_new = stop_n - rest_n
+        stop_new = int(stop_n - rest_n)
         self._case.set_value("STOP_N", stop_new)
         self._case.set_value("CONTINUE_RUN", True)
         self._case.set_value("REST_OPTION","never")

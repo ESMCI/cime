@@ -94,7 +94,7 @@ The steps for adding a new component grid to the model system follow. This proce
    If you are introducing just one new grid, you can leverage SCRIP grid files that are already in place for the other components.
    There is no supported functionality for creating the SCRIP format file.
 
-2. Build the **check_map** utility by following the instructions in **$CCSMROOT/mapping/check_maps/INSTALL**. Also confirm that the `ESMF <http://www.cesm.ucar.edu/models2.0/external-link-here>`_ toolkit is installed on your machine.
+2. Build the **check_map** utility by following the instructions in **$CCSMROOT/mapping/check_maps/INSTALL**. Also confirm that the ESMF toolkit is installed on your machine.
 
    When you add new user-defined grid files, you also need to generate a set of mapping files so the coupler can send data from a component on one grid to a component on another grid.
    There is an ESMF tool that tests the mapping file by comparing a mapping of a smooth function to its true value on the destination grid.
