@@ -146,7 +146,7 @@ def expect(condition, error_msg, exc_type=CIMEError, error_prefix="ERROR:"):
     if not condition:
         if logger.isEnabledFor(logging.DEBUG):
             import pdb
-            pdb.set_trace()
+            pdb.set_trace() # pylint: disable=forgotten-debug-statement
 
         msg = error_prefix + " " + error_msg
         raise exc_type(msg)
