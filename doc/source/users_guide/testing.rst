@@ -455,26 +455,29 @@ CIME's scripts regression tests
 ===============================
 .. _`CIME's scripts regression tests`:
 
-**$CIMEROOT/scripts/tests/scripts_regression_tests.py** is the suite of internal tests we run
+**$CIMEROOT/scripts/lib/CIME/tests/scripts_regression_tests.py** is the suite of internal tests we run
 for the stand-alone CIME testing. With no arguments, it will run the full suite. You can limit testing to a specific
 test class or even a specific test within a test class.
 
 Run full suite::
 
-  ./scripts_regression_tests.py
+  python scripts/lib/CIME/tests/scripts_regression_tests.py
 
 Run a test class::
 
-  ./scripts_regression_tests.py K_TestCimeCase
+  python scripts/lib/CIME/tests/scripts_regression_tests.py K_TestCimeCase
 
 Run a specific test::
 
-  ./scripts_regression_tests.py K_TestCimeCase.test_cime_case
+  python scripts/lib/CIME/tests/scripts_regression_tests.py K_TestCimeCase.test_cime_case
 
 If a test fails, the unittest module that drives scripts_regression_tests wil note the failure, but
 won't print the output of the test until testing has completed. When there are failures for a
 test, the case directories for that test will not be cleaned up so that the user can do a post-mortem
 analysis. The user will be notified of the specific directories that will be left for them to
 examine.
+
+The test suite can also be ran with `pytest` and `pytest-cov`. After the test suite is done running
+a coverage report will be presented.
 
 More description can be found in https://github.com/ESCOMP/ctsm/wiki/System-Testing-Guide
