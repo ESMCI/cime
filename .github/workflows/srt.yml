@@ -12,6 +12,19 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Set up python
+        uses: actions/setup-python@v2
+        with:
+          python-vesion: 3.9
+      - name: Install and run pre-commit
+        uses: pre-commit/action@v2.0.3
+  
   # This workflow contains a single job called "build"
   build:
     # The type of runner that the job will run on
