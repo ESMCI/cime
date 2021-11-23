@@ -145,9 +145,7 @@ class TestWaitForTests(base.BaseTestCase):
 
         self.assertTrue(self._thread_error is None, msg="Thread had failure: %s" % self._thread_error)
 
-    ###########################################################################
     def test_wait_for_test_wait_kill(self):
-    ###########################################################################
         expected_results = ["PEND" if item == 5 else "PASS" for item in range(10)]
         run_thread = threading.Thread(target=self.threaded_test, args=(self._testdir_unfinished, expected_results))
         run_thread.daemon = True
@@ -165,9 +163,7 @@ class TestWaitForTests(base.BaseTestCase):
 
         self.assertTrue(self._thread_error is None, msg="Thread had failure: %s" % self._thread_error)
 
-    ###########################################################################
     def test_wait_for_test_cdash_pass(self):
-    ###########################################################################
         expected_results = ["PASS"] * 10
         build_name = "regression_test_pass_" + self._timestamp
         run_thread = threading.Thread(target=self.threaded_test,
@@ -183,9 +179,7 @@ class TestWaitForTests(base.BaseTestCase):
 
         self.assert_dashboard_has_build(build_name)
 
-    ###########################################################################
     def test_wait_for_test_cdash_kill(self):
-    ###########################################################################
         expected_results = ["PEND" if item == 5 else "PASS" for item in range(10)]
         build_name = "regression_test_kill_" + self._timestamp
         run_thread = threading.Thread(target=self.threaded_test,
