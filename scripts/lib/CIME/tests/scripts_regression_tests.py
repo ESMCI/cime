@@ -36,6 +36,7 @@ from  CIME.case import Case
 from  CIME.code_checker import check_code, get_all_checkable_files
 from  CIME.test_status import *
 from  CIME.provenance import get_test_success, save_test_success
+from  CIME.tests.base import BaseTestCase
 
 os.environ["CIME_GLOBAL_WALLTIME"] = "0:05:00"
 
@@ -127,12 +128,13 @@ OR
     sys.argv[1:] = args
 
     if ns.timeout:
-        os.environ["GLOBAL_TIMEOUT"] = str(ns.timeout)
-    os.environ["NO_FORTRAN_RUN"] = str(ns.no_fortran_run or False)
-    os.environ["FAST_ONLY"] = str((ns.fast or ns.no_fortran_run) or False)
-    os.environ["NO_BATCH"] = str(ns.no_batch or False)
-    os.environ["NO_CMAKE"] = str(ns.no_cmake or False)
-    os.environ["NO_TEARDOWN"] = str(ns.no_teardown or False)
+        BaseTestCase.GLOBAL_TIMEOUT = str(ns.timeout)
+
+    BaseTestCase.NO_FORTRAN_RUN = ns.no_fortran_run or False
+    BaseTestCase.FAST_ONLY = ns.fast or ns.no_fortran_run or False
+    BaseTestCase.NO_BATCH = ns.no_batch or False
+    BaseTestCase.NO_CMAKE = ns.no_cmake or False
+    BaseTestCase.NO_TEARDOWN = ns.no_teardown or False
 
     os.chdir(CIMEROOT)
 
@@ -145,7 +147,7 @@ OR
     else:
         MACHINE = Machines()
 
-    os.environ["CIME_MACHINE"] = MACHINE.get_machine_name()
+    BaseTestCase.MACHINE = MACHINE
 
     if ns.compiler is not None:
         TEST_COMPILER = ns.compiler
@@ -156,7 +158,7 @@ OR
     else:
         TEST_COMPILER = MACHINE.get_default_compiler()
 
-    os.environ["TEST_COMPILER"] = TEST_COMPILER
+    BaseTestCase.TEST_COMPILER = TEST_COMPILER
 
     if ns.mpilib is not None:
         TEST_MPILIB = ns.mpilib
@@ -167,7 +169,7 @@ OR
     else:
         TEST_MPILIB = MACHINE.get_default_MPIlib()
 
-    os.environ["TEST_MPILIB"] = TEST_MPILIB
+    BaseTestCase.TEST_MPILIB = TEST_MPILIB
 
     if ns.test_root is not None:
         TEST_ROOT = ns.test_root
@@ -177,7 +179,7 @@ OR
         TEST_ROOT = os.path.join(MACHINE.get_value("CIME_OUTPUT_ROOT"),
                                  "scripts_regression_test.%s"% CIME.utils.get_timestamp())
 
-    os.environ["TEST_ROOT"] = TEST_ROOT
+    BaseTestCase.TEST_ROOT = TEST_ROOT
 
     args = lambda: None # just something to set attrs on
     for log_param in ["debug", "silent", "verbose"]:
