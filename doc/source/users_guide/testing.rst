@@ -480,4 +480,12 @@ examine.
 The test suite can also be ran with `pytest` and `pytest-cov`. After the test suite is done running
 a coverage report will be presented.
 
+Install dependencies::
+
+  python -m pip install pytest pytest-cov
+
+Run full suite::
+
+  pytest -vvv 
+
 More description can be found in https://github.com/ESCOMP/ctsm/wiki/System-Testing-Guide
