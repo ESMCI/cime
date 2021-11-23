@@ -11,6 +11,8 @@ from CIME import utils
 from CIME import test_status
 from CIME.utils import expect
 
+MACRO_PRESERVE_ENV = ["ADDR2LINE","AR","AS","CC","CC_FOR_BUILD","CMAKE_ARGS","CONDA_EXE","CONDA_PYTHON_EXE","CPP","CXX","CXXFILT","CXX_FOR_BUILD","ELFEDIT","F77","F90","F95","FC","GCC","GCC_AR","GCC_NM","GCC_RANLIB","GFORTRAN","GPROF","GXX","LD","LD_GOLD","NM","OBJCOPY","OBJDUMP","PATH","RANLIB","READELF","SIZE","STRINGS","STRIP"]
+
 
 def parse_test_status(line):
     status, test = line.split()[0:2]
@@ -154,13 +156,17 @@ query:
         with open(makefile_name, "w") as makefile:
             makefile.write(self._makefile_template.format(var_name))
 
-        environment = os.environ.copy()
+        # environment = os.environ.copy()
+        environment = dict(PATH=os.environ["PATH"])
         environment.update(env)
         environment.update(var)
-        gmake_exe = MACHINE.get_value("GMAKE")
+        for x in MACRO_PRESERVE_ENV:
+            if x in os.environ:
+                environment[x] = os.environ[x]
+        gmake_exe = self.parent.MACHINE.get_value("GMAKE")
         if gmake_exe is None:
             gmake_exe = "gmake"
-        run_cmd_assert_result(self.parent, "%s query --directory=%s 2>&1" % (gmake_exe, temp_dir), env=environment)
+        self.parent.run_cmd_assert_result("%s query --directory=%s 2>&1" % (gmake_exe, temp_dir), env=environment)
 
         with open(output_name, "r") as output:
             query_result = output.read().strip()
@@ -246,16 +252,20 @@ file(WRITE query.out "${{{}}}")
         with open(cmakelists_name, "w") as cmakelists:
             cmakelists.write(self._cmakelists_template.format(var_name))
 
-        environment = os.environ.copy()
+        # environment = os.environ.copy()
+        environment = dict(PATH=os.environ["PATH"])
         environment.update(env)
-        os_ = MACHINE.get_value("OS")
+        for x in MACRO_PRESERVE_ENV:
+            if x in os.environ:
+                environment[x] = os.environ[x]
+        os_ = self.parent.MACHINE.get_value("OS")
         # cmake will not work on cray systems without this flag
         if os_ == "CNL":
             cmake_args = "-DCMAKE_SYSTEM_NAME=Catamount"
         else:
             cmake_args = ""
 
-        run_cmd_assert_result(self.parent, "cmake %s . 2>&1" % cmake_args, from_dir=temp_dir, env=environment)
+        self.parent.run_cmd_assert_result("cmake %s . 2>&1" % cmake_args, from_dir=temp_dir, env=environment)
 
         with open(output_name, "r") as output:
             query_result = output.read().strip()

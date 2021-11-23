@@ -14,21 +14,36 @@ from CIME import utils
 from CIME.XML.machines import Machines
 
 
+def typed_os_environ(key, default_value, expected_type=None):
+    # Infer type if not explicitly set
+    dst_type = expected_type or type(default_value)
+
+    value = os.environ.get(key, default_value)
+
+    if value is not None and dst_type == bool:
+        # Any else is false, might want to be more strict
+        return value.lower() == "true" if isinstance(value, str) else value
+
+    if value is None:
+        return None
+
+    return dst_type(value)
+
+
 class BaseTestCase(unittest.TestCase):
-    MACHINE = Machines(machine=os.environ.get("CIME_MACHINE", "docker"))
+    # These static values are set when scripts/lib/CIME/tests/scripts_regression_tests.py is called.
+    MACHINE = None
     SCRIPT_DIR = utils.get_scripts_root()
     TOOLS_DIR = os.path.join(SCRIPT_DIR, "Tools")
-    TEST_ROOT = os.path.join(
-        MACHINE.get_value("CIME_OUTPUT_ROOT"),
-        f"scripts_regression_test.{utils.get_timestamp()}")
-    TEST_COMPILER = os.environ.get("TEST_COMPILER", "gnu")
-    TEST_MPILIB = os.environ.get("TEST_MPILIB", "openmpi")
-    FAST_ONLY = os.environ.get("FAST_ONLY", False)
-    NO_BATCH = os.environ.get("NO_BATCH", False)
-    NO_CMAKE = os.environ.get("NO_CMAKE", False)
-    NO_TEARDOWN = os.environ.get("NO_TEARDOWN", False)
-    NO_FORTRAN_RUN = os.environ.get("NO_FORTRAN_RUN", False)
-    GLOBAL_TIMEOUT = os.environ.get("GLOBAL_TIMEOUT", None)
+    TEST_ROOT = None
+    TEST_COMPILER = None
+    TEST_MPILIB = None
+    NO_FORTRAN_RUN = None
+    FAST_ONLY = None
+    NO_BATCH = None
+    NO_CMAKE = None
+    NO_TEARDOWN = None
+    GLOBAL_TIMEOUT = None
 
     def setUp(self):
         self._thread_error      = None
@@ -186,7 +201,7 @@ class BaseTestCase(unittest.TestCase):
         if self._hasbatch or always_wait:
             timeout_arg = "--timeout={}".format(self.GLOBAL_TIMEOUT) if self.GLOBAL_TIMEOUT is not None else ""
             expected_stat = 0 if expect_works else utils.TESTS_FAILED_ERR_CODE
-            self.run_cmd_assert_result(self, "{}/wait_for_tests {} *{}/TestStatus".format(self.TOOLS_DIR, timeout_arg, test_id),
+            self.run_cmd_assert_result("{}/wait_for_tests {} *{}/TestStatus".format(self.TOOLS_DIR, timeout_arg, test_id),
                                   from_dir=self._testroot, expected_stat=expected_stat)
 
     def get_casedir(self, case_fragment, all_cases):

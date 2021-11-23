@@ -138,13 +138,13 @@ class TestTestScheduler(base.BaseTestCase):
 
         self._wait_for_tests(test_id, expect_works=False)
 
-        test_statuses = glob.glob("%s/*%s/test_status.TestStatus" % (self._testroot, test_id))
+        test_statuses = glob.glob("%s/*%s/TestStatus" % (self._testroot, test_id))
         self.assertEqual(len(tests), len(test_statuses))
 
         for x in test_statuses:
             ts = test_status.TestStatus(test_dir=os.path.dirname(x))
             test_name = ts.get_name()
-            log_files = glob.glob("%s/%s*%s/test_status.TestStatus.log" % (self._testroot, test_name, test_id))
+            log_files = glob.glob("%s/%s*%s/TestStatus.log" % (self._testroot, test_name, test_id))
             self.assertEqual(len(log_files), 1, "Expected exactly one test_status.TestStatus.log file, found %d" % len(log_files))
             log_file = log_files[0]
             if (test_name == build_fail_test):
@@ -201,7 +201,7 @@ class TestTestScheduler(base.BaseTestCase):
         finally:
             logging.getLogger().setLevel(log_lvl)
 
-        test_statuses = glob.glob("%s/*%s/test_status.TestStatus" % (self._testroot, test_id))
+        test_statuses = glob.glob("%s/*%s/TestStatus" % (self._testroot, test_id))
         self.assertEqual(len(tests), len(test_statuses))
 
         self._wait_for_tests(test_id, expect_works=False)

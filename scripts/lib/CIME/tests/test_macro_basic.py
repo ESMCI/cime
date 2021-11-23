@@ -33,7 +33,7 @@ class TestMacrosBasic(base.BaseTestCase):
         """The macro writer rejects a bad build system string."""
         maker = Compilers(test_utils.MockMachines("mymachine", "SomeOS"), version=2.0)
         bad_string = "argle-bargle."
-        with self.assertRaisesRegex(self,
+        with self.assertRaisesRegex(
                 utils.CIMEError,
                 "Unrecognized build system provided to write_macros: " + bad_string):
             test_utils.get_macros(maker, "This string is irrelevant.", bad_string)
