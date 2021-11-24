@@ -46,7 +46,7 @@ class TestTestScheduler(base.BaseTestCase):
                                               self._machine, self._compiler)
         self.assertEqual(len(tests), 3)
         ct = test_scheduler.TestScheduler(tests, test_root=self._testroot, output_root=self._testroot,
-                           compiler=self._compiler, mpilib=self.TEST_MPILIB)
+                           compiler=self._compiler, mpilib=self.TEST_MPILIB, machine_name=self.MACHINE.get_machine_name())
 
         build_fail_test = [item for item in tests if "TESTBUILDFAIL" in item][0]
         run_fail_test   = [item for item in tests if "TESTRUNFAIL" in item][0]
@@ -115,7 +115,7 @@ class TestTestScheduler(base.BaseTestCase):
         tests = get_tests.get_full_test_names(["cime_test_only"], self._machine, self._compiler)
         test_id="%s-%s" % (self._baseline_name, utils.get_timestamp())
         ct = test_scheduler.TestScheduler(tests, test_id=test_id, no_batch=self.NO_BATCH, test_root=self._testroot,
-                           output_root=self._testroot,compiler=self._compiler, mpilib=self.TEST_MPILIB)
+                           output_root=self._testroot,compiler=self._compiler, mpilib=self.TEST_MPILIB, machine_name=self.MACHINE.get_machine_name())
 
         build_fail_test     = [item for item in tests if "TESTBUILDFAIL_" in item][0]
         build_fail_exc_test = [item for item in tests if "TESTBUILDFAILEXC" in item][0]
@@ -184,7 +184,7 @@ class TestTestScheduler(base.BaseTestCase):
                                                       self._machine, self._compiler)
         test_id="%s-%s" % (self._baseline_name, utils.get_timestamp())
         ct = test_scheduler.TestScheduler(tests, test_id=test_id, no_batch=self.NO_BATCH, test_root=self._testroot,
-                           output_root=self._testroot,compiler=self._compiler, mpilib=self.TEST_MPILIB)
+                           output_root=self._testroot,compiler=self._compiler, mpilib=self.TEST_MPILIB, machine_name=self.MACHINE.get_machine_name())
 
         build_fail_test     = [item for item in tests if "TESTBUILDFAIL" in item][0]
         run_fail_test       = [item for item in tests if "TESTRUNFAIL" in item][0]
@@ -224,7 +224,7 @@ class TestTestScheduler(base.BaseTestCase):
         os.environ["TESTRUNFAIL_PASS"] = "True"
         ct2 = test_scheduler.TestScheduler(tests, test_id=test_id, no_batch=self.NO_BATCH, use_existing=True,
                             test_root=self._testroot,output_root=self._testroot,compiler=self._compiler,
-                            mpilib=self.TEST_MPILIB)
+                            mpilib=self.TEST_MPILIB, machine_name=self.MACHINE.get_machine_name())
 
         log_lvl = logging.getLogger().getEffectiveLevel()
         logging.disable(logging.CRITICAL)
@@ -249,7 +249,7 @@ class TestTestScheduler(base.BaseTestCase):
 
         ct2 = test_scheduler.TestScheduler(tests, test_id=test_id, no_batch=self.NO_BATCH, use_existing=True,
                             test_root=self._testroot,output_root=self._testroot,compiler=self._compiler,
-                            mpilib=self.TEST_MPILIB)
+                            mpilib=self.TEST_MPILIB, machine_name=self.MACHINE.get_machine_name())
 
         log_lvl = logging.getLogger().getEffectiveLevel()
         logging.disable(logging.CRITICAL)

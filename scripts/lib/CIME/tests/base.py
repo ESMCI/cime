@@ -177,6 +177,7 @@ class BaseTestCase(unittest.TestCase):
         if self.TEST_MPILIB and ([extra_arg for extra_arg in extra_args if "--mpilib" in extra_arg] == []):
             extra_args.append("--mpilib={}".format(self.TEST_MPILIB))
         extra_args.append("--test-root={0} --output-root={0}".format(self._testroot))
+        extra_args.append(f"--machine {self.MACHINE.get_machine_name()}")
 
         full_run = (set(extra_args) & set(["-n", "--namelist-only", "--no-setup", "--no-build", "--no-run"])) == set()
         if full_run and not self.NO_BATCH:
