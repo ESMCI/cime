@@ -6,6 +6,7 @@ create_dirs and create_namelists are members of Class case from file case.py
 from CIME.XML.standard_module_setup import *
 from CIME.utils import run_sub_or_cmd, safe_copy
 import time, glob
+import importlib
 logger = logging.getLogger(__name__)
 
 def create_dirs(self):
@@ -65,6 +66,7 @@ def create_namelists(self, component=None):
     # Create namelists - must have cpl last in the list below
     # Note - cpl must be last in the loop below so that in generating its namelist,
     # it can use xml vars potentially set by other component's buildnml scripts
+    comp_cime_py = dict()
     models = self.get_values("COMP_CLASSES")
     models += [models.pop(0)]
     for model in models:
@@ -84,10 +86,22 @@ def create_namelists(self, component=None):
             else:
                 # otherwise look in the component config_dir
                 cmd = os.path.join(config_dir, "buildnml")
-            expect(os.path.isfile(cmd), "Could not find buildnml file for component {}".format(compname))
-            logger.info("Create namelist for component {}".format(compname))
-            run_sub_or_cmd(cmd, (caseroot), "buildnml",
-                           (self, caseroot, compname), case=self)
+                # For now, only try to import if not using SourceMods
+                try:
+                    # can we import buildnml?
+                    sys.path.append(config_dir)
+                    comp_cime_py[compname] = importlib.import_module(f"{compname}_cime_py")
+                except:
+                    pass
+            # If successfully imported {compname}_cime_py, call buildnml(),
+            # otherwise just run buildnml via run_sub_or_cmd()
+            if compname in comp_cime_py:
+                comp_cime_py[compname].buildnml(self, caseroot, compname)
+            else:
+                expect(os.path.isfile(cmd), "Could not find buildnml file for component {}".format(compname))
+                logger.info("Create namelist for component {}".format(compname))
+                run_sub_or_cmd(cmd, (caseroot), "buildnml",
+                               (self, caseroot, compname), case=self)
 
         logger.debug("Finished creating component namelists, component {} models = {}".format(component, models))
 
