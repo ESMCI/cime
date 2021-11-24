@@ -138,6 +138,11 @@ OR
 
     os.chdir(CIMEROOT)
 
+    # make sure we have default values
+    MACHINE = None
+    TEST_COMPILER = None
+    TEST_MPILIB = None
+
     if ns.machine is not None:
         MACHINE = Machines(machine=ns.machine)
         os.environ["CIME_MACHINE"] = ns.machine
