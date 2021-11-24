@@ -131,7 +131,7 @@ OR
         BaseTestCase.GLOBAL_TIMEOUT = str(ns.timeout)
 
     BaseTestCase.NO_FORTRAN_RUN = ns.no_fortran_run or False
-    BaseTestCase.FAST_ONLY = ns.fast or ns.no_fortran_run or False
+    BaseTestCase.FAST_ONLY = ns.fast or ns.no_fortran_run
     BaseTestCase.NO_BATCH = ns.no_batch or False
     BaseTestCase.NO_CMAKE = ns.no_cmake or False
     BaseTestCase.NO_TEARDOWN = ns.no_teardown or False
@@ -140,10 +140,13 @@ OR
 
     if ns.machine is not None:
         MACHINE = Machines(machine=ns.machine)
+        os.environ["CIME_MACHINE"] = ns.machine
+    elif "CIME_MACHINE" in os.environ:
+        MACHINE = Machines(machine=os.environ["CIME_MACHINE"])
     elif config.has_option("create_test", "MACHINE"):
-        MACHINE = Machines(config.get("create_test", "MACHINE"))
+        MACHINE = Machines(machine=config.get("create_test", "MACHINE"))
     elif config.has_option("main", "MACHINE"):
-        MACHINE = Machines(config.get("main", "MACHINE"))
+        MACHINE = Machines(machine=config.get("main", "MACHINE"))
     else:
         MACHINE = Machines()
 
@@ -155,8 +158,6 @@ OR
         TEST_COMPILER = config.get("create_test", "COMPILER")
     elif config.has_option("main", "COMPILER"):
         TEST_COMPILER = config.get("main", "COMPILER")
-    else:
-        TEST_COMPILER = MACHINE.get_default_compiler()
 
     BaseTestCase.TEST_COMPILER = TEST_COMPILER
 
@@ -166,8 +167,6 @@ OR
         TEST_MPILIB = config.get("create_test", "MPILIB")
     elif config.has_option("main", "MPILIB"):
         TEST_MPILIB = config.get("main", "MPILIB")
-    else:
-        TEST_MPILIB = MACHINE.get_default_MPIlib()
 
     BaseTestCase.TEST_MPILIB = TEST_MPILIB
 
