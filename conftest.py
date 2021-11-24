@@ -10,11 +10,12 @@ sys.path.insert(0, CIMEROOT)
 import pytest
 
 from CIME import utils
+from CIME.tests import scripts_regression_tests
 from CIME.tests.base import BaseTestCase
 from CIME.XML.machines import Machines
 
-
 os.environ["CIME_GLOBAL_WALLTIME"] = "0:05:00"
+
 
 def write_provenance_info(machine, test_compiler, test_mpilib, test_root):
     curr_commit = utils.get_current_commit(repo=CIMEROOT)
@@ -30,6 +31,7 @@ def write_provenance_info(machine, test_compiler, test_mpilib, test_root):
     logging.info("Test driver: %s" % utils.get_cime_default_driver())
     logging.info("Python version {}\n".format(sys.version))
 
+
 def cleanup(test_root):
     if os.path.exists(test_root):
         testreporter = os.path.join(test_root,"testreporter")
@@ -40,38 +42,11 @@ def cleanup(test_root):
             print("All pass, removing directory:", test_root)
             os.rmdir(test_root)
 
+
 def pytest_addoption(parser):
-    parser.addoption("--fast", action="store_true",
-                     help="Skip full system tests, which saves a lot of time")
+    setattr(parser, "add_argument", parser.addoption)
 
-    parser.addoption("--no-batch", action="store_true",
-                     help="Do not submit jobs to batch system, run locally."
-                     " If false, will default to machine setting.")
-
-    parser.addoption("--no-fortran-run", action="store_true",
-                     help="Do not run any fortran jobs. Implies --fast"
-                     " Used for github actions")
-
-    parser.addoption("--no-cmake", action="store_true",
-                     help="Do not run cmake tests")
-
-    parser.addoption("--no-teardown", action="store_true",
-                     help="Do not delete directories left behind by testing")
-
-    parser.addoption("--machine",
-                     help="Select a specific machine setting for cime", default=None)
-
-    parser.addoption("--compiler",
-                     help="Select a specific compiler setting for cime", default=None)
-
-    parser.addoption( "--mpilib",
-                     help="Select a specific compiler setting for cime", default=None)
-
-    parser.addoption( "--test-root",
-                     help="Select a specific test root for all cases created by the testing", default=None)
-
-    parser.addoption("--timeout", type=int,
-                     help="Select a specific timeout for all tests", default=None)
+    scripts_regression_tests.configure_args(parser)
 
 
 @pytest.fixture(scope="session", autouse=True)

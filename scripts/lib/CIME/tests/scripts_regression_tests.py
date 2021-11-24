@@ -66,30 +66,7 @@ def cleanup(test_root):
             print("All pass, removing directory:", test_root)
             os.rmdir(test_root)
 
-def _main_func(description):
-    config = CIME.utils.get_cime_config()
-
-    help_str = \
-"""
-{0} [TEST] [TEST]
-OR
-{0} --help
-
-\033[1mEXAMPLES:\033[0m
-    \033[1;32m# Run the full suite \033[0m
-    > {0}
-
-    \033[1;32m# Run all code checker tests \033[0m
-    > {0} B_CheckCode
-
-    \033[1;32m# Run test test_wait_for_test_all_pass from class M_TestWaitForTests \033[0m
-    > {0} M_TestWaitForTests.test_wait_for_test_all_pass
-""".format(os.path.basename(sys.argv[0]))
-
-    parser = argparse.ArgumentParser(usage=help_str,
-                                     description=description,
-                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-
+def configure_args(parser):
     parser.add_argument("--fast", action="store_true",
                         help="Skip full system tests, which saves a lot of time")
 
@@ -121,6 +98,32 @@ OR
 
     parser.add_argument("--timeout", type=int,
                         help="Select a specific timeout for all tests", default=None)
+
+def _main_func(description):
+    config = CIME.utils.get_cime_config()
+
+    help_str = \
+"""
+{0} [TEST] [TEST]
+OR
+{0} --help
+
+\033[1mEXAMPLES:\033[0m
+    \033[1;32m# Run the full suite \033[0m
+    > {0}
+
+    \033[1;32m# Run all code checker tests \033[0m
+    > {0} B_CheckCode
+
+    \033[1;32m# Run test test_wait_for_test_all_pass from class M_TestWaitForTests \033[0m
+    > {0} M_TestWaitForTests.test_wait_for_test_all_pass
+""".format(os.path.basename(sys.argv[0]))
+
+    parser = argparse.ArgumentParser(usage=help_str,
+                                     description=description,
+                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+
+    configure_args(parser)
 
     ns, args = parser.parse_known_args()
 
