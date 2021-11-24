@@ -66,7 +66,8 @@ def cleanup(test_root):
             print("All pass, removing directory:", test_root)
             os.rmdir(test_root)
 
-def configure_args(parser):
+
+def setup_arguments(parser):
     parser.add_argument("--fast", action="store_true",
                         help="Skip full system tests, which saves a lot of time")
 
@@ -99,9 +100,73 @@ def configure_args(parser):
     parser.add_argument("--timeout", type=int,
                         help="Select a specific timeout for all tests", default=None)
 
-def _main_func(description):
+
+def configure_tests(timeout, no_fortran_run, fast, no_batch, no_cmake,
+                    no_teardown, machine, compiler, mpilib, test_root, **kwargs):
     config = CIME.utils.get_cime_config()
 
+    if timeout:
+        BaseTestCase.GLOBAL_TIMEOUT = str(timeout)
+
+    BaseTestCase.NO_FORTRAN_RUN = no_fortran_run or False
+    BaseTestCase.FAST_ONLY = fast or no_fortran_run
+    BaseTestCase.NO_BATCH = no_batch or False
+    BaseTestCase.NO_CMAKE = no_cmake or False
+    BaseTestCase.NO_TEARDOWN = no_teardown or False
+
+    # make sure we have default values
+    MACHINE = None
+    TEST_COMPILER = None
+    TEST_MPILIB = None
+
+    if machine is not None:
+        MACHINE = Machines(machine=machine)
+        os.environ["CIME_MACHINE"] = machine
+    elif "CIME_MACHINE" in os.environ:
+        MACHINE = Machines(machine=os.environ["CIME_MACHINE"])
+    elif config.has_option("create_test", "MACHINE"):
+        MACHINE = Machines(machine=config.get("create_test", "MACHINE"))
+    elif config.has_option("main", "MACHINE"):
+        MACHINE = Machines(machine=config.get("main", "MACHINE"))
+    else:
+        MACHINE = Machines()
+
+    BaseTestCase.MACHINE = MACHINE
+
+    if compiler is not None:
+        TEST_COMPILER = compiler
+    elif config.has_option("create_test", "COMPILER"):
+        TEST_COMPILER = config.get("create_test", "COMPILER")
+    elif config.has_option("main", "COMPILER"):
+        TEST_COMPILER = config.get("main", "COMPILER")
+
+    BaseTestCase.TEST_COMPILER = TEST_COMPILER
+
+    if mpilib is not None:
+        TEST_MPILIB = mpilib
+    elif config.has_option("create_test", "MPILIB"):
+        TEST_MPILIB = config.get("create_test", "MPILIB")
+    elif config.has_option("main", "MPILIB"):
+        TEST_MPILIB = config.get("main", "MPILIB")
+
+    BaseTestCase.TEST_MPILIB = TEST_MPILIB
+
+    if test_root is not None:
+        TEST_ROOT = test_root
+    elif config.has_option("create_test", "TEST_ROOT"):
+        TEST_ROOT = config.get("create_test", "TEST_ROOT")
+    else:
+        TEST_ROOT = os.path.join(MACHINE.get_value("CIME_OUTPUT_ROOT"),
+                                 "scripts_regression_test.%s"% CIME.utils.get_timestamp())
+
+    BaseTestCase.TEST_ROOT = TEST_ROOT
+
+    write_provenance_info(MACHINE, TEST_COMPILER, TEST_MPILIB, TEST_ROOT)
+
+    atexit.register(functools.partial(cleanup, TEST_ROOT))
+
+
+def _main_func(description):
     help_str = \
 """
 {0} [TEST] [TEST]
@@ -123,70 +188,14 @@ OR
                                      description=description,
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
-    configure_args(parser)
+    setup_arguments(parser)
 
     ns, args = parser.parse_known_args()
 
     # Now set the sys.argv to the unittest_args (leaving sys.argv[0] alone)
     sys.argv[1:] = args
 
-    if ns.timeout:
-        BaseTestCase.GLOBAL_TIMEOUT = str(ns.timeout)
-
-    BaseTestCase.NO_FORTRAN_RUN = ns.no_fortran_run or False
-    BaseTestCase.FAST_ONLY = ns.fast or ns.no_fortran_run
-    BaseTestCase.NO_BATCH = ns.no_batch or False
-    BaseTestCase.NO_CMAKE = ns.no_cmake or False
-    BaseTestCase.NO_TEARDOWN = ns.no_teardown or False
-
-    os.chdir(CIMEROOT)
-
-    # make sure we have default values
-    MACHINE = None
-    TEST_COMPILER = None
-    TEST_MPILIB = None
-
-    if ns.machine is not None:
-        MACHINE = Machines(machine=ns.machine)
-        os.environ["CIME_MACHINE"] = ns.machine
-    elif "CIME_MACHINE" in os.environ:
-        MACHINE = Machines(machine=os.environ["CIME_MACHINE"])
-    elif config.has_option("create_test", "MACHINE"):
-        MACHINE = Machines(machine=config.get("create_test", "MACHINE"))
-    elif config.has_option("main", "MACHINE"):
-        MACHINE = Machines(machine=config.get("main", "MACHINE"))
-    else:
-        MACHINE = Machines()
-
-    BaseTestCase.MACHINE = MACHINE
-
-    if ns.compiler is not None:
-        TEST_COMPILER = ns.compiler
-    elif config.has_option("create_test", "COMPILER"):
-        TEST_COMPILER = config.get("create_test", "COMPILER")
-    elif config.has_option("main", "COMPILER"):
-        TEST_COMPILER = config.get("main", "COMPILER")
-
-    BaseTestCase.TEST_COMPILER = TEST_COMPILER
-
-    if ns.mpilib is not None:
-        TEST_MPILIB = ns.mpilib
-    elif config.has_option("create_test", "MPILIB"):
-        TEST_MPILIB = config.get("create_test", "MPILIB")
-    elif config.has_option("main", "MPILIB"):
-        TEST_MPILIB = config.get("main", "MPILIB")
-
-    BaseTestCase.TEST_MPILIB = TEST_MPILIB
-
-    if ns.test_root is not None:
-        TEST_ROOT = ns.test_root
-    elif config.has_option("create_test", "TEST_ROOT"):
-        TEST_ROOT = config.get("create_test", "TEST_ROOT")
-    else:
-        TEST_ROOT = os.path.join(MACHINE.get_value("CIME_OUTPUT_ROOT"),
-                                 "scripts_regression_test.%s"% CIME.utils.get_timestamp())
-
-    BaseTestCase.TEST_ROOT = TEST_ROOT
+    configure_tests(**vars(ns))
 
     args = lambda: None # just something to set attrs on
     for log_param in ["debug", "silent", "verbose"]:
@@ -199,9 +208,7 @@ OR
 
     args = CIME.utils.parse_args_and_handle_standard_logging_options(args, None)
 
-    write_provenance_info(MACHINE, TEST_COMPILER, TEST_MPILIB, TEST_ROOT)
-
-    atexit.register(functools.partial(cleanup, TEST_ROOT))
+    os.chdir(CIMEROOT)
 
     test_suite = unittest.defaultTestLoader.discover(CIMEROOT)
     test_runner = unittest.TextTestRunner(verbosity=2)
