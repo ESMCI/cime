@@ -1205,19 +1205,12 @@ class _LessThanFilter(logging.Filter):
         #non-zero return means we log this message
         return 1 if record.levelno < self.max_level else 0
 
-def parse_args_and_handle_standard_logging_options(args, parser=None):
-    """
-    Guide to logging in CIME.
-
-    logger.debug -> Verbose/detailed output, use for debugging, off by default. Goes to a .log file
-    logger.info -> Goes to stdout (and log if --debug). Use for normal program output
-    logger.warning -> Goes to stderr (and log if --debug). Use for minor problems
-    logger.error -> Goes to stderr (and log if --debug)
-    """
+def configure_logging(verbose, debug, silent):
     root_logger = logging.getLogger()
 
-    verbose_formatter   = logging.Formatter(fmt='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
-                                            datefmt='%m-%d %H:%M')
+    verbose_formatter = logging.Formatter(
+        fmt='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
+        datefmt='%m-%d %H:%M')
 
     # Change info to go to stdout. This handle applies to INFO exclusively
     stdout_stream_handler = logging.StreamHandler(stream=sys.stdout)
@@ -1228,21 +1221,15 @@ def parse_args_and_handle_standard_logging_options(args, parser=None):
     stderr_stream_handler = logging.StreamHandler(stream=sys.stderr)
     stderr_stream_handler.setLevel(logging.WARNING)
 
-    # scripts_regression_tests is the only thing that should pass a None argument in parser
-    if parser is not None:
-        if "--help" not in args[1:]:
-            _check_for_invalid_args(args[1:])
-        args = parser.parse_args(args[1:])
-
     # --verbose adds to the message format but does not impact the log level
-    if args.verbose:
+    if verbose:
         stdout_stream_handler.setFormatter(verbose_formatter)
         stderr_stream_handler.setFormatter(verbose_formatter)
 
     root_logger.addHandler(stdout_stream_handler)
     root_logger.addHandler(stderr_stream_handler)
 
-    if args.debug:
+    if debug:
         # Set up log file to catch ALL logging records
         log_file = "{}.log".format(os.path.basename(sys.argv[0]))
 
@@ -1252,10 +1239,28 @@ def parse_args_and_handle_standard_logging_options(args, parser=None):
         root_logger.addHandler(debug_log_handler)
 
         root_logger.setLevel(logging.DEBUG)
-    elif args.silent:
+    elif silent:
         root_logger.setLevel(logging.WARN)
     else:
         root_logger.setLevel(logging.INFO)
+
+def parse_args_and_handle_standard_logging_options(args, parser=None):
+    """
+    Guide to logging in CIME.
+
+    logger.debug -> Verbose/detailed output, use for debugging, off by default. Goes to a .log file
+    logger.info -> Goes to stdout (and log if --debug). Use for normal program output
+    logger.warning -> Goes to stderr (and log if --debug). Use for minor problems
+    logger.error -> Goes to stderr (and log if --debug)
+    """
+    # scripts_regression_tests is the only thing that should pass a None argument in parser
+    if parser is not None:
+        if "--help" not in args[1:]:
+            _check_for_invalid_args(args[1:])
+        args = parser.parse_args(args[1:])
+
+    configure_logging(args.verbose, args.debug, args.silent)
+
     return args
 
 def get_logging_options():

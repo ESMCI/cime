@@ -22,6 +22,7 @@ import stat as osstat
 
 import collections
 
+from CIME import utils
 from CIME.utils import run_cmd, run_cmd_no_fail, get_lids, get_current_commit, \
     safe_copy, CIMEError, get_cime_root, get_src_root, Timeout, \
     import_from_file, get_model
@@ -43,10 +44,10 @@ os.environ["CIME_GLOBAL_WALLTIME"] = "0:05:00"
 
 def write_provenance_info(machine, test_compiler, test_mpilib, test_root):
     curr_commit = get_current_commit(repo=CIMEROOT)
-    logging.info("\nTesting commit %s" % curr_commit)
+    logging.info("Testing commit %s" % curr_commit)
     cime_model = get_model()
     logging.info("Using cime_model = %s" % cime_model)
-    logging.info("Testing machine = %s" % machine)
+    logging.info("Testing machine = %s" % machine.get_machine_name())
     if test_compiler is not None:
         logging.info("Testing compiler = %s"% test_compiler)
     if test_mpilib is not None:
@@ -190,23 +191,23 @@ OR
 
     setup_arguments(parser)
 
+    parser.add_argument("--verbose", action="store_true",
+                        help="Enable verbose logging")
+
+    parser.add_argument("--debug", action="store_true",
+                        help="Enable debug logging")
+
+    parser.add_argument("--silent", action="store_true",
+                        help="Disable all logging")
+
     ns, args = parser.parse_known_args()
 
     # Now set the sys.argv to the unittest_args (leaving sys.argv[0] alone)
     sys.argv[1:] = args
 
+    utils.configure_logging(ns.verbose, ns.debug, ns.silent)
+
     configure_tests(**vars(ns))
-
-    args = lambda: None # just something to set attrs on
-    for log_param in ["debug", "silent", "verbose"]:
-        flag = "--%s" % log_param
-        if flag in sys.argv:
-            sys.argv.remove(flag)
-            setattr(args, log_param, True)
-        else:
-            setattr(args, log_param, False)
-
-    args = CIME.utils.parse_args_and_handle_standard_logging_options(args, None)
 
     os.chdir(CIMEROOT)
 
@@ -219,6 +220,7 @@ OR
     # Implements same behavior as unittesst.main
     # https://github.com/python/cpython/blob/b6d68aa08baebb753534a26d537ac3c0d2c21c79/Lib/unittest/main.py#L272-L273
     sys.exit(not TEST_RESULT.wasSuccessful())
+
 
 if (__name__ == "__main__"):
     _main_func(__doc__)
