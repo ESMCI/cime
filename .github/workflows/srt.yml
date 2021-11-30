@@ -21,7 +21,7 @@ jobs:
       - name: Set up python
         uses: actions/setup-python@v2
         with:
-          python-vesion: 3.9
+          python-version: 3.9
       - name: Install and run pre-commit
         uses: pre-commit/action@v2.0.3
   
