@@ -357,7 +357,7 @@ contains
           s2 = count(mask(:,1))
           vdiff = abs(buf(:,1)-buf(:,2))
           rms = sqrt(sum(vdiff**2,mask(:,1))/real(s2))
-          diffcnt = count((vdiff>0) .and. mask(:,1))
+          diffcnt = count(((vdiff>0) .or. (vdiff .ne. vdiff)) .and. mask(:,1))
 
           ! Compute normalized rms difference; normalize using the avg abs field
           ! values. Note that this differs from the definition of normalized rms
