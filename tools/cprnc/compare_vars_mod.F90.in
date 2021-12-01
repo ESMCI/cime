@@ -358,12 +358,20 @@ contains
           s2 = count(mask(:,1))
           vdiff = abs(buf(:,1)-buf(:,2))
           rms = sqrt(sum(vdiff**2,mask(:,1))/real(s2))
-
+          diffcnt = 0
 #if {ITYPE}==TYPEDOUBLE || {ITYPE}==TYPEREAL
-          diffcnt = count((vdiff>0 .or. ieee_is_nan(vdiff)) .and. mask(:,1))
-#else
-          diffcnt = count(vdiff>0 .and. mask(:,1))
+          ! Count the NaN values only if they differ between files
+          do i=1,s1
+             if(mask(i,1)) then
+                if(ieee_is_nan(buf(i,1)) .and. .not. ieee_is_nan(buf(i,2))) then
+                   diffcnt = diffcnt + 1
+                else if(ieee_is_nan(buf(i,2)) .and. .not. ieee_is_nan(buf(i,1))) then
+                   diffcnt = diffcnt + 1
+                endif
+             endif
+          enddo
 #endif
+          diffcnt = diffcnt + count(vdiff>0 .and. mask(:,1))
           ! Compute normalized rms difference; normalize using the avg abs field
           ! values. Note that this differs from the definition of normalized rms
           ! difference found in some references (e.g., normalizing by [max - min], which
