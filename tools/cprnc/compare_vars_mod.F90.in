@@ -360,7 +360,6 @@ contains
           rms = sqrt(sum(vdiff**2,mask(:,1))/real(s2))
 
 #if {ITYPE}==TYPEDOUBLE || {ITYPE}==TYPEREAL
-          print *,__FILE__,__LINE__,vdiff
           diffcnt = count((vdiff>0 .or. ieee_is_nan(vdiff)) .and. mask(:,1))
 #else
           diffcnt = count(vdiff>0 .and. mask(:,1))
