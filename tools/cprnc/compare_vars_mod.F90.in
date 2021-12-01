@@ -222,6 +222,7 @@ contains
 
   ! TYPE real,int,double
   subroutine compare_var_{TYPE}(n,file, vid, idiff, ifilldiff, ifail, tindex)
+    use, intrinsic :: ieee_arithmetic, only: ieee_is_nan
     integer, intent(in) :: n
     type(file_t) :: file(2)
     integer, intent(in) :: vid(2)
@@ -357,8 +358,13 @@ contains
           s2 = count(mask(:,1))
           vdiff = abs(buf(:,1)-buf(:,2))
           rms = sqrt(sum(vdiff**2,mask(:,1))/real(s2))
-          diffcnt = count(((vdiff>0) .or. (vdiff .ne. vdiff)) .and. mask(:,1))
 
+#if {ITYPE}==TYPEDOUBLE || {ITYPE}==TYPEREAL
+          print *,__FILE__,__LINE__,vdiff
+          diffcnt = count((vdiff>0 .or. ieee_is_nan(vdiff)) .and. mask(:,1))
+#else
+          diffcnt = count(vdiff>0 .and. mask(:,1))
+#endif
           ! Compute normalized rms difference; normalize using the avg abs field
           ! values. Note that this differs from the definition of normalized rms
           ! difference found in some references (e.g., normalizing by [max - min], which
