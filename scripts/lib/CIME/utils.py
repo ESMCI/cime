@@ -422,6 +422,28 @@ def file_contains_python_function(filepath, funcname):
 
     return has_function
 
+def import_and_run_sub_or_cmd(cmd, cmdargs, subname, subargs, config_dir, compname,
+                              logfile=None, case=None, from_dir=None, timeout=None):
+    sys_path_old = sys.path
+    sys.path.insert(1, config_dir)
+    try:
+        mod = importlib.import_module(f"{compname}_cime_py")
+        getattr(mod, subname)(*subargs)
+    except (ModuleNotFoundError, AttributeError) as _:
+        # * ModuleNotFoundError if importlib can not find module,
+        # * AttributeError if importlib finds the module but
+        #   {subname} is not defined in the module
+        expect(os.path.isfile(cmd), f"Could not find {subname} file for component {compname}")
+        run_sub_or_cmd(cmd, cmdargs, subname, subargs, logfile, case, from_dir, timeout)
+    except Exception:
+        if logfile:
+            with open(logfile, "a") as log_fd:
+                log_fd.write(str(sys.exc_info()[1]))
+            expect(False, "{} FAILED, cat {}".format(cmd, logfile))
+        else:
+            raise
+    sys.path = sys_path_old
+
 def run_sub_or_cmd(cmd, cmdargs, subname, subargs, logfile=None, case=None,
                    from_dir=None, timeout=None):
     """
@@ -430,6 +452,10 @@ def run_sub_or_cmd(cmd, cmdargs, subname, subargs, logfile=None, case=None,
 
     Raises exception on failure.
     """
+# Potential strategy:
+# 1. Can we run this function by importing package in cime_config/?
+# 2. If not, fall back to old behavior (either import function from file
+#    or just run the script)
     if file_contains_python_function(cmd, subname):
         do_run_cmd = False
     else:
