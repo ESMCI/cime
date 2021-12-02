@@ -200,6 +200,9 @@ OR
     parser.add_argument("--silent", action="store_true",
                         help="Disable all logging")
 
+    parser.add_argument("tests", nargs="*",
+                        help="Specific tests to run e.g. test_unit*")
+
     ns, args = parser.parse_known_args()
 
     # Now set the sys.argv to the unittest_args (leaving sys.argv[0] alone)
@@ -211,7 +214,12 @@ OR
 
     os.chdir(CIMEROOT)
 
-    test_suite = unittest.defaultTestLoader.discover(CIMEROOT)
+    if len(ns.tests) == 0:
+        test_suite = unittest.defaultTestLoader.discover(CIMEROOT)
+    else:
+        # Try to load tests by just names
+        test_suite = unittest.defaultTestLoader.loadTestsFromNames(ns.tests)
+
     test_runner = unittest.TextTestRunner(verbosity=2)
 
     test_runner.run(test_suite)
