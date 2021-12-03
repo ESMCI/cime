@@ -465,11 +465,11 @@ Run full suite::
 
 Run a test class::
 
-  python scripts/lib/CIME/tests/scripts_regression_tests.py K_TestCimeCase
+  python scripts/lib/CIME/tests/scripts_regression_tests.py CIME.tests.test_unit_case
 
 Run a specific test::
 
-  python scripts/lib/CIME/tests/scripts_regression_tests.py K_TestCimeCase.test_cime_case
+  python scripts/lib/CIME/tests/scripts_regression_tests.py CIME.tests.test_unit_case.TestCaseSubmit.test_check_case
 
 If a test fails, the unittest module that drives scripts_regression_tests wil note the failure, but
 won't print the output of the test until testing has completed. When there are failures for a
@@ -487,5 +487,17 @@ Install dependencies::
 Run full suite::
 
   pytest -vvv 
+
+Run just unit tests::
+
+  pytest -vvv scripts/lib/CIME/tests/test_unit*
+
+Run a test class:: 
+
+  pytest -vvv scripts/lib/CIME/tests/test_unit_case.py
+
+Run a specific test::
+
+  pytest -vvv scripts/lib/CIME/tests/test_unit_case.py::TestCaseSubmit::test_check_case
 
 More description can be found in https://github.com/ESCOMP/ctsm/wiki/System-Testing-Guide
