@@ -175,13 +175,13 @@ class Machines(GenericXML):
                 logger.debug("machine regex string is " + regex_str)
                 # an environment variable can be used
                 if regex_str.startswith("$ENV"):
-                    machine = self.get_resolved_value(regex_str, allow_unresolved_envvars=True)
-                    if not machine.startswith("$ENV"):
+                    machine_value = self.get_resolved_value(regex_str, allow_unresolved_envvars=True)
+                    if not machine_value.startswith("$ENV"):
                         try:
-                            match,machine = machine.split(":")
+                            match, this_machine = machine_value.split(":")
                         except ValueError:
                             expect(False,"Bad formation of NODENAME_REGEX.  Expected envvar:value, found {}".format(regex_str))
-                        if match == machine:
+                        if match == this_machine:
                             machine = machtocheck
                             break
                 else:    
