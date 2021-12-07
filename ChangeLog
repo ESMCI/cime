@@ -1,6 +1,48 @@
 ======================================================================
 
 Originator: Chris Fischer 
+Date: 12-7-2021
+Tag: cime5.6.37
+Answer Changes: None
+Tests:  Build SMS.f19_g17.B1850.cori-haswell_intel and SMS.f19_g17.B1850.cori-knl_intel
+        Tested query_config --compsets by hand
+        scripts_regression_tests
+Dependencies:
+
+Brief Summary:
+    - Update cori modules.
+    - Fix documentation of seq_flux_mct_alb* variables.
+    - Fix issue iterating over compsets.
+    - Fix issue reading streams from user_nl_datm.
+    - Add a check for case_dir.
+    - Update comet port. 
+ 
+User interface changes: 
+
+PR summary: git log --oneline --first-parent [previous_tag]..master 
+6ee76f234 Merge pull request #4138 from ESMCI/fischer/cori_update
+27b5571ff Merge pull request #4069 from billsacks/fix_albedo_doc
+ba4251401 Merge pull request #4044 from jedwards4b/maint-5.6
+56b8845f5 Merge pull request #3992 from jedwards4b/bugfix/streams_from_user_nl
+ccdea36cd Merge pull request #4004 from jedwards4b/case_dir_check/maint-5.6
+4d507fd33 Merge pull request #3928 from jedwards4b/SDSCcomet_port
+
+Modified files: git diff --name-status [previous_tag]
+M       config/cesm/machines/config_compilers.xml
+M       config/cesm/machines/config_machines.xml
+M       scripts/Tools/xmlchange
+M       scripts/lib/CIME/case/case.py
+M       scripts/lib/CIME/nmlgen.py
+M       scripts/query_config
+M       src/components/data_comps/datm/cime_config/buildnml
+M       src/drivers/mct/cime_config/namelist_definition_drv.xml
+
+
+======================================================================
+
+======================================================================
+
+Originator: Chris Fischer 
 Date: 4-2-2021
 Tag: cime5.6.36
 Answer Changes: None
