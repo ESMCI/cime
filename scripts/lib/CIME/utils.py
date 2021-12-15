@@ -452,10 +452,6 @@ def run_sub_or_cmd(cmd, cmdargs, subname, subargs, logfile=None, case=None,
 
     Raises exception on failure.
     """
-# Potential strategy:
-# 1. Can we run this function by importing package in cime_config/?
-# 2. If not, fall back to old behavior (either import function from file
-#    or just run the script)
     if file_contains_python_function(cmd, subname):
         do_run_cmd = False
     else:
