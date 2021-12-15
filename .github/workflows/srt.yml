@@ -12,6 +12,19 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Set up python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      - name: Install and run pre-commit
+        uses: pre-commit/action@v2.0.3
+  
   # This workflow contains a single job called "build"
   build:
     # The type of runner that the job will run on
@@ -142,11 +155,12 @@ jobs:
           pwd
           mkdir -p $HOME/cesm/scratch
           mkdir -p $HOME/cesm/inputdata
-          cd $HOME/work/cime/cime/scripts/tests
+          cd $HOME/work/cime/cime
           export NETCDF=$HOME/netcdf-fortran
           export PATH=$NETCDF/bin:$PATH
           export LD_LIBRARY_PATH=$NETCDF/lib:$HOME/pnetcdf/lib:$LD_LIBRARY_PATH
-          ./scripts_regression_tests.py --no-fortran-run --compiler gnu --mpilib openmpi --machine ubuntu-latest
+          python -m pip install pytest pytest-cov
+          pytest -vvv --no-fortran-run --compiler gnu --mpilib openmpi --machine ubuntu-latest
 
 #     the following can be used by developers to login to the github server in case of errors
 #     see https://github.com/marketplace/actions/debugging-with-tmate for further details

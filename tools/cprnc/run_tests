@@ -51,6 +51,8 @@ my %tests = ('copy.nc' => {control => 'control.nc'},
 
              'copy_char.nc' => {control => 'control_char.nc',
                                 extra_args => '-m'},
+
+	     'diffs_in_nans.nc' => {control => 'control_floatDoubleNan.nc'},
              );
 
 #----------------------------------------------------------------------

@@ -51,10 +51,10 @@ os.environ["CIME_GLOBAL_WALLTIME"] = "0:05:00"
 
 def write_provenance_info(machine, test_compiler, test_mpilib, test_root):
     curr_commit = get_current_commit(repo=CIMEROOT)
-    logging.info("\nTesting commit %s" % curr_commit)
+    logging.info("Testing commit %s" % curr_commit)
     cime_model = get_model()
     logging.info("Using cime_model = %s" % cime_model)
-    logging.info("Testing machine = %s" % machine)
+    logging.info("Testing machine = %s" % machine.get_machine_name())
     if test_compiler is not None:
         logging.info("Testing compiler = %s" % test_compiler)
     if test_mpilib is not None:
@@ -75,10 +75,110 @@ def cleanup(test_root):
             os.rmdir(test_root)
 
 
-def _main_func(description):
+def setup_arguments(parser):
+    parser.add_argument("--fast", action="store_true",
+                        help="Skip full system tests, which saves a lot of time")
+
+    parser.add_argument("--no-batch", action="store_true",
+                        help="Do not submit jobs to batch system, run locally."
+                        " If false, will default to machine setting.")
+
+    parser.add_argument("--no-fortran-run", action="store_true",
+                        help="Do not run any fortran jobs. Implies --fast"
+                        " Used for github actions")
+
+    parser.add_argument("--no-cmake", action="store_true",
+                        help="Do not run cmake tests")
+
+    parser.add_argument("--no-teardown", action="store_true",
+                        help="Do not delete directories left behind by testing")
+
+    parser.add_argument("--machine",
+                        help="Select a specific machine setting for cime", default=None)
+
+    parser.add_argument("--compiler",
+                        help="Select a specific compiler setting for cime", default=None)
+
+    parser.add_argument( "--mpilib",
+                        help="Select a specific compiler setting for cime", default=None)
+
+    parser.add_argument( "--test-root",
+                        help="Select a specific test root for all cases created by the testing", default=None)
+
+    parser.add_argument("--timeout", type=int,
+                        help="Select a specific timeout for all tests", default=None)
+
+
+def configure_tests(timeout, no_fortran_run, fast, no_batch, no_cmake,
+                    no_teardown, machine, compiler, mpilib, test_root, **kwargs):
     config = CIME.utils.get_cime_config()
 
-    help_str = """
+    if timeout:
+        BaseTestCase.GLOBAL_TIMEOUT = str(timeout)
+
+    BaseTestCase.NO_FORTRAN_RUN = no_fortran_run or False
+    BaseTestCase.FAST_ONLY = fast or no_fortran_run
+    BaseTestCase.NO_BATCH = no_batch or False
+    BaseTestCase.NO_CMAKE = no_cmake or False
+    BaseTestCase.NO_TEARDOWN = no_teardown or False
+
+    # make sure we have default values
+    MACHINE = None
+    TEST_COMPILER = None
+    TEST_MPILIB = None
+
+    if machine is not None:
+        MACHINE = Machines(machine=machine)
+        os.environ["CIME_MACHINE"] = machine
+    elif "CIME_MACHINE" in os.environ:
+        MACHINE = Machines(machine=os.environ["CIME_MACHINE"])
+    elif config.has_option("create_test", "MACHINE"):
+        MACHINE = Machines(machine=config.get("create_test", "MACHINE"))
+    elif config.has_option("main", "MACHINE"):
+        MACHINE = Machines(machine=config.get("main", "MACHINE"))
+    else:
+        MACHINE = Machines()
+
+    BaseTestCase.MACHINE = MACHINE
+
+    if compiler is not None:
+        TEST_COMPILER = compiler
+    elif config.has_option("create_test", "COMPILER"):
+        TEST_COMPILER = config.get("create_test", "COMPILER")
+    elif config.has_option("main", "COMPILER"):
+        TEST_COMPILER = config.get("main", "COMPILER")
+
+    BaseTestCase.TEST_COMPILER = TEST_COMPILER
+
+    if mpilib is not None:
+        TEST_MPILIB = mpilib
+    elif config.has_option("create_test", "MPILIB"):
+        TEST_MPILIB = config.get("create_test", "MPILIB")
+    elif config.has_option("main", "MPILIB"):
+        TEST_MPILIB = config.get("main", "MPILIB")
+
+    BaseTestCase.TEST_MPILIB = TEST_MPILIB
+
+    if test_root is not None:
+        TEST_ROOT = test_root
+    elif config.has_option("create_test", "TEST_ROOT"):
+        TEST_ROOT = config.get("create_test", "TEST_ROOT")
+    else:
+        TEST_ROOT = os.path.join(
+            MACHINE.get_value("CIME_OUTPUT_ROOT"),
+            "scripts_regression_test.%s" % CIME.utils.get_timestamp(),
+        )
+
+    BaseTestCase.TEST_ROOT = TEST_ROOT
+
+    write_provenance_info(MACHINE, TEST_COMPILER, TEST_MPILIB, TEST_ROOT)
+
+    atexit.register(functools.partial(cleanup, TEST_ROOT))
+
+
+def _main_func(description):
+    help_str = \
+"""
 {0} [TEST] [TEST]
 OR
 {0} --help
@@ -92,144 +192,43 @@ OR
 
     \033[1;32m# Run test test_wait_for_test_all_pass from class M_TestWaitForTests \033[0m
     > {0} M_TestWaitForTests.test_wait_for_test_all_pass
-""".format(
-        os.path.basename(sys.argv[0])
-    )
+""".format(os.path.basename(sys.argv[0]))
 
-    parser = argparse.ArgumentParser(
-        usage=help_str,
-        description=description,
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-    )
+    parser = argparse.ArgumentParser(usage=help_str,
+                                     description=description,
+                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
-    parser.add_argument(
-        "--fast",
-        action="store_true",
-        help="Skip full system tests, which saves a lot of time",
-    )
+    setup_arguments(parser)
 
-    parser.add_argument(
-        "--no-batch",
-        action="store_true",
-        help="Do not submit jobs to batch system, run locally."
-        " If false, will default to machine setting.",
-    )
+    parser.add_argument("--verbose", action="store_true",
+                        help="Enable verbose logging")
 
-    parser.add_argument(
-        "--no-fortran-run",
-        action="store_true",
-        help="Do not run any fortran jobs. Implies --fast" " Used for github actions",
-    )
+    parser.add_argument("--debug", action="store_true",
+                        help="Enable debug logging")
 
-    parser.add_argument(
-        "--no-cmake", action="store_true", help="Do not run cmake tests"
-    )
+    parser.add_argument("--silent", action="store_true",
+                        help="Disable all logging")
 
-    parser.add_argument(
-        "--no-teardown",
-        action="store_true",
-        help="Do not delete directories left behind by testing",
-    )
-
-    parser.add_argument(
-        "--machine", help="Select a specific machine setting for cime", default=None
-    )
-
-    parser.add_argument(
-        "--compiler", help="Select a specific compiler setting for cime", default=None
-    )
-
-    parser.add_argument(
-        "--mpilib", help="Select a specific compiler setting for cime", default=None
-    )
-
-    parser.add_argument(
-        "--test-root",
-        help="Select a specific test root for all cases created by the testing",
-        default=None,
-    )
-
-    parser.add_argument(
-        "--timeout",
-        type=int,
-        help="Select a specific timeout for all tests",
-        default=None,
-    )
+    parser.add_argument("tests", nargs="*",
+                        help="Specific tests to run e.g. test_unit*")
 
     ns, args = parser.parse_known_args()
 
     # Now set the sys.argv to the unittest_args (leaving sys.argv[0] alone)
     sys.argv[1:] = args
 
-    if ns.timeout:
-        os.environ["GLOBAL_TIMEOUT"] = str(ns.timeout)
-    os.environ["NO_FORTRAN_RUN"] = str(ns.no_fortran_run or False)
-    os.environ["FAST_ONLY"] = str((ns.fast or ns.no_fortran_run) or False)
-    os.environ["NO_BATCH"] = str(ns.no_batch or False)
-    os.environ["NO_CMAKE"] = str(ns.no_cmake or False)
-    os.environ["NO_TEARDOWN"] = str(ns.no_teardown or False)
+    utils.configure_logging(ns.verbose, ns.debug, ns.silent)
+
+    configure_tests(**vars(ns))
 
     os.chdir(CIMEROOT)
 
-    if ns.machine is not None:
-        MACHINE = Machines(machine=ns.machine)
-    elif config.has_option("create_test", "MACHINE"):
-        MACHINE = Machines(config.get("create_test", "MACHINE"))
-    elif config.has_option("main", "MACHINE"):
-        MACHINE = Machines(config.get("main", "MACHINE"))
-
-    os.environ["CIME_MACHINE"] = MACHINE.get_machine_name()
-
-    if ns.compiler is not None:
-        TEST_COMPILER = ns.compiler
-    elif config.has_option("create_test", "COMPILER"):
-        TEST_COMPILER = config.get("create_test", "COMPILER")
-    elif config.has_option("main", "COMPILER"):
-        TEST_COMPILER = config.get("main", "COMPILER")
+    if len(ns.tests) == 0:
+        test_suite = unittest.defaultTestLoader.discover(CIMEROOT)
     else:
-        TEST_COMPILER = MACHINE.get_default_compiler()
+        # Try to load tests by just names
+        test_suite = unittest.defaultTestLoader.loadTestsFromNames(ns.tests)
 
-    os.environ["TEST_COMPILER"] = TEST_COMPILER
-
-    if ns.mpilib is not None:
-        TEST_MPILIB = ns.mpilib
-    elif config.has_option("create_test", "MPILIB"):
-        TEST_MPILIB = config.get("create_test", "MPILIB")
-    elif config.has_option("main", "MPILIB"):
-        TEST_MPILIB = config.get("main", "MPILIB")
-    else:
-        TEST_MPILIB = MACHINE.get_default_MPIlib()
-
-    os.environ["TEST_MPILIB"] = TEST_MPILIB
-
-    if ns.test_root is not None:
-        TEST_ROOT = ns.test_root
-    elif config.has_option("create_test", "TEST_ROOT"):
-        TEST_ROOT = config.get("create_test", "TEST_ROOT")
-    else:
-        TEST_ROOT = os.path.join(
-            MACHINE.get_value("CIME_OUTPUT_ROOT"),
-            "scripts_regression_test.%s" % CIME.utils.get_timestamp(),
-        )
-
-    os.environ["TEST_ROOT"] = TEST_ROOT
-
-    args = lambda: None  # just something to set attrs on
-    for log_param in ["debug", "silent", "verbose"]:
-        flag = "--%s" % log_param
-        if flag in sys.argv:
-            sys.argv.remove(flag)
-            setattr(args, log_param, True)
-        else:
-            setattr(args, log_param, False)
-
-    args = CIME.utils.parse_args_and_handle_standard_logging_options(args, None)
-
-    write_provenance_info(MACHINE, TEST_COMPILER, TEST_MPILIB, TEST_ROOT)
-
-    atexit.register(functools.partial(cleanup, TEST_ROOT))
-
-    test_suite = unittest.defaultTestLoader.discover(CIMEROOT)
     test_runner = unittest.TextTestRunner(verbosity=2)
 
     test_runner.run(test_suite)

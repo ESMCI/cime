@@ -44,6 +44,8 @@ class TestCreateNewcase(base.BaseTestCase):
         else:
             args += " --res f19_g16 "
 
+        args += f" --machine {self.MACHINE.get_machine_name()}"
+
         cls._testdirs.append(testdir)
         self.run_cmd_assert_result(
             "./create_newcase %s" % (args), from_dir=self.SCRIPT_DIR
@@ -158,9 +160,10 @@ class TestCreateNewcase(base.BaseTestCase):
         else:
             args += " --res f19_g16 "
 
-        self.run_cmd_assert_result(
-            "%s/create_newcase %s " % (self.SCRIPT_DIR, args), from_dir=self.SCRIPT_DIR
-        )
+        args += f" --machine {self.MACHINE.get_machine_name()}"
+
+        self.run_cmd_assert_result("%s/create_newcase %s "
+                              % (self.SCRIPT_DIR, args),from_dir=self.SCRIPT_DIR)
 
         self.assertTrue(
             os.path.isfile(
@@ -355,9 +358,9 @@ class TestCreateNewcase(base.BaseTestCase):
         if self.TEST_MPILIB is not None:
             args = args + " --mpilib %s" % self.TEST_MPILIB
 
-        self.run_cmd_assert_result(
-            "%s/create_newcase %s" % (self.SCRIPT_DIR, args), from_dir=self.SCRIPT_DIR
-        )
+        args += f" --machine {self.MACHINE.get_machine_name()}"
+
+        self.run_cmd_assert_result("%s/create_newcase %s"%(self.SCRIPT_DIR, args), from_dir=self.SCRIPT_DIR)
         self.run_cmd_assert_result("./case.setup", from_dir=testdir)
         self.run_cmd_assert_result("./case.build", from_dir=testdir)
 
@@ -384,14 +387,12 @@ class TestCreateNewcase(base.BaseTestCase):
         if self.TEST_COMPILER is not None:
             args += " --compiler %s" % self.TEST_COMPILER
         if self.TEST_MPILIB is not None:
-            args += " --mpilib %s" % self.TEST_MPILIB
+            args +=  " --mpilib %s"%self.TEST_MPILIB
 
-        self.run_cmd_assert_result(
-            "%s/create_newcase %s" % (self.SCRIPT_DIR, args), from_dir=self.SCRIPT_DIR
-        )
-        self.run_cmd_assert_result(
-            "diff env_mach_pes.xml %s" % (previous_testdir), from_dir=testdir
-        )
+        args += f" --machine {self.MACHINE.get_machine_name()}"
+
+        self.run_cmd_assert_result("%s/create_newcase %s"%(self.SCRIPT_DIR, args), from_dir=self.SCRIPT_DIR)
+        self.run_cmd_assert_result("diff env_mach_pes.xml %s"%(previous_testdir), from_dir=testdir)
         # this line should cause the diff to fail (I assume no machine is going to default to 17 tasks)
         self.run_cmd_assert_result("./xmlchange NTASKS=17", from_dir=testdir)
         self.run_cmd_assert_result(
@@ -425,9 +426,9 @@ class TestCreateNewcase(base.BaseTestCase):
         else:
             args += " --res f19_g16 "
 
-        self.run_cmd_assert_result(
-            "%s/create_newcase %s" % (self.SCRIPT_DIR, args), from_dir=self.SCRIPT_DIR
-        )
+        args += f" --machine {self.MACHINE.get_machine_name()}"
+
+        self.run_cmd_assert_result("%s/create_newcase %s" % (self.SCRIPT_DIR, args), from_dir=self.SCRIPT_DIR)
         self.assertTrue(os.path.exists(testdir))
         self.assertTrue(os.path.exists(os.path.join(testdir, "case.setup")))
 
@@ -541,10 +542,9 @@ class TestCreateNewcase(base.BaseTestCase):
         if self.TEST_MPILIB is not None:
             args += " --mpilib %s" % self.TEST_MPILIB
 
-        self.run_cmd_assert_result(
-            "{}/create_newcase {}".format(self.SCRIPT_DIR, args),
-            from_dir=self.SCRIPT_DIR,
-        )
+        args += f" --machine {self.MACHINE.get_machine_name()}"
+
+        self.run_cmd_assert_result("{}/create_newcase {}" .format (self.SCRIPT_DIR, args), from_dir=self.SCRIPT_DIR)
         self.run_cmd_assert_result("./case.setup ", from_dir=testdir1)
         self.run_cmd_assert_result("./preview_namelists ", from_dir=testdir1)
 
@@ -580,10 +580,9 @@ class TestCreateNewcase(base.BaseTestCase):
         if self.TEST_MPILIB is not None:
             args += " --mpilib %s" % self.TEST_MPILIB
 
-        self.run_cmd_assert_result(
-            "{}/create_newcase {}".format(self.SCRIPT_DIR, args),
-            from_dir=self.SCRIPT_DIR,
-        )
+        args += f" --machine {self.MACHINE.get_machine_name()}"
+
+        self.run_cmd_assert_result("{}/create_newcase {}".format(self.SCRIPT_DIR, args), from_dir=self.SCRIPT_DIR)
         self.run_cmd_assert_result("./case.setup ", from_dir=testdir2)
         self.run_cmd_assert_result("./preview_namelists ", from_dir=testdir2)
 
@@ -694,9 +693,11 @@ class TestCreateNewcase(base.BaseTestCase):
             args += " --res f19_g17 "
         else:
             args += " --res f19_g16 "
-        self.run_cmd_assert_result(
-            "./create_newcase {}".format(args), from_dir=self.SCRIPT_DIR
-        )
+        self.run_cmd_assert_result("./create_newcase {}".format(args),
+                              from_dir=self.SCRIPT_DIR)
+
+        args += f" --machine {self.MACHINE.get_machine_name()}"
+
         cls._do_teardown.append(testdir)
 
         # Run case.setup
@@ -741,6 +742,8 @@ class TestCreateNewcase(base.BaseTestCase):
             if self.TEST_MPILIB is not None:
                 args = args + " --mpilib %s" % self.TEST_MPILIB
 
+            args += f" --machine {self.MACHINE.get_machine_name()}"
+
             cls._testdirs.append(testdir)
             self.run_cmd_assert_result(
                 "./create_newcase %s" % (args), from_dir=self.SCRIPT_DIR
@@ -779,9 +782,11 @@ class TestCreateNewcase(base.BaseTestCase):
         else:
             args += " --res f19_g16 "
 
-        self.run_cmd_assert_result(
-            "./create_newcase %s" % (args), from_dir=self.SCRIPT_DIR, expected_stat=1
-        )
+        args += f" --machine {self.MACHINE.get_machine_name()}"
+
+
+        self.run_cmd_assert_result("./create_newcase %s"%(args),
+                              from_dir=self.SCRIPT_DIR, expected_stat=1)
         self.assertFalse(os.path.exists(testdir))
 
     @classmethod

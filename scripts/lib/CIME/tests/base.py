@@ -20,9 +20,9 @@ def typed_os_environ(key, default_value, expected_type=None):
 
     value = os.environ.get(key, default_value)
 
-    if value is None and dst_type == bool:
+    if value is not None and dst_type == bool:
         # Any else is false, might want to be more strict
-        return value.lower() == "true"
+        return value.lower() == "true" if isinstance(value, str) else value
 
     if value is None:
         return None
@@ -31,8 +31,8 @@ def typed_os_environ(key, default_value, expected_type=None):
 
 
 class BaseTestCase(unittest.TestCase):
-    # TODO Should we replace the use of class variables
-    MACHINE = Machines(machine=typed_os_environ("CIME_MACHINE", "docker"))
+    # These static values are set when scripts/lib/CIME/tests/scripts_regression_tests.py is called.
+    MACHINE = None
     SCRIPT_DIR = utils.get_scripts_root()
     TOOLS_DIR = os.path.join(SCRIPT_DIR, "Tools")
     TEST_ROOT = os.environ.get(
@@ -227,6 +227,7 @@ class BaseTestCase(unittest.TestCase):
         ):
             extra_args.append("--mpilib={}".format(self.TEST_MPILIB))
         extra_args.append("--test-root={0} --output-root={0}".format(self._testroot))
+        extra_args.append(f"--machine {self.MACHINE.get_machine_name()}")
 
         full_run = (
             set(extra_args)
