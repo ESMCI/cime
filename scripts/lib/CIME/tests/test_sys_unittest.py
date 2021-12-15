@@ -80,7 +80,11 @@ class TestUnitTest(base.BaseTestCase):
 
     @classmethod
     def tearDownClass(cls):
-        do_teardown = len(cls._do_teardown) > 0 and sys.exc_info() == (None, None, None) and not cls.NO_TEARDOWN
+        do_teardown = (
+            len(cls._do_teardown) > 0
+            and sys.exc_info() == (None, None, None)
+            and not cls.NO_TEARDOWN
+        )
         del os.environ["CIME_NO_CMAKE_MACRO"]
 
         teardown_root = True

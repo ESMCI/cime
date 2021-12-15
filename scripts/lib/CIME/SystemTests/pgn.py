@@ -269,7 +269,9 @@ class PGN(SystemTestsCommon):
         logger.debug("PGN_INFO: Case name is:{}".format(casename))
 
         for icond in range(NUMBER_INITIAL_CONDITIONS):
-            for iprt, (prt_name, prt_value) in enumerate(PERTURBATIONS.items()):  # pylint: disable=unused-variable
+            for iprt, (prt_name, prt_value) in enumerate(
+                PERTURBATIONS.items()
+            ):  # pylint: disable=unused-variable
                 iinst = pg._sub2instance(icond, iprt, len(PERTURBATIONS))
                 fname = os.path.join(
                     rundir,

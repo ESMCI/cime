@@ -7,9 +7,10 @@ import urllib.parse
 import urllib.request
 from CIME.XML.standard_module_setup import *
 from CIME.XML.generic_xml import GenericXML
-from CIME.utils import expect,get_model
+from CIME.utils import expect, get_model
 import ssl
-#pylint: disable=protected-access
+
+# pylint: disable=protected-access
 ssl._create_default_https_context = ssl._create_unverified_context
 
 

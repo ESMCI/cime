@@ -486,13 +486,13 @@ Install dependencies::
 
 Run full suite::
 
-  pytest -vvv 
+  pytest -vvv
 
 Run just unit tests::
 
   pytest -vvv scripts/lib/CIME/tests/test_unit*
 
-Run a test class:: 
+Run a test class::
 
   pytest -vvv scripts/lib/CIME/tests/test_unit_case.py
 

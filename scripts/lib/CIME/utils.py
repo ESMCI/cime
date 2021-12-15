@@ -156,7 +156,8 @@ def expect(condition, error_msg, exc_type=CIMEError, error_prefix="ERROR:"):
     if not condition:
         if logger.isEnabledFor(logging.DEBUG):
             import pdb
-            pdb.set_trace() # pylint: disable=forgotten-debug-statement
+
+            pdb.set_trace()  # pylint: disable=forgotten-debug-statement
 
         msg = error_prefix + " " + error_msg
         raise exc_type(msg)
@@ -1502,12 +1503,13 @@ class _LessThanFilter(logging.Filter):
         # non-zero return means we log this message
         return 1 if record.levelno < self.max_level else 0
 
+
 def configure_logging(verbose, debug, silent):
     root_logger = logging.getLogger()
 
     verbose_formatter = logging.Formatter(
-        fmt='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
-        datefmt='%m-%d %H:%M')
+        fmt="%(asctime)s %(name)-12s %(levelname)-8s %(message)s", datefmt="%m-%d %H:%M"
+    )
 
     # Change info to go to stdout. This handle applies to INFO exclusively
     stdout_stream_handler = logging.StreamHandler(stream=sys.stdout)
@@ -1540,6 +1542,7 @@ def configure_logging(verbose, debug, silent):
         root_logger.setLevel(logging.WARN)
     else:
         root_logger.setLevel(logging.INFO)
+
 
 def parse_args_and_handle_standard_logging_options(args, parser=None):
     """

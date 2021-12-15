@@ -76,41 +76,74 @@ def cleanup(test_root):
 
 
 def setup_arguments(parser):
-    parser.add_argument("--fast", action="store_true",
-                        help="Skip full system tests, which saves a lot of time")
+    parser.add_argument(
+        "--fast",
+        action="store_true",
+        help="Skip full system tests, which saves a lot of time",
+    )
 
-    parser.add_argument("--no-batch", action="store_true",
-                        help="Do not submit jobs to batch system, run locally."
-                        " If false, will default to machine setting.")
+    parser.add_argument(
+        "--no-batch",
+        action="store_true",
+        help="Do not submit jobs to batch system, run locally."
+        " If false, will default to machine setting.",
+    )
 
-    parser.add_argument("--no-fortran-run", action="store_true",
-                        help="Do not run any fortran jobs. Implies --fast"
-                        " Used for github actions")
+    parser.add_argument(
+        "--no-fortran-run",
+        action="store_true",
+        help="Do not run any fortran jobs. Implies --fast" " Used for github actions",
+    )
 
-    parser.add_argument("--no-cmake", action="store_true",
-                        help="Do not run cmake tests")
+    parser.add_argument(
+        "--no-cmake", action="store_true", help="Do not run cmake tests"
+    )
 
-    parser.add_argument("--no-teardown", action="store_true",
-                        help="Do not delete directories left behind by testing")
+    parser.add_argument(
+        "--no-teardown",
+        action="store_true",
+        help="Do not delete directories left behind by testing",
+    )
 
-    parser.add_argument("--machine",
-                        help="Select a specific machine setting for cime", default=None)
+    parser.add_argument(
+        "--machine", help="Select a specific machine setting for cime", default=None
+    )
 
-    parser.add_argument("--compiler",
-                        help="Select a specific compiler setting for cime", default=None)
+    parser.add_argument(
+        "--compiler", help="Select a specific compiler setting for cime", default=None
+    )
 
-    parser.add_argument( "--mpilib",
-                        help="Select a specific compiler setting for cime", default=None)
+    parser.add_argument(
+        "--mpilib", help="Select a specific compiler setting for cime", default=None
+    )
 
-    parser.add_argument( "--test-root",
-                        help="Select a specific test root for all cases created by the testing", default=None)
+    parser.add_argument(
+        "--test-root",
+        help="Select a specific test root for all cases created by the testing",
+        default=None,
+    )
 
-    parser.add_argument("--timeout", type=int,
-                        help="Select a specific timeout for all tests", default=None)
+    parser.add_argument(
+        "--timeout",
+        type=int,
+        help="Select a specific timeout for all tests",
+        default=None,
+    )
 
 
-def configure_tests(timeout, no_fortran_run, fast, no_batch, no_cmake,
-                    no_teardown, machine, compiler, mpilib, test_root, **kwargs):
+def configure_tests(
+    timeout,
+    no_fortran_run,
+    fast,
+    no_batch,
+    no_cmake,
+    no_teardown,
+    machine,
+    compiler,
+    mpilib,
+    test_root,
+    **kwargs
+):
     config = CIME.utils.get_cime_config()
 
     if timeout:
@@ -177,8 +210,7 @@ def configure_tests(timeout, no_fortran_run, fast, no_batch, no_cmake,
 
 
 def _main_func(description):
-    help_str = \
-"""
+    help_str = """
 {0} [TEST] [TEST]
 OR
 {0} --help
@@ -192,25 +224,27 @@ OR
 
     \033[1;32m# Run test test_wait_for_test_all_pass from class M_TestWaitForTests \033[0m
     > {0} M_TestWaitForTests.test_wait_for_test_all_pass
-""".format(os.path.basename(sys.argv[0]))
+""".format(
+        os.path.basename(sys.argv[0])
+    )
 
-    parser = argparse.ArgumentParser(usage=help_str,
-                                     description=description,
-                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser = argparse.ArgumentParser(
+        usage=help_str,
+        description=description,
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
 
     setup_arguments(parser)
 
-    parser.add_argument("--verbose", action="store_true",
-                        help="Enable verbose logging")
+    parser.add_argument("--verbose", action="store_true", help="Enable verbose logging")
 
-    parser.add_argument("--debug", action="store_true",
-                        help="Enable debug logging")
+    parser.add_argument("--debug", action="store_true", help="Enable debug logging")
 
-    parser.add_argument("--silent", action="store_true",
-                        help="Disable all logging")
+    parser.add_argument("--silent", action="store_true", help="Disable all logging")
 
-    parser.add_argument("tests", nargs="*",
-                        help="Specific tests to run e.g. test_unit*")
+    parser.add_argument(
+        "tests", nargs="*", help="Specific tests to run e.g. test_unit*"
+    )
 
     ns, args = parser.parse_known_args()
 

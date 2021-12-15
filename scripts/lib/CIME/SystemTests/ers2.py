@@ -36,7 +36,7 @@ class ERS2(SystemTestsCommon):
         stop_n = self._case.get_value("STOP_N")
         stop_option = self._case.get_value("STOP_OPTION")
 
-        rest_n = int(stop_n/2 + 1)
+        rest_n = int(stop_n / 2 + 1)
         stop_new = rest_n
 
         self._case.set_value("REST_OPTION", stop_option)

@@ -470,6 +470,7 @@ def _save_prerun_timing_e3sm(case, lid):
             ) as fd:
                 fd.write("{}\n".format(syslog_jobid))
 
+
 def _cleanup_spio_stats(case):
     rundir = case.get_value("RUNDIR")
     for item in glob.glob(os.path.join(rundir, "io_perf_summary*")):
@@ -482,7 +483,12 @@ def _cleanup_spio_stats(case):
     try:
         os.makedirs(spio_stats_dir)
     except OSError:
-        logger.warning("{} could not be created. Scorpio I/O statistics will be stored in the run directory.".format(spio_stats_dir))
+        logger.warning(
+            "{} could not be created. Scorpio I/O statistics will be stored in the run directory.".format(
+                spio_stats_dir
+            )
+        )
+
 
 def _save_prerun_provenance_e3sm(case, lid):
     _cleanup_spio_stats(case)
