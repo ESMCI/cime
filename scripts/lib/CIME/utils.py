@@ -699,8 +699,9 @@ def run_cmd(
         if isinstance(arg_stdout, file):  # pylint: disable=undefined-variable
             arg_stdout.close()  # pylint: disable=no-member
         if (
-            isinstance(arg_stderr, file) and arg_stderr is not arg_stdout
-        ):  # pylint: disable=undefined-variable
+            isinstance(arg_stderr, file)  # pylint: disable=undefined-variable
+            and arg_stderr is not arg_stdout
+        ):
             arg_stderr.close()  # pylint: disable=no-member
     else:
         if isinstance(arg_stdout, io.IOBase):

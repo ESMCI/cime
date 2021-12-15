@@ -1038,8 +1038,9 @@ class TestScheduler(object):
 
         case_opts = parse_test_name(test)[1]
         if (
-            case_opts is not None and "B" in case_opts
-        ):  # pylint: disable=unsupported-membership-test
+            case_opts is not None
+            and "B" in case_opts  # pylint: disable=unsupported-membership-test
+        ):
             self._log_output(test, "{} SKIPPED for test '{}'".format(RUN_PHASE, test))
             self._update_test_status_file(test, SUBMIT_PHASE, TEST_PASS_STATUS)
             self._update_test_status_file(test, RUN_PHASE, TEST_PASS_STATUS)
