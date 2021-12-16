@@ -2,10 +2,10 @@
 # This script will print the list of test classes in
 # scripts_regression_tests.py
 #
-import os
+#import os
 import unittest
 
-os.chdir(os.path.dirname(__file__))
+#os.chdir(os.path.dirname(__file__))
 
 #pylint: disable=protected-access
 def list_tests_from():
