@@ -157,7 +157,7 @@ class TestBlessTestResults(base.BaseTestCase):
 
         # Bless
         new_test_id = "%s-%s" % (self._baseline_name, utils.get_timestamp())
-        self.run_cmd_no_fail("{}/bless_test_results --test-root {} -n --force -t {} --new-test-root={} --new-test-id={}"
+        utils.run_cmd_no_fail("{}/bless_test_results --test-root {} -n --force -t {} --new-test-root={} --new-test-id={}"
                         .format(self.TOOLS_DIR, self._testroot, test_id, self._testroot, new_test_id))
 
         # Basic namelist compare should now pass again
