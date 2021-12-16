@@ -2,15 +2,13 @@
 # This script will print the list of test classes in
 # scripts_regression_tests.py
 #
-import os
-import unittest
 
-os.chdir(os.path.dirname(__file__))
+import unittest
 
 # pylint: disable=protected-access
 def list_tests_from():
 
-    suite = unittest.defaultTestLoader.discover(".")
+    suite = unittest.defaultTestLoader.discover("../lib/CIME/tests")
     for test in suite:
         print(test._tests[0]._testMethodName)
         
