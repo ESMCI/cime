@@ -9,7 +9,7 @@ os.chdir(os.path.dirname(__file__))
 
 #pylint: disable=protected-access
 def list_tests_from():
-    suite = unittest.defaultTestLoader.discover(".")
+    suite = unittest.defaultTestLoader.discover("../lib/CIME/tests")
     for test in suite:
         print(test._tests[0]._testMethodName)
 
