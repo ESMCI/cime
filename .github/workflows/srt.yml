@@ -22,8 +22,16 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: 3.9
-      - name: Install and run pre-commit
-        uses: pre-commit/action@v2.0.3
+      # Offical action is deprecated in favor of pre-commit.ci
+      # Should evaulate switching or just running manually.
+      # - name: Runs pre-commit action
+      #   # Do not run if using act tooling (https://github.com/nektos/act)
+      #   if: ${{ !env.ACT }}
+      #   uses: pre-commit/action@v2.0.3
+      - name: Runs pre-commit
+        run: |
+          pip install pre-commit
+          pre-commit run -a
 
   # This workflow contains a single job called "build"
   build:
