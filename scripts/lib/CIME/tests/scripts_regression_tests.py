@@ -45,6 +45,8 @@ from CIME.case import Case
 from CIME.code_checker import check_code, get_all_checkable_files
 from CIME.test_status import *
 from CIME.provenance import get_test_success, save_test_success
+from CIME import utils
+from CIME.tests.base import BaseTestCase
 
 os.environ["CIME_GLOBAL_WALLTIME"] = "0:05:00"
 
