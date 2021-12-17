@@ -518,7 +518,7 @@
 
   <batch_system type="pbs" MACH="izumi" >
     <batch_submit>qsub</batch_submit>
-    <jobid_pattern>(\d+.izumi.unified.ucar.edu)$</jobid_pattern>
+    <jobid_pattern>(\d+.izumi.cgd.ucar.edu)$</jobid_pattern>
     <directives>
       <directive>-l nodes={{ num_nodes }}:ppn={{ tasks_per_node }}</directive>
       <directive default="/bin/bash" > -S {{ shell }}  </directive>
