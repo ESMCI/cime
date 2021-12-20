@@ -163,4 +163,4 @@ class TestBlessTestResults(base.BaseTestCase):
         # Basic namelist compare should now pass again
         self._create_test(compargs)
 
-        self.verify_perms(self, self._baseline_area)
+        self.verify_perms(self._baseline_area)

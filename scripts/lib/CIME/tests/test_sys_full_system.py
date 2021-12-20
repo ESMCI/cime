@@ -26,10 +26,10 @@ class TestFullSystem(base.BaseTestCase):
 
         # Ensure that we can get test times
         for case_dir in cases:
-            test_status = os.path.join(case_dir, "TestStatus")
-            test_time = wait_for_tests.get_test_time(os.path.dirname(test_status))
-            self.assertIs(type(test_time), int, msg="get time did not return int for %s" % test_status)
-            self.assertTrue(test_time > 0, msg="test time was zero for %s" % test_status)
+            tstatus = os.path.join(case_dir, "TestStatus")
+            test_time = wait_for_tests.get_test_time(os.path.dirname(tstatus))
+            self.assertIs(type(test_time), int, msg="get time did not return int for %s" % tstatus)
+            self.assertTrue(test_time > 0, msg="test time was zero for %s" % tstatus)
 
         # Test that re-running works
         skip_tests = None
