@@ -1,6 +1,6 @@
 ======================================================================
 
-Originator: Chris Fischer 
+Originator: Chris Fischer
 Date: 12-16-21
 Tag: cime6.0.12
 Answer Changes: None
@@ -26,9 +26,9 @@ Brief Summary:
     - Update cime externals.
     - tools/configure was using deprecated config_compilers.xml system.
     - Remove documentation sections for pieces no longer included in CIME.
-    - More grids for mizuRoute. 
+    - More grids for mizuRoute.
 
-User interface changes: 
+User interface changes:
 
 PR summary: git log --oneline --first-parent [previous_tag]..master
 5e99566ae Merge pull request #4142 from ESMCI/fischer/izumi_cgd
@@ -163,7 +163,7 @@ M	tools/mapping/gen_mapping_files/gen_ESMF_mapping_file/create_ESMF_map.sh
 
 ======================================================================
 
-Originator: Chris Fischer 
+Originator: Chris Fischer
 Date: 11-1-21
 Tag: cime6.0.11
 Answer Changes: None

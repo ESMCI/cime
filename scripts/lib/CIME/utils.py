@@ -527,8 +527,19 @@ def file_contains_python_function(filepath, funcname):
 
     return has_function
 
-def import_and_run_sub_or_cmd(cmd, cmdargs, subname, subargs, config_dir, compname,
-                              logfile=None, case=None, from_dir=None, timeout=None):
+
+def import_and_run_sub_or_cmd(
+    cmd,
+    cmdargs,
+    subname,
+    subargs,
+    config_dir,
+    compname,
+    logfile=None,
+    case=None,
+    from_dir=None,
+    timeout=None,
+):
     sys_path_old = sys.path
     sys.path.insert(1, config_dir)
     try:
@@ -538,7 +549,10 @@ def import_and_run_sub_or_cmd(cmd, cmdargs, subname, subargs, config_dir, compna
         # * ModuleNotFoundError if importlib can not find module,
         # * AttributeError if importlib finds the module but
         #   {subname} is not defined in the module
-        expect(os.path.isfile(cmd), f"Could not find {subname} file for component {compname}")
+        expect(
+            os.path.isfile(cmd),
+            f"Could not find {subname} file for component {compname}",
+        )
         run_sub_or_cmd(cmd, cmdargs, subname, subargs, logfile, case, from_dir, timeout)
     except Exception:
         if logfile:
@@ -549,8 +563,10 @@ def import_and_run_sub_or_cmd(cmd, cmdargs, subname, subargs, config_dir, compna
             raise
     sys.path = sys_path_old
 
-def run_sub_or_cmd(cmd, cmdargs, subname, subargs, logfile=None, case=None,
-                   from_dir=None, timeout=None):
+
+def run_sub_or_cmd(
+    cmd, cmdargs, subname, subargs, logfile=None, case=None, from_dir=None, timeout=None
+):
     """
     This code will try to import and run each cmd as a subroutine
     if that fails it will run it as a program in a seperate shell
