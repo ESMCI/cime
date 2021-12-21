@@ -79,7 +79,7 @@ Make your change. Add tests for your change. Make the tests pass to the same lev
     cd scripts/lib/CIME/tests
     python scripts_regression_tests.py
 
-Run [pre-commit](https://pre-commit.com/#usage) before commit changes and submitting a PR.
+Run [pre-commit](https://pre-commit.com/#usage) before committing changes and submitting a PR.
 
     pip install pre-commit
     pre-commit run -a
@@ -100,9 +100,9 @@ Some things that will increase the chance that your pull request is accepted:
 * Follow [PEP8][pep8] for style. (The `flake8` utility can help with this.)
 * Write a [good commit message][commit].
 
-Pull requests will automatically have tests run by Github Action. This
+Pull requests will automatically have tests run by a Github Action. This
 includes running both the unit tests as well as `pre-commit`, which checks
-liniting.
+linting.
 
 [pep8]: http://pep8.org
 [commit]: https://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html
