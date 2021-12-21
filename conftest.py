@@ -20,16 +20,13 @@ def pytest_addoption(parser):
     scripts_regression_tests.setup_arguments(parser)
 
     # verbose and debug flags already exist
-    parser.addoption("--silent", action="store_true",
-                     help="Disable all logging")
+    parser.addoption("--silent", action="store_true", help="Disable all logging")
 
 
 def pytest_configure(config):
     kwargs = vars(config.option)
 
-    utils.configure_logging(kwargs['verbose'],
-                            kwargs['debug'],
-                            kwargs['silent'])
+    utils.configure_logging(kwargs["verbose"], kwargs["debug"], kwargs["silent"])
 
     scripts_regression_tests.configure_tests(**kwargs)
 

@@ -9,8 +9,8 @@ from CIME.XML.expected_fails_file import ExpectedFailsFile
 from CIME.utils import CIMEError
 from CIME.expected_fails import ExpectedFails
 
-class TestExpectedFailsFile(unittest.TestCase):
 
+class TestExpectedFailsFile(unittest.TestCase):
     def setUp(self):
         self._workdir = tempfile.mkdtemp()
         self._xml_filepath = os.path.join(self._workdir, "expected_fails.xml")
@@ -45,19 +45,18 @@ class TestExpectedFailsFile(unittest.TestCase):
   </test>
 </expectedFails>
 """
-        with open(self._xml_filepath, 'w') as xml_file:
+        with open(self._xml_filepath, "w") as xml_file:
             xml_file.write(contents)
         expected_fails_file = ExpectedFailsFile(self._xml_filepath)
         xfails = expected_fails_file.get_expected_fails()
 
         expected_test1 = ExpectedFails()
-        expected_test1.add_failure('RUN', 'FAIL')
-        expected_test1.add_failure('COMPARE_base_rest', 'PEND')
+        expected_test1.add_failure("RUN", "FAIL")
+        expected_test1.add_failure("COMPARE_base_rest", "PEND")
         expected_test2 = ExpectedFails()
-        expected_test2.add_failure('GENERATE', 'FAIL')
-        expected_test2.add_failure('BASELINE', 'FAIL')
-        expected = {'my.test.1': expected_test1,
-                    'my.test.2': expected_test2}
+        expected_test2.add_failure("GENERATE", "FAIL")
+        expected_test2.add_failure("BASELINE", "FAIL")
+        expected = {"my.test.1": expected_test1, "my.test.2": expected_test2}
 
         self.assertEqual(xfails, expected)
 
@@ -84,15 +83,15 @@ class TestExpectedFailsFile(unittest.TestCase):
   </test>
 </expectedFails>
 """
-        with open(self._xml_filepath, 'w') as xml_file:
+        with open(self._xml_filepath, "w") as xml_file:
             xml_file.write(contents)
         expected_fails_file = ExpectedFailsFile(self._xml_filepath)
         xfails = expected_fails_file.get_expected_fails()
 
         expected_test1 = ExpectedFails()
-        expected_test1.add_failure('RUN', 'FAIL')
-        expected_test1.add_failure('COMPARE_base_rest', 'PEND')
-        expected = {'my.test.1': expected_test1}
+        expected_test1.add_failure("RUN", "FAIL")
+        expected_test1.add_failure("COMPARE_base_rest", "PEND")
+        expected = {"my.test.1": expected_test1}
 
         self.assertEqual(xfails, expected)
 
@@ -111,11 +110,12 @@ class TestExpectedFailsFile(unittest.TestCase):
   </test>
 </expectedFails>
 """
-        with open(self._xml_filepath, 'w') as xml_file:
+        with open(self._xml_filepath, "w") as xml_file:
             xml_file.write(contents)
 
         with six.assertRaisesRegex(self, CIMEError, "Schemas validity error"):
             _ = ExpectedFailsFile(self._xml_filepath)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

@@ -27,11 +27,14 @@ class TestBlessTestResults(base.BaseTestCase):
         os.umask(self._orig_umask)
 
     def test_bless_test_results(self):
-        if (self.NO_FORTRAN_RUN):
+        if self.NO_FORTRAN_RUN:
             self.skipTest("Skipping fortran test")
         # Test resubmit scenario if Machine has a batch system
         if self.MACHINE.has_batch_system():
-            test_names = ["TESTRUNDIFFRESUBMIT_Mmpi-serial.f19_g16_rx1.A", "TESTRUNDIFF_Mmpi-serial.f19_g16_rx1.A"]
+            test_names = [
+                "TESTRUNDIFFRESUBMIT_Mmpi-serial.f19_g16_rx1.A",
+                "TESTRUNDIFF_Mmpi-serial.f19_g16_rx1.A",
+            ]
         else:
             test_names = ["TESTRUNDIFF_P1.f19_g16_rx1.A"]
 
@@ -41,10 +44,21 @@ class TestBlessTestResults(base.BaseTestCase):
                 genargs = ["-g", "-o", "-b", self._baseline_name, test_name]
                 compargs = ["-c", "-b", self._baseline_name, test_name]
             else:
-                genargs = ["-g", self._baseline_name, "-o", test_name,
-                           "--baseline-root ", self._baseline_area]
-                compargs = ["-c", self._baseline_name, test_name,
-                            "--baseline-root ", self._baseline_area]
+                genargs = [
+                    "-g",
+                    self._baseline_name,
+                    "-o",
+                    test_name,
+                    "--baseline-root ",
+                    self._baseline_area,
+                ]
+                compargs = [
+                    "-c",
+                    self._baseline_name,
+                    test_name,
+                    "--baseline-root ",
+                    self._baseline_area,
+                ]
 
             self._create_test(genargs)
             # Hist compare should pass
@@ -57,18 +71,28 @@ class TestBlessTestResults(base.BaseTestCase):
             self._create_test(compargs, test_id=test_id, run_errors=True)
 
             # compare_test_results should detect the fail
-            cpr_cmd = "{}/compare_test_results --test-root {} -t {} 2>&1" \
-                    .format(self.TOOLS_DIR, self._testroot, test_id)
-            output = self.run_cmd_assert_result(cpr_cmd, expected_stat=utils.TESTS_FAILED_ERR_CODE)
+            cpr_cmd = "{}/compare_test_results --test-root {} -t {} 2>&1".format(
+                self.TOOLS_DIR, self._testroot, test_id
+            )
+            output = self.run_cmd_assert_result(
+                cpr_cmd, expected_stat=utils.TESTS_FAILED_ERR_CODE
+            )
 
             # use regex
-            expected_pattern = re.compile(r'FAIL %s[^\s]* BASELINE' % test_name)
+            expected_pattern = re.compile(r"FAIL %s[^\s]* BASELINE" % test_name)
             the_match = expected_pattern.search(output)
-            self.assertNotEqual(the_match, None,
-                                msg="Cmd '%s' failed to display failed test %s in output:\n%s" % (cpr_cmd, test_name, output))
+            self.assertNotEqual(
+                the_match,
+                None,
+                msg="Cmd '%s' failed to display failed test %s in output:\n%s"
+                % (cpr_cmd, test_name, output),
+            )
             # Bless
-            utils.run_cmd_no_fail("{}/bless_test_results --test-root {} --hist-only --force -t {}"
-                            .format(self.TOOLS_DIR, self._testroot, test_id))
+            utils.run_cmd_no_fail(
+                "{}/bless_test_results --test-root {} --hist-only --force -t {}".format(
+                    self.TOOLS_DIR, self._testroot, test_id
+                )
+            )
             # Hist compare should now pass again
             self._create_test(compargs)
             self.verify_perms(self._baseline_area)
@@ -77,14 +101,14 @@ class TestBlessTestResults(base.BaseTestCase):
 
     def test_rebless_namelist(self):
         # Generate some namelist baselines
-        if (self.NO_FORTRAN_RUN):
+        if self.NO_FORTRAN_RUN:
             self.skipTest("Skipping fortran test")
         test_to_change = "TESTRUNPASS_P1.f19_g16_rx1.A"
         if utils.get_model() == "e3sm":
             genargs = ["-g", "-o", "-b", self._baseline_name, "cime_test_only_pass"]
             compargs = ["-c", "-b", self._baseline_name, "cime_test_only_pass"]
         else:
-            genargs = ["-g", self._baseline_name, "-o",  "cime_test_only_pass"]
+            genargs = ["-g", self._baseline_name, "-o", "cime_test_only_pass"]
             compargs = ["-c", self._baseline_name, "cime_test_only_pass"]
 
         self._create_test(genargs)
@@ -98,16 +122,20 @@ class TestBlessTestResults(base.BaseTestCase):
         self.run_cmd_assert_result("./case.cmpgen_namelists", from_dir=casedir)
 
         # compare_test_results should pass
-        cpr_cmd = "{}/compare_test_results --test-root {} -n -t {} 2>&1" \
-            .format(self.TOOLS_DIR, self._testroot, test_id)
+        cpr_cmd = "{}/compare_test_results --test-root {} -n -t {} 2>&1".format(
+            self.TOOLS_DIR, self._testroot, test_id
+        )
         output = self.run_cmd_assert_result(cpr_cmd)
 
         # use regex
-        expected_pattern = re.compile(r'PASS %s[^\s]* NLCOMP' % test_to_change)
+        expected_pattern = re.compile(r"PASS %s[^\s]* NLCOMP" % test_to_change)
         the_match = expected_pattern.search(output)
-        self.assertNotEqual(the_match, None,
-                            msg="Cmd '%s' failed to display passed test in output:\n%s" % (cpr_cmd, output))
-
+        self.assertNotEqual(
+            the_match,
+            None,
+            msg="Cmd '%s' failed to display passed test in output:\n%s"
+            % (cpr_cmd, output),
+        )
 
         # Modify namelist
         fake_nl = """
@@ -116,8 +144,14 @@ class TestBlessTestResults(base.BaseTestCase):
    fake = .true.
 /"""
         baseline_area = self._baseline_area
-        baseline_glob = glob.glob(os.path.join(baseline_area, self._baseline_name, "TEST*"))
-        self.assertEqual(len(baseline_glob), 3, msg="Expected three matches, got:\n%s" % "\n".join(baseline_glob))
+        baseline_glob = glob.glob(
+            os.path.join(baseline_area, self._baseline_name, "TEST*")
+        )
+        self.assertEqual(
+            len(baseline_glob),
+            3,
+            msg="Expected three matches, got:\n%s" % "\n".join(baseline_glob),
+        )
 
         for baseline_dir in baseline_glob:
             nl_path = os.path.join(baseline_dir, "CaseDocs", "datm_in")
@@ -136,29 +170,43 @@ class TestBlessTestResults(base.BaseTestCase):
         test_id2 = "%s-%s" % (self._baseline_name, utils.get_timestamp())
         self._create_test(compargs + ["--ignore-namelists"], test_id=test_id2)
 
-        self.run_cmd_assert_result("./case.cmpgen_namelists", from_dir=casedir, expected_stat=100)
+        self.run_cmd_assert_result(
+            "./case.cmpgen_namelists", from_dir=casedir, expected_stat=100
+        )
 
         # preview namelists should work
         self.run_cmd_assert_result("./preview_namelists", from_dir=casedir)
 
         # This should still fail
-        self.run_cmd_assert_result("./case.cmpgen_namelists", from_dir=casedir, expected_stat=100)
+        self.run_cmd_assert_result(
+            "./case.cmpgen_namelists", from_dir=casedir, expected_stat=100
+        )
 
         # compare_test_results should fail
-        cpr_cmd = "{}/compare_test_results --test-root {} -n -t {} 2>&1" \
-            .format(self.TOOLS_DIR, self._testroot, test_id)
-        output = self.run_cmd_assert_result(cpr_cmd, expected_stat=utils.TESTS_FAILED_ERR_CODE)
+        cpr_cmd = "{}/compare_test_results --test-root {} -n -t {} 2>&1".format(
+            self.TOOLS_DIR, self._testroot, test_id
+        )
+        output = self.run_cmd_assert_result(
+            cpr_cmd, expected_stat=utils.TESTS_FAILED_ERR_CODE
+        )
 
         # use regex
-        expected_pattern = re.compile(r'FAIL %s[^\s]* NLCOMP' % test_to_change)
+        expected_pattern = re.compile(r"FAIL %s[^\s]* NLCOMP" % test_to_change)
         the_match = expected_pattern.search(output)
-        self.assertNotEqual(the_match, None,
-                            msg="Cmd '%s' failed to display passed test in output:\n%s" % (cpr_cmd, output))
+        self.assertNotEqual(
+            the_match,
+            None,
+            msg="Cmd '%s' failed to display passed test in output:\n%s"
+            % (cpr_cmd, output),
+        )
 
         # Bless
         new_test_id = "%s-%s" % (self._baseline_name, utils.get_timestamp())
-        utils.run_cmd_no_fail("{}/bless_test_results --test-root {} -n --force -t {} --new-test-root={} --new-test-id={}"
-                        .format(self.TOOLS_DIR, self._testroot, test_id, self._testroot, new_test_id))
+        utils.run_cmd_no_fail(
+            "{}/bless_test_results --test-root {} -n --force -t {} --new-test-root={} --new-test-id={}".format(
+                self.TOOLS_DIR, self._testroot, test_id, self._testroot, new_test_id
+            )
+        )
 
         # Basic namelist compare should now pass again
         self._create_test(compargs)

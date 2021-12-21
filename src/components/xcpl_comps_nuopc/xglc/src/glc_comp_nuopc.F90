@@ -351,7 +351,7 @@ contains
        lat(n) = ownedElemCoords(2*n)
     end do
 
-    ! Start from index 2 in order to skip the scalar field 
+    ! Start from index 2 in order to skip the scalar field
     do ns = 1,num_icesheets
        do nf = 2,fldsFrGlc_num
           if (fldsFrGlc(nf)%ungridded_ubound == 0) then

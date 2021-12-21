@@ -6,14 +6,15 @@ from CIME.XML.generic_xml import GenericXML
 
 logger = logging.getLogger(__name__)
 
-class ArchiveBase(GenericXML):
 
+class ArchiveBase(GenericXML):
     def get_entry(self, compname):
         """
         Returns an xml node corresponding to compname in comp_archive_spec
         """
-        return self.scan_optional_child('comp_archive_spec',
-                                        attributes={"compname":compname})
+        return self.scan_optional_child(
+            "comp_archive_spec", attributes={"compname": compname}
+        )
 
     def _get_file_node_text(self, attnames, archive_entry):
         """
@@ -37,7 +38,7 @@ class ArchiveBase(GenericXML):
         returns a list of text entries or
         an empty list if no entries are found
         """
-        return self._get_file_node_text(['rest_file_extension'],archive_entry)
+        return self._get_file_node_text(["rest_file_extension"], archive_entry)
 
     def get_hist_file_extensions(self, archive_entry):
         """
@@ -46,7 +47,7 @@ class ArchiveBase(GenericXML):
         returns a list of text entries or
         an empty list if no entries are found
         """
-        return self._get_file_node_text(['hist_file_extension'],archive_entry)
+        return self._get_file_node_text(["hist_file_extension"], archive_entry)
 
     def get_hist_file_ext_regexes(self, archive_entry):
         """
@@ -55,7 +56,7 @@ class ArchiveBase(GenericXML):
         returns a list of text entries or
         an empty list if no entries are found
         """
-        return self._get_file_node_text(['hist_file_ext_regex'],archive_entry)
+        return self._get_file_node_text(["hist_file_ext_regex"], archive_entry)
 
     def get_entry_value(self, name, archive_entry):
         """
@@ -67,12 +68,18 @@ class ArchiveBase(GenericXML):
             return self.text(node)
         return None
 
-    def get_latest_hist_files(self, casename, model, from_dir, suffix="", ref_case=None):
+    def get_latest_hist_files(
+        self, casename, model, from_dir, suffix="", ref_case=None
+    ):
         """
         get the most recent history files in directory from_dir with suffix if provided
         """
-        test_hists = self.get_all_hist_files(casename, model, from_dir, suffix=suffix, ref_case=ref_case)
-        ext_regexes = self.get_hist_file_ext_regexes(self.get_entry(self._get_compname(model)))
+        test_hists = self.get_all_hist_files(
+            casename, model, from_dir, suffix=suffix, ref_case=ref_case
+        )
+        ext_regexes = self.get_hist_file_ext_regexes(
+            self.get_entry(self._get_compname(model))
+        )
         latest_files = {}
         histlist = []
         for hist in test_hists:
@@ -106,24 +113,42 @@ class ArchiveBase(GenericXML):
 
         # Strip any trailing $ if suffix is present and add it back after the suffix
         for ext in extensions:
-            if ext.endswith('$') and has_suffix:
+            if ext.endswith("$") and has_suffix:
                 ext = ext[:-1]
-            string = model+r'\d?_?(\d{4})?\.'+ext
+            string = model + r"\d?_?(\d{4})?\." + ext
             if has_suffix:
-                string += '.'+suffix+'$'
+                string += "." + suffix + "$"
 
-
-            logger.debug ("Regex is {}".format(string))
+            logger.debug("Regex is {}".format(string))
             pfile = re.compile(string)
-            hist_files.extend([f for f in os.listdir(from_dir) if pfile.search(f) and ( (f.startswith(casename) or f.startswith(model)) and not f.endswith("cprnc.out") )])
+            hist_files.extend(
+                [
+                    f
+                    for f in os.listdir(from_dir)
+                    if pfile.search(f)
+                    and (
+                        (f.startswith(casename) or f.startswith(model))
+                        and not f.endswith("cprnc.out")
+                    )
+                ]
+            )
 
         if ref_case:
-            expect(ref_case not in casename,"ERROR: ref_case name {} conflicts with casename {}".format(ref_case,casename))
-            hist_files = [h for h in hist_files if not (ref_case in os.path.basename(h))]
+            expect(
+                ref_case not in casename,
+                "ERROR: ref_case name {} conflicts with casename {}".format(
+                    ref_case, casename
+                ),
+            )
+            hist_files = [
+                h for h in hist_files if not (ref_case in os.path.basename(h))
+            ]
 
         hist_files = list(set(hist_files))
         hist_files.sort()
-        logger.debug("get_all_hist_files returns {} for model {}".format(hist_files, model))
+        logger.debug(
+            "get_all_hist_files returns {} for model {}".format(hist_files, model)
+        )
 
         return hist_files
 
@@ -136,6 +161,7 @@ class ArchiveBase(GenericXML):
         if model == "cpl":
             return "drv"
         return model
+
 
 def _get_extension(model, filepath, ext_regexes):
     r"""
@@ -193,18 +219,18 @@ def _get_extension(model, filepath, ext_regexes):
     if model == "mom":
         # Need to check 'sfc.day' specially: the embedded '.' messes up the
         # general-purpose regex
-        ext_regexes.append(r'sfc\.day')
+        ext_regexes.append(r"sfc\.day")
 
     # Now add the general-purpose extension regex
-    ext_regexes.append(r'\w+')
+    ext_regexes.append(r"\w+")
 
     for ext_regex in ext_regexes:
-        full_regex_str = model+r'\d?_?(\d{4})?\.('+ext_regex+r')[-\w\.]*'
+        full_regex_str = model + r"\d?_?(\d{4})?\.(" + ext_regex + r")[-\w\.]*"
         full_regex = re.compile(full_regex_str)
         m = full_regex.search(basename)
         if m is not None:
             if m.group(1) is not None:
-                result = m.group(1)+'.'+m.group(2)
+                result = m.group(1) + "." + m.group(2)
             else:
                 result = m.group(2)
             return result

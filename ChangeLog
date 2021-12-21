@@ -1,6 +1,6 @@
 ======================================================================
 
-Originator: Chris Fischer 
+Originator: Chris Fischer
 Date: 12-16-21
 Tag: cime6.0.12
 Answer Changes: None
@@ -26,9 +26,9 @@ Brief Summary:
     - Update cime externals.
     - tools/configure was using deprecated config_compilers.xml system.
     - Remove documentation sections for pieces no longer included in CIME.
-    - More grids for mizuRoute. 
+    - More grids for mizuRoute.
 
-User interface changes: 
+User interface changes:
 
 PR summary: git log --oneline --first-parent [previous_tag]..master
 5e99566ae Merge pull request #4142 from ESMCI/fischer/izumi_cgd
@@ -163,7 +163,7 @@ M	tools/mapping/gen_mapping_files/gen_ESMF_mapping_file/create_ESMF_map.sh
 
 ======================================================================
 
-Originator: Chris Fischer 
+Originator: Chris Fischer
 Date: 11-1-21
 Tag: cime6.0.11
 Answer Changes: None
@@ -176,7 +176,7 @@ Brief Summary:
     - Improve Macro.make generation.
     - Update centos7-linux settings.
 
-User interface changes: 
+User interface changes:
 
 PR summary: git log --oneline --first-parent [previous_tag]..master
 b763b20a9 Merge pull request #4110 from jedwards4b/fix_IRT_generate
@@ -224,7 +224,7 @@ M       scripts/tests/scripts_regression_tests.py
 
 ======================================================================
 
-Originator: Chris Fischer 
+Originator: Chris Fischer
 Date: 10-25-2021
 Tag: cime6.0.10
 Answer Changes: [None, Round Off, Climate Changing]
@@ -254,7 +254,7 @@ Brief Summary:
     - Hot fix for better cmake-macro toggling.
     - Change E3SM to use cmake macro file system.
 
-User interface changes: 
+User interface changes:
 
 PR summary: git log --oneline --first-parent [previous_tag]..master
 1a77ba628 Merge pull request #4114 from ESMCI/fischer/ESMF_update
@@ -415,7 +415,7 @@ M	tools/cprnc/CMakeLists.txt
 
 ======================================================================
 
-Originator: Chris Fischer 
+Originator: Chris Fischer
 Date: 9-09-2021
 Tag: cime6.0.9
 Answer Changes: None
@@ -430,7 +430,7 @@ Brief Summary:
     - Update modules and build flags on cori.
     - Add a SourceMods/src.cdeps directory for shared cdeps sourcemods.
 
-User interface changes: 
+User interface changes:
 
 PR summary: git log --oneline --first-parent [previous_tag]..master
 4fa1194a2 Merge pull request #4085 from ESMCI/jgfouca/fix_scripts_reg
@@ -457,11 +457,11 @@ M       tools/statistical_ensemble_test/pyCECT/docs/requirements.txt
 
 ======================================================================
 
-Originator: Chris Fischer 
+Originator: Chris Fischer
 Date: 9-02-2021
 Tag: cime6.0.8
 Answer Changes: None
-Tests: 
+Tests:
 Dependencies:
 
 Brief Summary:
@@ -470,7 +470,7 @@ Brief Summary:
     - Set nuopc as the default.
     - Remove moab.
 
-User interface changes: 
+User interface changes:
 
 PR summary: git log --oneline --first-parent [previous_tag]..master
 1c41537f7 Merge pull request #4080 from ESMCI/fischer/izumi_esmf
@@ -491,11 +491,11 @@ D	src/drivers/moab
 
 ======================================================================
 
-Originator: Chris Fischer 
+Originator: Chris Fischer
 Date: 8-25-2021
 Tag: cime6.0.7
 Answer Changes: None
-Tests: ran the test testlist_cdeps.xml  
+Tests: ran the test testlist_cdeps.xml
 Dependencies:
 
 Brief Summary:
@@ -516,11 +516,11 @@ M       scripts/lib/CIME/case/case_setup.py
 
 ======================================================================
 
-Originator: Chris Fischer 
+Originator: Chris Fischer
 Date: 8-20-2021
 Tag: cime6.0.6
 Answer Changes: [None, Round Off, Climate Changing]
-Tests: 
+Tests:
 Dependencies:
 
 Brief Summary:
@@ -532,7 +532,7 @@ Brief Summary:
     - Changed Addendum to Appendices.
     - Allow multiple methods for running unit tests.
 
-User interface changes: 
+User interface changes:
 
 PR summary: git log --oneline --first-parent [previous_tag]..master
 2ceb39021 make sure CLM_USRDAT_NAME is not UNSET if set
@@ -550,11 +550,11 @@ Modified files: git diff --name-status [previous_tag]
 
 ======================================================================
 
-Originator: Chris Fischer 
+Originator: Chris Fischer
 Date: 8-6-2021
 Tag: cime6.0.5
 Answer Changes: None
-Tests: scripts_regression_tests 
+Tests: scripts_regression_tests
 Dependencies:
 
 Brief Summary:
@@ -563,7 +563,7 @@ Brief Summary:
     - Update esmf version.
     - Support the creation of multiple user_nl files for a component.
 
-User interface changes: 
+User interface changes:
     - Allows components to define a get_user_nl_list function in their
       buildnml file, which supports the creation of multiple user_nl files for
       the component
@@ -592,7 +592,7 @@ M       scripts/lib/CIME/utils.py
 
 ======================================================================
 
-Originator: Chris Fischer 
+Originator: Chris Fischer
 Date: 8-2-2021
 Tag: cime6.0.4
 Answer Changes: None
@@ -609,7 +609,7 @@ Brief Summary:
     - Fix type in centos7-linux definition.
     - jenkins_generic_job: no reason for this magic config setting here.
 
-User interface changes: 
+User interface changes:
 
 PR summary: git log --oneline --first-parent [previous_tag]..master
 c6f489356 Merge pull request #4053 from jasonb5/fix_replay_archive
@@ -704,7 +704,7 @@ M	tools/cprnc/CMakeLists.txt
 
 ======================================================================
 
-Originator: Chris Fischer 
+Originator: Chris Fischer
 Date: 6-29-2021
 Tag: cime6.0.2
 Answer Changes: None
@@ -717,7 +717,7 @@ Brief Summary:
     - Add esmf support for casper pgi.
     - Fix testreporter issues with python3
 
-User interface changes: 
+User interface changes:
 
 PR summary: git log --oneline --first-parent [previous_tag]..master
 95644f2 update externals
@@ -743,8 +743,8 @@ M       src/build_scripts/buildlib.pio
 
 ======================================================================
 
-Originator: Chris Fischer 
-Date: 6-29-2021 
+Originator: Chris Fischer
+Date: 6-29-2021
 Tag: cime6.0.1
 Answer Changes: None
 Tests: scripts_regression_tests
@@ -758,9 +758,9 @@ Brief Summary:
     - Multi gpus casper.
     - cime smartsim.
     - Refactor lilac build - only relevant to CESM.
-    - Adds default walltime for queues. 
+    - Adds default walltime for queues.
 
-User interface changes: 
+User interface changes:
 
 PR summary: git log --oneline --first-parent [previous_tag]..master
 ccdf7376e Merge pull request #4019 from jedwards4b/fix_max_tasks_per_node
@@ -817,7 +817,7 @@ M	scripts/tests/scripts_regression_tests.py
 
 ======================================================================
 
-Originator: Chris Fischer 
+Originator: Chris Fischer
 Date: 6-23-2021
 Tag: cime6.0.0
 Answer Changes: None
@@ -845,7 +845,7 @@ Brief Summary:
     - Updates for pleiades systems.
     - Add feature to capture CIME commands in a script.
 
-User interface changes: 
+User interface changes:
 
 PR summary: git log --oneline --first-parent [previous_tag]..master
 866d4f507 Merge pull request #4010 from ESMCI/fischer/rm_moved_share
@@ -2227,7 +2227,7 @@ M	tools/statistical_ensemble_test/pyCECT/docs/requirements.txt
 
 ======================================================================
 
-Originator: Chris Fischer 
+Originator: Chris Fischer
 Date: 5-11-2021
 Tag: cime5.8.47
 Answer Changes: None
@@ -2237,7 +2237,7 @@ Dependencies:
 Brief Summary:
     - Add back domain for CLM_USRDAT for mct driver.
 
-User interface changes: 
+User interface changes:
 
 PR summary: git log --oneline --first-parent [previous_tag]..master
 f01e48081 Merge pull request #3954 from jedwards4b/fix_clm_usrdata_mct
@@ -2249,7 +2249,7 @@ M       config/cesm/config_grids.xml
 
 ======================================================================
 
-Originator: Chris Fischer 
+Originator: Chris Fischer
 Date: 5-10-2021
 Tag: cime5.8.46
 Answer Changes: None
@@ -2259,7 +2259,7 @@ Dependencies:
 Brief Summary:
     - Rename GLC Greenland grid from "gland" to "gris"
 
-User interface changes: 
+User interface changes:
 
 PR summary: git log --oneline --first-parent [previous_tag]..master
 a52e7faf6 Merge pull request #3943 from billsacks/rename_gland
@@ -2274,7 +2274,7 @@ M       src/drivers/mct/cime_config/config_component.xml
 
 ======================================================================
 
-Originator: Chris Fischer 
+Originator: Chris Fischer
 Date: 5-7-2021
 Tag: cime5.8.45
 Answer Changes: None
@@ -2290,7 +2290,7 @@ Brief Summary:
     - Adds git submodule info to provenance.
     - Fixes phase 1 of multisubmit not executing during rerun.
 
-User interface changes: 
+User interface changes:
 
 PR summary: git log --oneline --first-parent [previous_tag]..master
 1e72b5db7 Merge pull request #3956 from jedwards4b/GLCMakefile
@@ -2324,7 +2324,7 @@ M       scripts/tests/scripts_regression_tests.py
 
 ======================================================================
 
-Originator: Chris Fischer 
+Originator: Chris Fischer
 Date: 5-3-2021
 Tag: cime5.8.44
 Answer Changes: None
@@ -2336,7 +2336,7 @@ Brief Summary:
     - Revert cheyenne intel mpt to 2.22.
     - Change shebang to explict python3.
 
-User interface changes: 
+User interface changes:
 
 PR summary: git log --oneline --first-parent [previous_tag]..master
 6cbfdd632 Merge pull request #3951 from ESMCI/fischer/mpt_cheyenne
@@ -2395,7 +2395,7 @@ M	scripts/tests/scripts_regression_tests.py
 
 ======================================================================
 
-Originator: Chris Fiscehr 
+Originator: Chris Fiscehr
 Date: 4-26-2021
 Tag: cime5.8.43
 Answer Changes: None
@@ -2417,7 +2417,7 @@ Brief Summary:
     - Update configuration xml for Casper and add openacc directives to enable GPU simulation.
     - Fix query_config for py3 output format.
 
-User interface changes: 
+User interface changes:
 
 PR summary: git log --oneline --first-parent [previous_tag]..master
 40be61f38 Merge pull request #3941 from ESMCI/fischer/cheyenne_intel
@@ -2471,7 +2471,7 @@ M	src/share/util/shr_spfn_mod.F90
 
 ======================================================================
 
-Originator: Chris Fischer 
+Originator: Chris Fischer
 Date: 4-8-2021
 Tag: cime5.8.42
 Answer Changes: None
@@ -2481,7 +2481,7 @@ Dependencies:
 Brief Summary:
     - No need to test ESMF_AWARE_THREADING here.
 
-User interface changes: 
+User interface changes:
 
 PR summary: git log --oneline --first-parent [previous_tag]..master
 b655c9127 Merge pull request #3918 from jedwards4b/ninst_fix
@@ -2493,11 +2493,11 @@ M       scripts/lib/CIME/XML/env_mach_pes.py
 
 ======================================================================
 
-Originator: Jim Edwards 
+Originator: Jim Edwards
 Date: 4-6-2021
 Tag: cime5.8.41
 Answer Changes: Climate Changing just for T compsets.
-Tests: scripts_regression_tests 
+Tests: scripts_regression_tests
        SMS_Vnuopc_D_P1x1.f10_f10_mg37.I2000Clm50Sp.izumi_nag.clm-default
 Dependencies:
 
@@ -2508,7 +2508,7 @@ Brief Summary:
     - Handle case when domain_root is not present.
     - Point to new dlnd scpl forcing data.
 
-User interface changes: 
+User interface changes:
 
 PR summary: git log --oneline --first-parent [previous_tag]..master
 81d4f2033 Merge pull request #3904 from ESMCI/jayeshkrishna/spio_stats_provenance
@@ -2533,17 +2533,17 @@ M       src/components/data_comps_mct/dlnd/cime_config/config_component.xml
 
 ======================================================================
 
-Originator: Chris Fischer 
+Originator: Chris Fischer
 Date: 3-30-2021
 Tag: cime5.8.40
-Answer Changes: 
-Tests: 
+Answer Changes:
+Tests:
 Dependencies:
 
 Brief Summary:
     - Bug fix for generating C/G nuopc compsets
 
-User interface changes: 
+User interface changes:
 
 PR summary: git log --oneline --first-parent [previous_tag]..master
 a900c8ef6 Merge pull request #3900 from mvertens/feature/nuopc_grids_bugfix
@@ -2556,7 +2556,7 @@ M       scripts/lib/CIME/XML/grids.py
 
 ======================================================================
 
-Originator: Chris Fischer 
+Originator: Chris Fischer
 Date: 3-26-2021
 Tag: cime5.8.39
 Answer Changes: Round Off for nuopc/cmeps configurations.
@@ -2577,7 +2577,7 @@ Brief Summary:
     - New nuopc/cmeps single/column single/point functionality.
     - Logs tail of cprnc outputs to TestStatus.log.
 
-User interface changes: 
+User interface changes:
 
 PR summary: git log --oneline --first-parent [previous_tag]..master
 1e705ee39 Merge pull request #3895 from ESMCI/jgfouca/add_rof_support_to_primary_comp
@@ -2618,16 +2618,16 @@ M       tools/statistical_ensemble_test/pyCECT/docs/requirements.txt
 
 ======================================================================
 
-Originator: Chris Fischer 
+Originator: Chris Fischer
 Date: 3-12-2021
 Tag: cime5.8.38
-Answer Changes: bit-for-bit, climate-changing for trigrid 
+Answer Changes: bit-for-bit, climate-changing for trigrid
 Tests: scripts_regression_tests
 Dependencies:
 
 Brief Summary:
 
-User interface changes: 
+User interface changes:
     - Disable kokkos tests when building for E3SM.
     - Remove references to CISM1-only grid for CESM.
     - NAG port for nuopc.
@@ -2770,7 +2770,7 @@ M	src/share/util/shr_reprosum_mod.F90
 
 ======================================================================
 
-Originator: Chris Fischer 
+Originator: Chris Fischer
 Date: 1-27-2021
 Tag: cime5.8.37
 Answer Changes: Some fill_values and pgi on cheyenne
@@ -2803,7 +2803,7 @@ Brief Summary:
     - Check if TEST_ROOT exists earlier in cleanup from scripts_regression_tests.
     - query_testlists: replace newlines in comments with spaces.
 
-User interface changes: 
+User interface changes:
     - Slight change to output of query_testlists
 
 PR summary: git log --oneline --first-parent [previous_tag]..master
@@ -2970,7 +2970,7 @@ A	tools/statistical_ensemble_test/pyCECT/test_uf_cam_ect.sh
 
 ======================================================================
 
-Originator: Chris Fischer 
+Originator: Chris Fischer
 Date: 12-11-2020
 Tag: cime5.8.36
 Answer Changes: None
@@ -2984,7 +2984,7 @@ Brief Summary:
     - Add memory usage logging for memory profiling.
     - Update OS process id error-checking in GPTL's get_memusage.
 
-User interface changes: 
+User interface changes:
 
 PR summary: git log --oneline --first-parent [previous_tag]..master
 a0fb01a33 Merge pull request #3796 from ESMCI/jgfouca/wait_for_tests_expect
@@ -3398,7 +3398,7 @@ M	tools/statistical_ensemble_test/single_run.py
 
 ======================================================================
 
-Originator: Chris Fischer 
+Originator: Chris Fischer
 Date: 12-7-2020
 Tag: cime5.8.35
 Answer Changes: None
@@ -3419,7 +3419,7 @@ Brief Summary:
     - Update seq_io_write_time to work for CPLHIST run.
     - Fix python3 incompatibilities in case.py.
 
-User interface changes: 
+User interface changes:
 
 PR summary: git log --oneline --first-parent [previous_tag]..master
 184f5886f Merge pull request #3732 from jedwards4b/change_pio_default_version
@@ -3579,12 +3579,12 @@ M	src/share/util/shr_pio_mod.F90
 
 ======================================================================
 
-Originator: Chris Fischer 
+Originator: Chris Fischer
 Date: 11-12-2020
 Tag: cime5.8.34
 Answer Changes: None
 Tests: code-checker, ERP_Ln9.f09_f09_mg17.F2000climo.cheyenne_intel.cam-outfrq9s_mg3
-       github actions, scripts_regression_tests.py, P_TestJenkinsGenericJob 
+       github actions, scripts_regression_tests.py, P_TestJenkinsGenericJob
 Dependencies:
 
 Brief Summary:
@@ -3623,7 +3623,7 @@ Brief Summary:
     - Fix check_input_data to fail over to svn when a wget download fails.
     - Change permissions on ref case rpointer files.
 
-User interface changes: 
+User interface changes:
 
 PR summary: git log --oneline --first-parent [previous_tag]..master
 726e53cf7 Merge pull request #3775 from ESMCI/fischer/MPAS_build
@@ -3723,7 +3723,7 @@ Brief Summary:
     - Revert "Use enhanced compiler flags for PUMAS/MG3 related F90 codes".
     - Use enhanced compiler flags for PUMAS/MG3 related F90 codes.
     - Create srt.yml.
-    - ESMF and pgi cheyenne update. 
+    - ESMF and pgi cheyenne update.
     - Correctly attribute scorpio timers in cime_pre_init2.
     - Fix test Y for nuopc driver.
     - Add nuopc tests to cdash.
@@ -3731,7 +3731,7 @@ Brief Summary:
     - Fix for pop ecosys rh files.
     - Merge branch 'master'.
     - Update ESMF on cheyenne.
-    - Change name ccsm cppdefs. 
+    - Change name ccsm cppdefs.
     - Fixes Y_TestUserConcurrentMods by adding a more-robust waiting scheme.
     - Add a no-submit option to jenkins_generic_job.
     - In MEMLEAK checks, skip first day memory highwater while initializing.
@@ -3761,7 +3761,7 @@ Brief Summary:
     - Cime changes required by the topounit inplementation in E3SM.
     - Update for UFS app.
 
-User interface changes: 
+User interface changes:
 
 PR summary: git log --oneline --first-parent [previous_tag]..master
 5316eabdf Merge pull request #3761 from ESMCI/jgfouca/sep_builds_for_tests
@@ -3875,12 +3875,12 @@ M	src/drivers/mct/shr/seq_flds_mod.F90
 
 ======================================================================
 
-Originator: Chris Fischer 
+Originator: Chris Fischer
 Date: 8-28-2020
 Tag: cime5.8.32
 Answer Changes: None
 Tests: scripts_regression_tests, create_test_cime_developer,
-       SMS_D_Ld5_Vnuopc.f10_f10_musgs.I2000Clm50BgcCropGs.cheyenne_intel.clm-default, 
+       SMS_D_Ld5_Vnuopc.f10_f10_musgs.I2000Clm50BgcCropGs.cheyenne_intel.clm-default,
        SMS.f19_g17.X.cheyenne_intel, cdeps_aux tests and testlist_drv.xml test
 Dependencies:
 
@@ -3890,9 +3890,9 @@ Brief Summary:
     - Avoid artificial limit on string lengths in shr_string_listMerge.
     - Don't try to set a variable from env_test.xml if it does not otherwise exist in the case.
     - Fix logic in cdeps build.
-    - New cdeps stream schema and stream definition file. 
+    - New cdeps stream schema and stream definition file.
 
-User interface changes: 
+User interface changes:
 
 PR summary: git log --oneline --first-parent [previous_tag]..master
 5ab9bf4bd Merge pull request #3693 from ESMCI/jgfouca/volatile_env
@@ -3925,7 +3925,7 @@ M       src/share/util/shr_string_mod.F90
 
 ======================================================================
 
-Originator: Chris Fischer 
+Originator: Chris Fischer
 Date: 8-20-2020
 Tag: cime5.8.31
 Answer Changes: None
@@ -3947,7 +3947,7 @@ Brief Summary:
     - CIME changes to support upcoming addition of MALI gis1to10km configuration.
     - Changes needed to have cdeps 3d stream input working.
 
-User interface changes: 
+User interface changes:
 
 PR summary: git log --oneline --first-parent [previous_tag]..master
 d575f612e Merge pull request #3679 from ekluzek/fv3gridfix2013endGSWP3
@@ -3990,7 +3990,7 @@ M       src/externals/mct/mpeu/m_inpak90.F90
 
 ======================================================================
 
-Originator: Chris Fischer 
+Originator: Chris Fischer
 Date: 8-12-2020
 Tag: cime5.8.30
 Answer Changes: [None, Round Off, Climate Changing]
@@ -4016,7 +4016,7 @@ Brief Summary:
     - Archive atm_chunk_costs with other performance data.
     - Use SRCROOT instead of CIMEROOT in key places.
 
-User interface changes: 
+User interface changes:
 
 PR summary: git log --oneline --first-parent [previous_tag]..master
 899fcd90e Merge pull request #3663 from billsacks/cprnc_fix_int_singlevar
@@ -4115,7 +4115,7 @@ M	tools/statistical_ensemble_test/single_run.py
 
 ======================================================================
 
-Originator: Chris Fischer 
+Originator: Chris Fischer
 Date: 7-24-2020
 Tag: cime5.8.29
 Answer Changes: MOM6
@@ -4145,9 +4145,9 @@ Brief Summary:
     - Dict has_key is removed in python3.
     - Update TFREEZE_SALTWATER_OPTION value for MOM6.
     - Set PIO_REARR_COMM_TYPE: coll for mpi-serial.
-   
 
-User interface changes: 
+
+User interface changes:
 
 PR summary: git log --oneline --first-parent [previous_tag]..master
 8cda0e75b Merge pull request #3633 from ESMCI/bdobbins-wget-inputdata-bugfix
@@ -4310,7 +4310,7 @@ M	tools/statistical_ensemble_test/single_run.py
 
 ======================================================================
 
-Originator: Chris Fischer 
+Originator: Chris Fischer
 Date: 6-30-2020
 Tag: cime5.8.28
 Answer Changes: None
@@ -4322,7 +4322,7 @@ Brief Summary:
     - Improve error message for create newcase test option.
     - Clean up screen output & logging in check_input_data.
 
-User interface changes: 
+User interface changes:
 
 PR summary: git log --oneline --first-parent [previous_tag]..master
 a2de0598c Merge pull request #3602 from ESMCI/fischer/mapping_file_update
@@ -4343,12 +4343,12 @@ M       scripts/lib/CIME/test_scheduler.py
 
 ======================================================================
 
-Originator: Chris Fischer 
+Originator: Chris Fischer
 Date: 6-23-2020
 Tag: cime5.8.27
 Answer Changes: [None, Round Off, Climate Changing]
 Tests:  SMS.ne30pg3_ne30pg3_mg17.A.cheyenne_intel
-        scripts_resgression_tests 
+        scripts_resgression_tests
         SMS_D_Ld3.f45_g37_rx1.A.izumi_nag
 Dependencies:
 
@@ -4368,7 +4368,7 @@ Brief Summary:
     - Remove nuopc data models to new repo CDEPS.
     - Fixed and cleaned-up scripts_regression_tests.py test Q_TestBlessTestResults with CIME_MODEL = cesm.
 
-User interface changes: 
+User interface changes:
 
 PR summary: git log --oneline --first-parent [previous_tag]..master
 b3fb69d87 Merge pull request #3587 from ESMCI/fischer/rename_ne30pg3_grid
@@ -4482,11 +4482,11 @@ D	src/share/streams_nuopc/dshr_tInterp_mod.F90
 
 ======================================================================
 
-Originator: Chris Fischer 
+Originator: Chris Fischer
 Date: 6-16-2020
 Tag: cime5.8.26
-Answer Changes: Climate Changin] 
-Tests:  hand tested with ERS_Vnuopc_D.f09_g17.A.cheyenne_intel modified for era5 
+Answer Changes: Climate Changin]
+Tests:  hand tested with ERS_Vnuopc_D.f09_g17.A.cheyenne_intel modified for era5
         ../src/drivers/nuopc/cime_config/testdefs/testlist_drv.xml (cheyenne, intel)
         scripts_regression_tests (with PIO_VERSION=2)
 Dependencies:
@@ -4504,7 +4504,7 @@ Brief Summary:
     - Pleiades machines updates.
     - Improved error message for incorrect setting of cime model.
 
-User interface changes: 
+User interface changes:
     - For all CIME data models.
 
 PR summary: git log --oneline --first-parent [previous_tag]..master
@@ -4617,7 +4617,7 @@ M	src/share/util/shr_kind_mod.F90
 
 ======================================================================
 
-Originator: Chris Fischer 
+Originator: Chris Fischer
 Date: 6-8-2020
 Tag: cime5.8.25
 Answer Changes: None
@@ -4628,7 +4628,7 @@ Brief Summary:
     - Change grid alias for artic var-res grids.
     - Couples HYCOM with data atmosphere for UFS HAFS application.
 
-User interface changes: 
+User interface changes:
 
 PR summary: git log --oneline --first-parent [previous_tag]..master
 e8dfe9356 Merge pull request #3566 from ESMCI/fischer/var_res_grids
@@ -4649,11 +4649,11 @@ M       src/components/data_comps_nuopc/datm/src/atm_comp_nuopc.F90
 
 ======================================================================
 
-Originator: Chris Fischer 
+Originator: Chris Fischer
 Date: 6-3-2020
 Tag: cime5.8.24
 Answer Changes: Round Off on izumi
-Tests: scripts_regression_tests, izumi tests 
+Tests: scripts_regression_tests, izumi tests
 Dependencies:
 
 Brief Summary:
@@ -4672,7 +4672,7 @@ Brief Summary:
     - Change type to double for derived vars in cprnc.
     - Fix typo.
 
-User interface changes: 
+User interface changes:
     - New component added for cesm.
 
 PR summary: git log --oneline --first-parent [previous_tag]..master
@@ -4762,7 +4762,7 @@ D	tools/cprnc/test.csh
 
 ======================================================================
 
-Originator: Chris Fischer 
+Originator: Chris Fischer
 Date: 4-19-2020
 Tag: cime5.8.23
 Answer Changes: roundoff for some compsets, bfb for others
@@ -4774,7 +4774,7 @@ Brief Summary:
     - Fix atm level spec so that it does not match 1x1_brazil.
     - Document provenance from COARE/Fairall surface flux scheme option.
     - Add missing ROF2OCN grid for r05_TO_gx3v7.
-    - Updates to CIME used for 0.1 degree JRA-forced G run with BGC enabled. 
+    - Updates to CIME used for 0.1 degree JRA-forced G run with BGC enabled.
     - FV3 bug fix and Makefile update.
     - Update cheyenne ESMF libs.
     - case.setup: fix merge error from prev PR.
@@ -4784,7 +4784,7 @@ Brief Summary:
     - Remove code specific to ORNL machine.
 
 
-User interface changes: 
+User interface changes:
     - Adds --extra-machines-dir argument to create_newcase.
 
 PR summary: git log --oneline --first-parent [previous_tag]..master
@@ -4860,18 +4860,18 @@ M	utils/perl5lib/Config/SetupTools.pm
 
 ======================================================================
 
-Originator: Chris Fischer 
+Originator: Chris Fischer
 Date: 4-26-2020
 Tag: cime5.8.22
 Answer Changes: b4b
-Tests: scripts_regression_tests 
+Tests: scripts_regression_tests
 Dependencies:
 
 Brief Summary:
     - Fix issue with mpi-serial io.
     - Use esmf8.1.0b14 on cheyenne.
 
-User interface changes: 
+User interface changes:
 
 PR summary: git log --oneline --first-parent [previous_tag]..master
 3b4ea8a99 Merge pull request #3499 from jedwards4b/pio_serialio_fix
@@ -4890,11 +4890,11 @@ M       src/share/util/shr_pio_mod.F90
 
 ======================================================================
 
-Originator: Chris Fischer 
+Originator: Chris Fischer
 Date: 4-17-2020
 Tag: cime5.8.21
 Answer Changes: None
-Tests: scripts_regression_tests 
+Tests: scripts_regression_tests
        CIME_MODEL=cesm; CIME_DRIVER=nuopc; ./scripts_regression_tests.py
 Dependencies:
 
@@ -4910,7 +4910,7 @@ Brief Summary:
     - Bugfixes and changes that permit cmeps to run without a mediator.
     - Some changes to cprnc's CMakeLists.txt.
 
-User interface changes: 
+User interface changes:
 
 PR summary: git log --oneline --first-parent [previous_tag]..master
 979ab8433 Merge pull request #3470 from jedwards4b/shr_map_getARptr
@@ -4960,7 +4960,7 @@ M	tools/cprnc/CMakeLists.txt
 
 ======================================================================
 
-Originator: Chris Fischer 
+Originator: Chris Fischer
 Date: 4-7-2020
 Tag: cime5.8.20
 Answer Changes: None
@@ -4972,7 +4972,7 @@ Brief Summary:
     - E3SM 03-16-2020 merger.
     - Remove unneeded encodes.
 
-User interface changes: 
+User interface changes:
 
 PR summary: git log --oneline --first-parent [previous_tag]..master
 708a9338b Merge pull request #3479 from jedwards4b/ftp_timeout
@@ -5116,8 +5116,8 @@ A	tools/mapping/gen_domain_files/test_gen_domain.sh
 
 ======================================================================
 
-Originator: Chris Fischer 
-Date: 4-3-2020 
+Originator: Chris Fischer
+Date: 4-3-2020
 Tag: cime5.8.19
 Answer Changes: None
 Tests:  scripts_regression_tests
@@ -5129,7 +5129,7 @@ Brief Summary:
     - Change sst_aquap11 to sst_aquap_constant
     - case.setup: Add --keep option
 
-User interface changes: 
+User interface changes:
 
 PR summary: git log --oneline --first-parent [previous_tag]..master
 2656300d5 Merge pull request #3462 from mnlevy1981/cleanup_maint-5.6_merge
@@ -5151,7 +5151,7 @@ M       src/drivers/mct/cime_config/namelist_definition_drv.xml
 
 ======================================================================
 
-Originator: Chris Fischer 
+Originator: Chris Fischer
 Date: 3-20-2020
 Tag: cime5.8.18
 Answer Changes: None
@@ -5160,10 +5160,10 @@ Dependencies:
 
 Brief Summary:
     - Add ne5np4.pg4 grid.
-    - Ensure that api documentation is rebuilt whenever rebuilding 
+    - Ensure that api documentation is rebuilt whenever rebuilding
       documentation.
 
-User interface changes: 
+User interface changes:
 
 PR summary: git log --oneline --first-parent [previous_tag]..master
 f990945a7 Merge pull request #3460 from ESMCI/fischer/ne5np4
@@ -5557,11 +5557,11 @@ M	tools/cprnc/CMakeLists.txt
 
 ======================================================================
 
-Originator: Chris Fischer 
+Originator: Chris Fischer
 Date: 2-27-2020
 Tag: cime5.8.16
 Answer Changes: None
-tests: scripts_regression_tests, aux_cam using fv3, various hand tests. 
+tests: scripts_regression_tests, aux_cam using fv3, various hand tests.
 Dependencies:
 
 Brief Summary:
@@ -5620,7 +5620,7 @@ Brief Summary:
     - Fixed Empty .cesm_proj file results in a crash.
     - Improve scripts_regression_tests test cleanup.
 
-User interface changes: 
+User interface changes:
 
 PR summary: git log --oneline --first-parent [previous_tag]..master
 b2e292597 Merge pull request #3420 from ESMCI/fischer/segrids
@@ -5864,7 +5864,7 @@ M	src/share/nuopc/shr_ndep_mod.F90
 
 ======================================================================
 
-Originator: Chris Fischer 
+Originator: Chris Fischer
 Date: 11-11-2019
 Tag: cime5.8.14
 Answer Changes: None, (except for X compsets with nuopc
@@ -5889,7 +5889,7 @@ Brief Summary:
     - ACME merge 2019-10-25.
 
 
-User interface changes: 
+User interface changes:
 
 PR summary: git log --oneline --first-parent [previous_tag]..master
 cad8477bb Merge pull request #3297 from ESMCI/revert-3296-master_seq_flux_init
@@ -5954,7 +5954,7 @@ M	src/share/util/shr_mct_mod.F90
 
 ======================================================================
 
-Originator: Chris Fischer 
+Originator: Chris Fischer
 Date: 10-24-2019
 Tag: cime5.8.13
 Answer Changes: None
@@ -5965,7 +5965,7 @@ Brief Summary:
     - Add a raw xml option to the query_config interface.
     - Add --only-job option to case.submit.
 
-User interface changes: 
+User interface changes:
     - Add --xml to query_config.
     - Add option --only-job to case.submit.
     - Fix an issue with Lockedfile error when case.submit is used with the --no-batch flag.
@@ -5996,11 +5996,11 @@ M       src/share/util/shr_scam_mod.F90
 
 ======================================================================
 
-Originator: Chris Fischer 
+Originator: Chris Fischer
 Date: 10-15-2019
 Tag: cime5.8.12
 Answer Changes: None
-Tests: ERS.T5_T5_mg37.QPC4, scripts_regression_tests 
+Tests: ERS.T5_T5_mg37.QPC4, scripts_regression_tests
 Dependencies:
 
 Brief Summary:
@@ -6009,7 +6009,7 @@ Brief Summary:
     - Updates for cam testing updates.
     - Fix nuopc esmf paths.
 
-User interface changes: 
+User interface changes:
 
 PR summary: git log --oneline --first-parent [previous_tag]..master
 7f1d48fe9 Merge pull request #3263 from ESMCI/fischer/T5_grid_fix
@@ -6035,18 +6035,18 @@ M       src/share/util/shr_flux_mod.F90
 
 ======================================================================
 
-Originator: Chris Fischer 
+Originator: Chris Fischer
 Date: 10-01-2019
 Tag: cime5.8.11
 Answer Changes: None
-Tests: scripts_regression_tests, Hand tested SMS_D_Vnuopc.f09_g17.X.cheyenne_intel 
+Tests: scripts_regression_tests, Hand tested SMS_D_Vnuopc.f09_g17.X.cheyenne_intel
 Dependencies:
 
 Brief Summary:
     - Correct the way esmf is built to avoid library mismatch.
     - Update gnu compiler on cheyenne, bit for bit.
 
-User interface changes: 
+User interface changes:
 
 PR summary: git log --oneline --first-parent [previous_tag]..master
 693383167 Merge pull request #3252 from jedwards4b/nuopc_esmf_build_correction
@@ -6061,7 +6061,7 @@ M       scripts/Tools/Makefile
 
 ======================================================================
 
-Originator: Chris Fischer 
+Originator: Chris Fischer
 Date: 9-26-2019
 Tag: cime5.8.10
 Answer Changes: None
@@ -6081,7 +6081,7 @@ Brief Summary:
     - Clean up some issues in scripts_regression_tests.py.
     - Add /cluster/torque/bin to path on izumi.
 
-User interface changes: 
+User interface changes:
 
 PR summary: git log --oneline --first-parent [previous_tag]..master
 809bcb3b8 Merge pull request #3248 from jedwards4b/mct_null_comm_fix
@@ -6152,7 +6152,7 @@ M	src/share/util/shr_scam_mod.F90
 
 ======================================================================
 
-Originator: Chris Fischer 
+Originator: Chris Fischer
 Date: 10-24-2019
 Tag: cime5.8.13
 Answer Changes: None
@@ -6163,7 +6163,7 @@ Brief Summary:
     - Add a raw xml option to the query_config interface.
     - Add --only-job option to case.submit.
 
-User interface changes: 
+User interface changes:
     - Add --xml to query_config.
     - Add option --only-job to case.submit.
     - Fix an issue with Lockedfile error when case.submit is used with the --no-batch flag.
@@ -6194,11 +6194,11 @@ M       src/share/util/shr_scam_mod.F90
 
 ======================================================================
 
-Originator: Chris Fischer 
+Originator: Chris Fischer
 Date: 10-15-2019
 Tag: cime5.8.12
 Answer Changes: None
-Tests: ERS.T5_T5_mg37.QPC4, scripts_regression_tests 
+Tests: ERS.T5_T5_mg37.QPC4, scripts_regression_tests
 Dependencies:
 
 Brief Summary:
@@ -6207,7 +6207,7 @@ Brief Summary:
     - Updates for cam testing updates.
     - Fix nuopc esmf paths.
 
-User interface changes: 
+User interface changes:
 
 PR summary: git log --oneline --first-parent [previous_tag]..master
 7f1d48fe9 Merge pull request #3263 from ESMCI/fischer/T5_grid_fix
@@ -6233,18 +6233,18 @@ M       src/share/util/shr_flux_mod.F90
 
 ======================================================================
 
-Originator: Chris Fischer 
+Originator: Chris Fischer
 Date: 10-01-2019
 Tag: cime5.8.11
 Answer Changes: None
-Tests: scripts_regression_tests, Hand tested SMS_D_Vnuopc.f09_g17.X.cheyenne_intel 
+Tests: scripts_regression_tests, Hand tested SMS_D_Vnuopc.f09_g17.X.cheyenne_intel
 Dependencies:
 
 Brief Summary:
     - Correct the way esmf is built to avoid library mismatch.
     - Update gnu compiler on cheyenne, bit for bit.
 
-User interface changes: 
+User interface changes:
 
 PR summary: git log --oneline --first-parent [previous_tag]..master
 693383167 Merge pull request #3252 from jedwards4b/nuopc_esmf_build_correction
@@ -6259,7 +6259,7 @@ M       scripts/Tools/Makefile
 
 ======================================================================
 
-Originator: Chris Fischer 
+Originator: Chris Fischer
 Date: 9-26-2019
 Tag: cime5.8.10
 Answer Changes: None
@@ -6279,7 +6279,7 @@ Brief Summary:
     - Clean up some issues in scripts_regression_tests.py.
     - Add /cluster/torque/bin to path on izumi.
 
-User interface changes: 
+User interface changes:
 
 PR summary: git log --oneline --first-parent [previous_tag]..master
 809bcb3b8 Merge pull request #3248 from jedwards4b/mct_null_comm_fix
@@ -6350,7 +6350,7 @@ M	src/share/util/shr_scam_mod.F90
 
 ======================================================================
 
-Originator: Chris Fischer 
+Originator: Chris Fischer
 Date: 8-29-2019
 Tag: cime5.8.9
 Answer Changes: None
@@ -6360,7 +6360,7 @@ Dependencies:
 Brief Summary:
     - Fix nag compiler for CAM.
 
-User interface changes: 
+User interface changes:
 
 PR summary: git log --oneline --first-parent [previous_tag]..master
     - 6026ca341 Merge pull request #3219 from ESMCI/fischer/nag
@@ -6373,11 +6373,11 @@ M       config/cesm/machines/Depends.nag
 
 ======================================================================
 
-Originator: Chris Fischer 
+Originator: Chris Fischer
 Date: 8-26-2019
 Tag: cime5.8.8
 Answer Changes: None
-Tests: scripts_regression_tests, aux_mom 
+Tests: scripts_regression_tests, aux_mom
 Dependencies:
 
 Brief Summary:
@@ -6398,7 +6398,7 @@ Brief Summary:
     - ACME merge 2019-07-22
     - Remove test SMS.T42_T42.S when testing with nuopc driver.
 
-User interface changes: 
+User interface changes:
 
 PR summary: git log --oneline --first-parent [previous_tag]..master
 a9c9289f1 Merge branch 'maint-5.6'
@@ -6562,7 +6562,7 @@ M	src/share/util/shr_pio_mod.F90
 
 ======================================================================
 
-Originator: Chris Fischer 
+Originator: Chris Fischer
 Date: 7-19-209
 Tag: cime5.8.7
 Answer Changes: Climate changing for CAM ne120, ne120pg3, ne0CONUS grids
@@ -6574,7 +6574,7 @@ Brief Summary:
     - Updates and fixes for MOM6 in cime.
     - Maint 5.6 merge.
 
-User interface changes: 
+User interface changes:
 
 PR summary: git log --oneline --first-parent [previous_tag]..master
 6efe21745 Merge pull request #3177 from ESMCI/fischer/SE_gx1v7MaskFix
@@ -6629,17 +6629,17 @@ M	src/share/util/shr_file_mod.F90
 
 ======================================================================
 
-Originator: Chris Fischer 
+Originator: Chris Fischer
 Date: 7-16-2019
 Tag: cime5.8.6
 Answer Changes: None
-Tests: scripts_regression_tests, SMS_Ld1.f19_f19_mg17.FXSD.cheyenne_intel.cam-outfrq1d 
+Tests: scripts_regression_tests, SMS_Ld1.f19_f19_mg17.FXSD.cheyenne_intel.cam-outfrq1d
 Dependencies:
 
 Brief Summary:
     - Add back ESMF modules on cheyenne.
 
-User interface changes: 
+User interface changes:
 
 PR summary: git log --oneline --first-parent [previous_tag]..master
 07f0945e6 Merge pull request #3172 from ESMCI/fischer/fix_esmfmodules
@@ -6653,11 +6653,11 @@ M       config/cesm/machines/config_machines.xml
 
 ======================================================================
 
-Originator: Chris Fischer 
+Originator: Chris Fischer
 Date: 7-12-2019
 Tag: cime5.8.5
 Answer Changes: bit for bit
-Tests: scripts_regression_tests on izumi, SMS_Ln9.ne0CONUSne30x8_ne0CONUSne30x8_mg17.F2000climo 
+Tests: scripts_regression_tests on izumi, SMS_Ln9.ne0CONUSne30x8_ne0CONUSne30x8_mg17.F2000climo
 Dependencies:
 
 Brief Summary:
@@ -6667,7 +6667,7 @@ Brief Summary:
     - Case insensitive user_nl.
     - ACME merge 2019-06-25.
 
-User interface changes: 
+User interface changes:
 
 PR summary: git log --oneline --first-parent [previous_tag]..master
 ba5ce7f68 Merge pull request #3167 from ESMCI/fischer/SE_conusmt12
@@ -6699,11 +6699,11 @@ M       src/share/util/shr_flux_mod.F90
 
 ======================================================================
 
-Originator: Chris Fischer 
+Originator: Chris Fischer
 Date: 6-24-2019
 Tag: cime5.8.4
 Answer Changes: None
-Tests: scripts_regression_tests, code checker 
+Tests: scripts_regression_tests, code checker
 Dependencies:
 
 Brief Summary:
@@ -6717,7 +6717,7 @@ Brief Summary:
     - ACME merge 2019-06-10
     - Change nodefail test to allow for nuopc file name difference from mct.
 
-User interface changes: 
+User interface changes:
 
 PR summary: git log --oneline --first-parent [previous_tag]..master
 8f0e3d3 Merge pull request #3150 from ESMCI/theia_to_slurm
@@ -6947,8 +6947,8 @@ A	src/externals/pio2/tests/unit/run_tests.sh
 
 ======================================================================
 
-Originator: Chris Fischer 
-Date: 6-7-2019 
+Originator: Chris Fischer
+Date: 6-7-2019
 Tag: cime5.8.3
 Answer Changes: [None, Round Off, Climate Changing]
 Tests: scripts_regression_tests.py with CIME_DRIVER=nuopc,
@@ -6959,8 +6959,8 @@ Brief Summary:
     - Add logic to control activation of glcshelf_c2_ice.
     - Fix nuopc build, update for stamepede esmf lib.
     - Fixes for nuopc scripts_regressions_tests.
-    - Merge branch master. 
-    - Merge branch master. 
+    - Merge branch master.
+    - Merge branch master.
     - Merge acme split 2019-5-28
     - Remove the nuopc driver and mediator to a separate repository https://github.com/ESCOMP/CMEPS.git
     - New documentation explaining how to invoked the --user-mods-dir option to create_newcase.
@@ -6983,7 +6983,7 @@ Brief Summary:
     - Update modules cheyenne.
     - Poperly link nag f90.
 
-User interface changes: 
+User interface changes:
 
 PR summary: git log --oneline --first-parent [previous_tag]..master
 9f39361 Add logic to control activation of glcshelf_c2_ice (#3131)
@@ -7200,7 +7200,7 @@ M	tools/statistical_ensemble_test/README
 ======================================================================
 
 
-Originator: Chris Fischer 
+Originator: Chris Fischer
 Date: 4-23-2019
 Tag: cime5.8.2
 Answer Changes: None
@@ -7216,7 +7216,7 @@ Brief Summary:
     - Introduces a new stub IAC.
     - Master merge to nuopc cmeps.
 
-User interface changes: 
+User interface changes:
 
 PR summary: git log --oneline --first-parent [previous_tag]..master
 57cf4a5 Merge pull request #3086 from ESMCI/fischer/ne_conus
@@ -7368,11 +7368,11 @@ M	src/share/util/shr_pio_mod.F90
 
 ======================================================================
 
-Originator: Chris Fischer 
+Originator: Chris Fischer
 Date: 04-08-2019
 Tag: cime5.8.1
 Answer Changes: None
-Tests: scripts_regression_tests, many create_newcase with mangled compset names 
+Tests: scripts_regression_tests, many create_newcase with mangled compset names
        hand test xmllint
 Dependencies:
 
@@ -7392,7 +7392,7 @@ Brief Summary:
     - PET and ERP tests were not setting compile_threaded correctly.
     - Implement 'share' field of test suites.
 
-User interface changes: 
+User interface changes:
     - Stub components are now optional in compset long names. Also there is less order dependency.
 
 PR summary: git log --oneline --first-parent [previous_tag]..master
@@ -7478,7 +7478,7 @@ M       tools/mapping/gen_mapping_files/runoff_to_ocn/src/Makefile
 
 ======================================================================
 
-Originator: Chris Fischer 
+Originator: Chris Fischer
 Date: 03-12-2019
 Tag: cime5.8.0
 Answer Changes: None
@@ -7489,7 +7489,7 @@ Brief Summary:
     - Merge maint-5.6 branch.
     - Cleanup of build.
 
-User interface changes: 
+User interface changes:
 
 PR summary: git log --oneline --first-parent [previous_tag]..master
 5f939ae Merge pull request #3039 from ESMCI/maint-5.6
@@ -7630,7 +7630,7 @@ Brief Summary:
     - Fix test issue for cesm.
     - Better handling of file permissions when copying files.
 
-User interface changes: 
+User interface changes:
 
 PR summary: git log --oneline --first-parent [previous_tag]..master
 5f31182 Merge pull request #3014 from jedwards4b/config_grids_v2.1
@@ -7821,11 +7821,11 @@ A	tools/cprnc/test_inputs/missing_variables.nc
 
 ======================================================================
 
-Originator: Chris Fischer 
+Originator: Chris Fischer
 Date: 1-15-2019
 Tag: cime5.7.7
 Answer Changes: None
-Tests: scripts_regression_tests 
+Tests: scripts_regression_tests
 Dependencies:
 
 Brief Summary:
@@ -7841,7 +7841,7 @@ Brief Summary:
     - docn_comp_mod needs fix for optional variable.
     - Remove support for CLM4.0.
 
-User interface changes: 
+User interface changes:
 
 PR summary: git log --oneline --first-parent [previous_tag]..master
 e5c2368 Minor fix to e3sm_cime_mgmt to properly handle exe files
@@ -7939,11 +7939,11 @@ M	src/share/util/shr_wv_sat_mod.F90
 
 ======================================================================
 
-Originator: Chris Fischer 
+Originator: Chris Fischer
 Date: 01-07-2019
 Tag: cime5.7.6
 Answer Changes: None
-Tests: scripts_regression_tests.py, hand testing of cesm cases 
+Tests: scripts_regression_tests.py, hand testing of cesm cases
        scripts_regression_tests.py with PIO_VERSION=2
        code-checker, by-hand
 Dependencies:
@@ -7969,7 +7969,7 @@ Brief Summary:
     - Merge latest maint-5.6 changes into master.
     - Fix new pylint errors.
 
-User interface changes: 
+User interface changes:
 
 PR summary: git log --oneline --first-parent [previous_tag]..master
 486c579 Merge pull request #2966 from jedwards4b/cmpgen_needs_write
@@ -8257,20 +8257,20 @@ Brief Summary: Miscellaneous minor bug fixes, including getting
 
 User interface changes: none
 
-Originator: Chris Fischer 
+Originator: Chris Fischer
 Date: 11-29-2018
 Tag: cime_cesm2_1_rel_06
 Answer Changes: None
-Tests: scripts_regression_tests 
+Tests: scripts_regression_tests
 Dependencies:
 
 Brief Summary:
     - Fix new pylint errors.
     - Update addmetadata for POP-ECT tests.
 
-User interface changes: 
+User interface changes:
 
-PR summary: git log --oneline --first-parent [previous_tag]..master 
+PR summary: git log --oneline --first-parent [previous_tag]..master
 5a86646 Merge pull request #2921 from jedwards4b/fixpylint3errors
 98821ff Merge pull request #2919 from ESMCI/fischer/addmetadata
 
@@ -8295,7 +8295,7 @@ M       tools/statistical_ensemble_test/addmetadata.sh
 
 ======================================================================
 
-Originator: Chris Fischer 
+Originator: Chris Fischer
 PR summary: git log --oneline --first-parent [previous_tag]..master
 e882c1c06 Merge pull request #2897 from billsacks/fix_histutils_regex
 fc14d5870 Merge pull request #2895 from billsacks/fix_lnd2glc_averaged_now

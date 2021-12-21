@@ -3,6 +3,7 @@ from CIME.BuildTools.macroconditiontree import MacroConditionTree
 
 logger = logging.getLogger(__name__)
 
+
 class PossibleValues(object):
 
     """Holds a list of settings for a single "Macros" variable.
@@ -111,16 +112,19 @@ class PossibleValues(object):
 
         This function raises an error if an ambiguity is found.
         """
-        for i in range(len(self.settings)-1):
-            for j in range(i+1, len(self.settings)):
+        for i in range(len(self.settings) - 1):
+            for j in range(i + 1, len(self.settings)):
                 if self._specificities[i] != self._specificities[j]:
                     continue
                 other = self.settings[j]
-                expect(not self.settings[i].is_ambiguous_with(other),
-                       "Variable "+self.name+" is set ambiguously in "
-                       "config_compilers.xml. Check the file for these "
-                       "conflicting settings: \n1: {}\n2: {}".format(
-                           self.settings[i].conditions, other.conditions))
+                expect(
+                    not self.settings[i].is_ambiguous_with(other),
+                    "Variable " + self.name + " is set ambiguously in "
+                    "config_compilers.xml. Check the file for these "
+                    "conflicting settings: \n1: {}\n2: {}".format(
+                        self.settings[i].conditions, other.conditions
+                    ),
+                )
 
     def dependencies(self):
         """Returns a set of names of variables needed to set this variable."""
@@ -148,9 +152,11 @@ class PossibleValues(object):
         # Build trees, starting from the least specific and working up.
         normal_trees = {}
         for specificity in specificities:
-            settings_for_tree = [self.settings[i]
-                                 for i in range(len(self.settings))
-                                 if self._specificities[i] == specificity]
+            settings_for_tree = [
+                self.settings[i]
+                for i in range(len(self.settings))
+                if self._specificities[i] == specificity
+            ]
             normal_trees[specificity] = MacroConditionTree(self.name, settings_for_tree)
         if self.append_settings:
             append_tree = MacroConditionTree(self.name, self.append_settings)

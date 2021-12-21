@@ -79,4 +79,3 @@ void *GPTLallocate (const int nbytes)
 
   return ptr;
 }
-

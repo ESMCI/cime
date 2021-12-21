@@ -22,24 +22,32 @@ class TestGridGeneration(base.BaseTestCase):
         inputdata = self.MACHINE.get_value("DIN_LOC_ROOT")
 
         tool_name = "test_gen_domain"
-        tool_location = os.path.join(cime_root, "tools", "mapping", "gen_domain_files", "test_gen_domain.sh")
+        tool_location = os.path.join(
+            cime_root, "tools", "mapping", "gen_domain_files", "test_gen_domain.sh"
+        )
         args = "--cime_root={} --inputdata_root={}".format(cime_root, inputdata)
 
         cls = self.__class__
         test_dir = os.path.join(cls._testroot, tool_name)
         cls._testdirs.append(test_dir)
         os.makedirs(test_dir)
-        self.run_cmd_assert_result(self, "{} {}".format(tool_location, args), from_dir=test_dir)
+        self.run_cmd_assert_result(
+            self, "{} {}".format(tool_location, args), from_dir=test_dir
+        )
         cls._do_teardown.append(test_dir)
 
     @classmethod
     def tearDownClass(cls):
-        do_teardown = len(cls._do_teardown) > 0 and sys.exc_info() == (None, None, None) and not cls.NO_TEARDOWN
+        do_teardown = (
+            len(cls._do_teardown) > 0
+            and sys.exc_info() == (None, None, None)
+            and not cls.NO_TEARDOWN
+        )
         teardown_root = True
         for tfile in cls._testdirs:
             if tfile not in cls._do_teardown:
                 print("Detected failed test or user request no teardown")
-                print("Leaving case directory : %s"%tfile)
+                print("Leaving case directory : %s" % tfile)
                 teardown_root = False
             elif do_teardown:
                 shutil.rmtree(tfile)

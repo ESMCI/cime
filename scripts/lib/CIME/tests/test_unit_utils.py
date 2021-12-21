@@ -7,30 +7,29 @@ import tempfile
 
 import unittest
 from unittest import mock
-from CIME.utils import indent_string, run_and_log_case_status, \
-    import_from_file, \
-    _line_defines_python_function, file_contains_python_function
+from CIME.utils import (
+    indent_string,
+    run_and_log_case_status,
+    import_from_file,
+    _line_defines_python_function,
+    file_contains_python_function,
+)
 
 from CIME.tests import utils
 
-class TestIndentStr(unittest.TestCase):
-    """Test the indent_string function.
 
-    """
+class TestIndentStr(unittest.TestCase):
+    """Test the indent_string function."""
 
     def test_indent_string_singleline(self):
-        """Test the indent_string function with a single-line string
-
-        """
-        mystr = 'foo'
+        """Test the indent_string function with a single-line string"""
+        mystr = "foo"
         result = indent_string(mystr, 4)
-        expected = '    foo'
+        expected = "    foo"
         self.assertEqual(expected, result)
 
     def test_indent_string_multiline(self):
-        """Test the indent_string function with a multi-line string
-
-        """
+        """Test the indent_string function with a multi-line string"""
         mystr = """hello
 hi
 goodbye
@@ -41,6 +40,7 @@ goodbye
   goodbye
 """
         self.assertEqual(expected, result)
+
 
 class TestLineDefinesPythonFunction(unittest.TestCase):
     """Tests of _line_defines_python_function"""
@@ -118,6 +118,7 @@ class TestLineDefinesPythonFunction(unittest.TestCase):
         line = "from bar.baz import foobar"
         self.assertFalse(_line_defines_python_function(line, "foo"))
 
+
 class TestFileContainsPythonFunction(unittest.TestCase):
     """Tests of file_contains_python_function"""
 
@@ -131,7 +132,7 @@ class TestFileContainsPythonFunction(unittest.TestCase):
         """Creates a test file with the given contents, and returns the path to that file"""
 
         filepath = os.path.join(self._workdir, "testfile")
-        with open(filepath, 'w') as fd:
+        with open(filepath, "w") as fd:
             fd.write(contents)
 
         return filepath
@@ -156,6 +157,7 @@ def baz():
         filepath = self.create_test_file(contents)
         self.assertFalse(file_contains_python_function(filepath, "foo"))
 
+
 class MockTime(object):
     def __init__(self):
         self._old = None
@@ -166,6 +168,7 @@ class MockTime(object):
 
     def __exit__(self, *args, **kwargs):
         setattr(sys.modules["time"], "strftime", self._old)
+
 
 def match_all_lines(data, lines):
     for line in data:
@@ -180,11 +183,12 @@ def match_all_lines(data, lines):
 
     return False, lines
 
+
 class TestUtils(unittest.TestCase):
     def setUp(self):
         self.base_func = lambda *args: None
 
-        #pylint: disable=unused-argument
+        # pylint: disable=unused-argument
         def _error_func(*args):
             raise Exception("Something went wrong")
 
@@ -208,10 +212,12 @@ class TestUtils(unittest.TestCase):
 
     def test_import_from_file(self):
         with tempfile.NamedTemporaryFile() as fd:
-            fd.writelines([
-                b"def test():\n",
-                b"  return 'value'",
-            ])
+            fd.writelines(
+                [
+                    b"def test():\n",
+                    b"  return 'value'",
+                ]
+            )
 
             fd.flush()
 
@@ -226,8 +232,7 @@ class TestUtils(unittest.TestCase):
         ]
 
         with utils.TemporaryDirectory() as tempdir, MockTime():
-            run_and_log_case_status(self.base_func, "default",
-                                    caseroot=tempdir)
+            run_and_log_case_status(self.base_func, "default", caseroot=tempdir)
 
             self.assertMatchAllLines(tempdir, test_lines)
 
@@ -238,8 +243,9 @@ class TestUtils(unittest.TestCase):
         ]
 
         with utils.TemporaryDirectory() as tempdir, MockTime():
-            run_and_log_case_status(self.base_func, "case.submit",
-                                    caseroot=tempdir, is_batch=True)
+            run_and_log_case_status(
+                self.base_func, "case.submit", caseroot=tempdir, is_batch=True
+            )
 
             self.assertMatchAllLines(tempdir, test_lines)
 
@@ -250,8 +256,9 @@ class TestUtils(unittest.TestCase):
         ]
 
         with utils.TemporaryDirectory() as tempdir, MockTime():
-            run_and_log_case_status(self.base_func, "case.submit",
-                                    caseroot=tempdir, is_batch=False)
+            run_and_log_case_status(
+                self.base_func, "case.submit", caseroot=tempdir, is_batch=False
+            )
 
             self.assertMatchAllLines(tempdir, test_lines)
 
@@ -264,8 +271,9 @@ class TestUtils(unittest.TestCase):
 
         with utils.TemporaryDirectory() as tempdir, MockTime():
             with self.assertRaises(Exception):
-                run_and_log_case_status(self.error_func, "case.submit",
-                                        caseroot=tempdir, is_batch=True)
+                run_and_log_case_status(
+                    self.error_func, "case.submit", caseroot=tempdir, is_batch=True
+                )
 
             self.assertMatchAllLines(tempdir, test_lines)
 
@@ -282,10 +290,13 @@ class TestUtils(unittest.TestCase):
             return "data"
 
         with utils.TemporaryDirectory() as tempdir, MockTime():
-            run_and_log_case_status(normal_func, "default",
-                                    custom_starting_msg_functor=starting_func,
-                                    custom_success_msg_functor=success_func,
-                                    caseroot=tempdir)
+            run_and_log_case_status(
+                normal_func,
+                "default",
+                custom_starting_msg_functor=starting_func,
+                custom_success_msg_functor=success_func,
+                caseroot=tempdir,
+            )
 
             self.assertMatchAllLines(tempdir, test_lines)
 
@@ -304,12 +315,16 @@ class TestUtils(unittest.TestCase):
         def error_func():
             raise Exception("Error")
 
-        with utils.TemporaryDirectory() as tempdir, MockTime(), \
-                self.assertRaises(Exception):
-            run_and_log_case_status(error_func, "default",
-                                    custom_starting_msg_functor=starting_func,
-                                    custom_success_msg_functor=success_func,
-                                    caseroot=tempdir)
+        with utils.TemporaryDirectory() as tempdir, MockTime(), self.assertRaises(
+            Exception
+        ):
+            run_and_log_case_status(
+                error_func,
+                "default",
+                custom_starting_msg_functor=starting_func,
+                custom_success_msg_functor=success_func,
+                caseroot=tempdir,
+            )
 
             self.assertMatchAllLines(tempdir, test_lines)
 
@@ -325,10 +340,10 @@ class TestUtils(unittest.TestCase):
 
         with utils.TemporaryDirectory() as tempdir, MockTime():
             with self.assertRaises(Exception):
-                run_and_log_case_status(self.error_func, "default",
-                                        caseroot=tempdir)
+                run_and_log_case_status(self.error_func, "default", caseroot=tempdir)
 
             self.assertMatchAllLines(tempdir, test_lines)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

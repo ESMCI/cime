@@ -22,16 +22,13 @@ from CIME.tests.case_fake import CaseFake
 # the sake of unit testing
 # ========================================================================
 
+
 class SystemTestsCompareTwoFake(SystemTestsCompareTwo):
-    def __init__(self,
-                 case1,
-                 run_two_suffix = 'test'):
+    def __init__(self, case1, run_two_suffix="test"):
 
         SystemTestsCompareTwo.__init__(
-            self,
-            case1,
-            separate_builds = False,
-            run_two_suffix = run_two_suffix)
+            self, case1, separate_builds=False, run_two_suffix=run_two_suffix
+        )
 
     # ------------------------------------------------------------------------
     # Stubs of methods called by SystemTestsCommon.__init__ that interact with
@@ -57,9 +54,11 @@ class SystemTestsCompareTwoFake(SystemTestsCompareTwo):
     def _case_two_setup(self):
         pass
 
+
 # ========================================================================
 # Test class itself
 # ========================================================================
+
 
 class TestLinkToCase2Output(unittest.TestCase):
 
@@ -86,9 +85,9 @@ class TestLinkToCase2Output(unittest.TestCase):
 
         case1root = os.path.join(self.tempdir, casename1)
         case1 = CaseFake(case1root)
-        mytest = SystemTestsCompareTwoFake(case1, run_two_suffix = run2_suffix)
-        mytest._case1.make_rundir()  #pylint: disable=maybe-no-member
-        mytest._case2.make_rundir()  #pylint: disable=maybe-no-member
+        mytest = SystemTestsCompareTwoFake(case1, run_two_suffix=run2_suffix)
+        mytest._case1.make_rundir()  # pylint: disable=maybe-no-member
+        mytest._case2.make_rundir()  # pylint: disable=maybe-no-member
 
         return mytest
 
@@ -99,11 +98,11 @@ class TestLinkToCase2Output(unittest.TestCase):
 
         Returns full path to the file created
         """
-        filename = '{}.{}.nc.{}'.format(mytest._case2.get_value('CASE'),
-                                        core_filename,
-                                        run2_suffix)
-        filepath = os.path.join(mytest._case2.get_value('RUNDIR'), filename)
-        open(filepath, 'w').close()
+        filename = "{}.{}.nc.{}".format(
+            mytest._case2.get_value("CASE"), core_filename, run2_suffix
+        )
+        filepath = os.path.join(mytest._case2.get_value("RUNDIR"), filename)
+        open(filepath, "w").close()
         return filepath
 
     # ========================================================================
@@ -112,36 +111,38 @@ class TestLinkToCase2Output(unittest.TestCase):
 
     def test_basic(self):
         # Setup
-        casename1 = 'mytest'
-        run2_suffix = 'run2'
+        casename1 = "mytest"
+        run2_suffix = "run2"
 
         mytest = self.setup_test_and_directories(casename1, run2_suffix)
-        filepath1 = self.create_file_in_rundir2(mytest, 'clm2.h0', run2_suffix)
-        filepath2 = self.create_file_in_rundir2(mytest, 'clm2.h1', run2_suffix)
+        filepath1 = self.create_file_in_rundir2(mytest, "clm2.h0", run2_suffix)
+        filepath2 = self.create_file_in_rundir2(mytest, "clm2.h1", run2_suffix)
 
         # Exercise
         mytest._link_to_case2_output()
 
         # Verify
-        expected_link_filename1 = '{}.clm2.h0.nc.{}'.format(casename1, run2_suffix)
-        expected_link_filepath1 = os.path.join(mytest._case1.get_value('RUNDIR'),
-                                               expected_link_filename1)
+        expected_link_filename1 = "{}.clm2.h0.nc.{}".format(casename1, run2_suffix)
+        expected_link_filepath1 = os.path.join(
+            mytest._case1.get_value("RUNDIR"), expected_link_filename1
+        )
         self.assertTrue(os.path.islink(expected_link_filepath1))
         self.assertEqual(filepath1, os.readlink(expected_link_filepath1))
 
-        expected_link_filename2 = '{}.clm2.h1.nc.{}'.format(casename1, run2_suffix)
-        expected_link_filepath2 = os.path.join(mytest._case1.get_value('RUNDIR'),
-                                               expected_link_filename2)
+        expected_link_filename2 = "{}.clm2.h1.nc.{}".format(casename1, run2_suffix)
+        expected_link_filepath2 = os.path.join(
+            mytest._case1.get_value("RUNDIR"), expected_link_filename2
+        )
         self.assertTrue(os.path.islink(expected_link_filepath2))
         self.assertEqual(filepath2, os.readlink(expected_link_filepath2))
 
     def test_existing_link(self):
         # Setup
-        casename1 = 'mytest'
-        run2_suffix = 'run2'
+        casename1 = "mytest"
+        run2_suffix = "run2"
 
         mytest = self.setup_test_and_directories(casename1, run2_suffix)
-        self.create_file_in_rundir2(mytest, 'clm2.h0', run2_suffix)
+        self.create_file_in_rundir2(mytest, "clm2.h0", run2_suffix)
 
         # Create initial link via a call to _link_to_case2_output
         mytest._link_to_case2_output()
@@ -152,5 +153,6 @@ class TestLinkToCase2Output(unittest.TestCase):
 
         # (No verification: Test passes if no exception was raised)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

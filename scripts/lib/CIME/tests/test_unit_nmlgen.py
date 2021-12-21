@@ -7,9 +7,8 @@ from CIME.nmlgen import NamelistGenerator
 
 # pylint: disable=protected-access
 class TestNamelistGenerator(unittest.TestCase):
-
     def test_init_defaults(self):
-        test_nml_infile =  b"""&test
+        test_nml_infile = b"""&test
 test1 = 'test1_updated'
 /"""
 
@@ -36,8 +35,7 @@ test1 = 'test1_updated'
     </entry>
 </entry_id>"""
 
-        with tempfile.NamedTemporaryFile() as temp, \
-                tempfile.NamedTemporaryFile() as temp2:
+        with tempfile.NamedTemporaryFile() as temp, tempfile.NamedTemporaryFile() as temp2:
             temp.write(test_data.encode())
             temp.flush()
 
@@ -50,14 +48,12 @@ test1 = 'test1_updated'
 
             nmlgen.init_defaults([temp2.name], None)
 
-            expected_groups = OrderedDict({
-                "test_nml": {
-                    "test1": ["'test1_updated'"],
-                    "test2": ['"test2_value"']
-                }
-            })
+            expected_groups = OrderedDict(
+                {"test_nml": {"test1": ["'test1_updated'"], "test2": ['"test2_value"']}}
+            )
 
             assert nmlgen._namelist._groups == expected_groups
+
 
 if __name__ == "__main__":
     unittest.main()

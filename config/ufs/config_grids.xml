@@ -233,7 +233,7 @@
       <mesh driver="nuopc">$DIN_LOC_ROOT/hafs/share/meshes/Atlantic8_SCRIP_230420_ESMFmesh.nc</mesh>
       <desc>Atlantic8 is a Atlantic grid for Dorian case at 7-8 km HYCOM grid:</desc>
       <support>For regional HYCOM experiments</support>
-    </domain>    
+    </domain>
 
     <!-- domains for regional atmosphere (UFSATM) -->
     <domain name="C768r">

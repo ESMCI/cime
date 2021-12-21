@@ -3,27 +3,27 @@ pyEnsSumPop
 ==================
 
 The verification tools in the CESM-ECT suite all require an *ensemble
-summary file*, which contains statistics describing the ensemble distribution. 
-pyEnsSumPop can be used to create a POP (ocean component) ensemble summary file. 
+summary file*, which contains statistics describing the ensemble distribution.
+pyEnsSumPop can be used to create a POP (ocean component) ensemble summary file.
 
 
-Note that an ensemble summary files for existing CESM tags for POP-ECT 
+Note that an ensemble summary files for existing CESM tags for POP-ECT
 that were created by CSEG (CESM Software Engineering Group)
 are located in the CESM input data directory:
 
 $CESMDATAROOT/inputdata/validation/pop_ensembles
 
 Alternatively, pyEnsSumPop can be used to create a summary file for POP-ECT
-given the location of appropriate ensemble history files (which should 
+given the location of appropriate ensemble history files (which should
 be generated in CIME via $CIME/tools/statistical_ensemble_test/ensemble.py).
 
-(Note: to generate a summary file for UF-CAM-ECT or CAM-ECT, you must use 
+(Note: to generate a summary file for UF-CAM-ECT or CAM-ECT, you must use
 pyEnsSum.py, which has its own corresponding instructions.)
 
 
-To use pyEnsSumPop: 
+To use pyEnsSumPop:
 --------------------------
- 
+
 *Note: compatible with Python 3*
 
 1. On NCAR's Cheyenne machine:
@@ -54,15 +54,15 @@ To use pyEnsSumPop:
 	 * glob
 	 * itertools
 	 * datetime
- 
+
 3. To see all options (and defaults):
 
    ``python pyEnsSumPop.py -h``::
 
-       Creates the summary file for an ensemble of POP data. 
+       Creates the summary file for an ensemble of POP data.
 
 
-       Args for pyEnsSumPop : 
+       Args for pyEnsSumPop :
 
        pyEnsSumPop.py
        -h                   : prints out this usage message
@@ -80,13 +80,13 @@ To use pyEnsSumPop:
        --jsonfile <fname>   : Jsonfile to provide that a list of variables that will be included
                               (RECOMMENDED: default = pop_ensemble.json)
        --mpi_disable        : Disable mpi mode to run in serial (off by default)
-   
+
 
 
 Notes:
 ----------------
 
-1. POP-ECT uses monthly average files. Therefore, one typically needs 
+1. POP-ECT uses monthly average files. Therefore, one typically needs
     to set ``--tslice 0`` (which is the default).
 
 2.  Note that ``--res``, ``--tag``, ``--compset``, and --mach only affect the
@@ -94,10 +94,10 @@ Notes:
 
 3.  The sample script test_pyEnsSumPop.sh gives a recommended parallel
     configuration for Cheyenne.  We recommend one core per month (and make
-    sure each core has sufficient memory). 
+    sure each core has sufficient memory).
 
-4.  The json file indicates variables from the output files that you want 
-    to include in the summary files statistics.  We recommend using the 
+4.  The json file indicates variables from the output files that you want
+    to include in the summary files statistics.  We recommend using the
     default pop_ensemble.json, which contains only 5 variables.
 
 
@@ -106,12 +106,12 @@ Example:
 ----------------------------------------
 (Note: this example is in test_pyEnsSumPop.sh)
 
-*To generate a summary file for 40 POP-ECT simulations runs (1 year of monthly output):* 
-       	 
+*To generate a summary file for 40 POP-ECT simulations runs (1 year of monthly output):*
+
 * We specify the size (this is optional since 40 is the default) and data location:
 
   ``--esize 40``
-    
+
   ``--indir /glade/p/cisl/iowa/pop_verification/cesm2_0_beta10/ensembles``
 
 *  We also specify the name of file to create for the summary:
@@ -127,7 +127,7 @@ Example:
    ``--nyear 1``
 
    ``--nmonth 12``
-	   
+
 *  We also can specify the tag, resolution, machine and compset
    information (that will be written to the  metadata of the summary file):
 
@@ -142,7 +142,7 @@ Example:
 * We include a recommended subset of variables (5) for the
   analysis by specifying them in a json file (optional, as
   this is the defaut):
-	   
+
   ``--jsonfile pop_ensemble.json``
 
  * This yields the following command for your job submission script:

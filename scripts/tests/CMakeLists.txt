@@ -16,7 +16,7 @@ execute_process(COMMAND ${PYTHON} "--version" OUTPUT_VARIABLE PY_VER
                 OUTPUT_STRIP_TRAILING_WHITESPACE
                 ERROR_STRIP_TRAILING_WHITESPACE)
 
-MESSAGE("Python version is " ${PY_VER})		     
+MESSAGE("Python version is " ${PY_VER})
 execute_process(COMMAND ${PYTHON} "list_tests" OUTPUT_VARIABLE STR_TESTS
                 WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
                 OUTPUT_STRIP_TRAILING_WHITESPACE

@@ -32,9 +32,9 @@ _MACHINE = Machines()
 
 ###############################################################################
 def parse_command_line(args, description):
-###############################################################################
+    ###############################################################################
     parser = argparse.ArgumentParser(
-usage="""\n{0} [-r <TESTROOT>] [-b <BRANCH> -c <COMPILER>] [-t <TESTID>] [<TEST> <TEST> ...] [--verbose]
+        usage="""\n{0} [-r <TESTROOT>] [-b <BRANCH> -c <COMPILER>] [-t <TESTID>] [<TEST> <TEST> ...] [--verbose]
 OR
 {0} --help
 
@@ -49,57 +49,106 @@ OR
     > {0} -r /home/jenkins/acme/scratch/jenkins -b next
     \033[1;32m# For typical CESM workflow, where baselines are named with tags \033[0m
     > {0} -t TESTID -b BASELINE_TAG
-""".format(os.path.basename(args[0])),
+""".format(
+            os.path.basename(args[0])
+        ),
+        description=description,
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
 
-description=description,
-
-formatter_class=argparse.ArgumentDefaultsHelpFormatter
-)
-
-    default_compiler      = _MACHINE.get_default_compiler()
-    scratch_root          = _MACHINE.get_value("CIME_OUTPUT_ROOT")
-    default_testroot      = os.path.join(scratch_root)
+    default_compiler = _MACHINE.get_default_compiler()
+    scratch_root = _MACHINE.get_value("CIME_OUTPUT_ROOT")
+    default_testroot = os.path.join(scratch_root)
 
     CIME.utils.setup_standard_logging_options(parser)
 
-    parser.add_argument("-n", "--namelists-only", action="store_true",
-                        help="Only analyze namelists.")
+    parser.add_argument(
+        "-n", "--namelists-only", action="store_true", help="Only analyze namelists."
+    )
 
-    parser.add_argument("--hist-only", action="store_true",
-                        help="Only analyze history files.")
+    parser.add_argument(
+        "--hist-only", action="store_true", help="Only analyze history files."
+    )
 
-    parser.add_argument("-b", "--baseline-name",
-                        help="Name of baselines to use. Default will use BASELINE_NAME_CMP first if possible, otherwise branch name.")
+    parser.add_argument(
+        "-b",
+        "--baseline-name",
+        help="Name of baselines to use. Default will use BASELINE_NAME_CMP first if possible, otherwise branch name.",
+    )
 
-    parser.add_argument("--baseline-root",
-                        help="Root of baselines. Default will use BASELINE_ROOT from the case.")
+    parser.add_argument(
+        "--baseline-root",
+        help="Root of baselines. Default will use BASELINE_ROOT from the case.",
+    )
 
-    parser.add_argument("-c", "--compiler", default=default_compiler,
-                        help="Compiler of run you want to compare")
+    parser.add_argument(
+        "-c",
+        "--compiler",
+        default=default_compiler,
+        help="Compiler of run you want to compare",
+    )
 
-    parser.add_argument("-r", "--test-root", default=default_testroot,
-                        help="Path to test results that are being compared")
+    parser.add_argument(
+        "-r",
+        "--test-root",
+        default=default_testroot,
+        help="Path to test results that are being compared",
+    )
 
-    parser.add_argument("-t", "--test-id",
-                        help="Limit processes to case dirs matching this test-id. Can be useful if mutiple runs dumped into the same dir.")
+    parser.add_argument(
+        "-t",
+        "--test-id",
+        help="Limit processes to case dirs matching this test-id. Can be useful if mutiple runs dumped into the same dir.",
+    )
 
-    parser.add_argument("compare_tests", nargs="*",
-                        help="When comparing, limit the comparison to tests matching these regex")
+    parser.add_argument(
+        "compare_tests",
+        nargs="*",
+        help="When comparing, limit the comparison to tests matching these regex",
+    )
 
     args = CIME.utils.parse_args_and_handle_standard_logging_options(args, parser)
 
-    return args.baseline_name, args.baseline_root, args.test_root, args.compiler, args.test_id, args.compare_tests, args.namelists_only, args.hist_only
+    return (
+        args.baseline_name,
+        args.baseline_root,
+        args.test_root,
+        args.compiler,
+        args.test_id,
+        args.compare_tests,
+        args.namelists_only,
+        args.hist_only,
+    )
+
 
 ###############################################################################
 def _main_func(description):
-###############################################################################
-    baseline_name, baseline_root, test_root, compiler, test_id, compare_tests, namelists_only, hist_only = \
-        parse_command_line(sys.argv, description)
+    ###############################################################################
+    (
+        baseline_name,
+        baseline_root,
+        test_root,
+        compiler,
+        test_id,
+        compare_tests,
+        namelists_only,
+        hist_only,
+    ) = parse_command_line(sys.argv, description)
 
-    success = compare_test_results(baseline_name, baseline_root, test_root, compiler, test_id, compare_tests, namelists_only, hist_only)
+    success = compare_test_results(
+        baseline_name,
+        baseline_root,
+        test_root,
+        compiler,
+        test_id,
+        compare_tests,
+        namelists_only,
+        hist_only,
+    )
     sys.exit(0 if success else CIME.utils.TESTS_FAILED_ERR_CODE)
 
+
 ###############################################################################
 
-if (__name__ == "__main__"):
+if __name__ == "__main__":
     _main_func(__doc__)

@@ -20,7 +20,9 @@ class TestJenkinsGenericJob(base.BaseTestCase):
 
         # Need to run in a subdir in order to not have CTest clash. Name it
         # such that it should be cleaned up by the parent tearDown
-        self._testdir = os.path.join(self._testroot, "jenkins_test_%s" % self._baseline_name)
+        self._testdir = os.path.join(
+            self._testroot, "jenkins_test_%s" % self._baseline_name
+        )
         os.makedirs(self._testdir)
 
         # Change root to avoid clashing with other jenkins_generic_jobs
@@ -38,10 +40,18 @@ class TestJenkinsGenericJob(base.BaseTestCase):
 
         # Need these flags to test dashboard if e3sm
         if utils.get_model() == "e3sm" and build_name is not None:
-            extra_args += " -p ACME_test --submit-to-cdash --cdash-build-group=Nightly -c %s" % build_name
+            extra_args += (
+                " -p ACME_test --submit-to-cdash --cdash-build-group=Nightly -c %s"
+                % build_name
+            )
 
-        self.run_cmd_assert_result(self, "%s/jenkins_generic_job -r %s %s -B %s" % (self.TOOLS_DIR, self._testdir, extra_args, self._baseline_area),
-                              from_dir=self._testdir, expected_stat=(0 if expect_works else utils.TESTS_FAILED_ERR_CODE))
+        self.run_cmd_assert_result(
+            self,
+            "%s/jenkins_generic_job -r %s %s -B %s"
+            % (self.TOOLS_DIR, self._testdir, extra_args, self._baseline_area),
+            from_dir=self._testdir,
+            expected_stat=(0 if expect_works else utils.TESTS_FAILED_ERR_CODE),
+        )
 
     def threaded_test(self, expect_works, extra_args, build_name=None):
         try:
@@ -52,12 +62,17 @@ class TestJenkinsGenericJob(base.BaseTestCase):
     def assert_num_leftovers(self, suite):
         num_tests_in_tiny = len(get_tests.get_test_suite(suite))
 
-        jenkins_dirs = glob.glob("%s/*%s*/" % (self._jenkins_root, self._baseline_name.capitalize())) # case dirs
+        jenkins_dirs = glob.glob(
+            "%s/*%s*/" % (self._jenkins_root, self._baseline_name.capitalize())
+        )  # case dirs
         # scratch_dirs = glob.glob("%s/*%s*/" % (self._testroot, test_id)) # blr/run dirs
 
-        self.assertEqual(num_tests_in_tiny, len(jenkins_dirs),
-                         msg="Wrong number of leftover directories in %s, expected %d, see %s" % \
-                             (self._jenkins_root, num_tests_in_tiny, jenkins_dirs))
+        self.assertEqual(
+            num_tests_in_tiny,
+            len(jenkins_dirs),
+            msg="Wrong number of leftover directories in %s, expected %d, see %s"
+            % (self._jenkins_root, num_tests_in_tiny, jenkins_dirs),
+        )
 
         # JGF: Can't test this at the moment due to root change flag given to jenkins_generic_job
         # self.assertEqual(num_tests_in_tiny + 1, len(scratch_dirs),
@@ -71,13 +86,22 @@ class TestJenkinsGenericJob(base.BaseTestCase):
         self.assert_num_leftovers("cime_test_only_pass")
 
         build_name = "jenkins_generic_job_pass_%s" % utils.get_timestamp()
-        self.simple_test(True, "-t cime_test_only_pass -b %s" % self._baseline_name, build_name=build_name)
-        self.assert_num_leftovers("cime_test_only_pass") # jenkins_generic_job should have automatically cleaned up leftovers from prior run
+        self.simple_test(
+            True,
+            "-t cime_test_only_pass -b %s" % self._baseline_name,
+            build_name=build_name,
+        )
+        self.assert_num_leftovers(
+            "cime_test_only_pass"
+        )  # jenkins_generic_job should have automatically cleaned up leftovers from prior run
         self.assert_dashboard_has_build(build_name)
 
     def test_jenkins_generic_job_kill(self):
         build_name = "jenkins_generic_job_kill_%s" % utils.get_timestamp()
-        run_thread = threading.Thread(target=self.threaded_test, args=(False, " -t cime_test_only_slow_pass -b master", build_name))
+        run_thread = threading.Thread(
+            target=self.threaded_test,
+            args=(False, " -t cime_test_only_slow_pass -b master", build_name),
+        )
         run_thread.daemon = True
         run_thread.start()
 
@@ -87,8 +111,13 @@ class TestJenkinsGenericJob(base.BaseTestCase):
 
         run_thread.join(timeout=30)
 
-        self.assertFalse(run_thread.is_alive(), msg="jenkins_generic_job should have finished")
-        self.assertTrue(self._thread_error is None, msg="Thread had failure: %s" % self._thread_error)
+        self.assertFalse(
+            run_thread.is_alive(), msg="jenkins_generic_job should have finished"
+        )
+        self.assertTrue(
+            self._thread_error is None,
+            msg="Thread had failure: %s" % self._thread_error,
+        )
         self.assert_dashboard_has_build(build_name)
 
     def test_jenkins_generic_job_realistic_dash(self):
@@ -110,8 +139,14 @@ class TestJenkinsGenericJob(base.BaseTestCase):
    fake_item = 'fake'
    fake = .true.
 /"""
-        baseline_glob = glob.glob(os.path.join(self._baseline_area, self._baseline_name, "TESTRUNPASS*"))
-        self.assertEqual(len(baseline_glob), 1, msg="Expected one match, got:\n%s" % "\n".join(baseline_glob))
+        baseline_glob = glob.glob(
+            os.path.join(self._baseline_area, self._baseline_name, "TESTRUNPASS*")
+        )
+        self.assertEqual(
+            len(baseline_glob),
+            1,
+            msg="Expected one match, got:\n%s" % "\n".join(baseline_glob),
+        )
 
         for baseline_dir in baseline_glob:
             nl_path = os.path.join(baseline_dir, "CaseDocs", "datm_in")
@@ -122,6 +157,10 @@ class TestJenkinsGenericJob(base.BaseTestCase):
                 nl_file.write(fake_nl)
 
         build_name = "jenkins_generic_job_mixed_%s" % utils.get_timestamp()
-        self.simple_test(False, "-t cime_test_all -b %s" % self._baseline_name, build_name=build_name)
-        self.assert_num_leftovers("cime_test_all") # jenkins_generic_job should have automatically cleaned up leftovers from prior run
+        self.simple_test(
+            False, "-t cime_test_all -b %s" % self._baseline_name, build_name=build_name
+        )
+        self.assert_num_leftovers(
+            "cime_test_all"
+        )  # jenkins_generic_job should have automatically cleaned up leftovers from prior run
         self.assert_dashboard_has_build(build_name)

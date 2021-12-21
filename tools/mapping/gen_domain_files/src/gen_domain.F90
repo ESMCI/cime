@@ -868,7 +868,7 @@ logical function var_exists(fid, var_name)
    integer, intent(in) :: fid
    character(len=*), intent(in) :: var_name
    integer :: error_code, vid
-   
+
    error_code = nf_inq_varid(fid, var_name, vid)
    if (error_code == NF_NOERR) then
       var_exists = .true.
