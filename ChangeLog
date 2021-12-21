@@ -1,6 +1,169 @@
 ======================================================================
 
-Originator: Chris Fischer
+Originator: Chris Fischer 
+Date: 12-16-21
+Tag: cime6.0.12
+Answer Changes: None
+Tests: scripts_regression_tests
+Dependencies:
+
+Brief Summary:
+    - Rename izumi.unified to izumi.cgd
+    - Fix test ptr to run_cmd_no_fail.
+    - chdir is redundent in CMakeLists.txt
+    - Fix paths in cdash testing
+    - Hot fix cdash testing/
+    - Update unit tests and linting.
+    - Fix SSL certification for testing database.
+    - Fix probing machine.
+    - cprnc compares NaN.
+    - Update izumi ESMF lib to 8.2.0 release.
+    - Update CCE for crayenv2 on cheyenne.
+    - Cleanup Scorpio I/O performance data in the run directory.
+    - Fix the N_TestUnitTest by setting CIME_NO_CMAKE_MACRO
+    - Add python 3.7.0 module load for izumi (CESM only).
+    - Fix broken links in documentation.
+    - Update cime externals.
+    - tools/configure was using deprecated config_compilers.xml system.
+    - Remove documentation sections for pieces no longer included in CIME.
+    - More grids for mizuRoute. 
+
+User interface changes: 
+
+PR summary: git log --oneline --first-parent [previous_tag]..master
+5e99566ae Merge pull request #4142 from ESMCI/fischer/izumi_cgd
+6ffadc5fd fix test ptr to run_cmd_no_fail
+d271ebbd8 chdir here is redundent, done in CMakeLists.txt
+1faf45586 fix paths in cdash testing
+3955917de hot fix cdash testing
+baf320df2 Merge pull request #4129 from jasonb5/updates_testing
+e725ab7cb Merge pull request #4128 from ESMCI/fischer/testreporter_ssl
+f0dca0d96 Merge pull request #4134 from billsacks/fix_machine_probe
+4961f0357 Merge pull request #4132 from jedwards4b/cprnc_nan_detect
+188e9fe2b Merge pull request #4124 from ESMCI/fischer/izumi_esmf
+b0f7080a9 update CCE for crayenv2 on cheyenne
+8c515e31c Merge pull request #4127 from ESMCI/jayeshkrishna/consolidate_spio_timing
+5a98a511b fix the N_TestUnitTest by setting CIME_NO_CMAKE_MACRO
+cde1dafda Merge pull request #4117 from peverwhee/python_load_module
+f9fe41210 Merge pull request #4123 from billsacks/fix_doc_links
+1686f03b8 update externals
+9f263ed3d Merge pull request #4122 from ESMCI/jgfouca/fix_tools_configure
+7f709b709 Merge pull request #4108 from billsacks/remove_some_docs
+c7813bce7 Merge pull request #3823 from ekluzek/mizuRoute
+
+
+Modified files: git diff --name-status [previous_tag]
+M	.github/workflows/srt.yml
+M	.github/workflows/srt_nuopc.yml
+A	.pre-commit-config.yaml
+M	Externals.cfg
+M	README.md
+M	config/cesm/config_grids.xml
+M	config/cesm/config_grids_nuopc.xml
+M	config/cesm/machines/config_batch.xml
+M	config/cesm/machines/config_machines.xml
+A	conftest.py
+D	doc/source/data_models/data-atm.rst
+D	doc/source/data_models/data-lnd.rst
+D	doc/source/data_models/data-model-science.rst
+D	doc/source/data_models/data-ocean.rst
+D	doc/source/data_models/data-river.rst
+D	doc/source/data_models/data-seaice.rst
+D	doc/source/data_models/data-wave.rst
+D	doc/source/data_models/design-details.rst
+D	doc/source/data_models/index.rst
+D	doc/source/data_models/input-namelists.rst
+D	doc/source/data_models/input-streams.rst
+D	doc/source/data_models/introduction.rst
+D	doc/source/driver_cpl/bit-for-bit-flag.rst
+D	doc/source/driver_cpl/budgets.rst
+D	doc/source/driver_cpl/cplug-02.1-figx1.jpg
+D	doc/source/driver_cpl/design.rst
+D	doc/source/driver_cpl/driver_threading_control.rst
+D	doc/source/driver_cpl/grids.rst
+D	doc/source/driver_cpl/history-and-restarts.rst
+D	doc/source/driver_cpl/implementation.rst
+D	doc/source/driver_cpl/index.rst
+D	doc/source/driver_cpl/initialization-and-restart.rst
+D	doc/source/driver_cpl/introduction.rst
+D	doc/source/driver_cpl/multi-instance.rst
+D	doc/source/driver_cpl/namelist-overview.rst
+D	doc/source/driver_cpl/time-management.rst
+M	doc/source/index.rst
+M	doc/source/users_guide/cime-change-namelist.rst
+M	doc/source/users_guide/grids.rst
+M	doc/source/users_guide/running-a-case.rst
+M	doc/source/users_guide/testing.rst
+M	doc/source/what_cime/index.rst
+M	scripts/lib/CIME/BuildTools/configure.py
+M	scripts/lib/CIME/BuildTools/macrowriterbase.py
+M	scripts/lib/CIME/SystemTests/ers2.py
+M	scripts/lib/CIME/SystemTests/pgn.py
+M	scripts/lib/CIME/XML/machines.py
+M	scripts/lib/CIME/XML/test_reporter.py
+M	scripts/lib/CIME/case/case_setup.py
+M	scripts/lib/CIME/provenance.py
+D	scripts/lib/CIME/tests/SystemTests/__init__.py
+D	scripts/lib/CIME/tests/SystemTests/test_utils/__init__.py
+D	scripts/lib/CIME/tests/XML/__init__.py
+A	scripts/lib/CIME/tests/base.py
+A	scripts/lib/CIME/tests/scripts_regression_tests.py
+A	scripts/lib/CIME/tests/test_sys_bless_tests_results.py
+A	scripts/lib/CIME/tests/test_sys_build_system.py
+A	scripts/lib/CIME/tests/test_sys_cime_case.py
+A	scripts/lib/CIME/tests/test_sys_cime_performance.py
+A	scripts/lib/CIME/tests/test_sys_cmake_macros.py
+A	scripts/lib/CIME/tests/test_sys_create_newcase.py
+A	scripts/lib/CIME/tests/test_sys_full_system.py
+A	scripts/lib/CIME/tests/test_sys_grid_generation.py
+A	scripts/lib/CIME/tests/test_sys_jenkins_generic_job.py
+A	scripts/lib/CIME/tests/test_sys_macro_basic.py
+A	scripts/lib/CIME/tests/test_sys_make_macros.py
+A	scripts/lib/CIME/tests/test_sys_manage_and_query.py
+A	scripts/lib/CIME/tests/test_sys_query_config.py
+A	scripts/lib/CIME/tests/test_sys_run_restart.py
+A	scripts/lib/CIME/tests/test_sys_save_timings.py
+A	scripts/lib/CIME/tests/test_sys_single_submit.py
+A	scripts/lib/CIME/tests/test_sys_test_scheduler.py
+A	scripts/lib/CIME/tests/test_sys_unittest.py
+A	scripts/lib/CIME/tests/test_sys_user_concurrent_mods.py
+A	scripts/lib/CIME/tests/test_sys_wait_for_tests.py
+D	scripts/lib/CIME/tests/test_test_scheduler.py
+R100	scripts/lib/CIME/tests/test_case.py	scripts/lib/CIME/tests/test_unit_case.py
+R100	scripts/lib/CIME/tests/test_case_fake.py	scripts/lib/CIME/tests/test_unit_case_fake.py
+R100	scripts/lib/CIME/tests/test_case_setup.py	scripts/lib/CIME/tests/test_unit_case_setup.py
+R100	scripts/lib/CIME/tests/test_compare_test_results.py	scripts/lib/CIME/tests/test_unit_compare_test_results.py
+R100	scripts/lib/CIME/tests/SystemTests/test_system_tests_compare_two.py	scripts/lib/CIME/tests/test_unit_compare_two.py
+R100	scripts/lib/CIME/tests/test_cs_status.py	scripts/lib/CIME/tests/test_unit_cs_status.py
+R100	scripts/lib/CIME/tests/test_custom_assertions_test_status.py	scripts/lib/CIME/tests/test_unit_custom_assertions_test_status.py
+R100	scripts/lib/CIME/tests/XML/test_expected_fails_file.py	scripts/lib/CIME/tests/test_unit_expected_fails_file.py
+R100	scripts/lib/CIME/tests/XML/test_grids.py	scripts/lib/CIME/tests/test_unit_grids.py
+R100	scripts/lib/CIME/tests/test_nmlgen.py	scripts/lib/CIME/tests/test_unit_nmlgen.py
+R100	scripts/lib/CIME/tests/test_provenance.py	scripts/lib/CIME/tests/test_unit_provenance.py
+R100	scripts/lib/CIME/tests/test_test_status.py	scripts/lib/CIME/tests/test_unit_test_status.py
+R100	scripts/lib/CIME/tests/SystemTests/test_system_tests_compare_two_link_to_case2_output.py	scripts/lib/CIME/tests/test_unit_two_link_to_case2_output.py
+R100	scripts/lib/CIME/tests/test_user_mod_support.py	scripts/lib/CIME/tests/test_unit_user_mod_support.py
+R100	scripts/lib/CIME/tests/SystemTests/test_utils/test_user_nl_utils.py	scripts/lib/CIME/tests/test_unit_user_nl_utils.py
+R100	scripts/lib/CIME/tests/test_utils.py	scripts/lib/CIME/tests/test_unit_utils.py
+R100	scripts/lib/CIME/tests/test_xml_namelist_definition.py	scripts/lib/CIME/tests/test_unit_xml_namelist_definition.py
+M	scripts/lib/CIME/tests/utils.py
+M	scripts/lib/CIME/utils.py
+M	scripts/tests/CMakeLists.txt
+M	scripts/tests/list_tests
+D	scripts/tests/scripts_regression_tests.py
+A	setup.cfg
+M	tools/cprnc/compare_vars_mod.F90.in
+M	tools/cprnc/run_tests
+M	tools/cprnc/test_inputs/README
+A	tools/cprnc/test_inputs/control_floatDoubleNan.nc
+A	tools/cprnc/test_inputs/diffs_in_nans.nc
+M	tools/mapping/gen_mapping_files/gen_ESMF_mapping_file/create_ESMF_map.sh
+
+======================================================================
+
+======================================================================
+
+Originator: Chris Fischer 
 Date: 11-1-21
 Tag: cime6.0.11
 Answer Changes: None

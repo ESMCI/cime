@@ -267,9 +267,8 @@ OR
 
     test_runner = unittest.TextTestRunner(verbosity=2)
 
-    test_runner.run(test_suite)
+    TEST_RESULT = test_runner.run(test_suite)
 
-    TEST_RESULT = test_runner._makeResult()
     # Implements same behavior as unittesst.main
     # https://github.com/python/cpython/blob/b6d68aa08baebb753534a26d537ac3c0d2c21c79/Lib/unittest/main.py#L272-L273
     sys.exit(not TEST_RESULT.wasSuccessful())

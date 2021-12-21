@@ -4,7 +4,7 @@ create_dirs and create_namelists are members of Class case from file case.py
 """
 
 from CIME.XML.standard_module_setup import *
-from CIME.utils import run_sub_or_cmd, safe_copy
+from CIME.utils import import_and_run_sub_or_cmd, safe_copy
 import time, glob
 
 logger = logging.getLogger(__name__)
@@ -84,22 +84,11 @@ def create_namelists(self, component=None):
             compname = "drv"
         else:
             compname = self.get_value("COMP_{}".format(model_str.upper()))
-        if component is None or component == model_str or compname == "ufsatm":
-            # first look in the case SourceMods directory
-            cmd = os.path.join(caseroot, "SourceMods", "src." + compname, "buildnml")
-            if os.path.isfile(cmd):
-                logger.warning("\nWARNING: Using local buildnml file {}\n".format(cmd))
-            else:
-                # otherwise look in the component config_dir
-                cmd = os.path.join(config_dir, "buildnml")
-            expect(
-                os.path.isfile(cmd),
-                "Could not find buildnml file for component {}".format(compname),
-            )
+        if component is None or component == model_str or compname=="ufsatm":
+            cmd = os.path.join(config_dir, "buildnml")
             logger.info("Create namelist for component {}".format(compname))
-            run_sub_or_cmd(
-                cmd, (caseroot), "buildnml", (self, caseroot, compname), case=self
-            )
+            import_and_run_sub_or_cmd(cmd, (caseroot), "buildnml",
+                           (self, caseroot, compname), config_dir, compname, case=self)
 
         logger.debug(
             "Finished creating component namelists, component {} models = {}".format(
