@@ -247,15 +247,13 @@ class Grids(GenericXML):
             )
             mesh_nodes = self.get_children("mesh", root=mask_domain_node)
             for mesh_node in mesh_nodes:
-                driver_attrib = self.get(mesh_node, "driver")
-                if driver == driver_attrib:
-                    domains["MASK_MESH"] = self.text(mesh_node)
-                    if "LND_DOMAIN_FILE" in domains:
-                        if domains["LND_DOMAIN_FILE"] != "UNSET":
-                            domains["PTS_DOMAINFILE"] = os.path.join(
-                                "$DIN_LOC_ROOT/share/domains",
-                                domains["LND_DOMAIN_FILE"],
-                            )
+                domains["MASK_MESH"] = self.text(mesh_node)
+                if "LND_DOMAIN_FILE" in domains:
+                    if domains["LND_DOMAIN_FILE"] != "UNSET":
+                        domains["PTS_DOMAINFILE"] = os.path.join(
+                            "$DIN_LOC_ROOT/share/domains",
+                            domains["LND_DOMAIN_FILE"],
+                        )
 
         return domains
 
@@ -351,13 +349,10 @@ class Grids(GenericXML):
                     _add_grid_info(domains, comp_name + "_DOMAIN_PATH", path)
 
             if not comp_name == "MASK":
-                mesh_nodes = self.get_children("mesh", root=domain_node)
                 mesh_file = ""
+                mesh_nodes = self.get_children("mesh", root=domain_node)
                 for mesh_node in mesh_nodes:
-                    driver_attrib = self.get(mesh_node, "driver")
-                    if driver == driver_attrib:
-                        mesh_file = self.text(mesh_node)
-
+                    mesh_file = self.text(mesh_node)
                 if mesh_file:
                     _add_grid_info(domains, comp_name + "_DOMAIN_MESH", mesh_file)
 

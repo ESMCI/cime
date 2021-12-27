@@ -173,6 +173,9 @@ def _hists_match(model, hists1, hists2, suffix1="", suffix2=""):
     multi_normalized1, multi_normalized2 = [], []
     multiinst = False
 
+    if model == "ww3dev":
+        model = "ww3"
+
     for hists, suffix, normalized, multi_normalized in [
         (hists1, suffix1, normalized1, multi_normalized1),
         (hists2, suffix2, normalized2, multi_normalized2),
@@ -585,6 +588,9 @@ def _generate_baseline_impl(case, baseline_dir=None, allow_baseline_overwrite=Fa
     num_gen = 0
     for model in _iter_model_file_substrs(case):
         comments += "  generating for model '{}'\n".format(model)
+
+        if model == "ww3dev":
+            model == "ww3"
 
         hists = archive.get_latest_hist_files(
             testcase, model, rundir, ref_case=ref_case
