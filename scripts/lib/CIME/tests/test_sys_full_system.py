@@ -34,7 +34,9 @@ class TestFullSystem(base.BaseTestCase):
         for case_dir in cases:
             tstatus = os.path.join(case_dir, "TestStatus")
             test_time = wait_for_tests.get_test_time(os.path.dirname(tstatus))
-            self.assertIs(type(test_time), int, msg="get time did not return int for %s" % tstatus)
+            self.assertIs(
+                type(test_time), int, msg="get time did not return int for %s" % tstatus
+            )
             self.assertTrue(test_time > 0, msg="test time was zero for %s" % tstatus)
 
         # Test that re-running works
