@@ -1,7 +1,0 @@
-if (COMP_NAME STREQUAL gptl)
-  string(APPEND CPPDEFS " -DHAVE_NANOTIME -DBIT64 -DHAVE_VPRINTF -DHAVE_BACKTRACE -DHAVE_SLASHPROC -DHAVE_COMM_F2C -DHAVE_TIMES -DHAVE_GETTIMEOFDAY")
-endif()
-set(NETCDF_PATH "/usr/local")
-set(PNETCDF_PATH "/usr/local")
-set(LDFLAGS "")
-string(APPEND SLIBS " -lnetcdf -lnetcdff -llapack -lblas")

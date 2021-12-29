@@ -1,5 +1,0 @@
-string(APPEND CFLAGS " -vec-report")
-string(APPEND FFLAGS " -vec-report")
-if (DEBUG)
-  string(APPEND CMAKE_OPTS " -DPIO_ENABLE_LOGGING=ON")
-endif()
