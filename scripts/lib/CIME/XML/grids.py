@@ -23,8 +23,6 @@ class Grids(GenericXML):
             files = Files(comp_interface=comp_interface)
         if infile is None:
             infile = files.get_value("GRIDS_SPEC_FILE")
-        print ("DEBUG: infile is {}".format(infile))
-        print ("DEBUG: comp_interface is {}".format(comp_interface))
         logger.debug(" Grid specification file is {}".format(infile))
         schema = files.get_schema("GRIDS_SPEC_FILE")
         try:
