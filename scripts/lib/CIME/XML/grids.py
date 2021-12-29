@@ -18,11 +18,13 @@ GRID_SEP = ":"
 
 
 class Grids(GenericXML):
-    def __init__(self, infile=None, files=None):
+    def __init__(self, infile=None, files=None, comp_interface=None):
         if files is None:
-            files = Files()
+            files = Files(comp_interface=comp_interface)
         if infile is None:
             infile = files.get_value("GRIDS_SPEC_FILE")
+        print ("DEBUG: infile is {}".format(infile))
+        print ("DEBUG: comp_interface is {}".format(comp_interface))
         logger.debug(" Grid specification file is {}".format(infile))
         schema = files.get_schema("GRIDS_SPEC_FILE")
         try:

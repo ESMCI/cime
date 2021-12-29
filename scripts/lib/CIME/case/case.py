@@ -1208,7 +1208,7 @@ class Case(object):
         # --------------------------------------------
         # grid
         # --------------------------------------------
-        grids = Grids(gridfile)
+        grids = Grids(gridfile, comp_interface=driver)
 
         gridinfo = grids.get_grid_info(
             name=grid_name, compset=self._compsetname, driver=self._comp_interface
