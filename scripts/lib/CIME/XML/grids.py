@@ -249,7 +249,7 @@ class Grids(GenericXML):
             # Now obtain the mesh for the mask for the domain node for that component grid
             mesh_node = self.get_child("mesh", root=mask_domain_node)
             domains["MASK_MESH"] = self.text(mesh_node)
-            
+
         return domains
 
     def _get_domains_for_one_grid(
@@ -314,8 +314,8 @@ class Grids(GenericXML):
             # set up dictionary of domain files for every component
             _add_grid_info(domains, comp_name + "_GRID", grid_name)
 
-            if driver == 'mct':
-                # mct 
+            if driver == "mct":
+                # mct
                 file_nodes = self.get_children("file", root=domain_node)
                 domain_file = ""
                 for file_node in file_nodes:
@@ -338,7 +338,9 @@ class Grids(GenericXML):
                             domain_file = self.text(file_node)
                 if domain_file:
                     _add_grid_info(
-                        domains, comp_name + "_DOMAIN_FILE", os.path.basename(domain_file)
+                        domains,
+                        comp_name + "_DOMAIN_FILE",
+                        os.path.basename(domain_file),
                     )
                     path = os.path.dirname(domain_file)
                     if len(path) > 0:
@@ -352,12 +354,14 @@ class Grids(GenericXML):
                         mesh_file = self.text(mesh_node)
                     if mesh_file:
                         _add_grid_info(domains, comp_name + "_DOMAIN_MESH", mesh_file)
-                    if comp_name == 'LND':
+                    if comp_name == "LND":
                         # Note: ONLY want to define PTS_DOMAINFILE for land
                         file_node = self.get_optional_child("file", root=domain_node)
                         if file_node is not None:
                             domain_file = self.text(file_node)
-                            domains["PTS_DOMAINFILE"] = os.path.join("$DIN_LOC_ROOT/share/domains",domain_file)
+                            domains["PTS_DOMAINFILE"] = os.path.join(
+                                "$DIN_LOC_ROOT/share/domains", domain_file
+                            )
 
     def _get_gridmaps(self, component_grids, driver, compset):
         """Set all mapping files for config_grids.xml v2 schema

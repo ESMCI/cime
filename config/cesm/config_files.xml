@@ -30,7 +30,7 @@
     <values>
       <value comp_interface="nuopc">$SRCROOT/ccs_config/config_grids_nuopc.xml</value>
       <value comp_interface="mct">$SRCROOT/ccs_config/config_grids_mct.xml</value>
-    </values>      
+    </values>
     <group>case_last</group>
     <file>env_case.xml</file>
     <desc>file containing specification of all supported model grids, domains and mapping files (for documentation only - DO NOT EDIT)</desc>
