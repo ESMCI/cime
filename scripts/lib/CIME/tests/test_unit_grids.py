@@ -200,12 +200,11 @@ $GRIDMAP_ENTRIES
                 "GRIDMAP_ENTRIES": gridmap_entries,
             }
         )
-        with open(self._xml_filepath, "w") as xml_file:
+        with open(self._xml_filepath, "w", encoding="UTF-8") as xml_file:
             xml_file.write(grids_xml)
 
     def assert_grid_info_f09_g17(self, grid_info):
-        """Asserts that expected grid info is present and correct when using _MODEL_GRID_F09_G17
-        """
+        """Asserts that expected grid info is present and correct when using _MODEL_GRID_F09_G17"""
         self.assertEqual(grid_info["ATM_NX"], 288)
         self.assertEqual(grid_info["ATM_NY"], 192)
         self.assertEqual(grid_info["ATM_GRID"], "0.9x1.25")
@@ -267,7 +266,9 @@ $GRIDMAP_ENTRIES
 
         grids = Grids(self._xml_filepath)
         grid_info = grids.get_grid_info(
-            name="f09_g17", compset="NOT_IMPORTANT", driver="nuopc",
+            name="f09_g17",
+            compset="NOT_IMPORTANT",
+            driver="nuopc",
         )
 
         self.assert_grid_info_f09_g17(grid_info)
@@ -291,7 +292,9 @@ $GRIDMAP_ENTRIES
 
         grids = Grids(self._xml_filepath)
         grid_info = grids.get_grid_info(
-            name="f09_g17", compset="NOT_IMPORTANT", driver="nuopc",
+            name="f09_g17",
+            compset="NOT_IMPORTANT",
+            driver="nuopc",
         )
 
         self.assert_grid_info_f09_g17(grid_info)
@@ -318,7 +321,9 @@ $GRIDMAP_ENTRIES
 
         grids = Grids(self._xml_filepath)
         grid_info = grids.get_grid_info(
-            name="f09_g17", compset="NOT_IMPORTANT", driver="nuopc",
+            name="f09_g17",
+            compset="NOT_IMPORTANT",
+            driver="nuopc",
         )
 
         self.assert_grid_info_f09_g17(grid_info)
@@ -355,7 +360,9 @@ $GRIDMAP_ENTRIES
 
         grids = Grids(self._xml_filepath)
         grid_info = grids.get_grid_info(
-            name="f09_g17_3glc", compset="NOT_IMPORTANT", driver="nuopc",
+            name="f09_g17_3glc",
+            compset="NOT_IMPORTANT",
+            driver="nuopc",
         )
 
         self.assert_grid_info_f09_g17_3glc(grid_info)
