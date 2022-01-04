@@ -207,6 +207,7 @@ class Component(EntryID):
                 parts = opt_parts.pop(0).split("%")
                 reqset = set(parts)
                 fullset = set(parts + opt_parts)
+                
                 match, complist = self._get_description_match(
                     compsetname, reqset, fullset, modifier_mode
                 )
@@ -262,10 +263,12 @@ class Component(EntryID):
         match = False
         comparts = compsetname.split("_")
         matchcomplist = None
-
         for comp in comparts:
+            if ':' in comp:
+                comp = comp.split(":")[1]
             complist = comp.split("%")
             cset = set(complist)
+            print("filename is {} reqset {} ".format(self.filename, reqset))
             if cset == reqset or (cset > reqset and cset <= fullset):
                 if modifier_mode == "1":
                     expect(

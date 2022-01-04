@@ -762,6 +762,7 @@ class Case(object):
         model_set[0] = components[0]
         noncomps = []
         allstubs = True
+        colonformat = False
         for model in components[1:]:
             match = Case.__mod_match_re__.match(model.lower())
             expect(match is not None, "No model match for {}".format(model))
@@ -769,6 +770,12 @@ class Case(object):
             # Check for noncomponent appends (BGC & TEST)
             if mod_match in ("bgc", "test"):
                 noncomps.append(model)
+            elif ':' in mod_match:
+                colonformat = True
+                mclass = mod_match[0:3]
+                comp_ind = comp_hash[mod_match[4:]]
+                model_set[comp_ind] = model
+                print("mclass {} comp_ind {} model_set {}".format(mclass, comp_ind, model_set))
             else:
                 expect(mod_match in comp_hash, "Unknown model type, {}".format(model))
                 comp_ind = comp_hash[mod_match]
@@ -780,7 +787,10 @@ class Case(object):
                 comp_class = comp_classes[comp_ind]
                 stub = "S" + comp_class
                 logger.info("Automatically adding {} to compset".format(stub))
-                model_set[comp_ind] = stub
+                if colonformat:
+                    model_set[comp_ind] = comp_class.lower()+":"+stub
+                else:
+                    model_set[comp_ind] = stub
             elif model_set[comp_ind][0] != "S":
                 allstubs = False
 
@@ -794,7 +804,7 @@ class Case(object):
         compsetname = "_".join(model_set)
         for noncomp in noncomps:
             compsetname = compsetname + "_" + noncomp
-
+        print("compsetname {} model_set {}".format(compsetname, model_set))
         return compsetname, model_set
 
     # RE to match component type name without optional piece (stuff after %).
@@ -894,6 +904,8 @@ class Case(object):
         # the first element is always the date operator - skip it
         elements = compset.split("_")[1:]  # pylint: disable=maybe-no-member
         for element in elements:
+            if ':' in element:
+                element = element[4:]
             # ignore the possible BGC or TEST modifier
             if element.startswith("BGC%") or element.startswith("TEST"):
                 continue
@@ -985,6 +997,8 @@ class Case(object):
         for i in range(1, len(self._component_classes)):
             comp_class = self._component_classes[i]
             comp_name = self._components[i - 1]
+            if ':' in comp_name:
+                comp_name=comp_name[4:]
             root_dir_node_name = "COMP_ROOT_DIR_" + comp_class
             node_name = "CONFIG_" + comp_class + "_FILE"
             compatt = {"component": comp_name}
