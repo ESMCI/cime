@@ -738,6 +738,10 @@ class Case(object):
         >>> caseroot = os.path.join(workdir, 'caseroot')  # use non-existent caseroot to avoid error about not being a valid case directory in Case __init__ method
         >>> Case(caseroot, read_only=False)._valid_compset_impl('2000_DATM%NYF_SLND_DICE%SSMI_DOCN%DOM_DROF%NYF_SGLC_SWAV', None, ['CPL', 'ATM', 'LND', 'ICE', 'OCN', 'ROF', 'GLC', 'WAV', 'ESP'], {'datm':1,'satm':1,'dlnd':2,'slnd':2,'dice':3,'sice':3,'docn':4,'socn':4,'drof':5,'srof':5,'sglc':6,'swav':7,'ww3':7,'sesp':8})
         ('2000_DATM%NYF_SLND_DICE%SSMI_DOCN%DOM_DROF%NYF_SGLC_SWAV_SESP', ['2000', 'DATM%NYF', 'SLND', 'DICE%SSMI', 'DOCN%DOM', 'DROF%NYF', 'SGLC', 'SWAV', 'SESP'])
+        >>> Case(caseroot, read_only=False)._valid_compset_impl('2000_DATM%NYF_SLND_DICE%SSMI_DOCN%DOM_DROF%NYF_SGLC_SWAV', None, ['CPL', 'ATM', 'LND', 'ICE', 'OCN', 'ROF', 'GLC', 'WAV', 'ESP'], {'datm':1,'satm':1,'dlnd':2,'slnd':2,'dice':3,'sice':3,'docn':4,'socn':4,'drof':5,'srof':5,'sglc':6,'swav':7,'ww3':7,'sesp':8})
+        ('2000_DATM%NYF_SLND_DICE%SSMI_DOCN%DOM_DROF%NYF_SGLC_SWAV_SESP', ['2000', 'DATM%NYF', 'SLND', 'DICE%SSMI', 'DOCN%DOM', 'DROF%NYF', 'SGLC', 'SWAV', 'SESP'])
+        >>> Case(caseroot, read_only=False)._valid_compset_impl('atm:DATM%NYF_rof:DROF%NYF_tim:2000_ice:DICE%SSMI_ocn:DOCN%DOM', None, ['CPL', 'ATM', 'LND', 'ICE', 'OCN', 'ROF', 'GLC', 'WAV', 'ESP'], {'datm':1,'satm':1,'dlnd':2,'slnd':2,'dice':3,'sice':3,'docn':4,'socn':4,'drof':5,'srof':5,'sglc':6,'swav':7,'ww3':7,'sesp':8})
+        ('tim:2000_atm:DATM%NYF_lnd:SLND_ice:DICE%SSMI_ocn:DOCN%DOM_rof:DROF%NYF_glc:SGLC_wav:SWAV_esp:SESP', ['tim:2000', 'atm:DATM%NYF', 'lnd:SLND', 'ice:DICE%SSMI', 'ocn:DOCN%DOM', 'rof:DROF%NYF', 'glc:SGLC', 'wav:SWAV', 'esp:SESP'])
         >>> Case(caseroot, read_only=False)._valid_compset_impl('2000_DATM%NYF_DICE%SSMI_DOCN%DOM_DROF%NYF', None, ['CPL', 'ATM', 'LND', 'ICE', 'OCN', 'ROF', 'GLC', 'WAV', 'ESP'], {'datm':1,'satm':1,'dlnd':2,'slnd':2,'dice':3,'sice':3,'docn':4,'socn':4,'drof':5,'srof':5,'sglc':6,'swav':7,'ww3':7,'sesp':8})
         ('2000_DATM%NYF_SLND_DICE%SSMI_DOCN%DOM_DROF%NYF_SGLC_SWAV_SESP', ['2000', 'DATM%NYF', 'SLND', 'DICE%SSMI', 'DOCN%DOM', 'DROF%NYF', 'SGLC', 'SWAV', 'SESP'])
         >>> Case(caseroot, read_only=False)._valid_compset_impl('2000_DICE%SSMI_DOCN%DOM_DATM%NYF_DROF%NYF', None, ['CPL', 'ATM', 'LND', 'ICE', 'OCN', 'ROF', 'GLC', 'WAV', 'ESP'], {'datm':1,'satm':1,'dlnd':2,'slnd':2,'dice':3,'sice':3,'docn':4,'socn':4,'drof':5,'srof':5,'sglc':6,'swav':7,'ww3':7,'sesp':8})
@@ -759,10 +763,20 @@ class Case(object):
         # Find the models declared in the compset
         model_set = [None] * len(comp_classes)
         components = compset_name.split("_")
-        model_set[0] = components[0]
         noncomps = []
         allstubs = True
-        colonformat = False
+        colonformat = ':' in compset_name
+        if colonformat:
+            # make sure that tim: is component[0] as expected
+            for i in range(1,len(components)):
+                if components[i].startswith('tim:'):
+                    tmp = components[0]
+                    components[0] = components[i]
+                    components[i] = tmp
+                    break
+
+        model_set[0] = components[0]
+
         for model in components[1:]:
             match = Case.__mod_match_re__.match(model.lower())
             expect(match is not None, "No model match for {}".format(model))
@@ -771,11 +785,9 @@ class Case(object):
             if mod_match in ("bgc", "test"):
                 noncomps.append(model)
             elif ':' in mod_match:
-                colonformat = True
                 mclass = mod_match[0:3]
                 comp_ind = comp_hash[mod_match[4:]]
                 model_set[comp_ind] = model
-                print("mclass {} comp_ind {} model_set {}".format(mclass, comp_ind, model_set))
             else:
                 expect(mod_match in comp_hash, "Unknown model type, {}".format(model))
                 comp_ind = comp_hash[mod_match]
@@ -804,7 +816,6 @@ class Case(object):
         compsetname = "_".join(model_set)
         for noncomp in noncomps:
             compsetname = compsetname + "_" + noncomp
-        print("compsetname {} model_set {}".format(compsetname, model_set))
         return compsetname, model_set
 
     # RE to match component type name without optional piece (stuff after %).

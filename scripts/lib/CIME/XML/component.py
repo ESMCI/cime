@@ -259,6 +259,8 @@ class Component(EntryID):
         (False, None)
         >>> obj._get_description_match("1850_CAM50%WCCM_Barn",set(["CAM50", "WCCM"]), set(["CAM50","WCCM","RCO2"]), "+")
         (True, ['CAM50', 'WCCM'])
+        >>> obj._get_description_match("tim:1850_atm:CAM50%WCCM_Barn",set(["CAM50", "WCCM"]), set(["CAM50","WCCM","RCO2"]), "+")
+        (True, ['CAM50', 'WCCM'])
         """
         match = False
         comparts = compsetname.split("_")
@@ -268,7 +270,7 @@ class Component(EntryID):
                 comp = comp.split(":")[1]
             complist = comp.split("%")
             cset = set(complist)
-            print("filename is {} reqset {} ".format(self.filename, reqset))
+
             if cset == reqset or (cset > reqset and cset <= fullset):
                 if modifier_mode == "1":
                     expect(
