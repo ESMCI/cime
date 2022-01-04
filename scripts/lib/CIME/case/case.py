@@ -765,11 +765,11 @@ class Case(object):
         components = compset_name.split("_")
         noncomps = []
         allstubs = True
-        colonformat = ':' in compset_name
+        colonformat = ":" in compset_name
         if colonformat:
             # make sure that scn: is component[0] as expected
-            for i in range(1,len(components)):
-                if components[i].startswith('scn:'):
+            for i in range(1, len(components)):
+                if components[i].startswith("scn:"):
                     tmp = components[0]
                     components[0] = components[i][4:]
                     components[i] = tmp
@@ -784,8 +784,7 @@ class Case(object):
             # Check for noncomponent appends (BGC & TEST)
             if mod_match in ("bgc", "test"):
                 noncomps.append(model)
-            elif ':' in mod_match:
-                mclass = mod_match[0:3]
+            elif ":" in mod_match:
                 comp_ind = comp_hash[mod_match[4:]]
                 model_set[comp_ind] = model
             else:
@@ -800,7 +799,7 @@ class Case(object):
                 stub = "S" + comp_class
                 logger.info("Automatically adding {} to compset".format(stub))
                 model_set[comp_ind] = stub
-            elif ':' in model_set[comp_ind]:
+            elif ":" in model_set[comp_ind]:
                 model_set[comp_ind] = model_set[comp_ind][4:]
 
             if model_set[comp_ind][0] != "S":
@@ -915,7 +914,7 @@ class Case(object):
         # the first element is always the date operator - skip it
         elements = compset.split("_")[1:]  # pylint: disable=maybe-no-member
         for element in elements:
-            if ':' in element:
+            if ":" in element:
                 element = element[4:]
             # ignore the possible BGC or TEST modifier
             if element.startswith("BGC%") or element.startswith("TEST"):
@@ -1008,8 +1007,8 @@ class Case(object):
         for i in range(1, len(self._component_classes)):
             comp_class = self._component_classes[i]
             comp_name = self._components[i - 1]
-            if ':' in comp_name:
-                comp_name=comp_name[4:]
+            if ":" in comp_name:
+                comp_name = comp_name[4:]
             root_dir_node_name = "COMP_ROOT_DIR_" + comp_class
             node_name = "CONFIG_" + comp_class + "_FILE"
             compatt = {"component": comp_name}

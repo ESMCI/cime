@@ -207,7 +207,7 @@ class Component(EntryID):
                 parts = opt_parts.pop(0).split("%")
                 reqset = set(parts)
                 fullset = set(parts + opt_parts)
-                
+
                 match, complist = self._get_description_match(
                     compsetname, reqset, fullset, modifier_mode
                 )
@@ -266,7 +266,7 @@ class Component(EntryID):
         comparts = compsetname.split("_")
         matchcomplist = None
         for comp in comparts:
-            if ':' in comp:
+            if ":" in comp:
                 comp = comp.split(":")[1]
             complist = comp.split("%")
             cset = set(complist)
