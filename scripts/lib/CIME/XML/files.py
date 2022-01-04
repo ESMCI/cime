@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 class Files(EntryID):
-    def __init__(self, comp_interface="mct"):
+    def __init__(self, comp_interface=None):
         """
         initialize an object
 
@@ -19,6 +19,8 @@ class Files(EntryID):
         >>> files.get_value('CASEFILE_HEADERS',resolved=False)
         '$CIMEROOT/config/config_headers.xml'
         """
+        if comp_interface is None:
+            comp_interface = 'mct'
         cimeroot = get_cime_root()
         infile = os.path.join(cimeroot, "config", get_model(), "config_files.xml")
         expect(os.path.isfile(infile), "Could not find or open file {}".format(infile))
