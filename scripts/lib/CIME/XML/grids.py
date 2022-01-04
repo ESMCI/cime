@@ -241,14 +241,15 @@ class Grids(GenericXML):
 
         if driver == "nuopc":
             # Obtain the root node for the domain entry that sets the mask
-            mask_domain_node = self.get_optional_child(
-                "domain",
-                attributes={"name": domains["MASK_GRID"]},
-                root=self.get_child("domains"),
-            )
-            # Now obtain the mesh for the mask for the domain node for that component grid
-            mesh_node = self.get_child("mesh", root=mask_domain_node)
-            domains["MASK_MESH"] = self.text(mesh_node)
+            if domains["MASK_GRID"] != "null":
+                mask_domain_node = self.get_optional_child(
+                    "domain",
+                    attributes={"name": domains["MASK_GRID"]},
+                    root=self.get_child("domains"),
+                )
+                # Now obtain the mesh for the mask for the domain node for that component grid
+                mesh_node = self.get_child("mesh", root=mask_domain_node)
+                domains["MASK_MESH"] = self.text(mesh_node)
 
         return domains
 
