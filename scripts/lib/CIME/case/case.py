@@ -740,8 +740,8 @@ class Case(object):
         ('2000_DATM%NYF_SLND_DICE%SSMI_DOCN%DOM_DROF%NYF_SGLC_SWAV_SESP', ['2000', 'DATM%NYF', 'SLND', 'DICE%SSMI', 'DOCN%DOM', 'DROF%NYF', 'SGLC', 'SWAV', 'SESP'])
         >>> Case(caseroot, read_only=False)._valid_compset_impl('2000_DATM%NYF_SLND_DICE%SSMI_DOCN%DOM_DROF%NYF_SGLC_SWAV', None, ['CPL', 'ATM', 'LND', 'ICE', 'OCN', 'ROF', 'GLC', 'WAV', 'ESP'], {'datm':1,'satm':1,'dlnd':2,'slnd':2,'dice':3,'sice':3,'docn':4,'socn':4,'drof':5,'srof':5,'sglc':6,'swav':7,'ww3':7,'sesp':8})
         ('2000_DATM%NYF_SLND_DICE%SSMI_DOCN%DOM_DROF%NYF_SGLC_SWAV_SESP', ['2000', 'DATM%NYF', 'SLND', 'DICE%SSMI', 'DOCN%DOM', 'DROF%NYF', 'SGLC', 'SWAV', 'SESP'])
-        >>> Case(caseroot, read_only=False)._valid_compset_impl('atm:DATM%NYF_rof:DROF%NYF_tim:2000_ice:DICE%SSMI_ocn:DOCN%DOM', None, ['CPL', 'ATM', 'LND', 'ICE', 'OCN', 'ROF', 'GLC', 'WAV', 'ESP'], {'datm':1,'satm':1,'dlnd':2,'slnd':2,'dice':3,'sice':3,'docn':4,'socn':4,'drof':5,'srof':5,'sglc':6,'swav':7,'ww3':7,'sesp':8})
-        ('tim:2000_atm:DATM%NYF_lnd:SLND_ice:DICE%SSMI_ocn:DOCN%DOM_rof:DROF%NYF_glc:SGLC_wav:SWAV_esp:SESP', ['tim:2000', 'atm:DATM%NYF', 'lnd:SLND', 'ice:DICE%SSMI', 'ocn:DOCN%DOM', 'rof:DROF%NYF', 'glc:SGLC', 'wav:SWAV', 'esp:SESP'])
+        >>> Case(caseroot, read_only=False)._valid_compset_impl('atm:DATM%NYF_rof:DROF%NYF_scn:2000_ice:DICE%SSMI_ocn:DOCN%DOM', None, ['CPL', 'ATM', 'LND', 'ICE', 'OCN', 'ROF', 'GLC', 'WAV', 'ESP'], {'datm':1,'satm':1,'dlnd':2,'slnd':2,'dice':3,'sice':3,'docn':4,'socn':4,'drof':5,'srof':5,'sglc':6,'swav':7,'ww3':7,'sesp':8})
+        ('2000_DATM%NYF_SLND_DICE%SSMI_DOCN%DOM_DROF%NYF_SGLC_SWAV_SESP', ['2000', 'DATM%NYF', 'SLND', 'DICE%SSMI', 'DOCN%DOM', 'DROF%NYF', 'SGLC', 'SWAV', 'SESP'])
         >>> Case(caseroot, read_only=False)._valid_compset_impl('2000_DATM%NYF_DICE%SSMI_DOCN%DOM_DROF%NYF', None, ['CPL', 'ATM', 'LND', 'ICE', 'OCN', 'ROF', 'GLC', 'WAV', 'ESP'], {'datm':1,'satm':1,'dlnd':2,'slnd':2,'dice':3,'sice':3,'docn':4,'socn':4,'drof':5,'srof':5,'sglc':6,'swav':7,'ww3':7,'sesp':8})
         ('2000_DATM%NYF_SLND_DICE%SSMI_DOCN%DOM_DROF%NYF_SGLC_SWAV_SESP', ['2000', 'DATM%NYF', 'SLND', 'DICE%SSMI', 'DOCN%DOM', 'DROF%NYF', 'SGLC', 'SWAV', 'SESP'])
         >>> Case(caseroot, read_only=False)._valid_compset_impl('2000_DICE%SSMI_DOCN%DOM_DATM%NYF_DROF%NYF', None, ['CPL', 'ATM', 'LND', 'ICE', 'OCN', 'ROF', 'GLC', 'WAV', 'ESP'], {'datm':1,'satm':1,'dlnd':2,'slnd':2,'dice':3,'sice':3,'docn':4,'socn':4,'drof':5,'srof':5,'sglc':6,'swav':7,'ww3':7,'sesp':8})
@@ -767,11 +767,11 @@ class Case(object):
         allstubs = True
         colonformat = ':' in compset_name
         if colonformat:
-            # make sure that tim: is component[0] as expected
+            # make sure that scn: is component[0] as expected
             for i in range(1,len(components)):
-                if components[i].startswith('tim:'):
+                if components[i].startswith('scn:'):
                     tmp = components[0]
-                    components[0] = components[i]
+                    components[0] = components[i][4:]
                     components[i] = tmp
                     break
 
@@ -799,11 +799,11 @@ class Case(object):
                 comp_class = comp_classes[comp_ind]
                 stub = "S" + comp_class
                 logger.info("Automatically adding {} to compset".format(stub))
-                if colonformat:
-                    model_set[comp_ind] = comp_class.lower()+":"+stub
-                else:
-                    model_set[comp_ind] = stub
-            elif model_set[comp_ind][0] != "S":
+                model_set[comp_ind] = stub
+            elif ':' in model_set[comp_ind]:
+                model_set[comp_ind] = model_set[comp_ind][4:]
+
+            if model_set[comp_ind][0] != "S":
                 allstubs = False
 
         expect(

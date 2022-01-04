@@ -259,7 +259,7 @@ class Component(EntryID):
         (False, None)
         >>> obj._get_description_match("1850_CAM50%WCCM_Barn",set(["CAM50", "WCCM"]), set(["CAM50","WCCM","RCO2"]), "+")
         (True, ['CAM50', 'WCCM'])
-        >>> obj._get_description_match("tim:1850_atm:CAM50%WCCM_Barn",set(["CAM50", "WCCM"]), set(["CAM50","WCCM","RCO2"]), "+")
+        >>> obj._get_description_match("scn:1850_atm:CAM50%WCCM_Barn",set(["CAM50", "WCCM"]), set(["CAM50","WCCM","RCO2"]), "+")
         (True, ['CAM50', 'WCCM'])
         """
         match = False
