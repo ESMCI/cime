@@ -20,7 +20,7 @@ class Files(EntryID):
         '$CIMEROOT/config/config_headers.xml'
         """
         if comp_interface is None:
-            comp_interface = 'mct'
+            comp_interface = "mct"
         cimeroot = get_cime_root()
         infile = os.path.join(cimeroot, "config", get_model(), "config_files.xml")
         expect(os.path.isfile(infile), "Could not find or open file {}".format(infile))
