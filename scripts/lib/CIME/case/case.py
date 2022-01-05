@@ -771,11 +771,13 @@ class Case(object):
             for i in range(1, len(components)):
                 if components[i].startswith("scn:"):
                     tmp = components[0]
-                    components[0] = components[i][4:]
+                    components[0] = components[i]
                     components[i] = tmp
                     break
-
-        model_set[0] = components[0]
+                    
+                model_set[0] = components[0][4:]
+        else:
+            model_set[0] = components[0]
 
         for model in components[1:]:
             match = Case.__mod_match_re__.match(model.lower())
