@@ -57,8 +57,6 @@ class Grids(GenericXML):
         atmnlev = None
         lndnlev = None
 
-        print("compset is now {} ".format(compset))
-
         # mechanism to specify atm levels
         atmlevregex = re.compile(r"([^_]+)z(\d+)(.*)$")
         levmatch = re.match(atmlevregex, name)
