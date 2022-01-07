@@ -102,6 +102,7 @@
       <value component="clm">$COMP_ROOT_DIR_LND/cime_config/config_tests.xml</value>
       <value component="cam">$COMP_ROOT_DIR_ATM/cime_config/config_tests.xml</value>
       <value component="cism">$COMP_ROOT_DIR_GLC/cime_config/config_tests.xml</value>
+      <value component="mom">$COMP_ROOT_DIR_OCN/cime_config/config_tests.xml</value>
     </values>
     <group>test</group>
     <file>env_test.xml</file>
