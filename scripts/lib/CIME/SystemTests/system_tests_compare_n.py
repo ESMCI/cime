@@ -233,8 +233,8 @@ class SystemTestsCompareN(SystemTestsCommon):
             # doesn't run.
             compare_phase_name = "{}_{}_{}".format(
                 COMPARE_PHASE,
-                self._run_suffixes[0],
-                self._run_suffixes[1])
+                self._run_suffixes[1],
+                self._run_suffixes[0])
             with self._test_status:
                 self._test_status.set_status(
                     compare_phase_name,
@@ -267,7 +267,7 @@ class SystemTestsCompareN(SystemTestsCommon):
                 # Compare results
                 self._activate_case(0)
                 self._link_to_subsq_case_output(i)
-                self._component_compare_test(self._run_suffixes[0], self._run_suffixes[i],
+                self._component_compare_test(self._run_suffixes[i], self._run_suffixes[0],
                                                 success_change=success_change,
                                                 ignore_fieldlist_diffs=self._ignore_fieldlist_diffs)
 
