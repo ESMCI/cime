@@ -27,7 +27,7 @@ find useful? Have a few minutes to tackle an issue? In this guide we will get yo
 integrated into contributing to CIME!
 
 ## What Can I Do?
-* Tackle any unassigned [issues](https://github.com/ESMCI/CIME/issues) you wish!  
+* Tackle any unassigned [issues](https://github.com/ESMCI/CIME/issues) you wish!
 
 * Contribute code you already have. It doesn’t need to be perfect! We will help you clean
   things up, test it, etc.
@@ -67,12 +67,22 @@ to tell CIME about your development machine. See the [CIME users guide](https://
 
 Run the scripts_regression_test:
 
-    cd scripts/tests
-    scripts_regression_tests.py
+    cd scripts/lib/CIME/tests
+    python scripts_regression_tests.py
+
+Alternatively with `pytest`:
+
+    pytest scripts/lib/CIME/tests
 
 Make your change. Add tests for your change. Make the tests pass to the same level as before your changes.
 
-    scripts_regression_tests.py
+    cd scripts/lib/CIME/tests
+    python scripts_regression_tests.py
+
+Run [pre-commit](https://pre-commit.com/#usage) before committing changes and submitting a PR.
+
+    pip install pre-commit
+    pre-commit run -a
 
 Commit the changes you made. Chris Beams has written a [guide](https://chris.beams.io/posts/git-commit/) on how to write good commit messages.
 
@@ -90,8 +100,9 @@ Some things that will increase the chance that your pull request is accepted:
 * Follow [PEP8][pep8] for style. (The `flake8` utility can help with this.)
 * Write a [good commit message][commit].
 
-Pull requests will automatically have tests run by Travis. This includes
-running both the unit tests as well as the `flake8` code linter.
+Pull requests will automatically have tests run by a Github Action. This
+includes running both the unit tests as well as `pre-commit`, which checks
+linting.
 
 [pep8]: http://pep8.org
 [commit]: https://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html

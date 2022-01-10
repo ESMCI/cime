@@ -15,14 +15,14 @@ help:
 	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
 # exit 0 is to prevent the api rule from being run by the catchall target
-# and generating an error. 
-api: CIME_api Tools_api Tools_user 
+# and generating an error.
+api: CIME_api Tools_api Tools_user
 	exit 0
 
-CIME_api: 
+CIME_api:
 	@$(SPHINXAPI) --force -o $(SOURCEDIR)/$@ $(SCRIPTSDIR)/lib/CIME
 
-Tools_api: 
+Tools_api:
 	@$(SPHINXAPI) --force -o $(SOURCEDIR)/$@ $(SCRIPTSDIR)/Tools
 
 Tools_user:

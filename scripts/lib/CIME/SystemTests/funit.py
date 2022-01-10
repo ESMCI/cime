@@ -10,8 +10,8 @@ from CIME.test_status import *
 
 logger = logging.getLogger(__name__)
 
-class FUNIT(SystemTestsCommon):
 
+class FUNIT(SystemTestsCommon):
     def __init__(self, case):
         """
         initialize an object interface to the FUNIT system test
@@ -21,7 +21,7 @@ class FUNIT(SystemTestsCommon):
 
     def build_phase(self, sharedlib_only=False, model_only=False):
         if not sharedlib_only:
-            exeroot  = self._case.get_value("EXEROOT")
+            exeroot = self._case.get_value("EXEROOT")
             logfile = os.path.join(exeroot, "funit.bldlog")
             with open(logfile, "w") as fd:
                 fd.write("No-op\n")
@@ -36,18 +36,34 @@ class FUNIT(SystemTestsCommon):
 
     def run_phase(self):
 
-        rundir   = self._case.get_value("RUNDIR")
-        exeroot  = self._case.get_value("EXEROOT")
-        mach     = self._case.get_value("MACH")
+        rundir = self._case.get_value("RUNDIR")
+        exeroot = self._case.get_value("EXEROOT")
+        mach = self._case.get_value("MACH")
 
         log = os.path.join(rundir, "funit.log")
         if os.path.exists(log):
             os.remove(log)
 
         test_spec_dir = self.get_test_spec_dir()
-        unit_test_tool = os.path.abspath(os.path.join(get_cime_root(),"scripts","fortran_unit_testing","run_tests.py"))
-        args = "--build-dir {} --test-spec-dir {} --machine {}".format(exeroot, test_spec_dir, mach)
-        stat = run_cmd("{} {} >& funit.log".format(unit_test_tool, args), from_dir=rundir)[0]
+        unit_test_tool = os.path.abspath(
+            os.path.join(
+                get_cime_root(), "scripts", "fortran_unit_testing", "run_tests.py"
+            )
+        )
+        args = "--build-dir {} --test-spec-dir {} --machine {}".format(
+            exeroot, test_spec_dir, mach
+        )
+
+        # BUG(wjs, 2022-01-07, ESMCI/CIME#4136) For now, these Fortran unit tests only
+        # work with the old config_compilers.xml-based configuration
+        my_env = os.environ.copy()
+        my_env["CIME_NO_CMAKE_MACRO"] = "ON"
+
+        stat = run_cmd(
+            "{} {} >& funit.log".format(unit_test_tool, args),
+            from_dir=rundir,
+            env=my_env,
+        )[0]
 
         append_testlog(open(os.path.join(rundir, "funit.log"), "r").read())
 

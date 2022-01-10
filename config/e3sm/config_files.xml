@@ -69,6 +69,14 @@
     <schema>$CIMEROOT/config/xml_schemas/config_compilers_v2.xsd</schema>
   </entry>
 
+  <entry id="CMAKE_MACROS_DIR">
+    <type>char</type>
+    <default_value>$SRCROOT/cime_config/machines/cmake_macros</default_value>
+    <group>case_last</group>
+    <file>env_case.xml</file>
+    <desc>Directory containing cmake macros (for documentation only - DO NOT EDIT)</desc>
+  </entry>
+
   <entry id="MACHINES_SPEC_FILE">
     <type>char</type>
     <default_value>$SRCROOT/cime_config/machines/config_machines.xml</default_value>
@@ -260,6 +268,7 @@
       <value component="mali"     >$COMP_ROOT_DIR_GLC/cime_config/config_compsets.xml</value>
       <value component="mpassi"   >$COMP_ROOT_DIR_ICE/cime_config/config_compsets.xml</value>
       <value component="mosart"   >$COMP_ROOT_DIR_ROF/cime_config/config_compsets.xml</value>
+      <value component="ww3"      >$COMP_ROOT_DIR_WAV/cime_config/config_compsets.xml</value>
     </values>
     <group>case_last</group>
     <file>env_case.xml</file>
@@ -279,6 +288,7 @@
       <value component="mpaso"    >$SRCROOT/cime_config/allactive/config_pesall.xml</value>
       <value component="mali"     >$SRCROOT/cime_config/allactive/config_pesall.xml</value>
       <value component="mpassi"   >$SRCROOT/cime_config/allactive/config_pesall.xml</value>
+      <value component="ww3"      >$SRCROOT/cime_config/allactive/config_pesall.xml</value>
     </values>
     <group>case_last</group>
     <file>env_case.xml</file>
@@ -370,6 +380,7 @@
       <value component="dlnd">$COMP_ROOT_DIR_LND/cime_config/namelist_definition_dlnd.xml</value>
       <value component="docn">$COMP_ROOT_DIR_OCN/cime_config/namelist_definition_docn.xml</value>
       <value component="dwav">$COMP_ROOT_DIR_WAV/cime_config/namelist_definition_dwav.xml</value>
+      <value component="desp">$COMP_ROOT_DIR_ESP/cime_config/namelist_definition_desp.xml</value>
       <!-- external model components -->
       <!--  TODO
       <value component="cam"      >$SRCROOT/components/cam/bld/namelist_files/namelist_definition.xml</value>

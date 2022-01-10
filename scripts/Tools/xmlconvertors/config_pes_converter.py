@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """
 config_pes_converter.py -- convert (or verify) config_pes elements from CIME2
 format to CIME5. This tool will compare the two versions and suggest updates to
@@ -15,23 +15,31 @@ from CIME.utils import run_cmd
 from distutils.spawn import find_executable
 import xml.etree.ElementTree as ET
 import grid_xml_converter
+
 LOGGER = logging.getLogger(__name__)
 
 ###############################################################################
 def parse_command_line(args):
-###############################################################################
-    parser = argparse.ArgumentParser(description=__doc__,
-                   formatter_class=argparse.RawDescriptionHelpFormatter)
+    ###############################################################################
+    parser = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
 
     CIME.utils.setup_standard_logging_options(parser)
 
     # Set command line options
-    parser.add_argument("-cime2file", "--cime2file",
-                        help="location of config_grid.xml file in CIME2 format",
-                        required=True)
-    parser.add_argument("-cime5file", "--cime5file",
-                        help="location of config_grids.xml file in CIME5 format",
-                        required=True)
+    parser.add_argument(
+        "-cime2file",
+        "--cime2file",
+        help="location of config_grid.xml file in CIME2 format",
+        required=True,
+    )
+    parser.add_argument(
+        "-cime5file",
+        "--cime5file",
+        help="location of config_grids.xml file in CIME5 format",
+        required=True,
+    )
 
     args = CIME.utils.parse_args_and_handle_standard_logging_options(args, parser)
 
@@ -41,8 +49,9 @@ def parse_command_line(args):
 
     return args.cime2file, args.cime5file
 
+
 class PesNode(grid_xml_converter.DataNode):
-    def __init__(self,root):
+    def __init__(self, root):
         self.ignore = False
         super(PesNode, self).__init__(root)
 
@@ -55,43 +64,44 @@ class PesNode(grid_xml_converter.DataNode):
         if key in self.data:
             node.set(tag, self.data[key])
         else:
-            node.set(tag, 'any')
+            node.set(tag, "any")
 
     def keyvalue(self):
-        return "{}:{}:{}:{}".format(self.data['gridname'], self.data['machname'],
-                                self.data['pesize'], self.data['compset'])
-
+        return "{}:{}:{}:{}".format(
+            self.data["gridname"],
+            self.data["machname"],
+            self.data["pesize"],
+            self.data["compset"],
+        )
 
     def to_cime5(self):
-        gridnode = ET.Element('grid')
-        self.setattrib(gridnode, 'name', 'gridname')
-        machnode = ET.SubElement(gridnode, 'mach')
-        self.setattrib(machnode, 'name', 'machname')
-        pesnode = ET.SubElement(machnode, 'pes')
-        self.setattrib(pesnode, 'compset')
-        self.setattrib(pesnode, 'pesize')
-        commentnode = ET.SubElement(pesnode, 'comment')
+        gridnode = ET.Element("grid")
+        self.setattrib(gridnode, "name", "gridname")
+        machnode = ET.SubElement(gridnode, "mach")
+        self.setattrib(machnode, "name", "machname")
+        pesnode = ET.SubElement(machnode, "pes")
+        self.setattrib(pesnode, "compset")
+        self.setattrib(pesnode, "pesize")
+        commentnode = ET.SubElement(pesnode, "comment")
         commentnode.text = "none"
-        for d in ['ntasks', 'nthrds', 'rootpe']:
+        for d in ["ntasks", "nthrds", "rootpe"]:
             newnode = ET.SubElement(pesnode, d)
-            for comp in ['atm', 'lnd', 'rof', 'ice', 'ocn', 'glc', 'wav', 'cpl', 'iac']:
-                tag = d + '_' + comp
+            for comp in ["atm", "lnd", "rof", "ice", "ocn", "glc", "wav", "cpl", "iac"]:
+                tag = d + "_" + comp
                 if tag in self.data[d]:
                     ET.SubElement(newnode, tag).text = str(self.data[d][tag])
 
         return gridnode
 
-
-
     def __eq__(self, other):
-        for k in ['gridname', 'machname', 'pesize', 'compset']:
+        for k in ["gridname", "machname", "pesize", "compset"]:
             if k not in self.data and k not in other.data:
                 continue
             if k not in self.data or k not in other.data:
                 return False
             if self.data[k] != other.data[k]:
                 return False
-        for d in ['ntasks', 'nthrds', 'rootpe']:
+        for d in ["ntasks", "nthrds", "rootpe"]:
             for k in self.data[d]:
                 if k not in self.data[d] and k not in other.data[d]:
                     continue
@@ -101,63 +111,70 @@ class PesNode(grid_xml_converter.DataNode):
                     return False
         return True
 
+
 class Cime5PesNode(PesNode):
     def set_data(self, xmlnode):
-        for d in ['ntasks', 'nthrds', 'rootpe']:
+        for d in ["ntasks", "nthrds", "rootpe"]:
             self.data[d] = {}
         self.xmlnode = xmlnode
-        self.data['gridname'] = xmlnode.get('name')
-        machnode = xmlnode.find('mach')
-        self.data['machname'] = machnode.get('name')
-        pesnode = machnode.find('pes')
-        self.data['pesize'] = pesnode.get('pesize')
-        self.data['compset'] = pesnode.get('compset')
-        commentnode = pesnode.find('comment')
+        self.data["gridname"] = xmlnode.get("name")
+        machnode = xmlnode.find("mach")
+        self.data["machname"] = machnode.get("name")
+        pesnode = machnode.find("pes")
+        self.data["pesize"] = pesnode.get("pesize")
+        self.data["compset"] = pesnode.get("compset")
+        commentnode = pesnode.find("comment")
         if commentnode is not None:
-            self.data['comment'] = commentnode.text
-        for tag in ['ntasks', 'nthrds', 'rootpe']:
+            self.data["comment"] = commentnode.text
+        for tag in ["ntasks", "nthrds", "rootpe"]:
             node = pesnode.find(tag)
             for child in node.getchildren():
                 self.data[tag][child.tag] = child.text.strip()
 
+
 class Cime2PesNode(PesNode):
     ISDEFAULT = "-999999"
-    DEFAULTS = {'ntasks':'16', 'nthrds':'1', 'rootpe':'0'}
+    DEFAULTS = {"ntasks": "16", "nthrds": "1", "rootpe": "0"}
+
     def set_data(self, xmlnode):
         # Set Defaults
-        for d in ['ntasks', 'nthrds', 'rootpe']:
+        for d in ["ntasks", "nthrds", "rootpe"]:
             self.data[d] = {}
-        for comp in ['atm', 'lnd', 'ice', 'ocn', 'glc', 'rof', 'wav', 'cpl', 'iac']:
-            self.data['ntasks']['ntasks_' + comp] = self.ISDEFAULT
-            self.data['nthrds']['nthrds_' + comp] = self.ISDEFAULT
-            self.data['rootpe']['rootpe_' + comp] = self.ISDEFAULT
+        for comp in ["atm", "lnd", "ice", "ocn", "glc", "rof", "wav", "cpl", "iac"]:
+            self.data["ntasks"]["ntasks_" + comp] = self.ISDEFAULT
+            self.data["nthrds"]["nthrds_" + comp] = self.ISDEFAULT
+            self.data["rootpe"]["rootpe_" + comp] = self.ISDEFAULT
 
         # Read in node
         self.xmlnode = xmlnode
-        for checktag in ['OS', 'TEST']:
+        for checktag in ["OS", "TEST"]:
             check = xmlnode.get(checktag)
             if check is not None:
                 self.ignore = True
                 return
-        self.data['machname'] = xmlnode.get('MACH', default='any')
-        self.data['gridname'] = xmlnode.get('GRID', default='any')
-        self.data['pesize'] = xmlnode.get('PECOUNT', default='any')
-        self.data['compset'] = xmlnode.get('CCSM_LCOMPSET', default='any')
-        for d in ['ntasks', 'nthrds', 'rootpe']:
-            for comp in ['atm', 'lnd', 'ice', 'ocn', 'glc', 'rof', 'wav', 'cpl', 'iac']:
-                tag = d + '_' + comp
+        self.data["machname"] = xmlnode.get("MACH", default="any")
+        self.data["gridname"] = xmlnode.get("GRID", default="any")
+        self.data["pesize"] = xmlnode.get("PECOUNT", default="any")
+        self.data["compset"] = xmlnode.get("CCSM_LCOMPSET", default="any")
+        for d in ["ntasks", "nthrds", "rootpe"]:
+            for comp in ["atm", "lnd", "ice", "ocn", "glc", "rof", "wav", "cpl", "iac"]:
+                tag = d + "_" + comp
                 node = xmlnode.find(tag.upper())
                 if node is not None:
                     val = node.text.strip()
-                    if val[0] == '$':
+                    if val[0] == "$":
                         resolvetag = val[1:]
                         if resolvetag == "MAX_TASKS_PER_NODE":
-                            val = '-1'
+                            val = "-1"
+                        elif resolvetag == "MAX_GPUS_PER_NODE":
+                            val = "-1"
                         else:
                             refnode = xmlnode.find(resolvetag)
                             if refnode is None:
                                 # use default value
-                                val = self.data[resolvetag.lower()[0:6]][resolvetag.lower()]
+                                val = self.data[resolvetag.lower()[0:6]][
+                                    resolvetag.lower()
+                                ]
                             else:
                                 val = xmlnode.find(resolvetag).text.strip()
 
@@ -165,29 +182,30 @@ class Cime2PesNode(PesNode):
         # Set to defaults. CIME2 had unresolved defaults that referred
         # back to the ATM value, so setting just the ATM value would in effect
         # set all values
-        for d in ['ntasks', 'nthrds', 'rootpe']:
-            atmtag = d + '_atm'
+        for d in ["ntasks", "nthrds", "rootpe"]:
+            atmtag = d + "_atm"
             if self.data[d][atmtag] == self.ISDEFAULT:
                 self.data[d][atmtag] = self.DEFAULTS[d]
-            for comp in ['lnd', 'rof', 'ice', 'ocn', 'glc', 'wav', 'cpl', 'iac']:
-                tag = d + '_' + comp
+            for comp in ["lnd", "rof", "ice", "ocn", "glc", "wav", "cpl", "iac"]:
+                tag = d + "_" + comp
                 if self.data[d][tag] == self.ISDEFAULT:
                     self.data[d][tag] = self.data[d][atmtag]
-
-
 
 
 class PesTree(grid_xml_converter.DataTree):
     def __init__(self, xmlfilename):
         # original xml file has bad comments
         import re, StringIO
+
         if os.access(xmlfilename, os.R_OK):
-            with open(xmlfilename, 'r') as xmlfile:
+            with open(xmlfilename, "r") as xmlfile:
                 t1 = xmlfile.read()
-                t2 = re.sub(r'(?<=<!--)([ -]+)',
-                            lambda x: x.group(0).replace('-', ' '), t1)
-                t3 = re.sub(r'([ -]+)(?=-->)',
-                            lambda x: x.group(0).replace('-', ' '), t2)
+                t2 = re.sub(
+                    r"(?<=<!--)([ -]+)", lambda x: x.group(0).replace("-", " "), t1
+                )
+                t3 = re.sub(
+                    r"([ -]+)(?=-->)", lambda x: x.group(0).replace("-", " "), t2
+                )
                 tempxml = StringIO.StringIO(t3)
                 super(PesTree, self).__init__(tempxml)
                 tempxml.close()
@@ -198,11 +216,11 @@ class PesTree(grid_xml_converter.DataTree):
     def populate(self):
         if self.root is None:
             return
-        xmlnodes = self.root.findall('grid')
+        xmlnodes = self.root.findall("grid")
         nodeclass = Cime5PesNode
 
         if len(xmlnodes) == 0:
-            xmlnodes = self.root.findall('pes')
+            xmlnodes = self.root.findall("pes")
             nodeclass = Cime2PesNode
         for xmlnode in xmlnodes:
             datanode = nodeclass(self.root)
@@ -210,21 +228,22 @@ class PesTree(grid_xml_converter.DataTree):
             if not datanode.ignore:
                 self.nodes.append(datanode)
 
-
-
     def writexml(self, addlist, newfilename):
-        root = ET.Element('config_pes')
+        root = ET.Element("config_pes")
         for a, b in addlist:
             if b is not None:
-                root.append(ET.Element('REPLACE'))
+                root.append(ET.Element("REPLACE"))
                 root.append(b.to_cime5())
-                root.append(ET.Element('WITH'))
+                root.append(ET.Element("WITH"))
             if a is not None:
                 root.append(a.to_cime5())
         xmllint = find_executable("xmllint")
         if xmllint is not None:
-            run_cmd("{} --format --output {} -".format(xmllint, newfilename),
-                    input_str=ET.tostring(root))
+            run_cmd(
+                "{} --format --output {} -".format(xmllint, newfilename),
+                input_str=ET.tostring(root),
+            )
+
 
 def diff_tree(atree, btree):
     afound = []
@@ -239,7 +258,6 @@ def diff_tree(atree, btree):
             duplist.append(bnode.keyvalue())
         else:
             bkeys.append(bnode.keyvalue())
-
 
     for anode in atree.nodes:
         for bnode in btree.nodes:
@@ -260,8 +278,6 @@ def diff_tree(atree, btree):
 
         addlist.append([anode, None])
 
-
-
     LOGGER.info("Number of ok nodes: {:d}".format(len(oklist)))
     LOGGER.info("Number of wrong nodes: {:d}".format(len(fixlist)))
     LOGGER.info("Number of missing nodes: {:d}".format(len(addlist)))
@@ -281,10 +297,8 @@ def pes_compare():
 
     LOGGER.info("Comparing config_pes files...")
     oklist, fixlist, addlist = diff_tree(cime2pestree, cime5pestree)
-    cime5pestree.postprocess(fixlist, addlist, "tempgrid.xml", cime5file,
-                             "badgrid.xml")
+    cime5pestree.postprocess(fixlist, addlist, "tempgrid.xml", cime5file, "badgrid.xml")
+
 
 if __name__ == "__main__":
     pes_compare()
-
-

@@ -7,8 +7,8 @@ from CIME.utils import get_model
 
 logger = logging.getLogger(__name__)
 
-class NODEFAIL(ERS):
 
+class NODEFAIL(ERS):
     def __init__(self, case):
         """
         initialize an object interface to the ERS system test
@@ -16,7 +16,7 @@ class NODEFAIL(ERS):
         ERS.__init__(self, case)
 
         self._fail_sentinel = os.path.join(case.get_value("RUNDIR"), "FAIL_SENTINEL")
-        self._fail_str      = case.get_value("NODE_FAIL_REGEX")
+        self._fail_str = case.get_value("NODE_FAIL_REGEX")
 
     def _restart_fake_phase(self):
         # Swap out model.exe for one that emits node failures
@@ -27,8 +27,7 @@ class NODEFAIL(ERS):
             logname = "drv"
         else:
             logname = "cpl"
-        fake_exe = \
-"""#!/bin/bash
+        fake_exe = """#!/bin/bash
 
 fail_sentinel={0}
 cpl_log={1}/{4}.log.$LID
@@ -48,7 +47,9 @@ else
   echo Insta pass
   echo SUCCESSFUL TERMINATION > $cpl_log
 fi
-""".format(self._fail_sentinel, rundir, get_model(), self._fail_str, logname)
+""".format(
+            self._fail_sentinel, rundir, get_model(), self._fail_str, logname
+        )
 
         fake_exe_file = os.path.join(exeroot, "fake.sh")
         with open(fake_exe_file, "w") as fd:

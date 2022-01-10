@@ -56,4 +56,3 @@ NOTES
 (a) The output file is ALWAYS CLOBBERED in the current implementation.
 
 (b) There is limited error checking at this time.
-

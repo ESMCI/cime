@@ -48,4 +48,3 @@ The file **$CIMEROOT/config/[cesm,e3sm]/config_files.xml** contains all model-sp
 
    user-mods directories:
       <entry id="USER_MODS_DIR">
-

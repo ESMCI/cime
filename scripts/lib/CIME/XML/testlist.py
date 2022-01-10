@@ -42,9 +42,9 @@ from CIME.XML.files import Files
 
 logger = logging.getLogger(__name__)
 
-class Testlist(GenericXML):
 
-    def __init__(self,infile, files=None):
+class Testlist(GenericXML):
+    def __init__(self, infile, files=None):
         """
         initialize an object
         """
@@ -53,34 +53,53 @@ class Testlist(GenericXML):
             files = Files()
         schema = files.get_schema("TESTS_SPEC_FILE")
         GenericXML.__init__(self, infile, schema=schema)
-        expect(self.get_version() >= 2.0,
-               "{} is an unsupported version of the testfile format and will be ignored".format(infile))
+        expect(
+            self.get_version() >= 2.0,
+            "{} is an unsupported version of the testfile format and will be ignored".format(
+                infile
+            ),
+        )
 
-    def get_tests(self, machine=None, category=None, compiler=None, compset=None, grid=None, supported_only=False):
+    def get_tests(
+        self,
+        machine=None,
+        category=None,
+        compiler=None,
+        compset=None,
+        grid=None,
+        supported_only=False,
+    ):
         tests = []
         attributes = {}
         if compset is not None:
-            attributes['compset'] = compset
+            attributes["compset"] = compset
         if grid is not None:
-            attributes['grid'] = grid
+            attributes["grid"] = grid
 
         testnodes = self.get_children("test", attributes=attributes)
 
         machatts = {}
         if machine is not None:
-            machatts["name"]      = machine
+            machatts["name"] = machine
         if category is not None:
-            machatts["category"]  = category
+            machatts["category"] = category
         if compiler is not None:
-            machatts["compiler"]  = compiler
-
+            machatts["compiler"] = compiler
 
         for tnode in testnodes:
-            if supported_only and self.has(tnode, "supported") and self.get(tnode, "supported") == 'false':
+            if (
+                supported_only
+                and self.has(tnode, "supported")
+                and self.get(tnode, "supported") == "false"
+            ):
                 continue
 
             machnode = self.get_optional_child("machines", root=tnode)
-            machnodes = None if machnode is None else self.get_children("machine",machatts,root=machnode)
+            machnodes = (
+                None
+                if machnode is None
+                else self.get_children("machine", machatts, root=machnode)
+            )
             if machnodes:
                 this_test_node = {}
                 for key, value in self.attrib(tnode).items():
@@ -88,8 +107,6 @@ class Testlist(GenericXML):
                         this_test_node["testname"] = value
                     else:
                         this_test_node[key] = value
-
-
 
                 # Get options that apply to all machines/compilers for this test
                 options = self.get_children("options", root=tnode)
@@ -108,13 +125,17 @@ class Testlist(GenericXML):
                     this_test["options"] = {}
 
                     for onode in optionnodes:
-                        this_test['options'][self.get(onode, 'name')] = self.text(onode)
+                        this_test["options"][self.get(onode, "name")] = self.text(onode)
 
                     # Now get options specific to this machine/compiler
                     options = self.get_optional_child("options", root=mach)
-                    optionnodes = [] if options is None else self.get_children("option", root=options)
+                    optionnodes = (
+                        []
+                        if options is None
+                        else self.get_children("option", root=options)
+                    )
                     for onode in optionnodes:
-                        this_test['options'][self.get(onode, 'name')] = self.text(onode)
+                        this_test["options"][self.get(onode, "name")] = self.text(onode)
 
                     tests.append(this_test)
 

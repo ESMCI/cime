@@ -8,8 +8,9 @@ import glob
 
 logger = logging.getLogger(__name__)
 
+
 def apply_user_mods(caseroot, user_mods_path, keepexe=None):
-    '''
+    """
     Recursivlely apply user_mods to caseroot - this includes updating user_nl_xxx,
     updating SourceMods and creating case shell_commands and xmlchange_cmds files
 
@@ -20,9 +21,11 @@ def apply_user_mods(caseroot, user_mods_path, keepexe=None):
 
     keepexe is an optional argument that is needed for cases where apply_user_mods is
     called from create_clone
-    '''
-    case_shell_command_files = [os.path.join(caseroot,"shell_commands"),
-                           os.path.join(caseroot,"xmlchange_cmnds")]
+    """
+    case_shell_command_files = [
+        os.path.join(caseroot, "shell_commands"),
+        os.path.join(caseroot, "xmlchange_cmnds"),
+    ]
     for shell_command_file in case_shell_command_files:
         if os.path.isfile(shell_command_file):
             os.remove(shell_command_file)
@@ -38,7 +41,7 @@ def apply_user_mods(caseroot, user_mods_path, keepexe=None):
     logger.debug("include_dirs are {}".format(include_dirs))
     for include_dir in include_dirs:
         # write user_nl_xxx file in caseroot
-        for user_nl in glob.iglob(os.path.join(include_dir,"user_nl_*")):
+        for user_nl in glob.iglob(os.path.join(include_dir, "user_nl_*")):
             with open(os.path.join(include_dir, user_nl), "r") as fd:
                 newcontents = fd.read()
             if len(newcontents) == 0:
@@ -51,40 +54,62 @@ def apply_user_mods(caseroot, user_mods_path, keepexe=None):
                 fd.write(newcontents)
 
         # update SourceMods in caseroot
-        for root, _, files in os.walk(include_dir,followlinks=True,topdown=False):
+        for root, _, files in os.walk(include_dir, followlinks=True, topdown=False):
             if "src" in os.path.basename(root):
                 if keepexe is not None:
-                    expect(False,
-                           "cannot have any source mods in {} if keepexe is an option".format(user_mods_path))
+                    expect(
+                        False,
+                        "cannot have any source mods in {} if keepexe is an option".format(
+                            user_mods_path
+                        ),
+                    )
                 for sfile in files:
-                    source_mods = os.path.join(root,sfile)
+                    source_mods = os.path.join(root, sfile)
                     case_source_mods = source_mods.replace(include_dir, caseroot)
                     # We overwrite any existing SourceMods file so that later
                     # include_dirs take precedence over earlier ones
                     if os.path.isfile(case_source_mods):
-                        logger.warning("WARNING: Overwriting existing SourceMods in {}".format(case_source_mods))
+                        logger.warning(
+                            "WARNING: Overwriting existing SourceMods in {}".format(
+                                case_source_mods
+                            )
+                        )
                     else:
-                        logger.info("Adding SourceMod to case {}".format(case_source_mods))
+                        logger.info(
+                            "Adding SourceMod to case {}".format(case_source_mods)
+                        )
                     try:
                         safe_copy(source_mods, case_source_mods)
                     except Exception:
-                        expect(False, "Could not write file {} in caseroot {}".format(case_source_mods,caseroot))
+                        expect(
+                            False,
+                            "Could not write file {} in caseroot {}".format(
+                                case_source_mods, caseroot
+                            ),
+                        )
 
         # create xmlchange_cmnds and shell_commands in caseroot
-        shell_command_files = glob.glob(os.path.join(include_dir,"shell_commands")) +\
-                              glob.glob(os.path.join(include_dir,"xmlchange_cmnds"))
+        shell_command_files = glob.glob(
+            os.path.join(include_dir, "shell_commands")
+        ) + glob.glob(os.path.join(include_dir, "xmlchange_cmnds"))
         for shell_commands_file in shell_command_files:
             case_shell_commands = shell_commands_file.replace(include_dir, caseroot)
             # add commands from both shell_commands and xmlchange_cmnds to
             # the same file (caseroot/shell_commands)
-            case_shell_commands = case_shell_commands.replace("xmlchange_cmnds","shell_commands")
+            case_shell_commands = case_shell_commands.replace(
+                "xmlchange_cmnds", "shell_commands"
+            )
             # Note that use of xmlchange_cmnds has been deprecated and will soon
             # be removed altogether, so new tests should rely on shell_commands
             if shell_commands_file.endswith("xmlchange_cmnds"):
-                logger.warning("xmlchange_cmnds is deprecated and will be removed " +\
-                            "in a future release; please rename {} shell_commands".format(shell_commands_file))
-            with open(shell_commands_file,"r") as fd:
-                new_shell_commands = fd.read().replace("xmlchange","xmlchange --force")
+                logger.warning(
+                    "xmlchange_cmnds is deprecated and will be removed "
+                    + "in a future release; please rename {} shell_commands".format(
+                        shell_commands_file
+                    )
+                )
+            with open(shell_commands_file, "r") as fd:
+                new_shell_commands = fd.read().replace("xmlchange", "xmlchange --force")
             # By appending the new commands to the end, settings from later
             # include_dirs take precedence over earlier ones
             with open(case_shell_commands, "a") as fd:
@@ -93,23 +118,26 @@ def apply_user_mods(caseroot, user_mods_path, keepexe=None):
     for shell_command_file in case_shell_command_files:
         if os.path.isfile(shell_command_file):
             os.chmod(shell_command_file, 0o777)
-            run_cmd_no_fail(shell_command_file,verbose=True)
+            run_cmd_no_fail(shell_command_file, verbose=True)
 
 
 def build_include_dirs_list(user_mods_path, include_dirs=None):
-    '''
+    """
     If user_mods_path has a file "include_user_mods" read that
     file and add directories to the include_dirs, recursively check
     each of those directories for further directories.
     The file may also include comments deleneated with # in the first column
-    '''
+    """
     include_dirs = [] if include_dirs is None else include_dirs
-    if user_mods_path is None or user_mods_path == 'UNSET':
+    if user_mods_path is None or user_mods_path == "UNSET":
         return include_dirs
-    expect(os.path.isabs(user_mods_path),
-           "Expected full directory path, got '{}'".format(user_mods_path))
-    expect(os.path.isdir(user_mods_path),
-           "Directory not found {}".format(user_mods_path))
+    expect(
+        os.path.isabs(user_mods_path),
+        "Expected full directory path, got '{}'".format(user_mods_path),
+    )
+    expect(
+        os.path.isdir(user_mods_path), "Directory not found {}".format(user_mods_path)
+    )
     norm_path = os.path.normpath(user_mods_path)
 
     for dir_ in include_dirs:
@@ -119,7 +147,7 @@ def build_include_dirs_list(user_mods_path, include_dirs=None):
 
     logger.info("Adding user mods directory {}".format(norm_path))
     include_dirs.append(norm_path)
-    include_file = os.path.join(norm_path,"include_user_mods")
+    include_file = os.path.join(norm_path, "include_user_mods")
     if os.path.isfile(include_file):
         with open(include_file, "r") as fd:
             for newpath in fd:
@@ -130,6 +158,10 @@ def build_include_dirs_list(user_mods_path, include_dirs=None):
                     if os.path.isabs(newpath):
                         build_include_dirs_list(newpath, include_dirs)
                     else:
-                        logger.warning("Could not resolve path '{}' in file '{}'".format(newpath, include_file))
+                        logger.warning(
+                            "Could not resolve path '{}' in file '{}'".format(
+                                newpath, include_file
+                            )
+                        )
 
     return include_dirs

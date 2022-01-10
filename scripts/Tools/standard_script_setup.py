@@ -6,7 +6,8 @@ that every script should do.
 
 import sys, os
 import __main__ as main
-_CIMEROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..","..")
+
+_CIMEROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..")
 _LIB_DIR = os.path.join(_CIMEROOT, "scripts", "lib")
 sys.path.append(_LIB_DIR)
 
@@ -14,6 +15,7 @@ sys.path.append(_LIB_DIR)
 os.environ["CIMEROOT"] = _CIMEROOT
 
 import CIME.utils
-CIME.utils.check_minimum_python_version(2, 7)
+
+CIME.utils.check_minimum_python_version(3, 6)
 CIME.utils.stop_buffering_output()
 import logging, argparse

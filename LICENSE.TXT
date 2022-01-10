@@ -1,12 +1,9 @@
 Copyright (c) 2017, University Corporation for Atmospheric Research (UCAR)
 All rights reserved.
   and
-Copyright (c) 2017, Sandia Corporation. 
+Copyright (c) 2017, Sandia Corporation.
 Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
 the U.S. Government retains certain rights in this software.
-  and
-Copyright (c) 2017, UChicago Argonne, LLC, All Rights Reserved 
-under Contract No. DE-AC02-06CH11357 with the Department of Energy
 
 Developed by:
               University Corporation for Atmospheric Research - National Center for Atmospheric Research

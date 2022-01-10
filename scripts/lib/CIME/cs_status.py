@@ -11,10 +11,15 @@ import os
 import sys
 from collections import defaultdict
 
-def cs_status(test_paths, summary=False, fails_only=False,
-              count_fails_phase_list=None,
-              expected_fails_filepath=None,
-              out=sys.stdout):
+
+def cs_status(
+    test_paths,
+    summary=False,
+    fails_only=False,
+    count_fails_phase_list=None,
+    expected_fails_filepath=None,
+    out=sys.stdout,
+):
     """Print the test statuses of all tests in test_paths. The default
     is to print to stdout, but this can be overridden with the 'out'
     argument.
@@ -35,10 +40,11 @@ def cs_status(test_paths, summary=False, fails_only=False,
     the full path to a file listing expected failures for this test
     suite. Expected failures are then labeled as such in the output.
     """
-    expect(not (summary and fails_only),
-           "Cannot have both summary and fails_only")
-    expect(not (summary and count_fails_phase_list),
-           "Cannot have both summary and count_fails_phase_list")
+    expect(not (summary and fails_only), "Cannot have both summary and fails_only")
+    expect(
+        not (summary and count_fails_phase_list),
+        "Cannot have both summary and count_fails_phase_list",
+    )
     if count_fails_phase_list is None:
         count_fails_phase_list = []
     non_pass_counts = dict.fromkeys(count_fails_phase_list, 0)
@@ -46,20 +52,24 @@ def cs_status(test_paths, summary=False, fails_only=False,
     test_id_output = defaultdict(str)
     test_id_counts = defaultdict(int)
     for test_path in test_paths:
-        test_dir=os.path.dirname(test_path)
+        test_dir = os.path.dirname(test_path)
         ts = TestStatus(test_dir=test_dir)
         test_id = os.path.basename(test_dir).split(".")[-1]
         if summary:
             output = _overall_output(ts, "  {status} {test_name}\n")
         else:
             if fails_only:
-                output = ''
+                output = ""
             else:
-                output = _overall_output(ts, "  {test_name} (Overall: {status}) details:\n")
-            output += ts.phase_statuses_dump(prefix="    ",
-                                             skip_passes=fails_only,
-                                             skip_phase_list=count_fails_phase_list,
-                                             xfails=xfails.get(ts.get_name()))
+                output = _overall_output(
+                    ts, "  {test_name} (Overall: {status}) details:\n"
+                )
+            output += ts.phase_statuses_dump(
+                prefix="    ",
+                skip_passes=fails_only,
+                skip_phase_list=count_fails_phase_list,
+                xfails=xfails.get(ts.get_name()),
+            )
             if count_fails_phase_list:
                 ts.increment_non_pass_counts(non_pass_counts)
 
@@ -68,15 +78,18 @@ def cs_status(test_paths, summary=False, fails_only=False,
 
     for test_id in sorted(test_id_output):
         count = test_id_counts[test_id]
-        print("{}: {} test{}".format(test_id, count, 's' if count > 1 else ''), file=out)
+        print(
+            "{}: {} test{}".format(test_id, count, "s" if count > 1 else ""), file=out
+        )
         print(test_id_output[test_id], file=out)
-        print(' ', file=out)
+        print(" ", file=out)
 
     if count_fails_phase_list:
-        print(72*'=', file=out)
-        print('Non-PASS results for select phases:', file=out)
+        print(72 * "=", file=out)
+        print("Non-PASS results for select phases:", file=out)
         for phase in count_fails_phase_list:
-            print('{} non-passes: {}'.format(phase, non_pass_counts[phase]), file=out)
+            print("{} non-passes: {}".format(phase, non_pass_counts[phase]), file=out)
+
 
 def _get_xfails(expected_fails_filepath):
     """Returns a dictionary of ExpectedFails objects, where the keys are test names
@@ -92,6 +105,7 @@ def _get_xfails(expected_fails_filepath):
     else:
         xfails = {}
     return xfails
+
 
 def _overall_output(ts, format_str):
     """Returns a string giving the overall test status

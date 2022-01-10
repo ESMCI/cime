@@ -104,7 +104,7 @@ The **config_batch.xml** schema is defined in **$CIMEROOT/config/xml_schemas/con
 
 CIME supports these batch systems: pbs, cobalt, lsf and slurm.
 
-As is the case for **config_compilers.xml**, the entries in **config_batch.xml** are hierarchical.
+The entries in **config_batch.xml** are hierarchical.
 
 #. General configurations for each system are provided at the top of the file.
 
@@ -132,24 +132,22 @@ In addition, there is **case.test** job that is used by the CIME system test wor
 Compiler settings
 -----------------
 
-CIME looks at the xml element ``COMPILERS_SPEC_FILE`` in the **config_files.xml** file to identify supported out-of-the-box compiler details for the target model. The node has the following contents:
+CIME looks at the xml element ``CMAKE_MACROS_DIR`` in the **config_files.xml** file to identify supported out-of-the-box compiler details for the target model. The node has the following contents:
 ::
 
-  <entry id="COMPILERS_SPEC_FILE">
+  <entry id="CMAKE_MACROS_DIR">
     <type>char</type>
-    <default_value>$CIMEROOT/cime_config/$MODEL/machines/config_compilers.xml</default_value>
+    <default_value>$CIMEROOT/config/$MODEL/machines/cmake_macros</default_value>
     <group>case_last</group>
     <file>env_case.xml</file>
-    <desc>file containing compiler specifications for target model primary component (for documentation only - DO NOT EDIT)</desc>
-    <schema>$CIMEROOT/cime_config/xml_schemas/config_compilers_v2.xsd</schema>
+    <desc>Directory containing cmake macros (for documentation only - DO NOT EDIT)</desc>
   </entry>
 
-Additional compilers are made avilable by adding entries to the files pointed to by COMPILERS_SPEC_FILE or to a config_compilers.xml file
-in your CIME config directory.
+Additional compilers are made avilable by adding cmake macros files to the directory pointed to by CMAKE_MACROS_DIR or to your $HOME/.cime directory.
 
 .. _compilerfile:
 
-config_compilers.xml - compiler paths and options
+config_compilers.xml - compiler paths and options **DEPRECATED use cmake_macros**
 -------------------------------------------------
 The **config_compilers.xml** file defines compiler flags for building CIME (and also CESM and E3SM prognostic CIME-driven components).
 
