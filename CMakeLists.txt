@@ -9,7 +9,11 @@ project(cime_tests Fortran C)
 
 # We rely on pio for cmake utilities like findnetcdf.cmake, so that we don't
 # need to duplicate this cmake code
-list(APPEND CMAKE_MODULE_PATH "${CIME_ROOT}/src/externals/pio2/cmake")
+if (EXISTS ${SRC_ROOT}/libraries/parallelio/cmake)
+  list(APPEND CMAKE_MODULE_PATH "${SRC_ROOT}/libraries/parallelio/cmake")
+else()
+  list(APPEND CMAKE_MODULE_PATH "${SRC_ROOT}/externals/scorpio/cmake")
+endif()
 
 include(CIME_utils)
 find_package(NetCDF COMPONENTS C Fortran)
@@ -21,7 +25,11 @@ include_directories(${NetCDF_C_INCLUDE_DIRS} ${NetCDF_Fortran_INCLUDE_DIRS})
 # ------------------------------------------------------------------------
 # Build mct
 # ------------------------------------------------------------------------
-set(MCT_ROOT "${CIME_ROOT}/src/externals/mct")
+if (EXISTS ${SRC_ROOT}/libraries/mct)
+  set(MCT_ROOT "${SRC_ROOT}/libraries/mct")
+else()
+  set(MCT_ROOT "${SRC_ROOT}/externals/mct")
+endif()
 
 if (USE_MPI_SERIAL)
   set(ENABLE_MPI_SERIAL "--enable-mpiserial")
@@ -85,15 +93,31 @@ endif()
 
 # csm_share (we don't build it here because it seems to be built differently
 # by different tests?)
-set(SHARE_ROOT "${CIME_ROOT}/src/share")
-add_subdirectory(${SHARE_ROOT}/util csm_share)
-add_subdirectory(${SHARE_ROOT}/unit_test_stubs/util csm_share_stubs)
-include_directories(${SHARE_ROOT}/include)
+
+if (EXISTS ${SRC_ROOT}/share/src)
+  add_subdirectory(${SRC_ROOT}/share/src share_src)
+  add_subdirectory(${SRC_ROOT}/components/cpl7/mct_shr mct_src)
+  add_subdirectory(${SRC_ROOT}/share/unit_test_stubs/util csm_share_stubs)
+  include_directories(${SRC_ROOT}/share/include)
+else()
+  add_subdirectory(${SRC_ROOT}/share/util csm_share)
+  add_subdirectory(${SRC_ROOT}/share/unit_test_stubs/util csm_share_stubs)
+  include_directories(${SRC_ROOT}/share/include)
+endif()
 
 # esmf_wrf_timemgr not built here because it depends on csm_share.
-add_subdirectory(${SHARE_ROOT}/esmf_wrf_timemgr esmf_wrf_timemgr)
-include_directories(${SHARE_ROOT}/esmf_wrf_timemgr)
+if (EXISTS ${SRC_ROOT}/share/src/esmf_wrf_timemgr)
+  add_subdirectory(${SRC_ROOT}/share/src/esmf_wrf_timemgr esmf_wrf_timemgr)
+  include_directories(${SRC_ROOT}/share/src/esmf_wrf_timemgr)
+else()
+  add_subdirectory(${SRC_ROOT}/share/esmf_wrf_timemgr esmf_wrf_timemgr)
+  include_directories(${SRC_ROOT}/share/esmf_wrf_timemgr)
+endif()
 
 # Now the actual test directories.
-add_subdirectory(${CIME_ROOT}/src/drivers/mct/unit_test)
-add_subdirectory(${SHARE_ROOT}/test/unit)
+if (EXISTS ${SRC_ROOT}/components/cpl7/driver/unit_test)
+  add_subdirectory(${SRC_ROOT}/components/cpl7/driver/unit_test unit_test)
+else()
+  add_subdirectory(${SRC_ROOT}/driver-mct/unit_test unit_test)
+endif()
+add_subdirectory(${SRC_ROOT}/share/test/unit ${CMAKE_BINARY_DIR}/unittests)

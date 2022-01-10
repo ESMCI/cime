@@ -5,7 +5,11 @@ These are used by components/<model_type>/<component>/cime_config/buildnml
 """
 
 from CIME.XML.standard_module_setup import *
-from CIME.utils import expect, parse_args_and_handle_standard_logging_options, setup_standard_logging_options
+from CIME.utils import (
+    expect,
+    parse_args_and_handle_standard_logging_options,
+    setup_standard_logging_options,
+)
 from CIME.utils import safe_copy
 import sys, os, argparse, glob
 
@@ -13,35 +17,37 @@ logger = logging.getLogger(__name__)
 
 ###############################################################################
 def parse_input(argv):
-###############################################################################
+    ###############################################################################
 
     parser = argparse.ArgumentParser()
 
     setup_standard_logging_options(parser)
 
-    parser.add_argument("caseroot", default=os.getcwd(),
-                        help="Case directory")
+    parser.add_argument("caseroot", default=os.getcwd(), help="Case directory")
 
     args = parse_args_and_handle_standard_logging_options(argv, parser)
 
     return args.caseroot
 
+
 ###############################################################################
-#pylint: disable=unused-argument
+# pylint: disable=unused-argument
 def build_xcpl_nml(case, caseroot, compname):
-###############################################################################
+    ###############################################################################
     compclasses = case.get_values("COMP_CLASSES")
     compclass = None
     for compclass in compclasses:
         if case.get_value("COMP_{}".format(compclass)) == compname:
             break
-    expect(compclass is not None,
-           "Could not identify compclass for compname {}".format(compname))
+    expect(
+        compclass is not None,
+        "Could not identify compclass for compname {}".format(compname),
+    )
     rundir = case.get_value("RUNDIR")
     comp_interface = case.get_value("COMP_INTERFACE")
 
     if comp_interface != "nuopc":
-        ninst  = case.get_value("NINST_{}".format(compclass.upper()))
+        ninst = case.get_value("NINST_{}".format(compclass.upper()))
     else:
         ninst = case.get_value("NINST")
     if not ninst:
@@ -52,7 +58,7 @@ def build_xcpl_nml(case, caseroot, compname):
 
     if comp_interface != "nuopc":
         if compname == "xrof":
-            flood_mode = case.get_value('XROF_FLOOD_MODE')
+            flood_mode = case.get_value("XROF_FLOOD_MODE")
         extras = []
         dtype = 1
         npes = 0
@@ -60,10 +66,10 @@ def build_xcpl_nml(case, caseroot, compname):
         if compname == "xatm":
             if ny == 1:
                 dtype = 2
-            extras = [["24",
-                       "ncpl  number of communications w/coupler per dat"],
-                      ["0.0",
-                       "simul time proxy (secs): time between cpl comms"]]
+            extras = [
+                ["24", "ncpl  number of communications w/coupler per dat"],
+                ["0.0", "simul time proxy (secs): time between cpl comms"],
+            ]
         elif compname == "xglc" or compname == "xice":
             dtype = 2
         elif compname == "xlnd":
@@ -85,25 +91,34 @@ def build_xcpl_nml(case, caseroot, compname):
         else:
             filename = os.path.join(rundir, "{}_in_{:04d}".format(compname, i))
 
-        with open(filename, 'w') as infile:
+        with open(filename, "w") as infile:
             infile.write("{:<20d} ! i-direction global dimension\n".format(nx))
             infile.write("{:<20d} ! j-direction global dimension\n".format(ny))
             if comp_interface != "nuopc":
-                infile.write("{:<20d} ! decomp_type  1=1d-by-lat, 2=1d-by-lon, 3=2d, 4=2d evensquare, 11=segmented\n".format(dtype))
+                infile.write(
+                    "{:<20d} ! decomp_type  1=1d-by-lat, 2=1d-by-lon, 3=2d, 4=2d evensquare, 11=segmented\n".format(
+                        dtype
+                    )
+                )
                 infile.write("{:<20d} ! num of pes for i (type 3 only)\n".format(npes))
-                infile.write("{:<20d} ! length of segments (type 4 only)\n".format(length))
+                infile.write(
+                    "{:<20d} ! length of segments (type 4 only)\n".format(length)
+                )
                 for extra in extras:
                     infile.write("{:<20s} ! {}\n".format(extra[0], extra[1]))
 
+
 ###############################################################################
 def create_namelist_infile(case, user_nl_file, namelist_infile, infile_text=""):
-###############################################################################
+    ###############################################################################
     lines_input = []
     if os.path.isfile(user_nl_file):
         with open(user_nl_file, "r") as file_usernl:
             lines_input = file_usernl.readlines()
     else:
-        logger.warning("WARNING: No file {} found in case directory".format(user_nl_file))
+        logger.warning(
+            "WARNING: No file {} found in case directory".format(user_nl_file)
+        )
 
     lines_output = []
     lines_output.append("&comp_inparm \n")
@@ -123,18 +138,19 @@ def create_namelist_infile(case, user_nl_file, namelist_infile, infile_text=""):
     with open(namelist_infile, "w") as file_infile:
         file_infile.write("\n".join(lines_output))
 
+
 def copy_inputs_to_rundir(caseroot, compname, confdir, rundir, inst_string):
 
     if os.path.isdir(rundir):
         filename = compname + "_in"
-        file_src  = os.path.join(confdir, filename)
+        file_src = os.path.join(confdir, filename)
         file_dest = os.path.join(rundir, filename)
         if inst_string:
             file_dest += inst_string
-        safe_copy(file_src,file_dest)
+        safe_copy(file_src, file_dest)
 
         for xmlfile in glob.glob(os.path.join(confdir, "*streams*.xml")):
-            casexml = os.path.join(caseroot,os.path.basename(xmlfile))
+            casexml = os.path.join(caseroot, os.path.basename(xmlfile))
             if os.path.exists(casexml):
                 logger.info("Using {} for {} streams".format(casexml, compname))
                 safe_copy(casexml, rundir)

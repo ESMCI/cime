@@ -1,6 +1,6 @@
 # CIME scripts regression tests
 
-name: scripts regression tests
+name: mct scripts regression tests
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
@@ -12,6 +12,27 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Set up python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      # Offical action is deprecated in favor of pre-commit.ci
+      # Should evaulate switching or just running manually.
+      # - name: Runs pre-commit action
+      #   # Do not run if using act tooling (https://github.com/nektos/act)
+      #   if: ${{ !env.ACT }}
+      #   uses: pre-commit/action@v2.0.3
+      - name: Runs pre-commit
+        run: |
+          pip install pre-commit
+          pre-commit run -a
+
   # This workflow contains a single job called "build"
   build:
     # The type of runner that the job will run on
@@ -27,15 +48,52 @@ jobs:
       # Versions of all dependencies can be updated here
       PNETCDF_VERSION: pnetcdf-1.12.2
       NETCDF_FORTRAN_VERSION: v4.5.2
+      MCT_VERSION: MCT_2.11.0
+      PARALLELIO_VERSION: pio2_5_4
       NETCDF_C_PATH: /usr
       NETCDF_FORTRAN_PATH: ${HOME}/netcdf-fortran
       PNETCDF_PATH: ${HOME}/pnetcdf
       CIME_MODEL: cesm
+      CIME_DRIVER: mct
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+
       - uses: actions/checkout@v2
+
+      - name: ccs_config checkout
+        uses: actions/checkout@v2
+        with:
+          repository: ESMCI/ccs_config_cesm
+          path: ccs_config
+
+      - name: share checkout
+        uses: actions/checkout@v2
+        with:
+          repository: ESCOMP/CESM_share
+          path: share
+
+      - name: cpl7 checkout
+        uses: actions/checkout@v2
+        with:
+          repository: ESCOMP/CESM_CPL7andDataComps
+          path: components/cpl7
+
+      - name: mct checkout
+        uses: actions/checkout@v2
+        with:
+          repository: MCSclimate/MCT
+          path: libraries/mct
+          ref: ${{ env.MCT_VERSION }}
+
+      - name: parallellio checkout
+        uses: actions/checkout@v2
+        with:
+          repository: NCAR/ParallelIO
+          path: libraries/parallelio
+          ref: ${{ env.PARALLELIO_VERSION }}
+
 
       - id: load-env
         run: |
@@ -52,7 +110,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/pnetcdf
-          key: ${{ runner.os }}-${{ env.PNETCDF_VERSION}}-pnetcdf-redo
+          key: ${{ runner.os }}-${{ env.PNETCDF_VERSION}}-pnetcdf
 
       - name: pnetcdf build
         if: steps.cache-pnetcdf.outputs.cache-hit != 'true'
@@ -71,7 +129,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/netcdf-fortran
-          key: ${{ runner.os }}-${{ env.NETCDF_FORTRAN_VERSION }}-netcdf-fortran-redo
+          key: ${{ runner.os }}-foo-v2-${{ env.NETCDF_FORTRAN_VERSION }}-netcdf-fortran-redo
 
       - name: netcdf fortran build
         if: steps.cache-netcdf-fortran.outputs.cache-hit != 'true'
@@ -99,7 +157,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: $HOME/cesm/inputdata
-          key: inputdata
+          key: inputdata-foo-v2
 #
 #      The following can be used to ssh to the testnode for debugging
 #      see https://github.com/mxschmitt/action-tmate for details
@@ -108,13 +166,15 @@ jobs:
 
       - name: scripts regression tests
         run: |
+          pwd
           mkdir -p $HOME/cesm/scratch
           mkdir -p $HOME/cesm/inputdata
-          cd $HOME/work/cime/cime/scripts/tests
+          cd $HOME/work/cime/cime
           export NETCDF=$HOME/netcdf-fortran
           export PATH=$NETCDF/bin:$PATH
           export LD_LIBRARY_PATH=$NETCDF/lib:$HOME/pnetcdf/lib:$LD_LIBRARY_PATH
-          ./scripts_regression_tests.py --no-fortran-run --compiler gnu --mpilib openmpi --machine ubuntu-latest
+          python -m pip install pytest pytest-cov
+          pytest -vvv --no-fortran-run --compiler gnu --mpilib openmpi --machine ubuntu-latest
 
 #     the following can be used by developers to login to the github server in case of errors
 #     see https://github.com/marketplace/actions/debugging-with-tmate for further details

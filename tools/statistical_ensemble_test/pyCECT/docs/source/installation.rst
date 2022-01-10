@@ -3,5 +3,3 @@ Installation
 ============
 
 *COMING SOON*
-
-

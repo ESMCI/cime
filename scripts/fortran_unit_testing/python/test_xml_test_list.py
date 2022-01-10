@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """Unit tests for the xml_test_list module.
 
 Public classes:
@@ -14,6 +14,7 @@ from xml_test_list import TestSuiteSpec, suites_from_xml
 
 __all__ = ("TestSuitesFromXML", "TestSuitesFromXML")
 
+
 class TestTestSuiteSpec(unittest.TestCase):
 
     """Tests for the TestSuiteSpec class."""
@@ -27,8 +28,7 @@ class TestTestSuiteSpec(unittest.TestCase):
     def test_relative_path(self):
         """TestSuiteSpec works as intended on relative paths."""
         spec = TestSuiteSpec("name", [None, None], ["path", "./path"])
-        self.assertEqual([abspath("path"), abspath("./path")],
-                         spec.directories)
+        self.assertEqual([abspath("path"), abspath("./path")], spec.directories)
 
     def test_no_path(self):
         """TestSuiteSpec works with no paths."""
@@ -50,15 +50,16 @@ class TestTestSuiteSpec(unittest.TestCase):
     def test_iterate(self):
         """TestSuiteSpec provides an iterator over directories."""
         spec = TestSuiteSpec("name", ["foo", "bar"], ["/foo", "/bar"])
-        self.assertEqual([("foo", "/foo"), ("bar", "/bar")],
-                         list(d for d in spec))
+        self.assertEqual([("foo", "/foo"), ("bar", "/bar")], list(d for d in spec))
+
 
 class TestSuitesFromXML(unittest.TestCase):
 
     """Tests for the suites_from_xml function."""
 
-    def check_spec_list(self, xml_str, names, directories,
-                        known_paths=None, labels=None):
+    def check_spec_list(
+        self, xml_str, names, directories, known_paths=None, labels=None
+    ):
         """Check that a spec list matches input names and directories.
 
         This is used by the following tests to do the dirty work of making
@@ -69,25 +70,31 @@ class TestSuitesFromXML(unittest.TestCase):
         xml_tree = ElementTree(XML(xml_str))
         spec_list = list(suites_from_xml(xml_tree, known_paths))
 
-        self.assertEqual(len(names), len(directories),
-                         msg="Internal test suite error: name and "+
-                         "directories lists are different sizes!")
+        self.assertEqual(
+            len(names),
+            len(directories),
+            msg="Internal test suite error: name and "
+            + "directories lists are different sizes!",
+        )
 
-        self.assertEqual(len(spec_list), len(names),
-                         msg="Wrong number of suite specs returned.")
+        self.assertEqual(
+            len(spec_list), len(names), msg="Wrong number of suite specs returned."
+        )
 
-        self.assertEqual(names,
-                         [spec.name for spec in spec_list],
-                         msg="Wrong suite name(s).")
+        self.assertEqual(
+            names, [spec.name for spec in spec_list], msg="Wrong suite name(s)."
+        )
 
-        self.assertEqual(directories,
-                         [spec.directories for spec in spec_list],
-                         msg="Wrong suite path(s).")
+        self.assertEqual(
+            directories,
+            [spec.directories for spec in spec_list],
+            msg="Wrong suite path(s).",
+        )
 
         if labels is not None:
-            self.assertEqual(labels,
-                             [spec.labels for spec in spec_list],
-                             msg="Wrong suite label(s).")
+            self.assertEqual(
+                labels, [spec.labels for spec in spec_list], msg="Wrong suite label(s)."
+            )
 
     def test_no_suites(self):
         """suites_from_xml output returns empty list for no matches."""
@@ -123,9 +130,9 @@ class TestSuitesFromXML(unittest.TestCase):
  </suite>
 </root>
 """
-        self.check_spec_list(xml_str,
-                             ["suite1", "suite2"],
-                             [["/the/path"], ["/other/path"]])
+        self.check_spec_list(
+            xml_str, ["suite1", "suite2"], [["/the/path"], ["/other/path"]]
+        )
 
     def test_path_relative_to_known(self):
         """suites_from_xml handles a relative_to directory attribute."""
@@ -137,10 +144,9 @@ class TestSuitesFromXML(unittest.TestCase):
  </suite>
 </root>
 """
-        self.check_spec_list(xml_str,
-                             ["suite1"],
-                             [["/foodir/path"]],
-                             known_paths={"foo": "/foodir"})
+        self.check_spec_list(
+            xml_str, ["suite1"], [["/foodir/path"]], known_paths={"foo": "/foodir"}
+        )
 
     def test_path_with_whitespace(self):
         """suites_from_xml handles a directory with whitespace added."""
@@ -166,8 +172,7 @@ class TestSuitesFromXML(unittest.TestCase):
  </suite>
 </root>
 """
-        self.check_spec_list(xml_str, ["suite1"], [["/foo"]],
-                             labels=[["foo"]])
+        self.check_spec_list(xml_str, ["suite1"], [["/foo"]], labels=[["foo"]])
 
 
 if __name__ == "__main__":

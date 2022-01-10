@@ -4,7 +4,7 @@
 CIME Land Data and Stub XML Files
 #################################
 
-Land component XML files for data, stub, and dead components. 
+Land component XML files for data, stub, and dead components.
 
 .. toctree::
    :maxdepth: 1
@@ -19,7 +19,7 @@ XML specification for archiving dlnd output files.
 
 .. literalinclude:: ../../../src/components/data_comps/dlnd/cime_config/config_archive.xml
 
-XML variables and component descriptions specific to dlnd. 
+XML variables and component descriptions specific to dlnd.
 
 .. literalinclude:: ../../../src/components/data_comps/dlnd/cime_config/config_component.xml
 
@@ -35,7 +35,7 @@ CIMEROOT/src/components/stub_comps/slnd/cime_config
 The land stub model, **slnd**, does not output any files in the RUNDIR nor
 does it have any namelist settings.
 
-XML variables and component descriptions specific to slnd. 
+XML variables and component descriptions specific to slnd.
 
 .. literalinclude:: ../../../src/components/stub_comps/slnd/cime_config/config_component.xml
 
@@ -47,11 +47,6 @@ CIMEROOT/src/components/xcpl_comps/xlnd/cime_config
 The land dead model, **xlnd**, does not output any files in the RUNDIR nor
 does it have any namelist settings.
 
-XML variables and component descriptions specific to xlnd. 
+XML variables and component descriptions specific to xlnd.
 
 .. literalinclude:: ../../../src/components/xcpl_comps/xlnd/cime_config/config_component.xml
-
-
-
-
-

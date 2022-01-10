@@ -176,3 +176,13 @@ Note: This file just has a character variable, in order to test what is output
 for character variables (which cannot be analyzed).
 
 - copy_char.nc: identical to control_char.nc
+
+--- FILES COMPARED AGAINST control_floatDoubleNan.nc ---
+
+Note: This file has a float variable, a double variable, and a double
+variable with a NaN value. Its initial purpose is for testing
+comparisons involving NaNs.
+
+- diffs_in_nans.nc: a float and double variable each have a NaN where
+  the control file does not, and another double variable has a NaN
+  only where the control file also has a NaN

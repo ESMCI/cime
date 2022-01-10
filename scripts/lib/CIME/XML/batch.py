@@ -11,9 +11,16 @@ from CIME.utils import expect
 
 logger = logging.getLogger(__name__)
 
-class Batch(GenericXML):
 
-    def __init__(self, batch_system=None, machine=None, infile=None, files=None, extra_machines_dir=None):
+class Batch(GenericXML):
+    def __init__(
+        self,
+        batch_system=None,
+        machine=None,
+        infile=None,
+        files=None,
+        extra_machines_dir=None,
+    ):
         """
         initialize an object
 
@@ -32,9 +39,9 @@ class Batch(GenericXML):
         GenericXML.__init__(self, infile, schema=schema)
 
         self.batch_system_node = None
-        self.machine_node      = None
-        self.batch_system      = batch_system
-        self.machine           = machine
+        self.machine_node = None
+        self.batch_system = batch_system
+        self.machine = machine
 
         # Append the contents of $HOME/.cime/config_batch.xml if it exists.
         #
@@ -42,7 +49,7 @@ class Batch(GenericXML):
         # extra_machines_dir, if present.
         #
         # This could cause problems if node matches are repeated when only one is expected.
-        infile = os.path.join(os.environ.get("HOME"),".cime","config_batch.xml")
+        infile = os.path.join(os.environ.get("HOME"), ".cime", "config_batch.xml")
         if os.path.exists(infile):
             GenericXML.read(self, infile)
         if extra_machines_dir:
@@ -63,16 +70,25 @@ class Batch(GenericXML):
         """
         Return data on a node for a batch system
         """
-        expect(self.batch_system_node is not None, "Batch system not set, use parent get_node?")
+        expect(
+            self.batch_system_node is not None,
+            "Batch system not set, use parent get_node?",
+        )
 
         if self.machine_node is not None:
-            result = self.get_optional_child(nodename, attributes, root=self.machine_node)
+            result = self.get_optional_child(
+                nodename, attributes, root=self.machine_node
+            )
             if result is None:
-                return self.get_optional_child(nodename, attributes, root=self.batch_system_node)
+                return self.get_optional_child(
+                    nodename, attributes, root=self.batch_system_node
+                )
             else:
                 return result
         else:
-            return self.get_optional_child(nodename, attributes, root=self.batch_system_node)
+            return self.get_optional_child(
+                nodename, attributes, root=self.batch_system_node
+            )
 
     def set_batch_system(self, batch_system, machine=None):
         """
@@ -80,7 +96,7 @@ class Batch(GenericXML):
         """
         machine = machine if machine is not None else self.machine
         if self.batch_system != batch_system or self.batch_system_node is None:
-            nodes = self.get_children("batch_system",{"type" : batch_system})
+            nodes = self.get_children("batch_system", {"type": batch_system})
             for node in nodes:
                 mach = self.get(node, "MACH")
                 if mach is None:
@@ -89,16 +105,22 @@ class Batch(GenericXML):
                     self.machine = machine
                     self.machine_node = node
 
-            expect(self.batch_system_node is not None, "No batch system '{}' found".format(batch_system))
+            expect(
+                self.batch_system_node is not None,
+                "No batch system '{}' found".format(batch_system),
+            )
 
         return batch_system
 
-    #pylint: disable=arguments-differ
+    # pylint: disable=arguments-differ
     def get_value(self, name, attribute=None, resolved=True, subgroup=None):
         """
         Get Value of fields in the config_batch.xml file
         """
-        expect(self.batch_system_node is not None, "Batch object has no batch system defined")
+        expect(
+            self.batch_system_node is not None,
+            "Batch object has no batch system defined",
+        )
         expect(subgroup is None, "This class does not support subgroups")
         value = None
 

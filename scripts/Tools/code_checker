@@ -10,16 +10,17 @@ from standard_script_setup import *
 from CIME.code_checker import check_code, expect
 
 import argparse, sys, os
-#pylint: disable=import-error
+
+# pylint: disable=import-error
 from distutils.spawn import find_executable
 
 logger = logging.getLogger(__name__)
 
 ###############################################################################
 def parse_command_line(args, description):
-###############################################################################
+    ###############################################################################
     parser = argparse.ArgumentParser(
-usage="""\n{0} [--verbose]
+        usage="""\n{0} [--verbose]
 OR
 {0} --help
 
@@ -30,28 +31,37 @@ OR
     \033[1;32m# Check code single file case.py \033[0m
     \033[1;32m# Note, you do NOT have to provide the path to this file, the tool will find it \033[0m
     > {0} case.py
-""".format(os.path.basename(args[0])),
-
-description=description,
-
-formatter_class=argparse.ArgumentDefaultsHelpFormatter
-)
+""".format(
+            os.path.basename(args[0])
+        ),
+        description=description,
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
 
     CIME.utils.setup_standard_logging_options(parser)
 
-    parser.add_argument("-j", "--num-procs", type=int, default=10,
-                        help="The number of files to check in parallel")
+    parser.add_argument(
+        "-j",
+        "--num-procs",
+        type=int,
+        default=10,
+        help="The number of files to check in parallel",
+    )
 
-    parser.add_argument("files", nargs="*",
-                        help="Restrict checking to specific files. Relative name is fine.")
+    parser.add_argument(
+        "files",
+        nargs="*",
+        help="Restrict checking to specific files. Relative name is fine.",
+    )
 
     args = CIME.utils.parse_args_and_handle_standard_logging_options(args, parser)
 
     return args.num_procs, args.files
 
+
 ###############################################################################
 def _main_func(description):
-###############################################################################
+    ###############################################################################
     pylint = find_executable("pylint")
     expect(pylint is not None, "pylint not found")
 
@@ -64,7 +74,8 @@ def _main_func(description):
 
     sys.exit(0)
 
+
 ###############################################################################
 
-if (__name__ == "__main__"):
+if __name__ == "__main__":
     _main_func(__doc__)

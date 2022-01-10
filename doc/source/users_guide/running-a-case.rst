@@ -484,8 +484,7 @@ for a component set using full active model components.
 If short-term archiving is turned on, the model archives the
 component restart data sets and pointer files into
 **$DOUT_S_ROOT/rest/yyyy-mm-dd-sssss**, where yyyy-mm-dd-sssss is the
-model date at the time of the restart. (See `below for more details
-<http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_.)
+model date at the time of the restart. (See below for more details.)
 
 ---------------------------------
 Backing up to a previous restart
@@ -604,7 +603,7 @@ as an external shell script.
 
 ::
 
-   #!/usr/bin/env python
+   #!/usr/bin/env python3
    import sys
    from CIME.case import Case
 

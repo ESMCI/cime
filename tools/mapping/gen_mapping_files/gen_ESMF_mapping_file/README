@@ -81,4 +81,3 @@ You can also set the following env variables:
   MPIEXEC ------ Name of mpirun executable
                  (ignored if --serial, which is default on cheyenne
                  login nodes
-

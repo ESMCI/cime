@@ -116,7 +116,7 @@ There are a few changes you can make to your case to get additional information 
 
 - Try rebuilding and rerunning with the build-time xml variable ``DEBUG`` set to ``TRUE``: ``./xmlchange DEBUG=TRUE``.
 
-  - This adds various runtime checks that trap conditions such as out-of-bounds array indexing, divide by 0, and other floating point exceptions (the exact conditions checked depend on flags set in ``config_compilers.xml``).
+  - This adds various runtime checks that trap conditions such as out-of-bounds array indexing, divide by 0, and other floating point exceptions (the exact conditions checked depend on flags set in macros defined in the cmake_macros subdirectory of the caseroot).
 
   - The best way to do this is often to create a new case and run ``./xmlchange DEBUG=TRUE`` before running ``./case.build``.
     However, if it is hard for you to recreate your case, then you can run that xmlchange command from your existing case; then you must run ``./case.build --clean-all`` before rerunning ``./case.build``.

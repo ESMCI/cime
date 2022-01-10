@@ -13,10 +13,18 @@ import six
 
 logger = logging.getLogger(__name__)
 
-class Compilers(GenericXML):
 
-    def __init__(self, machobj, infile=None, compiler=None, mpilib=None, files=None, version=None,
-                 extra_machines_dir=None):
+class Compilers(GenericXML):
+    def __init__(
+        self,
+        machobj,
+        infile=None,
+        compiler=None,
+        mpilib=None,
+        files=None,
+        version=None,
+        extra_machines_dir=None,
+    ):
         """
         initialize an object
 
@@ -40,27 +48,27 @@ class Compilers(GenericXML):
             self._version = self.get_version()
 
         self._machobj = machobj
-        self.machine  = machobj.get_machine_name()
+        self.machine = machobj.get_machine_name()
         self.os = machobj.get_value("OS")
         if compiler is None:
             compiler = machobj.get_default_compiler()
-        self.compiler       = compiler
+        self.compiler = compiler
 
         if mpilib is None:
             if compiler is None:
                 mpilib = machobj.get_default_MPIlib()
             else:
-                mpilib = machobj.get_default_MPIlib(attributes={'compiler':compiler})
+                mpilib = machobj.get_default_MPIlib(attributes={"compiler": compiler})
         self.mpilib = mpilib
 
-        self.compiler_nodes = None # Listed from last to first
+        self.compiler_nodes = None  # Listed from last to first
         # Append the contents of $HOME/.cime/config_compilers.xml if it exists.
         #
         # Also append the contents of a config_compilers.xml file in the directory given by
         # extra_machines_dir, if present.
         #
         # This could cause problems if node matches are repeated when only one is expected.
-        infile = os.path.join(os.environ.get("HOME"),".cime","config_compilers.xml")
+        infile = os.path.join(os.environ.get("HOME"), ".cime", "config_compilers.xml")
         if os.path.exists(infile):
             GenericXML.read(self, infile, schema=schema)
         if extra_machines_dir:
@@ -73,9 +81,19 @@ class Compilers(GenericXML):
 
         if self._version > 1.0:
             schema_db = GenericXML(infile=schema)
-            compiler_vars = schema_db.get_child("{http://www.w3.org/2001/XMLSchema}group", attributes={"name":"compilerVars"})
-            choice  = schema_db.get_child(name="{http://www.w3.org/2001/XMLSchema}choice", root=compiler_vars)
-            self.flag_vars = set(schema_db.get(elem, "name") for elem in schema_db.get_children(root=choice, attributes={"type":"flagsVar"}))
+            compiler_vars = schema_db.get_child(
+                "{http://www.w3.org/2001/XMLSchema}group",
+                attributes={"name": "compilerVars"},
+            )
+            choice = schema_db.get_child(
+                name="{http://www.w3.org/2001/XMLSchema}choice", root=compiler_vars
+            )
+            self.flag_vars = set(
+                schema_db.get(elem, "name")
+                for elem in schema_db.get_children(
+                    root=choice, attributes={"type": "flagsVar"}
+                )
+            )
 
     def get_compiler(self):
         """
@@ -87,17 +105,30 @@ class Compilers(GenericXML):
         """
         Return data on a node for a compiler
         """
-        expect(self.compiler_nodes is not None, "Compiler not set, use parent get_node?")
+        expect(
+            self.compiler_nodes is not None, "Compiler not set, use parent get_node?"
+        )
         for compiler_node in self.compiler_nodes:
-            result = self.get_optional_child(name=nodename, attributes=attributes, root=compiler_node)
+            result = self.get_optional_child(
+                name=nodename, attributes=attributes, root=compiler_node
+            )
             if result is not None:
                 return result
 
         return None
 
     def _is_compatible(self, compiler_node, compiler, machine, os_, mpilib):
-        for xmlid, value in [ ("COMPILER", compiler), ("MACH", machine), ("OS", os_), ("MPILIB", mpilib) ]:
-            if value is not None and self.has(compiler_node, xmlid) and value != self.get(compiler_node, xmlid):
+        for xmlid, value in [
+            ("COMPILER", compiler),
+            ("MACH", machine),
+            ("OS", os_),
+            ("MPILIB", mpilib),
+        ]:
+            if (
+                value is not None
+                and self.has(compiler_node, xmlid)
+                and value != self.get(compiler_node, xmlid)
+            ):
                 return False
 
         return True
@@ -112,10 +143,16 @@ class Compilers(GenericXML):
         'gnu'
         """
         machine = machine if machine else self.machine
-        os_     = os_ if os_ else self.os
-        mpilib  = mpilib if mpilib else self.mpilib
+        os_ = os_ if os_ else self.os
+        mpilib = mpilib if mpilib else self.mpilib
 
-        if self.compiler != compiler or self.machine != machine or self.os != os_ or self.mpilib != mpilib or self.compiler_nodes is None:
+        if (
+            self.compiler != compiler
+            or self.machine != machine
+            or self.os != os_
+            or self.mpilib != mpilib
+            or self.compiler_nodes is None
+        ):
             self.compiler_nodes = []
             nodes = self.get_children(name="compiler")
             for node in nodes:
@@ -125,16 +162,18 @@ class Compilers(GenericXML):
             self.compiler_nodes.reverse()
 
             self.compiler = compiler
-            self.machine  = machine
-            self.os       = os_
-            self.mpilib   = mpilib
+            self.machine = machine
+            self.os = os_
+            self.mpilib = mpilib
 
-    #pylint: disable=arguments-differ
+    # pylint: disable=arguments-differ
     def get_value(self, name, attribute=None, resolved=True, subgroup=None):
         """
         Get Value of fields in the config_compilers.xml file
         """
-        expect(self.compiler_nodes is not None, "Compiler object has no compiler defined")
+        expect(
+            self.compiler_nodes is not None, "Compiler object has no compiler defined"
+        )
         expect(subgroup is None, "This class does not support subgroups")
         value = None
 
@@ -150,9 +189,16 @@ class Compilers(GenericXML):
 
         return value
 
-    def write_macros_file(self, macros_file="Macros.make", output_format="make", xml=None):
+    def write_macros_file(
+        self, macros_file="Macros.make", output_format="make", xml=None
+    ):
         if self._version <= 1.0:
-            expect(False, "config_compilers.xml version '{}' is no longer supported".format(self._version))
+            expect(
+                False,
+                "config_compilers.xml version '{}' is no longer supported".format(
+                    self._version
+                ),
+            )
         else:
             if output_format == "make":
                 format_ = "Makefile"
@@ -183,9 +229,10 @@ class Compilers(GenericXML):
         elif build_system == "CMake":
             writer = CMakeMacroWriter(output)
         else:
-            expect(False,
-                   "Unrecognized build system provided to write_macros: " +
-                   build_system)
+            expect(
+                False,
+                "Unrecognized build system provided to write_macros: " + build_system,
+            )
 
         # Start processing the file.
         value_lists = dict()
@@ -208,29 +255,31 @@ class Compilers(GenericXML):
         while value_lists:
             # Variables that are ready to be written.
             ready_variables = [
-                var_name for var_name in value_lists
+                var_name
+                for var_name in value_lists
                 if value_lists[var_name].dependencies() <= vars_written
             ]
-            expect(len(ready_variables) > 0,
-                   "The file {} has bad $VAR references. "
-                   "Check for circular references or variables that "
-                   "are used in a $VAR but not actually defined.".format(self.filename))
+            expect(
+                len(ready_variables) > 0,
+                "The file {} has bad $VAR references. "
+                "Check for circular references or variables that "
+                "are used in a $VAR but not actually defined.".format(self.filename),
+            )
             big_normal_trees = {}
             big_append_tree = None
             for var_name in ready_variables:
                 # Note that we're writing this variable.
                 vars_written.add(var_name)
                 # Make the conditional trees and write them out.
-                normal_trees, append_tree = \
-                    value_lists[var_name].to_cond_trees()
+                normal_trees, append_tree = value_lists[var_name].to_cond_trees()
                 for spec in normal_trees:
                     if spec in big_normal_trees:
-                        big_normal_trees[spec] = merge_optional_trees(normal_trees[spec],
-                                                                      big_normal_trees[spec])
+                        big_normal_trees[spec] = merge_optional_trees(
+                            normal_trees[spec], big_normal_trees[spec]
+                        )
                     else:
                         big_normal_trees[spec] = normal_trees[spec]
-                big_append_tree = merge_optional_trees(append_tree,
-                                                        big_append_tree)
+                big_append_tree = merge_optional_trees(append_tree, big_append_tree)
                 # Remove this variable from the list of variables to handle
                 # next iteration.
                 del value_lists[var_name]

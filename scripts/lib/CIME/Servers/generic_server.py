@@ -7,17 +7,21 @@ so that they are interchangable objects
 
 from CIME.XML.standard_module_setup import *
 from socket import _GLOBAL_DEFAULT_TIMEOUT
+
 logger = logging.getLogger(__name__)
 
+
 class GenericServer(object):
-    def __init__(self, host=' ',user=' ', passwd=' ', acct=' ', timeout=_GLOBAL_DEFAULT_TIMEOUT):
+    def __init__(
+        self, host=" ", user=" ", passwd=" ", acct=" ", timeout=_GLOBAL_DEFAULT_TIMEOUT
+    ):
         raise NotImplementedError
 
     def fileexists(self, rel_path):
-        '''  Returns True if rel_path exists on server '''
+        """Returns True if rel_path exists on server"""
         raise NotImplementedError
 
     def getfile(self, rel_path, full_path):
-        ''' Get file from rel_path on server and place in location full_path on client
-        fail if full_path already exists on client, return True if successful '''
+        """Get file from rel_path on server and place in location full_path on client
+        fail if full_path already exists on client, return True if successful"""
         raise NotImplementedError

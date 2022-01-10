@@ -5,6 +5,7 @@ This module contains functions for working with user_nl files in system tests.
 import os
 import glob
 
+
 def append_to_user_nl_files(caseroot, component, contents):
     """
     Append the string given by 'contents' to the end of each user_nl file for
@@ -30,11 +31,12 @@ def append_to_user_nl_files(caseroot, component, contents):
     files = _get_list_of_user_nl_files(caseroot, component)
 
     if len(files) == 0:
-        raise RuntimeError('No user_nl files found for component ' + component)
+        raise RuntimeError("No user_nl files found for component " + component)
 
     for one_file in files:
-        with open(one_file, 'a') as user_nl_file:
-            user_nl_file.write('\n' + contents + '\n')
+        with open(one_file, "a") as user_nl_file:
+            user_nl_file.write("\n" + contents + "\n")
+
 
 def _get_list_of_user_nl_files(path, component):
     """Get a list of all user_nl files in the current path for the component
@@ -45,7 +47,7 @@ def _get_list_of_user_nl_files(path, component):
     The list of returned files gives their full path.
     """
 
-    file_pattern = 'user_nl_' + component + '*'
+    file_pattern = "user_nl_" + component + "*"
     file_list = glob.glob(os.path.join(path, file_pattern))
 
     return file_list

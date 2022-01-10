@@ -14,13 +14,13 @@ logger = logging.getLogger(__name__)
 # for GLC when there are multiple ice sheet grids). It is important that this character
 # NOT appear in any file names - or anywhere in the path of directories holding input
 # data.
-GRID_SEP = ':'
+GRID_SEP = ":"
+
 
 class Grids(GenericXML):
-
-    def __init__(self, infile=None, files=None):
+    def __init__(self, infile=None, files=None, comp_interface=None):
         if files is None:
-            files = Files()
+            files = Files(comp_interface=comp_interface)
         if infile is None:
             infile = files.get_value("GRIDS_SPEC_FILE")
         logger.debug(" Grid specification file is {}".format(infile))
@@ -57,19 +57,19 @@ class Grids(GenericXML):
         atmnlev = None
         lndnlev = None
 
-        #mechanism to specify atm levels
+        # mechanism to specify atm levels
         atmlevregex = re.compile(r"([^_]+)z(\d+)(.*)$")
         levmatch = re.match(atmlevregex, name)
-        if  levmatch:
+        if levmatch:
             atmnlev = levmatch.group(2)
-            name = levmatch.group(1)+levmatch.group(3)
+            name = levmatch.group(1) + levmatch.group(3)
 
-        #mechanism to specify lnd levels
+        # mechanism to specify lnd levels
         lndlevregex = re.compile(r"(.*_)([^_]+)z(\d+)(_[^m].*)$")
         levmatch = re.match(lndlevregex, name)
-        if  levmatch:
+        if levmatch:
             lndnlev = levmatch.group(3)
-            name = levmatch.group(1)+levmatch.group(2)+levmatch.group(4)
+            name = levmatch.group(1) + levmatch.group(2) + levmatch.group(4)
 
         # determine component_grids dictionary and grid longname
         lname = self._read_config_grids(name, compset, atmnlev, lndnlev)
@@ -77,7 +77,7 @@ class Grids(GenericXML):
         component_grids = _ComponentGrids(lname)
 
         # determine domains given component_grids
-        domains  = self._get_domains(component_grids, atmlevregex, lndlevregex, driver)
+        domains = self._get_domains(component_grids, atmlevregex, lndlevregex, driver)
 
         gridinfo.update(domains)
 
@@ -129,24 +129,33 @@ class Grids(GenericXML):
                     if compset_match is not None and not_compset_match is None:
                         foundcompset = True
                         model_gridnode = node
-                        logger.debug("Found match for {} with compset_match {} and not_compset_match {}"
-                                     .format(alias, compset_attrib, not_compset_attrib))
+                        logger.debug(
+                            "Found match for {} with compset_match {} and not_compset_match {}".format(
+                                alias, compset_attrib, not_compset_attrib
+                            )
+                        )
                         break
                 elif compset_attrib:
                     compset_match = re.search(compset_attrib, compset)
                     if compset_match is not None:
                         foundcompset = True
                         model_gridnode = node
-                        logger.debug("Found match for {} with compset_match {}"
-                                     .format(alias, compset_attrib))
+                        logger.debug(
+                            "Found match for {} with compset_match {}".format(
+                                alias, compset_attrib
+                            )
+                        )
                         break
                 elif not_compset_attrib:
                     not_compset_match = re.search(not_compset_attrib, compset)
                     if not_compset_match is None:
                         foundcompset = True
                         model_gridnode = node
-                        logger.debug("Found match for {} with not_compset_match {}"
-                                     .format(alias, not_compset_attrib))
+                        logger.debug(
+                            "Found match for {} with not_compset_match {}".format(
+                                alias, not_compset_attrib
+                            )
+                        )
                         break
                 else:
                     foundcompset = True
@@ -155,7 +164,9 @@ class Grids(GenericXML):
                     break
         expect(foundalias, "no alias {} defined".format(name))
         # if no match is found in config_grids.xml - exit
-        expect(foundcompset, "grid alias {} not valid for compset {}".format(name, compset))
+        expect(
+            foundcompset, "grid alias {} not valid for compset {}".format(name, compset)
+        )
 
         # for the match - find all of the component grid settings
         grid_nodes = self.get_children("grid", root=model_gridnode)
@@ -164,7 +175,7 @@ class Grids(GenericXML):
             value = self.text(grid_node)
             if model_grid[name] != "null":
                 model_grid[name] = value
-        mask_node = self.get_optional_child("mask",root=model_gridnode)
+        mask_node = self.get_optional_child("mask", root=model_gridnode)
         if mask_node is not None:
             model_grid["mask"] = self.text(mask_node)
         else:
@@ -172,7 +183,16 @@ class Grids(GenericXML):
 
         # determine component grids and associated required domains and gridmaps
         # TODO: this should be in XML, not here
-        prefix = {"atm":"a%", "lnd":"l%", "ocnice":"oi%", "rof":"r%", "wav":"w%", "glc":"g%", "mask":"m%", "iac":"z%"}
+        prefix = {
+            "atm": "a%",
+            "lnd": "l%",
+            "ocnice": "oi%",
+            "rof": "r%",
+            "wav": "w%",
+            "glc": "g%",
+            "mask": "m%",
+            "iac": "z%",
+        }
         lname = ""
         for component_gridname in self._comp_gridnames:
             if lname:
@@ -181,57 +201,61 @@ class Grids(GenericXML):
                 lname = prefix[component_gridname]
             if model_grid[component_gridname] is not None:
                 lname += model_grid[component_gridname]
-                if component_gridname == 'atm' and atmnlev is not None:
+                if component_gridname == "atm" and atmnlev is not None:
                     if not ("a{:n}ull" in lname):
                         lname += "z" + atmnlev
 
-                elif component_gridname == 'lnd' and lndnlev is not None:
+                elif component_gridname == "lnd" and lndnlev is not None:
                     if not ("l{:n}ull" in lname):
                         lname += "z" + lndnlev
 
             else:
-                lname += 'null'
+                lname += "null"
         return lname
 
     def _get_domains(self, component_grids, atmlevregex, lndlevregex, driver):
-        """ determine domains dictionary for config_grids.xml v2 schema"""
+        """determine domains dictionary for config_grids.xml v2 schema"""
         domains = {}
-        mask_name = component_grids.get_comp_gridname('mask')
+        mask_name = component_grids.get_comp_gridname("mask")
 
         for comp_name in component_grids.get_compnames(include_mask=True):
             for grid_name in component_grids.get_comp_gridlist(comp_name):
                 # Determine grid name with no nlev suffix if there is one
                 grid_name_nonlev = grid_name
                 levmatch = re.match(atmlevregex, grid_name)
-                if  levmatch:
-                    grid_name_nonlev = levmatch.group(1)+levmatch.group(3)
+                if levmatch:
+                    grid_name_nonlev = levmatch.group(1) + levmatch.group(3)
                 levmatch = re.match(lndlevregex, grid_name)
-                if  levmatch:
-                    grid_name_nonlev = levmatch.group(1)+levmatch.group(2)+levmatch.group(4)
-                self._get_domains_for_one_grid(domains=domains,
-                                               comp_name=comp_name.upper(),
-                                               grid_name=grid_name,
-                                               grid_name_nonlev=grid_name_nonlev,
-                                               mask_name=mask_name,
-                                               driver=driver)
+                if levmatch:
+                    grid_name_nonlev = (
+                        levmatch.group(1) + levmatch.group(2) + levmatch.group(4)
+                    )
+                self._get_domains_for_one_grid(
+                    domains=domains,
+                    comp_name=comp_name.upper(),
+                    grid_name=grid_name,
+                    grid_name_nonlev=grid_name_nonlev,
+                    mask_name=mask_name,
+                    driver=driver,
+                )
 
         if driver == "nuopc":
-            mask_domain_node = self.get_optional_child("domain", attributes={"name":domains["MASK_GRID"]},
-                                                       root=self.get_child("domains"))
-            mesh_nodes = self.get_children("mesh", root=mask_domain_node)
-            for mesh_node in mesh_nodes:
-                driver_attrib = self.get(mesh_node, "driver")
-                if driver == driver_attrib:
-                    domains["MASK_MESH"] = self.text(mesh_node)
-                    if "LND_DOMAIN_FILE" in domains:
-                        if domains["LND_DOMAIN_FILE"] != 'UNSET':
-                            domains["PTS_DOMAINFILE"] = os.path.join("$DIN_LOC_ROOT/share/domains",domains["LND_DOMAIN_FILE"])
+            # Obtain the root node for the domain entry that sets the mask
+            if domains["MASK_GRID"] != "null":
+                mask_domain_node = self.get_optional_child(
+                    "domain",
+                    attributes={"name": domains["MASK_GRID"]},
+                    root=self.get_child("domains"),
+                )
+                # Now obtain the mesh for the mask for the domain node for that component grid
+                mesh_node = self.get_child("mesh", root=mask_domain_node)
+                domains["MASK_MESH"] = self.text(mesh_node)
 
         return domains
 
-    def _get_domains_for_one_grid(self, domains, comp_name,
-                                  grid_name, grid_name_nonlev,
-                                  mask_name, driver):
+    def _get_domains_for_one_grid(
+        self, domains, comp_name, grid_name, grid_name_nonlev, mask_name, driver
+    ):
         """Get domain information for the given grid, adding elements to the domains dictionary
 
         Args:
@@ -242,29 +266,39 @@ class Grids(GenericXML):
         - mask_name: the mask being used in this case
         - driver: the name of the driver being used in this case
         """
-        domain_node = self.get_optional_child("domain", attributes={"name":grid_name_nonlev},
-                                              root=self.get_child("domains"))
+        domain_node = self.get_optional_child(
+            "domain",
+            attributes={"name": grid_name_nonlev},
+            root=self.get_child("domains"),
+        )
         if not domain_node:
-            domain_root = self.get_optional_child("domains",{"driver":driver})
+            domain_root = self.get_optional_child("domains", {"driver": driver})
             if domain_root:
-                domain_node = self.get_optional_child("domain", attributes={"name":grid_name_nonlev},
-                                                      root=domain_root)
+                domain_node = self.get_optional_child(
+                    "domain", attributes={"name": grid_name_nonlev}, root=domain_root
+                )
         if domain_node:
             # determine xml variable name
             if not "PTS_LAT" in domains:
-                domains["PTS_LAT"] = '-999.99'
+                domains["PTS_LAT"] = "-999.99"
             if not "PTS_LON" in domains:
-                domains["PTS_LON"] = '-999.99'
+                domains["PTS_LON"] = "-999.99"
             if not comp_name == "MASK":
                 if self.get_element_text("nx", root=domain_node):
                     # If there are multiple grids for this component, then the component
                     # _NX and _NY values won't end up being used, so we simply set them to 1
-                    _add_grid_info(domains, comp_name + "_NX",
-                                   int(self.get_element_text("nx", root=domain_node)),
-                                   value_for_multiple=1)
-                    _add_grid_info(domains, comp_name + "_NY",
-                                   int(self.get_element_text("ny", root=domain_node)),
-                                   value_for_multiple=1)
+                    _add_grid_info(
+                        domains,
+                        comp_name + "_NX",
+                        int(self.get_element_text("nx", root=domain_node)),
+                        value_for_multiple=1,
+                    )
+                    _add_grid_info(
+                        domains,
+                        comp_name + "_NY",
+                        int(self.get_element_text("ny", root=domain_node)),
+                        value_for_multiple=1,
+                    )
                 elif self.get_element_text("lon", root=domain_node):
                     # No need to call _add_grid_info here because, for multiple grids, the
                     # end result will be the same as the hard-coded 1 used here
@@ -281,43 +315,54 @@ class Grids(GenericXML):
             # set up dictionary of domain files for every component
             _add_grid_info(domains, comp_name + "_GRID", grid_name)
 
-            file_nodes = self.get_children("file", root=domain_node)
-            domain_file = ""
-            for file_node in file_nodes:
-                grid_attrib = self.get(file_node, "grid")
-                mask_attrib = self.get(file_node, "mask")
-                if grid_attrib is not None and mask_attrib is not None:
-                    grid_match = re.search(comp_name.lower(), grid_attrib)
-                    mask_match = False
-                    if mask_name is not None:
+            if driver == "mct":
+                # mct
+                file_nodes = self.get_children("file", root=domain_node)
+                domain_file = ""
+                for file_node in file_nodes:
+                    grid_attrib = self.get(file_node, "grid")
+                    mask_attrib = self.get(file_node, "mask")
+                    if grid_attrib is not None and mask_attrib is not None:
+                        grid_match = re.search(comp_name.lower(), grid_attrib)
+                        mask_match = False
+                        if mask_name is not None:
+                            mask_match = mask_name == mask_attrib
+                        if grid_match is not None and mask_match:
+                            domain_file = self.text(file_node)
+                    elif grid_attrib is not None:
+                        grid_match = re.search(comp_name.lower(), grid_attrib)
+                        if grid_match is not None:
+                            domain_file = self.text(file_node)
+                    elif mask_attrib is not None:
                         mask_match = mask_name == mask_attrib
-                    if grid_match is not None and mask_match:
-                        domain_file = self.text(file_node)
-                elif grid_attrib is not None:
-                    grid_match = re.search(comp_name.lower(), grid_attrib)
-                    if grid_match is not None:
-                        domain_file = self.text(file_node)
-                elif mask_attrib is not None:
-                    mask_match = mask_name == mask_attrib
-                    if mask_match:
-                        domain_file = self.text(file_node)
+                        if mask_match:
+                            domain_file = self.text(file_node)
+                if domain_file:
+                    _add_grid_info(
+                        domains,
+                        comp_name + "_DOMAIN_FILE",
+                        os.path.basename(domain_file),
+                    )
+                    path = os.path.dirname(domain_file)
+                    if len(path) > 0:
+                        _add_grid_info(domains, comp_name + "_DOMAIN_PATH", path)
 
-            if domain_file:
-                _add_grid_info(domains, comp_name + "_DOMAIN_FILE", os.path.basename(domain_file))
-                path = os.path.dirname(domain_file)
-                if len(path) > 0:
-                    _add_grid_info(domains, comp_name + "_DOMAIN_PATH", path)
-
-            if not comp_name == "MASK":
-                mesh_nodes = self.get_children("mesh", root=domain_node)
-                mesh_file = ""
-                for mesh_node in mesh_nodes:
-                    driver_attrib = self.get(mesh_node, "driver")
-                    if driver == driver_attrib:
+            if driver == "nuopc":
+                if not comp_name == "MASK":
+                    mesh_nodes = self.get_children("mesh", root=domain_node)
+                    mesh_file = ""
+                    for mesh_node in mesh_nodes:
                         mesh_file = self.text(mesh_node)
-
-                if mesh_file:
-                    _add_grid_info(domains, comp_name + "_DOMAIN_MESH", mesh_file)
+                    if mesh_file:
+                        _add_grid_info(domains, comp_name + "_DOMAIN_MESH", mesh_file)
+                    if comp_name == "LND":
+                        # Note: ONLY want to define PTS_DOMAINFILE for land
+                        file_node = self.get_optional_child("file", root=domain_node)
+                        if file_node is not None:
+                            domain_file = self.text(file_node)
+                            domains["PTS_DOMAINFILE"] = os.path.join(
+                                "$DIN_LOC_ROOT/share/domains", domain_file
+                            )
 
     def _get_gridmaps(self, component_grids, driver, compset):
         """Set all mapping files for config_grids.xml v2 schema
@@ -341,34 +386,47 @@ class Grids(GenericXML):
         #
         # Exclude the ice component from the list of compnames because it is assumed to be
         # on the same grid as ocn, so doesn't have any gridmaps of its own
-        compnames = component_grids.get_compnames(include_mask=False,
-                                                  exclude_comps=['ice'])
+        compnames = component_grids.get_compnames(
+            include_mask=False, exclude_comps=["ice"]
+        )
         for idx, compname in enumerate(compnames):
-            for other_compname in compnames[idx+1:]:
+            for other_compname in compnames[idx + 1 :]:
                 for gridvalue in component_grids.get_comp_gridlist(compname):
-                    for other_gridvalue in component_grids.get_comp_gridlist(other_compname):
-                        self._get_gridmaps_for_one_grid_pair(gridmaps=gridmaps,
-                                                             driver=driver,
-                                                             compname=compname,
-                                                             other_compname=other_compname,
-                                                             gridvalue=gridvalue,
-                                                             other_gridvalue=other_gridvalue)
+                    for other_gridvalue in component_grids.get_comp_gridlist(
+                        other_compname
+                    ):
+                        self._get_gridmaps_for_one_grid_pair(
+                            gridmaps=gridmaps,
+                            driver=driver,
+                            compname=compname,
+                            other_compname=other_compname,
+                            gridvalue=gridvalue,
+                            other_gridvalue=other_gridvalue,
+                        )
 
         # (2) set all possibly required gridmaps to 'idmap' for mct and 'unset/idmap' for
         # nuopc, if they aren't already set
         required_gridmaps_node = self.get_child("required_gridmaps")
-        tmp_gridmap_nodes = self.get_children("required_gridmap", root=required_gridmaps_node)
+        tmp_gridmap_nodes = self.get_children(
+            "required_gridmap", root=required_gridmaps_node
+        )
         required_gridmap_nodes = []
         for node in tmp_gridmap_nodes:
-            compset_att = self.get(node,"compset")
-            not_compset_att = self.get(node,"not_compset")
-            if compset_att and not compset_att in compset or \
-               not_compset_att and not_compset_att in compset:
+            compset_att = self.get(node, "compset")
+            not_compset_att = self.get(node, "not_compset")
+            if (
+                compset_att
+                and not compset_att in compset
+                or not_compset_att
+                and not_compset_att in compset
+            ):
                 continue
             required_gridmap_nodes.append(node)
             mapname = self.text(node)
             if mapname not in gridmaps:
-                gridmaps[mapname] = _get_unset_gridmap_value(mapname, component_grids, driver)
+                gridmaps[mapname] = _get_unset_gridmap_value(
+                    mapname, component_grids, driver
+                )
 
         # (3) check that all necessary maps are not set to idmap
         #
@@ -382,21 +440,36 @@ class Grids(GenericXML):
             grid1_value = component_grids.get_comp_gridname(comp1_name)
             grid2_value = component_grids.get_comp_gridname(comp2_name)
             if grid1_value is not None and grid2_value is not None:
-                if grid1_value != grid2_value and grid1_value != 'null' and grid2_value != 'null':
+                if (
+                    grid1_value != grid2_value
+                    and grid1_value != "null"
+                    and grid2_value != "null"
+                ):
                     map_ = gridmaps[self.text(node)]
-                    if map_ == 'idmap':
+                    if map_ == "idmap":
                         if comp1_name == "ocn" and grid1_value == atm_gridvalue:
-                            logger.debug('ocn_grid == atm_grid so this is not an idmap error')
+                            logger.debug(
+                                "ocn_grid == atm_grid so this is not an idmap error"
+                            )
                         else:
                             if driver == "nuopc":
-                                gridmaps[self.text(node)] = 'unset'
+                                gridmaps[self.text(node)] = "unset"
                             else:
-                                logger.warning("Warning: missing non-idmap {} for {}, {} and {} {} ".
-                                               format(self.text(node), comp1_name, grid1_value, comp2_name, grid2_value))
+                                logger.warning(
+                                    "Warning: missing non-idmap {} for {}, {} and {} {} ".format(
+                                        self.text(node),
+                                        comp1_name,
+                                        grid1_value,
+                                        comp2_name,
+                                        grid2_value,
+                                    )
+                                )
 
         return gridmaps
 
-    def _get_gridmaps_for_one_grid_pair(self, gridmaps, driver, compname, other_compname, gridvalue, other_gridvalue):
+    def _get_gridmaps_for_one_grid_pair(
+        self, gridmaps, driver, compname, other_compname, gridvalue, other_gridvalue
+    ):
         """Get gridmap information for one pair of grids, adding elements to the gridmaps dictionary
 
         Args:
@@ -414,8 +487,16 @@ class Grids(GenericXML):
             if gmdriver is None or gmdriver == driver:
                 gridname = compname + "_grid"
                 other_gridname = other_compname + "_grid"
-                gridmap_nodes.extend(self.get_children("gridmap", root=root,
-                                                       attributes={gridname:gridvalue, other_gridname:other_gridvalue}))
+                gridmap_nodes.extend(
+                    self.get_children(
+                        "gridmap",
+                        root=root,
+                        attributes={
+                            gridname: gridvalue,
+                            other_gridname: other_gridvalue,
+                        },
+                    )
+                )
 
         # We first create a dictionary of gridmaps just for this pair of grids, then later
         # add these grids to the main gridmaps dict using _add_grid_info. The reason for
@@ -427,16 +508,17 @@ class Grids(GenericXML):
         # leaving this possibility in place.)
         these_gridmaps = {}
         for gridmap_node in gridmap_nodes:
-            expect(len(self.attrib(gridmap_node)) == 2,
-                   " Bad attribute count in gridmap node %s"%self.attrib(gridmap_node))
-            map_nodes = self.get_children("map",root=gridmap_node)
+            expect(
+                len(self.attrib(gridmap_node)) == 2,
+                " Bad attribute count in gridmap node %s" % self.attrib(gridmap_node),
+            )
+            map_nodes = self.get_children("map", root=gridmap_node)
             for map_node in map_nodes:
                 name = self.get(map_node, "name")
                 value = self.text(map_node)
                 if name is not None and value is not None:
                     these_gridmaps[name] = value
-                    logger.debug(" gridmap name,value are {}: {}"
-                                 .format(name,value))
+                    logger.debug(" gridmap name,value are {}: {}".format(name, value))
 
         for name, value in these_gridmaps.items():
             _add_grid_info(gridmaps, name, value)
@@ -446,11 +528,21 @@ class Grids(GenericXML):
         helptext = self.get_element_text("help")
         logger.info("{} ".format(helptext))
 
-        logger.info("{:5s}-------------------------------------------------------------".format(""))
+        logger.info(
+            "{:5s}-------------------------------------------------------------".format(
+                ""
+            )
+        )
         logger.info("{:10s}  default component grids:\n".format(""))
-        logger.info("     component         compset       value " )
-        logger.info("{:5s}-------------------------------------------------------------".format(""))
-        default_nodes = self.get_children("model_grid_defaults", root=self.get_child("grids"))
+        logger.info("     component         compset       value ")
+        logger.info(
+            "{:5s}-------------------------------------------------------------".format(
+                ""
+            )
+        )
+        default_nodes = self.get_children(
+            "model_grid_defaults", root=self.get_child("grids")
+        )
         for default_node in default_nodes:
             grid_nodes = self.get_children("grid", root=default_node)
             for grid_node in grid_nodes:
@@ -458,14 +550,18 @@ class Grids(GenericXML):
                 compset = self.get(grid_node, "compset")
                 value = self.text(grid_node)
                 logger.info("     {:6s}   {:15s}   {:10s}".format(name, compset, value))
-        logger.info("{:5s}-------------------------------------------------------------".format(""))
+        logger.info(
+            "{:5s}-------------------------------------------------------------".format(
+                ""
+            )
+        )
 
         domains = {}
         if long_output is not None:
-            domain_nodes = self.get_children("domain",root=self.get_child("domains"))
+            domain_nodes = self.get_children("domain", root=self.get_child("domains"))
             for domain_node in domain_nodes:
-                name = self.get(domain_node, 'name')
-                if name == 'null':
+                name = self.get(domain_node, "name")
+                if name == "null":
                     continue
                 desc = self.text(self.get_child("desc", root=domain_node))
                 files = ""
@@ -483,7 +579,9 @@ class Grids(GenericXML):
                         files += " grid match: " + grid_attrib
                     if mask_attrib or grid_attrib:
                         files += ")"
-                domains[name] = "\n       {} with domain file(s): {} ".format(desc, files)
+                domains[name] = "\n       {} with domain file(s): {} ".format(
+                    desc, files
+                )
 
         model_grid_nodes = self.get_children("model_grid", root=self.get_child("grids"))
         for model_grid_node in model_grid_nodes:
@@ -496,7 +594,7 @@ class Grids(GenericXML):
             if not_compset:
                 restriction += "only for compsets that are not {} ".format(not_compset)
             if restriction:
-                logger.info("\n     alias: {} ({})".format(alias,restriction))
+                logger.info("\n     alias: {} ({})".format(alias, restriction))
             else:
                 logger.info("\n     alias: {}".format(alias))
             grid_nodes = self.get_children("grid", root=model_grid_node)
@@ -513,11 +611,13 @@ class Grids(GenericXML):
                 gridnames = set(gridnames)
                 for gridname in gridnames:
                     if gridname != "null":
-                        logger.info ("    {}".format(domains[gridname]))
+                        logger.info("    {}".format(domains[gridname]))
+
 
 # ------------------------------------------------------------------------
 # Helper class: _ComponentGrids
 # ------------------------------------------------------------------------
+
 
 class _ComponentGrids(object):
     """This class stores the grid names for each component and allows retrieval in a variety
@@ -531,15 +631,19 @@ class _ComponentGrids(object):
     # iterations.
     #
     # TODO: this should be in XML, not here
-    _COMP_NAMES = OrderedDict([('atm', 'a'),
-                               ('lnd', 'l'),
-                               ('ocn', 'o'),
-                               ('ice', 'i'),
-                               ('rof', 'r'),
-                               ('glc', 'g'),
-                               ('wav', 'w'),
-                               ('iac', 'z'),
-                               ('mask', 'm')])
+    _COMP_NAMES = OrderedDict(
+        [
+            ("atm", "a"),
+            ("lnd", "l"),
+            ("ocn", "o"),
+            ("ice", "i"),
+            ("rof", "r"),
+            ("glc", "g"),
+            ("wav", "w"),
+            ("iac", "z"),
+            ("mask", "m"),
+        ]
+    )
 
     def __init__(self, grid_longname):
         self._comp_gridnames = self._get_component_grids_from_longname(grid_longname)
@@ -548,7 +652,7 @@ class _ComponentGrids(object):
         """Return a dictionary mapping each compname to its gridname"""
         grid_re = re.compile(r"[_]{0,1}[a-z]{1,2}%")
         grids = grid_re.split(name)[1:]
-        prefixes = re.findall("[a-z]+%",name)
+        prefixes = re.findall("[a-z]+%", name)
         component_grids = {}
         i = 0
         while i < len(grids):
@@ -559,7 +663,7 @@ class _ComponentGrids(object):
             i += 1
         component_grids["i"] = component_grids["oi"]
         component_grids["o"] = component_grids["oi"]
-        del component_grids['oi']
+        del component_grids["oi"]
 
         result = {}
         for compname, prefix in self._COMP_NAMES.items():
@@ -584,9 +688,8 @@ class _ComponentGrids(object):
         else:
             all_exclude_comps = exclude_comps
         if not include_mask:
-            all_exclude_comps.append('mask')
-        result = [k for k in self._COMP_NAMES
-                  if k not in all_exclude_comps]
+            all_exclude_comps.append("mask")
+        result = [k for k in self._COMP_NAMES if k not in all_exclude_comps]
         return result
 
     def get_comp_gridname(self, compname):
@@ -663,13 +766,18 @@ class _ComponentGrids(object):
                         # component with multiple grids
                         continue
                     num_elements = len(value.split(GRID_SEP))
-                    expect(num_elements == expected_num_elements,
-                           "Unexpected number of colon-delimited elements in {}: {} (expected {} elements)".format(
-                               name, value, expected_num_elements))
+                    expect(
+                        num_elements == expected_num_elements,
+                        "Unexpected number of colon-delimited elements in {}: {} (expected {} elements)".format(
+                            name, value, expected_num_elements
+                        ),
+                    )
+
 
 # ------------------------------------------------------------------------
 # Some helper functions
 # ------------------------------------------------------------------------
+
 
 def _get_compnames_from_mapname(mapname):
     """Given a mapname like ATM2OCN_FMAPNAME, return the two component names
@@ -682,16 +790,17 @@ def _get_compnames_from_mapname(mapname):
     comp2_name = mapname[4:7].lower()
     return comp1_name, comp2_name
 
+
 def _strip_grid_from_name(name):
     """Given some string 'name', strip trailing '_grid' from name and return result
 
     Raises an exception if 'name' doesn't end with '_grid'
     """
-    expect(name.endswith('_grid'), "{} does not end with _grid".format(name))
-    return name[:-len('_grid')]
+    expect(name.endswith("_grid"), "{} does not end with _grid".format(name))
+    return name[: -len("_grid")]
 
-def _add_grid_info(info_dict, key, value,
-                   value_for_multiple=None):
+
+def _add_grid_info(info_dict, key, value, value_for_multiple=None):
     """Add a value to info_dict, handling the possibility of multiple grids for a component
 
     In the basic case, where key is not yet present in info_dict, this is equivalent to
@@ -708,8 +817,10 @@ def _add_grid_info(info_dict, key, value,
 
     """
     if not isinstance(value, str):
-        expect(value_for_multiple is not None,
-               "_add_grid_info: value_for_multiple must be specified if value is not a string")
+        expect(
+            value_for_multiple is not None,
+            "_add_grid_info: value_for_multiple must be specified if value is not a string",
+        )
     if key in info_dict:
         if value_for_multiple is not None:
             info_dict[key] = value_for_multiple
@@ -718,17 +829,18 @@ def _add_grid_info(info_dict, key, value,
     else:
         info_dict[key] = value
 
+
 def _get_unset_gridmap_value(mapname, component_grids, driver):
     """Return the appropriate setting for a given gridmap that has not been explicitly set
 
     This will be 'unset' or 'idmap' depending on various parameters.
     """
-    if driver == 'nuopc':
+    if driver == "nuopc":
         comp1_name, comp2_name = _get_compnames_from_mapname(mapname)
         grid1 = component_grids.get_comp_gridname(comp1_name)
         grid2 = component_grids.get_comp_gridname(comp2_name)
         if grid1 == grid2:
-            if grid1 != 'null' and grid2 != 'null':
+            if grid1 != "null" and grid2 != "null":
                 gridmap = "idmap"
             else:
                 gridmap = "unset"

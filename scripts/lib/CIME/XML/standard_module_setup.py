@@ -1,4 +1,3 @@
-
 # pragma pylint: disable=unused-import
 
 import logging, os, sys, re

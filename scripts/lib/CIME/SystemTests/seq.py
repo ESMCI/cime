@@ -6,18 +6,20 @@ from CIME.SystemTests.system_tests_compare_two import SystemTestsCompareTwo
 
 logger = logging.getLogger(__name__)
 
-class SEQ(SystemTestsCompareTwo):
 
+class SEQ(SystemTestsCompareTwo):
     def __init__(self, case):
         """
         initialize an object interface to file env_test.xml in the case directory
         """
-        SystemTestsCompareTwo.__init__(self,
-                                       case,
-                                       separate_builds=True,
-                                       run_two_suffix="seq",
-                                       run_one_description = "base",
-                                       run_two_description = "sequence")
+        SystemTestsCompareTwo.__init__(
+            self,
+            case,
+            separate_builds=True,
+            run_two_suffix="seq",
+            run_one_description="base",
+            run_two_description="sequence",
+        )
 
     def _case_one_setup(self):
         pass
@@ -32,7 +34,7 @@ class SEQ(SystemTestsCompareTwo):
                 self._case.set_value("ROOTPE_{}".format(comp), 0)
         else:
             totalpes = self._case.get_value("TOTALPES")
-            newntasks = max(1, totalpes//len(comp_classes))
+            newntasks = max(1, totalpes // len(comp_classes))
             rootpe = newntasks
 
             for comp in comp_classes:

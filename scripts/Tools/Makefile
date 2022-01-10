@@ -3,6 +3,17 @@
 # Common Makefile: a framework for building all CIME components and more
 #
 #===============================================================================
+ifdef MODEL
+  ifndef COMP_NAME
+    $(warning "Variable MODEL is deprecated, please use COMP_NAME instead")
+    COMP_NAME:=$(MODEL)
+  else
+    ifneq ($(MODEL), $(COMP_NAME))
+      $(warning "MODEL is inconsistent with COMP_NAME $(MODEL) $(COMP_NAME)")
+      COMP_NAME:=$(MODEL)
+    endif
+  endif
+endif
 
 # Set up special characters
 null  :=
@@ -75,7 +86,7 @@ endif
 
 CPPDEFS := $(USER_CPPDEFS) -D$(OS)
 
-include $(CASEROOT)/Macros.make
+-include $(CASEROOT)/Macros.make
 
 # Unless DEBUG mode is enabled, use NDEBUG to turn off assert statements.
 ifeq ($(strip $(DEBUG)),TRUE)
@@ -117,16 +128,11 @@ endif
 
 ifeq ($(COMP_INTERFACE), nuopc)
    CPPDEFS += -DNUOPC_INTERFACE
-   ifneq ($(LILAC_MODE), on)
-      # CDEPS isn't required yet when building CTSM with LILAC; once it is needed, we
-      # should remove this conditional and the similar one in build.py (along with the
-      # addition of LILAC_MODE to _CMD_ARGS_FOR_BUILD)
-      INCLDIR += -I$(SHAREDLIBROOT)/$(SHAREDPATH)/CDEPS/fox/include -I$(SHAREDLIBROOT)/$(SHAREDPATH)/CDEPS/dshr
-      # FoX libraries are provided and built by CDEPS
-      FoX_LIBS := -L$(SHAREDLIBROOT)/$(SHAREDPATH)/CDEPS/fox/lib -lFoX_wxml -lFoX_dom -lFoX_sax -lFoX_common -lFoX_utils -lFoX_fsys
-      ULIBS += -L$(SHAREDLIBROOT)/$(SHAREDPATH)/CDEPS/dshr -ldshr -L$(SHAREDLIBROOT)/$(SHAREDPATH)/CDEPS/streams -lstreams
-      SLIBS += $(FoX_LIBS)
-   endif
+   INCLDIR += -I$(SHAREDLIBROOT)/$(SHAREDPATH)/CDEPS/fox/include -I$(SHAREDLIBROOT)/$(SHAREDPATH)/CDEPS/dshr
+   # FoX libraries are provided and built by CDEPS
+   FoX_LIBS := -L$(SHAREDLIBROOT)/$(SHAREDPATH)/CDEPS/fox/lib -lFoX_dom -lFoX_sax -lFoX_common -lFoX_utils -lFoX_fsys -lFoX_wxml
+   ULIBS += -L$(SHAREDLIBROOT)/$(SHAREDPATH)/CDEPS/dshr -ldshr -L$(SHAREDLIBROOT)/$(SHAREDPATH)/CDEPS/streams -lstreams
+   SLIBS += $(FoX_LIBS)
 else
    CPPDEFS += -DMCT_INTERFACE
 endif
@@ -353,7 +359,7 @@ endif
 ifndef CONFIG_ARGS
   CONFIG_ARGS :=
 endif
-ifeq  ($(findstring pio,$(MODEL)),pio)
+ifeq  ($(findstring pio,$(COMP_NAME)),pio)
   CONFIG_ARGS+= --enable-timing
   ifeq ($DEBUG,TRUE)
      CONFIG_ARGS+= --enable-debug
@@ -413,7 +419,7 @@ ifdef INC_MOAB
   INCLDIR += -I$(INC_MOAB)
 endif
 
-ifeq ($(MODEL),driver)
+ifeq ($(COMP_NAME),driver)
   INCLDIR += -I$(EXEROOT)/atm/obj -I$(EXEROOT)/ice/obj -I$(EXEROOT)/ocn/obj -I$(EXEROOT)/glc/obj -I$(EXEROOT)/rof/obj -I$(EXEROOT)/wav/obj -I$(EXEROOT)/esp/obj -I$(EXEROOT)/iac/obj
 # nagfor and gcc have incompatible LDFLAGS.
 # nagfor requires the weird "-Wl,-Wl,," syntax.
@@ -495,7 +501,7 @@ FFLAGS_NOOPT += $(FPPDEFS)
 ifeq ($(findstring -cosp,$(CAM_CONFIG_OPTS)),-cosp)
   # The following is for the COSP simulator code:
   COSP_LIBDIR:=$(abspath $(EXEROOT)/atm/obj/cosp)
-  ifeq ($(MODEL),driver)
+  ifeq ($(COMP_NAME),driver)
     INCLDIR+=-I$(COSP_LIBDIR)
   endif
 endif
@@ -511,14 +517,14 @@ ifeq ($(strip $(COMP_ATM)),cam)
   ifeq ($(CAM_DYCORE),mpas)
     # For building CAM with the MPAS dycore
     MPAS_LIBDIR:=$(abspath $(EXEROOT)/atm/obj/mpas)
-    ifeq ($(MODEL),driver)
+    ifeq ($(COMP_NAME),driver)
       # This is needed by some compilers when building the driver.
       INCLDIR+=-I$(MPAS_LIBDIR)
     endif
   endif
 endif
 
-ifeq ($(MODEL),cam)
+ifeq ($(COMP_NAME),cam)
   # These RRTMG files take an extraordinarily long time to compile with optimization.
   # Until mods are made to read the data from files, just remove optimization from
   # their compilation.
@@ -612,12 +618,10 @@ endif
 # Drive configure scripts for support libraries (mct)
 #------------------------------------------------------------------------------
 
-ifeq ($(CIME_MODEL),cesm)
-    #This will be changed to EXTERN_PATH = $(SRCROOT)/libraries when the new
-    #share repos are used for cesm2.
-    EXTERN_PATH = $(CIMEROOT)/src/externals
+ifneq ("$(wildcard $(SRCROOT)/libraries)","")
+    EXTERN_PATH = $(SRCROOT)/libraries
 else
-    EXTERN_PATH = $(CIMEROOT)/src/externals
+    EXTERN_PATH = $(SRCROOT)/externals
 endif
 
 $(SHAREDLIBROOT)/$(SHAREDPATH)/mct/Makefile.conf:
@@ -634,7 +638,7 @@ ifndef IO_LIB_SRCROOT
   endif
 
   ifeq ($(PIO_VERSION),2)
-    PIO_SRC_DIR = $(PIO_SRCROOT)/pio2
+    PIO_SRC_DIR = $(PIO_SRCROOT)/parallelio
   else
     ifneq ("$(wildcard $(PIO_SRCROOT)/pio1/pio)", "")
       PIO_SRC_DIR = $(PIO_SRCROOT)/pio1
@@ -655,13 +659,20 @@ else
   PIOLIB = $(PIO_LIBDIR)/libpio.a
   PIOLIBNAME = -lpio
 endif
-#endif
 
 MCTLIBS = $(MCT_LIBDIR)/libmct.a $(MCT_LIBDIR)/libmpeu.a
 
 GPTLLIB = $(GPTL_LIBDIR)/libgptl.a
 
-ULIBS += -L$(INSTALL_SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/$(NINST_VALUE)/lib -lcsm_share -L$(INSTALL_SHAREDPATH)/lib $(PIOLIBNAME) -lgptl -lmct -lmpeu
+ULIBS += -L$(INSTALL_SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/$(NINST_VALUE)/lib
+
+ifneq ($(COMP_INTERFACE), nuopc)
+  ifneq ("$(wildcard $(SRCROOT)/components/cpl7)","")
+    ULIBS += -lcsm_share_cpl7
+  endif
+endif
+
+ULIBS += -lcsm_share -L$(INSTALL_SHAREDPATH)/lib $(PIOLIBNAME) -lgptl -lmct -lmpeu
 
 #------------------------------------------------------------------------------
 # Drive cmake script for cism and pio
@@ -681,7 +692,7 @@ CMAKE_OPTS += -Wno-dev -D CMAKE_Fortran_FLAGS:STRING="$(FFLAGS) $(EXTRA_PIO_FPPD
 	      -D GPTL_PATH:STRING=$(INSTALL_SHAREDPATH) \
 	      -D PIO_ENABLE_TESTS:BOOL=OFF \
 	      -D PIO_USE_MALLOC:BOOL=ON \
-	      -D USER_CMAKE_MODULE_PATH:LIST="$(CIMEROOT)/src/CMake;$(EXTERN_PATH)/pio2/cmake"
+	      -D USER_CMAKE_MODULE_PATH:LIST="$(CIMEROOT)/src/CMake;$(EXTERN_PATH)/parallelio/cmake"
 
 ifeq ($(DEBUG), TRUE)
   CMAKE_OPTS += -D PIO_ENABLE_LOGGING=ON
@@ -834,7 +845,7 @@ else
   LNDOBJDIR = $(SHAREDLIBROOT)/$(SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/clm/obj
   LNDLIBDIR = $(EXEROOT)/$(SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/lib
   INCLDIR += -I$(INSTALL_SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/include
-  ifeq ($(MODEL),clm)
+  ifeq ($(COMP_NAME),clm)
     INCLUDE_DIR = $(INSTALL_SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/include
   endif
 endif
@@ -873,6 +884,11 @@ endif
 
 # libcsm_share.a is in ULIBDEP, but -lcsm_share is in ULIBS rather than CLIBS,
 # so this needs to be added after creating CLIBS above
+ifeq ($(CIME_MODEL),cesm)
+  ifneq ($(COMP_INTERFACE), nuopc)
+    CSMSHARELIB_CPL7 = $(INSTALL_SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/$(NINST_VALUE)/lib/libcsm_share_cpl7.a
+  endif
+endif
 CSMSHARELIB = $(INSTALL_SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/$(NINST_VALUE)/lib/libcsm_share.a
 ULIBDEP += $(CSMSHARELIB)
 
@@ -898,8 +914,10 @@ $(PIOLIB) : $(MPISERIAL) $(GPTLLIB)
 
 $(CSMSHARELIB):  $(MCTLIBS) $(PIOLIB) $(GPTLLIB)
 
-ifneq ($(MODEL),csm_share)
-  $(OBJS):  $(CSMSHARELIB)
+ifneq ($(findstring csm_share,$(COMP_NAME)),csm_share)
+  $(OBJS):  $(CSMSHARELIB) $(CSMSHARELIB_CPL7)
+else ifeq ($(COMP_NAME),csm_share_cpl7)
+  complib: install_lib_cpl7
 else
   complib: install_lib
 endif
@@ -908,9 +926,13 @@ install_lib: $(COMPLIB)
 	$(CP) -p $(COMPLIB) $(CSMSHARELIB)
 	$(CP) -p *.$(MOD_SUFFIX) *.h $(INCLUDE_DIR)
 
+install_lib_cpl7: $(COMPLIB)
+	$(CP) -p $(COMPLIB) $(CSMSHARELIB_CPL7)
+	$(CP) -p *.$(MOD_SUFFIX) $(INCLUDE_DIR)
+
 # This rule writes the include flags and the link flags used in the $(EXEC_SE) rule below
 # It expects the variable OUTPUT_FILE to be defined
-# Set MODEL=driver to get the same flags as are used when building the driver
+# Set COMP_NAME=driver to get the same flags as are used when building the driver
 .PHONY: write_include_and_link_flags
 write_include_and_link_flags:
 	@$(RM) -f $(OUTPUT_FILE)
@@ -979,6 +1001,7 @@ clean_dependslnd:
 
 clean_dependscsmshare:
 	$(RM) -f $(SHAREDLIBROOT)/$(SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/$(NINST_VALUE)/csm_share/Srcfiles
+	$(RM) -f $(SHAREDLIBROOT)/$(SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/$(NINST_VALUE)/csm_share_cpl7/Srcfiles
 
 clean_depends: clean_dependsatm clean_dependscpl clean_dependswav clean_dependsglc clean_dependsice clean_dependsrof clean_dependslnd clean_dependscsmshare clean_dependsesp clean_dependsiac
 
@@ -1025,6 +1048,7 @@ cleanlnd:
 cleancsmshare:
 	$(RM) -f $(CSMSHARELIB)
 	$(RM) -fr $(SHAREDLIBROOT)/$(SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/$(NINST_VALUE)/csm_share
+	$(RM) -fr $(SHAREDLIBROOT)/$(SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/$(NINST_VALUE)/csm_share_cpl7
 
 cleanpio:
 	$(RM) -f $(PIO_LIBDIR)/libpio*
@@ -1050,6 +1074,6 @@ ifeq (,$(findstring clean,$(MAKECMDGOALS)))
 endif
 endif
 endif
-ifeq ($(MODEL),csm_share)
+ifeq ($(COMP_NAME),csm_share)
   shr_assert_mod.mod: shr_assert_mod.o
 endif

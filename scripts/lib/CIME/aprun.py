@@ -10,11 +10,20 @@ import math
 logger = logging.getLogger(__name__)
 
 ###############################################################################
-def _get_aprun_cmd_for_case_impl(ntasks, nthreads, rootpes, pstrids,
-                                 max_tasks_per_node, max_mpitasks_per_node,
-                                 pio_numtasks, pio_async_interface,
-                                 compiler, machine, run_exe):
-###############################################################################
+def _get_aprun_cmd_for_case_impl(
+    ntasks,
+    nthreads,
+    rootpes,
+    pstrids,
+    max_tasks_per_node,
+    max_mpitasks_per_node,
+    pio_numtasks,
+    pio_async_interface,
+    compiler,
+    machine,
+    run_exe,
+):
+    ###############################################################################
     """
     No one really understands this code, but we can at least test it.
 
@@ -70,13 +79,23 @@ def _get_aprun_cmd_for_case_impl(ntasks, nthreads, rootpes, pstrids,
             maxt[c1] = 1
 
     # Compute task and thread settings for batch commands
-    tasks_per_node, min_tasks_per_node, task_count, thread_count, max_thread_count, total_node_count, total_task_count, aprun_args = \
-        0, max_mpitasks_per_node, 1, maxt[0], maxt[0], 0, 0, ""
+    (
+        tasks_per_node,
+        min_tasks_per_node,
+        task_count,
+        thread_count,
+        max_thread_count,
+        total_node_count,
+        total_task_count,
+        aprun_args,
+    ) = (0, max_mpitasks_per_node, 1, maxt[0], maxt[0], 0, 0, "")
     c1list = list(range(1, total_tasks))
     c1list.append(None)
     for c1 in c1list:
         if c1 is None or maxt[c1] != thread_count:
-            tasks_per_node = min(max_mpitasks_per_node, int(max_tasks_per_node / thread_count))
+            tasks_per_node = min(
+                max_mpitasks_per_node, int(max_tasks_per_node / thread_count)
+            )
 
             tasks_per_node = min(task_count, tasks_per_node)
 
@@ -88,7 +107,13 @@ def _get_aprun_cmd_for_case_impl(ntasks, nthreads, rootpes, pstrids,
                 if compiler == "intel":
                     aprun_args += " -cc numa_node"
 
-            aprun_args += " -n {:d} -N {:d} -d {:d} {} {}".format(task_count, tasks_per_node, thread_count, run_exe, "" if c1 is None else ":")
+            aprun_args += " -n {:d} -N {:d} -d {:d} {} {}".format(
+                task_count,
+                tasks_per_node,
+                thread_count,
+                run_exe,
+                "" if c1 is None else ":",
+            )
 
             node_count = int(math.ceil(float(task_count) / tasks_per_node))
             total_node_count += node_count
@@ -105,11 +130,18 @@ def _get_aprun_cmd_for_case_impl(ntasks, nthreads, rootpes, pstrids,
         else:
             task_count += 1
 
-    return aprun_args, total_node_count, total_task_count, min_tasks_per_node, max_thread_count
+    return (
+        aprun_args,
+        total_node_count,
+        total_task_count,
+        min_tasks_per_node,
+        max_thread_count,
+    )
+
 
 ###############################################################################
 def get_aprun_cmd_for_case(case, run_exe, overrides=None):
-###############################################################################
+    ###############################################################################
     """
     Given a case, construct and return the aprun command and optimized node count
     """
@@ -117,25 +149,30 @@ def get_aprun_cmd_for_case(case, run_exe, overrides=None):
     ntasks, nthreads, rootpes, pstrids = [], [], [], []
     for model in models:
         model = "CPL" if model == "DRV" else model
-        for the_list, item_name in zip([ntasks, nthreads, rootpes, pstrids],
-                                       ["NTASKS", "NTHRDS", "ROOTPE", "PSTRID"]):
+        for the_list, item_name in zip(
+            [ntasks, nthreads, rootpes, pstrids],
+            ["NTASKS", "NTHRDS", "ROOTPE", "PSTRID"],
+        ):
             the_list.append(case.get_value("_".join([item_name, model])))
     max_tasks_per_node = case.get_value("MAX_TASKS_PER_NODE")
     if overrides:
-        if 'max_tasks_per_node' in overrides:
-            max_tasks_per_node = overrides['max_tasks_per_node'] 
-        if 'total_tasks' in overrides:
-            ntasks = [overrides['total_tasks'] if x > 1 else x for x in ntasks]
-        if 'thread_count' in overrides:
-            nthreads = [overrides['thread_count'] if x > 1 else x for x in nthreads]
-    
+        if "max_tasks_per_node" in overrides:
+            max_tasks_per_node = overrides["max_tasks_per_node"]
+        if "total_tasks" in overrides:
+            ntasks = [overrides["total_tasks"] if x > 1 else x for x in ntasks]
+        if "thread_count" in overrides:
+            nthreads = [overrides["thread_count"] if x > 1 else x for x in nthreads]
 
-
-    return _get_aprun_cmd_for_case_impl(ntasks, nthreads, rootpes, pstrids,
-                                        max_tasks_per_node,
-                                        case.get_value("MAX_MPITASKS_PER_NODE"),
-                                        case.get_value("PIO_NUMTASKS"),
-                                        case.get_value("PIO_ASYNC_INTERFACE"),
-                                        case.get_value("COMPILER"),
-                                        case.get_value("MACH"),
-                                        run_exe)
+    return _get_aprun_cmd_for_case_impl(
+        ntasks,
+        nthreads,
+        rootpes,
+        pstrids,
+        max_tasks_per_node,
+        case.get_value("MAX_MPITASKS_PER_NODE"),
+        case.get_value("PIO_NUMTASKS"),
+        case.get_value("PIO_ASYNC_INTERFACE"),
+        case.get_value("COMPILER"),
+        case.get_value("MACH"),
+        run_exe,
+    )

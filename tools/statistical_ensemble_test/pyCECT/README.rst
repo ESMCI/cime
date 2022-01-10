@@ -21,7 +21,7 @@ CESM simulations.
 
 Obtaining the code:
 ----------------
-	  
+
 Currently, the most up-to-date development source code is available via git from the site:
 
 https://github.com/NCAR/PyCECT
