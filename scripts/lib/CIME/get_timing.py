@@ -150,22 +150,26 @@ class _TimingParser:
         m = None
         timeline = []
         #  PETs   Count    Mean (s)    Min (s)     Min PET Max (s)     Max PET
-        timeline.append(re.compile(
-            r"\s*{}\s+\d+\s+\d+\s+(\d*\.\d+)\s+(\d*\.\d+)\s+\d+\s+(\d*\.\d+)\s+\d+".format(
-                re.escape(heading)
+        timeline.append(
+            re.compile(
+                r"\s*{}\s+\d+\s+\d+\s+(\d*\.\d+)\s+(\d*\.\d+)\s+\d+\s+(\d*\.\d+)\s+\d+".format(
+                    re.escape(heading)
+                )
             )
-        ))
+        )
         #  PETs   PEs  Count    Mean (s)    Min (s)     Min PET Max (s)     Max PET
-        timeline.append(re.compile(
-            r"\s*{}\s+\d+\s+\d+\s+\d+\s+(\d*\.\d+)\s+(\d*\.\d+)\s+\d+\s+(\d*\.\d+)\s+\d+".format(
-                re.escape(heading)
+        timeline.append(
+            re.compile(
+                r"\s*{}\s+\d+\s+\d+\s+\d+\s+(\d*\.\d+)\s+(\d*\.\d+)\s+\d+\s+(\d*\.\d+)\s+\d+".format(
+                    re.escape(heading)
+                )
             )
-        ))
+        )
         phase = None
         for line in self.finlines:
             if line.startswith("Region"):
                 if "PEs" in line:
-                    version = 1            
+                    version = 1
                 else:
                     version = 0
             phase = self._get_nuopc_phase(line, instance, phase)
@@ -179,7 +183,7 @@ class _TimingParser:
                     return (minval, maxval, True)
                 else:
                     expect(False, "Parsing error in ESMF_Profile.summary file")
-                
+
         return (0, 0, False)
 
     @staticmethod
@@ -197,28 +201,32 @@ class _TimingParser:
     def getMEDtime(self, instance):
         if instance == "":
             instance = "0001"
-        
+
         med_phase_line = []
         med_connector_line = []
         med_fraction_line = []
-        med_phase_line.append(re.compile(
-            r"\s*(\[MED\] med_phases\S+)\s+\d+\s+\d+\s+(\d*\.\d+)\s+"
-        ))
-        med_connector_line.append( re.compile(
-            r"\s*(\[MED\] med_connectors\S+)\s+\d+\s+\d+\s+(\d*\.\d+)\s+"
-        ))
-        med_fraction_line.append(re.compile(
-            r"\s*(\[MED\] med_fraction\S+)\s+\d+\s+\d+\s+(\d*\.\d+)\s+"
-        ))
-        med_phase_line.append(re.compile(
-            r"\s*(\[MED\] med_phases\S+)\s+\d+\s+\d+\s+\d+\s+(\d*\.\d+)\s+"
-        ))
-        med_connector_line.append(re.compile(
-            r"\s*(\[MED\] med_connectors\S+)\s+\d+\s+\d+\s+\d+\s+(\d*\.\d+)\s+"
-        ))
-        med_fraction_line.append(re.compile(
-            r"\s*(\[MED\] med_fraction\S+)\s+\d+\s+\d+\s+\d+\s+(\d*\.\d+)\s+"
-        ))
+        med_phase_line.append(
+            re.compile(r"\s*(\[MED\] med_phases\S+)\s+\d+\s+\d+\s+(\d*\.\d+)\s+")
+        )
+        med_connector_line.append(
+            re.compile(r"\s*(\[MED\] med_connectors\S+)\s+\d+\s+\d+\s+(\d*\.\d+)\s+")
+        )
+        med_fraction_line.append(
+            re.compile(r"\s*(\[MED\] med_fraction\S+)\s+\d+\s+\d+\s+(\d*\.\d+)\s+")
+        )
+        med_phase_line.append(
+            re.compile(r"\s*(\[MED\] med_phases\S+)\s+\d+\s+\d+\s+\d+\s+(\d*\.\d+)\s+")
+        )
+        med_connector_line.append(
+            re.compile(
+                r"\s*(\[MED\] med_connectors\S+)\s+\d+\s+\d+\s+\d+\s+(\d*\.\d+)\s+"
+            )
+        )
+        med_fraction_line.append(
+            re.compile(
+                r"\s*(\[MED\] med_fraction\S+)\s+\d+\s+\d+\s+\d+\s+(\d*\.\d+)\s+"
+            )
+        )
 
         m = None
         minval = 0
@@ -227,7 +235,7 @@ class _TimingParser:
         for line in self.finlines:
             if line.startswith("Region"):
                 if "PEs" in line:
-                    version = 1            
+                    version = 1
                 else:
                     version = 0
 
@@ -249,19 +257,21 @@ class _TimingParser:
         if instance == "":
             instance = "0001"
         comm_line = []
-        comm_line.append( re.compile(
-            r"\s*(\[\S+-TO-\S+\] RunPhase1)\s+\d+\s+\d+\s+(\d*\.\d+)\s+"
-        ))
-        comm_line.append( re.compile(
-            r"\s*(\[\S+-TO-\S+\] RunPhase1)\s+\d+\s+\d+\s+\d+\s+(\d*\.\d+)\s+"
-        ))
+        comm_line.append(
+            re.compile(r"\s*(\[\S+-TO-\S+\] RunPhase1)\s+\d+\s+\d+\s+(\d*\.\d+)\s+")
+        )
+        comm_line.append(
+            re.compile(
+                r"\s*(\[\S+-TO-\S+\] RunPhase1)\s+\d+\s+\d+\s+\d+\s+(\d*\.\d+)\s+"
+            )
+        )
         m = None
         maxval = 0
         phase = None
         for line in self.finlines:
             if line.startswith("Region"):
                 if "PEs" in line:
-                    version = 1            
+                    version = 1
                 else:
                     version = 0
             phase = self._get_nuopc_phase(line, instance, phase)
