@@ -571,7 +571,7 @@ class SystemTestsCommon(object):
                         self._test_status.set_status(
                             MEMLEAK_PHASE,
                             TEST_PASS_STATUS,
-                            comments="insuffiencient data for memleak test",
+                            comments="data for memleak test is insuffiencient",
                         )
                     elif memdiff < tolerance:
                         self._test_status.set_status(MEMLEAK_PHASE, TEST_PASS_STATUS)
@@ -653,15 +653,20 @@ class SystemTestsCommon(object):
                     blmem = 0 if blmem == [] else blmem[-1][1]
                     curmem = memlist[-1][1]
                     diff = 0.0 if blmem == 0 else (curmem - blmem) / blmem
+                    tolerance = self._case.get_value("TEST_MEMLEAK_TOLERANCE")
+                    if tolerance is None:
+                        tolerance = 0.1
                     if (
-                        diff < 0.1
+                        diff < tolerance
                         and self._test_status.get_status(MEMCOMP_PHASE) is None
                     ):
                         self._test_status.set_status(MEMCOMP_PHASE, TEST_PASS_STATUS)
                     elif (
                         self._test_status.get_status(MEMCOMP_PHASE) != TEST_FAIL_STATUS
                     ):
-                        comment = "Error: Memory usage increase > 10% from baseline"
+                        comment = "Error: Memory usage increase >{:d}% from baseline's {:f} to {:f}".format(
+                            int(tolerance * 100), blmem, curmem
+                        )
                         self._test_status.set_status(
                             MEMCOMP_PHASE, TEST_FAIL_STATUS, comments=comment
                         )
