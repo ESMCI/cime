@@ -33,6 +33,7 @@ class _TimingParser:
         self.models = {}
         self.ncount = 0
         self.nprocs = 0
+        self.version = -1
 
     def write(self, text):
         self.fout.write(text)
@@ -81,6 +82,8 @@ class _TimingParser:
         if self._driver == "mct":
             return self._gettime2_mct(heading_padded)
         elif self._driver == "nuopc":
+            if self.version < 0:
+                self._get_esmf_profile_version()
             return self._gettime2_nuopc()
 
     def _gettime2_mct(self, heading_padded):
@@ -121,6 +124,8 @@ class _TimingParser:
         if self._driver == "mct":
             return self._gettime_mct(heading_padded)
         elif self._driver == "nuopc":
+            if self.version < 0:
+                self._get_esmf_profile_version()
             return self._gettime_nuopc(heading_padded)
 
     def _gettime_mct(self, heading_padded):
@@ -141,6 +146,16 @@ class _TimingParser:
                 found = True
                 return (minval, maxval, found)
         return (0, 0, False)
+
+    def _get_esmf_profile_version(self):
+        expect(self.finlines, " No ESMF_Profile.summary file found")
+        for line in self.finlines:
+            if line.startswith("Region"):
+                if "PEs" in line:
+                    self.version = 1
+                else:
+                    self.version = 0
+        
 
     def _gettime_nuopc(self, heading, instance="0001"):
         if instance == "":
@@ -167,16 +182,11 @@ class _TimingParser:
         )
         phase = None
         for line in self.finlines:
-            if line.startswith("Region"):
-                if "PEs" in line:
-                    version = 1
-                else:
-                    version = 0
             phase = self._get_nuopc_phase(line, instance, phase)
             if phase != "run" and not "[ensemble]" in heading:
                 continue
             if heading in line:
-                m = timeline[version].match(line)
+                m = timeline[self.version].match(line)
                 if m:
                     minval = float(m.group(2))
                     maxval = float(m.group(3))
@@ -233,20 +243,14 @@ class _TimingParser:
         maxval = 0
         phase = None
         for line in self.finlines:
-            if line.startswith("Region"):
-                if "PEs" in line:
-                    version = 1
-                else:
-                    version = 0
-
             phase = self._get_nuopc_phase(line, instance, phase)
             if phase != "run":
                 continue
-            m = med_phase_line[version].match(line)
+            m = med_phase_line[self.version].match(line)
             if not m:
-                m = med_connector_line[version].match(line)
+                m = med_connector_line[self.version].match(line)
             if not m:
-                m = med_fraction_line[version].match(line)
+                m = med_fraction_line[self.version].match(line)
             if m:
                 minval += float(m.group(2))
                 maxval += float(m.group(2))
@@ -269,15 +273,10 @@ class _TimingParser:
         maxval = 0
         phase = None
         for line in self.finlines:
-            if line.startswith("Region"):
-                if "PEs" in line:
-                    version = 1
-                else:
-                    version = 0
             phase = self._get_nuopc_phase(line, instance, phase)
             if phase != "run":
                 continue
-            m = comm_line[version].match(line)
+            m = comm_line[self.version].match(line)
             if m:
                 heading = m.group(1)
                 maxv = float(m.group(2))
