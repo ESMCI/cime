@@ -148,6 +148,11 @@ class _TimingParser:
         return (0, 0, False)
 
     def _get_esmf_profile_version(self):
+        '''
+        Prior to ESMF8_3_0_beta_snapshot_04 the PEs column was not in ESMF_Profile.summary
+        this routine looks for that in the header field to determine if this file was produced 
+        by a newer (version 1) or older (version 0) ESMF library.
+        '''
         expect(self.finlines, " No ESMF_Profile.summary file found")
         for line in self.finlines:
             if line.startswith("Region"):
