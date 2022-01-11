@@ -2571,10 +2571,10 @@ def get_urlroot(machobj=None):
     return None
 
 
-def clear_folder(dir):
-    if os.path.exists(dir):
-        for the_file in os.listdir(dir):
-            file_path = os.path.join(dir, the_file)
+def clear_folder(_dir):
+    if os.path.exists(_dir):
+        for the_file in os.listdir(_dir):
+            file_path = os.path.join(_dir, the_file)
             try:
                 if os.path.isfile(file_path):
                     os.unlink(file_path)
