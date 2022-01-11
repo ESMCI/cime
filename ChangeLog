@@ -14,7 +14,7 @@ Brief Summary:
     - New compset naming convention.
     - Changes needed for new cesm grid split in ccs_config_cesm.
     - Move cesm config files to new repository - ccs_config_cesm.
-    - Add enforcing code formatting to pre-commit. 
+    - Add enforcing code formatting to pre-commit.
     - Support importing buildnml from cime_config/{compname}_cime_py.
     - Update the documentation of --extra-machines-dir.
     - Fix returning correct test results.
