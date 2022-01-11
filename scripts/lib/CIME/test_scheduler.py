@@ -346,8 +346,6 @@ class TestScheduler(object):
                     "Baseline directories already exists {}\n"
                     "Use -o to avoid this error".format(existing_baselines),
                 )
-                    
-
 
         if self._cime_model == "e3sm":
             _order_tests_by_runtime(test_names, self._baseline_root)

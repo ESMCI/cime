@@ -2570,6 +2570,7 @@ def get_urlroot(machobj=None):
     logger.info("No urlroot info available")
     return None
 
+
 def clear_folder(dir):
     if os.path.exists(dir):
         for the_file in os.listdir(dir):
