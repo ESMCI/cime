@@ -17,6 +17,8 @@ def cs_status(
     summary=False,
     fails_only=False,
     count_fails_phase_list=None,
+    check_throughput=False,
+    check_memory=False,
     expected_fails_filepath=None,
     out=sys.stdout,
 ):
@@ -56,13 +58,18 @@ def cs_status(
         ts = TestStatus(test_dir=test_dir)
         test_id = os.path.basename(test_dir).split(".")[-1]
         if summary:
-            output = _overall_output(ts, "  {status} {test_name}\n")
+            output = _overall_output(
+                ts, "  {status} {test_name}\n", check_throughput, check_memory
+            )
         else:
             if fails_only:
                 output = ""
             else:
                 output = _overall_output(
-                    ts, "  {test_name} (Overall: {status}) details:\n"
+                    ts,
+                    "  {test_name} (Overall: {status}) details:\n",
+                    check_throughput,
+                    check_memory,
                 )
             output += ts.phase_statuses_dump(
                 prefix="    ",
@@ -107,7 +114,7 @@ def _get_xfails(expected_fails_filepath):
     return xfails
 
 
-def _overall_output(ts, format_str):
+def _overall_output(ts, format_str, check_throughput, check_memory):
     """Returns a string giving the overall test status
 
     Args:
@@ -116,5 +123,8 @@ def _overall_output(ts, format_str):
         contain place-holders for status and test_name
     """
     test_name = ts.get_name()
-    status = ts.get_overall_test_status()[0]
+    status = ts.get_overall_test_status(
+        check_throughput=check_throughput,
+        check_memory=check_memory,
+    )[0]
     return format_str.format(status=status, test_name=test_name)
