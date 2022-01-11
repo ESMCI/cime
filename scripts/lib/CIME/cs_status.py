@@ -58,14 +58,18 @@ def cs_status(
         ts = TestStatus(test_dir=test_dir)
         test_id = os.path.basename(test_dir).split(".")[-1]
         if summary:
-            output = _overall_output(ts, "  {status} {test_name}\n", check_throughput, check_memory)
+            output = _overall_output(
+                ts, "  {status} {test_name}\n", check_throughput, check_memory
+            )
         else:
             if fails_only:
                 output = ""
             else:
                 output = _overall_output(
-                    ts, "  {test_name} (Overall: {status}) details:\n",
-                    check_throughput, check_memory
+                    ts,
+                    "  {test_name} (Overall: {status}) details:\n",
+                    check_throughput,
+                    check_memory,
                 )
             output += ts.phase_statuses_dump(
                 prefix="    ",
