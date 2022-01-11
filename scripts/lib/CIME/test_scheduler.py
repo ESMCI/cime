@@ -339,12 +339,15 @@ class TestScheduler(object):
                     test_baseline = os.path.join(full_baseline_dir, test_name)
                     if os.path.isdir(test_baseline):
                         existing_baselines.append(test_baseline)
-
+                        if allow_baseline_overwrite:
+                            utils.clear_folder(test_baseline)
                 expect(
                     allow_baseline_overwrite or len(existing_baselines) == 0,
                     "Baseline directories already exists {}\n"
                     "Use -o to avoid this error".format(existing_baselines),
                 )
+                    
+
 
         if self._cime_model == "e3sm":
             _order_tests_by_runtime(test_names, self._baseline_root)
