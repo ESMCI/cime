@@ -27,7 +27,7 @@ from CIME.utils import (
     get_timestamp,
     get_python_libs_root,
     get_cime_default_driver,
-    clear_folder
+    clear_folder,
 )
 from CIME.test_status import *
 from CIME.XML.machines import Machines
