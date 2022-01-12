@@ -96,11 +96,7 @@ $GRIDMAP_ENTRIES
     _DOMAIN_F09 = """
     <domain name="0.9x1.25">
       <nx>288</nx>  <ny>192</ny>
-      <file grid="atm|lnd" mask="gx1v6">domain.lnd.fv0.9x1.25_gx1v6.nc</file>
-      <file grid="ocnice"  mask="gx1v6">domain.ocn.fv0.9x1.25_gx1v6.nc</file>
-      <file grid="atm|lnd" mask="gx1v7">domain.lnd.fv0.9x1.25_gx1v7.nc</file>
-      <file grid="ocnice"  mask="gx1v7">domain.ocn.fv0.9x1.25_gx1v7.nc</file>
-      <mesh driver="nuopc">fv0.9x1.25_ESMFmesh.nc</mesh>
+      <mesh>fv0.9x1.25_ESMFmesh.nc</mesh>
       <desc>0.9x1.25 is FV 1-deg grid:</desc>
     </domain>
 """
@@ -108,9 +104,7 @@ $GRIDMAP_ENTRIES
     _DOMAIN_G17 = """
     <domain name="gx1v7">
       <nx>320</nx>  <ny>384</ny>
-      <file grid="atm|lnd">domain.ocn.gx1v7.nc</file>
-      <file grid="ocnice">domain.ocn.gx1v7.nc</file>
-      <mesh driver="nuopc">gx1v7_ESMFmesh.nc</mesh>
+      <mesh>gx1v7_ESMFmesh.nc</mesh>
       <desc>gx1v7 is displaced Greenland pole 1-deg grid with Caspian as a land feature:</desc>
     </domain>
 """
@@ -118,7 +112,7 @@ $GRIDMAP_ENTRIES
     _DOMAIN_GRIS4 = """
     <domain name="gris4">
       <nx>416</nx> <ny>704</ny>
-      <mesh driver="nuopc">greenland_4km_ESMFmesh.nc</mesh>
+      <mesh>greenland_4km_ESMFmesh.nc</mesh>
       <desc>4-km Greenland grid</desc>
     </domain>
 """
@@ -126,7 +120,7 @@ $GRIDMAP_ENTRIES
     _DOMAIN_AIS8 = """
     <domain name="ais8">
       <nx>704</nx> <ny>576</ny>
-      <mesh driver="nuopc">antarctica_8km_ESMFmesh.nc</mesh>
+      <mesh>antarctica_8km_ESMFmesh.nc</mesh>
       <desc>8-km Antarctica grid</desc>
     </domain>
 """
@@ -134,7 +128,7 @@ $GRIDMAP_ENTRIES
     _DOMAIN_LIS12 = """
     <domain name="lis12">
       <nx>123</nx> <ny>456</ny>
-      <mesh driver="nuopc">laurentide_12km_ESMFmesh.nc</mesh>
+      <mesh>laurentide_12km_ESMFmesh.nc</mesh>
       <desc>12-km Laurentide grid</desc>
     </domain>
 """
@@ -206,42 +200,30 @@ $GRIDMAP_ENTRIES
                 "GRIDMAP_ENTRIES": gridmap_entries,
             }
         )
-        with open(self._xml_filepath, "w") as xml_file:
+        with open(self._xml_filepath, "w", encoding="UTF-8") as xml_file:
             xml_file.write(grids_xml)
 
-    def assert_grid_info_f09_g17(self, grid_info, nuopc=True):
-        """Asserts that expected grid info is present and correct when using _MODEL_GRID_F09_G17
-
-        If nuopc is true (the default), then assumes that we used the nuopc driver.
-
-        """
+    def assert_grid_info_f09_g17(self, grid_info):
+        """Asserts that expected grid info is present and correct when using _MODEL_GRID_F09_G17"""
         self.assertEqual(grid_info["ATM_NX"], 288)
         self.assertEqual(grid_info["ATM_NY"], 192)
         self.assertEqual(grid_info["ATM_GRID"], "0.9x1.25")
-        self.assertEqual(grid_info["ATM_DOMAIN_FILE"], "domain.lnd.fv0.9x1.25_gx1v7.nc")
-        if nuopc:
-            self.assertEqual(grid_info["ATM_DOMAIN_MESH"], "fv0.9x1.25_ESMFmesh.nc")
+        self.assertEqual(grid_info["ATM_DOMAIN_MESH"], "fv0.9x1.25_ESMFmesh.nc")
 
         self.assertEqual(grid_info["LND_NX"], 288)
         self.assertEqual(grid_info["LND_NY"], 192)
         self.assertEqual(grid_info["LND_GRID"], "0.9x1.25")
-        self.assertEqual(grid_info["LND_DOMAIN_FILE"], "domain.lnd.fv0.9x1.25_gx1v7.nc")
-        if nuopc:
-            self.assertEqual(grid_info["LND_DOMAIN_MESH"], "fv0.9x1.25_ESMFmesh.nc")
+        self.assertEqual(grid_info["LND_DOMAIN_MESH"], "fv0.9x1.25_ESMFmesh.nc")
 
         self.assertEqual(grid_info["OCN_NX"], 320)
         self.assertEqual(grid_info["OCN_NY"], 384)
         self.assertEqual(grid_info["OCN_GRID"], "gx1v7")
-        self.assertEqual(grid_info["OCN_DOMAIN_FILE"], "domain.ocn.gx1v7.nc")
-        if nuopc:
-            self.assertEqual(grid_info["OCN_DOMAIN_MESH"], "gx1v7_ESMFmesh.nc")
+        self.assertEqual(grid_info["OCN_DOMAIN_MESH"], "gx1v7_ESMFmesh.nc")
 
         self.assertEqual(grid_info["ICE_NX"], 320)
         self.assertEqual(grid_info["ICE_NY"], 384)
         self.assertEqual(grid_info["ICE_GRID"], "gx1v7")
-        self.assertEqual(grid_info["ICE_DOMAIN_FILE"], "domain.ocn.gx1v7.nc")
-        if nuopc:
-            self.assertEqual(grid_info["ICE_DOMAIN_MESH"], "gx1v7_ESMFmesh.nc")
+        self.assertEqual(grid_info["ICE_DOMAIN_MESH"], "gx1v7_ESMFmesh.nc")
 
         self.assertEqual(
             grid_info["ATM2OCN_FMAPNAME"], "map_fv0.9x1.25_TO_gx1v7_aave.nc"
@@ -251,19 +233,17 @@ $GRIDMAP_ENTRIES
         )
         self.assertFalse("OCN2ATM_SHOULDBEABSENT" in grid_info)
 
-    def assert_grid_info_f09_g17_3glc(self, grid_info, nuopc=True):
+    def assert_grid_info_f09_g17_3glc(self, grid_info):
         """Asserts that all domain info is present & correct for _MODEL_GRID_F09_G17_3GLC"""
-        self.assert_grid_info_f09_g17(grid_info, nuopc=nuopc)
+        self.assert_grid_info_f09_g17(grid_info)
 
         # Note that we don't assert GLC_NX and GLC_NY here: these are unused for this
         # multi-grid case, so we don't care what arbitrary values they have.
         self.assertEqual(grid_info["GLC_GRID"], "ais8:gris4:lis12")
-        if nuopc:
-            self.assertEqual(
-                grid_info["GLC_DOMAIN_MESH"],
-                "antarctica_8km_ESMFmesh.nc:greenland_4km_ESMFmesh.nc:laurentide_12km_ESMFmesh.nc",
-            )
-
+        self.assertEqual(
+            grid_info["GLC_DOMAIN_MESH"],
+            "antarctica_8km_ESMFmesh.nc:greenland_4km_ESMFmesh.nc:laurentide_12km_ESMFmesh.nc",
+        )
         self.assertEqual(
             grid_info["GLC2OCN_LIQ_RMAPNAME"],
             "map_ais8_to_gx1v7_liq.nc:map_gris4_to_gx1v7_liq.nc:map_lis12_to_gx1v7_liq.nc",
@@ -286,10 +266,12 @@ $GRIDMAP_ENTRIES
 
         grids = Grids(self._xml_filepath)
         grid_info = grids.get_grid_info(
-            name="f09_g17", compset="NOT_IMPORTANT", driver="nuopc"
+            name="f09_g17",
+            compset="NOT_IMPORTANT",
+            driver="nuopc",
         )
 
-        self.assert_grid_info_f09_g17(grid_info, nuopc=True)
+        self.assert_grid_info_f09_g17(grid_info)
 
     def test_get_grid_info_extra_required_gridmaps(self):
         """Test of get_grid_info with some extra required gridmaps"""
@@ -310,10 +292,12 @@ $GRIDMAP_ENTRIES
 
         grids = Grids(self._xml_filepath)
         grid_info = grids.get_grid_info(
-            name="f09_g17", compset="NOT_IMPORTANT", driver="nuopc"
+            name="f09_g17",
+            compset="NOT_IMPORTANT",
+            driver="nuopc",
         )
 
-        self.assert_grid_info_f09_g17(grid_info, nuopc=True)
+        self.assert_grid_info_f09_g17(grid_info)
         self.assertEqual(grid_info["ATM2OCN_EXTRA"], "unset")
         self.assertEqual(grid_info["OCN2ATM_EXTRA"], "unset")
 
@@ -337,10 +321,12 @@ $GRIDMAP_ENTRIES
 
         grids = Grids(self._xml_filepath)
         grid_info = grids.get_grid_info(
-            name="f09_g17", compset="NOT_IMPORTANT", driver="nuopc"
+            name="f09_g17",
+            compset="NOT_IMPORTANT",
+            driver="nuopc",
         )
 
-        self.assert_grid_info_f09_g17(grid_info, nuopc=True)
+        self.assert_grid_info_f09_g17(grid_info)
         self.assertEqual(grid_info["ATM2OCN_EXTRA"], "map_fv0.9x1.25_TO_gx1v7_extra.nc")
         self.assertEqual(grid_info["OCN2ATM_EXTRA"], "map_gx1v7_TO_fv0.9x1.25_extra.nc")
 
@@ -374,10 +360,12 @@ $GRIDMAP_ENTRIES
 
         grids = Grids(self._xml_filepath)
         grid_info = grids.get_grid_info(
-            name="f09_g17_3glc", compset="NOT_IMPORTANT", driver="nuopc"
+            name="f09_g17_3glc",
+            compset="NOT_IMPORTANT",
+            driver="nuopc",
         )
 
-        self.assert_grid_info_f09_g17_3glc(grid_info, nuopc=True)
+        self.assert_grid_info_f09_g17_3glc(grid_info)
         self.assertEqual(grid_info["GLC2ATM_EXTRA"], "unset")
 
 

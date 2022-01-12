@@ -173,6 +173,9 @@ def _hists_match(model, hists1, hists2, suffix1="", suffix2=""):
     multi_normalized1, multi_normalized2 = [], []
     multiinst = False
 
+    if model == "ww3dev":
+        model = "ww3"
+
     for hists, suffix, normalized, multi_normalized in [
         (hists1, suffix1, normalized1, multi_normalized1),
         (hists2, suffix2, normalized2, multi_normalized2),
@@ -450,7 +453,7 @@ def cprnc(
             combine_output=True,
             arg_stdout=output_filename,
         )[0]
-        with open(output_filename, "r") as fd:
+        with open(output_filename, "r", encoding="utf-8") as fd:
             out = fd.read()
 
     comment = ""
@@ -520,7 +523,7 @@ def compare_baseline(case, baseline_dir=None, outfile_suffix=""):
     if get_model() == "e3sm":
         bless_log = os.path.join(basecmp_dir, BLESS_LOG_NAME)
         if os.path.exists(bless_log):
-            lines = open(bless_log, "r").readlines()
+            lines = open(bless_log, "r", encoding="utf-8").readlines()
             if lines:
                 last_line = lines[-1]
                 comments += "\n  Most recent bless: {}".format(last_line)
@@ -584,6 +587,9 @@ def _generate_baseline_impl(case, baseline_dir=None, allow_baseline_overwrite=Fa
     comments = "Generating baselines into '{}'\n".format(basegen_dir)
     num_gen = 0
     for model in _iter_model_file_substrs(case):
+
+        if model == "ww3dev":
+            model = "ww3"
         comments += "  generating for model '{}'\n".format(model)
 
         hists = archive.get_latest_hist_files(
@@ -640,7 +646,7 @@ def _generate_baseline_impl(case, baseline_dir=None, allow_baseline_overwrite=Fa
 
     if get_model() == "e3sm":
         bless_log = os.path.join(basegen_dir, BLESS_LOG_NAME)
-        with open(bless_log, "a") as fd:
+        with open(bless_log, "a", encoding="utf-8") as fd:
             fd.write(
                 "sha:{} date:{}\n".format(
                     get_current_commit(repo=case.get_value("SRCROOT")),

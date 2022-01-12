@@ -207,6 +207,7 @@ class Component(EntryID):
                 parts = opt_parts.pop(0).split("%")
                 reqset = set(parts)
                 fullset = set(parts + opt_parts)
+
                 match, complist = self._get_description_match(
                     compsetname, reqset, fullset, modifier_mode
                 )
@@ -258,14 +259,18 @@ class Component(EntryID):
         (False, None)
         >>> obj._get_description_match("1850_CAM50%WCCM_Barn",set(["CAM50", "WCCM"]), set(["CAM50","WCCM","RCO2"]), "+")
         (True, ['CAM50', 'WCCM'])
+        >>> obj._get_description_match("scn:1850_atm:CAM50%WCCM_Barn",set(["CAM50", "WCCM"]), set(["CAM50","WCCM","RCO2"]), "+")
+        (True, ['CAM50', 'WCCM'])
         """
         match = False
         comparts = compsetname.split("_")
         matchcomplist = None
-
         for comp in comparts:
+            if ":" in comp:
+                comp = comp.split(":")[1]
             complist = comp.split("%")
             cset = set(complist)
+
             if cset == reqset or (cset > reqset and cset <= fullset):
                 if modifier_mode == "1":
                     expect(

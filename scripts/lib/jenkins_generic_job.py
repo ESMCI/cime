@@ -262,6 +262,8 @@ def jenkins_generic_job(
     real_baseline_name,
     baseline_root,
     update_success,
+    check_throughput,
+    check_memory,
 ):
     ###############################################################################
     """
@@ -385,8 +387,8 @@ def jenkins_generic_job(
     tests_passed = CIME.wait_for_tests.wait_for_tests(
         glob.glob("{}/*{}/TestStatus".format(test_root, test_id)),
         no_wait=not use_batch,  # wait if using queue
-        check_throughput=False,  # don't check throughput
-        check_memory=False,  # don't check memory
+        check_throughput=check_throughput,
+        check_memory=check_memory,
         ignore_namelists=False,  # don't ignore namelist diffs
         cdash_build_name=cdash_build_name,
         cdash_project=cdash_project,

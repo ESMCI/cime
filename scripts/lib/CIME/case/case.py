@@ -738,6 +738,10 @@ class Case(object):
         >>> caseroot = os.path.join(workdir, 'caseroot')  # use non-existent caseroot to avoid error about not being a valid case directory in Case __init__ method
         >>> Case(caseroot, read_only=False)._valid_compset_impl('2000_DATM%NYF_SLND_DICE%SSMI_DOCN%DOM_DROF%NYF_SGLC_SWAV', None, ['CPL', 'ATM', 'LND', 'ICE', 'OCN', 'ROF', 'GLC', 'WAV', 'ESP'], {'datm':1,'satm':1,'dlnd':2,'slnd':2,'dice':3,'sice':3,'docn':4,'socn':4,'drof':5,'srof':5,'sglc':6,'swav':7,'ww3':7,'sesp':8})
         ('2000_DATM%NYF_SLND_DICE%SSMI_DOCN%DOM_DROF%NYF_SGLC_SWAV_SESP', ['2000', 'DATM%NYF', 'SLND', 'DICE%SSMI', 'DOCN%DOM', 'DROF%NYF', 'SGLC', 'SWAV', 'SESP'])
+        >>> Case(caseroot, read_only=False)._valid_compset_impl('2000_DATM%NYF_SLND_DICE%SSMI_DOCN%DOM_DROF%NYF_SGLC_SWAV', None, ['CPL', 'ATM', 'LND', 'ICE', 'OCN', 'ROF', 'GLC', 'WAV', 'ESP'], {'datm':1,'satm':1,'dlnd':2,'slnd':2,'dice':3,'sice':3,'docn':4,'socn':4,'drof':5,'srof':5,'sglc':6,'swav':7,'ww3':7,'sesp':8})
+        ('2000_DATM%NYF_SLND_DICE%SSMI_DOCN%DOM_DROF%NYF_SGLC_SWAV_SESP', ['2000', 'DATM%NYF', 'SLND', 'DICE%SSMI', 'DOCN%DOM', 'DROF%NYF', 'SGLC', 'SWAV', 'SESP'])
+        >>> Case(caseroot, read_only=False)._valid_compset_impl('atm:DATM%NYF_rof:DROF%NYF_scn:2000_ice:DICE%SSMI_ocn:DOCN%DOM', None, ['CPL', 'ATM', 'LND', 'ICE', 'OCN', 'ROF', 'GLC', 'WAV', 'ESP'], {'datm':1,'satm':1,'dlnd':2,'slnd':2,'dice':3,'sice':3,'docn':4,'socn':4,'drof':5,'srof':5,'sglc':6,'swav':7,'ww3':7,'sesp':8})
+        ('2000_DATM%NYF_SLND_DICE%SSMI_DOCN%DOM_DROF%NYF_SGLC_SWAV_SESP', ['2000', 'DATM%NYF', 'SLND', 'DICE%SSMI', 'DOCN%DOM', 'DROF%NYF', 'SGLC', 'SWAV', 'SESP'])
         >>> Case(caseroot, read_only=False)._valid_compset_impl('2000_DATM%NYF_DICE%SSMI_DOCN%DOM_DROF%NYF', None, ['CPL', 'ATM', 'LND', 'ICE', 'OCN', 'ROF', 'GLC', 'WAV', 'ESP'], {'datm':1,'satm':1,'dlnd':2,'slnd':2,'dice':3,'sice':3,'docn':4,'socn':4,'drof':5,'srof':5,'sglc':6,'swav':7,'ww3':7,'sesp':8})
         ('2000_DATM%NYF_SLND_DICE%SSMI_DOCN%DOM_DROF%NYF_SGLC_SWAV_SESP', ['2000', 'DATM%NYF', 'SLND', 'DICE%SSMI', 'DOCN%DOM', 'DROF%NYF', 'SGLC', 'SWAV', 'SESP'])
         >>> Case(caseroot, read_only=False)._valid_compset_impl('2000_DICE%SSMI_DOCN%DOM_DATM%NYF_DROF%NYF', None, ['CPL', 'ATM', 'LND', 'ICE', 'OCN', 'ROF', 'GLC', 'WAV', 'ESP'], {'datm':1,'satm':1,'dlnd':2,'slnd':2,'dice':3,'sice':3,'docn':4,'socn':4,'drof':5,'srof':5,'sglc':6,'swav':7,'ww3':7,'sesp':8})
@@ -759,9 +763,22 @@ class Case(object):
         # Find the models declared in the compset
         model_set = [None] * len(comp_classes)
         components = compset_name.split("_")
-        model_set[0] = components[0]
         noncomps = []
         allstubs = True
+        colonformat = ":" in compset_name
+        if colonformat:
+            # make sure that scn: is component[0] as expected
+            for i in range(1, len(components)):
+                if components[i].startswith("scn:"):
+                    tmp = components[0]
+                    components[0] = components[i]
+                    components[i] = tmp
+                    break
+
+                model_set[0] = components[0][4:]
+        else:
+            model_set[0] = components[0]
+
         for model in components[1:]:
             match = Case.__mod_match_re__.match(model.lower())
             expect(match is not None, "No model match for {}".format(model))
@@ -769,6 +786,9 @@ class Case(object):
             # Check for noncomponent appends (BGC & TEST)
             if mod_match in ("bgc", "test"):
                 noncomps.append(model)
+            elif ":" in mod_match:
+                comp_ind = comp_hash[mod_match[4:]]
+                model_set[comp_ind] = model
             else:
                 expect(mod_match in comp_hash, "Unknown model type, {}".format(model))
                 comp_ind = comp_hash[mod_match]
@@ -781,7 +801,10 @@ class Case(object):
                 stub = "S" + comp_class
                 logger.info("Automatically adding {} to compset".format(stub))
                 model_set[comp_ind] = stub
-            elif model_set[comp_ind][0] != "S":
+            elif ":" in model_set[comp_ind]:
+                model_set[comp_ind] = model_set[comp_ind][4:]
+
+            if model_set[comp_ind][0] != "S":
                 allstubs = False
 
         expect(
@@ -794,7 +817,6 @@ class Case(object):
         compsetname = "_".join(model_set)
         for noncomp in noncomps:
             compsetname = compsetname + "_" + noncomp
-
         return compsetname, model_set
 
     # RE to match component type name without optional piece (stuff after %).
@@ -894,6 +916,8 @@ class Case(object):
         # the first element is always the date operator - skip it
         elements = compset.split("_")[1:]  # pylint: disable=maybe-no-member
         for element in elements:
+            if ":" in element:
+                element = element[4:]
             # ignore the possible BGC or TEST modifier
             if element.startswith("BGC%") or element.startswith("TEST"):
                 continue
@@ -985,6 +1009,8 @@ class Case(object):
         for i in range(1, len(self._component_classes)):
             comp_class = self._component_classes[i]
             comp_name = self._components[i - 1]
+            if ":" in comp_name:
+                comp_name = comp_name[4:]
             root_dir_node_name = "COMP_ROOT_DIR_" + comp_class
             node_name = "CONFIG_" + comp_class + "_FILE"
             compatt = {"component": comp_name}
@@ -1208,7 +1234,7 @@ class Case(object):
         # --------------------------------------------
         # grid
         # --------------------------------------------
-        grids = Grids(gridfile)
+        grids = Grids(gridfile, comp_interface=driver)
 
         gridinfo = grids.get_grid_info(
             name=grid_name, compset=self._compsetname, driver=self._comp_interface

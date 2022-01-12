@@ -27,6 +27,7 @@ from CIME.utils import (
     get_timestamp,
     get_python_libs_root,
     get_cime_default_driver,
+    clear_folder,
 )
 from CIME.test_status import *
 from CIME.XML.machines import Machines
@@ -339,7 +340,8 @@ class TestScheduler(object):
                     test_baseline = os.path.join(full_baseline_dir, test_name)
                     if os.path.isdir(test_baseline):
                         existing_baselines.append(test_baseline)
-
+                        if allow_baseline_overwrite:
+                            clear_folder(test_baseline)
                 expect(
                     allow_baseline_overwrite or len(existing_baselines) == 0,
                     "Baseline directories already exists {}\n"
@@ -777,15 +779,20 @@ class TestScheduler(object):
         envtest.set_value("TESTCASE", test_case)
         envtest.set_value("TEST_TESTID", self._test_id)
         envtest.set_value("CASEBASEID", test)
+        memleak_tolerance = self._machobj.get_value(
+            "TEST_MEMLEAK_TOLERANCE", resolved=False
+        )
         if (
             test in self._test_data
             and "options" in self._test_data[test]
             and "memleak_tolerance" in self._test_data[test]["options"]
         ):
-            envtest.set_value(
-                "TEST_MEMLEAK_TOLERANCE",
-                self._test_data[test]["options"]["memleak_tolerance"],
-            )
+            memleak_tolerance = self._test_data[test]["options"]["memleak_tolerance"]
+
+        envtest.set_value(
+            "TEST_MEMLEAK_TOLERANCE",
+            0.10 if memleak_tolerance is None else memleak_tolerance,
+        )
 
         test_argv = "-testname {} -testroot {}".format(test, self._test_root)
         if self._baseline_gen_name:

@@ -18,9 +18,9 @@ GRID_SEP = ":"
 
 
 class Grids(GenericXML):
-    def __init__(self, infile=None, files=None):
+    def __init__(self, infile=None, files=None, comp_interface=None):
         if files is None:
-            files = Files()
+            files = Files(comp_interface=comp_interface)
         if infile is None:
             infile = files.get_value("GRIDS_SPEC_FILE")
         logger.debug(" Grid specification file is {}".format(infile))
@@ -240,22 +240,16 @@ class Grids(GenericXML):
                 )
 
         if driver == "nuopc":
-            mask_domain_node = self.get_optional_child(
-                "domain",
-                attributes={"name": domains["MASK_GRID"]},
-                root=self.get_child("domains"),
-            )
-            mesh_nodes = self.get_children("mesh", root=mask_domain_node)
-            for mesh_node in mesh_nodes:
-                driver_attrib = self.get(mesh_node, "driver")
-                if driver == driver_attrib:
-                    domains["MASK_MESH"] = self.text(mesh_node)
-                    if "LND_DOMAIN_FILE" in domains:
-                        if domains["LND_DOMAIN_FILE"] != "UNSET":
-                            domains["PTS_DOMAINFILE"] = os.path.join(
-                                "$DIN_LOC_ROOT/share/domains",
-                                domains["LND_DOMAIN_FILE"],
-                            )
+            # Obtain the root node for the domain entry that sets the mask
+            if domains["MASK_GRID"] != "null":
+                mask_domain_node = self.get_optional_child(
+                    "domain",
+                    attributes={"name": domains["MASK_GRID"]},
+                    root=self.get_child("domains"),
+                )
+                # Now obtain the mesh for the mask for the domain node for that component grid
+                mesh_node = self.get_child("mesh", root=mask_domain_node)
+                domains["MASK_MESH"] = self.text(mesh_node)
 
         return domains
 
@@ -321,45 +315,54 @@ class Grids(GenericXML):
             # set up dictionary of domain files for every component
             _add_grid_info(domains, comp_name + "_GRID", grid_name)
 
-            file_nodes = self.get_children("file", root=domain_node)
-            domain_file = ""
-            for file_node in file_nodes:
-                grid_attrib = self.get(file_node, "grid")
-                mask_attrib = self.get(file_node, "mask")
-                if grid_attrib is not None and mask_attrib is not None:
-                    grid_match = re.search(comp_name.lower(), grid_attrib)
-                    mask_match = False
-                    if mask_name is not None:
+            if driver == "mct":
+                # mct
+                file_nodes = self.get_children("file", root=domain_node)
+                domain_file = ""
+                for file_node in file_nodes:
+                    grid_attrib = self.get(file_node, "grid")
+                    mask_attrib = self.get(file_node, "mask")
+                    if grid_attrib is not None and mask_attrib is not None:
+                        grid_match = re.search(comp_name.lower(), grid_attrib)
+                        mask_match = False
+                        if mask_name is not None:
+                            mask_match = mask_name == mask_attrib
+                        if grid_match is not None and mask_match:
+                            domain_file = self.text(file_node)
+                    elif grid_attrib is not None:
+                        grid_match = re.search(comp_name.lower(), grid_attrib)
+                        if grid_match is not None:
+                            domain_file = self.text(file_node)
+                    elif mask_attrib is not None:
                         mask_match = mask_name == mask_attrib
-                    if grid_match is not None and mask_match:
-                        domain_file = self.text(file_node)
-                elif grid_attrib is not None:
-                    grid_match = re.search(comp_name.lower(), grid_attrib)
-                    if grid_match is not None:
-                        domain_file = self.text(file_node)
-                elif mask_attrib is not None:
-                    mask_match = mask_name == mask_attrib
-                    if mask_match:
-                        domain_file = self.text(file_node)
+                        if mask_match:
+                            domain_file = self.text(file_node)
+                if domain_file:
+                    _add_grid_info(
+                        domains,
+                        comp_name + "_DOMAIN_FILE",
+                        os.path.basename(domain_file),
+                    )
+                    path = os.path.dirname(domain_file)
+                    if len(path) > 0:
+                        _add_grid_info(domains, comp_name + "_DOMAIN_PATH", path)
 
-            if domain_file:
-                _add_grid_info(
-                    domains, comp_name + "_DOMAIN_FILE", os.path.basename(domain_file)
-                )
-                path = os.path.dirname(domain_file)
-                if len(path) > 0:
-                    _add_grid_info(domains, comp_name + "_DOMAIN_PATH", path)
-
-            if not comp_name == "MASK":
-                mesh_nodes = self.get_children("mesh", root=domain_node)
-                mesh_file = ""
-                for mesh_node in mesh_nodes:
-                    driver_attrib = self.get(mesh_node, "driver")
-                    if driver == driver_attrib:
+            if driver == "nuopc":
+                if not comp_name == "MASK":
+                    mesh_nodes = self.get_children("mesh", root=domain_node)
+                    mesh_file = ""
+                    for mesh_node in mesh_nodes:
                         mesh_file = self.text(mesh_node)
-
-                if mesh_file:
-                    _add_grid_info(domains, comp_name + "_DOMAIN_MESH", mesh_file)
+                    if mesh_file:
+                        _add_grid_info(domains, comp_name + "_DOMAIN_MESH", mesh_file)
+                    if comp_name == "LND":
+                        # Note: ONLY want to define PTS_DOMAINFILE for land
+                        file_node = self.get_optional_child("file", root=domain_node)
+                        if file_node is not None:
+                            domain_file = self.text(file_node)
+                            domains["PTS_DOMAINFILE"] = os.path.join(
+                                "$DIN_LOC_ROOT/share/domains", domain_file
+                            )
 
     def _get_gridmaps(self, component_grids, driver, compset):
         """Set all mapping files for config_grids.xml v2 schema
