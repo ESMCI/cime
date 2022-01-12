@@ -46,7 +46,6 @@ class TestJenkinsGenericJob(base.BaseTestCase):
             )
 
         self.run_cmd_assert_result(
-            self,
             "%s/jenkins_generic_job -r %s %s -B %s"
             % (self.TOOLS_DIR, self._testdir, extra_args, self._baseline_area),
             from_dir=self._testdir,

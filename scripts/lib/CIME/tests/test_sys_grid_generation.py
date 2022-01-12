@@ -32,7 +32,7 @@ class TestGridGeneration(base.BaseTestCase):
         cls._testdirs.append(test_dir)
         os.makedirs(test_dir)
         self.run_cmd_assert_result(
-            self, "{} {}".format(tool_location, args), from_dir=test_dir
+            "{} {}".format(tool_location, args), from_dir=test_dir
         )
         cls._do_teardown.append(test_dir)
 
