@@ -33,6 +33,7 @@ class _TimingParser:
         self.models = {}
         self.ncount = 0
         self.nprocs = 0
+        self.version = -1
 
     def write(self, text):
         self.fout.write(text)
@@ -81,6 +82,8 @@ class _TimingParser:
         if self._driver == "mct":
             return self._gettime2_mct(heading_padded)
         elif self._driver == "nuopc":
+            if self.version < 0:
+                self._get_esmf_profile_version()
             return self._gettime2_nuopc()
 
     def _gettime2_mct(self, heading_padded):
@@ -121,6 +124,8 @@ class _TimingParser:
         if self._driver == "mct":
             return self._gettime_mct(heading_padded)
         elif self._driver == "nuopc":
+            if self.version < 0:
+                self._get_esmf_profile_version()
             return self._gettime_nuopc(heading_padded)
 
     def _gettime_mct(self, heading_padded):
@@ -128,7 +133,6 @@ class _TimingParser:
         heading = '"' + heading_padded.strip() + '"'
         minval = 0
         maxval = 0
-
         for line in self.finlines:
             m = re.match(
                 r"\s*{}\s+\S\s+\d+\s*\d+\s*\S+\s*\S+\s*(\d*\.\d+)\s*\(.*\)\s*(\d*\.\d+)\s*\(.*\)".format(
@@ -143,16 +147,41 @@ class _TimingParser:
                 return (minval, maxval, found)
         return (0, 0, False)
 
+    def _get_esmf_profile_version(self):
+        """
+        Prior to ESMF8_3_0_beta_snapshot_04 the PEs column was not in ESMF_Profile.summary
+        this routine looks for that in the header field to determine if this file was produced
+        by a newer (version 1) or older (version 0) ESMF library.
+        """
+        expect(self.finlines, " No ESMF_Profile.summary file found")
+        for line in self.finlines:
+            if line.startswith("Region"):
+                if "PEs" in line:
+                    self.version = 1
+                else:
+                    self.version = 0
+
     def _gettime_nuopc(self, heading, instance="0001"):
         if instance == "":
             instance = "0001"
         minval = 0
         maxval = 0
         m = None
+        timeline = []
         #  PETs   Count    Mean (s)    Min (s)     Min PET Max (s)     Max PET
-        timeline = re.compile(
-            r"\s*{}\s+\d+\s+\d+\s+(\d*\.\d+)\s+(\d*\.\d+)\s+\d+\s+(\d*\.\d+)\s+\d+".format(
-                re.escape(heading)
+        timeline.append(
+            re.compile(
+                r"\s*{}\s+\d+\s+\d+\s+(\d*\.\d+)\s+(\d*\.\d+)\s+\d+\s+(\d*\.\d+)\s+\d+".format(
+                    re.escape(heading)
+                )
+            )
+        )
+        #  PETs   PEs  Count    Mean (s)    Min (s)     Min PET Max (s)     Max PET
+        timeline.append(
+            re.compile(
+                r"\s*{}\s+\d+\s+\d+\s+\d+\s+(\d*\.\d+)\s+(\d*\.\d+)\s+\d+\s+(\d*\.\d+)\s+\d+".format(
+                    re.escape(heading)
+                )
             )
         )
         phase = None
@@ -161,11 +190,13 @@ class _TimingParser:
             if phase != "run" and not "[ensemble]" in heading:
                 continue
             if heading in line:
-                m = timeline.match(line)
+                m = timeline[self.version].match(line)
                 if m:
                     minval = float(m.group(2))
                     maxval = float(m.group(3))
                     return (minval, maxval, True)
+                else:
+                    expect(False, "Parsing error in ESMF_Profile.summary file")
 
         return (0, 0, False)
 
@@ -184,14 +215,31 @@ class _TimingParser:
     def getMEDtime(self, instance):
         if instance == "":
             instance = "0001"
-        med_phase_line = re.compile(
-            r"\s*(\[MED\] med_phases\S+)\s+\d+\s+\d+\s+(\d*\.\d+)\s+"
+
+        med_phase_line = []
+        med_connector_line = []
+        med_fraction_line = []
+        med_phase_line.append(
+            re.compile(r"\s*(\[MED\] med_phases\S+)\s+\d+\s+\d+\s+(\d*\.\d+)\s+")
         )
-        med_connector_line = re.compile(
-            r"\s*(\[MED\] med_connectors\S+)\s+\d+\s+\d+\s+(\d*\.\d+)\s+"
+        med_connector_line.append(
+            re.compile(r"\s*(\[MED\] med_connectors\S+)\s+\d+\s+\d+\s+(\d*\.\d+)\s+")
         )
-        med_fraction_line = re.compile(
-            r"\s*(\[MED\] med_fraction\S+)\s+\d+\s+\d+\s+(\d*\.\d+)\s+"
+        med_fraction_line.append(
+            re.compile(r"\s*(\[MED\] med_fraction\S+)\s+\d+\s+\d+\s+(\d*\.\d+)\s+")
+        )
+        med_phase_line.append(
+            re.compile(r"\s*(\[MED\] med_phases\S+)\s+\d+\s+\d+\s+\d+\s+(\d*\.\d+)\s+")
+        )
+        med_connector_line.append(
+            re.compile(
+                r"\s*(\[MED\] med_connectors\S+)\s+\d+\s+\d+\s+\d+\s+(\d*\.\d+)\s+"
+            )
+        )
+        med_fraction_line.append(
+            re.compile(
+                r"\s*(\[MED\] med_fraction\S+)\s+\d+\s+\d+\s+\d+\s+(\d*\.\d+)\s+"
+            )
         )
 
         m = None
@@ -202,11 +250,11 @@ class _TimingParser:
             phase = self._get_nuopc_phase(line, instance, phase)
             if phase != "run":
                 continue
-            m = med_phase_line.match(line)
+            m = med_phase_line[self.version].match(line)
             if not m:
-                m = med_connector_line.match(line)
+                m = med_connector_line[self.version].match(line)
             if not m:
-                m = med_fraction_line.match(line)
+                m = med_fraction_line[self.version].match(line)
             if m:
                 minval += float(m.group(2))
                 maxval += float(m.group(2))
@@ -216,8 +264,14 @@ class _TimingParser:
     def getCOMMtime(self, instance):
         if instance == "":
             instance = "0001"
-        comm_line = re.compile(
-            r"\s*(\[\S+-TO-\S+\] RunPhase1)\s+\d+\s+\d+\s+(\d*\.\d+)\s+"
+        comm_line = []
+        comm_line.append(
+            re.compile(r"\s*(\[\S+-TO-\S+\] RunPhase1)\s+\d+\s+\d+\s+(\d*\.\d+)\s+")
+        )
+        comm_line.append(
+            re.compile(
+                r"\s*(\[\S+-TO-\S+\] RunPhase1)\s+\d+\s+\d+\s+\d+\s+(\d*\.\d+)\s+"
+            )
         )
         m = None
         maxval = 0
@@ -226,7 +280,7 @@ class _TimingParser:
             phase = self._get_nuopc_phase(line, instance, phase)
             if phase != "run":
                 continue
-            m = comm_line.match(line)
+            m = comm_line[self.version].match(line)
             if m:
                 heading = m.group(1)
                 maxv = float(m.group(2))
