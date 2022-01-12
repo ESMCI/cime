@@ -27,6 +27,7 @@ from CIME.utils import (
     get_timestamp,
     get_python_libs_root,
     get_cime_default_driver,
+    clear_folder,
 )
 from CIME.test_status import *
 from CIME.XML.machines import Machines
@@ -339,7 +340,8 @@ class TestScheduler(object):
                     test_baseline = os.path.join(full_baseline_dir, test_name)
                     if os.path.isdir(test_baseline):
                         existing_baselines.append(test_baseline)
-
+                        if allow_baseline_overwrite:
+                            clear_folder(test_baseline)
                 expect(
                     allow_baseline_overwrite or len(existing_baselines) == 0,
                     "Baseline directories already exists {}\n"
