@@ -50,6 +50,8 @@ from CIME.tests.base import BaseTestCase
 
 os.environ["CIME_GLOBAL_WALLTIME"] = "0:05:00"
 
+TEST_RESULT = None
+
 
 def write_provenance_info(machine, test_compiler, test_mpilib, test_root):
     curr_commit = get_current_commit(repo=CIMEROOT)
@@ -67,7 +69,11 @@ def write_provenance_info(machine, test_compiler, test_mpilib, test_root):
 
 
 def cleanup(test_root):
-    if os.path.exists(test_root):
+    if (
+        os.path.exists(test_root)
+        and TEST_RESULT is not None
+        and TEST_RESULT.wasSuccessful()
+    ):
         testreporter = os.path.join(test_root, "testreporter")
         files = os.listdir(test_root)
         if len(files) == 1 and os.path.isfile(testreporter):
@@ -266,6 +272,8 @@ OR
         test_suite = unittest.defaultTestLoader.loadTestsFromNames(ns.tests)
 
     test_runner = unittest.TextTestRunner(verbosity=2)
+
+    global TEST_RESULT
 
     TEST_RESULT = test_runner.run(test_suite)
 
