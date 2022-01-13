@@ -775,7 +775,7 @@ class Case(object):
                     components[i] = tmp
                     break
 
-                model_set[0] = components[0][4:]
+            model_set[0] = components[0][4:]
         else:
             model_set[0] = components[0]
 
