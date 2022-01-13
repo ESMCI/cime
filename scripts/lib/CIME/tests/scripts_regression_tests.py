@@ -221,11 +221,14 @@ OR
     \033[1;32m# Run the full suite \033[0m
     > {0}
 
-    \033[1;32m# Run all code checker tests \033[0m
-    > {0} B_CheckCode
+    \033[1;32m# Run single test file (with or without extension) \033[0m
+    > {0} test_unit_doctest
 
-    \033[1;32m# Run test test_wait_for_test_all_pass from class M_TestWaitForTests \033[0m
-    > {0} M_TestWaitForTests.test_wait_for_test_all_pass
+    \033[1;32m# Run single test class from a test file \033[0m
+    > {0} test_unit_doctest.TestDocs
+
+    \033[1;32m# Run single test case from a test class \033[0m
+    > {0} test_unit_doctest.TestDocs.test_lib_docs
 """.format(
         os.path.basename(sys.argv[0])
     )
@@ -262,8 +265,11 @@ OR
     if len(ns.tests) == 0:
         test_suite = unittest.defaultTestLoader.discover(CIMEROOT)
     else:
+        # Fixes handling shell expansion e.g. test_unit_*, by removing python extension
+        tests = [x.replace(".py", "") for x in ns.tests]
+
         # Try to load tests by just names
-        test_suite = unittest.defaultTestLoader.loadTestsFromNames(ns.tests)
+        test_suite = unittest.defaultTestLoader.loadTestsFromNames(tests)
 
     test_runner = unittest.TextTestRunner(verbosity=2)
 
