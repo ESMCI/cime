@@ -14,8 +14,8 @@ import CIME
 from CIME import utils
 from CIME.tests import base
 
-class TestDocs(base.BaseTestCase):
 
+class TestDocs(base.BaseTestCase):
     def test_lib_docs(self):
         cime_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 
@@ -28,8 +28,13 @@ class TestDocs(base.BaseTestCase):
 
         for dirpath, _, filenames in os.walk(cime_root):
             for filepath in map(lambda x: os.path.join(dirpath, x), filenames):
-                if not filepath.endswith(".py") or any([x in filepath for x in ignore_patterns]):
+                if not filepath.endswith(".py") or any(
+                    [x in filepath for x in ignore_patterns]
+                ):
                     continue
 
                 # Couldn't use doctest.DocFileSuite due to sys.path issue
-                self.run_cmd_assert_result(f"PYTHONPATH={cime_root}:$PYTHONPATH python3 -m doctest {filepath} 2>&1", from_dir=cime_root)
+                self.run_cmd_assert_result(
+                    f"PYTHONPATH={cime_root}:$PYTHONPATH python3 -m doctest {filepath} 2>&1",
+                    from_dir=cime_root,
+                )
