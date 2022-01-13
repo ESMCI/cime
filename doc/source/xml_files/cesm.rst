@@ -4,7 +4,7 @@
 CESM Coupled Model XML Files
 #############################
 
-XML files for CESM in CIMEROOT/config/cesm. 
+XML files for CESM in CIMEROOT/config/cesm.
 
 .. toctree::
    :maxdepth: 1
@@ -42,7 +42,7 @@ CESM XML settings for supported machines.
 
 .. literalinclude:: ../../../config/cesm/machines/config_machines.xml
 
-CESM XML settings for Parallel Input/Output (PIO) library. 
+CESM XML settings for Parallel Input/Output (PIO) library.
 
 .. literalinclude:: ../../../config/cesm/machines/config_pio.xml
 
@@ -66,4 +66,3 @@ CESM XML settings for all-active test configurations.
 CESM XML settings for optimized processor elements (PEs) layout configurations.
 
 .. literalinclude:: ../../../../cime_config/config_pes.xml
-

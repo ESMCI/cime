@@ -7,10 +7,19 @@ import json
 
 from CIME.XML.standard_module_setup import *
 
-from CIME.utils import run_cmd, run_cmd_no_fail, expect, get_cime_root, get_src_root, is_python_executable, get_cime_default_driver
+from CIME.utils import (
+    run_cmd,
+    run_cmd_no_fail,
+    expect,
+    get_cime_root,
+    get_src_root,
+    is_python_executable,
+    get_cime_default_driver,
+)
 
 from multiprocessing.dummy import Pool as ThreadPool
-#pylint: disable=import-error
+
+# pylint: disable=import-error
 from distutils.spawn import find_executable
 
 logger = logging.getLogger(__name__)
@@ -20,8 +29,12 @@ def _run_pylint(all_files, interactive):
 ###############################################################################
     pylint = find_executable("pylint")
 
-    cmd_options = " --disable=I,C,R,logging-not-lazy,wildcard-import,unused-wildcard-import"
-    cmd_options += ",fixme,broad-except,bare-except,eval-used,exec-used,global-statement"
+    cmd_options = (
+        " --disable=I,C,R,logging-not-lazy,wildcard-import,unused-wildcard-import"
+    )
+    cmd_options += (
+        ",fixme,broad-except,bare-except,eval-used,exec-used,global-statement"
+    )
     cmd_options += ",logging-format-interpolation,no-name-in-module,arguments-renamed"
     cmd_options += " -j 0 -f json"
     cimeroot = get_cime_root()
@@ -74,20 +87,30 @@ def _run_pylint(all_files, interactive):
     #         logger.info("File %s has no pylint problems" % on_file)
     #     return (on_file, "")
 
+
 ###############################################################################
 def _matches(file_path, file_ends):
-###############################################################################
+    ###############################################################################
     for file_end in file_ends:
         if file_path.endswith(file_end):
             return True
 
     return False
 
+
 ###############################################################################
 def _should_pylint_skip(filepath):
-###############################################################################
+    ###############################################################################
     # TODO - get rid of this
-    list_of_directories_to_ignore = ("xmlconvertors", "pointclm", "point_clm", "tools", "machines", "apidocs", "doc")
+    list_of_directories_to_ignore = (
+        "xmlconvertors",
+        "pointclm",
+        "point_clm",
+        "tools",
+        "machines",
+        "apidocs",
+        "doc",
+    )
     for dir_to_skip in list_of_directories_to_ignore:
         if dir_to_skip + "/" in filepath:
             return True
@@ -99,27 +122,46 @@ def _should_pylint_skip(filepath):
 
     return False
 
+
 ###############################################################################
 def get_all_checkable_files():
-###############################################################################
+    ###############################################################################
     cimeroot = get_cime_root()
-    all_git_files = run_cmd_no_fail("git ls-files", from_dir=cimeroot, verbose=False).splitlines()
+    all_git_files = run_cmd_no_fail(
+        "git ls-files", from_dir=cimeroot, verbose=False
+    ).splitlines()
     if get_cime_default_driver() == "nuopc":
         srcroot = get_src_root()
         nuopc_git_files = []
         try:
-            nuopc_git_files = run_cmd_no_fail("git ls-files", from_dir=os.path.join(srcroot,"components","cmeps"), verbose=False).splitlines()
+            nuopc_git_files = run_cmd_no_fail(
+                "git ls-files",
+                from_dir=os.path.join(srcroot, "components", "cmeps"),
+                verbose=False,
+            ).splitlines()
         except:
             logger.warning("No nuopc driver found in source")
-        all_git_files.extend([os.path.join(srcroot,"components","cmeps",_file) for _file in nuopc_git_files])
-    files_to_test = [item for item in all_git_files
-                     if ((item.endswith(".py") or is_python_executable(os.path.join(cimeroot, item))) and not _should_pylint_skip(item))]
+        all_git_files.extend(
+            [
+                os.path.join(srcroot, "components", "cmeps", _file)
+                for _file in nuopc_git_files
+            ]
+        )
+    files_to_test = [
+        item
+        for item in all_git_files
+        if (
+            (item.endswith(".py") or is_python_executable(os.path.join(cimeroot, item)))
+            and not _should_pylint_skip(item)
+        )
+    ]
 
     return files_to_test
 
+
 ###############################################################################
 def check_code(files, num_procs=10, interactive=False):
-###############################################################################
+    ###############################################################################
     """
     Check all python files in the given directory
 
@@ -138,10 +180,12 @@ def check_code(files, num_procs=10, interactive=False):
                 for repo_file in repo_files:
                     if repo_file.endswith(filearg):
                         found = True
-                        files_to_check.append(repo_file) # could have multiple matches
+                        files_to_check.append(repo_file)  # could have multiple matches
 
                 if not found:
-                    logger.warning("Could not find file matching argument '%s'" % filearg)
+                    logger.warning(
+                        "Could not find file matching argument '%s'" % filearg
+                    )
     else:
         # Check every python file
         files_to_check = get_all_checkable_files()

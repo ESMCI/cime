@@ -1,9 +1,10 @@
 import re
 from CIME.XML.standard_module_setup import *
+
 logger = logging.getLogger(__name__)
 ###############################################################################
 def get_file_date(filename):
-###############################################################################
+    ###############################################################################
     """
     Returns the date associated with the filename as a date object representing the correct date
     Formats supported:
@@ -34,10 +35,11 @@ def get_file_date(filename):
     # TODO: Add these to config_archive.xml, instead of here
     # Note these must be in order of most specific to least
     # so that lesser specificities aren't used to parse greater ones
-    re_formats = [r"[0-9]*[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}_[0-9]{1,2}\.[0-9]{1,2}\.[0-9]{1,2}", # [yy...]yyyy-mm-dd_hh.MM.ss
-                  r"[0-9]*[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}[\-_][0-9]{1,5}",                     # [yy...]yyyy-mm-dd_sssss
-                  r"[0-9]*[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}",                                    # [yy...]yyyy-mm-dd
-                  r"[0-9]*[0-9]{4}[\-\.][0-9]{1,2}",                                          # [yy...]yyyy-mm
+    re_formats = [
+        r"[0-9]*[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}_[0-9]{1,2}\.[0-9]{1,2}\.[0-9]{1,2}",  # [yy...]yyyy-mm-dd_hh.MM.ss
+        r"[0-9]*[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}[\-_][0-9]{1,5}",  # [yy...]yyyy-mm-dd_sssss
+        r"[0-9]*[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}",  # [yy...]yyyy-mm-dd
+        r"[0-9]*[0-9]{4}[\-\.][0-9]{1,2}",  # [yy...]yyyy-mm
     ]
 
     for re_str in re_formats:
@@ -57,14 +59,15 @@ def get_file_date(filename):
             elif len(date_tuple) == 6:
                 # Create a date object with arbitrary year, month, day, but the correct time of day
                 # Then use _get_day_second to get the time of day in seconds
-                second = date.hms_to_second(hour = date_tuple[3],
-                                            minute = date_tuple[4],
-                                            second = date_tuple[5])
+                second = date.hms_to_second(
+                    hour=date_tuple[3], minute=date_tuple[4], second=date_tuple[5]
+                )
         return date(year, month, day, 0, 0, second)
 
     # Not a valid filename date format
     logger.debug("{} is a filename without a supported date!".format(filename))
     return None
+
 
 class date:
     """
@@ -178,20 +181,21 @@ class date:
     >>> date(3, 5, 6, 8) > date(4, 5, 6, 8)
     False
     """
+
     @staticmethod
     def hms_to_second(hour, minute, second):
         _SECONDS_PER_HOUR = 3600
         _SECONDS_PER_MINUTE = 60
-        return (hour * _SECONDS_PER_HOUR + minute * _SECONDS_PER_MINUTE
-                + second)
+        return hour * _SECONDS_PER_HOUR + minute * _SECONDS_PER_MINUTE + second
 
     @staticmethod
     def second_to_hms(second):
         _SECONDS_PER_HOUR = 3600
         _SECONDS_PER_MINUTE = 60
-        return { 'hour': second // _SECONDS_PER_HOUR,
-                 'minute': (second % _SECONDS_PER_HOUR) // _SECONDS_PER_MINUTE,
-                 'second': second % _SECONDS_PER_MINUTE
+        return {
+            "hour": second // _SECONDS_PER_HOUR,
+            "minute": (second % _SECONDS_PER_HOUR) // _SECONDS_PER_MINUTE,
+            "second": second % _SECONDS_PER_MINUTE,
         }
 
     def __init__(self, year=1, month=1, day=1, hour=0, minute=0, second=0):
@@ -206,12 +210,14 @@ class date:
         'date(4, 5, 7, 0, 1, 4)'
         """
         fmt_str = "date({year:d}, {month:d}, {day:d}, {hour:d}, {minute:d}, {second:d})"
-        return fmt_str.format(year = self.year(),
-                              month = self.month(),
-                              day = self.day(),
-                              hour = self.hour(),
-                              minute = self.minute(),
-                              second = self.second())
+        return fmt_str.format(
+            year=self.year(),
+            month=self.month(),
+            day=self.day(),
+            hour=self.hour(),
+            minute=self.minute(),
+            second=self.second(),
+        )
 
     def year(self):
         return self._year
@@ -223,13 +229,13 @@ class date:
         return self._day
 
     def hour(self):
-        return self.second_to_hms(self._second)['hour']
+        return self.second_to_hms(self._second)["hour"]
 
     def minute(self):
-        return self.second_to_hms(self._second)['minute']
+        return self.second_to_hms(self._second)["minute"]
 
     def second(self):
-        return self.second_to_hms(self._second)['second']
+        return self.second_to_hms(self._second)["second"]
 
     def second_of_day(self):
         return self._second
@@ -238,9 +244,12 @@ class date:
         return str(self)
 
     def __eq__(self, other):
-        return ((self.year() == other.year()) and (self.month() == other.month())
-                and (self.day() == other.day())
-                and (self.second_of_day() == other.second_of_day()))
+        return (
+            (self.year() == other.year())
+            and (self.month() == other.month())
+            and (self.day() == other.day())
+            and (self.second_of_day() == other.second_of_day())
+        )
 
     def __ne__(self, other):
         return not (self == other)
@@ -268,7 +277,7 @@ class date:
             return False
 
     def __le__(self, other):
-        return ((self < other) or (self == other))
+        return (self < other) or (self == other)
 
     def __ge__(self, other):
         return not (self < other)

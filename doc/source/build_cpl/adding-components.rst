@@ -4,7 +4,7 @@
 Adding components
 ===================
 
-Here are the steps to add prognostic components to CIME models.  
+Here are the steps to add prognostic components to CIME models.
 
 There are a couple of aspects of a component interface to CIME, the
 scripts interface which controls setting up component inputs and

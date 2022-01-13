@@ -8,9 +8,16 @@ import math
 
 logger = logging.getLogger(__name__)
 
-class EnvMachPes(EnvBase):
 
-    def __init__(self, case_root=None, infile="env_mach_pes.xml", components=None, read_only=False, comp_interface="mct"):
+class EnvMachPes(EnvBase):
+    def __init__(
+        self,
+        case_root=None,
+        infile="env_mach_pes.xml",
+        components=None,
+        read_only=False,
+        comp_interface="mct",
+    ):
         """
         initialize an object interface to file env_mach_pes.xml in the case directory
         """
@@ -28,7 +35,14 @@ class EnvMachPes(EnvBase):
             self.remove_child(node)
             self.add_child(node, position=1)
 
-    def get_value(self, vid, attribute=None, resolved=True, subgroup=None, max_mpitasks_per_node=None): # pylint: disable=arguments-differ
+    def get_value(
+        self,
+        vid,
+        attribute=None,
+        resolved=True,
+        subgroup=None,
+        max_mpitasks_per_node=None,
+    ):  # pylint: disable=arguments-differ
         # Special variable NINST_MAX is used to determine the number of
         # drivers in multi-driver mode.
         if vid == "NINST_MAX":
@@ -45,7 +59,7 @@ class EnvMachPes(EnvBase):
             if max_mpitasks_per_node is None:
                 max_mpitasks_per_node = self.get_value("MAX_MPITASKS_PER_NODE")
             if value is not None and value < 0:
-                value = -1*value*max_mpitasks_per_node
+                value = -1 * value * max_mpitasks_per_node
         # in the nuopc driver there is only one NINST value
         # so that NINST_{comp} = NINST
         if "NINST_" in vid and value is None:
@@ -64,21 +78,28 @@ class EnvMachPes(EnvBase):
                 if comp == "CPL":
                     continue
                 ninst = self.get_value("NINST_{}".format(comp))
-                expect(ninst == ninst_max,
-                       "All components must have the same NINST value in multi_driver mode.  NINST_{}={} shoud be {}".format(comp,ninst,ninst_max))
+                expect(
+                    ninst == ninst_max,
+                    "All components must have the same NINST value in multi_driver mode.  NINST_{}={} shoud be {}".format(
+                        comp, ninst, ninst_max
+                    ),
+                )
         if "NTASKS" in vid or "NTHRDS" in vid:
             expect(value != 0, "Cannot set NTASKS or NTHRDS to 0")
 
-
-        return EnvBase.set_value(self, vid, value, subgroup=subgroup, ignore_type=ignore_type)
-
+        return EnvBase.set_value(
+            self, vid, value, subgroup=subgroup, ignore_type=ignore_type
+        )
 
     def get_max_thread_count(self, comp_classes):
-        ''' Find the maximum number of openmp threads for any component in the case '''
+        """Find the maximum number of openmp threads for any component in the case"""
         max_threads = 1
         for comp in comp_classes:
-            threads = self.get_value("NTHRDS",attribute={"compclass":comp})
-            expect(threads is not None, "Error no thread count found for component class {}".format(comp))
+            threads = self.get_value("NTHRDS", attribute={"compclass": comp})
+            expect(
+                threads is not None,
+                "Error no thread count found for component class {}".format(comp),
+            )
             if threads > max_threads:
                 max_threads = threads
         return max_threads
@@ -89,36 +110,42 @@ class EnvMachPes(EnvBase):
         if maxinst:
             comp_interface = "nuopc"
         else:
-            comp_interface = 'unknown'
+            comp_interface = "unknown"
             maxinst = 1
         for comp in comp_classes:
-            ntasks = self.get_value("NTASKS", attribute={"compclass":comp})
-            rootpe = self.get_value("ROOTPE", attribute={"compclass":comp})
-            pstrid = self.get_value("PSTRID", attribute={"compclass":comp})
+            ntasks = self.get_value("NTASKS", attribute={"compclass": comp})
+            rootpe = self.get_value("ROOTPE", attribute={"compclass": comp})
+            pstrid = self.get_value("PSTRID", attribute={"compclass": comp})
             esmf_aware_threading = self.get_value("ESMF_AWARE_THREADING")
             # mct is unaware of threads and they should not be counted here
             # if esmf is thread aware they are included
             if comp_interface == "nuopc" and esmf_aware_threading:
-                nthrds = self.get_value("NTHRDS", attribute={"compclass":comp})
+                nthrds = self.get_value("NTHRDS", attribute={"compclass": comp})
             else:
                 nthrds = 1
 
-            if comp != "CPL" and comp_interface!="nuopc":
-                ninst = self.get_value("NINST", attribute={"compclass":comp})
+            if comp != "CPL" and comp_interface != "nuopc":
+                ninst = self.get_value("NINST", attribute={"compclass": comp})
                 maxinst = max(maxinst, ninst)
-            tt = rootpe + nthrds*((ntasks - 1) * pstrid + 1)
+            tt = rootpe + nthrds * ((ntasks - 1) * pstrid + 1)
             total_tasks = max(tt, total_tasks)
         if self.get_value("MULTI_DRIVER"):
             total_tasks *= maxinst
         return total_tasks
 
     def get_tasks_per_node(self, total_tasks, max_thread_count):
-        expect(total_tasks > 0,"totaltasks > 0 expected, totaltasks = {}".format(total_tasks))
-        if self._comp_interface == 'nuopc' and self.get_value("ESMF_AWARE_THREADING"):
+        expect(
+            total_tasks > 0,
+            "totaltasks > 0 expected, totaltasks = {}".format(total_tasks),
+        )
+        if self._comp_interface == "nuopc" and self.get_value("ESMF_AWARE_THREADING"):
             tasks_per_node = self.get_value("MAX_MPITASKS_PER_NODE")
         else:
-            tasks_per_node = min(self.get_value("MAX_TASKS_PER_NODE")// max_thread_count,
-                                 self.get_value("MAX_MPITASKS_PER_NODE"), total_tasks)
+            tasks_per_node = min(
+                self.get_value("MAX_TASKS_PER_NODE") // max_thread_count,
+                self.get_value("MAX_MPITASKS_PER_NODE"),
+                total_tasks,
+            )
         return tasks_per_node if tasks_per_node > 0 else 1
 
     def get_total_nodes(self, total_tasks, max_thread_count):
@@ -126,7 +153,7 @@ class EnvMachPes(EnvBase):
         Return (num_active_nodes, num_spare_nodes)
         """
         # threads have already been included in nuopc interface
-        if self._comp_interface == 'nuopc' and self.get_value("ESMF_AWARE_THREADING"):
+        if self._comp_interface == "nuopc" and self.get_value("ESMF_AWARE_THREADING"):
             max_thread_count = 1
         tasks_per_node = self.get_tasks_per_node(total_tasks, max_thread_count)
         num_nodes = int(math.ceil(float(total_tasks) / tasks_per_node))
@@ -140,9 +167,9 @@ class EnvMachPes(EnvBase):
         if self.get_value("ALLOCATE_SPARE_NODES"):
             ten_pct = int(math.ceil(float(num_nodes) * 0.1))
             if ten_pct < 1:
-                return 1 # Always provide at lease one spare node
+                return 1  # Always provide at lease one spare node
             elif ten_pct > 10:
-                return 10 # Never provide more than 10 spare nodes
+                return 10  # Never provide more than 10 spare nodes
             else:
                 return ten_pct
         else:

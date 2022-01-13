@@ -8,15 +8,18 @@ from CIME.utils import convert_to_type
 
 logger = logging.getLogger(__name__)
 
+
 class EnvTest(EnvBase):
     # pylint: disable=unused-argument
-    def __init__(self, case_root=None, infile="env_test.xml", components=None, read_only=False):
+    def __init__(
+        self, case_root=None, infile="env_test.xml", components=None, read_only=False
+    ):
         """
         initialize an object interface to file env_test.xml in the case directory
         """
         EnvBase.__init__(self, case_root, infile, read_only=read_only)
 
-    def add_test(self,testnode):
+    def add_test(self, testnode):
         self.add_child(testnode)
         self.write()
 
@@ -30,14 +33,20 @@ class EnvTest(EnvBase):
         tnode = self.get_child("test")
         for child in self.get_children(root=tnode):
             if self.text(child) is not None:
-                logger.debug("Setting {} to {} for test".format(self.name(child), self.text(child)))
+                logger.debug(
+                    "Setting {} to {} for test".format(
+                        self.name(child), self.text(child)
+                    )
+                )
                 if "$" in self.text(child):
-                    case.set_value(self.name(child),self.text(child),ignore_type=True)
+                    case.set_value(self.name(child), self.text(child), ignore_type=True)
                 else:
                     item_type = case.get_type_info(self.name(child))
                     if item_type:
-                        value = convert_to_type(self.text(child),item_type,self.name(child))
-                        case.set_value(self.name(child),value)
+                        value = convert_to_type(
+                            self.text(child), item_type, self.name(child)
+                        )
+                        case.set_value(self.name(child), value)
         case.flush()
         return
 
@@ -47,7 +56,7 @@ class EnvTest(EnvBase):
         otherwise create a node and initialize it to value
         """
         case = self.get_value("TESTCASE")
-        tnode = self.get_child("test",{"NAME":case})
+        tnode = self.get_child("test", {"NAME": case})
         idnode = self.get_optional_child(name, root=tnode)
 
         if idnode is None:
@@ -57,14 +66,14 @@ class EnvTest(EnvBase):
 
     def get_test_parameter(self, name):
         case = self.get_value("TESTCASE")
-        tnode = self.get_child("test",{"NAME":case})
+        tnode = self.get_child("test", {"NAME": case})
         value = None
         idnode = self.get_optional_child(name, root=tnode)
         if idnode is not None:
             value = self.text(idnode)
         return value
 
-    def get_step_phase_cnt(self,step):
+    def get_step_phase_cnt(self, step):
         bldnodes = self.get_children(step)
         cnt = 0
         for node in bldnodes:
@@ -72,25 +81,29 @@ class EnvTest(EnvBase):
         return cnt
 
     def get_settings_for_phase(self, name, cnt):
-        node = self.get_optional_child(name,attributes={"phase":cnt})
+        node = self.get_optional_child(name, attributes={"phase": cnt})
         settings = []
         if node is not None:
             for child in node:
-                logger.debug ("Here child is {} with value {}".format(self.name(child), self.text(child)))
+                logger.debug(
+                    "Here child is {} with value {}".format(
+                        self.name(child), self.text(child)
+                    )
+                )
                 settings.append((self.name(child), self.text(child)))
 
         return settings
 
     def run_phase_get_clone_name(self, phase):
-        node = self.get_child("RUN",attributes={"phase":str(phase)})
+        node = self.get_child("RUN", attributes={"phase": str(phase)})
         if self.has(node, "clone"):
             return self.get(node, "clone")
         return None
 
     def cleanupnode(self, node):
-        '''
+        """
         keep the values component set
-        '''
+        """
         fnode = self.get_child(name="file", root=node)
         self.remove_child(fnode, root=node)
         gnode = self.get_child(name="group", root=node)

@@ -14,6 +14,7 @@ sys.path.insert(0, cimeroot)
 os.environ["CIMEROOT"] = cimeroot
 
 import CIME.utils
+
 CIME.utils.check_minimum_python_version(3, 6)
 CIME.utils.stop_buffering_output()
 import logging, argparse

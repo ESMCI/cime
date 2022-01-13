@@ -4,7 +4,7 @@
 E3SM Coupled Model XML Files
 #############################
 
-XML files for E3SM in CIMEROOT/config/e3sm. 
+XML files for E3SM in CIMEROOT/config/e3sm.
 
 .. toctree::
    :maxdepth: 1
@@ -59,7 +59,6 @@ E3SM XML settings for supported machines.
 
 .. literalinclude:: ../../../config/e3sm/machines/config_machines.xml
 
-E3SM XML settings for Parallel Input/Output (PIO) library. 
+E3SM XML settings for Parallel Input/Output (PIO) library.
 
 .. literalinclude:: ../../../config/e3sm/machines/config_pio.xml
-

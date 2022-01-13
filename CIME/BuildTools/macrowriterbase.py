@@ -17,6 +17,7 @@ from CIME.six import add_metaclass
 
 logger = logging.getLogger(__name__)
 
+
 def _get_components(value):
     """
     >>> value = '-something ${shell ${NETCDF_PATH}/bin/nf-config --flibs} -lblas -llapack'
@@ -34,7 +35,7 @@ def _get_components(value):
     curr_comp = ""
     idx = 0
     while idx < len(value):
-        if value[idx:idx+8] == "${shell ":
+        if value[idx : idx + 8] == "${shell ":
             if curr_comp:
                 components.append((False, curr_comp.strip()))
                 curr_comp = ""
@@ -69,6 +70,7 @@ def _get_components(value):
         components.append((False, curr_comp.strip()))
 
     return components
+
 
 @add_metaclass(ABCMeta)
 class MacroWriterBase(object):
@@ -117,7 +119,7 @@ class MacroWriterBase(object):
 
     def indent_string(self):
         """Return an appropriate number of spaces for the indent."""
-        return ' ' * self._indent_num
+        return " " * self._indent_num
 
     def indent_left(self):
         """Decrease the amount of line indent."""
@@ -132,7 +134,7 @@ class MacroWriterBase(object):
 
         A trailing newline is added, whether or not the input has one.
         """
-        self.output.write(u"{}{}\n".format(self.indent_string(), line))
+        self.output.write("{}{}\n".format(self.indent_string(), line))
 
     @abstractmethod
     def environment_variable_string(self, name):

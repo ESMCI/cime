@@ -13,29 +13,32 @@ from CIME.SystemTests.restart_tests import RestartTest
 
 logger = logging.getLogger(__name__)
 
-class ERP(RestartTest):
 
+class ERP(RestartTest):
     def __init__(self, case):
         """
         initialize a test object
         """
-        RestartTest.__init__(self, case,
-                             separate_builds = True,
-                             run_two_suffix = 'rest',
-                             run_one_description = 'initial',
-                             run_two_description = 'restart')
+        RestartTest.__init__(
+            self,
+            case,
+            separate_builds=True,
+            run_two_suffix="rest",
+            run_one_description="initial",
+            run_two_description="restart",
+        )
 
     def _case_two_setup(self):
         # halve the number of tasks and threads
         for comp in self._case.get_values("COMP_CLASSES"):
-            ntasks    = self._case1.get_value("NTASKS_{}".format(comp))
-            nthreads  = self._case1.get_value("NTHRDS_{}".format(comp))
-            rootpe    = self._case1.get_value("ROOTPE_{}".format(comp))
-            if ( nthreads > 1 ):
-                self._case.set_value("NTHRDS_{}".format(comp), int(nthreads/2))
-            if ( ntasks > 1 ):
-                self._case.set_value("NTASKS_{}".format(comp), int(ntasks/2))
-                self._case.set_value("ROOTPE_{}".format(comp), int(rootpe/2))
+            ntasks = self._case1.get_value("NTASKS_{}".format(comp))
+            nthreads = self._case1.get_value("NTHRDS_{}".format(comp))
+            rootpe = self._case1.get_value("ROOTPE_{}".format(comp))
+            if nthreads > 1:
+                self._case.set_value("NTHRDS_{}".format(comp), int(nthreads / 2))
+            if ntasks > 1:
+                self._case.set_value("NTASKS_{}".format(comp), int(ntasks / 2))
+                self._case.set_value("ROOTPE_{}".format(comp), int(rootpe / 2))
 
         RestartTest._case_two_setup(self)
         self._case.case_setup(test_mode=True, reset=True)

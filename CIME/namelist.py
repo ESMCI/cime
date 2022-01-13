@@ -114,39 +114,45 @@ logger = logging.getLogger(__name__)
 
 # Fortran syntax regular expressions.
 # Variable names.
-#FORTRAN_NAME_REGEX = re.compile(r"(^[a-z][a-z0-9_]{0,62})(\([+-]?\d*:?[+-]?\d*:?[+-]?\d*\))?$", re.IGNORECASE)
-FORTRAN_NAME_REGEX = re.compile(r"""(^[a-z][a-z0-9_@]{0,62})                            #  The variable name
+# FORTRAN_NAME_REGEX = re.compile(r"(^[a-z][a-z0-9_]{0,62})(\([+-]?\d*:?[+-]?\d*:?[+-]?\d*\))?$", re.IGNORECASE)
+FORTRAN_NAME_REGEX = re.compile(
+    r"""(^[a-z][a-z0-9_@]{0,62})                            #  The variable name
                                   (\(                                                   # begin optional index expression
                                   (([+-]?\d+)                                           # Single valued index
                                   |                                                     # or
                                   (([+-]?\d+)?:([+-]?\d+)?:?([+-]?\d+)?))               # colon seperated triplet
-                                  \))?\s*$"""                                           # end optional index expression
-                                , re.IGNORECASE | re.VERBOSE)
+                                  \))?\s*$""",  # end optional index expression
+    re.IGNORECASE | re.VERBOSE,
+)
 
 FORTRAN_LITERAL_REGEXES = {}
 # Integer literals.
 _int_re_string = r"(\+|-)?[0-9]+"
-FORTRAN_LITERAL_REGEXES['integer'] = re.compile("^" + _int_re_string + "$")
+FORTRAN_LITERAL_REGEXES["integer"] = re.compile("^" + _int_re_string + "$")
 # Real/complex literals.
 _ieee_exceptional_re_string = r"inf(inity)?|nan(\([^)]+\))?"
-_float_re_string = r"((\+|-)?([0-9]+(\.[0-9]*)?|\.[0-9]+)([ed]?{})?|{})".format(_int_re_string, _ieee_exceptional_re_string)
-FORTRAN_LITERAL_REGEXES['real'] = re.compile("^" + _float_re_string + "$",
-                                             re.IGNORECASE)
-FORTRAN_LITERAL_REGEXES['complex'] = re.compile(r"^\([ \n]*" +
-                                                _float_re_string +
-                                                r"[ \n]*,[ \n]*" +
-                                                _float_re_string +
-                                                r"[ \n]*\)$", re.IGNORECASE)
+_float_re_string = r"((\+|-)?([0-9]+(\.[0-9]*)?|\.[0-9]+)([ed]?{})?|{})".format(
+    _int_re_string, _ieee_exceptional_re_string
+)
+FORTRAN_LITERAL_REGEXES["real"] = re.compile(
+    "^" + _float_re_string + "$", re.IGNORECASE
+)
+FORTRAN_LITERAL_REGEXES["complex"] = re.compile(
+    r"^\([ \n]*"
+    + _float_re_string
+    + r"[ \n]*,[ \n]*"
+    + _float_re_string
+    + r"[ \n]*\)$",
+    re.IGNORECASE,
+)
 # Character literals.
 _char_single_re_string = r"'[^']*(''[^']*)*'"
 _char_double_re_string = r'"[^"]*(""[^"]*)*"'
-FORTRAN_LITERAL_REGEXES['character'] = re.compile("^(" +
-                                                  _char_single_re_string + "|" +
-                                                  _char_double_re_string +
-                                                  ")$")
+FORTRAN_LITERAL_REGEXES["character"] = re.compile(
+    "^(" + _char_single_re_string + "|" + _char_double_re_string + ")$"
+)
 # Logical literals.
-FORTRAN_LITERAL_REGEXES['logical'] = re.compile(r"^\.?[tf][^=/ \n]*$",
-                                                re.IGNORECASE)
+FORTRAN_LITERAL_REGEXES["logical"] = re.compile(r"^\.?[tf][^=/ \n]*$", re.IGNORECASE)
 # Repeated value prefix.
 FORTRAN_REPEAT_PREFIX_REGEX = re.compile(r"^[0-9]*[1-9]+[0-9]*\*")
 
@@ -195,8 +201,9 @@ def is_valid_fortran_name(string):
     """
     return FORTRAN_NAME_REGEX.search(string) is not None
 
+
 def get_fortran_name_only(full_var):
-    """ remove array section if any and return only the variable name
+    """remove array section if any and return only the variable name
     >>> get_fortran_name_only('foo')
     'foo'
     >>> get_fortran_name_only('foo(3)')
@@ -215,8 +222,9 @@ def get_fortran_name_only(full_var):
     m = FORTRAN_NAME_REGEX.search(full_var)
     return m.group(1)
 
+
 def get_fortran_variable_indices(varname, varlen=1, allow_any_len=False):
-    """ get indices from a fortran namelist variable as a triplet of minindex, maxindex and step
+    """get indices from a fortran namelist variable as a triplet of minindex, maxindex and step
 
     >>> get_fortran_variable_indices('foo(3)')
     (3, 3, 1)
@@ -248,9 +256,10 @@ def get_fortran_variable_indices(varname, varlen=1, allow_any_len=False):
     if allow_any_len and maxindex == minindex:
         maxindex = -1
 
-    expect(step != 0,"Step size 0 not allowed")
+    expect(step != 0, "Step size 0 not allowed")
 
     return (minindex, maxindex, step)
+
 
 def fortran_namelist_base_value(string):
     r"""Strip off whitespace and repetition syntax from a namelist value.
@@ -272,7 +281,7 @@ def fortran_namelist_base_value(string):
     string = string.strip(" \n")
     # Strip off repeated value prefix.
     if FORTRAN_REPEAT_PREFIX_REGEX.search(string) is not None:
-        string = string[string.find('*') + 1:]
+        string = string[string.find("*") + 1 :]
     return string
 
 
@@ -298,7 +307,7 @@ def character_literal_to_string(literal):
     # Find left and right edges of the string, extract middle.
     left_pos = literal.find(delimiter)
     right_pos = literal.rfind(delimiter)
-    new_literal = literal[left_pos+1:right_pos]
+    new_literal = literal[left_pos + 1 : right_pos]
     # Replace escaped quote and apostrophe characters.
     return new_literal.replace(delimiter * 2, delimiter)
 
@@ -317,6 +326,7 @@ def string_to_character_literal(string):
     """
     string = string.replace('"', '""')
     return '"' + string + '"'
+
 
 def is_valid_fortran_namelist_literal(type_, string):
     r"""Determine whether a literal is valid in a Fortran namelist.
@@ -573,12 +583,14 @@ def is_valid_fortran_namelist_literal(type_, string):
     >>> is_valid_fortran_namelist_literal("logical", ".t2 ")
     True
     """
-    expect(type_ in FORTRAN_LITERAL_REGEXES,
-           "Invalid Fortran type for a namelist: {!r}".format(str(type_)))
+    expect(
+        type_ in FORTRAN_LITERAL_REGEXES,
+        "Invalid Fortran type for a namelist: {!r}".format(str(type_)),
+    )
     # Strip off whitespace and repetition.
     string = fortran_namelist_base_value(string)
     # Null values are always allowed.
-    if string == '':
+    if string == "":
         return True
     return FORTRAN_LITERAL_REGEXES[type_].search(string) is not None
 
@@ -643,37 +655,45 @@ def literal_to_python_value(literal, type_=None):
     -10000000000.0
     >>> shouldRaise(ValueError, literal_to_python_value, "nan(1234)")
     """
-    expect(FORTRAN_REPEAT_PREFIX_REGEX.search(literal) is None,
-           "Cannot use repetition syntax in literal_to_python_value")
+    expect(
+        FORTRAN_REPEAT_PREFIX_REGEX.search(literal) is None,
+        "Cannot use repetition syntax in literal_to_python_value",
+    )
     # Handle null value.
-    if fortran_namelist_base_value(literal) == '':
+    if fortran_namelist_base_value(literal) == "":
         return None
     if type_ is None:
         # Autodetect type.
-        for test_type in ('character', 'complex', 'integer', 'logical', 'real'):
+        for test_type in ("character", "complex", "integer", "logical", "real"):
             if is_valid_fortran_namelist_literal(test_type, literal):
                 type_ = test_type
                 break
-        expect(type_ is not None,
-               "{!r} is not a valid literal for any Fortran type.".format(str(literal)))
+        expect(
+            type_ is not None,
+            "{!r} is not a valid literal for any Fortran type.".format(str(literal)),
+        )
     else:
         # Check that type is valid.
-        expect(is_valid_fortran_namelist_literal(type_, literal),
-               "{!r} is not a valid literal of type {!r}.".format(str(literal), str(type_)))
+        expect(
+            is_valid_fortran_namelist_literal(type_, literal),
+            "{!r} is not a valid literal of type {!r}.".format(
+                str(literal), str(type_)
+            ),
+        )
     # Conversion for each type.
-    if type_ == 'character':
+    if type_ == "character":
         return character_literal_to_string(literal)
-    elif type_ == 'complex':
-        literal = literal.lstrip(' \n(').rstrip(' \n)')
-        real_part, _, imag_part = literal.partition(',')
+    elif type_ == "complex":
+        literal = literal.lstrip(" \n(").rstrip(" \n)")
+        real_part, _, imag_part = literal.partition(",")
         return complex(float(real_part), float(imag_part))
-    elif type_ == 'integer':
+    elif type_ == "integer":
         return int(literal)
-    elif type_ == 'logical':
-        literal = literal.lstrip(' \n.')
-        return literal[0] in 'tT'
-    elif type_ == 'real':
-        literal = literal.lower().replace('d', 'e')
+    elif type_ == "logical":
+        literal = literal.lstrip(" \n.")
+        return literal[0] in "tT"
+    elif type_ == "real":
+        literal = literal.lower().replace("d", "e")
         return float(literal)
 
 
@@ -692,7 +712,7 @@ def expand_literal_list(literals):
     expanded = []
     for literal in literals:
         if FORTRAN_REPEAT_PREFIX_REGEX.search(literal) is not None:
-            num, _, value = literal.partition('*')
+            num, _, value = literal.partition("*")
             expanded += int(num) * [value]
         else:
             expanded.append(literal)
@@ -729,14 +749,14 @@ def compress_literal_list(literals):
             else:
                 # Otherwise, write out the previous literal and start tracking the
                 # new one.
-                rep_str = str(num_reps) + '*' if num_reps > 1 else ''
+                rep_str = str(num_reps) + "*" if num_reps > 1 else ""
                 if isinstance(old_literal, CIME.six.string_types):
                     compressed.append(rep_str + old_literal)
                 else:
                     compressed.append(rep_str + str(old_literal))
                 old_literal = literal
                 num_reps = 1
-        rep_str = str(num_reps) + '*' if num_reps > 1 else ''
+        rep_str = str(num_reps) + "*" if num_reps > 1 else ""
         if isinstance(old_literal, CIME.six.string_types):
             compressed.append(rep_str + old_literal)
         else:
@@ -749,6 +769,7 @@ def compress_literal_list(literals):
             else:
                 compressed.append(str(literal))
         return compressed
+
 
 def merge_literal_lists(default, overwrite):
     """Merge two lists of literal value strings.
@@ -780,7 +801,7 @@ def merge_literal_lists(default, overwrite):
     overwrite = expand_literal_list(overwrite)
 
     for default_elem, elem in zip(default, overwrite):
-        if elem == '':
+        if elem == "":
             merged.append(default_elem)
         else:
             merged.append(elem)
@@ -827,10 +848,14 @@ def parse(in_file=None, text=None, groupless=False, convert_tab_to_space=True):
     of "6*2" is returned as that string; it is not converted to 6 copies of the
     Python integer `2`. Null values are returned as the empty string ("").
     """
-    expect(in_file is not None or text is not None,
-           "Must specify an input file or text to the namelist parser.")
-    expect(in_file is None or text is None,
-           "Cannot specify both input file and text to the namelist parser.")
+    expect(
+        in_file is not None or text is not None,
+        "Must specify an input file or text to the namelist parser.",
+    )
+    expect(
+        in_file is None or text is None,
+        "Cannot specify both input file and text to the namelist parser.",
+    )
     if isinstance(in_file, CIME.six.string_types):
         logger.debug("Reading namelist at: {}".format(in_file))
         with open(in_file) as in_file_obj:
@@ -839,7 +864,7 @@ def parse(in_file=None, text=None, groupless=False, convert_tab_to_space=True):
         logger.debug("Reading namelist from file object")
         text = in_file.read()
     if convert_tab_to_space:
-        text = text.replace('\t', ' ')
+        text = text.replace("\t", " ")
     try:
         namelist_dict = _NamelistParser(text, groupless).parse_namelist()
     except (_NamelistEOF, _NamelistParseError) as error:
@@ -863,8 +888,8 @@ def shouldRaise(eclass, method, *args, **kw):
         if not isinstance(e, eclass):
             raise
         return
-    raise Exception("Expected exception %s not raised" %
-                    str(eclass))
+    raise Exception("Expected exception %s not raised" % str(eclass))
+
 
 class Namelist(object):
 
@@ -898,7 +923,9 @@ class Namelist(object):
                 expect(group_name is not None, " Got None in groups {}".format(groups))
                 self._groups[group_name] = collections.OrderedDict()
                 for variable_name in groups[group_name]:
-                    self._groups[group_name][variable_name] = groups[group_name][variable_name]
+                    self._groups[group_name][variable_name] = groups[group_name][
+                        variable_name
+                    ]
 
     def clean_groups(self):
         self._groups = collections.OrderedDict()
@@ -930,7 +957,7 @@ class Namelist(object):
         >>> sorted(x.get_variable_names('fOo'))
         ['bar(::)', 'bazz', 'bazz(2)', 'bazz(:2:)']
         """
-        gn = string_in_list(group_name,self._groups)
+        gn = string_in_list(group_name, self._groups)
         if not gn:
             return []
         return list(self._groups[gn].keys())
@@ -949,14 +976,14 @@ class Namelist(object):
         >>> parse(text='&foo bar=1,2 /').get_variable_value('foO', 'Bar')
         ['1', '2']
         """
-        gn = string_in_list(group_name,self._groups)
+        gn = string_in_list(group_name, self._groups)
         if gn:
-            vn = string_in_list(variable_name,self._groups[gn])
+            vn = string_in_list(variable_name, self._groups[gn])
             if vn:
                 # Make a copy of the list so that any modifications done by the caller
                 # don't modify the internal values.
                 return self._groups[gn][vn][:]
-        return ['']
+        return [""]
 
     def get_value(self, variable_name):
         """Return the value of a uniquely-named variable.
@@ -983,13 +1010,15 @@ class Namelist(object):
             if vnt:
                 vn = vnt
                 possible_groups.append(group_name)
-        expect(len(possible_groups) <= 1,
-               "Namelist.get_value: Variable {} is present in multiple groups: "
-               + str(possible_groups))
+        expect(
+            len(possible_groups) <= 1,
+            "Namelist.get_value: Variable {} is present in multiple groups: "
+            + str(possible_groups),
+        )
         if possible_groups:
             return self._groups[possible_groups[0]][vn]
         else:
-            return ['']
+            return [""]
 
     def set_variable_value(self, group_name, variable_name, value, var_size=1):
         """Set the value of the specified variable.
@@ -1019,8 +1048,13 @@ class Namelist(object):
         minindex, maxindex, step = get_fortran_variable_indices(variable_name, var_size)
         variable_name = get_fortran_name_only(variable_name)
 
-        expect(minindex > 0, "Indices < 1 not supported in CIME interface to fortran namelists... lower bound={}".format(minindex))
-        gn = string_in_list(group_name,self._groups)
+        expect(
+            minindex > 0,
+            "Indices < 1 not supported in CIME interface to fortran namelists... lower bound={}".format(
+                minindex
+            ),
+        )
+        gn = string_in_list(group_name, self._groups)
         if not gn:
             gn = group_name
             self._groups[gn] = {}
@@ -1032,15 +1066,15 @@ class Namelist(object):
         else:
             vn = variable_name
             tlen = 1
-            self._groups[gn][vn] = ['']
+            self._groups[gn][vn] = [""]
 
         if minindex > tlen:
-            self._groups[gn][vn].extend(['']*(minindex-tlen-1))
+            self._groups[gn][vn].extend([""] * (minindex - tlen - 1))
 
-        for i in range(minindex, maxindex+2*step, step):
+        for i in range(minindex, maxindex + 2 * step, step):
             while len(self._groups[gn][vn]) < i:
-                self._groups[gn][vn].append('')
-            self._groups[gn][vn][i-1] = value.pop(0)
+                self._groups[gn][vn].append("")
+            self._groups[gn][vn][i - 1] = value.pop(0)
             if len(value) == 0:
                 break
 
@@ -1058,9 +1092,9 @@ class Namelist(object):
         >>> x.get_variable_names('brack')
         []
         """
-        gn = string_in_list(group_name,self._groups)
+        gn = string_in_list(group_name, self._groups)
         if gn:
-            vn=string_in_list(variable_name,self._groups[gn])
+            vn = string_in_list(variable_name, self._groups[gn])
             if vn:
                 del self._groups[gn][vn]
 
@@ -1122,8 +1156,9 @@ class Namelist(object):
                     merged_val = merge_literal_lists(self_val, other_val)
                 else:
                     merged_val = merge_literal_lists(other_val, self_val)
-                self.set_variable_value(group_name, variable_name, merged_val,
-                                        var_size=len(merged_val))
+                self.set_variable_value(
+                    group_name, variable_name, merged_val, var_size=len(merged_val)
+                )
 
     def get_group_variables(self, group_name):
         group_variables = {}
@@ -1133,7 +1168,9 @@ class Namelist(object):
             group_variables[name] = value
         return group_variables
 
-    def write(self, out_file, groups=None, append=False, format_='nml', sorted_groups=True):
+    def write(
+        self, out_file, groups=None, append=False, format_="nml", sorted_groups=True
+    ):
 
         """Write a the output data (normally fortran namelist) to the  out_file
 
@@ -1149,11 +1186,13 @@ class Namelist(object):
         specifies the file format. Formats other than 'nml' may not support all
         possible output values.
         """
-        expect(format_ in ('nml', 'rc', 'nmlcontents'),
-               "Namelist.write: unexpected output format {!r}".format(str(format_)))
+        expect(
+            format_ in ("nml", "rc", "nmlcontents"),
+            "Namelist.write: unexpected output format {!r}".format(str(format_)),
+        )
         if isinstance(out_file, CIME.six.string_types):
             logger.debug("Writing namelist to: {}".format(out_file))
-            flag = 'a' if append else 'w'
+            flag = "a" if append else "w"
             with open(out_file, flag) as file_obj:
                 self._write(file_obj, groups, format_, sorted_groups=sorted_groups)
         else:
@@ -1164,16 +1203,16 @@ class Namelist(object):
         """Unwrapped version of `write` assuming that a file object is input."""
         if groups is None:
             groups = list(self._groups.keys())
-        if format_ == 'nml' or format_ == 'nmlcontents':
-            equals = ' ='
-        elif format_ == 'rc':
-            equals = ':'
-        if (sorted_groups):
+        if format_ == "nml" or format_ == "nmlcontents":
+            equals = " ="
+        elif format_ == "rc":
+            equals = ":"
+        if sorted_groups:
             group_names = sorted(group for group in groups)
         else:
             group_names = groups
         for group_name in group_names:
-            if format_ == 'nml':
+            if format_ == "nml":
                 out_file.write("&{}\n".format(group_name))
             # allow empty group
             if group_name in self._groups:
@@ -1185,16 +1224,22 @@ class Namelist(object):
                     # in the write phase, all characters in the namelist variable name after
                     # the @ and including the @ should be removed
                     if "@" in name:
-                        name = re.sub('@.+$', "", name)
+                        name = re.sub("@.+$", "", name)
 
                     # To prettify things for long lists of values, build strings
                     # line-by-line.
                     if values[0] == "True" or values[0] == "False":
-                        values[0] = values[0].replace("True",".true.").replace("False",".false.")
+                        values[0] = (
+                            values[0]
+                            .replace("True", ".true.")
+                            .replace("False", ".false.")
+                        )
                     lines = ["  {}{} {}".format(name, equals, values[0])]
                     for value in values[1:]:
                         if value == "True" or value == "False":
-                            value = value.replace("True",".true.").replace("False",".false.")
+                            value = value.replace("True", ".true.").replace(
+                                "False", ".false."
+                            )
                         if len(lines[-1]) + len(value) <= 77:
                             lines[-1] += ", " + value
                         else:
@@ -1203,9 +1248,9 @@ class Namelist(object):
                     lines[-1] += "\n"
                     for line in lines:
                         out_file.write(line)
-            if format_ == 'nml':
+            if format_ == "nml":
                 out_file.write("/\n")
-            if format_ == 'nmlcontents':
+            if format_ == "nmlcontents":
                 out_file.write("\n")
 
     def write_nuopc(self, out_file, groups=None, sorted_groups=True):
@@ -1217,26 +1262,29 @@ class Namelist(object):
         """
         if isinstance(out_file, CIME.six.string_types):
             logger.debug("Writing nuopc config file to: {}".format(out_file))
-            flag = 'w'
+            flag = "w"
             with open(out_file, flag) as file_obj:
                 self._write_nuopc(file_obj, groups, sorted_groups=sorted_groups)
         else:
             logger.debug("Writing nuopc config data to file object")
             self._write_nuopc(out_file, groups, sorted_groups=sorted_groups)
 
-
-    def _write_nuopc(self, out_file,  groups, sorted_groups):
+    def _write_nuopc(self, out_file, groups, sorted_groups):
         """Unwrapped version of `write` assuming that a file object is input."""
         if groups is None:
             groups = self._groups.keys()
 
-        if (sorted_groups):
+        if sorted_groups:
             group_names = sorted(group for group in groups)
         else:
             group_names = groups
 
         for group_name in group_names:
-            if "_attributes" not in group_name and "nuopc_" not in group_name and "_no_group" not in group_name:
+            if (
+                "_attributes" not in group_name
+                and "nuopc_" not in group_name
+                and "_no_group" not in group_name
+            ):
                 continue
             if "_attributes" in group_name:
                 out_file.write("{}::\n".format(group_name))
@@ -1249,16 +1297,18 @@ class Namelist(object):
                 # in the write phase, all characters in the namelist variable name after
                 # the @ and including the @ should be removed
                 if "@" in name:
-                    name = re.sub('@.+$', "", name)
+                    name = re.sub("@.+$", "", name)
 
                 equals = " ="
                 if "_var" in group_name:
-                    equals = ':'
+                    equals = ":"
 
                 # To prettify things for long lists of values, build strings
                 # line-by-line.
                 if values[0] == "True" or values[0] == "False":
-                    values[0] = values[0].replace("True",".true.").replace("False",".false.")
+                    values[0] = (
+                        values[0].replace("True", ".true.").replace("False", ".false.")
+                    )
 
                 if "_attribute" in group_name:
                     lines = ["     {}{} {}".format(name, equals, values[0])]
@@ -1267,7 +1317,9 @@ class Namelist(object):
 
                 for value in values[1:]:
                     if value == "True" or value == "False":
-                        value = value.replace("True",".true.").replace("False",".false.")
+                        value = value.replace("True", ".true.").replace(
+                            "False", ".false."
+                        )
                     if len(lines[-1]) + len(value) <= 77:
                         lines[-1] += ", " + value
                     else:
@@ -1275,11 +1327,12 @@ class Namelist(object):
                         lines.append("      " + value)
                 lines[-1] += "\n"
                 for line in lines:
-                    line = line.replace('"','')
+                    line = line.replace('"', "")
                     out_file.write(line)
 
             if "_attribute" in group_name:
                 out_file.write("::\n\n")
+
 
 class _NamelistEOF(Exception):
 
@@ -1325,7 +1378,7 @@ class _NamelistParseError(Exception):
         return string
 
 
-class _NamelistParser(object): # pylint:disable=too-few-public-methods
+class _NamelistParser(object):  # pylint:disable=too-few-public-methods
 
     """Class to validate and read from Fortran namelist input.
 
@@ -1375,7 +1428,7 @@ class _NamelistParser(object): # pylint:disable=too-few-public-methods
         # way to do this is to just advance.
         if self._pos == self._len - 1:
             self._advance()
-        return self._text[self._pos+1]
+        return self._text[self._pos + 1]
 
     def _advance(self, nchars=1, check_eof=False):
         r"""Advance the parser's current position by `nchars` characters.
@@ -1420,17 +1473,16 @@ class _NamelistParser(object): # pylint:disable=too-few-public-methods
         >>> x._advance(check_eof=True)
         True
         """
-        assert nchars >= 0, \
-            "_NamelistParser attempted to 'advance' backwards"
+        assert nchars >= 0, "_NamelistParser attempted to 'advance' backwards"
         new_pos = min(self._pos + nchars, self._len)
-        consumed_text = self._text[self._pos:new_pos]
+        consumed_text = self._text[self._pos : new_pos]
         self._pos = new_pos
-        lines = consumed_text.count('\n')
+        lines = consumed_text.count("\n")
         self._line += lines
         # If we started a new line, set self._col to be relative to the start of
         # the current line.
         if lines > 0:
-            self._col = -(consumed_text.rfind('\n') + 1)
+            self._col = -(consumed_text.rfind("\n") + 1)
         self._col += len(consumed_text)
         end_of_file = new_pos == self._len
         if check_eof:
@@ -1480,8 +1532,8 @@ class _NamelistParser(object): # pylint:disable=too-few-public-methods
         eaten = False
         comment_allowed = allow_initial_comment
         while True:
-            while self._curr() in (' ', '\n'):
-                comment_allowed |= self._curr() == '\n'
+            while self._curr() in (" ", "\n"):
+                comment_allowed |= self._curr() == "\n"
                 eaten = True
                 self._advance()
             # Note the reliance on short-circuit `and` here.
@@ -1515,9 +1567,9 @@ class _NamelistParser(object): # pylint:disable=too-few-public-methods
         >>> shouldRaise(_NamelistEOF, x._eat_comment)
 
         """
-        if self._curr() != '!':
+        if self._curr() != "!":
             return False
-        newline_pos = self._text[self._pos:].find('\n')
+        newline_pos = self._text[self._pos :].find("\n")
         if newline_pos == -1:
             # This is the last line.
             self._advance(self._len - self._pos)
@@ -1546,7 +1598,9 @@ class _NamelistParser(object): # pylint:disable=too-few-public-methods
                 char_description = repr(str(chars))
             else:
                 char_description = "one of the characters in {!r}".format(str(chars))
-            raise _NamelistParseError("expected {} but found {!r}".format(char_description, str(self._curr())))
+            raise _NamelistParseError(
+                "expected {} but found {!r}".format(char_description, str(self._curr()))
+            )
 
     def _parse_namelist_group_name(self):
         r"""Parses and returns a namelist group name at the current position.
@@ -1614,28 +1668,30 @@ class _NamelistParser(object): # pylint:disable=too-few-public-methods
         'foo'
         """
         old_pos = self._pos
-        separators = (' ', '\n', '=', '+') if allow_equals else (' ', '\n')
+        separators = (" ", "\n", "=", "+") if allow_equals else (" ", "\n")
         while self._curr() not in separators:
             self._advance()
-        text = self._text[old_pos:self._pos]
-        if '(' in text:
-            expect(')' in text,"Parsing error ")
-        elif ')' in text:
-            expect(False,"Parsing error ")
+        text = self._text[old_pos : self._pos]
+        if "(" in text:
+            expect(")" in text, "Parsing error ")
+        elif ")" in text:
+            expect(False, "Parsing error ")
 
         # @ is used in a namelist to put the same namelist variable in multiple groups
         # in the write phase, all characters in the namelist variable name after
         # the @ and including the @ should be removed
         if "%" in text:
-            text_check = re.sub('%.+$', "", text)
+            text_check = re.sub("%.+$", "", text)
         elif "@" in text:
-            text_check = re.sub('@.+$', "", text)
+            text_check = re.sub("@.+$", "", text)
         else:
             text_check = text
 
         if not is_valid_fortran_name(text_check):
             if re.search(r".*\(.*\,.*\)", text_check):
-                err_str = "Multiple dimensions not supported in CIME namelist variables {!r}".format(str(text))
+                err_str = "Multiple dimensions not supported in CIME namelist variables {!r}".format(
+                    str(text)
+                )
             else:
                 err_str = "{!r} is not a valid variable name".format(str(text))
             raise _NamelistParseError(err_str)
@@ -1676,9 +1732,11 @@ class _NamelistParser(object): # pylint:disable=too-few-public-methods
                 self._advance(2)
             else:
                 break
-        text = self._text[old_pos:self._pos+1]
+        text = self._text[old_pos : self._pos + 1]
         if not is_valid_fortran_namelist_literal("character", text):
-            raise _NamelistParseError("{} is not a valid character literal".format(text))
+            raise _NamelistParseError(
+                "{} is not a valid character literal".format(text)
+            )
         return text
 
     def _parse_complex_literal(self):
@@ -1695,11 +1753,13 @@ class _NamelistParser(object): # pylint:disable=too-few-public-methods
 
         """
         old_pos = self._pos
-        while self._curr() != ')':
+        while self._curr() != ")":
             self._advance()
-        text = self._text[old_pos:self._pos+1]
+        text = self._text[old_pos : self._pos + 1]
         if not is_valid_fortran_namelist_literal("complex", text):
-            raise _NamelistParseError("{!r} is not a valid complex literal".format(str(text)))
+            raise _NamelistParseError(
+                "{!r} is not a valid complex literal".format(str(text))
+            )
         return text
 
     def _look_ahead_for_equals(self, pos):
@@ -1718,8 +1778,8 @@ class _NamelistParser(object): # pylint:disable=too-few-public-methods
         False
         """
         for test_pos in range(pos, self._len):
-            if self._text[test_pos] not in (' ', '\n'):
-                if self._text[test_pos] == '=':
+            if self._text[test_pos] not in (" ", "\n"):
+                if self._text[test_pos] == "=":
                     return True
                 else:
                     break
@@ -1741,8 +1801,8 @@ class _NamelistParser(object): # pylint:disable=too-few-public-methods
         False
         """
         for test_pos in range(pos, self._len):
-            if self._text[test_pos] not in (' ', '\n'):
-                if self._text[test_pos] == '+':
+            if self._text[test_pos] not in (" ", "\n"):
+                if self._text[test_pos] == "+":
                     return self._look_ahead_for_equals(test_pos + 1)
                 else:
                     break
@@ -1842,38 +1902,38 @@ class _NamelistParser(object): # pylint:disable=too-few-public-methods
         """
         # Deal with empty input string.
         if allow_eof_end and self._pos == self._len:
-            return ''
+            return ""
         # Deal with a repeated value prefix.
         old_pos = self._pos
-        if FORTRAN_REPEAT_PREFIX_REGEX.search(self._text[self._pos:]):
+        if FORTRAN_REPEAT_PREFIX_REGEX.search(self._text[self._pos :]):
             allow_name = False
-            while self._curr() != '*':
+            while self._curr() != "*":
                 self._advance()
             if self._advance(check_eof=allow_eof_end):
                 # In case the file ends with the 'r*' form of null value.
                 return self._text[old_pos:]
-        prefix = self._text[old_pos:self._pos]
+        prefix = self._text[old_pos : self._pos]
         # Deal with delimited literals.
         if self._curr() in ('"', "'"):
             literal = self._parse_character_literal()
             self._advance(check_eof=allow_eof_end)
             return prefix + literal
-        if self._curr() == '(':
+        if self._curr() == "(":
             literal = self._parse_complex_literal()
             self._advance(check_eof=allow_eof_end)
             return prefix + literal
         # Deal with non-delimited literals.
         new_pos = self._pos
-        separators = [' ', '\n', ',', '/']
+        separators = [" ", "\n", ",", "/"]
         if allow_name:
-            separators.append('=')
-            separators.append('+')
+            separators.append("=")
+            separators.append("+")
         while new_pos != self._len and self._text[new_pos] not in separators:
             # allow commas if they are inside ()
-            if self._text[new_pos] == '(':
-                separators.remove(',')
-            elif self._text[new_pos] == ')':
-                separators.append(',')
+            if self._text[new_pos] == "(":
+                separators.remove(",")
+            elif self._text[new_pos] == ")":
+                separators.append(",")
             new_pos += 1
 
         if not allow_eof_end and new_pos == self._len:
@@ -1887,10 +1947,14 @@ class _NamelistParser(object): # pylint:disable=too-few-public-methods
             return
 
         self._advance(new_pos - self._pos, check_eof=allow_eof_end)
-        text = self._text[old_pos:self._pos]
-        if not any(is_valid_fortran_namelist_literal(type_, text)
-                   for type_ in ("integer", "logical", "real")):
-            raise _NamelistParseError("expected literal value, but got {!r}".format(str(text)))
+        text = self._text[old_pos : self._pos]
+        if not any(
+            is_valid_fortran_namelist_literal(type_, text)
+            for type_ in ("integer", "logical", "real")
+        ):
+            raise _NamelistParseError(
+                "expected literal value, but got {!r}".format(str(text))
+            )
         return text
 
     def _expect_separator(self, allow_eof=False):
@@ -1969,10 +2033,10 @@ class _NamelistParser(object): # pylint:disable=too-few-public-methods
         if allow_eof and self._pos == self._len:
             return False
         # Must actually be at a value separator.
-        self._expect_char(' \n,/')
+        self._expect_char(" \n,/")
         try:
             self._eat_whitespace()
-            if self._curr() == '/':
+            if self._curr() == "/":
                 if allow_eof:
                     raise _NamelistParseError(errstring)
                 else:
@@ -1983,7 +2047,7 @@ class _NamelistParser(object): # pylint:disable=too-few-public-methods
             else:
                 raise
         try:
-            if self._curr() == ',':
+            if self._curr() == ",":
                 self._advance()
                 self._eat_whitespace(allow_initial_comment=True)
         except _NamelistEOF:
@@ -2051,9 +2115,9 @@ class _NamelistParser(object): # pylint:disable=too-few-public-methods
 
         self._eat_whitespace()
         # check to see if we have a "+="
-        if self._curr() == '+':
+        if self._curr() == "+":
             self._advance()
-            addto=True  # tell parser that we want to add to dictionary values
+            addto = True  # tell parser that we want to add to dictionary values
         self._expect_char("=")
         try:
             self._advance()
@@ -2061,7 +2125,7 @@ class _NamelistParser(object): # pylint:disable=too-few-public-methods
         except _NamelistEOF:
             # If we hit the end of file, return a name assigned to a null value.
             if allow_eof_end:
-                return name, [''], addto
+                return name, [""], addto
             else:
                 raise
         # Expect at least one literal, even if it's a null value.
@@ -2069,15 +2133,16 @@ class _NamelistParser(object): # pylint:disable=too-few-public-methods
         # While we haven't reached the end of the namelist group...
         while self._expect_separator(allow_eof=allow_eof_end):
             # see if we can parse a literal (we might get a variable name)...
-            literal = self._parse_literal(allow_name=True,
-                                          allow_eof_end=allow_eof_end)
+            literal = self._parse_literal(allow_name=True, allow_eof_end=allow_eof_end)
             if literal is None:
                 break
             # and if it really is a literal, add it.
             values.append(literal)
-        (minindex, maxindex, step) = get_fortran_variable_indices(name,allow_any_len=True)
+        (minindex, maxindex, step) = get_fortran_variable_indices(
+            name, allow_any_len=True
+        )
         if (minindex > 1 or maxindex > minindex or step > 1) and maxindex > 0:
-            arraylen =max(0,1 + ((maxindex - minindex)/step))
+            arraylen = max(0, 1 + ((maxindex - minindex) / step))
             expect(len(values) <= arraylen, "Too many values for array {}".format(name))
 
         return name, values, addto
@@ -2142,10 +2207,12 @@ class _NamelistParser(object): # pylint:disable=too-few-public-methods
         if not self._groupless:
             # Make sure that this is the first time we've seen this group.
             if group_name in self._settings:
-                raise _NamelistParseError("Namelist group {!r} encountered twice.".format(str(group_name)))
+                raise _NamelistParseError(
+                    "Namelist group {!r} encountered twice.".format(str(group_name))
+                )
             self._settings[group_name] = {}
         self._eat_whitespace()
-        while self._curr() != '/':
+        while self._curr() != "/":
             name, values, addto = self._parse_name_and_values()
             dsettings = []
             if self._groupless:
@@ -2219,7 +2286,7 @@ class _NamelistParser(object): # pylint:disable=too-few-public-methods
         except _NamelistEOF:
             return self._settings
         # Handle case with no namelist groups.
-        if self._groupless and self._curr() != '&':
+        if self._groupless and self._curr() != "&":
             while self._pos < self._len:
                 name, values, addto = self._parse_name_and_values(allow_eof_end=True)
                 if name in self._settings:

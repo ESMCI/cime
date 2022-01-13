@@ -9,9 +9,15 @@ from CIME.SystemTests.system_tests_common import *
 
 import sys, signal
 
+
 def _iter_signal_names():
-    for signame in [item for item in dir(signal) if item.startswith("SIG") and not item.startswith("SIG_")]:
+    for signame in [
+        item
+        for item in dir(signal)
+        if item.startswith("SIG") and not item.startswith("SIG_")
+    ]:
         yield signame
+
 
 def _signal_handler(signum, _):
     name = "Unknown"
@@ -32,6 +38,7 @@ def _signal_handler(signum, _):
     # Throw an exception so SystemTest infrastructure can handle this error
     expect(False, "Job killed due to receiving signal {:d} ({})".format(signum, name))
 
+
 def _set_up_signal_handlers():
     """
     Add handles for all signals that might be used to abort a test
@@ -43,9 +50,10 @@ def _set_up_signal_handlers():
         signum = getattr(signal, signame)
         signal.signal(signum, _signal_handler)
 
+
 def case_test(self, testname=None, reset=False, skip_pnl=False):
     if testname is None:
-        testname = self.get_value('TESTCASE')
+        testname = self.get_value("TESTCASE")
 
     expect(testname is not None, "testname argument not resolved")
     logging.warning("Running test for {}".format(testname))

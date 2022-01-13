@@ -10,9 +10,11 @@ from CIME.utils import convert_to_type
 
 logger = logging.getLogger(__name__)
 
-class EnvRun(EnvBase):
 
-    def __init__(self, case_root=None, infile="env_run.xml", components=None, read_only=False):
+class EnvRun(EnvBase):
+    def __init__(
+        self, case_root=None, infile="env_run.xml", components=None, read_only=False
+    ):
         """
         initialize an object interface to file env_run.xml in the case directory
         """
@@ -50,11 +52,10 @@ class EnvRun(EnvBase):
                     logger.warning("Only CPL settings are used for PIO in async mode")
                 subgroup = "CPL"
 
-
         if vid == "PIO_ASYNC_INTERFACE":
             if type(value) == type(True):
                 self._pio_async_interface = value
             else:
-                self._pio_async_interface = convert_to_type(value, "logical" , vid)
+                self._pio_async_interface = convert_to_type(value, "logical", vid)
 
         return EnvBase.set_value(self, vid, value, subgroup, ignore_type)

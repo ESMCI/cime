@@ -10,9 +10,9 @@ from CIME.utils import expect, get_cime_root, get_config_path, get_schema_path, 
 
 logger = logging.getLogger(__name__)
 
-class Files(EntryID):
 
-    def __init__(self, comp_interface="mct"):
+class Files(EntryID):
+    def __init__(self, comp_interface=None):
         """
         initialize an object
 
@@ -20,6 +20,8 @@ class Files(EntryID):
         >>> files.get_value('CASEFILE_HEADERS',resolved=False)
         '$CIMEROOT/config/config_headers.xml'
         """
+        if comp_interface is None:
+            comp_interface = "mct"
         cimeroot = get_cime_root()
         cimeroot_parent = os.path.dirname(cimeroot)
         config_path = get_config_path()
@@ -50,49 +52,71 @@ class Files(EntryID):
             elif attribute:
                 self._cpl_comp = attribute
             else:
-                self._cpl_comp['component'] = 'cpl'
+                self._cpl_comp["component"] = "cpl"
         if "COMP_ROOT_DIR" in vid:
             if vid in self.COMP_ROOT_DIR:
                 if attribute is not None:
-                    if vid+attribute["component"] in self.COMP_ROOT_DIR:
-                        return self.COMP_ROOT_DIR[vid+attribute["component"]]
+                    if vid + attribute["component"] in self.COMP_ROOT_DIR:
+                        return self.COMP_ROOT_DIR[vid + attribute["component"]]
                 else:
                     return self.COMP_ROOT_DIR[vid]
 
-        newatt = {"comp_interface":self._comp_interface}
+        newatt = {"comp_interface": self._comp_interface}
         if attribute:
             newatt.update(attribute)
-        value = super(Files, self).get_value(vid, attribute=newatt, resolved=False, subgroup=subgroup)
+        value = super(Files, self).get_value(
+            vid, attribute=newatt, resolved=False, subgroup=subgroup
+        )
         if value is None and attribute is not None:
-            value = super(Files, self).get_value(vid, attribute=attribute, resolved=False, subgroup=subgroup)
+            value = super(Files, self).get_value(
+                vid, attribute=attribute, resolved=False, subgroup=subgroup
+            )
         if value is None:
-            value = super(Files, self).get_value(vid, attribute=None, resolved=False, subgroup=subgroup)
+            value = super(Files, self).get_value(
+                vid, attribute=None, resolved=False, subgroup=subgroup
+            )
 
-        if "COMP_ROOT_DIR" not in vid and value is not None and "COMP_ROOT_DIR" in value:
+        if (
+            "COMP_ROOT_DIR" not in vid
+            and value is not None
+            and "COMP_ROOT_DIR" in value
+        ):
             m = re.search("(COMP_ROOT_DIR_[^/]+)/", value)
             comp_root_dir_var_name = m.group(1)
-            newatt = {"comp_interface":self._comp_interface}
+            newatt = {"comp_interface": self._comp_interface}
             if attribute:
                 newatt.update(attribute)
 
-            crd_node = self.scan_optional_child(comp_root_dir_var_name, attributes=newatt)
+            crd_node = self.scan_optional_child(
+                comp_root_dir_var_name, attributes=newatt
+            )
             if crd_node:
-                comp_root_dir = self.get_value(comp_root_dir_var_name, attribute=newatt, resolved=False, subgroup=subgroup)
+                comp_root_dir = self.get_value(
+                    comp_root_dir_var_name,
+                    attribute=newatt,
+                    resolved=False,
+                    subgroup=subgroup,
+                )
             else:
-                comp_root_dir = self.get_value(comp_root_dir_var_name, attribute=attribute, resolved=False, subgroup=subgroup)
-            self.set_value(comp_root_dir_var_name, comp_root_dir,subgroup=attribute)
+                comp_root_dir = self.get_value(
+                    comp_root_dir_var_name,
+                    attribute=attribute,
+                    resolved=False,
+                    subgroup=subgroup,
+                )
+            self.set_value(comp_root_dir_var_name, comp_root_dir, subgroup=attribute)
             if resolved:
-                value = value.replace("$"+comp_root_dir_var_name, comp_root_dir)
+                value = value.replace("$" + comp_root_dir_var_name, comp_root_dir)
 
         if resolved and value is not None:
             value = value.replace("$COMP_INTERFACE", self._comp_interface)
             value = self.get_resolved_value(value)
         return value
 
-    def set_value(self, vid, value,subgroup=None,ignore_type=False):
+    def set_value(self, vid, value, subgroup=None, ignore_type=False):
         if "COMP_ROOT_DIR" in vid:
             if subgroup is not None:
-                self.COMP_ROOT_DIR[vid+subgroup["component"]] = value
+                self.COMP_ROOT_DIR[vid + subgroup["component"]] = value
             else:
                 self.COMP_ROOT_DIR[vid] = value
 
@@ -100,9 +124,8 @@ class Files(EntryID):
             expect(False, "Attempt to set a nonmutable variable {}".format(vid))
         return value
 
-
     def get_schema(self, nodename, attributes=None):
-        node = self.get_optional_child("entry", {"id":nodename})
+        node = self.get_optional_child("entry", {"id": nodename})
         schemanode = self.get_optional_child("schema", root=node, attributes=attributes)
         if schemanode is not None:
             logger.debug("Found schema for {}".format(nodename))
@@ -110,9 +133,11 @@ class Files(EntryID):
         return None
 
     def get_components(self, nodename):
-        node = self.get_optional_child("entry", {"id":nodename})
+        node = self.get_optional_child("entry", {"id": nodename})
         if node is not None:
-            valnodes = self.get_children("value", root=self.get_child("values", root=node))
+            valnodes = self.get_children(
+                "value", root=self.get_child("values", root=node)
+            )
             values = []
             for valnode in valnodes:
                 value = self.get(valnode, "component")

@@ -14,5 +14,6 @@ sys.path.insert(1, tools_path)
 
 from CIME.scripts.query_testlists import _main_func
 
+
 if __name__ == "__main__":
     _main_func()

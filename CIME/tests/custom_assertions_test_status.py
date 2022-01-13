@@ -11,8 +11,8 @@ import CIME.six
 import CIME.six_additions
 from CIME import test_status
 
-class CustomAssertionsTestStatus(unittest.TestCase):
 
+class CustomAssertionsTestStatus(unittest.TestCase):
     def assert_status_of_phase(self, output, status, phase, test_name, xfail=None):
         """Asserts that 'output' contains a line showing the given
         status for the given phase for the given test_name.
@@ -24,16 +24,21 @@ class CustomAssertionsTestStatus(unittest.TestCase):
         - 'expected': After the phase, the line should contain '(EXPECTED FAILURE)'
         - 'unexpected': After the phase, the line should contain '(UNEXPECTED'
         """
-        expected = (r'^ *{} +'.format(re.escape(status)) +
-                    self._test_name_and_phase_regex(test_name, phase))
+        expected = r"^ *{} +".format(
+            re.escape(status)
+        ) + self._test_name_and_phase_regex(test_name, phase)
 
-        if xfail == 'no':
+        if xfail == "no":
             # There should be no other text after the testname and phase regex
-            expected += r' *$'
-        elif xfail == 'expected':
-            expected += r' *{}'.format(re.escape(test_status.TEST_EXPECTED_FAILURE_COMMENT))
-        elif xfail == 'unexpected':
-            expected += r' *{}'.format(re.escape(test_status.TEST_UNEXPECTED_FAILURE_COMMENT_START))
+            expected += r" *$"
+        elif xfail == "expected":
+            expected += r" *{}".format(
+                re.escape(test_status.TEST_EXPECTED_FAILURE_COMMENT)
+            )
+        elif xfail == "unexpected":
+            expected += r" *{}".format(
+                re.escape(test_status.TEST_UNEXPECTED_FAILURE_COMMENT_START)
+            )
         else:
             expect(xfail is None, "Unhandled value of xfail argument")
 
@@ -43,9 +48,10 @@ class CustomAssertionsTestStatus(unittest.TestCase):
     def assert_phase_absent(self, output, phase, test_name):
         """Asserts that 'output' does not contain a status line for the
         given phase and test_name"""
-        expected = re.compile(r'^.* +' +
-                              self._test_name_and_phase_regex(test_name, phase),
-                              flags=re.MULTILINE)
+        expected = re.compile(
+            r"^.* +" + self._test_name_and_phase_regex(test_name, phase),
+            flags=re.MULTILINE,
+        )
 
         CIME.six_additions.assertNotRegex(self, output, expected)
 
@@ -59,16 +65,22 @@ class CustomAssertionsTestStatus(unittest.TestCase):
                 status = test_status.TEST_FAIL_STATUS
             else:
                 status = test_status.TEST_PASS_STATUS
-            self.assert_status_of_phase(output=output,
-                                        status=status,
-                                        phase=phase,
-                                        test_name=test_name)
+            self.assert_status_of_phase(
+                output=output, status=status, phase=phase, test_name=test_name
+            )
 
-    def assert_num_expected_unexpected_fails(self, output, num_expected, num_unexpected):
+    def assert_num_expected_unexpected_fails(
+        self, output, num_expected, num_unexpected
+    ):
         """Asserts that the number of occurrences of expected and unexpected fails in
         'output' matches the given numbers"""
-        self.assertEqual(output.count(test_status.TEST_EXPECTED_FAILURE_COMMENT), num_expected)
-        self.assertEqual(output.count(test_status.TEST_UNEXPECTED_FAILURE_COMMENT_START), num_unexpected)
+        self.assertEqual(
+            output.count(test_status.TEST_EXPECTED_FAILURE_COMMENT), num_expected
+        )
+        self.assertEqual(
+            output.count(test_status.TEST_UNEXPECTED_FAILURE_COMMENT_START),
+            num_unexpected,
+        )
 
     @staticmethod
     def _test_name_and_phase_regex(test_name, phase):
@@ -80,4 +92,4 @@ class CustomAssertionsTestStatus(unittest.TestCase):
         # changing. By making its regex shared as much as possible with
         # the regex in assert_status_of_phase, we decrease the chances
         # of these false passes.
-        return r'{} +{}'.format(re.escape(test_name), re.escape(phase))
+        return r"{} +{}".format(re.escape(test_name), re.escape(phase))
