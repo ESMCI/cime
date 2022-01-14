@@ -9,12 +9,14 @@ sys.path.append(os.path.join(_CIMEROOT, "scripts", "fortran_unit_testing", "pyth
 
 from standard_script_setup import *
 from CIME.BuildTools.configure import configure, FakeCase
-from CIME.utils import run_cmd_no_fail, stringify_bool, expect, get_src_root
+from CIME.utils import run_cmd_no_fail, stringify_bool, expect, get_src_root, safe_copy
 from CIME.XML.machines import Machines
 from CIME.XML.compilers import Compilers
 from CIME.XML.env_mach_specific import EnvMachSpecific
+from CIME.build import get_makefile_vars
 from xml_test_list import TestSuiteSpec, suites_from_xml
-import socket
+import socket, shutil
+from pathlib import Path
 
 # =================================================
 # Standard library modules.
@@ -287,31 +289,34 @@ def make_stage(name, output, make_j, clean=False, verbose=True):
     run_cmd_no_fail(" ".join(make_command), combine_output=True)
 
 
-def find_pfunit(compilerobj, mpilib, use_openmp):
+def find_pfunit(caseroot, cmake_args):
     """Find the pfunit installation we'll be using, and print its path
 
     Aborts if necessary information cannot be found.
 
     Args:
-    - compilerobj: Object of type Compilers
-    - mpilib: String giving the mpi library we're using
-    - use_openmp: Boolean
+    - case: A fake case
+    - caseroot: The dir with the macros
     """
-    attrs = {"MPILIB": mpilib, "compile_threaded": "TRUE" if use_openmp else "FALSE"}
+    new_cmake_dir = os.path.join(caseroot, "cmake_macros")
+    cmake_lists = os.path.join(new_cmake_dir, "CMakeLists.txt")
+    Path(os.path.join(caseroot, "cmaketmp")).mkdir(parents=False, exist_ok=True)
+    safe_copy(cmake_lists, "cmaketmp")
 
-    pfunit_path = compilerobj.get_optional_compiler_node(
-        "PFUNIT_PATH", attributes=attrs
-    )
-    expect(
-        pfunit_path is not None,
-        """PFUNIT_PATH not found for this machine and compiler, with MPILIB={} and compile_threaded={}.
-You must specify PFUNIT_PATH in config_compilers.xml, with attributes MPILIB and compile_threaded.""".format(
-            mpilib, attrs["compile_threaded"]
-        ),
-    )
-    logger.info("Using PFUNIT_PATH: {}".format(compilerobj.text(pfunit_path)))
-    return compilerobj.text(pfunit_path)
+    all_vars = get_makefile_vars(None, caseroot, cmake_args=cmake_args)
+    shutil.rmtree(os.path.join(caseroot, "cmaketmp"))
 
+    all_vars_list = all_vars.splitlines()
+    for all_var in all_vars_list:
+        if ":=" in all_var:
+            expect(all_var.count(":=") == 1, "Bad makefile line: {}".format(all_var))
+            varname, value = [item.strip() for item in all_var.split(":=")]
+            if varname == "PFUNIT_PATH":
+                logger.info("Using PFUNIT_PATH: {}".format(value))
+                return value
+
+    expect(False, "PFUNIT_PATH not found for this machine and compiler")
+    return None
 
 # =================================================
 # Iterate over input suite specs, building the tests.
@@ -402,10 +407,6 @@ def _main():
         compiler = machobj.get_default_compiler()
         logger.info("Compiler is {}".format(compiler))
 
-    compilerobj = Compilers(machobj, compiler=compiler, mpilib=mpilib)
-
-    pfunit_path = find_pfunit(compilerobj, mpilib=mpilib, use_openmp=use_openmp)
-
     debug = not build_optimized
     os_ = machobj.get_value("OS")
 
@@ -425,18 +426,23 @@ def _main():
     )
     machspecific = EnvMachSpecific(build_dir, unit_testing=True)
 
-    fake_case = FakeCase(compiler, mpilib, debug, comp_interface)
+    fake_case = FakeCase(compiler, mpilib, debug, comp_interface, threading=use_openmp)
     machspecific.load_env(fake_case)
+    # JGF bug? original contents of cmake_args is lost
     cmake_args = (
-        "{}-DOS={} -DCOMPILER={} -DDEBUG={} -DMPILIB={} -Dcompile_threaded={}".format(
+        "{}-DOS={} -DMACH={} -DCOMPILER={} -DDEBUG={} -DMPILIB={} -Dcompile_threaded={} -DCASEROOT={}".format(
             "" if not cmake_args else " ",
             os_,
+            machine,
             compiler,
             stringify_bool(debug),
             mpilib,
             stringify_bool(use_openmp),
+            build_dir
         )
     )
+
+    pfunit_path = find_pfunit(build_dir, cmake_args)
 
     os.environ["UNIT_TEST_HOST"] = socket.gethostname()
     if "NETCDF_PATH" in os.environ and not "NETCDF" in os.environ:

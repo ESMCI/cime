@@ -653,7 +653,7 @@ class TestCreateNewcase(base.BaseTestCase):
 
     def test_ka_createnewcase_extra_machines_dir(self):
         # Test that we pick up changes in both config_machines.xml and
-        # config_compilers.xml in a directory specified with the --extra-machines-dir
+        # cmake macros in a directory specified with the --extra-machines-dir
         # argument to create_newcase.
         cls = self.__class__
         casename = "testcreatenewcase_extra_machines_dir"
@@ -673,18 +673,12 @@ class TestCreateNewcase(base.BaseTestCase):
         utils.safe_copy(
             newmachfile, os.path.join(extra_machines_dir, "config_machines.xml")
         )
-        os.environ["CIME_NO_CMAKE_MACRO"] = "ON"
-        config_compilers_text = """\
-<?xml version="1.0" encoding="UTF-8"?>
-<config_compilers version="2.0">
-<compiler MACH="mymachine">
-  <NETCDF_PATH>/my/netcdf/path</NETCDF_PATH>
-</compiler>
-</config_compilers>
+        cmake_macro_text = """\
+set(NETCDF_PATH /my/netcdf/path)
 """
-        config_compilers_path = os.path.join(extra_machines_dir, "config_compilers.xml")
-        with open(config_compilers_path, "w") as config_compilers:
-            config_compilers.write(config_compilers_text)
+        cmake_macro_path = os.path.join(extra_machines_dir, "mymachine.cmake")
+        with open(cmake_macro_path, "w") as cmake_macro:
+            cmake_macro.write(cmake_macro_text)
 
         # Create the case
         testdir = os.path.join(cls._testroot, casename)
@@ -727,7 +721,6 @@ class TestCreateNewcase(base.BaseTestCase):
                 macros_contents = macros_file.read()
             expected_re = re.compile("NETCDF_PATH.*/my/netcdf/path")
             self.assertTrue(expected_re.search(macros_contents))
-        del os.environ["CIME_NO_CMAKE_MACRO"]
 
     def test_m_createnewcase_alternate_drivers(self):
         # Test that case.setup runs for nuopc and moab drivers

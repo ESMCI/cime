@@ -16,12 +16,14 @@ COMPILER, MPILIB, and DEBUG, respectively.
 """
 
 from CIME.XML.standard_module_setup import *
-from CIME.utils import expect, safe_copy
+from CIME.utils import expect, safe_copy, get_model, get_src_root, stringify_bool
 from CIME.XML.compilers import Compilers
 from CIME.XML.env_mach_specific import EnvMachSpecific
 from CIME.XML.files import Files
+from CIME.build import get_makefile_vars
 
 import shutil
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
@@ -64,12 +66,10 @@ def configure(
     macro_maker = None
     for form in macros_format:
 
-        if (
-            form == "CMake"
-            and new_cmake_macros_dir is not None
-            and os.path.exists(new_cmake_macros_dir)
-            and not "CIME_NO_CMAKE_MACRO" in os.environ
-        ):
+        if not "CIME_NO_CMAKE_MACRO" in os.environ:
+            expect(new_cmake_macros_dir is not None and os.path.exists(new_cmake_macros_dir),
+                   "Cannot create CMake macros without CMAKE_MACROS_DIR")
+
             if not os.path.isfile(os.path.join(output_dir, "Macros.cmake")):
                 safe_copy(
                     os.path.join(new_cmake_macros_dir, "Macros.cmake"), output_dir
@@ -78,6 +78,31 @@ def configure(
                 shutil.copytree(
                     new_cmake_macros_dir, os.path.join(output_dir, "cmake_macros")
                 )
+
+            if form == "Makefile":
+                # Use the cmake macros to generate the make macros
+                cmake_args = (
+                        " -DOS={} -DMACH={} -DCOMPILER={} -DDEBUG={} -DMPILIB={} -Dcompile_threaded={} -DCASEROOT={}".format(
+                            sysos,
+                            machobj.get_machine_name(),
+                            compiler,
+                            stringify_bool(debug),
+                            mpilib,
+                            stringify_bool(threaded),
+                            output_dir
+                        )
+                )
+
+                new_cmake_dir = os.path.join(output_dir, "cmake_macros")
+                cmake_lists = os.path.join(new_cmake_dir, "CMakeLists.txt")
+                Path(os.path.join(output_dir, "cmaketmp")).mkdir(parents=False, exist_ok=True)
+                safe_copy(cmake_lists, "cmaketmp")
+
+                output = get_makefile_vars(None, output_dir, cmake_args=cmake_args)
+                shutil.rmtree(os.path.join(output_dir, "cmaketmp"))
+
+                with open(os.path.join(output_dir, "Macros.make"), "w") as fd:
+                    fd.write(output)
 
         else:
             logger.warning("Using deprecated CIME makefile generators")
@@ -135,7 +160,7 @@ def copy_depends_files(machine_name, machines_dir, output_dir, compiler):
 
 
 class FakeCase(object):
-    def __init__(self, compiler, mpilib, debug, comp_interface):
+    def __init__(self, compiler, mpilib, debug, comp_interface, threading=False):
         # PIO_VERSION is needed to parse config_machines.xml but isn't otherwise used
         # by FakeCase
         self._vals = {
@@ -144,8 +169,13 @@ class FakeCase(object):
             "DEBUG": debug,
             "COMP_INTERFACE": comp_interface,
             "PIO_VERSION": 2,
-            "SMP_PRESENT": False,
+            "SMP_PRESENT": threading,
+            "MODEL" : get_model(),
+            "SRCROOT" : get_src_root()
         }
+
+    def get_build_threaded(self):
+        return self.get_value("SMP_PRESENT")
 
     def get_value(self, attrib):
         expect(

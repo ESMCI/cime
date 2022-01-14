@@ -353,34 +353,6 @@ file(WRITE query.out "${{{}}}")
         self.parent.assertRegexpMatches(self.query_var(var_name, env, var), regex)
 
 
-def get_macros(macro_maker, build_xml, build_system):
-    """Generate build system ("Macros" file) output from config_compilers XML.
-
-    Arguments:
-    macro_maker - The underlying Build object.
-    build_xml - A string containing the XML to operate on.
-    build_system - Either "Makefile" or "CMake", depending on desired output.
-
-    The return value is a string containing the build system output.
-    """
-    # Build.write_macros expects file-like objects as input, so
-    # we need to wrap the strings in StringIO objects.
-    xml = six.StringIO(str(build_xml))
-    output = six.StringIO()
-    output_format = None
-    if build_system == "Makefile":
-        output_format = "make"
-    elif build_system == "CMake":
-        output_format = "cmake"
-    else:
-        output_format = build_system
-
-    macro_maker.write_macros_file(
-        macros_file=output, output_format=output_format, xml=xml
-    )
-    return str(output.getvalue())
-
-
 # TODO after dropping python 2.7 replace with tempfile.TemporaryDirectory
 class TemporaryDirectory(object):
     def __init__(self):

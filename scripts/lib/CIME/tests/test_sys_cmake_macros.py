@@ -5,6 +5,7 @@ from CIME.tests import base
 from CIME.tests import utils as test_utils
 from CIME.XML.compilers import Compilers
 
+import os
 
 class TestCMakeMacros(base.BaseTestCase):
     """CMake macros tests.
@@ -27,6 +28,9 @@ class TestCMakeMacros(base.BaseTestCase):
 
     def setUp(self):
         super().setUp()
+
+        if "CIME_NO_CMAKE_MACRO" not in os.environ:
+            self.skipTest("Skipping test of old macro system")
 
         self.test_os = "SomeOS"
         self.test_machine = "mymachine"

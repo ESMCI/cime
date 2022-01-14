@@ -57,11 +57,13 @@ _CMD_ARGS_FOR_BUILD = (
 )
 
 
-def get_makefile_vars(case, caseroot, comp=None):
+def get_makefile_vars(case, caseroot, comp=None, cmake_args=None):
     """
     Run cmake and process output to a list of variable settings
+
+    case can be None if caller is providing their own cmake args
     """
-    cmake_args = get_standard_cmake_args(case, "DO_NOT_USE", shared_lib=True)
+    cmake_args = get_standard_cmake_args(case, "DO_NOT_USE", shared_lib=True) if cmake_args is None else cmake_args
     dcomp = "-DCOMP_NAME={}".format(comp) if comp else ""
     output = run_cmd_no_fail(
         "cmake -DCONVERT_TO_MAKE=ON {dcomp} {cmake_args} .".format(

@@ -7,6 +7,7 @@ from CIME.tests import base
 from CIME.tests import utils as test_utils
 from CIME.XML.compilers import Compilers
 
+import os
 
 class TestMacrosBasic(base.BaseTestCase):
     """Basic infrastructure tests.
@@ -15,6 +16,12 @@ class TestMacrosBasic(base.BaseTestCase):
     macro file conversion. This includes basic smoke testing and tests of
     error-handling in the routine.
     """
+
+    def setUp(self):
+        super().setUp()
+
+        if "CIME_NO_CMAKE_MACRO" not in os.environ:
+            self.skipTest("Skipping test of old macro system")
 
     def test_script_is_callable(self):
         """The test script can be called on valid output without dying."""
