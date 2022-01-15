@@ -112,16 +112,7 @@ class TestUserNLCopier(unittest.TestCase):
         self.write_user_nl_file(component_exists, "irrelevant contents")
 
         # Exercise & verify
-<<<<<<< HEAD:CIME/tests/SystemTests/test_utils/test_user_nl_utils.py
-        CIME.six.assertRaisesRegex(self, RuntimeError, "No user_nl files found",
-                                user_nl_utils.append_to_user_nl_files,
-                                caseroot = self._caseroot,
-                                component = component_for_append,
-                                contents = 'irrelevant contents to append')
-
-if __name__ == '__main__':
-=======
-        six.assertRaisesRegex(
+        CIME.six.assertRaisesRegex(
             self,
             RuntimeError,
             "No user_nl files found",
@@ -133,5 +124,4 @@ if __name__ == '__main__':
 
 
 if __name__ == "__main__":
->>>>>>> master:CIME/tests/test_unit_user_nl_utils.py
     unittest.main()

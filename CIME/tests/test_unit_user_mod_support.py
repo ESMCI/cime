@@ -135,18 +135,12 @@ class TestUserModSupport(unittest.TestCase):
 
     def test_keepexe(self):
         self.createUserMod("foo")
-<<<<<<< HEAD:CIME/tests/test_user_mod_support.py
         with CIME.six.assertRaisesRegex(self, CIMEError, "cannot have any source mods"):
-            apply_user_mods(self._caseroot,
-                            os.path.join(self._user_mods_parent_dir, "foo"), keepexe=True)
-=======
-        with six.assertRaisesRegex(self, CIMEError, "cannot have any source mods"):
             apply_user_mods(
                 self._caseroot,
                 os.path.join(self._user_mods_parent_dir, "foo"),
                 keepexe=True,
             )
->>>>>>> master:CIME/tests/test_unit_user_mod_support.py
 
     def test_two_applications(self):
         """If apply_user_mods is called twice, the second should appear after the first so that it takes precedence."""

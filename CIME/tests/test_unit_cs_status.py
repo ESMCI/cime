@@ -137,17 +137,10 @@ class TestCsStatus(CustomAssertionsTestStatus):
         )
         for phase in test_status.CORE_PHASES:
             if phase != fail_phase:
-<<<<<<< HEAD:CIME/tests/test_cs_status.py
-                self.assert_phase_absent(output=self._output.getvalue(),
-                                         phase=phase,
-                                         test_name=test_name)
-        CIME.six_additions.assertNotRegex(self, self._output.getvalue(), r'Overall:')
-=======
                 self.assert_phase_absent(
                     output=self._output.getvalue(), phase=phase, test_name=test_name
                 )
-        six_additions.assertNotRegex(self, self._output.getvalue(), r"Overall:")
->>>>>>> master:CIME/tests/test_unit_cs_status.py
+        CIME.six_additions.assertNotRegex(self, self._output.getvalue(), r"Overall:")
 
     def test_count_fails(self):
         """Test the count of fails with three tests
@@ -206,18 +199,6 @@ class TestCsStatus(CustomAssertionsTestStatus):
         )
 
         for testnum in range(3):
-<<<<<<< HEAD:CIME/tests/test_cs_status.py
-            self.assert_phase_absent(output=self._output.getvalue(),
-                                     phase=phase_of_interest1,
-                                     test_name=test_names[testnum])
-            self.assert_phase_absent(output=self._output.getvalue(),
-                                     phase=phase_of_interest2,
-                                     test_name=test_names[testnum])
-        count_regex1 = r'{} +non-passes: +2'.format(re.escape(phase_of_interest1))
-        CIME.six.assertRegex(self, self._output.getvalue(), count_regex1)
-        count_regex2 = r'{} +non-passes: +1'.format(re.escape(phase_of_interest2))
-        CIME.six.assertRegex(self, self._output.getvalue(), count_regex2)
-=======
             self.assert_phase_absent(
                 output=self._output.getvalue(),
                 phase=phase_of_interest1,
@@ -229,10 +210,9 @@ class TestCsStatus(CustomAssertionsTestStatus):
                 test_name=test_names[testnum],
             )
         count_regex1 = r"{} +non-passes: +2".format(re.escape(phase_of_interest1))
-        six.assertRegex(self, self._output.getvalue(), count_regex1)
+        CIME.six.assertRegex(self, self._output.getvalue(), count_regex1)
         count_regex2 = r"{} +non-passes: +1".format(re.escape(phase_of_interest2))
-        six.assertRegex(self, self._output.getvalue(), count_regex2)
->>>>>>> master:CIME/tests/test_unit_cs_status.py
+        CIME.six.assertRegex(self, self._output.getvalue(), count_regex2)
 
     def test_expected_fails(self):
         """With the expected_fails_file flag, expected failures should be flagged as such"""

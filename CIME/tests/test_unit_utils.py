@@ -15,13 +15,6 @@ from CIME.utils import (
     file_contains_python_function,
 )
 
-<<<<<<< HEAD:CIME/tests/test_utils.py
-class TestIndentStr(unittest.TestCase):
-    """Test the indent_string function.
-=======
-from CIME.tests import utils
-
->>>>>>> master:CIME/tests/test_unit_utils.py
 
 class TestIndentStr(unittest.TestCase):
     """Test the indent_string function."""
@@ -236,14 +229,8 @@ class TestUtils(unittest.TestCase):
             "00:00:00 default success \n",
         ]
 
-<<<<<<< HEAD:CIME/tests/test_utils.py
         with tempfile.TemporaryDirectory() as tempdir, MockTime():
-            run_and_log_case_status(self.base_func, "default",
-                                    caseroot=tempdir)
-=======
-        with utils.TemporaryDirectory() as tempdir, MockTime():
             run_and_log_case_status(self.base_func, "default", caseroot=tempdir)
->>>>>>> master:CIME/tests/test_unit_utils.py
 
             self.assertMatchAllLines(tempdir, test_lines)
 
@@ -253,16 +240,10 @@ class TestUtils(unittest.TestCase):
             "00:00:00 case.submit success \n",
         ]
 
-<<<<<<< HEAD:CIME/tests/test_utils.py
         with tempfile.TemporaryDirectory() as tempdir, MockTime():
-            run_and_log_case_status(self.base_func, "case.submit",
-                                    caseroot=tempdir, is_batch=True)
-=======
-        with utils.TemporaryDirectory() as tempdir, MockTime():
             run_and_log_case_status(
                 self.base_func, "case.submit", caseroot=tempdir, is_batch=True
             )
->>>>>>> master:CIME/tests/test_unit_utils.py
 
             self.assertMatchAllLines(tempdir, test_lines)
 
@@ -272,16 +253,10 @@ class TestUtils(unittest.TestCase):
             "00:00:00 case.submit success \n",
         ]
 
-<<<<<<< HEAD:CIME/tests/test_utils.py
         with tempfile.TemporaryDirectory() as tempdir, MockTime():
-            run_and_log_case_status(self.base_func, "case.submit",
-                                    caseroot=tempdir, is_batch=False)
-=======
-        with utils.TemporaryDirectory() as tempdir, MockTime():
             run_and_log_case_status(
                 self.base_func, "case.submit", caseroot=tempdir, is_batch=False
             )
->>>>>>> master:CIME/tests/test_unit_utils.py
 
             self.assertMatchAllLines(tempdir, test_lines)
 
@@ -312,14 +287,7 @@ class TestUtils(unittest.TestCase):
         def normal_func():
             return "data"
 
-<<<<<<< HEAD:CIME/tests/test_utils.py
         with tempfile.TemporaryDirectory() as tempdir, MockTime():
-            run_and_log_case_status(normal_func, "default",
-                                    custom_starting_msg_functor=starting_func,
-                                    custom_success_msg_functor=success_func,
-                                    caseroot=tempdir)
-=======
-        with utils.TemporaryDirectory() as tempdir, MockTime():
             run_and_log_case_status(
                 normal_func,
                 "default",
@@ -327,7 +295,6 @@ class TestUtils(unittest.TestCase):
                 custom_success_msg_functor=success_func,
                 caseroot=tempdir,
             )
->>>>>>> master:CIME/tests/test_unit_utils.py
 
             self.assertMatchAllLines(tempdir, test_lines)
 
@@ -346,15 +313,7 @@ class TestUtils(unittest.TestCase):
         def error_func():
             raise Exception("Error")
 
-<<<<<<< HEAD:CIME/tests/test_utils.py
-        with tempfile.TemporaryDirectory() as tempdir, MockTime(), \
-                self.assertRaises(Exception):
-            run_and_log_case_status(error_func, "default",
-                                    custom_starting_msg_functor=starting_func,
-                                    custom_success_msg_functor=success_func,
-                                    caseroot=tempdir)
-=======
-        with utils.TemporaryDirectory() as tempdir, MockTime(), self.assertRaises(
+        with tempfile.TemporaryDirectory() as tempdir, MockTime(), self.assertRaises(
             Exception
         ):
             run_and_log_case_status(
@@ -364,7 +323,6 @@ class TestUtils(unittest.TestCase):
                 custom_success_msg_functor=success_func,
                 caseroot=tempdir,
             )
->>>>>>> master:CIME/tests/test_unit_utils.py
 
             self.assertMatchAllLines(tempdir, test_lines)
 
