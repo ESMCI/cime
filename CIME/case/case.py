@@ -2276,7 +2276,7 @@ directory, NOT in this subdirectory."""
 
             # Propagate to `GenericXML` to resolve $SRCROOT
             utils.GLOBAL["SRCROOT"] = srcroot
-            
+
             # If any of the top level user_mods_dirs contain a config_grids.xml file and
             # gridfile was not set on the command line, use it. However, if there are
             # multiple user_mods_dirs, it is an error for more than one of them to contain

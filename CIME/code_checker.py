@@ -54,7 +54,7 @@ def _run_pylint(all_files, interactive):
     cmd = "%s %s %s" % (pylint, cmd_options, files)
     logger.debug("pylint command is %s"%cmd)
     stat, out, err = run_cmd(cmd, verbose=False, from_dir=cimeroot)
-    
+
     data = json.loads(out)
 
     result = {}
