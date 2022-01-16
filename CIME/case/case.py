@@ -12,6 +12,7 @@ from CIME.XML.standard_module_setup import *
 
 # pylint: disable=import-error,redefined-builtin
 from six.moves import input
+from CIME import utils
 from CIME.utils import expect, get_cime_root, append_status
 from CIME.utils import convert_to_type, get_model, set_model
 from CIME.utils import get_project, get_charge_account, check_name
@@ -146,7 +147,7 @@ class Case(object):
         # creation we get the values for those fields from this lookup
         # table and then remove the entry.
         self.lookups = {}
-        self.set_lookup_value('CIMEROOT', cimeroot)
+        self.set_lookup_value("CIMEROOT", cimeroot)
         self._cime_model = get_model()
         self.set_lookup_value("MODEL", self._cime_model)
         self._compsetname = None
@@ -1600,7 +1601,7 @@ class Case(object):
     def _create_caseroot_tools(self):
         machines_dir = os.path.abspath(self.get_value("MACHDIR"))
         machine = self.get_value("MACH")
-        toolsdir = os.path.join(self.get_value("CIMEROOT"),"CIME","Tools")
+        toolsdir = os.path.join(self.get_value("CIMEROOT"), "CIME", "Tools")
         casetools = os.path.join(self._caseroot, "Tools")
         # setup executable files in caseroot/
         exefiles = (

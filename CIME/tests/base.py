@@ -34,7 +34,7 @@ class BaseTestCase(unittest.TestCase):
     # These static values are set when scripts/lib/CIME/tests/scripts_regression_tests.py is called.
     MACHINE = None
     SCRIPT_DIR = utils.get_scripts_root()
-    TOOLS_DIR = os.path.join(SCRIPT_DIR, "Tools")
+    TOOLS_DIR = os.path.join(utils.get_cime_root(), "CIME", "Tools")
     TEST_ROOT = None
     TEST_COMPILER = None
     TEST_MPILIB = None

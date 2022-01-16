@@ -7,7 +7,7 @@ import stat
 import threading
 import time
 
-import get_tests
+from CIME import get_tests
 from CIME import utils
 from CIME.tests import base
 

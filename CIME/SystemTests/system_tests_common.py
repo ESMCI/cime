@@ -397,7 +397,10 @@ class SystemTestsCommon(object):
         allgood = len(newestcpllogfiles)
         for cpllog in newestcpllogfiles:
             try:
-                if CIME.six.b("SUCCESSFUL TERMINATION") in gzip.open(cpllog, "rb").read():
+                if (
+                    CIME.six.b("SUCCESSFUL TERMINATION")
+                    in gzip.open(cpllog, "rb").read()
+                ):
                     allgood = allgood - 1
             except Exception as e:  # Probably want to be more specific here
                 msg = e.__str__()

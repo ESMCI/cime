@@ -143,7 +143,7 @@ class TestCreateNewcase(base.BaseTestCase):
         cls._testdirs.append(testdir)
 
         user_mods_dir = os.path.join(
-            utils.get_python_libs_root(), "..", "tests", "user_mods_test1"
+            os.path.dirname(__file__), "user_mods_test1"
         )
         args = (
             " --case %s --compset X --user-mods-dir %s --output-root %s --handle-preexisting-dirs=r"
@@ -193,7 +193,7 @@ class TestCreateNewcase(base.BaseTestCase):
             shutil.rmtree(testdir)
         prevtestdir = cls._testdirs[0]
         user_mods_dir = os.path.join(
-            utils.get_python_libs_root(), "..", "tests", "user_mods_test3"
+            os.path.dirname(__file__), "user_mods_test3"
         )
 
         cmd = "%s/create_clone --clone %s --case %s --keepexe --user-mods-dir %s" % (
@@ -631,6 +631,8 @@ class TestCreateNewcase(base.BaseTestCase):
 
         newmachfile = os.path.join(
             utils.get_cime_root(),
+            "CIME",
+            "data",
             "config",
             "xml_schemas",
             "config_machines_template.xml",
@@ -666,6 +668,8 @@ class TestCreateNewcase(base.BaseTestCase):
         cls._do_teardown.append(extra_machines_dir)
         newmachfile = os.path.join(
             utils.get_cime_root(),
+            "CIME",
+            "data",
             "config",
             "xml_schemas",
             "config_machines_template.xml",

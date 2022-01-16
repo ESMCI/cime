@@ -6,7 +6,7 @@ import os
 import unittest
 from unittest import mock
 
-import get_tests
+from CIME import get_tests
 from CIME import utils
 from CIME import test_status
 from CIME import test_scheduler

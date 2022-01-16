@@ -44,7 +44,7 @@ LDFLAGS = -L$(LIB_NETCDF) -lnetcdff -Wl,-rpath $(LIB_NETCDF)
 UNAMES := $(shell uname -s)
 SNAME := $(shell uname -n | cut -c1-2)
 
-GENF90 = ../../src/externals/genf90/genf90.pl
+GENF90 = ../../CIME/data/genf90/genf90.pl
 
 FC := $(SFC)
 FFLAGS += -I$(INC_NETCDF) -I.

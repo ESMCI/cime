@@ -11,7 +11,7 @@ from CIME.test_status import *
 from CIME.hist_utils import generate_baseline, compare_baseline
 from CIME.case import Case
 from CIME.test_utils import get_test_status_files
-import os,  time
+import os, time
 
 logger = logging.getLogger(__name__)
 
@@ -32,8 +32,9 @@ def bless_namelists(
 
     # Update namelist files
     logger.info("Test '{}' had namelist diff".format(test_name))
-    if (not report_only and
-        (force or input("Update namelists (y/n)? ").upper() in ["Y", "YES"])):
+    if not report_only and (
+        force or input("Update namelists (y/n)? ").upper() in ["Y", "YES"]
+    ):
 
         create_test_gen_args = " -g {} ".format(
             baseline_name
@@ -79,9 +80,12 @@ def bless_history(test_name, case, baseline_name, baseline_root, report_only, fo
             return True, None
         else:
             logger.info(cmp_comments)
-            if (not report_only and
-                (force or input("Update this diff (y/n)? ").upper() in ["Y", "YES"])):
-                gen_result, gen_comments = generate_baseline(case, baseline_dir=baseline_full_dir)
+            if not report_only and (
+                force or input("Update this diff (y/n)? ").upper() in ["Y", "YES"]
+            ):
+                gen_result, gen_comments = generate_baseline(
+                    case, baseline_dir=baseline_full_dir
+                )
                 if not gen_result:
                     logger.warning(
                         "Hist file bless FAILED for test {}".format(test_name)

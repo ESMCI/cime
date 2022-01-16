@@ -13,6 +13,7 @@ import glob
 import gzip
 import json
 import io
+import os
 from os.path import expanduser
 import re
 import shutil

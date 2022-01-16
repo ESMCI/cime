@@ -24,9 +24,11 @@ from CIME.utils import (
     get_model,
     convert_to_seconds,
     get_cime_root,
+    get_src_root,
+    get_tools_path,
+    get_template_path,
     get_project,
     get_timestamp,
-    get_python_libs_root,
     get_cime_default_driver,
     clear_folder,
 )
@@ -563,9 +565,9 @@ class TestScheduler(object):
 
     ###########################################################################
     def _shell_cmd_for_phase(self, test, cmd, phase, from_dir=None):
-    ###########################################################################
+        ###########################################################################
         env = os.environ.copy()
-        env["PYTHONPATH"] = get_cime_root()
+        env["PYTHONPATH"] = f"{get_cime_root()}:{get_tools_path()}"
 
         while True:
             rc, output, errput = run_cmd(cmd, from_dir=from_dir, env=env)
@@ -610,7 +612,7 @@ class TestScheduler(object):
             os.path.join(self._cime_root, "CIME", "scripts", "create_newcase.py"),
             test_dir,
             grid,
-            compset
+            compset,
         )
 
         if machine is not None:
@@ -630,7 +632,7 @@ class TestScheduler(object):
         if self._pesfile is not None:
             create_newcase_cmd += " --pesfile {} ".format(self._pesfile)
 
-        create_newcase_cmd += f" --srcroot {utils.get_src_root()}"
+        create_newcase_cmd += f" --srcroot {get_src_root()}"
 
         mpilib = None
         ninst = 1
@@ -977,16 +979,16 @@ class TestScheduler(object):
         # It's OK for this command to fail with baseline diffs but not catastrophically
         if rv[0]:
             env = os.environ.copy()
-            env["PYTHONPATH"] = get_cime_root()
+            env["PYTHONPATH"] = f"{get_cime_root()}:{get_tools_path()}"
             cmdstat, output, _ = run_cmd(
                 "./case.cmpgen_namelists",
                 combine_output=True,
                 from_dir=test_dir,
-                env=env
+                env=env,
             )
             expect(
                 cmdstat in [0, TESTS_FAILED_ERR_CODE],
-                "Fatal error in case.cmpgen_namelists: {}".format(output)
+                "Fatal error in case.cmpgen_namelists: {}".format(output),
             )
 
         return rv
@@ -1291,7 +1293,9 @@ class TestScheduler(object):
 
                             logger.debug("  Current workload:")
                             total_procs = 0
-                            for the_test, the_data in CIME.six.iteritems(threads_in_flight):
+                            for the_test, the_data in CIME.six.iteritems(
+                                threads_in_flight
+                            ):
                                 logger.debug(
                                     "    {}: {} -> {}".format(
                                         the_test, the_data[2], the_data[1]
@@ -1372,9 +1376,7 @@ class TestScheduler(object):
             if self._cime_model == "cesm":
                 template_file = os.path.join(template_path, "testreporter.template")
                 template = open(template_file, "r").read()
-                template = template.replace(
-                    "<PATH>", self._cime_root
-                )
+                template = template.replace("<PATH>", self._cime_root)
                 testreporter_file = os.path.join(self._test_root, "testreporter")
                 with open(testreporter_file, "w") as fd:
                     fd.write(template)

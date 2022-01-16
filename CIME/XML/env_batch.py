@@ -33,7 +33,7 @@ class EnvBatch(EnvBase):
         # This arbitrary setting should always be overwritten
         self._default_walltime = "00:20:00"
         schema = os.path.join(utils.get_schema_path(), "env_batch.xsd")
-        super(EnvBatch,self).__init__(
+        super(EnvBatch, self).__init__(
             case_root, infile, schema=schema, read_only=read_only
         )
 

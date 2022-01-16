@@ -6,6 +6,7 @@ that every script should do.
 
 import sys, os
 import __main__ as main
+
 real_file_dir = os.path.dirname(os.path.realpath(__file__))
 cimeroot = os.path.abspath(os.path.join(real_file_dir, "..", ".."))
 sys.path.insert(0, cimeroot)

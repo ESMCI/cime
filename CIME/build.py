@@ -737,7 +737,7 @@ def _build_libraries(
             my_file = build_script[lib]
         else:
             my_file = os.path.join(
-                cimeroot, "src", "build_scripts", "buildlib.{}".format(lib)
+                cimeroot, "CIME", "build_scripts", "buildlib.{}".format(lib)
             )
         expect(
             os.path.exists(my_file),

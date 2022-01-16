@@ -34,8 +34,8 @@ from CIME.utils import (
     import_from_file,
     get_model,
 )
-import get_tests
 import CIME.test_scheduler, CIME.wait_for_tests
+from CIME import get_tests
 from CIME.test_scheduler import TestScheduler
 from CIME.XML.compilers import Compilers
 from CIME.XML.env_run import EnvRun

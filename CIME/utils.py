@@ -8,7 +8,8 @@ import errno, signal, warnings, filecmp
 import stat as statlib
 import CIME.six
 from contextlib import contextmanager
-#pylint: disable=import-error
+
+# pylint: disable=import-error
 from CIME.six.moves import configparser
 from distutils import file_util
 
@@ -19,6 +20,7 @@ logger = logging.getLogger(__name__)
 # Fix to pass user defined `srcroot` to `CIME.XML.generic_xml.GenericXML`
 # where it's used to resolve $SRCROOT in XML config files.
 GLOBAL = {}
+
 
 def import_from_file(name, file_path):
     loader = importlib.machinery.SourceFileLoader(name, file_path)
@@ -312,6 +314,7 @@ def reset_cime_config():
     global _CIMECONFIG
     _CIMECONFIG = None
 
+
 def get_cime_root(case=None):
     """
     Return the absolute path to the root of CIME that contains this script
@@ -332,20 +335,30 @@ def get_cime_root(case=None):
     logger.debug("CIMEROOT is " + cimeroot)
     return cimeroot
 
+
 def get_config_path():
     cimeroot = get_cime_root()
 
     return os.path.join(cimeroot, "CIME", "data", "config")
+
 
 def get_schema_path():
     config_path = get_config_path()
 
     return os.path.join(config_path, "xml_schemas")
 
+
 def get_template_path():
     cimeroot = get_cime_root()
 
     return os.path.join(cimeroot, "CIME", "data", "templates")
+
+
+def get_tools_path():
+    cimeroot = get_cime_root()
+
+    return os.path.join(cimeroot, "CIME", "Tools")
+
 
 def get_src_root():
     """
@@ -361,12 +374,15 @@ def get_src_root():
     elif "SRCROOT" in GLOBAL:
         srcroot = GLOBAL["SRCROOT"]
     else:
-        if os.path.isdir(os.path.join(get_cime_root(),"share")) and get_model() == "cesm":
+        if (
+            os.path.isdir(os.path.join(get_cime_root(), "share"))
+            and get_model() == "cesm"
+        ):
             srcroot = os.path.abspath(os.path.join(get_cime_root()))
         else:
-            srcroot = os.path.abspath(os.path.join(get_cime_root(),".."))
+            srcroot = os.path.abspath(os.path.join(get_cime_root(), ".."))
 
-    logger.debug( "SRCROOT is " + srcroot)
+    logger.debug("SRCROOT is " + srcroot)
 
     return srcroot
 
@@ -404,7 +420,7 @@ def get_all_cime_models():
         if os.path.isdir(os.path.join(config_path, entry)):
             models.append(entry)
 
-    models.remove('xml_schemas')
+    models.remove("xml_schemas")
 
     return models
 
@@ -464,7 +480,7 @@ def get_model():
                 logger.debug("Setting CIME_MODEL={} from ~/.cime/config".format(model))
 
     # One last try
-    if (model is None):
+    if model is None:
         srcroot = get_src_root()
 
         if os.path.isfile(os.path.join(srcroot, "Externals.cfg")):
@@ -1156,9 +1172,11 @@ def get_current_commit(short=False, repo=None, tag=False):
 
     return output if rc == 0 else "unknown"
 
+
 def get_model_config_location_within_cime(model=None):
     model = get_model() if model is None else model
     return os.path.join("config", model)
+
 
 def get_scripts_root():
     """

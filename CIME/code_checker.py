@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 
 ###############################################################################
 def _run_pylint(all_files, interactive):
-###############################################################################
+    ###############################################################################
     pylint = find_executable("pylint")
 
     cmd_options = (
@@ -44,15 +44,16 @@ def _run_pylint(all_files, interactive):
     #     cmd_options +=",relative-import"
 
     # add init-hook option
-    cmd_options += " --init-hook='sys.path.extend((\"%s\",\"%s\",\"%s\",\"%s\"))'"%\
-        (os.path.join(cimeroot,"CIME"),
-         os.path.join(cimeroot,"CIME","Tools"),
-         os.path.join(cimeroot,"scripts","fortran_unit_testing","python"),
-         os.path.join(srcroot,"components","cmeps","cime_config","runseq"))
+    cmd_options += ' --init-hook=\'sys.path.extend(("%s","%s","%s","%s"))\'' % (
+        os.path.join(cimeroot, "CIME"),
+        os.path.join(cimeroot, "CIME", "Tools"),
+        os.path.join(cimeroot, "scripts", "fortran_unit_testing", "python"),
+        os.path.join(srcroot, "components", "cmeps", "cime_config", "runseq"),
+    )
 
     files = " ".join(all_files)
     cmd = "%s %s %s" % (pylint, cmd_options, files)
-    logger.debug("pylint command is %s"%cmd)
+    logger.debug("pylint command is %s" % cmd)
     stat, out, err = run_cmd(cmd, verbose=False, from_dir=cimeroot)
 
     data = json.loads(out)
@@ -70,7 +71,9 @@ def _run_pylint(all_files, interactive):
         if path in result:
             result[path].append(f"{message}:{line}")
         else:
-            result[path] = [message, ]
+            result[path] = [
+                message,
+            ]
 
     for k in result.keys():
         result[k] = "\n".join(set(result[k]))
