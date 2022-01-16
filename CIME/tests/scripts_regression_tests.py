@@ -260,7 +260,9 @@ OR
     os.chdir(CIMEROOT)
 
     if len(ns.tests) == 0:
-        test_suite = unittest.defaultTestLoader.discover(CIMEROOT)
+        test_root = os.path.join(CIMEROOT, "CIME", "tests")
+
+        test_suite = unittest.defaultTestLoader.discover(test_root)
     else:
         # Try to load tests by just names
         test_suite = unittest.defaultTestLoader.loadTestsFromNames(ns.tests)
