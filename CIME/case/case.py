@@ -791,7 +791,7 @@ class Case(object):
                     components[i] = tmp
                     break
 
-                model_set[0] = components[0][4:]
+            model_set[0] = components[0][4:]
         else:
             model_set[0] = components[0]
 
@@ -2070,7 +2070,7 @@ directory, NOT in this subdirectory."""
             testlist = tests.get_tests(
                 compset=compset_alias, grid=grid_name, supported_only=True
             )
-            test_categories = ["prealpha", "prebeta", "test_release"]
+            test_categories = ["prealpha", "prebeta"]
             for test in testlist:
                 if (
                     test["category"] in test_categories

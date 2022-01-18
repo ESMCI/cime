@@ -50,6 +50,8 @@ from CIME.tests.base import BaseTestCase
 
 os.environ["CIME_GLOBAL_WALLTIME"] = "0:05:00"
 
+TEST_RESULT = None
+
 
 def write_provenance_info(machine, test_compiler, test_mpilib, test_root):
     curr_commit = get_current_commit(repo=CIMEROOT)
@@ -67,7 +69,11 @@ def write_provenance_info(machine, test_compiler, test_mpilib, test_root):
 
 
 def cleanup(test_root):
-    if os.path.exists(test_root):
+    if (
+        os.path.exists(test_root)
+        and TEST_RESULT is not None
+        and TEST_RESULT.wasSuccessful()
+    ):
         testreporter = os.path.join(test_root, "testreporter")
         files = os.listdir(test_root)
         if len(files) == 1 and os.path.isfile(testreporter):
@@ -221,11 +227,14 @@ OR
     \033[1;32m# Run the full suite \033[0m
     > {0}
 
-    \033[1;32m# Run all code checker tests \033[0m
-    > {0} B_CheckCode
+    \033[1;32m# Run single test file (with or without extension) \033[0m
+    > {0} test_unit_doctest
 
-    \033[1;32m# Run test test_wait_for_test_all_pass from class M_TestWaitForTests \033[0m
-    > {0} M_TestWaitForTests.test_wait_for_test_all_pass
+    \033[1;32m# Run single test class from a test file \033[0m
+    > {0} test_unit_doctest.TestDocs
+
+    \033[1;32m# Run single test case from a test class \033[0m
+    > {0} test_unit_doctest.TestDocs.test_lib_docs
 """.format(
         os.path.basename(sys.argv[0])
     )
@@ -264,10 +273,15 @@ OR
 
         test_suite = unittest.defaultTestLoader.discover(test_root)
     else:
+        # Fixes handling shell expansion e.g. test_unit_*, by removing python extension
+        tests = [x.replace(".py", "") for x in ns.tests]
+
         # Try to load tests by just names
-        test_suite = unittest.defaultTestLoader.loadTestsFromNames(ns.tests)
+        test_suite = unittest.defaultTestLoader.loadTestsFromNames(tests)
 
     test_runner = unittest.TextTestRunner(verbosity=2)
+
+    global TEST_RESULT
 
     TEST_RESULT = test_runner.run(test_suite)
 

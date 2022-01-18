@@ -14,9 +14,11 @@ from CIME.tests import base
 
 
 class TestTestScheduler(base.BaseTestCase):
-    @mock.patch.dict(os.environ, {"CIME_MODEL": "cesm"})
     @mock.patch("time.strftime", return_value="00:00:00")
     def test_chksum(self, strftime):  # pylint: disable=unused-argument
+        if utils.get_model() != "cesm":
+            self.skipTest("Skipping chksum test. Depends on CESM settings")
+
         ts = test_scheduler.TestScheduler(
             ["SEQ_Ln9.f19_g16_rx1.A.cori-haswell_gnu"],
             machine_name="cori-haswell",
