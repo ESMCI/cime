@@ -34,7 +34,10 @@ class Compilers(GenericXML):
         config_compilers.xml. An empty string is treated the same as None.
         """
 
-        expect("CIME_NO_CMAKE_MACRO" in os.environ, "Should not be using config_compilers.xml without CIME_NO_CMAKE_MACRO")
+        expect(
+            "CIME_NO_CMAKE_MACRO" in os.environ,
+            "Should not be using config_compilers.xml without CIME_NO_CMAKE_MACRO",
+        )
 
         if infile is None:
             if files is None:

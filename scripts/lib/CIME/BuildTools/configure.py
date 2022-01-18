@@ -67,8 +67,11 @@ def configure(
     for form in macros_format:
 
         if not "CIME_NO_CMAKE_MACRO" in os.environ:
-            expect(new_cmake_macros_dir is not None and os.path.exists(new_cmake_macros_dir),
-                   "Cannot create CMake macros without CMAKE_MACROS_DIR")
+            expect(
+                new_cmake_macros_dir is not None
+                and os.path.exists(new_cmake_macros_dir),
+                "Cannot create CMake macros without CMAKE_MACROS_DIR",
+            )
 
             if not os.path.isfile(os.path.join(output_dir, "Macros.cmake")):
                 safe_copy(
@@ -81,21 +84,21 @@ def configure(
 
             if form == "Makefile":
                 # Use the cmake macros to generate the make macros
-                cmake_args = (
-                        " -DOS={} -DMACH={} -DCOMPILER={} -DDEBUG={} -DMPILIB={} -Dcompile_threaded={} -DCASEROOT={}".format(
-                            sysos,
-                            machobj.get_machine_name(),
-                            compiler,
-                            stringify_bool(debug),
-                            mpilib,
-                            stringify_bool(threaded),
-                            output_dir
-                        )
+                cmake_args = " -DOS={} -DMACH={} -DCOMPILER={} -DDEBUG={} -DMPILIB={} -Dcompile_threaded={} -DCASEROOT={}".format(
+                    sysos,
+                    machobj.get_machine_name(),
+                    compiler,
+                    stringify_bool(debug),
+                    mpilib,
+                    stringify_bool(threaded),
+                    output_dir,
                 )
 
                 new_cmake_dir = os.path.join(output_dir, "cmake_macros")
                 cmake_lists = os.path.join(new_cmake_dir, "CMakeLists.txt")
-                Path(os.path.join(output_dir, "cmaketmp")).mkdir(parents=False, exist_ok=True)
+                Path(os.path.join(output_dir, "cmaketmp")).mkdir(
+                    parents=False, exist_ok=True
+                )
                 safe_copy(cmake_lists, "cmaketmp")
 
                 output = get_makefile_vars(None, output_dir, cmake_args=cmake_args)
@@ -170,8 +173,8 @@ class FakeCase(object):
             "COMP_INTERFACE": comp_interface,
             "PIO_VERSION": 2,
             "SMP_PRESENT": threading,
-            "MODEL" : get_model(),
-            "SRCROOT" : get_src_root()
+            "MODEL": get_model(),
+            "SRCROOT": get_src_root(),
         }
 
     def get_build_threaded(self):

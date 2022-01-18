@@ -8,6 +8,7 @@ from CIME.XML.compilers import Compilers
 
 import os
 
+
 class TestMakeMacros(base.BaseTestCase):
     """Makefile macros tests.
 

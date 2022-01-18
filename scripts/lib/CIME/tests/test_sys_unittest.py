@@ -10,6 +10,7 @@ from CIME.XML.compilers import Compilers
 from CIME.build import get_makefile_vars
 from CIME.XML.files import Files
 
+
 class TestUnitTest(base.BaseTestCase):
     @classmethod
     def setUpClass(cls):
@@ -26,7 +27,9 @@ class TestUnitTest(base.BaseTestCase):
         mach = self.MACHINE.get_machine_name()
         cmake_macros_dir = Files().get_value("CMAKE_MACROS_DIR")
 
-        machine_macro = os.path.join(cmake_macros_dir, "{}_{}.cmake".format(compiler, mach))
+        machine_macro = os.path.join(
+            cmake_macros_dir, "{}_{}.cmake".format(compiler, mach)
+        )
         if os.path.exists(machine_macro):
             macro_text = open(machine_macro, "r").read()
 

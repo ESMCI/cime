@@ -55,8 +55,7 @@ class FUNIT(SystemTestsCommon):
         )
 
         stat = run_cmd(
-            "{} {} >& funit.log".format(unit_test_tool, args),
-            from_dir=rundir
+            "{} {} >& funit.log".format(unit_test_tool, args), from_dir=rundir
         )[0]
 
         append_testlog(open(os.path.join(rundir, "funit.log"), "r").read())

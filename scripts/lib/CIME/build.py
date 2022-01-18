@@ -63,7 +63,11 @@ def get_makefile_vars(case, caseroot, comp=None, cmake_args=None):
 
     case can be None if caller is providing their own cmake args
     """
-    cmake_args = get_standard_cmake_args(case, "DO_NOT_USE", shared_lib=True) if cmake_args is None else cmake_args
+    cmake_args = (
+        get_standard_cmake_args(case, "DO_NOT_USE", shared_lib=True)
+        if cmake_args is None
+        else cmake_args
+    )
     dcomp = "-DCOMP_NAME={}".format(comp) if comp else ""
     output = run_cmd_no_fail(
         "cmake -DCONVERT_TO_MAKE=ON {dcomp} {cmake_args} .".format(

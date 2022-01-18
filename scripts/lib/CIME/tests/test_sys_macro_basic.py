@@ -9,6 +9,7 @@ from CIME.XML.compilers import Compilers
 
 import os
 
+
 class TestMacrosBasic(base.BaseTestCase):
     """Basic infrastructure tests.
 

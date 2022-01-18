@@ -7,6 +7,7 @@ from CIME.XML.compilers import Compilers
 
 import os
 
+
 class TestCMakeMacros(base.BaseTestCase):
     """CMake macros tests.
 
