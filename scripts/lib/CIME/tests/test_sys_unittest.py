@@ -27,12 +27,8 @@ class TestUnitTest(base.BaseTestCase):
         cmake_macros_dir = Files().get_value("CMAKE_MACROS_DIR")
 
         macros_to_check = [
-            os.path.join(
-                cmake_macros_dir, "{}_{}.cmake".format(compiler, mach)
-            ),
-            os.path.join(
-                cmake_macros_dir, "{}.cmake".format(mach)
-            ),
+            os.path.join(cmake_macros_dir, "{}_{}.cmake".format(compiler, mach)),
+            os.path.join(cmake_macros_dir, "{}.cmake".format(mach)),
         ]
 
         for macro_to_check in macros_to_check:

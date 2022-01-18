@@ -71,7 +71,7 @@ class CmakeTmpBuildDir(object):
         """
         self._macroloc = os.getcwd() if macroloc is None else macroloc
         self._rootdir = self._macroloc if rootdir is None else rootdir
-        self._tmpdir  = "cmaketmp" if tmpdir is None else tmpdir
+        self._tmpdir = "cmaketmp" if tmpdir is None else tmpdir
 
         self._entered = False
 
@@ -80,7 +80,12 @@ class CmakeTmpBuildDir(object):
 
     def __enter__(self):
         cmake_macros_dir = os.path.join(self._macroloc, "cmake_macros")
-        expect(os.path.isdir(cmake_macros_dir, "Cannot create cmake temp build dir, no {} macros found".format(cmake_macros_dir)))
+        expect(
+            os.path.isdir(cmake_macros_dir),
+            "Cannot create cmake temp build dir, no {} macros found".format(
+                cmake_macros_dir
+            ),
+        )
         cmake_lists = os.path.join(cmake_macros_dir, "CMakeLists.txt")
         full_tmp_dir = self.get_full_tmpdir()
         Path(full_tmp_dir).mkdir(parents=False, exist_ok=True)
@@ -88,7 +93,7 @@ class CmakeTmpBuildDir(object):
 
         self._entered = True
 
-    def __exit__(self):
+    def __exit__(self, *args):
         shutil.rmtree(self.get_full_tmpdir())
         self._entered = False
 
@@ -98,9 +103,14 @@ class CmakeTmpBuildDir(object):
 
         case can be None if caller is providing their own cmake args
         """
-        expect(self._entered, "Should only call get_makefile_vars within a with statement")
+        expect(
+            self._entered, "Should only call get_makefile_vars within a with statement"
+        )
         if case is None:
-            expect(cmake_args is not None, "Need either a case or hardcoded cmake_args to generate makefile vars")
+            expect(
+                cmake_args is not None,
+                "Need either a case or hardcoded cmake_args to generate makefile vars",
+            )
 
         cmake_args = (
             get_standard_cmake_args(case, "DO_NOT_USE", shared_lib=True)
@@ -113,7 +123,7 @@ class CmakeTmpBuildDir(object):
                 dcomp=dcomp, cmake_args=cmake_args
             ),
             combine_output=True,
-            from_dir=self.get_full_tmpdir()
+            from_dir=self.get_full_tmpdir(),
         )
 
         lines_to_keep = []

@@ -23,7 +23,6 @@ from CIME.XML.files import Files
 from CIME.build import CmakeTmpBuildDir
 
 import shutil
-from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
@@ -67,10 +66,10 @@ def configure(
     for form in macros_format:
 
         if (
-             new_cmake_macros_dir is not None
-             and os.path.exists(new_cmake_macros_dir)
-             and not "CIME_NO_CMAKE_MACRO" in os.environ
-         ):
+            new_cmake_macros_dir is not None
+            and os.path.exists(new_cmake_macros_dir)
+            and not "CIME_NO_CMAKE_MACRO" in os.environ
+        ):
 
             if not os.path.isfile(os.path.join(output_dir, "Macros.cmake")):
                 safe_copy(

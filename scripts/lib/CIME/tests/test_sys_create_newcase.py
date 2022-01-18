@@ -11,6 +11,7 @@ from CIME.tests import base
 from CIME.case.case import Case
 from CIME.build import CmakeTmpBuildDir
 
+
 class TestCreateNewcase(base.BaseTestCase):
     @classmethod
     def setUpClass(cls):
