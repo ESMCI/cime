@@ -13,7 +13,7 @@ from CIME.utils import run_cmd_no_fail, stringify_bool, expect, get_src_root, sa
 from CIME.XML.machines import Machines
 from CIME.XML.compilers import Compilers
 from CIME.XML.env_mach_specific import EnvMachSpecific
-from CIME.build import get_makefile_vars
+from CIME.build import CmakeTmpBuildDir
 from xml_test_list import TestSuiteSpec, suites_from_xml
 import socket, shutil
 from pathlib import Path
@@ -298,13 +298,8 @@ def find_pfunit(caseroot, cmake_args):
     - case: A fake case
     - caseroot: The dir with the macros
     """
-    new_cmake_dir = os.path.join(caseroot, "cmake_macros")
-    cmake_lists = os.path.join(new_cmake_dir, "CMakeLists.txt")
-    Path(os.path.join(caseroot, "cmaketmp")).mkdir(parents=False, exist_ok=True)
-    safe_copy(cmake_lists, "cmaketmp")
-
-    all_vars = get_makefile_vars(None, caseroot, cmake_args=cmake_args)
-    shutil.rmtree(os.path.join(caseroot, "cmaketmp"))
+    with CmakeTmpBuildDir(macroloc=caseroot) as cmaketmp:
+        all_vars = cmaketmp.get_makefile_vars(cmake_args=cmake_args)
 
     all_vars_list = all_vars.splitlines()
     for all_var in all_vars_list:

@@ -20,7 +20,7 @@ from CIME.utils import expect, safe_copy, get_model, get_src_root, stringify_boo
 from CIME.XML.compilers import Compilers
 from CIME.XML.env_mach_specific import EnvMachSpecific
 from CIME.XML.files import Files
-from CIME.build import get_makefile_vars
+from CIME.build import CmakeTmpBuildDir
 
 import shutil
 from pathlib import Path
@@ -66,12 +66,11 @@ def configure(
     macro_maker = None
     for form in macros_format:
 
-        if not "CIME_NO_CMAKE_MACRO" in os.environ:
-            expect(
-                new_cmake_macros_dir is not None
-                and os.path.exists(new_cmake_macros_dir),
-                "Cannot create CMake macros without CMAKE_MACROS_DIR",
-            )
+        if (
+             new_cmake_macros_dir is not None
+             and os.path.exists(new_cmake_macros_dir)
+             and not "CIME_NO_CMAKE_MACRO" in os.environ
+         ):
 
             if not os.path.isfile(os.path.join(output_dir, "Macros.cmake")):
                 safe_copy(
@@ -94,15 +93,8 @@ def configure(
                     output_dir,
                 )
 
-                new_cmake_dir = os.path.join(output_dir, "cmake_macros")
-                cmake_lists = os.path.join(new_cmake_dir, "CMakeLists.txt")
-                Path(os.path.join(output_dir, "cmaketmp")).mkdir(
-                    parents=False, exist_ok=True
-                )
-                safe_copy(cmake_lists, "cmaketmp")
-
-                output = get_makefile_vars(None, output_dir, cmake_args=cmake_args)
-                shutil.rmtree(os.path.join(output_dir, "cmaketmp"))
+                with CmakeTmpBuildDir(macroloc=output_dir) as cmaketmp:
+                    output = cmaketmp.get_makefile_vars(cmake_args=cmake_args)
 
                 with open(os.path.join(output_dir, "Macros.make"), "w") as fd:
                     fd.write(output)

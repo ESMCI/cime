@@ -9,7 +9,7 @@ import sys
 from CIME import utils
 from CIME.tests import base
 from CIME.case.case import Case
-
+from CIME.build import CmakeTmpBuildDir
 
 class TestCreateNewcase(base.BaseTestCase):
     @classmethod
@@ -714,11 +714,11 @@ set(NETCDF_PATH /my/netcdf/path)
         self.run_cmd_assert_result("./case.setup", from_dir=testdir)
 
         # Make sure Macros file contains expected text
-        if utils.get_model() != "e3sm":
-            macros_file_name = os.path.join(testdir, "Macros.make")
-            self.assertTrue(os.path.isfile(macros_file_name))
-            with open(macros_file_name) as macros_file:
-                macros_contents = macros_file.read()
+
+        with Case(testdir) as case:
+            with CmakeTmpBuildDir(macroloc=testdir) as cmaketmp:
+                macros_contents = cmaketmp.get_makefile_vars(case=case)
+
             expected_re = re.compile("NETCDF_PATH.*/my/netcdf/path")
             self.assertTrue(expected_re.search(macros_contents))
 

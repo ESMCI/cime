@@ -7,7 +7,6 @@ import sys
 from CIME import utils
 from CIME.tests import base
 from CIME.XML.compilers import Compilers
-from CIME.build import get_makefile_vars
 from CIME.XML.files import Files
 
 
@@ -27,15 +26,22 @@ class TestUnitTest(base.BaseTestCase):
         mach = self.MACHINE.get_machine_name()
         cmake_macros_dir = Files().get_value("CMAKE_MACROS_DIR")
 
-        machine_macro = os.path.join(
-            cmake_macros_dir, "{}_{}.cmake".format(compiler, mach)
-        )
-        if os.path.exists(machine_macro):
-            macro_text = open(machine_macro, "r").read()
+        macros_to_check = [
+            os.path.join(
+                cmake_macros_dir, "{}_{}.cmake".format(compiler, mach)
+            ),
+            os.path.join(
+                cmake_macros_dir, "{}.cmake".format(mach)
+            ),
+        ]
 
-            return "PFUNIT_PATH" in macro_text
-        else:
-            return False
+        for macro_to_check in macros_to_check:
+            if os.path.exists(macro_to_check):
+                macro_text = open(machine_macro, "r").read()
+
+                return "PFUNIT_PATH" in macro_text
+
+        return False
 
     def test_a_unit_test(self):
         cls = self.__class__

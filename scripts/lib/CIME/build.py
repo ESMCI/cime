@@ -57,40 +57,79 @@ _CMD_ARGS_FOR_BUILD = (
 )
 
 
-def get_makefile_vars(case, caseroot, comp=None, cmake_args=None):
+class CmakeTmpBuildDir(object):
     """
-    Run cmake and process output to a list of variable settings
-
-    case can be None if caller is providing their own cmake args
+    Use to create a temporary cmake build dir for the purposes of querying
+    Macros.
     """
-    cmake_args = (
-        get_standard_cmake_args(case, "DO_NOT_USE", shared_lib=True)
-        if cmake_args is None
-        else cmake_args
-    )
-    dcomp = "-DCOMP_NAME={}".format(comp) if comp else ""
-    output = run_cmd_no_fail(
-        "cmake -DCONVERT_TO_MAKE=ON {dcomp} {cmake_args} .".format(
-            dcomp=dcomp, cmake_args=cmake_args
-        ),
-        combine_output=True,
-        from_dir=os.path.join(caseroot, "cmaketmp"),
-    )
 
-    lines_to_keep = []
-    for line in output.splitlines():
-        if "CIME_SET_MAKEFILE_VAR" in line and "BUILD_INTERNAL_IGNORE" not in line:
-            lines_to_keep.append(line)
+    def __init__(self, macroloc=None, rootdir=None, tmpdir=None):
+        """
+        macroloc: The dir containing the cmake macros, default is pwd. This can be a case or CMAKE_MACROS_DIR
+        rootdir:  The dir containing the tmpdir, default is macroloc
+        tmpdir:   The name of the tempdir, default is "cmaketmp"
+        """
+        self._macroloc = os.getcwd() if macroloc is None else macroloc
+        self._rootdir = self._macroloc if rootdir is None else rootdir
+        self._tmpdir  = "cmaketmp" if tmpdir is None else tmpdir
 
-    output_to_keep = "\n".join(lines_to_keep) + "\n"
-    output_to_keep = (
-        output_to_keep.replace("CIME_SET_MAKEFILE_VAR ", "")
-        .replace("CPPDEFS := ", "CPPDEFS := $(CPPDEFS) ")
-        .replace("SLIBS := ", "SLIBS := $(SLIBS) ")
-        + "\n"
-    )
+        self._entered = False
 
-    return output_to_keep
+    def get_full_tmpdir(self):
+        return os.path.join(self._rootdir, self._tmpdir)
+
+    def __enter__(self):
+        cmake_macros_dir = os.path.join(self._macroloc, "cmake_macros")
+        expect(os.path.isdir(cmake_macros_dir, "Cannot create cmake temp build dir, no {} macros found".format(cmake_macros_dir)))
+        cmake_lists = os.path.join(cmake_macros_dir, "CMakeLists.txt")
+        full_tmp_dir = self.get_full_tmpdir()
+        Path(full_tmp_dir).mkdir(parents=False, exist_ok=True)
+        safe_copy(cmake_lists, full_tmp_dir)
+
+        self._entered = True
+
+    def __exit__(self):
+        shutil.rmtree(self.get_full_tmpdir())
+        self._entered = False
+
+    def get_makefile_vars(self, case=None, comp=None, cmake_args=None):
+        """
+        Run cmake and process output to a list of variable settings
+
+        case can be None if caller is providing their own cmake args
+        """
+        expect(self._entered, "Should only call get_makefile_vars within a with statement")
+        if case is None:
+            expect(cmake_args is not None, "Need either a case or hardcoded cmake_args to generate makefile vars")
+
+        cmake_args = (
+            get_standard_cmake_args(case, "DO_NOT_USE", shared_lib=True)
+            if cmake_args is None
+            else cmake_args
+        )
+        dcomp = "-DCOMP_NAME={}".format(comp) if comp else ""
+        output = run_cmd_no_fail(
+            "cmake -DCONVERT_TO_MAKE=ON {dcomp} {cmake_args} .".format(
+                dcomp=dcomp, cmake_args=cmake_args
+            ),
+            combine_output=True,
+            from_dir=self.get_full_tmpdir()
+        )
+
+        lines_to_keep = []
+        for line in output.splitlines():
+            if "CIME_SET_MAKEFILE_VAR" in line and "BUILD_INTERNAL_IGNORE" not in line:
+                lines_to_keep.append(line)
+
+        output_to_keep = "\n".join(lines_to_keep) + "\n"
+        output_to_keep = (
+            output_to_keep.replace("CIME_SET_MAKEFILE_VAR ", "")
+            .replace("CPPDEFS := ", "CPPDEFS := $(CPPDEFS) ")
+            .replace("SLIBS := ", "SLIBS := $(SLIBS) ")
+            + "\n"
+        )
+
+        return output_to_keep
 
 
 def generate_makefile_macro(case, caseroot):
@@ -100,50 +139,45 @@ def generate_makefile_macro(case, caseroot):
     Since indirection based on comp_name is allowed for sharedlibs, each sharedlib must generate
     their own macro.
     """
-    new_cmake_dir = os.path.join(caseroot, "cmake_macros")
-    if not os.path.isdir(new_cmake_dir):
-        return
-    cmake_lists = os.path.join(new_cmake_dir, "CMakeLists.txt")
-    Path(os.path.join(caseroot, "cmaketmp")).mkdir(parents=False, exist_ok=True)
-    safe_copy(cmake_lists, "cmaketmp")
+    with CmakeTmpBuildDir(macroloc=caseroot) as cmake_tmp:
 
-    # Append CMakeLists.txt with compset specific stuff
-    comps = _get_compset_comps(case)
-    comps.extend(
-        [
-            "mct",
-            "pio{}".format(case.get_value("PIO_VERSION")),
-            "gptl",
-            "csm_share",
-            "csm_share_cpl7",
-        ]
-    )
-    cmake_macro = os.path.join(caseroot, "Macros.cmake")
-    expect(
-        os.path.exists(cmake_macro),
-        "Cannot generate Makefile macro without {}".format(cmake_macro),
-    )
+        # Append CMakeLists.txt with compset specific stuff
+        comps = _get_compset_comps(case)
+        comps.extend(
+            [
+                "mct",
+                "pio{}".format(case.get_value("PIO_VERSION")),
+                "gptl",
+                "csm_share",
+                "csm_share_cpl7",
+            ]
+        )
+        cmake_macro = os.path.join(caseroot, "Macros.cmake")
+        expect(
+            os.path.exists(cmake_macro),
+            "Cannot generate Makefile macro without {}".format(cmake_macro),
+        )
 
-    # run once with no COMP_NAME
-    no_comp_output = get_makefile_vars(case, caseroot)
-    all_output = no_comp_output
-    no_comp_lines = no_comp_output.splitlines()
+        # run once with no COMP_NAME
+        no_comp_output = cmake_tmp.get_makefile_vars(case=case)
+        all_output = no_comp_output
+        no_comp_lines = no_comp_output.splitlines()
 
-    for comp in comps:
-        comp_output = get_makefile_vars(case, caseroot, comp=comp)
-        # The Tools/Makefile may have already adding things to CPPDEFS and SLIBS
-        comp_lines = comp_output.splitlines()
-        first = True
-        for comp_line in comp_lines:
-            if comp_line not in no_comp_lines:
-                if first:
-                    all_output += 'ifeq "$(COMP_NAME)" "{}"\n'.format(comp)
-                    first = False
+        for comp in comps:
+            comp_output = cmake_tmp.get_makefile_vars(case=case, comp=comp)
+            # The Tools/Makefile may have already adding things to CPPDEFS and SLIBS
+            comp_lines = comp_output.splitlines()
+            first = True
+            for comp_line in comp_lines:
+                if comp_line not in no_comp_lines:
+                    if first:
+                        all_output += 'ifeq "$(COMP_NAME)" "{}"\n'.format(comp)
+                        first = False
 
-                all_output += "  " + comp_line + "\n"
+                    all_output += "  " + comp_line + "\n"
 
-        if not first:
-            all_output += "endif\n"
+            if not first:
+                all_output += "endif\n"
 
     with open(os.path.join(caseroot, "Macros.make"), "w") as fd:
         fd.write(
@@ -155,8 +189,6 @@ def generate_makefile_macro(case, caseroot):
 """
         )
         fd.write(all_output)
-
-    shutil.rmtree(os.path.join(caseroot, "cmaketmp"))
 
 
 def get_standard_makefile_args(case, shared_lib=False):
