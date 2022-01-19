@@ -76,6 +76,7 @@ class Machines(GenericXML):
                             local_infile = os.path.join(
                                 get_cime_root(),
                                 "CIME",
+                                "data",
                                 "config",
                                 potential_model,
                                 "machines",
