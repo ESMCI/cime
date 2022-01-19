@@ -34,6 +34,11 @@ class Compilers(GenericXML):
         config_compilers.xml. An empty string is treated the same as None.
         """
 
+        expect(
+            "CIME_NO_CMAKE_MACRO" in os.environ,
+            "Should not be using config_compilers.xml without CIME_NO_CMAKE_MACRO",
+        )
+
         if infile is None:
             if files is None:
                 files = Files()
@@ -136,11 +141,6 @@ class Compilers(GenericXML):
     def set_compiler(self, compiler, machine=None, os_=None, mpilib=None):
         """
         Sets the compiler block in the Compilers object
-        >>> from CIME.XML.machines import Machines
-        >>> compobj = Compilers(Machines(machine="melvin"))
-        >>> compobj.set_compiler("gnu")
-        >>> compobj.get_compiler()
-        'gnu'
         """
         machine = machine if machine else self.machine
         os_ = os_ if os_ else self.os

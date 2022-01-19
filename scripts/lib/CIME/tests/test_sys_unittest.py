@@ -7,6 +7,7 @@ import sys
 from CIME import utils
 from CIME.tests import base
 from CIME.XML.compilers import Compilers
+from CIME.XML.files import Files
 
 
 class TestUnitTest(base.BaseTestCase):
@@ -15,22 +16,28 @@ class TestUnitTest(base.BaseTestCase):
         cls._do_teardown = []
         cls._testroot = os.path.join(cls.TEST_ROOT, "TestUnitTests")
         cls._testdirs = []
-        os.environ["CIME_NO_CMAKE_MACRO"] = "ON"
 
     def _has_unit_test_support(self):
         if self.TEST_COMPILER is None:
-            default_compiler = self.MACHINE.get_default_compiler()
-            compiler = Compilers(self.MACHINE, compiler=default_compiler)
+            compiler = self.MACHINE.get_default_compiler()
         else:
-            compiler = Compilers(self.MACHINE, compiler=self.TEST_COMPILER)
-        attrs = {"MPILIB": "mpi-serial", "compile_threaded": "FALSE"}
-        pfunit_path = compiler.get_optional_compiler_node(
-            "PFUNIT_PATH", attributes=attrs
-        )
-        if pfunit_path is None:
-            return False
-        else:
-            return True
+            compiler = self.TEST_COMPILER
+
+        mach = self.MACHINE.get_machine_name()
+        cmake_macros_dir = Files().get_value("CMAKE_MACROS_DIR")
+
+        macros_to_check = [
+            os.path.join(cmake_macros_dir, "{}_{}.cmake".format(compiler, mach)),
+            os.path.join(cmake_macros_dir, "{}.cmake".format(mach)),
+        ]
+
+        for macro_to_check in macros_to_check:
+            if os.path.exists(macro_to_check):
+                macro_text = open(macro_to_check, "r").read()
+
+                return "PFUNIT_PATH" in macro_text
+
+        return False
 
     def test_a_unit_test(self):
         cls = self.__class__
@@ -85,7 +92,6 @@ class TestUnitTest(base.BaseTestCase):
             and sys.exc_info() == (None, None, None)
             and not cls.NO_TEARDOWN
         )
-        del os.environ["CIME_NO_CMAKE_MACRO"]
 
         teardown_root = True
         for tfile in cls._testdirs:

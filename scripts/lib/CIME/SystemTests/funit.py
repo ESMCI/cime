@@ -54,15 +54,8 @@ class FUNIT(SystemTestsCommon):
             exeroot, test_spec_dir, mach
         )
 
-        # BUG(wjs, 2022-01-07, ESMCI/CIME#4136) For now, these Fortran unit tests only
-        # work with the old config_compilers.xml-based configuration
-        my_env = os.environ.copy()
-        my_env["CIME_NO_CMAKE_MACRO"] = "ON"
-
         stat = run_cmd(
-            "{} {} >& funit.log".format(unit_test_tool, args),
-            from_dir=rundir,
-            env=my_env,
+            "{} {} >& funit.log".format(unit_test_tool, args), from_dir=rundir
         )[0]
 
         append_testlog(open(os.path.join(rundir, "funit.log"), "r").read())
