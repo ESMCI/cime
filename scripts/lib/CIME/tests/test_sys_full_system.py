@@ -12,7 +12,8 @@ from CIME.tests import base
 class TestFullSystem(base.BaseTestCase):
     def test_full_system(self):
         # Put this inside any test that's slow
-        self.skipTest("Skipping slow test")
+        if self.FAST_ONLY:
+            self.skipTest("Skipping slow test")
 
         driver = utils.get_cime_default_driver()
         if driver == "mct":
