@@ -423,10 +423,9 @@ def _main():
 
     fake_case = FakeCase(compiler, mpilib, debug, comp_interface, threading=use_openmp)
     machspecific.load_env(fake_case)
-    # JGF bug? original contents of cmake_args is lost
     cmake_args = (
         "{}-DOS={} -DMACH={} -DCOMPILER={} -DDEBUG={} -DMPILIB={} -Dcompile_threaded={} -DCASEROOT={}".format(
-            "" if not cmake_args else " ",
+            "" if not cmake_args else "{} ".format(cmake_args),
             os_,
             machine,
             compiler,
