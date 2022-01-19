@@ -706,7 +706,7 @@ set(NETCDF_PATH /my/netcdf/path)
         else:
             args += " --res f19_g16 "
         self.run_cmd_assert_result(
-            "./create_newcase {}".format(args), from_dir=self.SCRIPT_DIR, verbose=True
+            "./create_newcase {}".format(args), from_dir=self.SCRIPT_DIR
         )
 
         args += f" --machine {self.MACHINE.get_machine_name()}"
