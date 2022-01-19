@@ -82,7 +82,9 @@ def configure(
 
             # Grab macros from extra machine dir if it was provided
             if extra_machines_dir:
-                extra_cmake_macros = glob.glob("{}/cmake_macros/*.cmake".format(extra_machines_dir))
+                extra_cmake_macros = glob.glob(
+                    "{}/cmake_macros/*.cmake".format(extra_machines_dir)
+                )
                 for extra_cmake_macro in extra_cmake_macros:
                     safe_copy(extra_cmake_macro, new_cmake_macros_dir)
 

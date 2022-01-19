@@ -677,7 +677,9 @@ class TestCreateNewcase(base.BaseTestCase):
         cmake_macro_text = """\
 set(NETCDF_PATH /my/netcdf/path)
 """
-        cmake_macro_path = os.path.join(extra_machines_dir, "cmake_macros", "mymachine.cmake")
+        cmake_macro_path = os.path.join(
+            extra_machines_dir, "cmake_macros", "mymachine.cmake"
+        )
         with open(cmake_macro_path, "w") as cmake_macro:
             cmake_macro.write(cmake_macro_text)
 
@@ -721,8 +723,10 @@ set(NETCDF_PATH /my/netcdf/path)
                 macros_contents = cmaketmp.get_makefile_vars(case=case)
 
             expected_re = re.compile("NETCDF_PATH.*/my/netcdf/path")
-            self.assertTrue(expected_re.search(macros_contents),
-                            msg="{} not found in:\n{}".format(expected_re.pattern, macros_contents))
+            self.assertTrue(
+                expected_re.search(macros_contents),
+                msg="{} not found in:\n{}".format(expected_re.pattern, macros_contents),
+            )
 
     def test_m_createnewcase_alternate_drivers(self):
         # Test that case.setup runs for nuopc and moab drivers
