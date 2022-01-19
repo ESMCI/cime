@@ -13,7 +13,7 @@ Quick Start Guide:
 ------------------
 
 On cime supported systems you can generate a Macros file using the following
-(assuming you are running the command from the directory cime/tools/cprnc):
+(assuming you are running the command from the directory CIME/data/cprnc):
 
 CIMEROOT=../.. ../configure --macros-format=Makefile --mpilib=mpi-serial
 
