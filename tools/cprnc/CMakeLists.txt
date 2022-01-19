@@ -1,4 +1,4 @@
-# Generate this with: $cimeroot/tools/configure --mpilib=mpi-serial --macros-format=CMake
+# Generate this with: $cimeroot/CIME/configure --mpilib=mpi-serial --macros-format=CMake
 #   You'll also need to source the .env_mach_specific.sh file before trying to build cprnc
 
 include("${BLDROOT}/Macros.cmake")
