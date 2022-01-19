@@ -295,8 +295,8 @@ def find_pfunit(caseroot, cmake_args):
     Aborts if necessary information cannot be found.
 
     Args:
-    - case: A fake case
-    - caseroot: The dir with the macros
+    - caseroot:   The dir with the macros
+    - cmake_args: The cmake args used to invoke cmake (so that we get the correct makefile vars)
     """
     with CmakeTmpBuildDir(macroloc=caseroot) as cmaketmp:
         all_vars = cmaketmp.get_makefile_vars(cmake_args=cmake_args)
