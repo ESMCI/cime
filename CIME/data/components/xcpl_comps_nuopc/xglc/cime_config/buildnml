@@ -9,7 +9,7 @@ import sys, os
 _CIMEROOT = os.path.join(
     os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", "..", ".."
 )
-sys.path.append(os.path.join(_CIMEROOT, "scripts", "Tools"))
+sys.path.append(os.path.join(_CIMEROOT, "CIME", "Tools"))
 
 from standard_script_setup import *
 from CIME.buildnml import build_xcpl_nml, parse_input

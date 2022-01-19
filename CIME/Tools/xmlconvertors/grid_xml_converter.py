@@ -16,7 +16,12 @@ The location of these files are needed by the script:
 #    CIME5: config/acme/config_grids.xml
 #
 
-from standard_script_setup import *
+import os, sys
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..")))
+
+from CIME import utils
+from CIME.Tools.standard_script_setup import *
 from CIME.utils import run_cmd_no_fail
 from distutils.spawn import find_executable
 import xml.etree.ElementTree as ET
@@ -31,7 +36,7 @@ def parse_command_line(args):
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
     )
 
-    CIME.utils.setup_standard_logging_options(parser)
+    utils.setup_standard_logging_options(parser)
 
     # Set command line options
     parser.add_argument(
@@ -47,7 +52,7 @@ def parse_command_line(args):
         required=True,
     )
 
-    args = CIME.utils.parse_args_and_handle_standard_logging_options(args, parser)
+    args = utils.parse_args_and_handle_standard_logging_options(args, parser)
 
     return args.cime2file, args.cime5file
 

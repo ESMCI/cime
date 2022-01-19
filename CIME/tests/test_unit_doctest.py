@@ -26,7 +26,7 @@ class TestDocs(base.BaseTestCase):
             "tsc.py",
         ]
 
-        for dirpath, _, filenames in os.walk(cime_root):
+        for dirpath, _, filenames in os.walk(os.path.join(cime_root, "CIME")):
             for filepath in map(lambda x: os.path.join(dirpath, x), filenames):
                 if not filepath.endswith(".py") or any(
                     [x in filepath for x in ignore_patterns]

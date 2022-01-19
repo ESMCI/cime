@@ -50,6 +50,9 @@ class TestCaseSubmit(unittest.TestCase):
             get_value.side_effect = [
                 tempdir,
                 tempdir,
+                tempdir,
+                "test",
+                tempdir,
                 True,
                 "baseid",
                 None,

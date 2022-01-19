@@ -16,7 +16,7 @@ class Headers(GenericXML):
 
         >>> files = Files()
         >>> files.get_value('CASEFILE_HEADERS',resolved=False)
-        '$CIMEROOT/config/config_headers.xml'
+        '$CIMEROOT/CIME/data/config/config_headers.xml'
         """
         if infile is None:
             files = Files()

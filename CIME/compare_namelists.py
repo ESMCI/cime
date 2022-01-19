@@ -140,7 +140,7 @@ def _parse_namelists(namelist_lines, filename):
     ...   dval = 'one->two', 'three -> four'
     ...   mdval = 'one   -> two',
     ...           'three -> four',
-    ...           'five -> CIME.six'
+    ...           'five -> six'
     ...   nval = 1850
     ... /
     ...

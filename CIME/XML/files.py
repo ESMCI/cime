@@ -24,7 +24,7 @@ class Files(EntryID):
 
         >>> files = Files()
         >>> files.get_value('CASEFILE_HEADERS',resolved=False)
-        '$CIMEROOT/config/config_headers.xml'
+        '$CIMEROOT/CIME/data/config/config_headers.xml'
         """
         if comp_interface is None:
             comp_interface = "mct"

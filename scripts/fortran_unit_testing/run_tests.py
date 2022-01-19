@@ -3,7 +3,7 @@ from __future__ import print_function
 import os, sys
 
 _CIMEROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../..")
-sys.path.append(os.path.join(_CIMEROOT, "scripts", "Tools"))
+sys.path.append(os.path.join(_CIMEROOT, "CIME", "Tools"))
 sys.path.append(os.path.join(_CIMEROOT, "scripts", "utils", "python"))
 sys.path.append(os.path.join(_CIMEROOT, "scripts", "fortran_unit_testing", "python"))
 

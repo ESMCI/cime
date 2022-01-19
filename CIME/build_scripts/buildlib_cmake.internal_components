@@ -12,7 +12,7 @@ if _CIMEROOT == None:
     raise ValueError(
         "ERROR: CIMEROOT not defined in buildlib_cmake.internal_components."
     )
-sys.path.append(os.path.join(_CIMEROOT, "scripts", "Tools"))
+sys.path.append(os.path.join(_CIMEROOT, "CIME", "Tools"))
 
 from standard_script_setup import *
 from CIME.buildlib import build_cime_component_lib, parse_input

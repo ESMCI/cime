@@ -2,7 +2,7 @@
 import sys, os, logging, argparse
 
 cimeroot = os.getenv("CIMEROOT")
-sys.path.append(os.path.join(cimeroot, "scripts", "Tools"))
+sys.path.append(os.path.join(cimeroot, "CIME", "Tools"))
 
 from standard_script_setup import *
 from CIME import utils
