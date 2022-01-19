@@ -663,7 +663,7 @@ class TestCreateNewcase(base.BaseTestCase):
         extra_machines_dir = os.path.join(
             cls._testroot, "{}_machine_config".format(casename)
         )
-        os.makedirs(extra_machines_dir)
+        os.makedirs(os.path.join(extra_machines_dir, "cmake_macros"))
         cls._do_teardown.append(extra_machines_dir)
         newmachfile = os.path.join(
             utils.get_cime_root(),
@@ -677,7 +677,7 @@ class TestCreateNewcase(base.BaseTestCase):
         cmake_macro_text = """\
 set(NETCDF_PATH /my/netcdf/path)
 """
-        cmake_macro_path = os.path.join(extra_machines_dir, "mymachine.cmake")
+        cmake_macro_path = os.path.join(extra_machines_dir, "cmake_macros", "mymachine.cmake")
         with open(cmake_macro_path, "w") as cmake_macro:
             cmake_macro.write(cmake_macro_text)
 
@@ -704,7 +704,7 @@ set(NETCDF_PATH /my/netcdf/path)
         else:
             args += " --res f19_g16 "
         self.run_cmd_assert_result(
-            "./create_newcase {}".format(args), from_dir=self.SCRIPT_DIR
+            "./create_newcase {}".format(args), from_dir=self.SCRIPT_DIR, verbose=True
         )
 
         args += f" --machine {self.MACHINE.get_machine_name()}"
@@ -721,7 +721,8 @@ set(NETCDF_PATH /my/netcdf/path)
                 macros_contents = cmaketmp.get_makefile_vars(case=case)
 
             expected_re = re.compile("NETCDF_PATH.*/my/netcdf/path")
-            self.assertTrue(expected_re.search(macros_contents))
+            self.assertTrue(expected_re.search(macros_contents),
+                            msg="{} not found in:\n{}".format(expected_re.pattern, macros_contents))
 
     def test_m_createnewcase_alternate_drivers(self):
         # Test that case.setup runs for nuopc and moab drivers

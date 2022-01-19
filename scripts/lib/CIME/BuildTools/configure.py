@@ -22,7 +22,7 @@ from CIME.XML.env_mach_specific import EnvMachSpecific
 from CIME.XML.files import Files
 from CIME.build import CmakeTmpBuildDir
 
-import shutil
+import shutil, glob
 
 logger = logging.getLogger(__name__)
 
@@ -79,6 +79,12 @@ def configure(
                 shutil.copytree(
                     new_cmake_macros_dir, os.path.join(output_dir, "cmake_macros")
                 )
+
+            # Grab macros from extra machine dir if it was provided
+            if extra_machines_dir:
+                extra_cmake_macros = glob.glob("{}/cmake_macros/*.cmake".format(extra_machines_dir))
+                for extra_cmake_macro in extra_cmake_macros:
+                    safe_copy(extra_cmake_macro, new_cmake_macros_dir)
 
             if form == "Makefile":
                 # Use the cmake macros to generate the make macros
