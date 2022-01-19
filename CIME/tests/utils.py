@@ -506,4 +506,3 @@ class Mocker:
             raise Exception("Could not patch")
 
         return rv
-

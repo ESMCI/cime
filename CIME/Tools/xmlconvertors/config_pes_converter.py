@@ -10,7 +10,9 @@ The location of these files are needed by the script:
 """
 import os, sys
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..")))
+sys.path.insert(
+    0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
+)
 
 from CIME import utils
 from CIME.Tools.standard_script_setup import *

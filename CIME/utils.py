@@ -1196,7 +1196,10 @@ def get_model_config_root(model=None):
     True
     """
     model = get_model() if model is None else model
-    return os.path.join(get_cime_root(), "CIME", "data", get_model_config_location_within_cime(model))
+    return os.path.join(
+        get_cime_root(), "CIME", "data", get_model_config_location_within_cime(model)
+    )
+
 
 def stop_buffering_output():
     """

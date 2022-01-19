@@ -142,9 +142,7 @@ class TestCreateNewcase(base.BaseTestCase):
 
         cls._testdirs.append(testdir)
 
-        user_mods_dir = os.path.join(
-            os.path.dirname(__file__), "user_mods_test1"
-        )
+        user_mods_dir = os.path.join(os.path.dirname(__file__), "user_mods_test1")
         args = (
             " --case %s --compset X --user-mods-dir %s --output-root %s --handle-preexisting-dirs=r"
             % (testdir, user_mods_dir, cls._testroot)
@@ -192,9 +190,7 @@ class TestCreateNewcase(base.BaseTestCase):
         if os.path.exists(testdir):
             shutil.rmtree(testdir)
         prevtestdir = cls._testdirs[0]
-        user_mods_dir = os.path.join(
-            os.path.dirname(__file__), "user_mods_test3"
-        )
+        user_mods_dir = os.path.join(os.path.dirname(__file__), "user_mods_test3")
 
         cmd = "%s/create_clone --clone %s --case %s --keepexe --user-mods-dir %s" % (
             self.SCRIPT_DIR,
