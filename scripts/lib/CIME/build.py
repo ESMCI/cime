@@ -93,6 +93,8 @@ class CmakeTmpBuildDir(object):
 
         self._entered = True
 
+        return self
+
     def __exit__(self, *args):
         shutil.rmtree(self.get_full_tmpdir())
         self._entered = False

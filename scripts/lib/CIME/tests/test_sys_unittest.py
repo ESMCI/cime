@@ -33,7 +33,7 @@ class TestUnitTest(base.BaseTestCase):
 
         for macro_to_check in macros_to_check:
             if os.path.exists(macro_to_check):
-                macro_text = open(machine_macro, "r").read()
+                macro_text = open(macro_to_check, "r").read()
 
                 return "PFUNIT_PATH" in macro_text
 
