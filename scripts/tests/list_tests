@@ -1,0 +1,17 @@
+#!/usr/bin/env python3
+# This script will print the list of test classes in
+# scripts_regression_tests.py
+#
+
+import unittest
+
+# pylint: disable=protected-access
+def list_tests_from():
+
+    suite = unittest.defaultTestLoader.discover("../lib/CIME/tests")
+    for test in suite:
+        print(test._tests[0]._testMethodName)
+
+if __name__ == "__main__":
+    # Include the directories
+    list_tests_from()
