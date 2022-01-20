@@ -12,29 +12,18 @@ your case directory.
 Quick Start Guide:
 ------------------
 
-On cime supported systems you can generate a Macros file using the following
+On cime supported systems you can generate a cmake Macros file using the following
 (assuming you are running the command from the directory CIME/data/cprnc):
 
-CIMEROOT=../.. ../configure --macros-format=Makefile --mpilib=mpi-serial
-
-To change the compiler or MPI library used, or to enable debugging options,
-set the COMPILER, MPILIB, or DEBUG environment variables prior to running
-configure.
-
-Next, run make to build cprnc. For instance, using sh/bash as a login shell:
-
-CIMEROOT=../.. source ./.env_mach_specific.sh && make
-
-Finally, put the resulting executable in CCSM_CPRNC as defined in
-config_machines.xml.
-
-You can also build cprnc using cmake:
 export CIMEROOT=../..
 MPILIB=mpi-serial source ./.env_mach_specific.sh
 ../configure --macros-format=CMake --mpilib=mpi-serial
 
 Next run cmake . to build the Makefile and then
 make to build cprnc.
+
+Finally, put the resulting executable in CCSM_CPRNC as defined in
+config_machines.xml.
 
 
  Usage: cprnc  [-v] [-d dimname:start[:count]] file1 [file2]
