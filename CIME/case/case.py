@@ -11,7 +11,7 @@ import glob, os, shutil, math, CIME.six, time, hashlib, socket, getpass
 from CIME.XML.standard_module_setup import *
 
 # pylint: disable=import-error,redefined-builtin
-from six.moves import input
+from CIME.six.moves import input
 from CIME import utils
 from CIME.utils import expect, get_cime_root, append_status
 from CIME.utils import convert_to_type, get_model, set_model

@@ -18,7 +18,7 @@ Other examples:
 from standard_script_setup import *
 from CIME.case import Case
 from CIME.utils import expect
-from six.moves import configparser
+from CIME.six.moves import configparser
 
 ###############################################################################
 def parse_command_line(args, description):
