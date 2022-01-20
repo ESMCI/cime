@@ -191,7 +191,7 @@ jobs:
           export PATH=$NETCDF/bin:$PATH
           export LD_LIBRARY_PATH=$NETCDF/lib:$HOME/pnetcdf/lib:$LD_LIBRARY_PATH
           export ESMFMKFILE=$HOME/ESMF/lib/libg/Linux.gfortran.64.openmpi.default/esmf.mk
-          python -m pip install pytest pytest-cov
+          python -m pip install pytest pytest-cov six
           pytest -vvv --no-fortran-run --compiler gnu --mpilib openmpi --machine ubuntu-latest
 
 
