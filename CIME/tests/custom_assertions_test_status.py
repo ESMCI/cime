@@ -7,7 +7,6 @@ from CIME.XML.standard_module_setup import *
 
 import unittest
 import re
-import six
 from CIME import test_status
 
 
@@ -42,7 +41,8 @@ class CustomAssertionsTestStatus(unittest.TestCase):
             expect(xfail is None, "Unhandled value of xfail argument")
 
         expected_re = re.compile(expected, flags=re.MULTILINE)
-        six.assertRegex(self, output, expected_re)
+
+        self.assertRegex(output, expected_re)
 
     def assert_phase_absent(self, output, phase, test_name):
         """Asserts that 'output' does not contain a status line for the
@@ -52,7 +52,7 @@ class CustomAssertionsTestStatus(unittest.TestCase):
             flags=re.MULTILINE,
         )
 
-        six.assertNotRegex(self, output, expected)
+        self.assertNotRegex(output, expected)
 
     def assert_core_phases(self, output, test_name, fails):
         """Asserts that 'output' contains a line for each of the core test

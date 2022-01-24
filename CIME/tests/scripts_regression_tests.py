@@ -15,8 +15,6 @@ from xml.etree.ElementTree import ParseError
 import subprocess, argparse
 
 subprocess.call('/bin/rm -f $(find . -name "*.pyc")', shell=True, cwd=CIMEROOT)
-import six
-from six import assertRaisesRegex
 import stat as osstat
 
 import collections

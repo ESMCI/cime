@@ -108,7 +108,6 @@ import collections
 
 from CIME.XML.standard_module_setup import *
 from CIME.utils import expect, string_in_list
-import CIME.six
 
 logger = logging.getLogger(__name__)
 
@@ -750,21 +749,21 @@ def compress_literal_list(literals):
                 # Otherwise, write out the previous literal and start tracking the
                 # new one.
                 rep_str = str(num_reps) + "*" if num_reps > 1 else ""
-                if isinstance(old_literal, CIME.six.string_types):
+                if isinstance(old_literal, str):
                     compressed.append(rep_str + old_literal)
                 else:
                     compressed.append(rep_str + str(old_literal))
                 old_literal = literal
                 num_reps = 1
         rep_str = str(num_reps) + "*" if num_reps > 1 else ""
-        if isinstance(old_literal, CIME.six.string_types):
+        if isinstance(old_literal, str):
             compressed.append(rep_str + old_literal)
         else:
             compressed.append(rep_str + str(old_literal))
         return compressed
     else:
         for literal in literals:
-            if isinstance(literal, CIME.six.string_types):
+            if isinstance(literal, str):
                 compressed.append(literal)
             else:
                 compressed.append(str(literal))
@@ -856,7 +855,7 @@ def parse(in_file=None, text=None, groupless=False, convert_tab_to_space=True):
         in_file is None or text is None,
         "Cannot specify both input file and text to the namelist parser.",
     )
-    if isinstance(in_file, CIME.six.string_types):
+    if isinstance(in_file, str):
         logger.debug("Reading namelist at: {}".format(in_file))
         with open(in_file) as in_file_obj:
             text = in_file_obj.read()
@@ -1190,7 +1189,7 @@ class Namelist(object):
             format_ in ("nml", "rc", "nmlcontents"),
             "Namelist.write: unexpected output format {!r}".format(str(format_)),
         )
-        if isinstance(out_file, CIME.six.string_types):
+        if isinstance(out_file, str):
             logger.debug("Writing namelist to: {}".format(out_file))
             flag = "a" if append else "w"
             with open(out_file, flag) as file_obj:
@@ -1260,7 +1259,7 @@ class Namelist(object):
         file object with a `write` method that accepts unicode. If specified,
         the `groups` argument specifies a subset of all groups to write out.
         """
-        if isinstance(out_file, CIME.six.string_types):
+        if isinstance(out_file, str):
             logger.debug("Writing nuopc config file to: {}".format(out_file))
             flag = "w"
             with open(out_file, flag) as file_obj:

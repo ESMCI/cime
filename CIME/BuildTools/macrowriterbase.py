@@ -13,7 +13,6 @@ more.
 from abc import ABCMeta, abstractmethod
 from CIME.XML.standard_module_setup import *
 from CIME.utils import get_cime_root
-from CIME.six import add_metaclass
 
 logger = logging.getLogger(__name__)
 
@@ -72,8 +71,7 @@ def _get_components(value):
     return components
 
 
-@add_metaclass(ABCMeta)
-class MacroWriterBase(object):
+class MacroWriterBase(object, metaclass=ABCMeta):
 
     """Abstract base class for macro file writers.
 

@@ -15,10 +15,10 @@ Other examples:
       Submits the case, requesting mail at job beginning and end
 """
 
+import configparser
 from standard_script_setup import *
 from CIME.case import Case
 from CIME.utils import expect
-from CIME.six.moves import configparser
 
 ###############################################################################
 def parse_command_line(args, description):

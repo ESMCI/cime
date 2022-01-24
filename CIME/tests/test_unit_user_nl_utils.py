@@ -5,7 +5,6 @@ import os
 import shutil
 import tempfile
 from CIME.SystemTests.test_utils import user_nl_utils
-import CIME.six
 
 
 class TestUserNLCopier(unittest.TestCase):
@@ -111,9 +110,7 @@ class TestUserNLCopier(unittest.TestCase):
         # Create file in caseroot for component_exists, but not for component_for_append
         self.write_user_nl_file(component_exists, "irrelevant contents")
 
-        # Exercise & verify
-        CIME.six.assertRaisesRegex(
-            self,
+        self.assertRaisesRegex(
             RuntimeError,
             "No user_nl files found",
             user_nl_utils.append_to_user_nl_files,

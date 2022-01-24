@@ -173,7 +173,7 @@ jobs:
           export NETCDF=$HOME/netcdf-fortran
           export PATH=$NETCDF/bin:$PATH
           export LD_LIBRARY_PATH=$NETCDF/lib:$HOME/pnetcdf/lib:$LD_LIBRARY_PATH
-          python -m pip install pytest pytest-cov six
+          python -m pip install pytest pytest-cov
           pytest -vvv --no-fortran-run --compiler gnu --mpilib openmpi --machine ubuntu-latest
 
 #     the following can be used by developers to login to the github server in case of errors

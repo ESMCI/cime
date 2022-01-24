@@ -1,4 +1,4 @@
-import os, re, logging, CIME.six
+import os, re, logging
 
 from collections import OrderedDict
 from CIME.utils import expect, CIMEError
@@ -485,7 +485,7 @@ def _compare_values(name, gold_value, comp_value, case):
 
     else:
         expect(
-            isinstance(gold_value, CIME.six.string_types),
+            isinstance(gold_value, str),
             "Unexpected type found: '{}'".format(type(gold_value)),
         )
         norm_gold_value = _normalize_string_value(name, gold_value, case)
@@ -514,7 +514,7 @@ def _compare_namelists(gold_namelists, comp_namelists, case):
     ...   aval = 'one','two', 'three'
     ...   maval = 'one', 'two', 'three', 'four'
     ...   dval = 'one -> two', 'three -> four'
-    ...   mdval = 'one -> two', 'three -> four', 'five -> CIME.six'
+    ...   mdval = 'one -> two', 'three -> four', 'five -> six'
     ...   nval = 1850
     ... /
     ... &nml2

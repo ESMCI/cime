@@ -10,7 +10,6 @@ import xml.etree.ElementTree as ET
 # pylint: disable=import-error
 from distutils.spawn import find_executable
 import getpass
-import CIME.six
 from copy import deepcopy
 from collections import namedtuple
 
@@ -125,12 +124,7 @@ class GenericXML(object):
 
         if not cached_read:
             logger.debug("read: {}".format(infile))
-            file_open = (
-                (lambda x: open(x, "r", encoding="utf-8"))
-                if CIME.six.PY3
-                else (lambda x: open(x, "r"))
-            )
-            with file_open(infile) as fd:
+            with open(infile, "r", encoding="utf-8") as fd:
                 self.read_fd(fd)
 
             if schema is not None and self.get_version() > 1.0:
@@ -473,10 +467,7 @@ class GenericXML(object):
         if outfile is None:
             outfile = self.filename
 
-        logger.debug(
-            "write: "
-            + (outfile if isinstance(outfile, CIME.six.string_types) else str(outfile))
-        )
+        logger.debug("write: " + outfile)
 
         xmlstr = self.get_raw_record()
 
@@ -484,7 +475,7 @@ class GenericXML(object):
         xmllint = find_executable("xmllint")
 
         if xmllint is not None:
-            if isinstance(outfile, CIME.six.string_types):
+            if isinstance(outfile, str):
                 run_cmd_no_fail(
                     "{} --format --output {} -".format(xmllint, outfile),
                     input_str=xmlstr,
@@ -646,7 +637,7 @@ class GenericXML(object):
         if item_data is None:
             return None
 
-        if not isinstance(item_data, CIME.six.string_types):
+        if not isinstance(item_data, str):
             return item_data
 
         for m in env_ref_re.finditer(item_data):

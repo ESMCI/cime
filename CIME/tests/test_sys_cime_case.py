@@ -7,7 +7,6 @@ import shutil
 import sys
 import time
 
-import six
 from CIME import utils
 from CIME.tests import base
 from CIME.case.case import Case
@@ -110,7 +109,7 @@ class TestCimeCase(base.BaseTestCase):
                     ),
                 )
                 self.assertTrue(
-                    isinstance(batch_cmd[1], six.string_types),
+                    isinstance(batch_cmd[1], str),
                     "case.submit_jobs returned internal sequences without the batch command string as the second parameter: {}".format(
                         batch_cmd[1]
                     ),

@@ -117,8 +117,6 @@ def _should_pylint_skip(filepath):
     for dir_to_skip in list_of_directories_to_ignore:
         if dir_to_skip + "/" in filepath:
             return True
-        if filepath == "CIME/six.py":
-            return True
         # intended to be temporary, file needs update
         if filepath.endswith("archive_metadata") or filepath.endswith("pgn.py"):
             return True

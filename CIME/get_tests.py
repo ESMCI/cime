@@ -1,7 +1,7 @@
 import CIME.utils
 from CIME.utils import expect, convert_to_seconds, parse_test_name, get_cime_root
 from CIME.XML.machines import Machines
-import CIME.six, sys, os
+import sys, os
 
 # Expect that, if a model wants to use python-based test lists, they will have a file
 # $model/cime_config/tests.py , containing a test dictionary called _TESTS. Currently,
@@ -143,7 +143,7 @@ def _get_key_data(raw_dict, key, the_type):
             expect(False, "Unsupported type {}".format(the_type))
     else:
         val = raw_dict[key]
-        if the_type is tuple and isinstance(val, CIME.six.string_types):
+        if the_type is tuple and isinstance(val, str):
             val = (val,)
 
         expect(
@@ -206,7 +206,7 @@ def get_test_suite(
     tests = []
     for item in tests_raw:
         expect(
-            isinstance(item, CIME.six.string_types),
+            isinstance(item, str),
             "Bad type of test {}, expected string".format(item),
         )
 

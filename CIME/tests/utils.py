@@ -1,3 +1,4 @@
+import io
 import os
 import tempfile
 import signal
@@ -6,7 +7,6 @@ import sys
 import time
 from collections.abc import Iterable
 
-import six
 from CIME import utils
 from CIME import test_status
 from CIME.utils import expect
@@ -121,8 +121,8 @@ def get_macros(macro_maker, build_xml, build_system):
     """
     # Build.write_macros expects file-like objects as input, so
     # we need to wrap the strings in StringIO objects.
-    xml = six.StringIO(str(build_xml))
-    output = six.StringIO()
+    xml = io.StringIO(str(build_xml))
+    output = io.StringIO()
     output_format = None
     if build_system == "Makefile":
         output_format = "make"
