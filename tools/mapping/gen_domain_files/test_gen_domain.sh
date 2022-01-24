@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -x
+
 # get arguments
 # Need --cime_root=
 #      --inputdata_root=
@@ -67,7 +69,7 @@ if [ ! -f .env_mach_specific.sh ]; then
         exit 1
     fi
 else
-    (. .env_mach_specific.sh && ${cime_root}/tools/configure --macros-format Makefile --mpilib mpi-serial) >> ${test_log} 2>&1
+    (. .env_mach_specific.sh && ${cime_root}/CIME/configure --macros-format Makefile --mpilib mpi-serial) >> ${test_log} 2>&1
 fi
 
 cp ${cime_root}/tools/mapping/gen_domain_files/src/* .

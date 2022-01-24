@@ -27,9 +27,9 @@ find_package (NetCDF COMPONENTS Fortran REQUIRED)
 # generate compare_vars_mod.F90
 add_custom_command(
   OUTPUT ${PROJECT_BINARY_DIR}/compare_vars_mod.F90
-  COMMAND perl ${PROJECT_SOURCE_DIR}/../../CIME/data/genf90/genf90.pl
+  COMMAND perl ${PROJECT_SOURCE_DIR}/../../../CIME/data/genf90/genf90.pl
     ${PROJECT_SOURCE_DIR}/compare_vars_mod.F90.in > ${PROJECT_BINARY_DIR}/compare_vars_mod.F90
-    DEPENDS ${PROJECT_SOURCE_DIR}/compare_vars_mod.F90.in ${PROJECT_SOURCE_DIR}/../../CIME/data/genf90/genf90.pl
+    DEPENDS ${PROJECT_SOURCE_DIR}/compare_vars_mod.F90.in ${PROJECT_SOURCE_DIR}/../../../CIME/data/genf90/genf90.pl
 )
 
 # Set up includes
