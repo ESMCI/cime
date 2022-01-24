@@ -1180,6 +1180,7 @@ def get_model_config_root(model=None):
     """
     Get absolute path to model config area"
 
+    >>> os.environ["CIME_MODEL"] = "e3sm" # Set the test up don't depend on external resources
     >>> os.path.isdir(get_model_config_root())
     True
     """
