@@ -510,7 +510,7 @@ This allows using a different mpirun command to launch unit tests
     <NODENAME_REGEX>comet.*.sdsc.edu</NODENAME_REGEX>
     <OS>LINUX</OS>
     <COMPILERS>intel</COMPILERS>
-    <MPILIBS>impi,mvapich</MPILIBS>
+    <MPILIBS>openmpi,impi,mvapich</MPILIBS>
     <CIME_OUTPUT_ROOT>/cw3e/mead/projects/csg100/cesm/scratch</CIME_OUTPUT_ROOT>
     <DIN_LOC_ROOT>/cw3e/mead/projects/csg100/cesm/inputdata</DIN_LOC_ROOT>
     <DIN_LOC_ROOT_CLMFORC>/cw3e/mead/projects/csg100/cesm/inputdata/atm/datm7</DIN_LOC_ROOT_CLMFORC>
@@ -523,6 +523,13 @@ This allows using a different mpirun command to launch unit tests
     <MAX_TASKS_PER_NODE>24</MAX_TASKS_PER_NODE>
     <MAX_MPITASKS_PER_NODE>24</MAX_MPITASKS_PER_NODE>
     <PROJECT_REQUIRED>FALSE</PROJECT_REQUIRED>
+    <mpirun mpilib="openmpi">
+      <executable>ibrun -v</executable>
+      <arguments>
+	<arg name="num_tasks">-n {{ total_tasks }}</arg>
+	<arg name="bind"> -bp scatter -bl core</arg>
+      </arguments>
+    </mpirun>
     <mpirun mpilib="mvapich">
       <executable>ibrun -v</executable>
       <arguments>
@@ -534,6 +541,7 @@ This allows using a different mpirun command to launch unit tests
       <arguments>
 	<arg name="num_tasks">-n {{ total_tasks }}</arg>
 	<arg name="cpu_bind">--cpu_bind=sockets --cpu_bind=verbose</arg>
+	<arg name="qos">--qos=cw3e</arg>
       </arguments>
     </mpirun>
 
@@ -550,20 +558,25 @@ This allows using a different mpirun command to launch unit tests
 	<command name="purge"/>
       </modules>
       <modules>
-	<command name="load">cmake/3.12.1</command>
+	<command name="use">/share/apps/compute/modulefiles</command>
+	<command name="load">applications/cmake/3.17.0</command>
       </modules>
       <modules compiler="intel">
-	<command name="load">intel/2018.1.163</command>
-	<command name="load">mkl/2018.1.163</command>
+	<command name="load">intel/2019.5.281</command>
+	<command name="load">mkl</command>
       </modules>
-
+      <modules mpilib="openmpi">
+	<command name="unload">mvapich2_ib/2.3.2</command>
+	<command name="load">openmpi_ib/3.1.4</command>
+	<command name="load">netcdf-serial/4.6.1</command>
+      </modules>
       <modules mpilib="mvapich">
 	<command name="load">mvapich2_ib/2.3.2</command>
 	<command name="load">netcdf/4.6.1</command>
       </modules>
       <modules mpilib="impi">
 	<command name="unload">mvapich2_ib/2.3.2</command>
-	<command name="load">intelmpi/2018.1.163</command>
+	<command name="load">intelmpi/2019.5.281</command>
 	<command name="load">netcdf/4.6.1</command>
       </modules>
       <modules mpilib="mpi-serial">
@@ -572,15 +585,17 @@ This allows using a different mpirun command to launch unit tests
     </module_system>
     <environment_variables>
       <env name="OMP_STACKSIZE">64M</env>
-      <env name="PNETCDF_PATH">/home/edwardsj/work/cesm/tools/pnetcdf/intel/mvapich</env>
     </environment_variables>
     <environment_variables mpilib="impi">
-      <env name="TMI_CONFIG">$ENV{MPIHOME}/etc/tmi.conf</env>
+<!--      <env name="TMI_CONFIG">$ENV{MPIHOME}/etc/tmi.conf</env> -->
       <env name="I_MPI_PMI_LIBRARY">/usr/lib64/libpmi.so</env>
-      <env name="PNETCDF_PATH">/home/edwardsj/work/cesm/tools/pnetcdf/intel/impi</env>
+      <env name="PNETCDF_PATH">/home/edwardsj/work/cesm/tools/pnetcdf/intel/impi.2019</env>
     </environment_variables>
     <environment_variables mpilib="mvapich">
       <env name="PNETCDF_PATH">/home/edwardsj/work/cesm/tools/pnetcdf/intel/mvapich</env>
+    </environment_variables>
+    <environment_variables mpilib="openmpi">
+      <env name="PNETCDF_PATH">/home/edwardsj/work/cesm/tools/pnetcdf/intel/openmpi</env>
     </environment_variables>
   </machine>
 
