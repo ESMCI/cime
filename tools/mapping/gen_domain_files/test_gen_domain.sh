@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -x
-
 # get arguments
 # Need --cime_root=
 #      --inputdata_root=
