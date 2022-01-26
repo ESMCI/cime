@@ -142,5 +142,4 @@ class TestProvenance(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    sys.path.insert(0, os.path.abspath(os.path.join(".", "..", "..", "lib")))
     unittest.main()
