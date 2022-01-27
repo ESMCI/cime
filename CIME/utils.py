@@ -554,6 +554,22 @@ def file_contains_python_function(filepath, funcname):
     return has_function
 
 
+def fixup_sys_path(*additional_paths):
+    cimeroot = get_cime_root()
+
+    if cimeroot not in sys.path or sys.path.index(cimeroot) > 0:
+        sys.path.insert(0, cimeroot)
+
+    tools_path = get_tools_path()
+
+    if tools_path not in sys.path or sys.path.index(tools_path) > 1:
+        sys.path.insert(1, tools_path)
+
+    for i, x in enumerate(additional_paths):
+        if x not in sys.path or sys.path.index(x) > 2 + i:
+            sys.path.insert(2 + i, x)
+
+
 def import_and_run_sub_or_cmd(
     cmd,
     cmdargs,
@@ -567,7 +583,10 @@ def import_and_run_sub_or_cmd(
     timeout=None,
 ):
     sys_path_old = sys.path
-    sys.path.insert(1, config_dir)
+    # ensure we provide `get_src_root()` and `get_tools_path()` to sys.path
+    # allowing imported modules to correctly import `CIME` module or any
+    # tool under `CIME/Tools`.
+    fixup_sys_path(config_dir)
     try:
         mod = importlib.import_module(f"{compname}_cime_py")
         getattr(mod, subname)(*subargs)
@@ -605,6 +624,11 @@ def run_sub_or_cmd(
         do_run_cmd = True
 
     if not do_run_cmd:
+        # ensure we provide `get_src_root()` and `get_tools_path()` to sys.path
+        # allowing imported modules to correctly import `CIME` module or any
+        # tool under `CIME/Tools`.
+        fixup_sys_path()
+
         try:
             mod = import_from_file(subname, cmd)
             logger.info("   Calling {}".format(cmd))
@@ -705,6 +729,29 @@ def run_cmd(
         stdin = subprocess.PIPE
     else:
         stdin = None
+
+    # ensure we have an environment to use if not being over written by parent
+    if env is None:
+        # persist current environment
+        env = os.environ.copy()
+
+    # Always provide these variables for anything called externally.
+    # `CIMEROOT` is provided for external scripts, makefiles, etc that
+    # may reference it. `PYTHONPATH` is provided to ensure external
+    # python can correctly import the CIME module and anything under
+    # `CIME/tools`.
+    #
+    # `get_tools_path()` is provided for backwards compatibility.
+    # External python prior to the CIME module move would use `CIMEROOT`
+    # or build a relative path and append `sys.path` to import
+    # `standard_script_setup`. Providing `PYTHONPATH` fixes protential
+    # broken paths in external python.
+    env.update(
+        {
+            "CIMEROOT": f"{get_cime_root()}",
+            "PYTHONPATH": f"{get_cime_root()}:{get_tools_path()}",
+        }
+    )
 
     if timeout:
         with Timeout(timeout):
