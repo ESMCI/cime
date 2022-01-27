@@ -128,7 +128,7 @@ For a serial build of pFUnit, follow these instructions:
 
    .. code-block:: shell
 
-      > $CIMEROOT/CIME/configure --mpilib mpi-serial
+      > $CIMEROOT/CIME/scripts/configure --mpilib mpi-serial
 
    If you are doing an MPI-enabled build, also change the ``--mpilib`` argument.
    Then source either **./.env_mach_specific.sh** or **./.env_mach_specific.csh**, depending on your shell.

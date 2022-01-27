@@ -55,7 +55,7 @@ def buildlib(bldroot, installpath, case):
     # Generate macros and environment
     compiler = case.get_value("COMPILER")
     run_bld_cmd_ensure_logging(
-        "{}/CIME/configure --mpilib=mpi-serial --macros-format=CMake --machine={} --compiler={}".format(
+        "{}/CIME/scripts/configure --mpilib=mpi-serial --macros-format=CMake --machine={} --compiler={}".format(
             cimeroot, case.get_value("MACH"), compiler
         ),
         logger,

@@ -685,7 +685,7 @@ class TestCimeCase(base.BaseTestCase):
 
         utils.run_cmd_no_fail(
             "{} --machine={} --compiler={}".format(
-                os.path.join(utils.get_cime_root(), "CIME", "configure"),
+                os.path.join(utils.get_cime_root(), "CIME", "scripts", "configure"),
                 self._machine,
                 self._compiler,
             ),
