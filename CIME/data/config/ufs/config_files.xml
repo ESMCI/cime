@@ -108,8 +108,8 @@
     <type>char</type>
     <values>
       <value component="datm"      >$SRCROOT/src/model/CDEPS/datm</value>
-      <value component="satm"      >$CIMEROOT/CIME/components/stub_comps_$COMP_INTERFACE/satm</value>
-      <value component="xatm"      >$CIMEROOT/CIME/components/xcpl_comps_$COMP_INTERFACE/xatm</value>
+      <value component="satm"      >$CIMEROOT/CIME/data/src/components/stub_comps_$COMP_INTERFACE/satm</value>
+      <value component="xatm"      >$CIMEROOT/CIME/data/src/components/xcpl_comps_$COMP_INTERFACE/xatm</value>
       <value component="cam"       >$SRCROOT/components/cam/</value>
       <value component="ufsatm"    >$SRCROOT/src/model/FV3</value>
     </values>
@@ -140,8 +140,8 @@
       <value component="nemo"      >$SRCROOT/components/nemo/</value>
       <value component="hycom"     >$SRCROOT/src/model/HYCOM/</value>
       <value component="docn"      >$SRCROOT/src/model/CDEPS/docn</value>
-      <value component="socn"      >$CIMEROOT/CIME/components/stub_comps_$COMP_INTERFACE/socn</value>
-      <value component="xocn"      >$CIMEROOT/CIME/components/xcpl_comps_$COMP_INTERFACE/xocn</value>
+      <value component="socn"      >$CIMEROOT/CIME/data/src/components/stub_comps_$COMP_INTERFACE/socn</value>
+      <value component="xocn"      >$CIMEROOT/CIME/data/src/components/xcpl_comps_$COMP_INTERFACE/xocn</value>
     </values>
     <group>case_comps</group>
     <file>env_case.xml</file>
@@ -155,8 +155,8 @@
     <values>
       <value component="ww3"      >$SRCROOT/components/ww3/</value>
       <value component="dwav"     >$SRCROOT/src/model/CDEPS/dwav</value>
-      <value component="swav"      >$CIMEROOT/CIME/components/stub_comps_$COMP_INTERFACE/swav</value>
-      <value component="xwav"      >$CIMEROOT/CIME/components/xcpl_comps_$COMP_INTERFACE/xwav</value>
+      <value component="swav"      >$CIMEROOT/CIME/data/src/components/stub_comps_$COMP_INTERFACE/swav</value>
+      <value component="xwav"      >$CIMEROOT/CIME/data/src/components/xcpl_comps_$COMP_INTERFACE/xwav</value>
     </values>
     <group>case_comps</group>
     <file>env_case.xml</file>
@@ -170,8 +170,8 @@
     <values>
       <value component="cism"      >$SRCROOT/components/cism/</value>
       <value component="dglc"      >$SRCROOT/src/model/CDEPS/dglc</value>
-      <value component="sglc"      >$CIMEROOT/CIME/components/stub_comps_$COMP_INTERFACE/sglc</value>
-      <value component="xglc"      >$CIMEROOT/CIME/components/xcpl_comps_$COMP_INTERFACE/xglc</value>
+      <value component="sglc"      >$CIMEROOT/CIME/data/src/components/stub_comps_$COMP_INTERFACE/sglc</value>
+      <value component="xglc"      >$CIMEROOT/CIME/data/src/components/xcpl_comps_$COMP_INTERFACE/xglc</value>
     </values>
     <group>case_comps</group>
     <file>env_case.xml</file>
@@ -185,8 +185,8 @@
     <values>
       <value component="cice"      >$SRCROOT/src/model/CICE/</value>
       <value component="dice"      >$SRCROOT/src/model/CDEPS/dice</value>
-      <value component="sice"      >$CIMEROOT/CIME/components/stub_comps_$COMP_INTERFACE/sice</value>
-      <value component="xice"      >$CIMEROOT/CIME/components/xcpl_comps_$COMP_INTERFACE/xice</value>
+      <value component="sice"      >$CIMEROOT/CIME/data/src/components/stub_comps_$COMP_INTERFACE/sice</value>
+      <value component="xice"      >$CIMEROOT/CIME/data/src/components/xcpl_comps_$COMP_INTERFACE/xice</value>
     </values>
     <group>case_comps</group>
     <file>env_case.xml</file>
@@ -201,8 +201,8 @@
       <value component="rtm"      >$SRCROOT/components/rtm/</value>
       <value component="mosart"   >$SRCROOT/components/mosart/</value>
       <value component="drof"     >$SRCROOT/src/model/CDEPS/drof</value>
-      <value component="srof"     >$CIMEROOT/CIME/components/stub_comps_$COMP_INTERFACE/srof</value>
-      <value component="xrof"     >$CIMEROOT/CIME/components/xcpl_comps_$COMP_INTERFACE/xrof</value>
+      <value component="srof"     >$CIMEROOT/CIME/data/src/components/stub_comps_$COMP_INTERFACE/srof</value>
+      <value component="xrof"     >$CIMEROOT/CIME/data/src/components/xcpl_comps_$COMP_INTERFACE/xrof</value>
     </values>
     <group>case_comps</group>
     <file>env_case.xml</file>
@@ -216,8 +216,8 @@
     <values>
       <value component="clm"      >$SRCROOT/components/clm/</value>
       <value component="dlnd"     >$SRCROOT/src/model/CDEPS/dlnd</value>
-      <value component="slnd"     >$CIMEROOT/CIME/components/stub_comps_$COMP_INTERFACE/slnd</value>
-      <value component="xlnd"     >$CIMEROOT/CIME/components/xcpl_comps_$COMP_INTERFACE/xlnd</value>
+      <value component="slnd"     >$CIMEROOT/CIME/data/src/components/stub_comps_$COMP_INTERFACE/slnd</value>
+      <value component="xlnd"     >$CIMEROOT/CIME/data/src/components/xcpl_comps_$COMP_INTERFACE/xlnd</value>
     </values>
     <group>case_comps</group>
     <file>env_case.xml</file>
@@ -229,8 +229,8 @@
     <type>char</type>
     <default_value>unset</default_value>
     <values>
-      <value component="siac"      >$CIMEROOT/CIME/components/stub_comps_$COMP_INTERFACE/siac</value>
-      <value component="xiac"      >$CIMEROOT/CIME/components/xcpl_comps_$COMP_INTERFACE/xiac</value>
+      <value component="siac"      >$CIMEROOT/CIME/data/src/components/stub_comps_$COMP_INTERFACE/siac</value>
+      <value component="xiac"      >$CIMEROOT/CIME/data/src/components/xcpl_comps_$COMP_INTERFACE/xiac</value>
     </values>
     <group>case_comps</group>
     <file>env_case.xml</file>
@@ -243,7 +243,7 @@
     <default_value>unset</default_value>
     <values>
       <value component="desp"      >$SRCROOT/src/model/CDEPS/desp</value>
-      <value component="sesp"      >$CIMEROOT/CIME/components/stub_comps_$COMP_INTERFACE/sesp</value>
+      <value component="sesp"      >$CIMEROOT/CIME/data/src/components/stub_comps_$COMP_INTERFACE/sesp</value>
     </values>
     <group>case_comps</group>
     <file>env_case.xml</file>
