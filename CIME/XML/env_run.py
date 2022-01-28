@@ -18,8 +18,10 @@ class EnvRun(EnvBase):
         """
         initialize an object interface to file env_run.xml in the case directory
         """
+        self._pio_async_interface = {}
         self._components = components
-        self._pio_async_interface = False
+        for comp in components:
+            self._pio_async_interface[comp] = False
         schema = os.path.join(utils.get_schema_path(), "env_entry_id.xsd")
 
         EnvBase.__init__(self, case_root, infile, schema=schema, read_only=read_only)
@@ -32,7 +34,7 @@ class EnvRun(EnvBase):
         """
         if self._pio_async_interface:
             vid, comp, iscompvar = self.check_if_comp_var(vid, attribute)
-            if vid.startswith("PIO") and iscompvar:
+            if vid != "PIO_ASYNC_INTERFACE" and vid.startswith("PIO") and iscompvar:
                 if comp and comp != "CPL":
                     logger.warning("Only CPL settings are used for PIO in async mode")
                 subgroup = "CPL"
