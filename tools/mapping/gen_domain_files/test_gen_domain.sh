@@ -81,10 +81,10 @@ fi
 # Build the cprnc executable (for comparison of netcdf files)
 echo "" >> ${test_log}
 echo "Building cprnc in ${PWD}/builds ..." >> ${test_log}
-cp ${cime_root}/CIME/data/cprnc/*.F90 .
-cp ${cime_root}/CIME/data/cprnc/Makefile .
-cp ${cime_root}/CIME/data/cprnc/Depends .
-cp ${cime_root}/CIME/data/cprnc/*.in .
+cp ${cime_root}/CIME/data/tools/cprnc/*.F90 .
+cp ${cime_root}/CIME/data/tools/cprnc/Makefile .
+cp ${cime_root}/CIME/data/tools/cprnc/Depends .
+cp ${cime_root}/CIME/data/tools/cprnc/*.in .
 (. .env_mach_specific.sh && make GENF90=${cime_root}/CIME/data/genf90/genf90.pl) >> ${test_log} 2>&1
 if [ ! -f cprnc ]; then
     echo "ERROR building cprnc" >&2
