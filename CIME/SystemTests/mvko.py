@@ -149,19 +149,14 @@ class MVKO(SystemTestsCommon):
                 nl_ocn_file.write("config_am_timeseriesstatsclimatology_backward_output_offset = '00-03-00_00:00:00'\n")
                 nl_ocn_file.write("config_am_timeseriesstatsclimatology_compute_interval = '00-00-00_01:00:00'\n")
                 nl_ocn_file.write("config_am_timeseriesstatsclimatology_compute_on_startup = .false.\n")
-                nl_ocn_file.write("config_am_timeseriesstatsclimatology_duration_intervals = '00-03-00_00:00:00;00-03-00_00:00:00;00-03-00_00:00:00;00-03-00_00:00:00;01-00-00_00:00'\n")
+                nl_ocn_file.write("config_am_timeseriesstatsclimatology_duration_intervals = '01-00-00_00:00'\n")
                 nl_ocn_file.write("config_am_timeseriesstatsclimatology_operation = 'avg'\n")
                 nl_ocn_file.write("config_am_timeseriesstatsclimatology_output_stream = 'timeSeriesStatsClimatologyOutput'\n")
-                nl_ocn_file.write("config_am_timeseriesstatsclimatology_reference_times = '00-03-01_00:00:00;00-06-01_00:00:00;00-09-01_00:00:00;00-12-01_00:00:00;00-12-01_00:00:00'\n")
-                nl_ocn_file.write("config_am_timeseriesstatsclimatology_repeat_intervals = '01-00-00_00:00:00;01-00-00_00:00:00;01-00-00_00:00:00;01-00-00_00:00:00;01-00-00_00:00:00'\n")
-                nl_ocn_file.write("config_am_timeseriesstatsclimatology_reset_intervals = '0001-00-00_00:00:00;0001-00-00_00:00:00;0001-00-00_00:00:00;0001-00-00_00:00:00;0001-00-00_00:00:00'\n")
+                nl_ocn_file.write("config_am_timeseriesstatsclimatology_reference_times = '00-01-01_00:00:00'\n")
+                nl_ocn_file.write("config_am_timeseriesstatsclimatology_repeat_intervals = '01-00-00_00:00:00'\n")
+                nl_ocn_file.write("config_am_timeseriesstatsclimatology_reset_intervals = '0001-00-00_00:00:00'\n")
                 nl_ocn_file.write("config_am_timeseriesstatsclimatology_restart_stream = 'timeSeriesStatsClimatologyRestart'\n")
                 nl_ocn_file.write("config_am_timeseriesstatsclimatology_write_on_startup = .false.\n")
-
-                # nl_ocn_file.write("config_am_timeseriesstatsclimatology_duration_intervals = '00-03-00_00:00:00;00-03-00_00:00:00;00-03-00_00:00:00;00-03-00_00:00:00;01-00-00_00:00'\n")
-                # nl_ocn_file.write("config_am_timeseriesstatsclimatology_reference_times = '00-03-01_00:00:00;00-06-01_00:00:00;00-09-01_00:00:00;00-12-01_00:00:00;00-01-00_00:00'\n")
-                # nl_ocn_file.write("config_am_timeseriesstatsclimatology_repeat_intervals = '01-00-00_00:00:00;01-00-00_00:00:00;01-00-00_00:00:00;01-00-00_00:00:00;01-00-00_00:00'\n")
-                # nl_ocn_file.write("config_am_timeseriesstatsclimatology_reset_intervals = '01-00-00_00:00:00;01-00-00_00:00:00;01-00-00_00:00:00;01-00-00_00:00:00;01-00-00_00:00:00'\n")
 
                 # Disable output we don't use for this test
                 nl_ocn_file.write("config_am_highfrequencyoutput_enable = .false.\n")
@@ -189,8 +184,6 @@ class MVKO(SystemTestsCommon):
 
             for clim_element in clim_var_elements:
                 clim_stream.append(clim_element)
-            # clim_stream.set("filename_interval", "01-00-00_00:00:00")
-            # clim_stream.set("output_interval", "01-00-00_00:00:00")
             streams.write(stream_file)
 
         self.build_indv(sharedlib_only=sharedlib_only, model_only=model_only)
@@ -246,15 +239,17 @@ class MVKO(SystemTestsCommon):
             test_name = "{}".format(case_name.split('.')[-1])
             evv_config = {
                 test_name: {
-                    "module": os.path.join(evv_lib_dir, "extensions", "ks.py"),
+                    "module": os.path.join(evv_lib_dir, "extensions", "kso.py"),
                     "test-case": "Test",
                     "test-dir": run_dir,
                     "ref-case": "Baseline",
                     "ref-dir": base_dir,
                     "var-set": "default",
                     "ninst": NINST,
-                    "critical": 13,
+                    "critical": 0,
                     "component": self.component,
+                    "alpha": 0.05,
+                    "hist-name": "hist.am.timeSeriesStatsClimatology"
                 }
             }
 
@@ -269,14 +264,17 @@ class MVKO(SystemTestsCommon):
                 evv_status = json.load(evv_f)
 
             comments = ""
-            for evv_elem in evv_status['Data']['Elements']:
-                if evv_elem['Type'] == 'ValSummary' \
-                        and evv_elem['TableTitle'] == 'Kolmogorov-Smirnov test':
-                    comments = "; ".join("{}: {}".format(key, val) for key, val
-                                         in evv_elem['Data'][test_name][''].items())
-                    if evv_elem['Data'][test_name]['']['Test status'].lower() == 'pass':
-                        self._test_status.set_status(CIME.test_status.BASELINE_PHASE,
-                                                     CIME.test_status.TEST_PASS_STATUS)
+            for evv_ele in evv_status["Page"]["elements"]:
+                if "Table" in evv_ele:
+                    comments = "; ".join(
+                        "{}: {}".format(key, val[0])
+                        for key, val in evv_ele["Table"]["data"].items()
+                    )
+                    if evv_ele["Table"]["data"]["Test status"][0].lower() == "pass":
+                        self._test_status.set_status(
+                            CIME.test_status.BASELINE_PHASE,
+                            CIME.test_status.TEST_PASS_STATUS,
+                        )
                     break
 
             status = self._test_status.get_status(CIME.test_status.BASELINE_PHASE)
