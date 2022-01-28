@@ -7,6 +7,7 @@ that every script should do.
 import sys, os
 import __main__ as main
 
+
 def check_minimum_python_version(major, minor):
     """
     Check your python version.
