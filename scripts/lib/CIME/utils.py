@@ -820,31 +820,6 @@ def run_cmd_no_fail(
 
     return output
 
-
-def check_minimum_python_version(major, minor):
-    """
-    Check your python version.
-
-    >>> check_minimum_python_version(sys.version_info[0], sys.version_info[1])
-    >>>
-    """
-    msg = (
-        "Python "
-        + str(major)
-        + ", minor version "
-        + str(minor)
-        + " is required, you have "
-        + str(sys.version_info[0])
-        + "."
-        + str(sys.version_info[1])
-    )
-    expect(
-        sys.version_info[0] > major
-        or (sys.version_info[0] == major and sys.version_info[1] >= minor),
-        msg,
-    )
-
-
 def normalize_case_id(case_id):
     """
     Given a case_id, return it in form TESTCASE.GRID.COMPSET.PLATFORM
