@@ -967,7 +967,7 @@ $(COMPLIB): $(OBJS)
 	$(CXX) -c $(INCLDIR) $(INCS) $(CXXFLAGS)  $<
 
 %.F90: %.F90.in
-	$(CIMEROOT)/CIME/data/genf90/genf90.pl $< > $@
+	$(CIMEROOT)/CIME/data/externals/genf90/genf90.pl $< > $@
 
 clean_dependsatm:
 	$(RM) -f $(EXEROOT)/atm/obj/Srcfiles

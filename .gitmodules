@@ -1,0 +1,3 @@
+[submodule "CIME/data/externals/genf90"]
+	path = CIME/data/externals/genf90
+	url = https://github.com/PARALLELIO/genf90

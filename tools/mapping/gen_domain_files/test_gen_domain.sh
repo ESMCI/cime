@@ -85,7 +85,7 @@ cp ${cime_root}/CIME/data/tools/cprnc/*.F90 .
 cp ${cime_root}/CIME/data/tools/cprnc/Makefile .
 cp ${cime_root}/CIME/data/tools/cprnc/Depends .
 cp ${cime_root}/CIME/data/tools/cprnc/*.in .
-(. .env_mach_specific.sh && make GENF90=${cime_root}/CIME/data/genf90/genf90.pl) >> ${test_log} 2>&1
+(. .env_mach_specific.sh && make GENF90=${cime_root}/CIME/data/externals/genf90/genf90.pl) >> ${test_log} 2>&1
 if [ ! -f cprnc ]; then
     echo "ERROR building cprnc" >&2
     echo "cat ${test_log} for more info" >&2
