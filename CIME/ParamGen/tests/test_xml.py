@@ -46,5 +46,17 @@ class TestXmlConstructor(unittest.TestCase):
         pg.reduce(lambda varname: "_")
         self.assertEqual(pg.data['test_nml']['foo']['values'], 'alpha')
 
+    def test_duplicate_entry_error(self):
+        """
+        Test to make sure duplicate ids raise the correct error
+        when the "no_duplicates" flag is True.
+        """
+        with self.assertRaises(ValueError) as verr:
+            pg = ParamGen.from_xml_nml("./xml/duplicate_ids.xml",
+                                       no_duplicates=True)
+
+        emsg = "Entry id 'foo' listed twice in file:\n'./xml/duplicate_ids.xml'"
+        self.assertEqual(emsg, str(verr.exception))
+
 if __name__ == '__main__':
     unittest.main()

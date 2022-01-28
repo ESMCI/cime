@@ -106,7 +106,7 @@ class ParamGen():
         return cls(_data, match)
 
     @classmethod
-    def from_xml_nml(cls, input_path, match='last'):
+    def from_xml_nml(cls, input_path, match='last', no_duplicates=False):
         """
         Reads in a given xml input file and initializes a ParamGen object. The XML file must conform to the
         entry_id_pg.xsd schema that's defined within ParamGen.
@@ -117,6 +117,9 @@ class ParamGen():
             Path to xml input file containing the defaults.
         match: str
             "first" or "last"
+        no_duplicates: bool
+            If True, then any duplicate entry ids in the XML file will result in an error.
+
         Returns
         -------
         ParamGen
@@ -144,7 +147,12 @@ class ParamGen():
         for entry in list(root):
             # where each entry corresponds to a namelist variable, i.e., parameter
             param_name = entry.attrib['id']
-            data[param_name] = {}
+            if no_duplicates and param_name in data:
+                #No duplicate namelist entries allowed, so raise error:
+                emsg = "Entry id '{}' listed twice in file:\n'{}'"
+                raise ValueError(emsg.format(param_name, input_path))
+            else:
+                data[param_name] = {}
 
             # loop over child entries and attributes of the parameter
             for child in list(entry):
