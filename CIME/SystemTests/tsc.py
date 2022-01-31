@@ -193,16 +193,13 @@ class TSC(SystemTestsCommon):
                 evv_status = json.load(evv_f)
 
             comments = ""
-            for evv_elem in evv_status["Data"]["Elements"]:
-                if (
-                    evv_elem["Type"] == "ValSummary"
-                    and evv_elem["TableTitle"] == "Time step convergence test"
-                ):
+            for evv_ele in evv_status["Page"]["elements"]:
+                if "Table" in evv_ele:
                     comments = "; ".join(
-                        "{}: {}".format(key, val)
-                        for key, val in evv_elem["Data"][test_name][""].items()
+                        "{}: {}".format(key, val[0])
+                        for key, val in evv_ele["Table"]["data"].items()
                     )
-                    if evv_elem["Data"][test_name][""]["Test status"].lower() == "pass":
+                    if evv_ele["Table"]["data"]["Test status"][0].lower() == "pass":
                         self._test_status.set_status(
                             CIME.test_status.BASELINE_PHASE,
                             CIME.test_status.TEST_PASS_STATUS,
