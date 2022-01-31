@@ -820,6 +820,7 @@ def run_cmd_no_fail(
 
     return output
 
+
 def normalize_case_id(case_id):
     """
     Given a case_id, return it in form TESTCASE.GRID.COMPSET.PLATFORM
