@@ -22,7 +22,7 @@ See the documentation of that method for details.
 
 Classes that inherit from this are REQUIRED to implement the following method:
 
-(1) _case_setup_config
+(1) _case_setup
     This method will be called to set up case i, where i==0 corresponds to the base case
     and i=={1,..N-1} corresponds to subsequent runs to be compared with the base.
 
@@ -87,8 +87,6 @@ class SystemTestsCompareN(SystemTestsCommon):
         self._separate_builds = separate_builds
         self._ignore_fieldlist_diffs = ignore_fieldlist_diffs
 
-        # Initialize cases; it will get set to its true value in
-        # _setup_cases_if_not_yet_done
         expect(N>1, "Number of cases must be greater than 1.")
         self._cases = [None]*N
         self.N = N
@@ -102,7 +100,7 @@ class SystemTestsCompareN(SystemTestsCommon):
                 "each suffix in run_suffixes must be unique")
             self._run_suffixes = [sfx.rstrip() for sfx in run_suffixes]
         else:
-            self.run_suffixes = ['base'] + ['subsq_{}'.format(i) for i in range(1,N)]
+            self._run_suffixes = ['base'] + ['subsq_{}'.format(i) for i in range(1,N)]
 
 
         if run_descriptions:
@@ -114,8 +112,7 @@ class SystemTestsCompareN(SystemTestsCommon):
         else:
             self._run_descriptions = [''] * self.N
 
-        # Save case for first run so we can return to it if we switch self._case
-        # to point to self._case2
+        # Set the base case for referencing purposes
         self._cases[0] = self._case
         self._caseroots = self._get_caseroots()
 
@@ -128,7 +125,7 @@ class SystemTestsCompareN(SystemTestsCommon):
     # base class
     # ========================================================================
 
-    def _case_setup_config(self, i):
+    def _case_setup(self, i):
         """
         This method will be called to set up case[i], where case[0] is the base case.
 
@@ -144,9 +141,8 @@ class SystemTestsCompareN(SystemTestsCommon):
 
     def _common_setup(self):
         """
-        This method will be called to set up both cases. It should contain any setup
-        that's needed in both cases. This is called before _case_one_setup or
-        _case_two_setup.
+        This method will be called to set up all cases. It should contain any setup
+        that's needed in both cases.
 
         This should be written to refer to self._case: It will be called once with
         self._case pointing to case1, and once with self._case pointing to case2.
@@ -183,6 +179,8 @@ class SystemTestsCompareN(SystemTestsCommon):
                     if get_model() != "e3sm":
                         # We need to turn off this change for E3SM because it breaks
                         # the MPAS build system
+                        ## TODO: ^this logic mimics what's done in SystemTestsCompareTwo
+                        # Confirm this is needed in SystemTestsCompareN as well.
                         self._cases[i].set_value("SHAREDLIBROOT",
                                               self._cases[0].get_value("SHAREDLIBROOT"))
 
@@ -209,9 +207,9 @@ class SystemTestsCompareN(SystemTestsCommon):
 
         # On a batch system with a multisubmit test "RESUBMIT" is used to track
         # which phase is being ran. By the end of the test it equals 0. If the
-        # the test fails in a way where the RUN_PHASE is PEND then "RESUBMIT" 
-        # does not get reset to 1 on a rerun and the first phase is skipped 
-        # causing the COMPARE_PHASE to fail. This ensures that "RESUBMIT" will 
+        # the test fails in a way where the RUN_PHASE is PEND then "RESUBMIT"
+        # does not get reset to 1 on a rerun and the first phase is skipped
+        # causing the COMPARE_PHASE to fail. This ensures that "RESUBMIT" will
         # get reset if the test state is not correct for a rerun.
         # NOTE: "IS_FIRST_RUN" is reset in "case_submit.py"
         ### todo: confirm below code block
@@ -366,19 +364,23 @@ class SystemTestsCompareN(SystemTestsCommon):
         # do the test setup once.)
         if os.path.exists(self._caseroots[-1]):
             for i in range(1,self.N):
-                caseroot_i = self._caseroots[i]    
+                caseroot_i = self._caseroots[i]
                 self._cases[i] = self._case_from_existing_caseroot(caseroot_i)
         else:
+            # Create the subsequent cases by cloning the base case.
             for i in range(1,self.N):
-                caseroot_i = self._caseroots[i]    
+                self._cases[i] = self._cases[0].create_clone(
+                    self._caseroots[i],
+                    keepexe = not self._separate_builds,
+                    cime_output_root = self._get_subsq_output_root(i),
+                    exeroot = self._get_subsq_case_exeroot(i),
+                    rundir = self._get_subsq_case_rundir(i))
+                self._write_info_to_subsq_case_output_root(i)
+
+            # Set up all cases, including the base case.
+            for i in range(0,self.N):
+                caseroot_i = self._caseroots[i]
                 try:
-                    self._cases[i] = self._cases[0].create_clone(
-                        caseroot_i,
-                        keepexe = not self._separate_builds,
-                        cime_output_root = self._get_subsq_output_root(i),
-                        exeroot = self._get_subsq_case_exeroot(i),
-                        rundir = self._get_subsq_case_rundir(i))
-                    self._write_info_to_subsq_case_output_root(i)
                     self._setup_case(i)
                 except BaseException:
                     # If a problem occurred in setting up the test case i, it's
@@ -454,7 +456,7 @@ class SystemTestsCompareN(SystemTestsCommon):
         # Set up case 1
         self._activate_case(i)
         self._common_setup()
-        self._case_setup_config(i)
+        self._case_setup(i)
         if i==0:
             # Flush the case so that, if errors occur later, then at least base case is
             # in a correct, post-setup state. This is important because the mere
@@ -468,7 +470,7 @@ class SystemTestsCompareN(SystemTestsCommon):
             # and creates the case.test script
             self._case.case_setup(test_mode=False, reset=True)
         else:
-            # Go back to case 1 to ensure that's where we are for any following code
+            # Go back to base case to ensure that's where we are for any following code
             self._activate_case(0)
 
     def _link_to_subsq_case_output(self, i):
