@@ -892,6 +892,8 @@ endif
 CSMSHARELIB = $(INSTALL_SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/$(NINST_VALUE)/lib/libcsm_share.a
 ULIBDEP += $(CSMSHARELIB)
 
+GENF90 ?= $(CIMEROOT)/CIME/data/externals/genf90/genf90.pl
+
 #-------------------------------------------------------------------------------
 # build rules:
 #-------------------------------------------------------------------------------
@@ -967,7 +969,7 @@ $(COMPLIB): $(OBJS)
 	$(CXX) -c $(INCLDIR) $(INCS) $(CXXFLAGS)  $<
 
 %.F90: %.F90.in
-	$(CIMEROOT)/CIME/data/externals/genf90/genf90.pl $< > $@
+	$(GENF90) $< > $@
 
 clean_dependsatm:
 	$(RM) -f $(EXEROOT)/atm/obj/Srcfiles
