@@ -1,5 +1,31 @@
 ======================================================================
 
+Originator: Chris Fischer
+Date: 2-2-2022
+Tag: cime5.6.38
+Answer Changes: None
+Tests: 
+Dependencies:
+
+Brief Summary:
+    - Addition of AWS machine entry for their HPC6a nodes.
+    - Update comet settings.
+
+User interface changes: 
+
+PR summary: git log --oneline --first-parent [previous_tag]..master 
+d8ac39f88 Merge pull request #4171 from briandobbins/aws-hpc6a
+d87274028 Merge pull request #4165 from jedwards4b/maint-5.6-smyleL83
+
+Modified files: git diff --name-status [previous_tag]
+M       config/cesm/machines/config_batch.xml
+M       config/cesm/machines/config_compilers.xml
+M       config/cesm/machines/config_machines.xml
+
+======================================================================
+
+======================================================================
+
 Originator: Chris Fischer 
 Date: 12-7-2021
 Tag: cime5.6.37
