@@ -201,6 +201,48 @@ This allows using a different mpirun command to launch unit tests
     </environment_variables>
   </machine>
 
+  <machine MACH="aws-hpc6a">
+    <DESC>AWS HPC6a (96-core AMD) Nodes</DESC>
+    <NODENAME_REGEX>regular-dy-computehpc6a-.*</NODENAME_REGEX>
+    <OS>LINUX</OS>
+    <COMPILERS>intel</COMPILERS>
+    <MPILIBS>impi</MPILIBS>
+    <CIME_OUTPUT_ROOT>/scratch/$USER</CIME_OUTPUT_ROOT>
+    <DIN_LOC_ROOT>/scratch/$USER/inputdata</DIN_LOC_ROOT>
+    <DIN_LOC_ROOT_CLMFORC>/scratch/$USER/inputdata/tss/CTSM_datm_forcing_data</DIN_LOC_ROOT_CLMFORC>
+    <DOUT_S_ROOT>$CIME_OUTPUT_ROOT/archive/$CASE</DOUT_S_ROOT>
+    <BASELINE_ROOT>$ENV{CESMDATAROOT}/cesm_baselines</BASELINE_ROOT>
+    <CCSM_CPRNC>$ENV{CESMDATAROOT}/tools/cime/tools/cprnc/cprnc</CCSM_CPRNC>
+    <GMAKE_J>6</GMAKE_J>
+    <BATCH_SYSTEM>slurm</BATCH_SYSTEM>
+    <SUPPORTED_BY>cseg</SUPPORTED_BY>
+    <!-- have not seen any performance benefit in smt -->
+    <MAX_TASKS_PER_NODE>96</MAX_TASKS_PER_NODE>
+    <MAX_MPITASKS_PER_NODE>96</MAX_MPITASKS_PER_NODE>
+    <PROJECT_REQUIRED>FALSE</PROJECT_REQUIRED>
+    <mpirun mpilib="default">
+      <executable>srun</executable>
+      <arguments>
+        <arg name="num_tasks">-n {{ total_tasks }}</arg>
+        <arg name="bindinfo"> --cpu-bind=verbose </arg>
+        <arg name="cpu_bind">--cpu_bind=sockets --cpu_bind=verbose</arg>
+        <arg name="kill-on-bad-exit">--kill-on-bad-exit</arg>
+      </arguments>
+    </mpirun>
+    <module_system type="none"/>
+    <environment_variables>
+      <env name="OMP_STACKSIZE">256M</env>
+      <env name="TMPDIR">/scratch/$USER</env>
+      <env name="I_MPI_CC">icc</env>
+      <env name="I_MPI_CXX">icpc</env>
+      <env name="I_MPI_FC">ifort</env>
+      <env name="I_MPI_F90">ifort</env>
+    </environment_variables>
+    <resource_limits>
+      <resource name="RLIMIT_STACK">-1</resource>
+    </resource_limits>
+  </machine>
+
   <machine MACH="bluewaters">
     <DESC>ORNL XE6, os is CNL, 32 pes/node, batch system is PBS</DESC>
     <NODENAME_REGEX>h2o</NODENAME_REGEX>
