@@ -346,7 +346,7 @@ foreach $f (keys %file_includes) {
     }
 
     # Expand
-    for ($i = 0; $i <= $#expand_incs; ++$i) {
+    foreach $i (0..$#expand_incs) {
 	push @expand_incs, @{ $include_depends{$expand_incs[$i]} };
     }
 
