@@ -596,6 +596,11 @@ ifdef LIB_MPI
    endif
 endif
 
+# Add xios libraries for NEMO
+ifdef XIOS_PATH
+  SLIBS += -L$(XIOS_PATH)/lib -lxios -lstdc++
+endif
+
 # Add PETSc libraries
 ifeq ($(strip $(USE_PETSC)), TRUE)
   SLIBS += ${PETSC_LIB}
