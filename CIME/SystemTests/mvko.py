@@ -22,7 +22,6 @@ from CIME.SystemTests.system_tests_common import SystemTestsCommon
 from CIME.case.case_setup import case_setup
 from CIME.XML.machines import Machines
 
-
 import evv4esm  # pylint: disable=import-error
 from evv4esm.__main__ import main as evv  # pylint: disable=import-error
 
@@ -35,27 +34,11 @@ INIT_FILE_ROOT = "/lcrc/group/e3sm/ac.mkelleher/scratch/initial_conditions"
 INIT_FILE_NAME = f"{INIT_FILE_ROOT}/inic_oQU240_from_GMPAS_mpaso.rst.0050-01-01_00000.nc"
 PERT_FILE_TEMPLATE = "mpaso_oQ240_perturbed_inic_{ens:04d}.nc"
 
-CLIMO_STREAM = \
-"""
-<stream name="timeSeriesStatsClimatologyOutput"
-    type="output"
-    precision="single"
-    io_type="pnetcdf"
-    filename_template="{case}.mpaso_{inst}.hist.am.timeSeriesStatsClimatology.$Y-$M-$D.nc"
-    filename_interval="00-00-00_00:00:00"
-    reference_time="00-01-01_00:00:00"
-    output_interval="00-00-00_00:00:00"
-    clobber_mode="truncate"
-    packages="timeSeriesStatsClimatologyAMPKG"
-    runtime_format="single_file">
+# No output is on by default for mpas-ocean
+OCN_TEST_VARS = ["daysSinceStartOfSim", "ssh", "velocityZonal", "velocityMeridional", "activeTracers"]
 
-    <var name="daysSinceStartOfSim" />
-    <var name="ssh" />
-    <var name="velocityZonal" />
-    <var name="velocityMeridional" />
-    <var name="activeTracers" />
-</stream>\n
-"""
+# daysSinceStartOfSim, icePresent, iceAreaCell, and iceVolumeCell are on by default
+ICE_TEST_VARS = ["uVelocityGeo", "vVelocityGeo", "icePressure", "divergence", "shear"]
 
 def perturb_init(infile, field_name, outfile, seed=None):
     """
@@ -81,7 +64,8 @@ def perturb_init(infile, field_name, outfile, seed=None):
     rng = np.random.default_rng(seed)
 
     # Perturbation between -1e-14 -- +1e-14, same size as the input field
-    perturbation = rng.uniform(-1e-14, 1e-14, field_temp[:].shape)
+    # perturbation = rng.uniform(-1e-14, 1e-14, field_temp[:].shape)
+    perturbation = rng.uniform(-1e-10, 1e-10, field_temp[:].shape)
     field = field_temp[:] + perturbation
 
     os.system(f"cp {infile} {outfile}")
@@ -93,6 +77,40 @@ def perturb_init(infile, field_name, outfile, seed=None):
     init_f.close()
 
 
+def modify_stream(
+    stream_file, input_file=None, var_names=None, output_stream_name="timeSeriesStatsClimatologyOutput"
+):
+    """Add variables to XML streams to specify output."""
+    streams = ET.parse(stream_file)
+
+    # Modify the input stream
+    if input_file is not None:
+        input_stream = list(
+            filter(
+                lambda x: x.get("name") == "input", streams.getroot().findall("immutable_stream")
+            )
+        )
+        input_stream[0].set("filename_template", input_file)
+
+    # Add variables to a particular stream (Climatology output by default)
+    if var_names is not None:
+        # Convert the variable name into xml elements
+        var_elements = [ET.Element("var", {"name": _var}) for _var in var_names]
+        clim_stream = list(
+            filter(
+                lambda x: x.get("name") == output_stream_name, streams.getroot().findall("stream")
+            )
+        )
+        clim_stream = clim_stream[0]
+
+        for clim_element in var_elements:
+            clim_stream.append(clim_element)
+
+    if input_file is not None or var_elements is not None:
+        # Only re-write the stream if changes were made
+        streams.write(stream_file)
+
+
 class MVKO(SystemTestsCommon):
 
     def __init__(self, case):
@@ -102,9 +120,11 @@ class MVKO(SystemTestsCommon):
         SystemTestsCommon.__init__(self, case)
 
         if self._case.get_value("MODEL") == "e3sm":
-            self.component = "mpaso"
+            self.ocn_component = "mpaso"
+            self.ice_component = "mpassi"
         else:
-            self.component = "pop"
+            self.ocn_component = "pop"
+            self.ice_component = "cice"
 
         if self._case.get_value("RESUBMIT") == 0 \
                 and self._case.get_value("GENERATE_BASELINE") is False:
@@ -132,9 +152,6 @@ class MVKO(SystemTestsCommon):
             case_setup(self._case, test_mode=False, reset=True)
         rundir = self._case.get_value("RUNDIR")
 
-        clim_vars = ["daysSinceStartOfSim", "ssh", "velocityZonal", "velocityMeridional", "activeTracers"]
-        clim_var_elements = [ET.Element("var", {"name": _var}) for _var in clim_vars]
-
         for iinst in range(1, NINST + 1):
             pert_file_name = PERT_FILE_TEMPLATE.format(ens=iinst)
             pert_file = os.path.join(rundir, pert_file_name)
@@ -144,47 +161,59 @@ class MVKO(SystemTestsCommon):
             perturb_init(INIT_FILE_NAME, field_name="temperature", outfile=pert_file)
 
             # Write yearly averages to custom output file
-            with open('user_nl_{}_{:04d}'.format(self.component, iinst), 'w') as nl_ocn_file:
-                nl_ocn_file.write("config_am_timeseriesstatsclimatology_enable = .true.\n")
-                nl_ocn_file.write("config_am_timeseriesstatsclimatology_backward_output_offset = '00-03-00_00:00:00'\n")
-                nl_ocn_file.write("config_am_timeseriesstatsclimatology_compute_interval = '00-00-00_01:00:00'\n")
-                nl_ocn_file.write("config_am_timeseriesstatsclimatology_compute_on_startup = .false.\n")
-                nl_ocn_file.write("config_am_timeseriesstatsclimatology_duration_intervals = '01-00-00_00:00'\n")
-                nl_ocn_file.write("config_am_timeseriesstatsclimatology_operation = 'avg'\n")
-                nl_ocn_file.write("config_am_timeseriesstatsclimatology_output_stream = 'timeSeriesStatsClimatologyOutput'\n")
-                nl_ocn_file.write("config_am_timeseriesstatsclimatology_reference_times = '00-01-01_00:00:00'\n")
-                nl_ocn_file.write("config_am_timeseriesstatsclimatology_repeat_intervals = '01-00-00_00:00:00'\n")
-                nl_ocn_file.write("config_am_timeseriesstatsclimatology_reset_intervals = '0001-00-00_00:00:00'\n")
-                nl_ocn_file.write("config_am_timeseriesstatsclimatology_restart_stream = 'timeSeriesStatsClimatologyRestart'\n")
-                nl_ocn_file.write("config_am_timeseriesstatsclimatology_write_on_startup = .false.\n")
+            tss_climatology_config = [
+                "config_am_timeseriesstatsclimatology_enable = .true.\n",
+                "config_am_timeseriesstatsclimatology_backward_output_offset = '00-03-00_00:00:00'\n",
+                "config_am_timeseriesstatsclimatology_compute_interval = '00-00-00_01:00:00'\n",
+                "config_am_timeseriesstatsclimatology_compute_on_startup = .false.\n",
+                "config_am_timeseriesstatsclimatology_duration_intervals = '01-00-00_00:00'\n",
+                "config_am_timeseriesstatsclimatology_operation = 'avg'\n",
+                "config_am_timeseriesstatsclimatology_output_stream = 'timeSeriesStatsClimatologyOutput'\n",
+                "config_am_timeseriesstatsclimatology_reference_times = '00-01-01_00:00:00'\n",
+                "config_am_timeseriesstatsclimatology_repeat_intervals = '01-00-00_00:00:00'\n",
+                "config_am_timeseriesstatsclimatology_reset_intervals = '0001-00-00_00:00:00'\n",
+                "config_am_timeseriesstatsclimatology_restart_stream = 'timeSeriesStatsClimatologyRestart'\n",
+                "config_am_timeseriesstatsclimatology_write_on_startup = .false.\n"
+            ]
 
-                # Disable output we don't use for this test
+            # Set up ocean namelist to specify climatology output and reduce other output
+            with open('user_nl_{}_{:04d}'.format(self.ocn_component, iinst), 'w') as nl_ocn_file:
+
+                for _config in tss_climatology_config:
+                    nl_ocn_file.write(_config)
+
+                # Disable ocean output we don't use for this test
                 nl_ocn_file.write("config_am_highfrequencyoutput_enable = .false.\n")
                 nl_ocn_file.write("config_am_timeseriesstatsmonthlymax_enable = .false.\n")
                 nl_ocn_file.write("config_am_timeseriesstatsmonthlymin_enable = .false.\n")
+                nl_ocn_file.write("config_am_timeseriesstatsmonthly_enable = .false.\n")
+                nl_ocn_file.write("config_am_globalstats_enable = .false.\n")
+                nl_ocn_file.write("config_am_eddyproductvariables_enable = .false.\n")
+                nl_ocn_file.write("config_am_meridionalheattransport_enable = .false.\n")
+                nl_ocn_file.write("config_am_oceanheatcontent_enable = .false.\n")
 
-            # Set up streams file to get perturbed init file and do yearly climatology
-            stream_file = os.path.join(caseroot, "SourceMods", "src.mpaso", "streams.ocean_{:04d}".format(iinst))
-            os.system("cp {}/streams.ocean_{:04d} {}".format(rundir, iinst, stream_file))
+            # Set up sea ice namelist to reduce output
+            with open("user_nl_{}_{:04d}".format(self.ice_component, iinst), "w") as nl_ice_file:
+                for _config in tss_climatology_config:
+                    nl_ice_file.write(_config)
+                nl_ice_file.write("config_am_timeseriesstatsdaily_enable = .false.\n")
+                nl_ice_file.write("config_am_timeseriesstatsmonthly_enable = .false.\n")
 
-            streams = ET.parse(stream_file)
-            input_stream = list(
-                filter(
-                    lambda x: x.get("name") == "input", streams.getroot().findall("immutable_stream")
+            if self.ocn_component == "mpaso":
+                # Set up streams file to get perturbed init file and do yearly climatology
+                ocn_stream_file = os.path.join(
+                    caseroot, "SourceMods", "src.mpaso", "streams.ocean_{:04d}".format(iinst)
                 )
-            )
-            input_stream[0].set("filename_template", pert_file)
-
-            clim_stream = list(
-                filter(
-                    lambda x: x.get("name") == "timeSeriesStatsClimatologyOutput", streams.getroot().findall("stream")
+                ice_stream_file = os.path.join(
+                    caseroot, "SourceMods", "src.mpassi", "streams.seaice_{:04d}".format(iinst)
                 )
-            )
-            clim_stream = clim_stream[0]
+                # buildnamelist creates the streams file for each instance, copy this to the
+                # SourceMods directory to make changes to the correct version
+                os.system("cp {}/streams.ocean_{:04d} {}".format(rundir, iinst, ocn_stream_file))
+                os.system("cp {}/streams.seaice_{:04d} {}".format(rundir, iinst, ice_stream_file))
 
-            for clim_element in clim_var_elements:
-                clim_stream.append(clim_element)
-            streams.write(stream_file)
+                modify_stream(ocn_stream_file, input_file=pert_file, var_names=OCN_TEST_VARS)
+                modify_stream(ice_stream_file, var_names=ICE_TEST_VARS)
 
         self.build_indv(sharedlib_only=sharedlib_only, model_only=model_only)
 
@@ -207,11 +236,11 @@ class MVKO(SystemTestsCommon):
             ref_case = self._case.get_value("RUN_REFCASE")
 
             env_archive = self._case.get_env("archive")
-            hists = env_archive.get_all_hist_files(self._case.get_value("CASE"), self.component, rundir, ref_case=ref_case)
+            hists = env_archive.get_all_hist_files(self._case.get_value("CASE"), self.ocn_component, rundir, ref_case=ref_case)
             logger.debug("MVKO additional baseline files: {}".format(hists))
             hists = [os.path.join(rundir,hist) for hist in hists]
             for hist in hists:
-                basename = hist[hist.rfind(self.component):]
+                basename = hist[hist.rfind(self.ocn_component):]
                 baseline = os.path.join(basegen_dir, basename)
                 if os.path.exists(baseline):
                     os.remove(baseline)
@@ -247,7 +276,7 @@ class MVKO(SystemTestsCommon):
                     "var-set": "default",
                     "ninst": NINST,
                     "critical": 0,
-                    "component": self.component,
+                    "component": self.ocn_component,
                     "alpha": 0.05,
                     "hist-name": "hist.am.timeSeriesStatsClimatology"
                 }
