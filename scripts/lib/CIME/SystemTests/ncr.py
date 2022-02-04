@@ -13,17 +13,20 @@ from CIME.SystemTests.system_tests_compare_two import SystemTestsCompareTwo
 
 logger = logging.getLogger(__name__)
 
-class NCR(SystemTestsCompareTwo):
 
+class NCR(SystemTestsCompareTwo):
     def __init__(self, case):
         """
         initialize an NCR test
         """
-        SystemTestsCompareTwo.__init__(self, case,
-                                       separate_builds = True,
-                                       run_two_suffix = "singleinst",
-                                       run_one_description = "two instances, each with the same number of tasks",
-                                       run_two_description = "default build")
+        SystemTestsCompareTwo.__init__(
+            self,
+            case,
+            separate_builds=True,
+            run_two_suffix="singleinst",
+            run_one_description="two instances, each with the same number of tasks",
+            run_two_description="default build",
+        )
 
     def _comp_classes(self):
         # Return the components which we need to set things for

@@ -27,7 +27,3 @@ function( add_mpi_test _testName _testExe _testArgs _numProc _timeout)
     set_tests_properties(${_testName} PROPERTIES TIMEOUT ${_timeout})
 
 endfunction(add_mpi_test)
-
-
-
-

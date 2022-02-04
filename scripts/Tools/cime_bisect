@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 ###############################################################################
 def parse_command_line(args, description):
-###############################################################################
+    ###############################################################################
     parser = argparse.ArgumentParser(
         usage="""\n{0} <testargs> <last-known-good-commit> [--bad=<bad>] [--verbose]
 OR
@@ -46,37 +46,52 @@ OR
     > {0} HEAD~4 'ERS.f45_g37.B1850C5 --no-run' 'SMS.f45_g37.F'
 
 
-""".format(os.path.basename(args[0])),
-
-description=description,
-
-formatter_class=argparse.ArgumentDefaultsHelpFormatter
-)
+""".format(
+            os.path.basename(args[0])
+        ),
+        description=description,
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
 
     CIME.utils.setup_standard_logging_options(parser)
 
     parser.add_argument("good", help="Name of most recent known good commit.")
 
-    parser.add_argument("-B", "--bad", default="HEAD",
-                        help="Name of bad commit, default is current HEAD.")
+    parser.add_argument(
+        "-B",
+        "--bad",
+        default="HEAD",
+        help="Name of bad commit, default is current HEAD.",
+    )
 
-    parser.add_argument("-a", "--all-commits", action="store_true",
-                        help="Test all commits, not just merges")
+    parser.add_argument(
+        "-a",
+        "--all-commits",
+        action="store_true",
+        help="Test all commits, not just merges",
+    )
 
-    parser.add_argument("-S", "--script",
-                        help="Use your own custom script instead")
+    parser.add_argument("-S", "--script", help="Use your own custom script instead")
 
-    parser.add_argument("testargs", nargs="*", help="String to pass to create_test. Combine with single quotes if it includes multiple args.")
+    parser.add_argument(
+        "testargs",
+        nargs="*",
+        help="String to pass to create_test. Combine with single quotes if it includes multiple args.",
+    )
 
     args = CIME.utils.parse_args_and_handle_standard_logging_options(args, parser)
 
-    expect(os.path.exists(".git"), "Please run the root of a repo. Either your CIME repo or model depending on which one you want to bisect on")
+    expect(
+        os.path.exists(".git"),
+        "Please run the root of a repo. Either your CIME repo or model depending on which one you want to bisect on",
+    )
 
     return args.testargs, args.good, args.bad, args.all_commits, args.script
 
+
 ###############################################################################
 def cime_bisect(testargs, good, bad, commits_to_skip, custom_script):
-###############################################################################
+    ###############################################################################
     logger.info("####################################################")
     logger.info("TESTING WITH ARGS '{}'".format(testargs))
     logger.info("####################################################")
@@ -97,21 +112,31 @@ def cime_bisect(testargs, good, bad, commits_to_skip, custom_script):
 
     # Formulate the create_test command, let create_test make the test-id, it will use
     # a timestamp that will allow us to avoid collisions
-    thing_to_run = custom_script if custom_script else "{} {}".format(create_test, testargs)
+    thing_to_run = (
+        custom_script if custom_script else "{} {}".format(create_test, testargs)
+    )
     bisect_cmd = "git submodule update --recursive && {}".format(thing_to_run)
 
     if not custom_script:
         is_batch = False
         try:
             from CIME.XML.machines import Machines
+
             machine = Machines()
             is_batch = machine.has_batch_system()
         except:
             pass
 
-        if (is_batch and "--no-run" not in testargs and "--no-build" not in testargs and "--no-setup" not in testargs):
-            expect("--wait" in testargs,
-                   "Your create_test command likely needs --wait to work correctly with bisect")
+        if (
+            is_batch
+            and "--no-run" not in testargs
+            and "--no-build" not in testargs
+            and "--no-setup" not in testargs
+        ):
+            expect(
+                "--wait" in testargs,
+                "Your create_test command likely needs --wait to work correctly with bisect",
+            )
 
     try:
         cmd = "git bisect run sh -c '{}'".format(bisect_cmd)
@@ -120,8 +145,10 @@ def cime_bisect(testargs, good, bad, commits_to_skip, custom_script):
 
         # Get list of potentially bad commits from output
         lines = output.splitlines()
-        regex = re.compile(r'^([a-f0-9]{40}).*$')
-        bad_commits = set([regex.match(line).groups()[0] for line in lines if regex.match(line)])
+        regex = re.compile(r"^([a-f0-9]{40}).*$")
+        bad_commits = set(
+            [regex.match(line).groups()[0] for line in lines if regex.match(line)]
+        )
 
         bad_commits_filtered = bad_commits - commits_to_skip
 
@@ -130,22 +157,30 @@ def cime_bisect(testargs, good, bad, commits_to_skip, custom_script):
         logger.info("####################################################")
         logger.info("BAD MERGE FOR ARGS '{}' IS:".format(testargs))
         logger.info("####################################################")
-        logger.warning(run_cmd_no_fail("git show {}".format(bad_commits_filtered.pop())))
+        logger.warning(
+            run_cmd_no_fail("git show {}".format(bad_commits_filtered.pop()))
+        )
 
     finally:
         run_cmd_no_fail("git bisect reset && git submodule update --recursive")
 
+
 ###############################################################################
 def _main_func(description):
-###############################################################################
-    testargs, good, bad, all_commits, custom_script = \
-        parse_command_line(sys.argv, description)
+    ###############################################################################
+    testargs, good, bad, all_commits, custom_script = parse_command_line(
+        sys.argv, description
+    )
 
     # Important: we only want to test merges
     if not all_commits:
-        commits_we_want_to_test = run_cmd_no_fail("git rev-list {}..{} --merges --first-parent".format(good, bad)).splitlines()
-        all_commits_            = run_cmd_no_fail("git rev-list {}..{}".format(good, bad)).splitlines()
-        commits_to_skip         = set(all_commits_) - set(commits_we_want_to_test)
+        commits_we_want_to_test = run_cmd_no_fail(
+            "git rev-list {}..{} --merges --first-parent".format(good, bad)
+        ).splitlines()
+        all_commits_ = run_cmd_no_fail(
+            "git rev-list {}..{}".format(good, bad)
+        ).splitlines()
+        commits_to_skip = set(all_commits_) - set(commits_we_want_to_test)
         logger.info("Skipping {} non-merge commits".format(len(commits_to_skip)))
         for item in commits_to_skip:
             logger.debug(item)
@@ -158,7 +193,8 @@ def _main_func(description):
         for set_of_test_args in testargs:
             cime_bisect(set_of_test_args, good, bad, commits_to_skip, custom_script)
 
+
 ###############################################################################
 
-if (__name__ == "__main__"):
+if __name__ == "__main__":
     _main_func(__doc__)

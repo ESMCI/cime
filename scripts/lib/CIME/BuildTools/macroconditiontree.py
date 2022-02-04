@@ -1,7 +1,9 @@
 from CIME.XML.standard_module_setup import *
+
 logger = logging.getLogger(__name__)
 
-class MacroConditionTree(object): # pylint: disable=too-many-instance-attributes
+
+class MacroConditionTree(object):  # pylint: disable=too-many-instance-attributes
 
     """Tree containing the various possible settings of a specific macro.
 
@@ -48,11 +50,12 @@ class MacroConditionTree(object): # pylint: disable=too-many-instance-attributes
             for setting in settings:
                 if not setting.do_append:
                     self._do_append = False
-                    assert len(settings) == 1, \
-                        "Internal error in macros: An ambiguity was " \
-                        "found after the ambiguity check was complete, " \
-                        "or there is a mixture of appending and initial " \
+                    assert len(settings) == 1, (
+                        "Internal error in macros: An ambiguity was "
+                        "found after the ambiguity check was complete, "
+                        "or there is a mixture of appending and initial "
                         "settings in the condition tree."
+                    )
                 self._assignments.append((name, setting.value))
                 self._set_up += setting.set_up
                 self._tear_down += setting.tear_down
@@ -73,8 +76,7 @@ class MacroConditionTree(object): # pylint: disable=too-many-instance-attributes
                     partition[cond_val] = [setting]
             branches = dict()
             for cond_val in partition:
-                branches[cond_val] = \
-                            MacroConditionTree(name, partition[cond_val])
+                branches[cond_val] = MacroConditionTree(name, partition[cond_val])
             self._branches = branches
 
     # pylint shouldn't concern itself with the way that we access other, since
@@ -88,10 +90,11 @@ class MacroConditionTree(object): # pylint: disable=too-many-instance-attributes
         """
         if self._is_leaf:
             if other._is_leaf:
-                assert self._do_append == other._do_append, \
-                    "Internal error in macros: Tried to merge an " \
-                    "appending tree with a tree containing initial "\
+                assert self._do_append == other._do_append, (
+                    "Internal error in macros: Tried to merge an "
+                    "appending tree with a tree containing initial "
                     "settings."
+                )
                 # If both are leaves, just merge the values.
                 self._assignments += other._assignments
                 self._set_up += other._set_up
@@ -121,11 +124,13 @@ class MacroConditionTree(object): # pylint: disable=too-many-instance-attributes
                 # their sets of branches.
                 for (cond_val, other_branch) in other._branches.items():
                     if cond_val in self._branches:
-                        self._branches[cond_val] = \
-                            self._branches[cond_val].merge(other_branch)
+                        self._branches[cond_val] = self._branches[cond_val].merge(
+                            other_branch
+                        )
                     else:
                         self._branches[cond_val] = other_branch
                 return self
+
     # pylint:enable=protected-access
 
     def write_out(self, writer):
@@ -158,6 +163,7 @@ class MacroConditionTree(object): # pylint: disable=too-many-instance-attributes
                 writer.start_ifeq(env_ref, cond_val)
                 self._branches[cond_val].write_out(writer)
                 writer.end_ifeq()
+
 
 def merge_optional_trees(tree, big_tree):
     """Merge two MacroConditionTrees when one or both objects may be `None`."""

@@ -9,38 +9,41 @@ import logging
 import operator
 import importlib
 from CIME.utils import expect
+
 try:
     import pulp
-except ImportError, e:
-    sys.stderr.write("pulp library not installed or located. "
-                     "Try pip install [--user] pulp\n")
+except ImportError as e:
+    sys.stderr.write(
+        "pulp library not installed or located. " "Try pip install [--user] pulp\n"
+    )
     raise e
 
 logger = logging.getLogger(__name__)
+
 
 def solver_factory(data):
     """
     load data either from a json file or dictionary
     """
-    expect(data.has_key('totaltasks'),"totaltasks not found in data")
+    expect(data.has_key("totaltasks"), "totaltasks not found in data")
 
-    layout = data['layout']
-    sp = layout.rsplit('.', 1)
+    layout = data["layout"]
+    sp = layout.rsplit(".", 1)
     try:
         if len(sp) > 1:
             layout_module = importlib.import_module(sp[0])
             layout = sp[1]
         else:
             import layouts
+
             layout_module = layouts
     except ImportError:
-        expect(False,"cannot import %s\n")
+        expect(False, "cannot import %s\n")
 
     try:
         solverclass = getattr(layout_module, layout)
     except KeyError:
-        expect(False, "layout class %s not found in %s\n",
-               layout, layout_module)
+        expect(False, "layout class %s not found in %s\n", layout, layout_module)
 
     solver = solverclass()
 
@@ -50,34 +53,42 @@ def solver_factory(data):
     solver.set_data(data)
     return solver
 
+
 class ModelData:
     """
     Convert dictionary data entry into usable object
     """
+
     def __init__(self, name, model_dict):
         self.name = name
-        self.blocksize = model_dict['blocksize']
-        self.nthrds = model_dict['nthrds'][0]
-        ntasks = copy.deepcopy(model_dict['ntasks'])
-        cost = copy.deepcopy(model_dict['cost'])
-        assert len(ntasks) == len(cost), "ntasks data not same length as cost for %s" % name
+        self.blocksize = model_dict["blocksize"]
+        self.nthrds = model_dict["nthrds"][0]
+        ntasks = copy.deepcopy(model_dict["ntasks"])
+        cost = copy.deepcopy(model_dict["cost"])
+        assert len(ntasks) == len(cost), (
+            "ntasks data not same length as cost for %s" % name
+        )
         # sort smallest ntasks to largest
-        tup = zip(*sorted(zip(cost, ntasks),
-                          key=operator.itemgetter(1)))
+        tup = zip(*sorted(zip(cost, ntasks), key=operator.itemgetter(1)))
         self.cost = list(tup[0])
         self.ntasks = list(tup[1])
         for j in self.ntasks:
             if j > 1 and j % self.blocksize:
-                logger.warning("WARNING: %s pe %d not divisible by "
-                               "blocksize %d. Results may be invalid\n",
-                               name, j, self.blocksize)
+                logger.warning(
+                    "WARNING: %s pe %d not divisible by "
+                    "blocksize %d. Results may be invalid\n",
+                    name,
+                    j,
+                    self.blocksize,
+                )
+
 
 class OptimizeModel(object):
     STATE_UNDEFINED = 0
     STATE_UNSOLVED = 1
     STATE_SOLVED_OK = 2
     STATE_SOLVED_BAD = 3
-    states = ['Undefined', 'Unsolved', 'Solved', 'No Solution']
+    states = ["Undefined", "Unsolved", "Solved", "No Solution"]
 
     def __init__(self):
         self.models = {}
@@ -102,12 +113,11 @@ class OptimizeModel(object):
         sets state to STATE_UNSOLVED
         """
         # get deep copy, because we need to divide ntasks by blocksize
-        self.maxtasks = data_dict['totaltasks']
+        self.maxtasks = data_dict["totaltasks"]
 
         for key in data_dict:
-            if isinstance(data_dict[key], dict) and 'ntasks' in data_dict[key]:
+            if isinstance(data_dict[key], dict) and "ntasks" in data_dict[key]:
                 self.models[key] = ModelData(key, data_dict[key])
-
 
         # extrapolate for n=1 and n=maxtasks
         for m in self.models.values():
@@ -126,13 +136,15 @@ class OptimizeModel(object):
                 if m.cost[-2] <= 0.0:
                     factor = 1.0
                 elif len(m.ntasks) > 1:
-                    factor = (1.0 - m.cost[-1]/m.cost[-2]) / \
-                             (1.0 - 1. * m.ntasks[-2] / m.ntasks[-1])
+                    factor = (1.0 - m.cost[-1] / m.cost[-2]) / (
+                        1.0 - 1.0 * m.ntasks[-2] / m.ntasks[-1]
+                    )
                 else:
                     # not much information to go on ...
                     factor = 1.0
-                m.cost.append(m.cost[-1] * (1.0 - factor +
-                                        factor * m.ntasks[-1] / self.maxtasks))
+                m.cost.append(
+                    m.cost[-1] * (1.0 - factor + factor * m.ntasks[-1] / self.maxtasks)
+                )
                 m.ntasks.append(self.maxtasks)
                 m.extrapolated.append(True)
 
@@ -145,23 +157,37 @@ class OptimizeModel(object):
         This should be the same for any layout so is provided in base class
         Assumes cost variables are 'Txxx' and ntask variables are 'Nxxx'
         """
-        assert self.state != self.STATE_UNDEFINED,\
-               "set_data() must be called before add_model_constraints()"
+        assert (
+            self.state != self.STATE_UNDEFINED
+        ), "set_data() must be called before add_model_constraints()"
         for k in self.get_required_components():
             m = self.models[k]
-            tk = 'T' + k.lower() # cost(time) key
-            nk = 'N' + k.lower() # nprocs key
+            tk = "T" + k.lower()  # cost(time) key
+            nk = "N" + k.lower()  # nprocs key
             for i in range(0, len(m.cost) - 1):
-                slope = (m.cost[i+1] - m.cost[i]) / (1. * m.ntasks[i+1] - m.ntasks[i])
-                self.constraints.append([self.X[tk] - slope * self.X[nk] >= \
-                                         m.cost[i] - slope * m.ntasks[i],
-                                         "T%s - %f*N%s >= %f" % \
-                                         (k.lower(), slope, k.lower(),
-                                          m.cost[i] - slope * m.ntasks[i])])
+                slope = (m.cost[i + 1] - m.cost[i]) / (
+                    1.0 * m.ntasks[i + 1] - m.ntasks[i]
+                )
+                self.constraints.append(
+                    [
+                        self.X[tk] - slope * self.X[nk]
+                        >= m.cost[i] - slope * m.ntasks[i],
+                        "T%s - %f*N%s >= %f"
+                        % (
+                            k.lower(),
+                            slope,
+                            k.lower(),
+                            m.cost[i] - slope * m.ntasks[i],
+                        ),
+                    ]
+                )
                 if slope > 0:
-                    logger.warning("WARNING: Nonconvex cost function for model "
-                                   "%s. Review costs to ensure data is correct "
-                                   "(--graph_models or --print_models)", k)
+                    logger.warning(
+                        "WARNING: Nonconvex cost function for model "
+                        "%s. Review costs to ensure data is correct "
+                        "(--graph_models or --print_models)",
+                        k,
+                    )
 
                     break
                 if slope == 0:
@@ -191,8 +217,9 @@ class OptimizeModel(object):
         Can be used to check that the data provided to the
         model is reasonable. Also see graph_costs()
         """
-        assert self.state != self.STATE_UNDEFINED,\
-               "set_data() must be called before write_timings()"
+        assert (
+            self.state != self.STATE_UNDEFINED
+        ), "set_data() must be called before write_timings()"
         for k in self.models:
             m = self.models[k]
             message = "***%s***" % k
@@ -204,8 +231,7 @@ class OptimizeModel(object):
                 extra = ""
                 if m.extrapolated[i]:
                     extra = " (extrapolated)"
-                message = "%4d: %f%s" % \
-                           (m.ntasks[i], m.cost[i], extra)
+                message = "%4d: %f%s" % (m.ntasks[i], m.cost[i], extra)
                 if fd is not None:
                     fd.write(message + "\n")
                 logger.log(level, message)
@@ -218,8 +244,9 @@ class OptimizeModel(object):
 
         If matplotlib is not available, nothing will happen
         """
-        assert self.state != self.STATE_UNDEFINED,\
-               "set_data() must be called before graph_costs()"
+        assert (
+            self.state != self.STATE_UNDEFINED
+        ), "set_data() must be called before graph_costs()"
         try:
             import matplotlib.pyplot as pyplot
         except ImportError:
@@ -230,32 +257,35 @@ class OptimizeModel(object):
         nrows = (nplots + 1) / 2
         ncols = 2
         fig, ax = pyplot.subplots(nrows, ncols)
-        row = 0; col = 0
+        row = 0
+        col = 0
         for k in self.models:
             m = self.models[k]
             p = ax[row, col]
-            p.loglog(m.ntasks, m.cost, 'k-')
+            p.loglog(m.ntasks, m.cost, "k-")
             for i in range(len(m.ntasks)):
                 if not m.extrapolated[i]:
-                    p.plot(m.ntasks[i], m.cost[i], 'bx')
+                    p.plot(m.ntasks[i], m.cost[i], "bx")
                 else:
-                    p.plot(m.ntasks[i], m.cost[i], 'rx')
+                    p.plot(m.ntasks[i], m.cost[i], "rx")
             p.set_title(m.name)
-            p.set_xlabel('ntasks')
-            p.set_ylabel('cost (s/mday)')
+            p.set_xlabel("ntasks")
+            p.set_ylabel("cost (s/mday)")
             p.set_xlim([1, self.maxtasks])
             row += 1
             if row == nrows:
                 row = 0
                 col += 1
 
-        fig.suptitle("log-log plot of Cost/mday vs ntasks for designated "
-                     "components.\nPerfectly scalable components would have a "
-                     "straight line. Blue 'X's designate points\nfrom data, "
-                     "red 'X's designate extrapolated data. Areas above the "
-                     "line plots represent\nthe feasible region. Global "
-                     "optimality of solution depends on the convexity of "
-                     "these line plots.\nClose graph to continue on to solve.")
+        fig.suptitle(
+            "log-log plot of Cost/mday vs ntasks for designated "
+            "components.\nPerfectly scalable components would have a "
+            "straight line. Blue 'X's designate points\nfrom data, "
+            "red 'X's designate extrapolated data. Areas above the "
+            "line plots represent\nthe feasible region. Global "
+            "optimality of solution depends on the convexity of "
+            "these line plots.\nClose graph to continue on to solve."
+        )
         fig.tight_layout()
         fig.subplots_adjust(top=0.75)
         logger.info("close graph window to continue")
@@ -289,10 +319,11 @@ class OptimizeModel(object):
         Return a dictionary of the solution variables, can be overridden.
         Default implementation returns values in self.X
         """
-        assert self.state == self.STATE_SOLVED_OK,\
-               "solver failed, no solution available"
+        assert (
+            self.state == self.STATE_SOLVED_OK
+        ), "solver failed, no solution available"
         retval = {}
-        if hasattr(self,'X') and isinstance(self.X, dict):
+        if hasattr(self, "X") and isinstance(self.X, dict):
             for k in self.X:
                 retval[k] = self.X[k].varValue
         return retval
@@ -327,28 +358,31 @@ class OptimizeModel(object):
         from distutils.spawn import find_executable
         from xml.etree import ElementTree as ET
         from CIME.utils import run_cmd
+
         logger.info("Writing pe node info to %s", pefilename)
-        root = ET.Element('config_pes')
-        grid = ET.SubElement(root, 'grid')
-        grid.set('name', 'any')
-        mach = ET.SubElement(grid, 'mach')
-        mach.set('name', 'any')
-        pes = ET.SubElement(mach, 'pes')
-        pes.set('compset', 'any')
-        pes.set('pesize', '')
-        ntasks_node = ET.SubElement(pes, 'ntasks')
+        root = ET.Element("config_pes")
+        grid = ET.SubElement(root, "grid")
+        grid.set("name", "any")
+        mach = ET.SubElement(grid, "mach")
+        mach.set("name", "any")
+        pes = ET.SubElement(mach, "pes")
+        pes.set("compset", "any")
+        pes.set("pesize", "")
+        ntasks_node = ET.SubElement(pes, "ntasks")
         for k in ntasks:
-            node = ET.SubElement(ntasks_node, 'ntasks_' + k)
+            node = ET.SubElement(ntasks_node, "ntasks_" + k)
             node.text = str(ntasks[k])
-        nthrds_node = ET.SubElement(pes, 'nthrds')
+        nthrds_node = ET.SubElement(pes, "nthrds")
         for k in nthrds:
-            node = ET.SubElement(nthrds_node, 'nthrds_' + k)
+            node = ET.SubElement(nthrds_node, "nthrds_" + k)
             node.text = str(nthrds[k])
-        rootpe_node = ET.SubElement(pes, 'rootpe')
+        rootpe_node = ET.SubElement(pes, "rootpe")
         for k in roots:
-            node = ET.SubElement(rootpe_node, 'rootpe_' + k)
+            node = ET.SubElement(rootpe_node, "rootpe_" + k)
             node.text = str(roots[k])
         xmllint = find_executable("xmllint")
         if xmllint is not None:
-            run_cmd("%s --format --output %s -" % (xmllint, pefilename),
-                    input_str=ET.tostring(root))
+            run_cmd(
+                "%s --format --output %s -" % (xmllint, pefilename),
+                input_str=ET.tostring(root),
+            )

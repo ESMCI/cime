@@ -1323,4 +1323,3 @@ int GPTLevent_code_to_name (int code, char *name)
 }
 
 #endif  /* HAVE_PAPI */
-

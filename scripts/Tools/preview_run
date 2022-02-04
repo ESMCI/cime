@@ -24,33 +24,42 @@ logger = logging.getLogger(__name__)
 
 ###############################################################################
 def parse_command_line(args, description):
-###############################################################################
+    ###############################################################################
     parser = argparse.ArgumentParser(
-        description=description,
-        formatter_class=argparse.RawTextHelpFormatter)
+        description=description, formatter_class=argparse.RawTextHelpFormatter
+    )
 
     CIME.utils.setup_standard_logging_options(parser)
 
-    parser.add_argument("caseroot", nargs="?", default=os.getcwd(),
-                        help="Case directory to query.\n"
-                        "Default is current directory.")
+    parser.add_argument(
+        "caseroot",
+        nargs="?",
+        default=os.getcwd(),
+        help="Case directory to query.\n" "Default is current directory.",
+    )
 
-    parser.add_argument("-j", "--job", default=None,
-                        help="The job you want to print.\n"
-                        "Default is case.run (or case.test if this is a test).")
+    parser.add_argument(
+        "-j",
+        "--job",
+        default=None,
+        help="The job you want to print.\n"
+        "Default is case.run (or case.test if this is a test).",
+    )
 
     args = CIME.utils.parse_args_and_handle_standard_logging_options(args, parser)
 
     return args.caseroot, args.job
 
+
 ###############################################################################
 def _main_func(description):
-###############################################################################
+    ###############################################################################
     caseroot, job = parse_command_line(sys.argv, description)
     logging.disable(logging.INFO)
 
     with Case(caseroot, read_only=False) as case:
         case.preview_run(print, job)
+
 
 if __name__ == "__main__":
     _main_func(__doc__)

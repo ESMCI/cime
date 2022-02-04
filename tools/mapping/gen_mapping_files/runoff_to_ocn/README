@@ -156,4 +156,3 @@ A couple of useful notes:
   containing one integer per grid cell -- a positive number represents a region
   in open ocean, a negative number represents a region in a marginal sea, and a
   zero is land.
-

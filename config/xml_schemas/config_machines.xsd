@@ -66,6 +66,7 @@
   <xs:element name="RUNDIR" type="xs:string"/>
   <xs:element name="EXEROOT" type="xs:string"/>
   <xs:element name="TEST_TPUT_TOLERANCE" type="xs:string"/>
+  <xs:element name="TEST_MEMLEAK_TOLERANCE" type="xs:string"/>
   <xs:element name="MAX_GB_OLD_TEST_DATA" type="xs:string"/>
 
 
@@ -181,6 +182,7 @@
         <xs:element ref="RUNDIR" minOccurs="0" maxOccurs="1"/>
         <xs:element ref="EXEROOT" minOccurs="0" maxOccurs="1"/>
         <xs:element ref="TEST_TPUT_TOLERANCE" minOccurs="0" maxOccurs="1"/>
+        <xs:element ref="TEST_MEMLEAK_TOLERANCE" minOccurs="0" maxOccurs="1"/>
         <xs:element ref="MAX_GB_OLD_TEST_DATA" minOccurs="0" maxOccurs="1"/>
         <xs:element minOccurs="0" maxOccurs="unbounded" ref="environment_variables"/>
         <xs:element minOccurs="0" maxOccurs="unbounded" ref="resource_limits"/>

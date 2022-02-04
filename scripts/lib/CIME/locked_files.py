@@ -6,6 +6,7 @@ logger = logging.getLogger(__name__)
 
 LOCKED_DIR = "LockedFiles"
 
+
 def lock_file(filename, caseroot=None, newname=None):
     expect("/" not in filename, "Please just provide basename of locked file")
     caseroot = os.getcwd() if caseroot is None else caseroot
@@ -24,6 +25,7 @@ def lock_file(filename, caseroot=None, newname=None):
     safe_copy(os.path.join(caseroot, filename), os.path.join(fulllockdir, newname))
     GenericXML.invalidate(os.path.join(fulllockdir, newname))
 
+
 def unlock_file(filename, caseroot=None):
     expect("/" not in filename, "Please just provide basename of locked file")
     caseroot = os.getcwd() if caseroot is None else caseroot
@@ -32,6 +34,7 @@ def unlock_file(filename, caseroot=None):
         os.remove(locked_path)
 
     logging.debug("Unlocking file {}".format(filename))
+
 
 def is_locked(filename, caseroot=None):
     expect("/" not in filename, "Please just provide basename of locked file")

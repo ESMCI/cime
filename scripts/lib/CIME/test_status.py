@@ -40,79 +40,95 @@ TEST_FAIL_STATUS = "FAIL"
 ALL_PHASE_STATUSES = [TEST_PEND_STATUS, TEST_PASS_STATUS, TEST_FAIL_STATUS]
 
 # Special statuses that the overall test can be in
-TEST_DIFF_STATUS     = "DIFF"   # Implies a failure in the BASELINE phase
-NAMELIST_FAIL_STATUS = "NLFAIL" # Implies a failure in the NLCOMP phase
+TEST_DIFF_STATUS = "DIFF"  # Implies a failure in the BASELINE phase
+NAMELIST_FAIL_STATUS = "NLFAIL"  # Implies a failure in the NLCOMP phase
 
 # Special strings that can appear in comments, indicating particular types of failures
-TEST_NO_BASELINES_COMMENT = "BFAIL" # Implies baseline directory is missing in the
-                                    # baseline comparison phase
-TEST_RERUN_COMMENT        = "RERUN" # Added to a PEND status to indicate that the test
-                                    # system has changed this phase to PEND in order to
-                                    # rerun it (e.g., to retry a failed test).
+TEST_NO_BASELINES_COMMENT = "BFAIL"  # Implies baseline directory is missing in the
+# baseline comparison phase
+TEST_RERUN_COMMENT = "RERUN"  # Added to a PEND status to indicate that the test
+# system has changed this phase to PEND in order to
+# rerun it (e.g., to retry a failed test).
 # The expected and unexpected failure comments aren't used directly in this module, but
 # are included here for symmetry, so other modules can access them from here.
 TEST_EXPECTED_FAILURE_COMMENT = expected_fails.EXPECTED_FAILURE_COMMENT
 TEST_UNEXPECTED_FAILURE_COMMENT_START = expected_fails.UNEXPECTED_FAILURE_COMMENT_START
 
 # The valid phases
-CREATE_NEWCASE_PHASE  = "CREATE_NEWCASE"
-XML_PHASE             = "XML"
-SETUP_PHASE           = "SETUP"
-NAMELIST_PHASE        = "NLCOMP"
+CREATE_NEWCASE_PHASE = "CREATE_NEWCASE"
+XML_PHASE = "XML"
+SETUP_PHASE = "SETUP"
+NAMELIST_PHASE = "NLCOMP"
 SHAREDLIB_BUILD_PHASE = "SHAREDLIB_BUILD"
-MODEL_BUILD_PHASE     = "MODEL_BUILD"
-SUBMIT_PHASE          = "SUBMIT"
-RUN_PHASE             = "RUN"
-THROUGHPUT_PHASE      = "TPUTCOMP"
-MEMCOMP_PHASE         = "MEMCOMP"
-MEMLEAK_PHASE         = "MEMLEAK"
-STARCHIVE_PHASE       = "SHORT_TERM_ARCHIVER"
-COMPARE_PHASE         = "COMPARE" # This is one special, real phase will be COMPARE_$WHAT, this is for internal test comparisons, there could be multiple variations of this phase in one test
-BASELINE_PHASE        = "BASELINE"
-GENERATE_PHASE        = "GENERATE"
+MODEL_BUILD_PHASE = "MODEL_BUILD"
+SUBMIT_PHASE = "SUBMIT"
+RUN_PHASE = "RUN"
+THROUGHPUT_PHASE = "TPUTCOMP"
+MEMCOMP_PHASE = "MEMCOMP"
+MEMLEAK_PHASE = "MEMLEAK"
+STARCHIVE_PHASE = "SHORT_TERM_ARCHIVER"
+COMPARE_PHASE = "COMPARE"  # This is one special, real phase will be COMPARE_$WHAT, this is for internal test comparisons, there could be multiple variations of this phase in one test
+BASELINE_PHASE = "BASELINE"
+GENERATE_PHASE = "GENERATE"
 
-ALL_PHASES = [CREATE_NEWCASE_PHASE,
-              XML_PHASE,
-              SETUP_PHASE,
-              NAMELIST_PHASE,
-              SHAREDLIB_BUILD_PHASE,
-              MODEL_BUILD_PHASE,
-              SUBMIT_PHASE,
-              RUN_PHASE,
-              COMPARE_PHASE,
-              BASELINE_PHASE,
-              THROUGHPUT_PHASE,
-              MEMCOMP_PHASE,
-              MEMLEAK_PHASE,
-              STARCHIVE_PHASE,
-              GENERATE_PHASE]
+ALL_PHASES = [
+    CREATE_NEWCASE_PHASE,
+    XML_PHASE,
+    SETUP_PHASE,
+    NAMELIST_PHASE,
+    SHAREDLIB_BUILD_PHASE,
+    MODEL_BUILD_PHASE,
+    SUBMIT_PHASE,
+    RUN_PHASE,
+    COMPARE_PHASE,
+    BASELINE_PHASE,
+    THROUGHPUT_PHASE,
+    MEMCOMP_PHASE,
+    MEMLEAK_PHASE,
+    STARCHIVE_PHASE,
+    GENERATE_PHASE,
+]
 
 # These are mandatory phases that a test must go through
-CORE_PHASES = [CREATE_NEWCASE_PHASE,
-               XML_PHASE,
-               SETUP_PHASE,
-               SHAREDLIB_BUILD_PHASE,
-               MODEL_BUILD_PHASE,
-               SUBMIT_PHASE,
-               RUN_PHASE]
+CORE_PHASES = [
+    CREATE_NEWCASE_PHASE,
+    XML_PHASE,
+    SETUP_PHASE,
+    SHAREDLIB_BUILD_PHASE,
+    MODEL_BUILD_PHASE,
+    SUBMIT_PHASE,
+    RUN_PHASE,
+]
+
 
 def _test_helper1(file_contents):
     ts = TestStatus(test_dir="/", test_name="ERS.foo.A")
-    ts._parse_test_status(file_contents) # pylint: disable=protected-access
-    return ts._phase_statuses # pylint: disable=protected-access
+    ts._parse_test_status(file_contents)  # pylint: disable=protected-access
+    return ts._phase_statuses  # pylint: disable=protected-access
 
-def _test_helper2(file_contents, wait_for_run=False, check_throughput=False, check_memory=False, ignore_namelists=False, no_run=False, no_perm=False):
+
+def _test_helper2(
+    file_contents,
+    wait_for_run=False,
+    check_throughput=False,
+    check_memory=False,
+    ignore_namelists=False,
+    no_run=False,
+    no_perm=False,
+):
     lines = file_contents.splitlines()
     rv = None
     perms = [lines] if no_perm else itertools.permutations(lines)
     for perm in perms:
         ts = TestStatus(test_dir="/", test_name="ERS.foo.A")
-        ts._parse_test_status("\n".join(perm)) # pylint: disable=protected-access
-        the_status = ts.get_overall_test_status(wait_for_run=wait_for_run,
-                                                check_throughput=check_throughput,
-                                                check_memory=check_memory,
-                                                ignore_namelists=ignore_namelists,
-                                                no_run=no_run)
+        ts._parse_test_status("\n".join(perm))  # pylint: disable=protected-access
+        the_status = ts.get_overall_test_status(
+            wait_for_run=wait_for_run,
+            check_throughput=check_throughput,
+            check_memory=check_memory,
+            ignore_namelists=ignore_namelists,
+            no_run=no_run,
+        )
         if rv is not None and the_status != rv:
             return "{} != {}".format(rv, the_status)
         else:
@@ -120,8 +136,8 @@ def _test_helper2(file_contents, wait_for_run=False, check_throughput=False, che
 
     return rv
 
-class TestStatus(object):
 
+class TestStatus(object):
     def __init__(self, test_dir=None, test_name=None, no_io=False):
         """
         Create a TestStatus object
@@ -133,7 +149,7 @@ class TestStatus(object):
         """
         test_dir = os.getcwd() if test_dir is None else test_dir
         self._filename = os.path.join(test_dir, TEST_STATUS_FILENAME)
-        self._phase_statuses = OrderedDict() # {name -> (status, comments)}
+        self._phase_statuses = OrderedDict()  # {name -> (status, comments)}
         self._test_name = test_name
         self._ok_to_modify = False
         self._no_io = no_io
@@ -143,7 +159,10 @@ class TestStatus(object):
             if not os.access(self._filename, os.W_OK):
                 self._no_io = True
         else:
-            expect(test_name is not None, "Must provide test_name if TestStatus file doesn't exist")
+            expect(
+                test_name is not None,
+                "Must provide test_name if TestStatus file doesn't exist",
+            )
 
     def __enter__(self):
         self._ok_to_modify = True
@@ -158,7 +177,9 @@ class TestStatus(object):
             yield phase, data[0]
 
     def __eq__(self, rhs):
-        return self._phase_statuses == rhs._phase_statuses # pylint: disable=protected-access
+        return (
+            self._phase_statuses == rhs._phase_statuses
+        )  # pylint: disable=protected-access
 
     def __ne__(self, rhs):
         return not self.__eq__(rhs)
@@ -198,25 +219,38 @@ class TestStatus(object):
         >>> ts._phase_statuses
         OrderedDict([('CREATE_NEWCASE', ('FAIL', ''))])
         """
-        expect(self._ok_to_modify, "TestStatus not in a modifiable state, use 'with' syntax")
-        expect(phase in ALL_PHASES or phase.startswith(COMPARE_PHASE),
-               "Invalid phase '{}'".format(phase))
+        expect(
+            self._ok_to_modify,
+            "TestStatus not in a modifiable state, use 'with' syntax",
+        )
+        expect(
+            phase in ALL_PHASES or phase.startswith(COMPARE_PHASE),
+            "Invalid phase '{}'".format(phase),
+        )
         expect(status in ALL_PHASE_STATUSES, "Invalid status '{}'".format(status))
 
         if phase in CORE_PHASES and phase != CORE_PHASES[0]:
-            previous_core_phase = CORE_PHASES[CORE_PHASES.index(phase)-1]
-            #TODO: enable check below
-            #expect(previous_core_phase in self._phase_statuses, "Core phase '{}' was skipped".format(previous_core_phase))
+            previous_core_phase = CORE_PHASES[CORE_PHASES.index(phase) - 1]
+            # TODO: enable check below
+            # expect(previous_core_phase in self._phase_statuses, "Core phase '{}' was skipped".format(previous_core_phase))
 
             if previous_core_phase in self._phase_statuses:
-                expect(self._phase_statuses[previous_core_phase][0] == TEST_PASS_STATUS,
-                       "Cannot move past core phase '{}', it didn't pass: ".format(previous_core_phase))
+                expect(
+                    self._phase_statuses[previous_core_phase][0] == TEST_PASS_STATUS,
+                    "Cannot move past core phase '{}', it didn't pass: ".format(
+                        previous_core_phase
+                    ),
+                )
 
-        reran_phase = (phase in self._phase_statuses and self._phase_statuses[phase][0] != TEST_PEND_STATUS and phase in CORE_PHASES)
+        reran_phase = (
+            phase in self._phase_statuses
+            and self._phase_statuses[phase][0] != TEST_PEND_STATUS
+            and phase in CORE_PHASES
+        )
         if reran_phase:
             # All subsequent phases are invalidated
             phase_idx = ALL_PHASES.index(phase)
-            for subsequent_phase in ALL_PHASES[phase_idx+1:]:
+            for subsequent_phase in ALL_PHASES[phase_idx + 1 :]:
                 if subsequent_phase in self._phase_statuses:
                     del self._phase_statuses[subsequent_phase]
                 if subsequent_phase.startswith(COMPARE_PHASE):
@@ -224,10 +258,14 @@ class TestStatus(object):
                         if stored_phase.startswith(COMPARE_PHASE):
                             del self._phase_statuses[stored_phase]
 
-        self._phase_statuses[phase] = (status, comments) # Can overwrite old phase info
+        self._phase_statuses[phase] = (status, comments)  # Can overwrite old phase info
 
-        if status == TEST_PASS_STATUS and phase in CORE_PHASES and phase != CORE_PHASES[-1]:
-            next_core_phase = CORE_PHASES[CORE_PHASES.index(phase)+1]
+        if (
+            status == TEST_PASS_STATUS
+            and phase in CORE_PHASES
+            and phase != CORE_PHASES[-1]
+        ):
+            next_core_phase = CORE_PHASES[CORE_PHASES.index(phase) + 1]
             self._phase_statuses[next_core_phase] = (TEST_PEND_STATUS, "")
 
     def get_status(self, phase):
@@ -236,7 +274,9 @@ class TestStatus(object):
     def get_comment(self, phase):
         return self._phase_statuses[phase][1] if phase in self._phase_statuses else None
 
-    def phase_statuses_dump(self, prefix='', skip_passes=False, skip_phase_list=None, xfails=None):
+    def phase_statuses_dump(
+        self, prefix="", skip_passes=False, skip_phase_list=None, xfails=None
+    ):
         """
         Args:
             prefix: string printed at the start of each line
@@ -308,36 +348,65 @@ class TestStatus(object):
             line = line.strip()
             tokens = line.split()
             if line == "":
-                pass # skip blank lines
+                pass  # skip blank lines
             elif len(tokens) >= 3:
                 status, curr_test_name, phase = tokens[:3]
-                if (self._test_name is None):
+                if self._test_name is None:
                     self._test_name = curr_test_name
                 else:
-                    expect(self._test_name == curr_test_name,
-                           "inconsistent test name in parse_test_status: '{}' != '{}'".format(self._test_name, curr_test_name))
+                    expect(
+                        self._test_name == curr_test_name,
+                        "inconsistent test name in parse_test_status: '{}' != '{}'".format(
+                            self._test_name, curr_test_name
+                        ),
+                    )
 
-                expect(status in ALL_PHASE_STATUSES,
-                       "Unexpected status '{}' in parse_test_status for test '{}'".format(status, self._test_name))
-                expect(phase in ALL_PHASES or phase.startswith(COMPARE_PHASE),
-                       "phase '{}' not expected in parse_test_status for test '{}'".format(phase, self._test_name))
-                expect(phase not in self._phase_statuses,
-                       "Should not have seen multiple instances of phase '{}' for test '{}'".format(phase, self._test_name))
+                expect(
+                    status in ALL_PHASE_STATUSES,
+                    "Unexpected status '{}' in parse_test_status for test '{}'".format(
+                        status, self._test_name
+                    ),
+                )
+                expect(
+                    phase in ALL_PHASES or phase.startswith(COMPARE_PHASE),
+                    "phase '{}' not expected in parse_test_status for test '{}'".format(
+                        phase, self._test_name
+                    ),
+                )
+                expect(
+                    phase not in self._phase_statuses,
+                    "Should not have seen multiple instances of phase '{}' for test '{}'".format(
+                        phase, self._test_name
+                    ),
+                )
 
                 self._phase_statuses[phase] = (status, " ".join(tokens[3:]))
             else:
-                logging.warning("In TestStatus file for test '{}', line '{}' not in expected format".format(self._test_name, line))
+                logging.warning(
+                    "In TestStatus file for test '{}', line '{}' not in expected format".format(
+                        self._test_name, line
+                    )
+                )
 
     def _parse_test_status_file(self):
         with open(self._filename, "r") as fd:
             self._parse_test_status(fd.read())
 
-    def _get_overall_status_based_on_phases(self, phases, wait_for_run=False, check_throughput=False, check_memory=False, ignore_namelists=False, ignore_memleak=False, no_run=False):
+    def _get_overall_status_based_on_phases(
+        self,
+        phases,
+        wait_for_run=False,
+        check_throughput=False,
+        check_memory=False,
+        ignore_namelists=False,
+        ignore_memleak=False,
+        no_run=False,
+    ):
 
         rv = TEST_PASS_STATUS
         run_phase_found = False
         phase_responsible_for_status = None
-        for phase in phases: # ensure correct order of processing phases
+        for phase in phases:  # ensure correct order of processing phases
             if phase in self._phase_statuses:
                 data = self._phase_statuses[phase]
             else:
@@ -345,7 +414,11 @@ class TestStatus(object):
 
             status = data[0]
 
-            if phase in CORE_PHASES and rv in [TEST_PASS_STATUS, NAMELIST_FAIL_STATUS] and status != TEST_PEND_STATUS:
+            if (
+                phase in CORE_PHASES
+                and rv in [TEST_PASS_STATUS, NAMELIST_FAIL_STATUS]
+                and status != TEST_PEND_STATUS
+            ):
                 phase_responsible_for_status = phase
 
             if phase == RUN_PHASE:
@@ -354,21 +427,26 @@ class TestStatus(object):
             if phase in [SUBMIT_PHASE, RUN_PHASE] and no_run:
                 break
 
-            if status == TEST_PEND_STATUS and rv in [TEST_PASS_STATUS, NAMELIST_FAIL_STATUS]:
+            if status == TEST_PEND_STATUS and rv in [
+                TEST_PASS_STATUS,
+                NAMELIST_FAIL_STATUS,
+            ]:
                 if not no_run:
                     rv = TEST_PEND_STATUS
                     phase_responsible_for_status = phase
                     break
 
-            elif (status == TEST_FAIL_STATUS):
-                if ( (not check_throughput and phase == THROUGHPUT_PHASE) or
-                     (not check_memory and phase == MEMCOMP_PHASE) or
-                     (ignore_namelists and phase == NAMELIST_PHASE) or
-                     (ignore_memleak and phase == MEMLEAK_PHASE) ):
+            elif status == TEST_FAIL_STATUS:
+                if (
+                    (not check_throughput and phase == THROUGHPUT_PHASE)
+                    or (not check_memory and phase == MEMCOMP_PHASE)
+                    or (ignore_namelists and phase == NAMELIST_PHASE)
+                    or (ignore_memleak and phase == MEMLEAK_PHASE)
+                ):
                     continue
 
                 if phase == NAMELIST_PHASE:
-                    if (rv == TEST_PASS_STATUS):
+                    if rv == TEST_PASS_STATUS:
                         rv = NAMELIST_FAIL_STATUS
 
                 elif phase == BASELINE_PHASE:
@@ -376,7 +454,7 @@ class TestStatus(object):
                         phase_responsible_for_status = phase
                         rv = TEST_DIFF_STATUS
                     else:
-                        pass # a DIFF does not trump a FAIL
+                        pass  # a DIFF does not trump a FAIL
 
                 elif phase in CORE_PHASES:
                     phase_responsible_for_status = phase
@@ -388,13 +466,25 @@ class TestStatus(object):
 
         # The test did not fail but the RUN phase was not found, so if the user requested
         # that we wait for the RUN phase, then the test must still be considered pending.
-        if rv in [TEST_PASS_STATUS, NAMELIST_FAIL_STATUS] and not run_phase_found and wait_for_run:
+        if (
+            rv in [TEST_PASS_STATUS, NAMELIST_FAIL_STATUS]
+            and not run_phase_found
+            and wait_for_run
+        ):
             phase_responsible_for_status = RUN_PHASE
             rv = TEST_PEND_STATUS
 
         return rv, phase_responsible_for_status
 
-    def get_overall_test_status(self, wait_for_run=False, check_throughput=False, check_memory=False, ignore_namelists=False, ignore_memleak=False, no_run=False):
+    def get_overall_test_status(
+        self,
+        wait_for_run=False,
+        check_throughput=False,
+        check_memory=False,
+        ignore_namelists=False,
+        ignore_memleak=False,
+        no_run=False,
+    ):
         r"""
         Given the current phases and statuses, produce a single results for this test. Preference
         is given to PEND since we don't want to stop waiting for a test
@@ -476,24 +566,29 @@ class TestStatus(object):
         ('PEND', 'SHAREDLIB_BUILD')
         """
         # Core phases take priority
-        core_rv, phase = self._get_overall_status_based_on_phases(CORE_PHASES,
-                                                                  wait_for_run=wait_for_run,
-                                                                  check_throughput=check_throughput,
-                                                                  check_memory=check_memory,
-                                                                  ignore_namelists=ignore_namelists,
-                                                                  ignore_memleak=ignore_memleak,
-                                                                  no_run=no_run)
+        core_rv, phase = self._get_overall_status_based_on_phases(
+            CORE_PHASES,
+            wait_for_run=wait_for_run,
+            check_throughput=check_throughput,
+            check_memory=check_memory,
+            ignore_namelists=ignore_namelists,
+            ignore_memleak=ignore_memleak,
+            no_run=no_run,
+        )
         if core_rv != TEST_PASS_STATUS:
             return core_rv, phase
         else:
             phase_order = list(CORE_PHASES)
-            phase_order.extend([item for item in self._phase_statuses if item not in CORE_PHASES])
+            phase_order.extend(
+                [item for item in self._phase_statuses if item not in CORE_PHASES]
+            )
 
-            return self._get_overall_status_based_on_phases(phase_order,
-                                                            wait_for_run=wait_for_run,
-                                                            check_throughput=check_throughput,
-                                                            check_memory=check_memory,
-                                                            ignore_namelists=ignore_namelists,
-                                                            ignore_memleak=ignore_memleak,
-                                                            no_run=no_run)
-
+            return self._get_overall_status_based_on_phases(
+                phase_order,
+                wait_for_run=wait_for_run,
+                check_throughput=check_throughput,
+                check_memory=check_memory,
+                ignore_namelists=ignore_namelists,
+                ignore_memleak=ignore_memleak,
+                no_run=no_run,
+            )

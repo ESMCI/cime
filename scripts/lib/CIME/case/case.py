@@ -8,38 +8,40 @@ through the Case module.
 from copy import deepcopy
 import glob, os, shutil, math, six, time, hashlib, socket, getpass
 from CIME.XML.standard_module_setup import *
-#pylint: disable=import-error,redefined-builtin
+
+# pylint: disable=import-error,redefined-builtin
 from six.moves import input
-from CIME.utils                     import expect, get_cime_root, append_status
-from CIME.utils                     import convert_to_type, get_model, set_model
-from CIME.utils                     import get_project, get_charge_account, check_name
-from CIME.utils                     import get_current_commit, safe_copy, get_cime_default_driver
-from CIME.locked_files              import LOCKED_DIR, lock_file
-from CIME.XML.machines              import Machines
-from CIME.XML.pes                   import Pes
-from CIME.XML.files                 import Files
-from CIME.XML.testlist              import Testlist
-from CIME.XML.component             import Component
-from CIME.XML.compsets              import Compsets
-from CIME.XML.grids                 import Grids
-from CIME.XML.batch                 import Batch
-from CIME.XML.workflow              import Workflow
-from CIME.XML.pio                   import PIO
-from CIME.XML.archive               import Archive
-from CIME.XML.env_test              import EnvTest
-from CIME.XML.env_mach_specific     import EnvMachSpecific
-from CIME.XML.env_case              import EnvCase
-from CIME.XML.env_mach_pes          import EnvMachPes
-from CIME.XML.env_build             import EnvBuild
-from CIME.XML.env_run               import EnvRun
-from CIME.XML.env_archive           import EnvArchive
-from CIME.XML.env_batch             import EnvBatch
-from CIME.XML.env_workflow          import EnvWorkflow
-from CIME.XML.generic_xml           import GenericXML
-from CIME.user_mod_support          import apply_user_mods
+from CIME.utils import expect, get_cime_root, append_status
+from CIME.utils import convert_to_type, get_model, set_model
+from CIME.utils import get_project, get_charge_account, check_name
+from CIME.utils import get_current_commit, safe_copy, get_cime_default_driver
+from CIME.locked_files import LOCKED_DIR, lock_file
+from CIME.XML.machines import Machines
+from CIME.XML.pes import Pes
+from CIME.XML.files import Files
+from CIME.XML.testlist import Testlist
+from CIME.XML.component import Component
+from CIME.XML.compsets import Compsets
+from CIME.XML.grids import Grids
+from CIME.XML.batch import Batch
+from CIME.XML.workflow import Workflow
+from CIME.XML.pio import PIO
+from CIME.XML.archive import Archive
+from CIME.XML.env_test import EnvTest
+from CIME.XML.env_mach_specific import EnvMachSpecific
+from CIME.XML.env_case import EnvCase
+from CIME.XML.env_mach_pes import EnvMachPes
+from CIME.XML.env_build import EnvBuild
+from CIME.XML.env_run import EnvRun
+from CIME.XML.env_archive import EnvArchive
+from CIME.XML.env_batch import EnvBatch
+from CIME.XML.env_workflow import EnvWorkflow
+from CIME.XML.generic_xml import GenericXML
+from CIME.user_mod_support import apply_user_mods
 from CIME.aprun import get_aprun_cmd_for_case
 
 logger = logging.getLogger(__name__)
+
 
 class Case(object):
     """
@@ -69,23 +71,43 @@ class Case(object):
     This class extends across multiple files, class members external to this file
     are listed in the following imports
     """
+
     from CIME.case.case_setup import case_setup
     from CIME.case.case_clone import create_clone, _copy_user_modified_to_clone
-    from CIME.case.case_test  import case_test
+    from CIME.case.case_test import case_test
     from CIME.case.case_submit import check_DA_settings, check_case, submit
-    from CIME.case.case_st_archive import case_st_archive, restore_from_archive, \
-        archive_last_restarts, test_st_archive, test_env_archive
+    from CIME.case.case_st_archive import (
+        case_st_archive,
+        restore_from_archive,
+        archive_last_restarts,
+        test_st_archive,
+        test_env_archive,
+    )
     from CIME.case.case_run import case_run
     from CIME.case.case_cmpgen_namelists import case_cmpgen_namelists
-    from CIME.case.check_lockedfiles import check_lockedfile, check_lockedfiles, check_pelayouts_require_rebuild
+    from CIME.case.check_lockedfiles import (
+        check_lockedfile,
+        check_lockedfiles,
+        check_pelayouts_require_rebuild,
+    )
     from CIME.case.preview_namelists import create_dirs, create_namelists
-    from CIME.case.check_input_data import check_all_input_data, stage_refcase, check_input_data
+    from CIME.case.check_input_data import (
+        check_all_input_data,
+        stage_refcase,
+        check_input_data,
+    )
 
     def __init__(self, case_root=None, read_only=True, record=False):
 
         if case_root is None:
             case_root = os.getcwd()
-        expect(not os.path.isdir(case_root) or os.path.isfile(os.path.join(case_root,"env_case.xml")), "Directory {} does not appear to be a valid case directory".format(case_root))
+        expect(
+            not os.path.isdir(case_root)
+            or os.path.isfile(os.path.join(case_root, "env_case.xml")),
+            "Directory {} does not appear to be a valid case directory".format(
+                case_root
+            ),
+        )
 
         self._caseroot = case_root
         logger.debug("Initializing Case.")
@@ -109,9 +131,9 @@ class Case(object):
         # creation we get the values for those fields from this lookup
         # table and then remove the entry.
         self.lookups = {}
-        self.set_lookup_value('CIMEROOT',os.path.abspath(get_cime_root()))
+        self.set_lookup_value("CIMEROOT", os.path.abspath(get_cime_root()))
         self._cime_model = get_model()
-        self.set_lookup_value('MODEL', self._cime_model)
+        self.set_lookup_value("MODEL", self._cime_model)
         self._compsetname = None
         self._gridname = None
         self._pesfile = None
@@ -156,36 +178,48 @@ class Case(object):
         for variable substitution using the {{ var }} syntax
         """
         set_model(self.get_value("MODEL"))
-        env_mach_pes  = self.get_env("mach_pes")
-        env_mach_spec = self.get_env('mach_specific')
-        comp_classes  = self.get_values("COMP_CLASSES")
-        max_mpitasks_per_node  = self.get_value("MAX_MPITASKS_PER_NODE")
+        env_mach_pes = self.get_env("mach_pes")
+        env_mach_spec = self.get_env("mach_specific")
+        comp_classes = self.get_values("COMP_CLASSES")
+        max_mpitasks_per_node = self.get_value("MAX_MPITASKS_PER_NODE")
         self.async_io = self.get_value("PIO_ASYNC_INTERFACE")
         if self.async_io:
-            self.iotasks = max(1,self.get_value("PIO_NUMTASKS_CPL"))
+            self.iotasks = max(1, self.get_value("PIO_NUMTASKS_CPL"))
 
         self.thread_count = env_mach_pes.get_max_thread_count(comp_classes)
 
         mpi_attribs = {
-            "compiler" : self.get_value("COMPILER"),
-            "mpilib"   : self.get_value("MPILIB"),
-            "threaded" : self.get_build_threaded(),
-            }
+            "compiler": self.get_value("COMPILER"),
+            "mpilib": self.get_value("MPILIB"),
+            "threaded": self.get_build_threaded(),
+        }
 
         job = self.get_primary_job()
         executable = env_mach_spec.get_mpirun(self, mpi_attribs, job, exe_only=True)[0]
         if executable is not None and "aprun" in executable:
-            _, self.num_nodes, self.total_tasks, self.tasks_per_node, self.thread_count = get_aprun_cmd_for_case(self, "e3sm.exe")
+            (
+                _,
+                self.num_nodes,
+                self.total_tasks,
+                self.tasks_per_node,
+                self.thread_count,
+            ) = get_aprun_cmd_for_case(self, "e3sm.exe")
             self.spare_nodes = env_mach_pes.get_spare_nodes(self.num_nodes)
             self.num_nodes += self.spare_nodes
         else:
             self.total_tasks = env_mach_pes.get_total_tasks(comp_classes) + self.iotasks
-            self.tasks_per_node = env_mach_pes.get_tasks_per_node(self.total_tasks, self.thread_count)
+            self.tasks_per_node = env_mach_pes.get_tasks_per_node(
+                self.total_tasks, self.thread_count
+            )
 
-            self.num_nodes, self.spare_nodes = env_mach_pes.get_total_nodes(self.total_tasks, self.thread_count)
+            self.num_nodes, self.spare_nodes = env_mach_pes.get_total_nodes(
+                self.total_tasks, self.thread_count
+            )
             self.num_nodes += self.spare_nodes
 
-        logger.debug("total_tasks {} thread_count {}".format(self.total_tasks, self.thread_count))
+        logger.debug(
+            "total_tasks {} thread_count {}".format(self.total_tasks, self.thread_count)
+        )
 
         max_gpus_per_node = self.get_value("MAX_GPUS_PER_NODE")
 
@@ -193,16 +227,22 @@ class Case(object):
             self.ngpus_per_node = self.get_value("NGPUS_PER_NODE")
 
         self.tasks_per_numa = int(math.ceil(self.tasks_per_node / 2.0))
-        smt_factor = max(1,int(self.get_value("MAX_TASKS_PER_NODE") / max_mpitasks_per_node))
+        smt_factor = max(
+            1, int(self.get_value("MAX_TASKS_PER_NODE") / max_mpitasks_per_node)
+        )
 
         threads_per_node = self.tasks_per_node * self.thread_count
-        threads_per_core = 1 if (threads_per_node <= max_mpitasks_per_node) else smt_factor
+        threads_per_core = (
+            1 if (threads_per_node <= max_mpitasks_per_node) else smt_factor
+        )
         self.cores_per_task = self.thread_count / threads_per_core
 
         os.environ["OMP_NUM_THREADS"] = str(self.thread_count)
 
-        self.srun_binding = math.floor(smt_factor*max_mpitasks_per_node / self.tasks_per_node)
-        self.srun_binding = max(1,int(self.srun_binding))
+        self.srun_binding = math.floor(
+            smt_factor * max_mpitasks_per_node / self.tasks_per_node
+        )
+        self.srun_binding = max(1, int(self.srun_binding))
 
     # Define __enter__ and __exit__ so that we can use this as a context manager
     # and force a flush on exit.
@@ -218,26 +258,62 @@ class Case(object):
 
     def read_xml(self):
         for env_file in self._files:
-            expect(not env_file.needsrewrite, "Potential loss of unflushed changes in {}".format(env_file.filename))
+            expect(
+                not env_file.needsrewrite,
+                "Potential loss of unflushed changes in {}".format(env_file.filename),
+            )
 
         self._env_entryid_files = []
-        self._env_entryid_files.append(EnvCase(self._caseroot, components=None, read_only=self._force_read_only))
+        self._env_entryid_files.append(
+            EnvCase(self._caseroot, components=None, read_only=self._force_read_only)
+        )
         components = self._env_entryid_files[0].get_values("COMP_CLASSES")
-        self._env_entryid_files.append(EnvRun(self._caseroot, components=components, read_only=self._force_read_only))
-        self._env_entryid_files.append(EnvBuild(self._caseroot, components=components, read_only=self._force_read_only))
+        self._env_entryid_files.append(
+            EnvRun(
+                self._caseroot, components=components, read_only=self._force_read_only
+            )
+        )
+        self._env_entryid_files.append(
+            EnvBuild(
+                self._caseroot, components=components, read_only=self._force_read_only
+            )
+        )
         self._comp_interface = self._env_entryid_files[-1].get_value("COMP_INTERFACE")
 
-        self._env_entryid_files.append(EnvMachPes(self._caseroot, components=components, read_only=self._force_read_only,
-                                                  comp_interface=self._comp_interface))
-        self._env_entryid_files.append(EnvBatch(self._caseroot, read_only=self._force_read_only))
-        self._env_entryid_files.append(EnvWorkflow(self._caseroot, read_only=self._force_read_only))
+        self._env_entryid_files.append(
+            EnvMachPes(
+                self._caseroot,
+                components=components,
+                read_only=self._force_read_only,
+                comp_interface=self._comp_interface,
+            )
+        )
+        self._env_entryid_files.append(
+            EnvBatch(self._caseroot, read_only=self._force_read_only)
+        )
+        self._env_entryid_files.append(
+            EnvWorkflow(self._caseroot, read_only=self._force_read_only)
+        )
 
-        if os.path.isfile(os.path.join(self._caseroot,"env_test.xml")):
-            self._env_entryid_files.append(EnvTest(self._caseroot, components=components, read_only=self._force_read_only))
+        if os.path.isfile(os.path.join(self._caseroot, "env_test.xml")):
+            self._env_entryid_files.append(
+                EnvTest(
+                    self._caseroot,
+                    components=components,
+                    read_only=self._force_read_only,
+                )
+            )
         self._env_generic_files = []
-        self._env_generic_files.append(EnvMachSpecific(self._caseroot, read_only=self._force_read_only,
-                                                       comp_interface=self._comp_interface))
-        self._env_generic_files.append(EnvArchive(self._caseroot, read_only=self._force_read_only))
+        self._env_generic_files.append(
+            EnvMachSpecific(
+                self._caseroot,
+                read_only=self._force_read_only,
+                comp_interface=self._comp_interface,
+            )
+        )
+        self._env_generic_files.append(
+            EnvArchive(self._caseroot, read_only=self._force_read_only)
+        )
         self._files = self._env_entryid_files + self._env_generic_files
 
     def get_case_root(self):
@@ -251,7 +327,7 @@ class Case(object):
                 return env_file
         if allow_missing:
             return None
-        expect(False,"Could not find object for {} in case".format(full_name))
+        expect(False, "Could not find object for {} in case".format(full_name))
 
     def check_timestamps(self, short_name=None):
         if short_name is not None:
@@ -263,7 +339,7 @@ class Case(object):
 
     def copy(self, newcasename, newcaseroot, newcimeroot=None, newsrcroot=None):
         newcase = deepcopy(self)
-        for env_file in newcase._files: # pylint: disable=protected-access
+        for env_file in newcase._files:  # pylint: disable=protected-access
             basename = os.path.basename(env_file.filename)
             newfile = os.path.join(newcaseroot, basename)
             env_file.change_file(newfile, copy=True)
@@ -274,16 +350,16 @@ class Case(object):
         if newsrcroot is not None:
             newcase.set_value("SRCROOT", newsrcroot)
 
-        newcase.set_value("CASE",newcasename)
-        newcase.set_value("CASEROOT",newcaseroot)
-        newcase.set_value("CONTINUE_RUN","FALSE")
-        newcase.set_value("RESUBMIT",0)
+        newcase.set_value("CASE", newcasename)
+        newcase.set_value("CASEROOT", newcaseroot)
+        newcase.set_value("CONTINUE_RUN", "FALSE")
+        newcase.set_value("RESUBMIT", 0)
         newcase.set_value("CASE_HASH", newcase.new_hash())
 
         # Important, and subtle: Writability should NOT be copied because
         # this allows the copy to be modified without needing a "with" statement
         # which opens the door to tricky errors such as unflushed writes.
-        newcase._read_only_mode = True # pylint: disable=protected-access
+        newcase._read_only_mode = True  # pylint: disable=protected-access
 
         return newcase
 
@@ -298,7 +374,9 @@ class Case(object):
     def get_values(self, item, attribute=None, resolved=True, subgroup=None):
         for env_file in self._files:
             # Wait and resolve in self rather than in env_file
-            results = env_file.get_values(item, attribute, resolved=False, subgroup=subgroup)
+            results = env_file.get_values(
+                item, attribute, resolved=False, subgroup=subgroup
+            )
             if len(results) > 0:
                 new_results = []
                 if resolved:
@@ -326,7 +404,9 @@ class Case(object):
         result = None
         for env_file in self._files:
             # Wait and resolve in self rather than in env_file
-            result = env_file.get_value(item, attribute, resolved=False, subgroup=subgroup)
+            result = env_file.get_value(
+                item, attribute, resolved=False, subgroup=subgroup
+            )
 
             if result is not None:
                 if resolved and isinstance(result, six.string_types):
@@ -341,14 +421,16 @@ class Case(object):
         return result
 
     def get_record_fields(self, variable, field):
-        """ get_record_fields gets individual requested field from an entry_id file
-        this routine is used only by xmlquery """
+        """get_record_fields gets individual requested field from an entry_id file
+        this routine is used only by xmlquery"""
         # Empty result
         result = []
 
         for env_file in self._env_entryid_files:
             # Wait and resolve in self rather than in env_file
-            logger.debug("(get_record_field) Searching in {}".format(env_file.__class__.__name__))
+            logger.debug(
+                "(get_record_field) Searching in {}".format(env_file.__class__.__name__)
+            )
             if field == "varid":
                 roots = env_file.scan_children("entry")
             else:
@@ -398,27 +480,42 @@ class Case(object):
     def get_resolved_value(self, item, recurse=0, allow_unresolved_envvars=False):
         num_unresolved = item.count("$") if item else 0
         recurse_limit = 10
-        if (num_unresolved > 0 and recurse < recurse_limit ):
+        if num_unresolved > 0 and recurse < recurse_limit:
             for env_file in self._env_entryid_files:
-                item = env_file.get_resolved_value(item,
-                                                   allow_unresolved_envvars=allow_unresolved_envvars)
-            if ("$" not in item):
+                item = env_file.get_resolved_value(
+                    item, allow_unresolved_envvars=allow_unresolved_envvars
+                )
+            if "$" not in item:
                 return item
             else:
-                item = self.get_resolved_value(item, recurse=recurse+1,
-                                               allow_unresolved_envvars=allow_unresolved_envvars)
+                item = self.get_resolved_value(
+                    item,
+                    recurse=recurse + 1,
+                    allow_unresolved_envvars=allow_unresolved_envvars,
+                )
 
         return item
 
-    def set_value(self, item, value, subgroup=None, ignore_type=False, allow_undefined=False, return_file=False):
+    def set_value(
+        self,
+        item,
+        value,
+        subgroup=None,
+        ignore_type=False,
+        allow_undefined=False,
+        return_file=False,
+    ):
         """
         If a file has been defined, and the variable is in the file,
         then that value will be set in the file object and the resovled value
         is returned unless return_file is True, in which case (resolved_value, filename)
         is returned where filename is the name of the modified file.
         """
-        expect(not self._read_only_mode, "Cannot modify case, read_only. "
-               "Case must be opened with read_only=False and can only be modified within a context manager")
+        expect(
+            not self._read_only_mode,
+            "Cannot modify case, read_only. "
+            "Case must be opened with read_only=False and can only be modified within a context manager",
+        )
 
         if item == "CASEROOT":
             self._caseroot = value
@@ -426,43 +523,54 @@ class Case(object):
 
         for env_file in self._files:
             result = env_file.set_value(item, value, subgroup, ignore_type)
-            if (result is not None):
+            if result is not None:
                 logger.debug("Will rewrite file {} {}".format(env_file.filename, item))
                 return (result, env_file.filename) if return_file else result
 
         if len(self._files) == 1:
-            expect(allow_undefined or result is not None,
-                   "No variable {} found in file {}".format(item, self._files[0].filename))
+            expect(
+                allow_undefined or result is not None,
+                "No variable {} found in file {}".format(item, self._files[0].filename),
+            )
         else:
-            expect(allow_undefined or result is not None,
-                   "No variable {} found in case".format(item))
+            expect(
+                allow_undefined or result is not None,
+                "No variable {} found in case".format(item),
+            )
 
     def set_valid_values(self, item, valid_values):
         """
         Update or create a valid_values entry for item and populate it
         """
-        expect(not self._read_only_mode, "Cannot modify case, read_only. "
-               "Case must be opened with read_only=False and can only be modified within a context manager")
+        expect(
+            not self._read_only_mode,
+            "Cannot modify case, read_only. "
+            "Case must be opened with read_only=False and can only be modified within a context manager",
+        )
 
         result = None
         for env_file in self._env_entryid_files:
             result = env_file.set_valid_values(item, valid_values)
-            if (result is not None):
+            if result is not None:
                 logger.debug("Will rewrite file {} {}".format(env_file.filename, item))
                 return result
 
     def set_lookup_value(self, item, value):
         if item in self.lookups and self.lookups[item] is not None:
-            logger.warning("Item {} already in lookups with value {}".format(item,self.lookups[item]))
+            logger.warning(
+                "Item {} already in lookups with value {}".format(
+                    item, self.lookups[item]
+                )
+            )
         else:
-            logger.debug("Setting in lookups: item {}, value {}".format(item,value))
+            logger.debug("Setting in lookups: item {}, value {}".format(item, value))
             self.lookups[item] = value
 
     def clean_up_lookups(self, allow_undefined=False):
         # put anything in the lookups table into existing env objects
-        for key,value in list(self.lookups.items()):
+        for key, value in list(self.lookups.items()):
             logger.debug("lookup key {} value {}".format(key, value))
-            result = self.set_value(key,value, allow_undefined=allow_undefined)
+            result = self.set_value(key, value, allow_undefined=allow_undefined)
             if result is not None:
                 del self.lookups[key]
 
@@ -481,48 +589,69 @@ class Case(object):
         science_support = []
         compset_alias = None
         components = files.get_components("COMPSETS_SPEC_FILE")
-        logger.debug(" Possible components for COMPSETS_SPEC_FILE are {}".format(components))
+        logger.debug(
+            " Possible components for COMPSETS_SPEC_FILE are {}".format(components)
+        )
 
         self.set_lookup_value("COMP_INTERFACE", self._comp_interface)
-        if self._cime_model == 'ufs':
+        if self._cime_model == "ufs":
             ufs_driver = os.environ.get("UFS_DRIVER")
             attribute = None
             if ufs_driver:
-                attribute = {"component":"nems"}
-            comp_root_dir_cpl = files.get_value("COMP_ROOT_DIR_CPL", attribute=attribute)
-        elif self._cime_model == 'cesm':
+                attribute = {"component": "nems"}
+            comp_root_dir_cpl = files.get_value(
+                "COMP_ROOT_DIR_CPL", attribute=attribute
+            )
+        elif self._cime_model == "cesm":
             comp_root_dir_cpl = files.get_value("COMP_ROOT_DIR_CPL")
 
-        if self._cime_model in ('cesm','ufs'):
-            self.set_lookup_value("COMP_ROOT_DIR_CPL",comp_root_dir_cpl)
+        if self._cime_model in ("cesm", "ufs"):
+            self.set_lookup_value("COMP_ROOT_DIR_CPL", comp_root_dir_cpl)
 
         # Loop through all of the files listed in COMPSETS_SPEC_FILE and find the file
         # that has a match for either the alias or the longname in that order
         for component in components:
 
             # Determine the compsets file for this component
-            compsets_filename = files.get_value("COMPSETS_SPEC_FILE", {"component":component})
+            compsets_filename = files.get_value(
+                "COMPSETS_SPEC_FILE", {"component": component}
+            )
 
             # If the file exists, read it and see if there is a match for the compset alias or longname
-            if (os.path.isfile(compsets_filename)):
+            if os.path.isfile(compsets_filename):
                 compsets = Compsets(compsets_filename)
-                match, compset_alias, science_support = compsets.get_compset_match(name=compset_name)
+                match, compset_alias, science_support = compsets.get_compset_match(
+                    name=compset_name
+                )
                 if match is not None:
                     self._compsetname = match
                     logger.info("Compset longname is {}".format(match))
-                    logger.info("Compset specification file is {}".format(compsets_filename))
+                    logger.info(
+                        "Compset specification file is {}".format(compsets_filename)
+                    )
                     break
 
         if compset_alias is None:
-            logger.info("Did not find an alias or longname compset match for {} ".format(compset_name))
+            logger.info(
+                "Did not find an alias or longname compset match for {} ".format(
+                    compset_name
+                )
+            )
             self._compsetname = compset_name
 
         # Fill in compset name
-        self._compsetname, self._components = self.valid_compset(self._compsetname, compset_alias, files)
+        self._compsetname, self._components = self.valid_compset(
+            self._compsetname, compset_alias, files
+        )
 
         # if this is a valiid compset longname there will be at least 7 components.
         components = self.get_compset_components()
-        expect(len(components) > 6, "No compset alias {} found and this does not appear to be a compset longname.".format(compset_name))
+        expect(
+            len(components) > 6,
+            "No compset alias {} found and this does not appear to be a compset longname.".format(
+                compset_name
+            ),
+        )
 
         return compset_alias, science_support
 
@@ -542,15 +671,24 @@ class Case(object):
             if comp == "CPL":
                 continue
             spec[comp] = self.get_value("COMP_{}".format(comp))
-            notprogcomps = ("D{}".format(comp),"X{}".format(comp),"S{}".format(comp))
+            notprogcomps = ("D{}".format(comp), "X{}".format(comp), "S{}".format(comp))
             if spec[comp].upper() in notprogcomps:
                 progcomps[comp] = False
             else:
                 progcomps[comp] = True
-        expect("ATM" in progcomps and "LND" in progcomps and "OCN" in progcomps and \
-               "ICE" in progcomps, " Not finding expected components in {}".format(self._component_classes))
-        if progcomps["ATM"] and progcomps["LND"] and progcomps["OCN"] and \
-           progcomps["ICE"]:
+        expect(
+            "ATM" in progcomps
+            and "LND" in progcomps
+            and "OCN" in progcomps
+            and "ICE" in progcomps,
+            " Not finding expected components in {}".format(self._component_classes),
+        )
+        if (
+            progcomps["ATM"]
+            and progcomps["LND"]
+            and progcomps["OCN"]
+            and progcomps["ICE"]
+        ):
             primary_component = "allactive"
         elif progcomps["LND"] and progcomps["OCN"] and progcomps["ICE"]:
             # this is a "J" compset
@@ -600,6 +738,10 @@ class Case(object):
         >>> caseroot = os.path.join(workdir, 'caseroot')  # use non-existent caseroot to avoid error about not being a valid case directory in Case __init__ method
         >>> Case(caseroot, read_only=False)._valid_compset_impl('2000_DATM%NYF_SLND_DICE%SSMI_DOCN%DOM_DROF%NYF_SGLC_SWAV', None, ['CPL', 'ATM', 'LND', 'ICE', 'OCN', 'ROF', 'GLC', 'WAV', 'ESP'], {'datm':1,'satm':1,'dlnd':2,'slnd':2,'dice':3,'sice':3,'docn':4,'socn':4,'drof':5,'srof':5,'sglc':6,'swav':7,'ww3':7,'sesp':8})
         ('2000_DATM%NYF_SLND_DICE%SSMI_DOCN%DOM_DROF%NYF_SGLC_SWAV_SESP', ['2000', 'DATM%NYF', 'SLND', 'DICE%SSMI', 'DOCN%DOM', 'DROF%NYF', 'SGLC', 'SWAV', 'SESP'])
+        >>> Case(caseroot, read_only=False)._valid_compset_impl('2000_DATM%NYF_SLND_DICE%SSMI_DOCN%DOM_DROF%NYF_SGLC_SWAV', None, ['CPL', 'ATM', 'LND', 'ICE', 'OCN', 'ROF', 'GLC', 'WAV', 'ESP'], {'datm':1,'satm':1,'dlnd':2,'slnd':2,'dice':3,'sice':3,'docn':4,'socn':4,'drof':5,'srof':5,'sglc':6,'swav':7,'ww3':7,'sesp':8})
+        ('2000_DATM%NYF_SLND_DICE%SSMI_DOCN%DOM_DROF%NYF_SGLC_SWAV_SESP', ['2000', 'DATM%NYF', 'SLND', 'DICE%SSMI', 'DOCN%DOM', 'DROF%NYF', 'SGLC', 'SWAV', 'SESP'])
+        >>> Case(caseroot, read_only=False)._valid_compset_impl('atm:DATM%NYF_rof:DROF%NYF_scn:2000_ice:DICE%SSMI_ocn:DOCN%DOM', None, ['CPL', 'ATM', 'LND', 'ICE', 'OCN', 'ROF', 'GLC', 'WAV', 'ESP'], {'datm':1,'satm':1,'dlnd':2,'slnd':2,'dice':3,'sice':3,'docn':4,'socn':4,'drof':5,'srof':5,'sglc':6,'swav':7,'ww3':7,'sesp':8})
+        ('2000_DATM%NYF_SLND_DICE%SSMI_DOCN%DOM_DROF%NYF_SGLC_SWAV_SESP', ['2000', 'DATM%NYF', 'SLND', 'DICE%SSMI', 'DOCN%DOM', 'DROF%NYF', 'SGLC', 'SWAV', 'SESP'])
         >>> Case(caseroot, read_only=False)._valid_compset_impl('2000_DATM%NYF_DICE%SSMI_DOCN%DOM_DROF%NYF', None, ['CPL', 'ATM', 'LND', 'ICE', 'OCN', 'ROF', 'GLC', 'WAV', 'ESP'], {'datm':1,'satm':1,'dlnd':2,'slnd':2,'dice':3,'sice':3,'docn':4,'socn':4,'drof':5,'srof':5,'sglc':6,'swav':7,'ww3':7,'sesp':8})
         ('2000_DATM%NYF_SLND_DICE%SSMI_DOCN%DOM_DROF%NYF_SGLC_SWAV_SESP', ['2000', 'DATM%NYF', 'SLND', 'DICE%SSMI', 'DOCN%DOM', 'DROF%NYF', 'SGLC', 'SWAV', 'SESP'])
         >>> Case(caseroot, read_only=False)._valid_compset_impl('2000_DICE%SSMI_DOCN%DOM_DATM%NYF_DROF%NYF', None, ['CPL', 'ATM', 'LND', 'ICE', 'OCN', 'ROF', 'GLC', 'WAV', 'ESP'], {'datm':1,'satm':1,'dlnd':2,'slnd':2,'dice':3,'sice':3,'docn':4,'socn':4,'drof':5,'srof':5,'sglc':6,'swav':7,'ww3':7,'sesp':8})
@@ -619,21 +761,36 @@ class Case(object):
         >>> shutil.rmtree(workdir, ignore_errors=True)
         """
         # Find the models declared in the compset
-        model_set = [None]*len(comp_classes)
-        components = compset_name.split('_')
-        model_set[0] = components[0]
+        model_set = [None] * len(comp_classes)
+        components = compset_name.split("_")
         noncomps = []
         allstubs = True
+        colonformat = ":" in compset_name
+        if colonformat:
+            # make sure that scn: is component[0] as expected
+            for i in range(1, len(components)):
+                if components[i].startswith("scn:"):
+                    tmp = components[0]
+                    components[0] = components[i]
+                    components[i] = tmp
+                    break
+
+            model_set[0] = components[0][4:]
+        else:
+            model_set[0] = components[0]
+
         for model in components[1:]:
             match = Case.__mod_match_re__.match(model.lower())
             expect(match is not None, "No model match for {}".format(model))
             mod_match = match.group(1)
             # Check for noncomponent appends (BGC & TEST)
-            if mod_match in ('bgc', 'test'):
+            if mod_match in ("bgc", "test"):
                 noncomps.append(model)
+            elif ":" in mod_match:
+                comp_ind = comp_hash[mod_match[4:]]
+                model_set[comp_ind] = model
             else:
-                expect(mod_match in comp_hash,
-                       "Unknown model type, {}".format(model))
+                expect(mod_match in comp_hash, "Unknown model type, {}".format(model))
                 comp_ind = comp_hash[mod_match]
                 model_set[comp_ind] = model
 
@@ -641,19 +798,25 @@ class Case(object):
         for comp_ind in range(1, len(model_set)):
             if model_set[comp_ind] is None:
                 comp_class = comp_classes[comp_ind]
-                stub = 'S' + comp_class
+                stub = "S" + comp_class
                 logger.info("Automatically adding {} to compset".format(stub))
                 model_set[comp_ind] = stub
-            elif model_set[comp_ind][0] != 'S':
+            elif ":" in model_set[comp_ind]:
+                model_set[comp_ind] = model_set[comp_ind][4:]
+
+            if model_set[comp_ind][0] != "S":
                 allstubs = False
 
-        expect((compset_alias is not None) or (not allstubs),
-               'Invalid compset name, {}, all stub components generated'.format(compset_name))
+        expect(
+            (compset_alias is not None) or (not allstubs),
+            "Invalid compset name, {}, all stub components generated".format(
+                compset_name
+            ),
+        )
         # Return the completed compset
-        compsetname = '_'.join(model_set)
+        compsetname = "_".join(model_set)
         for noncomp in noncomps:
-            compsetname = compsetname + '_' + noncomp
-
+            compsetname = compsetname + "_" + noncomp
         return compsetname, model_set
 
     # RE to match component type name without optional piece (stuff after %).
@@ -675,28 +838,30 @@ class Case(object):
         drv_config_file = files.get_value("CONFIG_CPL_FILE")
         drv_comp = Component(drv_config_file, "CPL")
         comp_classes = drv_comp.get_valid_model_components()
-        comp_hash = {} # Hash model name to component class index
+        comp_hash = {}  # Hash model name to component class index
         for comp_ind in range(1, len(comp_classes)):
             comp = comp_classes[comp_ind]
             # Find list of models for component class
             # List can be in different locations, check CONFIG_XXX_FILE
-            node_name = 'CONFIG_{}_FILE'.format(comp)
+            node_name = "CONFIG_{}_FILE".format(comp)
             models = files.get_components(node_name)
             if (models is None) or (None in models):
                 # Backup, check COMP_ROOT_DIR_XXX
-                node_name = 'COMP_ROOT_DIR_' + comp
+                node_name = "COMP_ROOT_DIR_" + comp
                 models = files.get_components(node_name)
 
-            expect((models is not None) and (None not in models),
-                   "Unable to find list of supported components")
+            expect(
+                (models is not None) and (None not in models),
+                "Unable to find list of supported components",
+            )
 
             for model in models:
                 mod_match = Case.__mod_match_re__.match(model.lower()).group(1)
                 comp_hash[mod_match] = comp_ind
 
-        return self._valid_compset_impl(compset_name, compset_alias,
-                                        comp_classes, comp_hash)
-
+        return self._valid_compset_impl(
+            compset_name, compset_alias, comp_classes, comp_hash
+        )
 
     def _set_info_from_primary_component(self, files, pesfile=None):
         """
@@ -707,55 +872,70 @@ class Case(object):
         """
         component = self.get_primary_component()
 
-        compset_spec_file = files.get_value("COMPSETS_SPEC_FILE",
-                                            {"component":component}, resolved=False)
+        compset_spec_file = files.get_value(
+            "COMPSETS_SPEC_FILE", {"component": component}, resolved=False
+        )
 
-        self.set_lookup_value("COMPSETS_SPEC_FILE" ,compset_spec_file)
+        self.set_lookup_value("COMPSETS_SPEC_FILE", compset_spec_file)
         if pesfile is None:
-            self._pesfile = files.get_value("PES_SPEC_FILE", {"component":component})
-            pesfile_unresolved = files.get_value("PES_SPEC_FILE", {"component":component}, resolved=False)
+            self._pesfile = files.get_value("PES_SPEC_FILE", {"component": component})
+            pesfile_unresolved = files.get_value(
+                "PES_SPEC_FILE", {"component": component}, resolved=False
+            )
             logger.info("Pes     specification file is {}".format(self._pesfile))
         else:
             self._pesfile = pesfile
             pesfile_unresolved = pesfile
-        expect(self._pesfile is not None,"No pesfile found for component {}".format(component))
+        expect(
+            self._pesfile is not None,
+            "No pesfile found for component {}".format(component),
+        )
 
         self.set_lookup_value("PES_SPEC_FILE", pesfile_unresolved)
 
-        tests_filename = files.get_value("TESTS_SPEC_FILE", {"component":component}, resolved=False)
-        tests_mods_dir = files.get_value("TESTS_MODS_DIR" , {"component":component}, resolved=False)
-        user_mods_dir  = files.get_value("USER_MODS_DIR"  , {"component":component}, resolved=False)
+        tests_filename = files.get_value(
+            "TESTS_SPEC_FILE", {"component": component}, resolved=False
+        )
+        tests_mods_dir = files.get_value(
+            "TESTS_MODS_DIR", {"component": component}, resolved=False
+        )
+        user_mods_dir = files.get_value(
+            "USER_MODS_DIR", {"component": component}, resolved=False
+        )
         self.set_lookup_value("TESTS_SPEC_FILE", tests_filename)
-        self.set_lookup_value("TESTS_MODS_DIR" , tests_mods_dir)
-        self.set_lookup_value("USER_MODS_DIR"  , user_mods_dir)
-
+        self.set_lookup_value("TESTS_MODS_DIR", tests_mods_dir)
+        self.set_lookup_value("USER_MODS_DIR", user_mods_dir)
 
     def get_compset_components(self):
-        #If are doing a create_clone then, self._compsetname is not set yet
+        # If are doing a create_clone then, self._compsetname is not set yet
         components = []
         compset = self.get_value("COMPSET")
         if compset is None:
             compset = self._compsetname
-        expect(compset is not None,
-               "compset is not set")
+        expect(compset is not None, "compset is not set")
         # the first element is always the date operator - skip it
-        elements = compset.split('_')[1:] # pylint: disable=maybe-no-member
+        elements = compset.split("_")[1:]  # pylint: disable=maybe-no-member
         for element in elements:
+            if ":" in element:
+                element = element[4:]
             # ignore the possible BGC or TEST modifier
             if element.startswith("BGC%") or element.startswith("TEST"):
                 continue
             else:
-                element_component = element.split('%')[0].lower()
-                if "ww" not in element_component and "fv3" not in element_component and "cice" not in element_component:
-                    element_component = re.sub(r'[0-9]*',"",element_component)
+                element_component = element.split("%")[0].lower()
+                if (
+                    "ww" not in element_component
+                    and "fv3" not in element_component
+                    and "cice" not in element_component
+                ):
+                    element_component = re.sub(r"[0-9]*", "", element_component)
                 components.append(element_component)
         return components
-
 
     def __iter__(self):
         for entryid_file in self._env_entryid_files:
             for key, val in entryid_file:
-                if isinstance(val, six.string_types) and '$' in val:
+                if isinstance(val, six.string_types) and "$" in val:
                     yield key, self.get_resolved_value(val)
                 else:
                     yield key, val
@@ -768,7 +948,11 @@ class Case(object):
     def _get_component_config_data(self, files):
         # attributes used for multi valued defaults
         # attlist is a dictionary used to determine the value element that has the most matches
-        attlist = {"compset":self._compsetname, "grid":self._gridname, "cime_model":self._cime_model}
+        attlist = {
+            "compset": self._compsetname,
+            "grid": self._gridname,
+            "cime_model": self._cime_model,
+        }
 
         # Determine list of component classes that this coupler/driver knows how
         # to deal with. This list follows the same order as compset longnames follow.
@@ -782,14 +966,26 @@ class Case(object):
         for env_file in self._env_entryid_files:
             env_file.add_elements_by_group(drv_comp, attributes=attlist)
 
-        drv_config_file_model_specific = files.get_value("CONFIG_CPL_FILE_MODEL_SPECIFIC")
-        expect(os.path.isfile(drv_config_file_model_specific),
-               "No {} specific file found for driver {}".format(get_model(),self._comp_interface))
-        drv_comp_model_specific = Component(drv_config_file_model_specific, 'CPL')
+        drv_config_file_model_specific = files.get_value(
+            "CONFIG_CPL_FILE_MODEL_SPECIFIC"
+        )
+        expect(
+            os.path.isfile(drv_config_file_model_specific),
+            "No {} specific file found for driver {}".format(
+                get_model(), self._comp_interface
+            ),
+        )
+        drv_comp_model_specific = Component(drv_config_file_model_specific, "CPL")
 
-        self._component_description["forcing"] = drv_comp_model_specific.get_forcing_description(self._compsetname)
-        logger.info("Compset forcing is {}".format(self._component_description["forcing"]))
-        self._component_description["CPL"] = drv_comp_model_specific.get_description(self._compsetname)
+        self._component_description[
+            "forcing"
+        ] = drv_comp_model_specific.get_forcing_description(self._compsetname)
+        logger.info(
+            "Compset forcing is {}".format(self._component_description["forcing"])
+        )
+        self._component_description["CPL"] = drv_comp_model_specific.get_description(
+            self._compsetname
+        )
         if len(self._component_description["CPL"]) > 0:
             logger.info("Com forcing is {}".format(self._component_description["CPL"]))
         for env_file in self._env_entryid_files:
@@ -802,18 +998,22 @@ class Case(object):
         self.set_comp_classes(drv_comp.get_valid_model_components())
 
         # will need a change here for new cpl components
-        root_dir_node_name = 'COMP_ROOT_DIR_CPL'
-        comp_root_dir = files.get_value(root_dir_node_name, {"component":self._comp_interface}, resolved=False)
+        root_dir_node_name = "COMP_ROOT_DIR_CPL"
+        comp_root_dir = files.get_value(
+            root_dir_node_name, {"component": self._comp_interface}, resolved=False
+        )
 
         if comp_root_dir is not None:
             self.set_value(root_dir_node_name, comp_root_dir)
 
-        for i in range(1,len(self._component_classes)):
+        for i in range(1, len(self._component_classes)):
             comp_class = self._component_classes[i]
-            comp_name  = self._components[i-1]
-            root_dir_node_name = 'COMP_ROOT_DIR_' + comp_class
-            node_name = 'CONFIG_' + comp_class + '_FILE'
-            compatt = {"component":comp_name}
+            comp_name = self._components[i - 1]
+            if ":" in comp_name:
+                comp_name = comp_name[4:]
+            root_dir_node_name = "COMP_ROOT_DIR_" + comp_class
+            node_name = "CONFIG_" + comp_class + "_FILE"
+            compatt = {"component": comp_name}
             comp_root_dir = files.get_value(root_dir_node_name, compatt, resolved=False)
             if comp_root_dir is not None:
                 self.set_value(root_dir_node_name, comp_root_dir)
@@ -821,47 +1021,73 @@ class Case(object):
             # Add the group and elements for the config_files.xml
 
             comp_config_file = files.get_value(node_name, compatt, resolved=False)
-            expect(comp_config_file is not None,"No component {} found for class {}".format(comp_name, comp_class))
+            expect(
+                comp_config_file is not None,
+                "No component {} found for class {}".format(comp_name, comp_class),
+            )
             self.set_value(node_name, comp_config_file)
-            comp_config_file =  files.get_value(node_name, compatt)
+            comp_config_file = files.get_value(node_name, compatt)
 
-            expect(comp_config_file is not None and os.path.isfile(comp_config_file),
-                   "Config file {} for component {} not found.".format(comp_config_file, comp_name))
+            expect(
+                comp_config_file is not None and os.path.isfile(comp_config_file),
+                "Config file {} for component {} not found.".format(
+                    comp_config_file, comp_name
+                ),
+            )
             compobj = Component(comp_config_file, comp_class)
             # For files following version 3 schema this also checks the compsetname validity
 
-            self._component_description[comp_class] = compobj.get_description(self._compsetname)
-            expect(self._component_description[comp_class] is not None,
-                   "No description found in file {} for component {} in comp_class {}".format(comp_config_file, comp_name, comp_class))
-            logger.info("{} component is {}".format(comp_class, self._component_description[comp_class]))
+            self._component_description[comp_class] = compobj.get_description(
+                self._compsetname
+            )
+            expect(
+                self._component_description[comp_class] is not None,
+                "No description found in file {} for component {} in comp_class {}".format(
+                    comp_config_file, comp_name, comp_class
+                ),
+            )
+            logger.info(
+                "{} component is {}".format(
+                    comp_class, self._component_description[comp_class]
+                )
+            )
             for env_file in self._env_entryid_files:
                 env_file.add_elements_by_group(compobj, attributes=attlist)
-        self.clean_up_lookups(allow_undefined=self._comp_interface=='nuopc')
+        self.clean_up_lookups(allow_undefined=self._comp_interface == "nuopc")
 
     def _setup_mach_pes(self, pecount, multi_driver, ninst, machine_name, mpilib):
-        #--------------------------------------------
+        # --------------------------------------------
         # pe layout
-        #--------------------------------------------
+        # --------------------------------------------
         mach_pes_obj = None
         # self._pesfile may already be env_mach_pes.xml if so we can just return
         gfile = GenericXML(infile=self._pesfile)
         ftype = gfile.get_id()
-        expect(ftype == "env_mach_pes.xml" or ftype == "config_pes", " Do not recognize {} as a valid CIME pes file {}".format(self._pesfile, ftype))
+        expect(
+            ftype == "env_mach_pes.xml" or ftype == "config_pes",
+            " Do not recognize {} as a valid CIME pes file {}".format(
+                self._pesfile, ftype
+            ),
+        )
         if ftype == "env_mach_pes.xml":
-            new_mach_pes_obj = EnvMachPes(infile=self._pesfile, components=self._component_classes, comp_interface=self._comp_interface)
+            new_mach_pes_obj = EnvMachPes(
+                infile=self._pesfile,
+                components=self._component_classes,
+                comp_interface=self._comp_interface,
+            )
             self.update_env(new_mach_pes_obj, "mach_pes", blow_away=True)
             return new_mach_pes_obj.get_value("TOTALPES")
 
         pesobj = Pes(self._pesfile)
 
-        match1 = re.match('(.+)x([0-9]+)', "" if pecount is None else pecount)
-        match2 = re.match('([0-9]+)', "" if pecount is None else pecount)
+        match1 = re.match("(.+)x([0-9]+)", "" if pecount is None else pecount)
+        match2 = re.match("([0-9]+)", "" if pecount is None else pecount)
 
         pes_ntasks = {}
         pes_nthrds = {}
         pes_rootpe = {}
         pes_pstrid = {}
-        other      = {}
+        other = {}
         comment = None
         force_tasks = None
         force_thrds = None
@@ -871,15 +1097,34 @@ class Case(object):
             if opti_tasks.isdigit():
                 force_tasks = int(opti_tasks)
             else:
-                pes_ntasks = pesobj.find_pes_layout(self._gridname, self._compsetname, machine_name,
-                                                    pesize_opts=opti_tasks, mpilib=mpilib)[0]
+                pes_ntasks = pesobj.find_pes_layout(
+                    self._gridname,
+                    self._compsetname,
+                    machine_name,
+                    pesize_opts=opti_tasks,
+                    mpilib=mpilib,
+                )[0]
             force_thrds = int(match1.group(2))
         elif match2:
             force_tasks = int(match2.group(1))
-            pes_nthrds = pesobj.find_pes_layout(self._gridname, self._compsetname, machine_name, mpilib=mpilib)[1]
+            pes_nthrds = pesobj.find_pes_layout(
+                self._gridname, self._compsetname, machine_name, mpilib=mpilib
+            )[1]
         else:
-            pes_ntasks, pes_nthrds, pes_rootpe, pes_pstrid, other, comment = pesobj.find_pes_layout(self._gridname, self._compsetname,
-                                                                               machine_name, pesize_opts=pecount, mpilib=mpilib)
+            (
+                pes_ntasks,
+                pes_nthrds,
+                pes_rootpe,
+                pes_pstrid,
+                other,
+                comment,
+            ) = pesobj.find_pes_layout(
+                self._gridname,
+                self._compsetname,
+                machine_name,
+                pesize_opts=pecount,
+                mpilib=mpilib,
+            )
 
         if match1 or match2:
             for component_class in self._component_classes:
@@ -915,7 +1160,7 @@ class Case(object):
             rootpe = pes_rootpe[rootpe_str] if rootpe_str in pes_rootpe else 0
             pstrid = pes_pstrid[pstrid_str] if pstrid_str in pes_pstrid else 1
 
-            totaltasks.append( (ntasks + rootpe) * nthrds )
+            totaltasks.append((ntasks + rootpe) * nthrds)
 
             mach_pes_obj.set_value(ntasks_str, ntasks)
             mach_pes_obj.set_value(nthrds_str, nthrds)
@@ -932,54 +1177,76 @@ class Case(object):
 
             key = "NTASKS_{}".format(compclass)
             if key not in pes_ntasks:
-                mach_pes_obj.set_value(key,1)
+                mach_pes_obj.set_value(key, 1)
             key = "NTHRDS_{}".format(compclass)
             if compclass not in pes_nthrds:
-                mach_pes_obj.set_value(compclass,1)
+                mach_pes_obj.set_value(compclass, 1)
         if multi_driver:
             mach_pes_obj.set_value("MULTI_DRIVER", True)
 
+    def configure(
+        self,
+        compset_name,
+        grid_name,
+        machine_name=None,
+        project=None,
+        pecount=None,
+        compiler=None,
+        mpilib=None,
+        pesfile=None,
+        gridfile=None,
+        multi_driver=False,
+        ninst=1,
+        test=False,
+        walltime=None,
+        queue=None,
+        output_root=None,
+        run_unsupported=False,
+        answer=None,
+        input_dir=None,
+        driver=None,
+        workflowid="default",
+        non_local=False,
+        extra_machines_dir=None,
+        case_group=None,
+        ngpus_per_node=0,
+    ):
 
-    def configure(self, compset_name, grid_name, machine_name=None,
-                  project=None, pecount=None, compiler=None, mpilib=None,
-                  pesfile=None, gridfile=None,
-                  multi_driver=False, ninst=1, test=False,
-                  walltime=None, queue=None, output_root=None,
-                  run_unsupported=False, answer=None,
-                  input_dir=None, driver=None, workflowid="default",
-                  non_local=False, extra_machines_dir=None, case_group=None,
-                  ngpus_per_node=0):
-
-        expect(check_name(compset_name, additional_chars='.'), "Invalid compset name {}".format(compset_name))
+        expect(
+            check_name(compset_name, additional_chars="."),
+            "Invalid compset name {}".format(compset_name),
+        )
 
         self._comp_interface = driver
-        #--------------------------------------------
+        # --------------------------------------------
         # compset, pesfile, and compset components
-        #--------------------------------------------
+        # --------------------------------------------
         files = Files(comp_interface=self._comp_interface)
 
-        #--------------------------------------------
+        # --------------------------------------------
         # find and/or fill out compset name
-        #--------------------------------------------
+        # --------------------------------------------
 
         compset_alias, science_support = self._set_compset(compset_name, files)
 
         self._components = self.get_compset_components()
 
-        #--------------------------------------------
+        # --------------------------------------------
         # grid
-        #--------------------------------------------
-        grids = Grids(gridfile)
+        # --------------------------------------------
+        grids = Grids(gridfile, comp_interface=driver)
 
-        gridinfo = grids.get_grid_info(name=grid_name, compset=self._compsetname, driver=self._comp_interface)
+        gridinfo = grids.get_grid_info(
+            name=grid_name, compset=self._compsetname, driver=self._comp_interface
+        )
         self._gridname = gridinfo["GRID"]
-        for key,value in list(gridinfo.items()):
-            logger.debug("Set grid {} {}".format(key,value))
-            self.set_lookup_value(key,value)
+        for key, value in list(gridinfo.items()):
+            logger.debug("Set grid {} {}".format(key, value))
+            self.set_lookup_value(key, value)
 
-        #--------------------------------------------
+        # --------------------------------------------
         # component config data
-        #--------------------------------------------
+        # --------------------------------------------
 
         self._get_component_config_data(files)
 
@@ -995,9 +1262,9 @@ class Case(object):
 
         self.clean_up_lookups(allow_undefined=True)
 
-        #--------------------------------------------
+        # --------------------------------------------
         # machine
-        #--------------------------------------------
+        # --------------------------------------------
         # set machine values in env_xxx files
         if extra_machines_dir:
             self.set_value("EXTRA_MACHDIR", extra_machines_dir)
@@ -1006,15 +1273,27 @@ class Case(object):
         machine_name = machobj.get_machine_name()
         self.set_value("MACH", machine_name)
         if probed_machine != machine_name and probed_machine is not None:
-            logger.warning("WARNING: User-selected machine '{}' does not match probed machine '{}'".format(machine_name, probed_machine))
+            logger.warning(
+                "WARNING: User-selected machine '{}' does not match probed machine '{}'".format(
+                    machine_name, probed_machine
+                )
+            )
         else:
             logger.info("Machine is {}".format(machine_name))
 
         nodenames = machobj.get_node_names()
-        nodenames = [x for x in nodenames if
-                     '_system' not in x and '_variables' not in x and 'mpirun' not in x and\
-                     'COMPILER' not in x and 'MPILIB' not in x and 'MAX_MPITASKS_PER_NODE' not in x and\
-                     'MAX_TASKS_PER_NODE' not in x and 'MAX_GPUS_PER_NODE' not in x]
+        nodenames = [
+            x
+            for x in nodenames
+            if "_system" not in x
+            and "_variables" not in x
+            and "mpirun" not in x
+            and "COMPILER" not in x
+            and "MPILIB" not in x
+            and "MAX_MPITASKS_PER_NODE" not in x
+            and "MAX_TASKS_PER_NODE" not in x
+            and "MAX_GPUS_PER_NODE" not in x
+        ]
 
         for nodename in nodenames:
             value = machobj.get_value(nodename, resolved=False)
@@ -1027,59 +1306,80 @@ class Case(object):
         if compiler is None:
             compiler = machobj.get_default_compiler()
         else:
-            expect(machobj.is_valid_compiler(compiler),
-                   "compiler {} is not supported on machine {}".format(compiler, machine_name))
+            expect(
+                machobj.is_valid_compiler(compiler),
+                "compiler {} is not supported on machine {}".format(
+                    compiler, machine_name
+                ),
+            )
 
-        self.set_value("COMPILER",compiler)
+        self.set_value("COMPILER", compiler)
 
         if mpilib is None:
-            mpilib = machobj.get_default_MPIlib({"compiler":compiler})
+            mpilib = machobj.get_default_MPIlib({"compiler": compiler})
         else:
-            expect(machobj.is_valid_MPIlib(mpilib, {"compiler":compiler}),
-                   "MPIlib {} is not supported on machine {}".format(mpilib, machine_name))
-        self.set_value("MPILIB",mpilib)
-        for name in ("MAX_TASKS_PER_NODE","MAX_MPITASKS_PER_NODE","MAX_GPUS_PER_NODE"):
-            dmax = machobj.get_value(name,{'compiler':compiler})
+            expect(
+                machobj.is_valid_MPIlib(mpilib, {"compiler": compiler}),
+                "MPIlib {} is not supported on machine {}".format(mpilib, machine_name),
+            )
+        self.set_value("MPILIB", mpilib)
+        for name in (
+            "MAX_TASKS_PER_NODE",
+            "MAX_MPITASKS_PER_NODE",
+            "MAX_GPUS_PER_NODE",
+        ):
+            dmax = machobj.get_value(name, {"compiler": compiler})
             if not dmax:
                 dmax = machobj.get_value(name)
             if dmax:
                 self.set_value(name, dmax)
             else:
-                logger.warning("Variable {} not defined for machine {}".format(name, machine_name))
+                logger.warning(
+                    "Variable {} not defined for machine {}".format(name, machine_name)
+                )
 
         machdir = machobj.get_machines_dir()
         self.set_value("MACHDIR", machdir)
 
         # Create env_mach_specific settings from machine info.
         env_mach_specific_obj = self.get_env("mach_specific")
-        env_mach_specific_obj.populate(machobj, attributes={"mpilib":mpilib, "compiler":compiler,"threaded":self.get_build_threaded()})
+        env_mach_specific_obj.populate(
+            machobj,
+            attributes={
+                "mpilib": mpilib,
+                "compiler": compiler,
+                "threaded": self.get_build_threaded(),
+            },
+        )
 
         self._setup_mach_pes(pecount, multi_driver, ninst, machine_name, mpilib)
 
-        if multi_driver and int(ninst)>1:
+        if multi_driver and int(ninst) > 1:
             logger.info(" Driver/Coupler has %s instances" % ninst)
 
-        #--------------------------------------------
+        # --------------------------------------------
         # archiving system
-        #--------------------------------------------
+        # --------------------------------------------
         env_archive = self.get_env("archive")
-        infile_node = files.get_child("entry", {"id":"ARCHIVE_SPEC_FILE"})
+        infile_node = files.get_child("entry", {"id": "ARCHIVE_SPEC_FILE"})
         infile = files.get_default_value(infile_node)
         infile = self.get_resolved_value(infile)
         logger.debug("archive defaults located in {}".format(infile))
         archive = Archive(infile=infile, files=files)
         archive.setup(env_archive, self._components, files=files)
 
-        self.set_value("COMPSET",self._compsetname)
+        self.set_value("COMPSET", self._compsetname)
 
         self._set_pio_xml()
         logger.info(" Compset is: {} ".format(self._compsetname))
-        logger.info(" Grid is: {} ".format(self._gridname ))
+        logger.info(" Grid is: {} ".format(self._gridname))
         logger.info(" Components in compset are: {} ".format(self._components))
 
         if not test and not run_unsupported and self._cime_model == "cesm":
             if grid_name in science_support:
-                logger.info("\nThis is a CESM scientifically supported compset at this resolution.\n")
+                logger.info(
+                    "\nThis is a CESM scientifically supported compset at this resolution.\n"
+                )
             else:
                 self._check_testlists(compset_alias, grid_name, files)
 
@@ -1104,8 +1404,12 @@ class Case(object):
         output_root = os.path.abspath(output_root)
         self.set_value("CIME_OUTPUT_ROOT", output_root)
         if non_local:
-            self.set_value("EXEROOT", os.path.join(output_root, self.get_value("CASE"), "bld"))
-            self.set_value("RUNDIR", os.path.join(output_root, self.get_value("CASE"), "run"))
+            self.set_value(
+                "EXEROOT", os.path.join(output_root, self.get_value("CASE"), "bld")
+            )
+            self.set_value(
+                "RUNDIR", os.path.join(output_root, self.get_value("CASE"), "run")
+            )
             self.set_value("NONLOCAL", True)
 
         # Overwriting an existing exeroot or rundir can cause problems
@@ -1114,9 +1418,15 @@ class Case(object):
         for wdir in (exeroot, rundir):
             logging.debug("wdir is {}".format(wdir))
             if os.path.exists(wdir):
-                expect(not test, "Directory {} already exists, aborting test".format(wdir))
+                expect(
+                    not test, "Directory {} already exists, aborting test".format(wdir)
+                )
                 if answer is None:
-                    response = input("\nDirectory {} already exists, (r)eplace, (a)bort, or (u)se existing?".format(wdir))
+                    response = input(
+                        "\nDirectory {} already exists, (r)eplace, (a)bort, or (u)se existing?".format(
+                            wdir
+                        )
+                    )
                 else:
                     response = answer
 
@@ -1126,7 +1436,7 @@ class Case(object):
                     expect(response.startswith("u"), "Aborting by user request")
 
         # miscellaneous settings
-        if self.get_value("RUN_TYPE") == 'hybrid':
+        if self.get_value("RUN_TYPE") == "hybrid":
             self.set_value("GET_REFCASE", True)
 
         if case_group:
@@ -1136,13 +1446,13 @@ class Case(object):
         model = get_model()
         self.set_model_version(model)
         if model == "cesm" and not test:
-            self.set_value("DOUT_S",True)
+            self.set_value("DOUT_S", True)
             self.set_value("TIMER_LEVEL", 4)
 
         if test:
-            self.set_value("TEST",True)
+            self.set_value("TEST", True)
 
-        #----------------------------------------------------------------------------------------------------------
+        # ----------------------------------------------------------------------------------------------------------
         # Sanity check:
         #     1. We assume that there is always a string "gpu" in the compiler name if we want to enable GPU
         #     2. For compilers without the string "gpu" in the name:
@@ -1155,31 +1465,52 @@ class Case(object):
         #        3.2. if ngpus_per_node argument is larger than the value of MAX_GPUS_PER_NODE, the NGPUS_PER_NODE
         #             XML variable in the env_mach_pes.xml file would be set to MAX_GPUS_PER_NODE automatically.
         #        3.3. if ngpus-per-node argument is equal to 0, it will be updated to 1 automatically.
-        #----------------------------------------------------------------------------------------------------------
+        # ----------------------------------------------------------------------------------------------------------
         max_gpus_per_node = self.get_value("MAX_GPUS_PER_NODE")
         if max_gpus_per_node:
-            if  "gpu" in compiler:
+            if "gpu" in compiler:
                 if not ngpus_per_node:
                     ngpus_per_node = 1
-                    logger.warning("Setting ngpus_per_node to 1 for compiler {}".format(compiler))
-                expect(ngpus_per_node > 0," ngpus_per_node is expected > 0 for compiler {}; current value is {}".format(compiler, ngpus_per_node))
+                    logger.warning(
+                        "Setting ngpus_per_node to 1 for compiler {}".format(compiler)
+                    )
+                expect(
+                    ngpus_per_node > 0,
+                    " ngpus_per_node is expected > 0 for compiler {}; current value is {}".format(
+                        compiler, ngpus_per_node
+                    ),
+                )
             else:
-                expect(ngpus_per_node == 0," ngpus_per_node is expected = 0 for compiler {}; current value is {}".format(compiler, ngpus_per_node))
+                expect(
+                    ngpus_per_node == 0,
+                    " ngpus_per_node is expected = 0 for compiler {}; current value is {}".format(
+                        compiler, ngpus_per_node
+                    ),
+                )
             if ngpus_per_node >= 0:
-                self.set_value("NGPUS_PER_NODE", ngpus_per_node if ngpus_per_node <= max_gpus_per_node else max_gpus_per_node)
+                self.set_value(
+                    "NGPUS_PER_NODE",
+                    ngpus_per_node
+                    if ngpus_per_node <= max_gpus_per_node
+                    else max_gpus_per_node,
+                )
 
         self.initialize_derived_attributes()
 
-        #--------------------------------------------
+        # --------------------------------------------
         # batch system (must come after initialize_derived_attributes)
-        #--------------------------------------------
+        # --------------------------------------------
         env_batch = self.get_env("batch")
 
         batch_system_type = machobj.get_value("BATCH_SYSTEM")
 
         logger.info("Batch_system_type is {}".format(batch_system_type))
-        batch = Batch(batch_system=batch_system_type, machine=machine_name, files=files,
-                      extra_machines_dir=extra_machines_dir)
+        batch = Batch(
+            batch_system=batch_system_type,
+            machine=machine_name,
+            files=files,
+            extra_machines_dir=extra_machines_dir,
+        )
 
         workflow = Workflow(files=files)
 
@@ -1190,9 +1521,13 @@ class Case(object):
         env_workflow.create_job_groups(bjobs, test)
 
         if walltime:
-            self.set_value("USER_REQUESTED_WALLTIME", walltime, subgroup=self.get_primary_job())
+            self.set_value(
+                "USER_REQUESTED_WALLTIME", walltime, subgroup=self.get_primary_job()
+            )
         if queue:
-            self.set_value("USER_REQUESTED_QUEUE", queue, subgroup=self.get_primary_job())
+            self.set_value(
+                "USER_REQUESTED_QUEUE", queue, subgroup=self.get_primary_job()
+            )
 
         env_batch.set_job_defaults(bjobs, self)
 
@@ -1208,13 +1543,20 @@ class Case(object):
             self.set_value("DIN_LOC_ROOT", os.path.abspath(input_dir))
 
     def get_compset_var_settings(self, files):
-        infile=files.get_value("COMPSETS_SPEC_FILE",
-                              attribute={"component":self._primary_component})
+        infile = files.get_value(
+            "COMPSETS_SPEC_FILE", attribute={"component": self._primary_component}
+        )
         compset_obj = Compsets(infile=infile, files=files)
-        matches = compset_obj.get_compset_var_settings(self._compsetname, self._gridname)
+        matches = compset_obj.get_compset_var_settings(
+            self._compsetname, self._gridname
+        )
         for name, value in matches:
             if len(value) > 0:
-                logger.info("Compset specific settings: name is {} and value is {}".format(name, value))
+                logger.info(
+                    "Compset specific settings: name is {} and value is {}".format(
+                        name, value
+                    )
+                )
                 self.set_lookup_value(name, value)
 
     def set_initial_test_values(self):
@@ -1233,62 +1575,78 @@ class Case(object):
         compset = self.get_value("COMPSET")
         mpilib = self.get_value("MPILIB")
 
-        defaults = pioobj.get_defaults(grid=grid, compset=compset, mach=mach, compiler=compiler, mpilib=mpilib)
+        defaults = pioobj.get_defaults(
+            grid=grid, compset=compset, mach=mach, compiler=compiler, mpilib=mpilib
+        )
 
         for vid, value in list(defaults.items()):
-            self.set_value(vid,value)
+            self.set_value(vid, value)
 
     def _create_caseroot_tools(self):
         machines_dir = os.path.abspath(self.get_value("MACHDIR"))
         machine = self.get_value("MACH")
-        toolsdir = os.path.join(self.get_value("CIMEROOT"),"scripts","Tools")
+        toolsdir = os.path.join(self.get_value("CIMEROOT"), "scripts", "Tools")
         casetools = os.path.join(self._caseroot, "Tools")
         # setup executable files in caseroot/
-        exefiles = (os.path.join(toolsdir, "case.setup"),
-                    os.path.join(toolsdir, "case.build"),
-                    os.path.join(toolsdir, "case.submit"),
-                    os.path.join(toolsdir, "case.qstatus"),
-                    os.path.join(toolsdir, "case.cmpgen_namelists"),
-                    os.path.join(toolsdir, "preview_namelists"),
-                    os.path.join(toolsdir, "preview_run"),
-                    os.path.join(toolsdir, "check_input_data"),
-                    os.path.join(toolsdir, "check_case"),
-                    os.path.join(toolsdir, "xmlchange"),
-                    os.path.join(toolsdir, "xmlquery"),
-                    os.path.join(toolsdir, "pelayout"))
+        exefiles = (
+            os.path.join(toolsdir, "case.setup"),
+            os.path.join(toolsdir, "case.build"),
+            os.path.join(toolsdir, "case.submit"),
+            os.path.join(toolsdir, "case.qstatus"),
+            os.path.join(toolsdir, "case.cmpgen_namelists"),
+            os.path.join(toolsdir, "preview_namelists"),
+            os.path.join(toolsdir, "preview_run"),
+            os.path.join(toolsdir, "check_input_data"),
+            os.path.join(toolsdir, "check_case"),
+            os.path.join(toolsdir, "xmlchange"),
+            os.path.join(toolsdir, "xmlquery"),
+            os.path.join(toolsdir, "pelayout"),
+        )
         try:
             for exefile in exefiles:
-                destfile = os.path.join(self._caseroot,os.path.basename(exefile))
+                destfile = os.path.join(self._caseroot, os.path.basename(exefile))
                 os.symlink(exefile, destfile)
         except Exception as e:
             logger.warning("FAILED to set up exefiles: {}".format(str(e)))
 
-        toolfiles = [os.path.join(toolsdir, "check_lockedfiles"),
-                     os.path.join(toolsdir, "get_standard_makefile_args"),
-                     os.path.join(toolsdir, "getTiming"),
-                     os.path.join(toolsdir, "save_provenance"),
-                     os.path.join(toolsdir,"Makefile"),
-                     os.path.join(toolsdir,"mkSrcfiles"),
-                     os.path.join(toolsdir,"mkDepends")]
+        toolfiles = [
+            os.path.join(toolsdir, "check_lockedfiles"),
+            os.path.join(toolsdir, "get_standard_makefile_args"),
+            os.path.join(toolsdir, "getTiming"),
+            os.path.join(toolsdir, "save_provenance"),
+            os.path.join(toolsdir, "Makefile"),
+            os.path.join(toolsdir, "mkSrcfiles"),
+            os.path.join(toolsdir, "mkDepends"),
+        ]
 
         # used on Titan
-        if os.path.isfile( os.path.join(toolsdir,"mdiag_reduce.csh") ):
-            toolfiles.append( os.path.join(toolsdir,"mdiag_reduce.csh") )
-            toolfiles.append( os.path.join(toolsdir,"mdiag_reduce.pl") )
+        if os.path.isfile(os.path.join(toolsdir, "mdiag_reduce.csh")):
+            toolfiles.append(os.path.join(toolsdir, "mdiag_reduce.csh"))
+            toolfiles.append(os.path.join(toolsdir, "mdiag_reduce.pl"))
 
         for toolfile in toolfiles:
             destfile = os.path.join(casetools, os.path.basename(toolfile))
-            expect(os.path.isfile(toolfile)," File {} does not exist".format(toolfile))
+            expect(os.path.isfile(toolfile), " File {} does not exist".format(toolfile))
             try:
                 os.symlink(toolfile, destfile)
             except Exception as e:
-                logger.warning("FAILED to set up toolfiles: {} {} {}".format(str(e), toolfile, destfile))
+                logger.warning(
+                    "FAILED to set up toolfiles: {} {} {}".format(
+                        str(e), toolfile, destfile
+                    )
+                )
 
         if get_model() == "e3sm":
             if os.path.exists(os.path.join(machines_dir, "syslog.{}".format(machine))):
-                safe_copy(os.path.join(machines_dir, "syslog.{}".format(machine)), os.path.join(casetools, "mach_syslog"))
+                safe_copy(
+                    os.path.join(machines_dir, "syslog.{}".format(machine)),
+                    os.path.join(casetools, "mach_syslog"),
+                )
             else:
-                safe_copy(os.path.join(machines_dir, "syslog.noop"), os.path.join(casetools, "mach_syslog"))
+                safe_copy(
+                    os.path.join(machines_dir, "syslog.noop"),
+                    os.path.join(casetools, "mach_syslog"),
+                )
 
             safe_copy(os.path.join(toolsdir, "e3sm_compile_wrap.py"), casetools)
 
@@ -1296,16 +1654,16 @@ class Case(object):
         if get_model() == "cesm":
             try:
                 exefile = os.path.join(toolsdir, "archive_metadata")
-                destfile = os.path.join(self._caseroot,os.path.basename(exefile))
+                destfile = os.path.join(self._caseroot, os.path.basename(exefile))
                 os.symlink(exefile, destfile)
             except Exception as e:
                 logger.warning("FAILED to set up exefiles: {}".format(str(e)))
 
     def _create_caseroot_sourcemods(self):
         components = self.get_compset_components()
-        components.extend(['share', 'drv'])
-        if self._comp_interface == 'nuopc':
-            components.extend(['cdeps'])
+        components.extend(["share", "drv"])
+        if self._comp_interface == "nuopc":
+            components.extend(["cdeps"])
 
         readme_message = """Put source mods for the {component} library in this directory.
 
@@ -1319,9 +1677,19 @@ leveraging version control (git or svn).
 """
 
         for component in components:
-            directory = os.path.join(self._caseroot,"SourceMods","src.{}".format(component))
+            directory = os.path.join(
+                self._caseroot, "SourceMods", "src.{}".format(component)
+            )
             # don't make SourceMods for stub components
-            if not os.path.exists(directory) and component not in ('satm','slnd','sice','socn','sesp','sglc','swav'):
+            if not os.path.exists(directory) and component not in (
+                "satm",
+                "slnd",
+                "sice",
+                "socn",
+                "sesp",
+                "sglc",
+                "swav",
+            ):
                 os.makedirs(directory)
                 # Besides giving some information on SourceMods, this
                 # README file serves one other important purpose: By
@@ -1334,9 +1702,11 @@ leveraging version control (git or svn).
                     fd.write(readme_message.format(component=component))
 
         if get_model() == "cesm":
-        # Note: this is CESM specific, given that we are referencing cism explitly
+            # Note: this is CESM specific, given that we are referencing cism explitly
             if "cism" in components:
-                directory = os.path.join(self._caseroot, "SourceMods", "src.cism", "source_cism")
+                directory = os.path.join(
+                    self._caseroot, "SourceMods", "src.cism", "source_cism"
+                )
                 if not os.path.exists(directory):
                     os.makedirs(directory)
                     readme_file = os.path.join(directory, "README")
@@ -1366,28 +1736,51 @@ directory, NOT in this subdirectory."""
         # Open a new README.case file in $self._caseroot
         append_status(" ".join(sys.argv), "README.case", caseroot=self._caseroot)
         compset_info = "Compset longname is {}".format(self.get_value("COMPSET"))
-        append_status(compset_info,
-                      "README.case", caseroot=self._caseroot)
-        append_status("Compset specification file is {}".format(self.get_value("COMPSETS_SPEC_FILE")),
-                      "README.case", caseroot=self._caseroot)
-        append_status("Pes     specification file is {}".format(self.get_value("PES_SPEC_FILE")),
-                      "README.case", caseroot=self._caseroot)
+        append_status(compset_info, "README.case", caseroot=self._caseroot)
+        append_status(
+            "Compset specification file is {}".format(
+                self.get_value("COMPSETS_SPEC_FILE")
+            ),
+            "README.case",
+            caseroot=self._caseroot,
+        )
+        append_status(
+            "Pes     specification file is {}".format(self.get_value("PES_SPEC_FILE")),
+            "README.case",
+            caseroot=self._caseroot,
+        )
         if "forcing" in self._component_description:
-            append_status("Forcing is {}".format(self._component_description["forcing"])
-                      ,"README.case", caseroot=self._caseroot)
+            append_status(
+                "Forcing is {}".format(self._component_description["forcing"]),
+                "README.case",
+                caseroot=self._caseroot,
+            )
         for component_class in self._component_classes:
-            if component_class in self._component_description and \
-               len(self._component_description[component_class])>0:
-                append_status("Component {} is {}".format(component_class, self._component_description[component_class]),"README.case", caseroot=self._caseroot)
+            if (
+                component_class in self._component_description
+                and len(self._component_description[component_class]) > 0
+            ):
+                append_status(
+                    "Component {} is {}".format(
+                        component_class, self._component_description[component_class]
+                    ),
+                    "README.case",
+                    caseroot=self._caseroot,
+                )
             if component_class == "CPL":
-                append_status("Using %s coupler instances" %
-                              (self.get_value("NINST_CPL")),
-                              "README.case", caseroot=self._caseroot)
+                append_status(
+                    "Using %s coupler instances" % (self.get_value("NINST_CPL")),
+                    "README.case",
+                    caseroot=self._caseroot,
+                )
                 continue
             comp_grid = "{}_GRID".format(component_class)
 
-            append_status("{} is {}".format(comp_grid,self.get_value(comp_grid)),
-                          "README.case", caseroot=self._caseroot)
+            append_status(
+                "{} is {}".format(comp_grid, self.get_value(comp_grid)),
+                "README.case",
+                caseroot=self._caseroot,
+            )
             comp = str(self.get_value("COMP_{}".format(component_class)))
             user_mods = self._get_comp_user_mods(comp)
             if user_mods is not None:
@@ -1427,7 +1820,7 @@ directory, NOT in this subdirectory."""
             if os.path.isabs(user_mods):
                 user_mods_path = user_mods
             else:
-                user_mods_path = self.get_value('USER_MODS_DIR')
+                user_mods_path = self.get_value("USER_MODS_DIR")
                 user_mods_path = os.path.join(user_mods_path, user_mods)
             apply_user_mods(self._caseroot, user_mods_path)
 
@@ -1442,21 +1835,41 @@ directory, NOT in this subdirectory."""
         Returns None if no value was found, or if the value is an empty string.
         """
         comp_user_mods = self.get_value("{}_USER_MODS".format(component.upper()))
-        #pylint: disable=no-member
+        # pylint: disable=no-member
         if comp_user_mods is None or comp_user_mods == "" or comp_user_mods.isspace():
             return None
         else:
             return comp_user_mods
 
-    def submit_jobs(self, no_batch=False, job=None, skip_pnl=None, prereq=None, allow_fail=False,
-                    resubmit_immediate=False, mail_user=None, mail_type=None, batch_args=None,
-                    dry_run=False, workflow=True):
-        env_batch = self.get_env('batch')
-        result =  env_batch.submit_jobs(self, no_batch=no_batch, skip_pnl=skip_pnl,
-                                        job=job, user_prereq=prereq, allow_fail=allow_fail,
-                                        resubmit_immediate=resubmit_immediate,
-                                        mail_user=mail_user, mail_type=mail_type,
-                                        batch_args=batch_args, dry_run=dry_run, workflow=workflow)
+    def submit_jobs(
+        self,
+        no_batch=False,
+        job=None,
+        skip_pnl=None,
+        prereq=None,
+        allow_fail=False,
+        resubmit_immediate=False,
+        mail_user=None,
+        mail_type=None,
+        batch_args=None,
+        dry_run=False,
+        workflow=True,
+    ):
+        env_batch = self.get_env("batch")
+        result = env_batch.submit_jobs(
+            self,
+            no_batch=no_batch,
+            skip_pnl=skip_pnl,
+            job=job,
+            user_prereq=prereq,
+            allow_fail=allow_fail,
+            resubmit_immediate=resubmit_immediate,
+            mail_user=mail_user,
+            mail_type=mail_type,
+            batch_args=batch_args,
+            dry_run=dry_run,
+            workflow=workflow,
+        )
         return result
 
     def get_job_info(self):
@@ -1468,7 +1881,7 @@ directory, NOT in this subdirectory."""
             return {}
         else:
             result = {}
-            job_infos = xml_job_ids.split(", ") # pylint: disable=no-member
+            job_infos = xml_job_ids.split(", ")  # pylint: disable=no-member
             for job_info in job_infos:
                 jobname, jobid = job_info.split(":")
                 result[jobname] = jobid
@@ -1478,17 +1891,23 @@ directory, NOT in this subdirectory."""
     def report_job_status(self):
         jobmap = self.get_job_info()
         if not jobmap:
-            logger.info("No job ids associated with this case. Either case.submit was not run or was run with no-batch")
+            logger.info(
+                "No job ids associated with this case. Either case.submit was not run or was run with no-batch"
+            )
         else:
             for jobname, jobid in list(jobmap.items()):
                 status = self.get_env("batch").get_status(jobid)
                 if status:
                     logger.info("{}: {}".format(jobname, status))
                 else:
-                    logger.info("{}: Unable to get status. Job may be complete already.".format(jobname))
+                    logger.info(
+                        "{}: Unable to get status. Job may be complete already.".format(
+                            jobname
+                        )
+                    )
 
     def cancel_batch_jobs(self, jobids):
-        env_batch = self.get_env('batch')
+        env_batch = self.get_env("batch")
         for jobid in jobids:
             success = env_batch.cancel_job(jobid)
             if not success:
@@ -1498,40 +1917,61 @@ directory, NOT in this subdirectory."""
         if job is None:
             job = self.get_primary_job()
 
-        env_mach_specific = self.get_env('mach_specific')
+        env_mach_specific = self.get_env("mach_specific")
         run_exe = env_mach_specific.get_value("run_exe")
         run_misc_suffix = env_mach_specific.get_value("run_misc_suffix")
         run_misc_suffix = "" if run_misc_suffix is None else run_misc_suffix
 
         mpirun_cmd_override = self.get_value("MPI_RUN_COMMAND")
         if mpirun_cmd_override not in ["", None, "UNSET"]:
-            return self.get_resolved_value(mpirun_cmd_override + " " + run_exe + " " + run_misc_suffix)
+            return self.get_resolved_value(
+                mpirun_cmd_override + " " + run_exe + " " + run_misc_suffix
+            )
         queue = self.get_value("JOB_QUEUE", subgroup=job)
 
         # Things that will have to be matched against mpirun element attributes
         mpi_attribs = {
-            "compiler"       : self.get_value("COMPILER"),
-            "mpilib"         : self.get_value("MPILIB"),
-            "threaded"       : self.get_build_threaded(),
-            "queue"          : queue,
-            "unit_testing"   : False,
-            "comp_interface" : self._comp_interface
-            }
+            "compiler": self.get_value("COMPILER"),
+            "mpilib": self.get_value("MPILIB"),
+            "threaded": self.get_build_threaded(),
+            "queue": queue,
+            "unit_testing": False,
+            "comp_interface": self._comp_interface,
+        }
 
-        executable, mpi_arg_list, custom_run_exe, custom_run_misc_suffix = env_mach_specific.get_mpirun(self, mpi_attribs, job)
+        (
+            executable,
+            mpi_arg_list,
+            custom_run_exe,
+            custom_run_misc_suffix,
+        ) = env_mach_specific.get_mpirun(self, mpi_attribs, job)
         if custom_run_exe:
-            logger.info('Using a custom run_exe {}'.format(custom_run_exe))
+            logger.info("Using a custom run_exe {}".format(custom_run_exe))
             run_exe = custom_run_exe
         if custom_run_misc_suffix:
-            logger.info('Using a custom run_misc_suffix {}'.format(custom_run_misc_suffix))
+            logger.info(
+                "Using a custom run_misc_suffix {}".format(custom_run_misc_suffix)
+            )
             run_misc_suffix = custom_run_misc_suffix
 
         # special case for aprun
-        if executable is not None and "aprun" in executable and not "theta" in self.get_value("MACH"):
-            aprun_args, num_nodes = get_aprun_cmd_for_case(self, run_exe, overrides=overrides)[0:2]
-            if job in ("case.run","case.test"):
-                expect( (num_nodes + self.spare_nodes) == self.num_nodes, "Not using optimized num nodes")
-            return self.get_resolved_value(executable + aprun_args + " " + run_misc_suffix, allow_unresolved_envvars=allow_unresolved_envvars)
+        if (
+            executable is not None
+            and "aprun" in executable
+            and not "theta" in self.get_value("MACH")
+        ):
+            aprun_args, num_nodes = get_aprun_cmd_for_case(
+                self, run_exe, overrides=overrides
+            )[0:2]
+            if job in ("case.run", "case.test"):
+                expect(
+                    (num_nodes + self.spare_nodes) == self.num_nodes,
+                    "Not using optimized num nodes",
+                )
+            return self.get_resolved_value(
+                executable + aprun_args + " " + run_misc_suffix,
+                allow_unresolved_envvars=allow_unresolved_envvars,
+            )
 
         else:
             mpi_arg_string = " ".join(mpi_arg_list)
@@ -1544,15 +1984,23 @@ directory, NOT in this subdirectory."""
             # 1. this setting is tested on Casper only and may not work on other machines
             # 2. need to be revisited in the future for a more adaptable implementation
             rundir = self.get_value("RUNDIR")
-            output_name = rundir+'/set_device_rank.sh'
+            output_name = rundir + "/set_device_rank.sh"
             mpi_arg_string = mpi_arg_string + " " + output_name + " "
 
-        return self.get_resolved_value("{} {} {} {}".format(executable if executable is not None else "", mpi_arg_string, run_exe, run_misc_suffix), allow_unresolved_envvars=allow_unresolved_envvars)
+        return self.get_resolved_value(
+            "{} {} {} {}".format(
+                executable if executable is not None else "",
+                mpi_arg_string,
+                run_exe,
+                run_misc_suffix,
+            ),
+            allow_unresolved_envvars=allow_unresolved_envvars,
+        )
 
     def set_model_version(self, model):
         version = "unknown"
         srcroot = self.get_value("SRCROOT")
-        version = get_current_commit(True, srcroot, tag=(model=="cesm"))
+        version = get_current_commit(True, srcroot, tag=(model == "cesm"))
 
         self.set_value("MODEL_VERSION", version)
 
@@ -1568,8 +2016,7 @@ directory, NOT in this subdirectory."""
             os.environ["OMP_NUM_THREADS"] = str(self.thread_count)
             env_module = self.get_env("mach_specific")
             self._loaded_envs = env_module.load_env(self, job=job, verbose=verbose)
-            self._loaded_envs.append(("OMP_NUM_THREADS",
-                                      os.environ["OMP_NUM_THREADS"]))
+            self._loaded_envs.append(("OMP_NUM_THREADS", os.environ["OMP_NUM_THREADS"]))
             self._is_env_loaded = True
 
         return self._loaded_envs
@@ -1604,20 +2051,36 @@ directory, NOT in this subdirectory."""
             # Only collect supported tests as this _check_testlists is only
             #   called if run_unsupported is False.
             tests = Testlist(tests_spec_file, files)
-            testlist = tests.get_tests(compset=compset_alias, grid=grid_name, supported_only=True)
-            test_categories = ["prealpha", "prebeta", "test_release"]
+            testlist = tests.get_tests(
+                compset=compset_alias, grid=grid_name, supported_only=True
+            )
+            test_categories = ["prealpha", "prebeta"]
             for test in testlist:
-                if test["category"] in test_categories or "aux_" in test["category"] \
-                   or get_cime_default_driver() in test["category"]:
+                if (
+                    test["category"] in test_categories
+                    or "aux_" in test["category"]
+                    or get_cime_default_driver() in test["category"]
+                ):
                     testcnt += 1
         if testcnt > 0:
-            logger.warning("\n*********************************************************************************************************************************")
-            logger.warning("This compset and grid combination is not scientifically supported, however it is used in {:d} tests.".format(testcnt))
-            logger.warning("*********************************************************************************************************************************\n")
+            logger.warning(
+                "\n*********************************************************************************************************************************"
+            )
+            logger.warning(
+                "This compset and grid combination is not scientifically supported, however it is used in {:d} tests.".format(
+                    testcnt
+                )
+            )
+            logger.warning(
+                "*********************************************************************************************************************************\n"
+            )
         else:
-            expect(False, "\nThis compset and grid combination is untested in CESM.  "
-                   "Override this warning with the --run-unsupported option to create_newcase.",
-                   error_prefix="STOP: ")
+            expect(
+                False,
+                "\nThis compset and grid combination is untested in CESM.  "
+                "Override this warning with the --run-unsupported option to create_newcase.",
+                error_prefix="STOP: ",
+            )
 
     def set_file(self, xmlfile):
         """
@@ -1643,7 +2106,11 @@ directory, NOT in this subdirectory."""
                 elif ftype == "env_case.xml":
                     new_env_file = EnvCase(infile=xmlfile, components=components)
                 elif ftype == "env_mach_pes.xml":
-                    new_env_file = EnvMachPes(infile=xmlfile, components=components, comp_interface=self._comp_interface)
+                    new_env_file = EnvMachPes(
+                        infile=xmlfile,
+                        components=components,
+                        comp_interface=self._comp_interface,
+                    )
                 elif ftype == "env_batch.xml":
                     new_env_file = EnvBatch(infile=xmlfile)
                 elif ftype == "env_workflow.xml":
@@ -1653,7 +2120,9 @@ directory, NOT in this subdirectory."""
                 elif ftype == "env_archive.xml":
                     new_env_file = EnvArchive(infile=xmlfile)
                 elif ftype == "env_mach_specific.xml":
-                    new_env_file = EnvMachSpecific(infile=xmlfile, comp_interface=self._comp_interface)
+                    new_env_file = EnvMachSpecific(
+                        infile=xmlfile, comp_interface=self._comp_interface
+                    )
                 else:
                     expect(False, "No match found for file type {}".format(ftype))
 
@@ -1667,7 +2136,9 @@ directory, NOT in this subdirectory."""
 
                 break
 
-        expect(new_env_file is not None, "No match found for file type {}".format(ftype))
+        expect(
+            new_env_file is not None, "No match found for file type {}".format(ftype)
+        )
         self._files = [new_env_file]
 
     def update_env(self, new_object, env_file, blow_away=False):
@@ -1676,7 +2147,10 @@ directory, NOT in this subdirectory."""
         """
         old_object = self.get_env(env_file)
         if not blow_away:
-            expect(not old_object.needsrewrite, "Potential loss of unflushed changes in {}".format(env_file))
+            expect(
+                not old_object.needsrewrite,
+                "Potential loss of unflushed changes in {}".format(env_file),
+            )
 
         new_object.filename = old_object.filename
         if old_object in self._env_entryid_files:
@@ -1696,7 +2170,7 @@ directory, NOT in this subdirectory."""
         if coupler_log_path is None:
             coupler_log_path = self.get_value("RUNDIR")
         cpllog = None
-        cpllogs = glob.glob(os.path.join(coupler_log_path, '{}.log.*'.format(cplname)))
+        cpllogs = glob.glob(os.path.join(coupler_log_path, "{}.log.*".format(cplname)))
         if cpllogs:
             cpllog = max(cpllogs, key=os.path.getctime)
             return cpllog
@@ -1719,21 +2193,28 @@ directory, NOT in this subdirectory."""
             # and continuing to execute commands
             lines.append("set -e\n\n")
             lines.append("# Created {}\n\n".format(ctime))
-            lines.append("CASEDIR=\"{}\"\n\n".format(caseroot))
-            lines.append("cd \"${CASEDIR}\"\n\n")
+            lines.append('CASEDIR="{}"\n\n'.format(caseroot))
+            lines.append('cd "${CASEDIR}"\n\n')
 
             # Ensure program path is absolute
             cmd[0] = re.sub("^./", "{}/scripts/".format(cimeroot), cmd[0])
         else:
-            expect(caseroot and os.path.isdir(caseroot) and os.path.isfile(os.path.join(caseroot,"env_case.xml")), "Directory {} does not appear to be a valid case directory".format(caseroot))
+            expect(
+                caseroot
+                and os.path.isdir(caseroot)
+                and os.path.isfile(os.path.join(caseroot, "env_case.xml")),
+                "Directory {} does not appear to be a valid case directory".format(
+                    caseroot
+                ),
+            )
 
         cmd = " ".join(cmd)
 
         # Replace instances of caseroot with variable
-        cmd = re.sub(caseroot, "\"${CASEDIR}\"", cmd)
+        cmd = re.sub(caseroot, '"${CASEDIR}"', cmd)
 
         lines_len = len(lines)
-        lines.insert(lines_len-1 if init else lines_len, "{}\n\n".format(cmd))
+        lines.insert(lines_len - 1 if init else lines_len, "{}\n\n".format(cmd))
 
         try:
             with open(os.path.join(caseroot, "replay.sh"), "a") as fd:
@@ -1741,15 +2222,36 @@ directory, NOT in this subdirectory."""
         except PermissionError:
             logger.warning("Could not write to 'replay.sh' script")
 
-    def create(self, casename, srcroot, compset_name, grid_name,
-               user_mods_dirs=None, machine_name=None,
-               project=None, pecount=None, compiler=None, mpilib=None,
-               pesfile=None, gridfile=None,
-               multi_driver=False, ninst=1, test=False,
-               walltime=None, queue=None, output_root=None,
-               run_unsupported=False, answer=None,
-               input_dir=None, driver=None, workflowid="default", non_local=False,
-               extra_machines_dir=None, case_group=None, ngpus_per_node=0):
+    def create(
+        self,
+        casename,
+        srcroot,
+        compset_name,
+        grid_name,
+        user_mods_dirs=None,
+        machine_name=None,
+        project=None,
+        pecount=None,
+        compiler=None,
+        mpilib=None,
+        pesfile=None,
+        gridfile=None,
+        multi_driver=False,
+        ninst=1,
+        test=False,
+        walltime=None,
+        queue=None,
+        output_root=None,
+        run_unsupported=False,
+        answer=None,
+        input_dir=None,
+        driver=None,
+        workflowid="default",
+        non_local=False,
+        extra_machines_dir=None,
+        case_group=None,
+        ngpus_per_node=0,
+    ):
         try:
             # Set values for env_case.xml
             self.set_lookup_value("CASE", os.path.basename(casename))
@@ -1764,35 +2266,57 @@ directory, NOT in this subdirectory."""
             if user_mods_dirs:
                 found_um_config_grids = False
                 for this_user_mods_dir in user_mods_dirs:
-                    um_config_grids = os.path.join(this_user_mods_dir,"config_grids.xml")
+                    um_config_grids = os.path.join(
+                        this_user_mods_dir, "config_grids.xml"
+                    )
                     if os.path.exists(um_config_grids):
                         if gridfile:
                             # Either a gridfile was found in an earlier user_mods
                             # directory or a gridfile was given on the command line. The
                             # first case (which would set found_um_config_grids to True)
                             # is an error; the second case just generates a warning.
-                            expect(not found_um_config_grids,
-                                   "Cannot handle multiple usermods directories with config_grids.xml files: {} and {}".format(
-                                       gridfile, um_config_grids))
-                            logger.warning("A config_grids file was found in {} but also provided on the command line {}, command line takes precedence".format(um_config_grids, gridfile))
+                            expect(
+                                not found_um_config_grids,
+                                "Cannot handle multiple usermods directories with config_grids.xml files: {} and {}".format(
+                                    gridfile, um_config_grids
+                                ),
+                            )
+                            logger.warning(
+                                "A config_grids file was found in {} but also provided on the command line {}, command line takes precedence".format(
+                                    um_config_grids, gridfile
+                                )
+                            )
                         else:
                             gridfile = um_config_grids
                             found_um_config_grids = True
 
-
             # Configure the Case
-            self.configure(compset_name, grid_name, machine_name=machine_name,
-                           project=project,
-                           pecount=pecount, compiler=compiler, mpilib=mpilib,
-                           pesfile=pesfile, gridfile=gridfile,
-                           multi_driver=multi_driver, ninst=ninst, test=test,
-                           walltime=walltime, queue=queue,
-                           output_root=output_root,
-                           run_unsupported=run_unsupported, answer=answer,
-                           input_dir=input_dir, driver=driver,
-                           workflowid=workflowid, non_local=non_local,
-                           extra_machines_dir=extra_machines_dir, case_group=case_group,
-                           ngpus_per_node=ngpus_per_node)
+            self.configure(
+                compset_name,
+                grid_name,
+                machine_name=machine_name,
+                project=project,
+                pecount=pecount,
+                compiler=compiler,
+                mpilib=mpilib,
+                pesfile=pesfile,
+                gridfile=gridfile,
+                multi_driver=multi_driver,
+                ninst=ninst,
+                test=test,
+                walltime=walltime,
+                queue=queue,
+                output_root=output_root,
+                run_unsupported=run_unsupported,
+                answer=answer,
+                input_dir=input_dir,
+                driver=driver,
+                workflowid=workflowid,
+                non_local=non_local,
+                extra_machines_dir=extra_machines_dir,
+                case_group=case_group,
+                ngpus_per_node=ngpus_per_node,
+            )
 
             self.create_caseroot()
 
@@ -1805,7 +2329,11 @@ directory, NOT in this subdirectory."""
         except Exception:
             if os.path.exists(self._caseroot):
                 if not logger.isEnabledFor(logging.DEBUG) and not test:
-                    logger.warning("Failed to setup case, removing {}\nUse --debug to force me to keep caseroot".format(self._caseroot))
+                    logger.warning(
+                        "Failed to setup case, removing {}\nUse --debug to force me to keep caseroot".format(
+                            self._caseroot
+                        )
+                    )
                     shutil.rmtree(self._caseroot)
                 else:
                     logger.warning("Leaving broken case dir {}".format(self._caseroot))
@@ -1813,8 +2341,7 @@ directory, NOT in this subdirectory."""
             raise
 
     def new_hash(self):
-        """ Creates a hash
-        """
+        """Creates a hash"""
         args = "".join(sys.argv)
         ctime = time.strftime("%Y-%m-%d %H:%M:%S")
         hostname = socket.getfqdn()
@@ -1824,7 +2351,7 @@ directory, NOT in this subdirectory."""
 
         return hashlib.sha256(data.encode()).hexdigest()
 
-    def is_save_timing_dir_project(self,project):
+    def is_save_timing_dir_project(self, project):
         """
         Check whether the project is permitted to archive performance data in the location
         specified for the current machine
@@ -1833,7 +2360,9 @@ directory, NOT in this subdirectory."""
         if not save_timing_dir_projects:
             return False
         else:
-            save_timing_dir_projects = save_timing_dir_projects.split(",") # pylint: disable=no-member
+            save_timing_dir_projects = save_timing_dir_projects.split(
+                ","
+            )  # pylint: disable=no-member
             for save_timing_dir_project in save_timing_dir_projects:
                 regex = re.compile(save_timing_dir_project)
                 if regex.match(project):
@@ -1863,7 +2392,7 @@ directory, NOT in this subdirectory."""
             job = self.get_first_job()
 
         job_id_to_cmd = self.submit_jobs(dry_run=True, job=job)
-        env_batch = self.get_env('batch')
+        env_batch = self.get_env("batch")
         for job_id, cmd in job_id_to_cmd:
             write("  FOR JOB: {}".format(job_id))
             write("    ENV:")
@@ -1881,5 +2410,5 @@ directory, NOT in this subdirectory."""
                 # env vars.
                 overrides = env_batch.get_job_overrides(job_id, self)
                 write("    MPIRUN (job={}):".format(job_id))
-                write ("      {}".format(self.get_resolved_value(overrides["mpirun"])))
+                write("      {}".format(self.get_resolved_value(overrides["mpirun"])))
                 write("")

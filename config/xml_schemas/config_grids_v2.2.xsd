@@ -42,6 +42,7 @@
         <xs:element ref="gridmaps" maxOccurs="3"/>
       </xs:sequence>
       <xs:attribute ref="version" use="required"/>
+      <xs:attribute ref="driver"/>
     </xs:complexType>
   </xs:element>
 
@@ -51,6 +52,7 @@
         <xs:element ref="model_grid_defaults"/>
         <xs:element ref="model_grid" maxOccurs="unbounded"/>
       </xs:sequence>
+      <xs:attribute ref="driver"/>
     </xs:complexType>
   </xs:element>
 

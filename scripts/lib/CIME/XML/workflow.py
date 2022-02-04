@@ -9,8 +9,8 @@ from CIME.utils import expect
 
 logger = logging.getLogger(__name__)
 
-class Workflow(GenericXML):
 
+class Workflow(GenericXML):
     def __init__(self, infile=None, files=None):
         """
         initialize an object
@@ -25,9 +25,9 @@ class Workflow(GenericXML):
 
         GenericXML.__init__(self, infile, schema=schema)
 
-        #Append the contents of $HOME/.cime/config_workflow.xml if it exists
-        #This could cause problems if node matchs are repeated when only one is expected
-        infile = os.path.join(os.environ.get("HOME"),".cime","config_workflow.xml")
+        # Append the contents of $HOME/.cime/config_workflow.xml if it exists
+        # This could cause problems if node matchs are repeated when only one is expected
+        infile = os.path.join(os.environ.get("HOME"), ".cime", "config_workflow.xml")
         if os.path.exists(infile):
             GenericXML.read(self, infile)
 
@@ -41,8 +41,13 @@ class Workflow(GenericXML):
         findmore = True
         prepend = False
         while findmore:
-            bnode = self.get_optional_child("workflow_jobs", attributes={"id":workflowid})
-            expect(bnode,"No workflow {} found in file {}".format(workflowid, self.filename))
+            bnode = self.get_optional_child(
+                "workflow_jobs", attributes={"id": workflowid}
+            )
+            expect(
+                bnode,
+                "No workflow {} found in file {}".format(workflowid, self.filename),
+            )
             if prepend:
                 bnodes = [bnode] + bnodes
             else:
@@ -64,7 +69,7 @@ class Workflow(GenericXML):
                     for child in self.get_children(root=jnode):
                         if self.name(child) == "runtime_parameters":
                             attrib = self.attrib(child)
-                            if attrib and attrib == {'MACH' : machine}:
+                            if attrib and attrib == {"MACH": machine}:
                                 for rtchild in self.get_children(root=child):
                                     jdict[self.name(rtchild)] = self.text(rtchild)
                             elif not attrib:

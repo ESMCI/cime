@@ -9,8 +9,8 @@ from CIME.SystemTests.system_tests_common import SystemTestsCommon
 
 logger = logging.getLogger(__name__)
 
-class PFS(SystemTestsCommon):
 
+class PFS(SystemTestsCommon):
     def __init__(self, case):
         """
         initialize an object interface to the PFS system test

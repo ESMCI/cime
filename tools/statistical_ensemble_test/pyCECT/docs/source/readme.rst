@@ -24,14 +24,14 @@ CESM/CIME notes:
     https://github.com/ESMCI/cime
 
 2. Creating the ensemble summaries (via pyEnsSum and pyEnsSumPop) is
-    typically done by the CESM software developers.  See: 
+    typically done by the CESM software developers.  See:
 
     http://www.cesm.ucar.edu/models/cesm2/python-tools/
 
 3. A web-based interface to this tool is available here:
 
    http://www.cesm.ucar.edu/models/cesm2/verification/
-    
+
 
 Relevant publications:
 ----------------------

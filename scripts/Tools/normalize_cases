@@ -15,7 +15,7 @@ import argparse, sys, os, glob
 
 ###############################################################################
 def parse_command_line(args, description):
-###############################################################################
+    ###############################################################################
     parser = argparse.ArgumentParser(
         usage="""\n{0} case1 case2
 OR
@@ -23,12 +23,12 @@ OR
 
 \033[1mEXAMPLES:\033[0m
     > {0} case1 case2
-""".format(os.path.basename(args[0])),
-
-description=description,
-
-formatter_class=argparse.ArgumentDefaultsHelpFormatter
-)
+""".format(
+            os.path.basename(args[0])
+        ),
+        description=description,
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
 
     CIME.utils.setup_standard_logging_options(parser)
 
@@ -40,21 +40,26 @@ formatter_class=argparse.ArgumentDefaultsHelpFormatter
 
     return args.case1, args.case2
 
+
 ###############################################################################
 def normalize_cases(case1, case2):
-###############################################################################
+    ###############################################################################
     # gunzip all logs
     for case_dir in [case1, case2]:
         for log_dir in ["bld", "run"]:
             gzips = glob.glob(os.path.join(case_dir, log_dir, "*.gz"))
-            if (gzips):
+            if gzips:
                 run_cmd_no_fail("gunzip -f {}".format(" ".join(gzips)))
 
     # Change case1 to be as if it had same test-id as case2
     test_id1 = run_cmd_no_fail("./xmlquery --value TEST_TESTID", from_dir=case1)
     test_id2 = run_cmd_no_fail("./xmlquery --value TEST_TESTID", from_dir=case2)
-    run_cmd_no_fail("for item in $(find -type f); do  sed -i 's/{}/{}/g' $item; done".format(test_id1, test_id2),
-            from_dir=case1)
+    run_cmd_no_fail(
+        "for item in $(find -type f); do  sed -i 's/{}/{}/g' $item; done".format(
+            test_id1, test_id2
+        ),
+        from_dir=case1,
+    )
 
     # Change case1 to look as if it is was built/run at exact same time as case2
     for log_dir in ["bld", "run"]:
@@ -70,31 +75,46 @@ def normalize_cases(case1, case2):
         case2_lids = list(sorted(case2_lids))
 
         for case1_lid, case2_lid in zip(case1_lids, case2_lids):
-            run_cmd_no_fail("for item in $(find -type f); do  sed -i 's/{}/{}/g' $item; done".format(case1_lid, case2_lid),
-                    from_dir=case1)
+            run_cmd_no_fail(
+                "for item in $(find -type f); do  sed -i 's/{}/{}/g' $item; done".format(
+                    case1_lid, case2_lid
+                ),
+                from_dir=case1,
+            )
 
         for case1_lid, case2_lid in zip(case1_lids, case2_lids):
-            files_needing_rename = run_cmd_no_fail('find -depth -name "*.{}"'.format(case1_lid), from_dir=case1).splitlines()
+            files_needing_rename = run_cmd_no_fail(
+                'find -depth -name "*.{}"'.format(case1_lid), from_dir=case1
+            ).splitlines()
             for file_needing_rename in files_needing_rename:
                 expect(file_needing_rename.endswith(case1_lid), "broken")
                 new_name = file_needing_rename.rstrip(case1_lid) + case2_lid
-                os.rename(os.path.join(case1, file_needing_rename), os.path.join(case1, new_name))
+                os.rename(
+                    os.path.join(case1, file_needing_rename),
+                    os.path.join(case1, new_name),
+                )
 
     # Normalize CIMEROOT
     case1_root = run_cmd_no_fail("./xmlquery --value CIMEROOT", from_dir=case1)
     case2_root = run_cmd_no_fail("./xmlquery --value CIMEROOT", from_dir=case2)
-    if (case1_root != case2_root):
-        run_cmd_no_fail("for item in $(find -type f); do  sed -i 's:{}:{}:g' $item; done".format(case1_root, case2_root),
-                from_dir=case1)
+    if case1_root != case2_root:
+        run_cmd_no_fail(
+            "for item in $(find -type f); do  sed -i 's:{}:{}:g' $item; done".format(
+                case1_root, case2_root
+            ),
+            from_dir=case1,
+        )
+
 
 ###############################################################################
 def _main_func(description):
-###############################################################################
+    ###############################################################################
     case1, case2 = parse_command_line(sys.argv, description)
 
     normalize_cases(case1, case2)
 
+
 ###############################################################################
 
-if (__name__ == "__main__"):
+if __name__ == "__main__":
     _main_func(__doc__)

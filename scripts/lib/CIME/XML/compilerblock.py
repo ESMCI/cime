@@ -69,6 +69,7 @@ from CIME.BuildTools.possiblevalues import PossibleValues
 
 logger = logging.getLogger(__name__)
 
+
 class CompilerBlock(object):
 
     """Data used to translate a single <compiler> element.
@@ -92,7 +93,7 @@ class CompilerBlock(object):
         """
         self._writer = writer
         self._compiler_elem = compiler_elem
-        self._db            = db
+        self._db = db
         self._machobj = machobj
         # If there's no COMPILER attribute, self._compiler is None.
         self._compiler = db.get(compiler_elem, "COMPILER")
@@ -120,22 +121,27 @@ class CompilerBlock(object):
             output = ""
 
         logger.debug("Initial output={}".format(output))
-        reference_re = re.compile(r'\${?(\w+)}?')
-        env_ref_re   = re.compile(r'\$ENV\{(\w+)\}')
+        reference_re = re.compile(r"\${?(\w+)}?")
+        env_ref_re = re.compile(r"\$ENV\{(\w+)\}")
         shell_prefix = "$SHELL{"
 
         for m in reference_re.finditer(output):
             var_name = m.groups()[0]
-            if var_name not in ("SHELL","ENV"):
+            if var_name not in ("SHELL", "ENV"):
                 output = output.replace(m.group(), writer.variable_string(var_name))
                 depends.add(var_name)
 
         logger.debug("preenv pass output={}".format(output))
 
         for m in env_ref_re.finditer(output):
-            logger.debug("look for {} in env {}".format(output,writer.environment_variable_string(m.groups()[0])))
-            output = output.replace(m.group(),
-                                    writer.environment_variable_string(m.groups()[0]))
+            logger.debug(
+                "look for {} in env {}".format(
+                    output, writer.environment_variable_string(m.groups()[0])
+                )
+            )
+            output = output.replace(
+                m.group(), writer.environment_variable_string(m.groups()[0])
+            )
             logger.debug("and output {}".format(output))
 
         logger.debug("postenv pass output={}".format(output))
@@ -154,14 +160,17 @@ class CompilerBlock(object):
 
             command = output[sidx + len(shell_prefix) : idx]
             logger.debug("execute {} in shell, command {}".format(output, command))
-            new_set_up, inline, new_tear_down = \
-                writer.shell_command_strings(command)
-            output = output.replace(output[sidx:idx+1], inline, 1)
+            new_set_up, inline, new_tear_down = writer.shell_command_strings(command)
+            output = output.replace(output[sidx : idx + 1], inline, 1)
             if new_set_up is not None:
                 set_up.append(new_set_up)
             if new_tear_down is not None:
                 tear_down.append(new_tear_down)
-            logger.debug("set_up {} inline {} tear_down {}".format(new_set_up,inline,new_tear_down))
+            logger.debug(
+                "set_up {} inline {} tear_down {}".format(
+                    new_set_up, inline, new_tear_down
+                )
+            )
 
         logger.debug("First pass output={}".format(output))
 
@@ -185,12 +194,10 @@ class CompilerBlock(object):
         set_up = []
         tear_down = []
         depends = set()
-        value_text = self._handle_references(elem, set_up,
-                                             tear_down, depends)
+        value_text = self._handle_references(elem, set_up, tear_down, depends)
         # Create the setting object.
         append = self._db.name(elem) == "append"
-        setting = ValueSetting(value_text, append,
-                               conditions, set_up, tear_down)
+        setting = ValueSetting(value_text, append, conditions, set_up, tear_down)
 
         return (setting, depends)
 
@@ -205,10 +212,11 @@ class CompilerBlock(object):
         """
         setting, depends = self._elem_to_setting(elem)
         if name not in value_lists:
-            value_lists[name] = PossibleValues(name, setting,
-                                               self._specificity, depends)
+            value_lists[name] = PossibleValues(
+                name, setting, self._specificity, depends
+            )
         else:
-            value_lists[name].add_setting(setting, self._specificity,depends)
+            value_lists[name].add_setting(setting, self._specificity, depends)
 
     def add_settings_to_lists(self, flag_vars, value_lists):
         """Add all data in the <compiler> element to lists of settings.
@@ -233,8 +241,9 @@ class CompilerBlock(object):
         """
         self._specificity = 0
         if self._db.has(self._compiler_elem, "MACH"):
-            if self._machobj.get_machine_name() == \
-               self._db.get(self._compiler_elem, "MACH"):
+            if self._machobj.get_machine_name() == self._db.get(
+                self._compiler_elem, "MACH"
+            ):
                 self._specificity += 2
             else:
                 return False
