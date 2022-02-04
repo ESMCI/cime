@@ -21,5 +21,3 @@ in the CIMEROOT/config/xml_schemas directory that can be used with
    e3sm.rst
    cesm.rst
    common.rst
-   components.rst
-   drivers.rst

@@ -25,6 +25,7 @@ import sphinx_rtd_theme
 
 sys.path.insert(0, os.path.abspath("../../scripts/lib"))
 sys.path.insert(1, os.path.abspath("../../scripts"))
+sys.path.insert(2, os.path.abspath("../../scripts/Tools"))
 
 # -- General configuration ------------------------------------------------
 

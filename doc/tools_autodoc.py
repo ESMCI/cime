@@ -330,9 +330,12 @@ def main(options):
     # gather the files from different locations in the CIMEROOT
     tools_files = get_tools(config, doc_dir)
     scripts_files = get_scripts(config, doc_dir)
-    template_files = get_templates(config, doc_dir)
+    # Disabling templates, they are no longer included in
+    # config/cesm/machines
+    # template_files = get_templates(config, doc_dir)
 
-    all_files = tools_files + scripts_files + template_files
+    # all_files = tools_files + scripts_files + template_files
+    all_files = tools_files + scripts_files
     all_files.sort()
 
     # copy the index.rst.template to index.rst
