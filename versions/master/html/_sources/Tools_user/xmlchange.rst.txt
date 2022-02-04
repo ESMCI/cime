@@ -2,7 +2,7 @@
 .. _xmlchange:
 
 ####################################################
-xmlchange 
+xmlchange
 ####################################################
 
 **xmlchange** is a script in CIMEROOT/scripts/Tools.

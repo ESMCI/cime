@@ -36,13 +36,13 @@ Also in this documentation is::
 
 
 1. set PYTHONPATH to include $CIME_DIR/scripts:$CIME_DIR/tools/load_balancing_tool
-   
+
 2. create PE XML <PESFILE> file to describe the PE layouts for the timing runs
 
 3. $ ./load_balancing_submit.py --res <RESOLUTION> --compset <COMPSET> --pesfile <PESFILE>
-   
+
 4. ...  wait for jobs to run ...
-   
+
 5. $ ./load_balancing_solve.py --total-tasks <N> --blocksize 8
 
 
@@ -55,7 +55,7 @@ Simulations can be run on a given system by executing the load_balancing_tool.py
 script, located in cime/tools/load_balancing_tool/load_balancing_tool_submit.py.
 This creates timing files in the case directory which will be used to solve
 a mixed integer linear program optimizing the layout. If there is already timing
-information available, then a 
+information available, then a
 
 As with the create_newcase and create_test scripts, command line options
 are used to tailor the simulations for a given model. These values will be
@@ -345,7 +345,7 @@ To permanently add to CIME:
 Testing
 *******
 
-To run the provided test suite: 
+To run the provided test suite:
 
   1. set PYTHONPATH to include CIME libraries::
 
@@ -377,6 +377,3 @@ To run the provided test suite:
 
 	$ cd $CIME_DIR/tools/load_balancing_tool
         $ ./tests/load_balancing_test.py
-
-
-      

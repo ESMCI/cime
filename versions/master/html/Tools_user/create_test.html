@@ -5,7 +5,8 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <title>create_test &mdash; CIME master documentation</title>
@@ -29,6 +30,10 @@
     <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   
 
+  
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   
 
   
@@ -121,13 +126,9 @@
 <li class="toctree-l2"><a class="reference internal" href="case.build.html">case.build</a></li>
 <li class="toctree-l2"><a class="reference internal" href="case.cmpgen_namelists.html">case.cmpgen_namelists</a></li>
 <li class="toctree-l2"><a class="reference internal" href="case.qstatus.html">case.qstatus</a></li>
-<li class="toctree-l2"><a class="reference internal" href="case.run.html">case.run</a></li>
 <li class="toctree-l2"><a class="reference internal" href="case.setup.html">case.setup</a></li>
-<li class="toctree-l2"><a class="reference internal" href="case.st_archive.html">case.st_archive</a></li>
 <li class="toctree-l2"><a class="reference internal" href="case.submit.html">case.submit</a></li>
-<li class="toctree-l2"><a class="reference internal" href="case.test.html">case.test</a></li>
 <li class="toctree-l2"><a class="reference internal" href="case_diff.html">case_diff</a></li>
-<li class="toctree-l2"><a class="reference internal" href="casper.html">casper</a></li>
 <li class="toctree-l2"><a class="reference internal" href="check_case.html">check_case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="check_input_data.html">check_input_data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="check_lockedfiles.html">check_lockedfiles</a></li>
@@ -164,7 +165,6 @@
 <li class="toctree-l2"><a class="reference internal" href="preview_run.html">preview_run</a></li>
 <li class="toctree-l2"><a class="reference internal" href="query_config.html">query_config</a></li>
 <li class="toctree-l2"><a class="reference internal" href="query_testlists.html">query_testlists</a></li>
-<li class="toctree-l2"><a class="reference internal" href="rc.template.html">rc.template</a></li>
 <li class="toctree-l2"><a class="reference internal" href="save_provenance.html">save_provenance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="simple-py-prof.html">simple-py-prof</a></li>
 <li class="toctree-l2"><a class="reference internal" href="simple_compare.html">simple_compare</a></li>
@@ -243,7 +243,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="create-test">
+  <section id="create-test">
 <span id="id1"></span><h1>create_test<a class="headerlink" href="#create-test" title="Permalink to this headline">¶</a></h1>
 <p><strong>create_test</strong> is a script in CIMEROOT/scripts.</p>
 <div class="toctree-wrapper compound">
@@ -253,21 +253,17 @@ usage: create_test [-h] [-d] [-v] [-s] [--no-run] [--no-build] [--no-setup]
                    [-u] [--save-timing] [--no-batch] [--single-exe]
                    [--single-submit] [-r TEST_ROOT]
                    [--output-root OUTPUT_ROOT] [--baseline-root BASELINE_ROOT]
-                   [--clean] [-m MACHINE] [--mpilib MPILIB] [-c COMPARE]
-                   [-g GENERATE] [--xml-machine XML_MACHINE]
-                   [--xml-compiler XML_COMPILER] [--xml-category XML_CATEGORY]
-                   [--xml-testlist XML_TESTLIST]
-                   [--xml-driver {mct,nuopc,moab}] [--compiler COMPILER] [-n]
-                   [-p PROJECT] [-t TEST_ID] [-j PARALLEL_JOBS]
-                   [--proc-pool PROC_POOL] [--walltime WALLTIME] [-q QUEUE]
-                   [-f TESTFILE] [-o] [--wait] [--allow-pnl]
-                   [--check-throughput] [--check-memory] [--ignore-namelists]
-                   [--ignore-memleak] [--force-procs FORCE_PROCS]
-                   [--force-threads FORCE_THREADS] [-i INPUT_DIR]
-                   [--pesfile PESFILE] [--retry RETRY] [-N]
+                   [--clean] [-m MACHINE] [--mpilib MPILIB] [-b BASELINE_NAME]
+                   [-c] [-g] [--compiler COMPILER] [-n] [-p PROJECT]
+                   [-t TEST_ID] [-j PARALLEL_JOBS] [--proc-pool PROC_POOL]
+                   [--walltime WALLTIME] [-q QUEUE] [-f TESTFILE] [-o]
+                   [--wait] [--allow-pnl] [--check-throughput]
+                   [--check-memory] [--ignore-namelists] [--ignore-memleak]
+                   [--force-procs FORCE_PROCS] [--force-threads FORCE_THREADS]
+                   [-i INPUT_DIR] [--pesfile PESFILE] [--retry RETRY] [-N]
                    [--workflow WORKFLOW] [--chksum] [--mail-user MAIL_USER]
                    [-M MAIL_TYPE]
-                   [testargs ...]
+                   testargs [testargs ...]
 
 Script to create, build and run CIME tests. This script can:
 
@@ -295,11 +291,11 @@ If this tool is missing any feature that you need, please add an issue on
 https://github.com/ESMCI/cime
 
 positional arguments:
-  testargs              Tests to run. Testname form is TEST.GRID.COMPSET[.MACHINE_COMPILER]
+  testargs              Tests or test suites to run. Testname form is TEST.GRID.COMPSET[.MACHINE_COMPILER]
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
-  -d, --debug           Print debug information (very verbose) to file /Users/sacks/cime/scripts/create_test.log
+  -d, --debug           Print debug information (very verbose) to file /home/titters/devel/E3SM/cime/master/scripts/create_test.log
   -v, --verbose         Add additional context (time and file) to log messages
   -s, --silent          Print only warnings and error messages
   --no-run              Do not run generated tests
@@ -335,24 +331,12 @@ optional arguments:
                         only be used if you are an expert.
   --mpilib MPILIB       Specify the mpilib. To see list of supported MPI libraries for each machine, 
                         invoke ./query_config. The default is the first listing .
-  -c COMPARE, --compare COMPARE
-                        While testing, compare baselines against the given compare directory. 
-  -g GENERATE, --generate GENERATE
-                        While testing, generate baselines in the given generate directory. 
+  -b BASELINE_NAME, --baseline-name BASELINE_NAME
+                        If comparing or generating baselines, use this directory under baseline root. 
+                        Default will be current branch name.
+  -c, --compare         While testing, compare baselines
+  -g, --generate        While testing, generate baselines. 
                         NOTE: this can also be done after the fact with bless_test_results
-  --xml-machine XML_MACHINE
-                        Use this machine key in the lookup in testlist.xml. 
-                        The default is all if any --xml- argument is used.
-  --xml-compiler XML_COMPILER
-                        Use this compiler key in the lookup in testlist.xml. 
-                        The default is all if any --xml- argument is used.
-  --xml-category XML_CATEGORY
-                        Use this category key in the lookup in testlist.xml. 
-                        The default is all if any --xml- argument is used.
-  --xml-testlist XML_TESTLIST
-                        Use this testlist to lookup tests.The default is specified in config_files.xml
-  --xml-driver {mct,nuopc,moab}
-                        Override driver specified in tests and use this one.
   --compiler COMPILER   Compiler for building cime. Default will be the name in the 
                         Testname or the default defined for the machine.
   -n, --namelists-only  Only perform namelist actions for tests
@@ -410,7 +394,7 @@ optional arguments:
                         You can specify multiple types with either comma-separated args or multiple -M flags.
 </pre></div>
 </div>
-</div>
+</section>
 
 
            </div>
@@ -459,6 +443,7 @@ optional arguments:
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>

@@ -5,7 +5,8 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <title>Tools package &mdash; CIME master documentation</title>
@@ -29,6 +30,10 @@
     <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   
 
+  
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   
 
   
@@ -119,9 +124,9 @@
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Tools package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-Tools.e3sm_compile_wrap">Tools.e3sm_compile_wrap module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#tools-generate-cylc-workflow-module">Tools.generate_cylc_workflow module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-Tools.generate_cylc_workflow">Tools.generate_cylc_workflow module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-Tools.standard_script_setup">Tools.standard_script_setup module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#tools-testreporter-module">Tools.testreporter module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-Tools.testreporter">Tools.testreporter module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-Tools">Module contents</a></li>
 </ul>
 </li>
@@ -192,12 +197,12 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="tools-package">
+  <section id="tools-package">
 <h1>Tools package<a class="headerlink" href="#tools-package" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="submodules">
+<section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="module-Tools.e3sm_compile_wrap">
+</section>
+<section id="module-Tools.e3sm_compile_wrap">
 <span id="tools-e3sm-compile-wrap-module"></span><h2>Tools.e3sm_compile_wrap module<a class="headerlink" href="#module-Tools.e3sm_compile_wrap" title="Permalink to this headline">¶</a></h2>
 <p>A script to wrap all e3sm compilations. This script should be enabled
 by prefixing it to all compiler and link calls. This can be done easily in
@@ -207,31 +212,78 @@ we want in our build system.</p>
 <p>We want this script to be super-lean, so we do not load any of the standard CIME
 stuff.</p>
 <dl class="py function">
-<dt id="Tools.e3sm_compile_wrap.parse_command_line">
-<code class="sig-prename descclassname">Tools.e3sm_compile_wrap.</code><code class="sig-name descname">parse_command_line</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">args</span></em>, <em class="sig-param"><span class="n">_</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Tools/e3sm_compile_wrap.html#parse_command_line"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Tools.e3sm_compile_wrap.parse_command_line" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="Tools.e3sm_compile_wrap.parse_command_line">
+<span class="sig-prename descclassname"><span class="pre">Tools.e3sm_compile_wrap.</span></span><span class="sig-name descname"><span class="pre">parse_command_line</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Tools/e3sm_compile_wrap.html#parse_command_line"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Tools.e3sm_compile_wrap.parse_command_line" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
-<dt id="Tools.e3sm_compile_wrap.run_cmd">
-<code class="sig-prename descclassname">Tools.e3sm_compile_wrap.</code><code class="sig-name descname">run_cmd</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">args</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Tools/e3sm_compile_wrap.html#run_cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Tools.e3sm_compile_wrap.run_cmd" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="Tools.e3sm_compile_wrap.run_cmd">
+<span class="sig-prename descclassname"><span class="pre">Tools.e3sm_compile_wrap.</span></span><span class="sig-name descname"><span class="pre">run_cmd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Tools/e3sm_compile_wrap.html#run_cmd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Tools.e3sm_compile_wrap.run_cmd" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-</div>
-<div class="section" id="tools-generate-cylc-workflow-module">
-<h2>Tools.generate_cylc_workflow module<a class="headerlink" href="#tools-generate-cylc-workflow-module" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="module-Tools.standard_script_setup">
+</section>
+<section id="module-Tools.generate_cylc_workflow">
+<span id="tools-generate-cylc-workflow-module"></span><h2>Tools.generate_cylc_workflow module<a class="headerlink" href="#module-Tools.generate_cylc_workflow" title="Permalink to this headline">¶</a></h2>
+<p>Generates a cylc workflow file for the case.  See <a class="reference external" href="https://cylc.github.io">https://cylc.github.io</a> for details about cylc</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="Tools.generate_cylc_workflow.cylc_batch_job_template">
+<span class="sig-prename descclassname"><span class="pre">Tools.generate_cylc_workflow.</span></span><span class="sig-name descname"><span class="pre">cylc_batch_job_template</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jobname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">case</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ensemble</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Tools/generate_cylc_workflow.html#cylc_batch_job_template"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Tools.generate_cylc_workflow.cylc_batch_job_template" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Tools.generate_cylc_workflow.cylc_get_case_path_string">
+<span class="sig-prename descclassname"><span class="pre">Tools.generate_cylc_workflow.</span></span><span class="sig-name descname"><span class="pre">cylc_get_case_path_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">case</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ensemble</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Tools/generate_cylc_workflow.html#cylc_get_case_path_string"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Tools.generate_cylc_workflow.cylc_get_case_path_string" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Tools.generate_cylc_workflow.cylc_get_ensemble_first_and_last">
+<span class="sig-prename descclassname"><span class="pre">Tools.generate_cylc_workflow.</span></span><span class="sig-name descname"><span class="pre">cylc_get_ensemble_first_and_last</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">case</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ensemble</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Tools/generate_cylc_workflow.html#cylc_get_ensemble_first_and_last"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Tools.generate_cylc_workflow.cylc_get_ensemble_first_and_last" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Tools.generate_cylc_workflow.cylc_script_job_template">
+<span class="sig-prename descclassname"><span class="pre">Tools.generate_cylc_workflow.</span></span><span class="sig-name descname"><span class="pre">cylc_script_job_template</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">case</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ensemble</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Tools/generate_cylc_workflow.html#cylc_script_job_template"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Tools.generate_cylc_workflow.cylc_script_job_template" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Tools.generate_cylc_workflow.parse_command_line">
+<span class="sig-prename descclassname"><span class="pre">Tools.generate_cylc_workflow.</span></span><span class="sig-name descname"><span class="pre">parse_command_line</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Tools/generate_cylc_workflow.html#parse_command_line"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Tools.generate_cylc_workflow.parse_command_line" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-Tools.standard_script_setup">
 <span id="tools-standard-script-setup-module"></span><h2>Tools.standard_script_setup module<a class="headerlink" href="#module-Tools.standard_script_setup" title="Permalink to this headline">¶</a></h2>
 <p>Encapsulate the importing of python utils and logging setup, things
 that every script should do.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="Tools.standard_script_setup.check_minimum_python_version">
+<span class="sig-prename descclassname"><span class="pre">Tools.standard_script_setup.</span></span><span class="sig-name descname"><span class="pre">check_minimum_python_version</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">major</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minor</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Tools/standard_script_setup.html#check_minimum_python_version"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Tools.standard_script_setup.check_minimum_python_version" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check your python version.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">check_minimum_python_version</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="go">&gt;&gt;&gt;</span>
+</pre></div>
 </div>
-<div class="section" id="tools-testreporter-module">
-<h2>Tools.testreporter module<a class="headerlink" href="#tools-testreporter-module" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="module-Tools">
+</dd></dl>
+
+</section>
+<section id="module-Tools.testreporter">
+<span id="tools-testreporter-module"></span><h2>Tools.testreporter module<a class="headerlink" href="#module-Tools.testreporter" title="Permalink to this headline">¶</a></h2>
+<p>Simple script to populate CESM test database with test results.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="Tools.testreporter.get_testreporter_xml">
+<span class="sig-prename descclassname"><span class="pre">Tools.testreporter.</span></span><span class="sig-name descname"><span class="pre">get_testreporter_xml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">testroot</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">testid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tagname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">testtype</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Tools/testreporter.html#get_testreporter_xml"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Tools.testreporter.get_testreporter_xml" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Tools.testreporter.parse_command_line">
+<span class="sig-prename descclassname"><span class="pre">Tools.testreporter.</span></span><span class="sig-name descname"><span class="pre">parse_command_line</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Tools/testreporter.html#parse_command_line"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Tools.testreporter.parse_command_line" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-Tools">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-Tools" title="Permalink to this headline">¶</a></h2>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
@@ -278,6 +330,7 @@ that every script should do.</p>
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>

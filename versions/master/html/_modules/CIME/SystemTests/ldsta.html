@@ -30,6 +30,10 @@
   
 
   
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
 
   
         <link rel="index" title="Index"
@@ -198,15 +202,17 @@
 
 <span class="c1"># datetime objects can&#39;t be used anywhere else</span>
 <span class="k">def</span> <span class="nf">_date_to_datetime</span><span class="p">(</span><span class="n">date_obj</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="n">year</span> <span class="o">=</span> <span class="n">date_obj</span><span class="o">.</span><span class="n">year</span><span class="p">(),</span>
-                             <span class="n">month</span> <span class="o">=</span> <span class="n">date_obj</span><span class="o">.</span><span class="n">month</span><span class="p">(),</span>
-                             <span class="n">day</span> <span class="o">=</span> <span class="n">date_obj</span><span class="o">.</span><span class="n">day</span><span class="p">(),</span>
-                             <span class="n">hour</span> <span class="o">=</span> <span class="n">date_obj</span><span class="o">.</span><span class="n">hour</span><span class="p">(),</span>
-                             <span class="n">minute</span> <span class="o">=</span> <span class="n">date_obj</span><span class="o">.</span><span class="n">minute</span><span class="p">(),</span>
-                             <span class="n">second</span> <span class="o">=</span> <span class="n">date_obj</span><span class="o">.</span><span class="n">second</span><span class="p">())</span>
+    <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span>
+        <span class="n">year</span><span class="o">=</span><span class="n">date_obj</span><span class="o">.</span><span class="n">year</span><span class="p">(),</span>
+        <span class="n">month</span><span class="o">=</span><span class="n">date_obj</span><span class="o">.</span><span class="n">month</span><span class="p">(),</span>
+        <span class="n">day</span><span class="o">=</span><span class="n">date_obj</span><span class="o">.</span><span class="n">day</span><span class="p">(),</span>
+        <span class="n">hour</span><span class="o">=</span><span class="n">date_obj</span><span class="o">.</span><span class="n">hour</span><span class="p">(),</span>
+        <span class="n">minute</span><span class="o">=</span><span class="n">date_obj</span><span class="o">.</span><span class="n">minute</span><span class="p">(),</span>
+        <span class="n">second</span><span class="o">=</span><span class="n">date_obj</span><span class="o">.</span><span class="n">second</span><span class="p">(),</span>
+    <span class="p">)</span>
+
 
 <div class="viewcode-block" id="LDSTA"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.ldsta.LDSTA">[docs]</a><span class="k">class</span> <span class="nc">LDSTA</span><span class="p">(</span><span class="n">SystemTestsCommon</span><span class="p">):</span>
-
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        initialize an object interface to the SMS system test</span>
@@ -214,35 +220,43 @@
         <span class="n">SystemTestsCommon</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">)</span>
 
 <div class="viewcode-block" id="LDSTA.run_phase"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.ldsta.LDSTA.run_phase">[docs]</a>    <span class="k">def</span> <span class="nf">run_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">archive_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">&#39;DOUT_S_ROOT&#39;</span><span class="p">)</span>
+        <span class="n">archive_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;DOUT_S_ROOT&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">archive_dir</span><span class="p">):</span>
             <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">archive_dir</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">run_indv</span><span class="p">()</span>
         <span class="c1"># finished running, so all archive files should exist</span>
-        <span class="n">start_date</span> <span class="o">=</span> <span class="n">_date_to_datetime</span><span class="p">(</span><span class="n">get_file_date</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">&#39;RUN_STARTDATE&#39;</span><span class="p">)))</span>
-        <span class="n">rest_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">archive_dir</span><span class="p">,</span> <span class="s1">&#39;rest&#39;</span><span class="p">)</span>
+        <span class="n">start_date</span> <span class="o">=</span> <span class="n">_date_to_datetime</span><span class="p">(</span>
+            <span class="n">get_file_date</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUN_STARTDATE&quot;</span><span class="p">))</span>
+        <span class="p">)</span>
+        <span class="n">rest_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">archive_dir</span><span class="p">,</span> <span class="s2">&quot;rest&quot;</span><span class="p">)</span>
         <span class="n">delta_day</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
         <span class="n">current_date</span> <span class="o">=</span> <span class="n">start_date</span> <span class="o">+</span> <span class="n">delta_day</span>
         <span class="n">next_datecheck</span> <span class="o">=</span> <span class="n">current_date</span>
-        <span class="n">days_left</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">&#39;STOP_N&#39;</span><span class="p">)</span>
+        <span class="n">days_left</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;STOP_N&quot;</span><span class="p">)</span>
         <span class="n">final_date</span> <span class="o">=</span> <span class="n">start_date</span> <span class="o">+</span> <span class="n">delta_day</span> <span class="o">*</span> <span class="n">days_left</span>
         <span class="k">while</span> <span class="n">current_date</span> <span class="o">&lt;</span> <span class="n">final_date</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Testing archiving with last date: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">current_date</span><span class="p">))</span>
-            <span class="n">current_date_str</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{:04}</span><span class="s1">-</span><span class="si">{:02}</span><span class="s1">-</span><span class="si">{:02}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">current_date</span><span class="o">.</span><span class="n">year</span><span class="p">,</span>
-                                                          <span class="n">current_date</span><span class="o">.</span><span class="n">month</span><span class="p">,</span>
-                                                          <span class="n">current_date</span><span class="o">.</span><span class="n">day</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Testing archiving with last date: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">current_date</span><span class="p">))</span>
+            <span class="n">current_date_str</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{:04}</span><span class="s2">-</span><span class="si">{:02}</span><span class="s2">-</span><span class="si">{:02}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">current_date</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="n">current_date</span><span class="o">.</span><span class="n">month</span><span class="p">,</span> <span class="n">current_date</span><span class="o">.</span><span class="n">day</span>
+            <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">case_st_archive</span><span class="p">(</span><span class="n">last_date_str</span><span class="o">=</span><span class="n">current_date_str</span><span class="p">,</span> <span class="n">copy_only</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-            <span class="n">archive_dates</span> <span class="o">=</span> <span class="p">[</span><span class="n">_date_to_datetime</span><span class="p">(</span><span class="n">get_file_date</span><span class="p">(</span><span class="n">fname</span><span class="p">))</span>
-                             <span class="k">for</span> <span class="n">fname</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rest_dir</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">))]</span>
+            <span class="n">archive_dates</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">_date_to_datetime</span><span class="p">(</span><span class="n">get_file_date</span><span class="p">(</span><span class="n">fname</span><span class="p">))</span>
+                <span class="k">for</span> <span class="n">fname</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rest_dir</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">))</span>
+            <span class="p">]</span>
             <span class="k">while</span> <span class="n">next_datecheck</span> <span class="o">&lt;=</span> <span class="n">current_date</span><span class="p">:</span>
-                <span class="n">expect</span><span class="p">(</span><span class="n">next_datecheck</span> <span class="ow">in</span> <span class="n">archive_dates</span><span class="p">,</span>
-                       <span class="s1">&#39;Not all dates generated and/or archived: &#39;</span>
-                       <span class="o">+</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> is missing&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">next_datecheck</span><span class="p">))</span>
+                <span class="n">expect</span><span class="p">(</span>
+                    <span class="n">next_datecheck</span> <span class="ow">in</span> <span class="n">archive_dates</span><span class="p">,</span>
+                    <span class="s2">&quot;Not all dates generated and/or archived: &quot;</span>
+                    <span class="o">+</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> is missing&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">next_datecheck</span><span class="p">),</span>
+                <span class="p">)</span>
                 <span class="n">next_datecheck</span> <span class="o">+=</span> <span class="n">delta_day</span>
             <span class="k">for</span> <span class="n">date</span> <span class="ow">in</span> <span class="n">archive_dates</span><span class="p">:</span>
-                <span class="n">expect</span><span class="p">(</span><span class="n">date</span> <span class="o">&lt;=</span> <span class="n">current_date</span><span class="p">,</span>
-                       <span class="s1">&#39;Archived date greater than specified by last-date: &#39;</span>
-                       <span class="o">+</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">date</span><span class="p">))</span>
+                <span class="n">expect</span><span class="p">(</span>
+                    <span class="n">date</span> <span class="o">&lt;=</span> <span class="n">current_date</span><span class="p">,</span>
+                    <span class="s2">&quot;Archived date greater than specified by last-date: &quot;</span>
+                    <span class="o">+</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">date</span><span class="p">),</span>
+                <span class="p">)</span>
             <span class="n">num_days</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">days_left</span><span class="p">))</span>
             <span class="n">days_left</span> <span class="o">-=</span> <span class="n">num_days</span>
             <span class="n">current_date</span> <span class="o">+=</span> <span class="n">num_days</span> <span class="o">*</span> <span class="n">delta_day</span></div></div>
@@ -285,6 +299,7 @@
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/doctools.js"></script>

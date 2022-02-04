@@ -2,7 +2,7 @@
 .. _cime_bisect:
 
 ####################################################
-cime_bisect 
+cime_bisect
 ####################################################
 
 **cime_bisect** is a script in CIMEROOT/scripts/Tools.

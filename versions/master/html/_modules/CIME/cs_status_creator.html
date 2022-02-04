@@ -30,6 +30,10 @@
   
 
   
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
 
   
         <link rel="index" title="Index"
@@ -186,7 +190,8 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">stat</span>
 
-<div class="viewcode-block" id="create_cs_status"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.cs_status_creator.create_cs_status">[docs]</a><span class="k">def</span> <span class="nf">create_cs_status</span><span class="p">(</span><span class="n">test_root</span><span class="p">,</span> <span class="n">test_id</span><span class="p">,</span> <span class="n">extra_args</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="create_cs_status"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.cs_status_creator.create_cs_status">[docs]</a><span class="k">def</span> <span class="nf">create_cs_status</span><span class="p">(</span><span class="n">test_root</span><span class="p">,</span> <span class="n">test_id</span><span class="p">,</span> <span class="n">extra_args</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Create a test suite-specific cs.status file from the template</span>
 
 <span class="sd">    Arguments:</span>
@@ -207,11 +212,12 @@
     <span class="n">cime_root</span> <span class="o">=</span> <span class="n">CIME</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_cime_root</span><span class="p">()</span>
     <span class="n">template_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">python_libs_root</span><span class="p">,</span> <span class="s2">&quot;cs.status.template&quot;</span><span class="p">)</span>
     <span class="n">template</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">template_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-    <span class="n">template</span> <span class="o">=</span> <span class="n">template</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;&lt;PATH&gt;&quot;</span><span class="p">,</span>
-                                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cime_root</span><span class="p">,</span><span class="s2">&quot;scripts&quot;</span><span class="p">,</span><span class="s2">&quot;Tools&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">replace</span>\
-                                <span class="p">(</span><span class="s2">&quot;&lt;EXTRA_ARGS&gt;&quot;</span><span class="p">,</span> <span class="n">extra_args</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span>\
-                                <span class="p">(</span><span class="s2">&quot;&lt;TESTID&gt;&quot;</span><span class="p">,</span> <span class="n">test_id</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span>\
-                                <span class="p">(</span><span class="s2">&quot;&lt;TESTROOT&gt;&quot;</span><span class="p">,</span> <span class="n">test_root</span><span class="p">)</span>
+    <span class="n">template</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">template</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;&lt;PATH&gt;&quot;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cime_root</span><span class="p">,</span> <span class="s2">&quot;scripts&quot;</span><span class="p">,</span> <span class="s2">&quot;Tools&quot;</span><span class="p">))</span>
+        <span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;&lt;EXTRA_ARGS&gt;&quot;</span><span class="p">,</span> <span class="n">extra_args</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;&lt;TESTID&gt;&quot;</span><span class="p">,</span> <span class="n">test_id</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;&lt;TESTROOT&gt;&quot;</span><span class="p">,</span> <span class="n">test_root</span><span class="p">)</span>
+    <span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">test_root</span><span class="p">):</span>
         <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">test_root</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -219,7 +225,9 @@
     <span class="n">cs_status_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">test_root</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">cs_status_file</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
         <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">template</span><span class="p">)</span>
-    <span class="n">os</span><span class="o">.</span><span class="n">chmod</span><span class="p">(</span><span class="n">cs_status_file</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">cs_status_file</span><span class="p">)</span><span class="o">.</span><span class="n">st_mode</span> <span class="o">|</span> <span class="n">stat</span><span class="o">.</span><span class="n">S_IXUSR</span> <span class="o">|</span> <span class="n">stat</span><span class="o">.</span><span class="n">S_IXGRP</span><span class="p">)</span></div>
+    <span class="n">os</span><span class="o">.</span><span class="n">chmod</span><span class="p">(</span>
+        <span class="n">cs_status_file</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">cs_status_file</span><span class="p">)</span><span class="o">.</span><span class="n">st_mode</span> <span class="o">|</span> <span class="n">stat</span><span class="o">.</span><span class="n">S_IXUSR</span> <span class="o">|</span> <span class="n">stat</span><span class="o">.</span><span class="n">S_IXGRP</span>
+    <span class="p">)</span></div>
 </pre></div>
 
            </div>
@@ -259,6 +267,7 @@
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>

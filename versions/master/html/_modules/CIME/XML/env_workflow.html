@@ -30,6 +30,10 @@
   
 
   
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
 
   
         <link rel="index" title="Index"
@@ -190,8 +194,8 @@
 
 <span class="c1"># pragma pylint: disable=attribute-defined-outside-init</span>
 
-<div class="viewcode-block" id="EnvWorkflow"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_workflow.EnvWorkflow">[docs]</a><span class="k">class</span> <span class="nc">EnvWorkflow</span><span class="p">(</span><span class="n">EnvBase</span><span class="p">):</span>
 
+<div class="viewcode-block" id="EnvWorkflow"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_workflow.EnvWorkflow">[docs]</a><span class="k">class</span> <span class="nc">EnvWorkflow</span><span class="p">(</span><span class="n">EnvBase</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case_root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">infile</span><span class="o">=</span><span class="s2">&quot;env_workflow.xml&quot;</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        initialize an object interface to file env_workflow.xml in the case directory</span>
@@ -200,13 +204,18 @@
         <span class="c1">#        schema = os.path.join(get_cime_root(), &quot;config&quot;, &quot;xml_schemas&quot;, &quot;env_workflow.xsd&quot;)</span>
         <span class="c1"># TODO: define schema for this file</span>
         <span class="n">schema</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">EnvWorkflow</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">case_root</span><span class="p">,</span> <span class="n">infile</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="n">read_only</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">EnvWorkflow</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">case_root</span><span class="p">,</span> <span class="n">infile</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="n">read_only</span>
+        <span class="p">)</span>
 
 <div class="viewcode-block" id="EnvWorkflow.create_job_groups"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_workflow.EnvWorkflow.create_job_groups">[docs]</a>    <span class="k">def</span> <span class="nf">create_job_groups</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch_jobs</span><span class="p">,</span> <span class="n">is_test</span><span class="p">):</span>
         <span class="c1"># Subtle: in order to support dynamic batch jobs, we need to remove the</span>
         <span class="c1"># job_submission group and replace with job-based groups</span>
-        <span class="n">orig_group</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_optional_child</span><span class="p">(</span><span class="s2">&quot;group&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span><span class="s2">&quot;job_submission&quot;</span><span class="p">},</span>
-                                    <span class="n">err_msg</span><span class="o">=</span><span class="s2">&quot;Looks like job groups have already been created&quot;</span><span class="p">)</span>
+        <span class="n">orig_group</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_optional_child</span><span class="p">(</span>
+            <span class="s2">&quot;group&quot;</span><span class="p">,</span>
+            <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;job_submission&quot;</span><span class="p">},</span>
+            <span class="n">err_msg</span><span class="o">=</span><span class="s2">&quot;Looks like job groups have already been created&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="n">expect</span><span class="p">(</span><span class="n">orig_group</span><span class="p">,</span> <span class="s2">&quot;No workflow groups found&quot;</span><span class="p">)</span>
         <span class="n">orig_group_children</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">EnvWorkflow</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="n">orig_group</span><span class="p">)</span>
 
@@ -218,18 +227,20 @@
 
         <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">jdict</span> <span class="ow">in</span> <span class="n">batch_jobs</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;case.run&quot;</span> <span class="ow">and</span> <span class="n">is_test</span><span class="p">:</span>
-                <span class="k">pass</span> <span class="c1"># skip</span>
+                <span class="k">pass</span>  <span class="c1"># skip</span>
             <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;case.test&quot;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">is_test</span><span class="p">:</span>
-                <span class="k">pass</span> <span class="c1"># skip</span>
+                <span class="k">pass</span>  <span class="c1"># skip</span>
             <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;case.run.sh&quot;</span><span class="p">:</span>
-                <span class="k">pass</span> <span class="c1"># skip</span>
+                <span class="k">pass</span>  <span class="c1"># skip</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">new_job_group</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_child</span><span class="p">(</span><span class="s2">&quot;group&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span><span class="n">name</span><span class="p">})</span>
+                <span class="n">new_job_group</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_child</span><span class="p">(</span><span class="s2">&quot;group&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">})</span>
                 <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">jdict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
                     <span class="k">if</span> <span class="n">field</span> <span class="o">==</span> <span class="s2">&quot;runtime_parameters&quot;</span><span class="p">:</span>
                         <span class="k">continue</span>
                     <span class="n">val</span> <span class="o">=</span> <span class="n">jdict</span><span class="p">[</span><span class="n">field</span><span class="p">]</span>
-                    <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_child</span><span class="p">(</span><span class="s2">&quot;entry&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span><span class="n">field</span><span class="p">,</span><span class="s2">&quot;value&quot;</span><span class="p">:</span><span class="n">val</span><span class="p">},</span> <span class="n">root</span><span class="o">=</span><span class="n">new_job_group</span><span class="p">)</span>
+                    <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_child</span><span class="p">(</span>
+                        <span class="s2">&quot;entry&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">field</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">val</span><span class="p">},</span> <span class="n">root</span><span class="o">=</span><span class="n">new_job_group</span>
+                    <span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">make_child</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">node</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;char&quot;</span><span class="p">)</span>
 
                 <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">childnodes</span><span class="p">:</span>
@@ -246,21 +257,29 @@
         <span class="n">gnodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="s2">&quot;group&quot;</span><span class="p">)</span>
         <span class="n">type_info</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">for</span> <span class="n">gnode</span> <span class="ow">in</span> <span class="n">gnodes</span><span class="p">:</span>
-            <span class="n">nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="s2">&quot;entry&quot;</span><span class="p">,{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span><span class="n">vid</span><span class="p">},</span> <span class="n">root</span><span class="o">=</span><span class="n">gnode</span><span class="p">)</span>
+            <span class="n">nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="s2">&quot;entry&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">vid</span><span class="p">},</span> <span class="n">root</span><span class="o">=</span><span class="n">gnode</span><span class="p">)</span>
             <span class="n">type_info</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
                 <span class="n">new_type_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_type_info</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">type_info</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="n">type_info</span> <span class="o">=</span> <span class="n">new_type_info</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">expect</span><span class="p">(</span> <span class="n">type_info</span> <span class="o">==</span> <span class="n">new_type_info</span><span class="p">,</span>
-                            <span class="s2">&quot;Inconsistent type_info for entry id=</span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">vid</span><span class="p">,</span> <span class="n">new_type_info</span><span class="p">,</span> <span class="n">type_info</span><span class="p">))</span>
+                    <span class="n">expect</span><span class="p">(</span>
+                        <span class="n">type_info</span> <span class="o">==</span> <span class="n">new_type_info</span><span class="p">,</span>
+                        <span class="s2">&quot;Inconsistent type_info for entry id=</span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                            <span class="n">vid</span><span class="p">,</span> <span class="n">new_type_info</span><span class="p">,</span> <span class="n">type_info</span>
+                        <span class="p">),</span>
+                    <span class="p">)</span>
         <span class="k">return</span> <span class="n">type_info</span></div>
 
 <div class="viewcode-block" id="EnvWorkflow.get_job_specs"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_workflow.EnvWorkflow.get_job_specs">[docs]</a>    <span class="k">def</span> <span class="nf">get_job_specs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">job</span><span class="p">):</span>
         <span class="n">task_count</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_resolved_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;task_count&quot;</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="n">job</span><span class="p">))</span>
-        <span class="n">tasks_per_node</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_resolved_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;tasks_per_node&quot;</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="n">job</span><span class="p">))</span>
-        <span class="n">thread_count</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_resolved_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;thread_count&quot;</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="n">job</span><span class="p">))</span>
+        <span class="n">tasks_per_node</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_resolved_value</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;tasks_per_node&quot;</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="n">job</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">thread_count</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_resolved_value</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;thread_count&quot;</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="n">job</span><span class="p">)</span>
+        <span class="p">)</span>
         <span class="n">max_gpus_per_node</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MAX_GPUS_PER_NODE&quot;</span><span class="p">)</span>
         <span class="n">ngpus_per_node</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;NGPUS_PER_NODE&quot;</span><span class="p">)</span>
         <span class="n">num_nodes</span> <span class="o">=</span> <span class="kc">None</span>
@@ -269,8 +288,8 @@
             <span class="n">ngpus_per_node</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">if</span> <span class="n">task_count</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">tasks_per_node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">task_count</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">task_count</span><span class="p">)</span>
-            <span class="n">num_nodes</span>   <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">task_count</span><span class="p">)</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="n">tasks_per_node</span><span class="p">)))</span>
-            <span class="n">tasks_per_node</span> <span class="o">=</span>  <span class="n">task_count</span><span class="o">//</span><span class="n">num_nodes</span>
+            <span class="n">num_nodes</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">task_count</span><span class="p">)</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">tasks_per_node</span><span class="p">)))</span>
+            <span class="n">tasks_per_node</span> <span class="o">=</span> <span class="n">task_count</span> <span class="o">//</span> <span class="n">num_nodes</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">thread_count</span><span class="p">:</span>
             <span class="n">thread_count</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="k">if</span> <span class="n">ngpus_per_node</span> <span class="o">&gt;</span> <span class="n">max_gpus_per_node</span><span class="p">:</span>
@@ -287,9 +306,11 @@
         <span class="k">if</span> <span class="n">subgroup</span> <span class="o">==</span> <span class="s2">&quot;PRIMARY&quot;</span><span class="p">:</span>
             <span class="n">subgroup</span> <span class="o">=</span> <span class="s2">&quot;case.test&quot;</span> <span class="k">if</span> <span class="s2">&quot;case.test&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_jobs</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;case.run&quot;</span>
 
-        <span class="c1">#pylint: disable=assignment-from-none</span>
+        <span class="c1"># pylint: disable=assignment-from-none</span>
         <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">value</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">EnvWorkflow</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="n">attribute</span><span class="p">,</span> <span class="n">resolved</span><span class="o">=</span><span class="n">resolved</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="n">subgroup</span><span class="p">)</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">EnvWorkflow</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span>
+                <span class="n">item</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="n">attribute</span><span class="p">,</span> <span class="n">resolved</span><span class="o">=</span><span class="n">resolved</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="n">subgroup</span>
+            <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">value</span></div>
 
@@ -304,25 +325,36 @@
         <span class="k">if</span> <span class="n">subgroup</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">gnodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="s2">&quot;group&quot;</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">gnode</span> <span class="ow">in</span> <span class="n">gnodes</span><span class="p">:</span>
-                <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_optional_child</span><span class="p">(</span><span class="s2">&quot;entry&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span><span class="n">item</span><span class="p">},</span> <span class="n">root</span><span class="o">=</span><span class="n">gnode</span><span class="p">)</span>
+                <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_optional_child</span><span class="p">(</span><span class="s2">&quot;entry&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">item</span><span class="p">},</span> <span class="n">root</span><span class="o">=</span><span class="n">gnode</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_set_value</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">vid</span><span class="o">=</span><span class="n">item</span><span class="p">,</span> <span class="n">ignore_type</span><span class="o">=</span><span class="n">ignore_type</span><span class="p">)</span>
                     <span class="n">val</span> <span class="o">=</span> <span class="n">value</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">group</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_optional_child</span><span class="p">(</span><span class="s2">&quot;group&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span><span class="n">subgroup</span><span class="p">})</span>
+            <span class="n">group</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_optional_child</span><span class="p">(</span><span class="s2">&quot;group&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">subgroup</span><span class="p">})</span>
             <span class="k">if</span> <span class="n">group</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_optional_child</span><span class="p">(</span><span class="s2">&quot;entry&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span><span class="n">item</span><span class="p">},</span> <span class="n">root</span><span class="o">=</span><span class="n">group</span><span class="p">)</span>
+                <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_optional_child</span><span class="p">(</span><span class="s2">&quot;entry&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">item</span><span class="p">},</span> <span class="n">root</span><span class="o">=</span><span class="n">group</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_value</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">vid</span><span class="o">=</span><span class="n">item</span><span class="p">,</span> <span class="n">ignore_type</span><span class="o">=</span><span class="n">ignore_type</span><span class="p">)</span>
+                    <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_value</span><span class="p">(</span>
+                        <span class="n">node</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">vid</span><span class="o">=</span><span class="n">item</span><span class="p">,</span> <span class="n">ignore_type</span><span class="o">=</span><span class="n">ignore_type</span>
+                    <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">val</span></div>
 
 <div class="viewcode-block" id="EnvWorkflow.get_children"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_workflow.EnvWorkflow.get_children">[docs]</a>    <span class="k">def</span> <span class="nf">get_children</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;JOB_WALLCLOCK_TIME&quot;</span><span class="p">,</span> <span class="s2">&quot;PROJECT&quot;</span><span class="p">,</span> <span class="s2">&quot;CHARGE_ACCOUNT&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;JOB_QUEUE&quot;</span><span class="p">,</span> <span class="s2">&quot;BATCH_COMMAND_FLAGS&quot;</span><span class="p">):</span>
-            <span class="n">nodes</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">EnvWorkflow</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="s2">&quot;entry&quot;</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span><span class="n">name</span><span class="p">},</span> <span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">(</span>
+            <span class="s2">&quot;JOB_WALLCLOCK_TIME&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;PROJECT&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;CHARGE_ACCOUNT&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;JOB_QUEUE&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;BATCH_COMMAND_FLAGS&quot;</span><span class="p">,</span>
+        <span class="p">):</span>
+            <span class="n">nodes</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">EnvWorkflow</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span>
+                <span class="s2">&quot;entry&quot;</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">},</span> <span class="n">root</span><span class="o">=</span><span class="n">root</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">nodes</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">EnvWorkflow</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="n">attributes</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">)</span>
+            <span class="n">nodes</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">EnvWorkflow</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span>
+                <span class="n">name</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="n">attributes</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">root</span>
+            <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">nodes</span></div></div>
 </pre></div>
@@ -364,6 +396,7 @@
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/doctools.js"></script>

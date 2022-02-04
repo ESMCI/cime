@@ -30,6 +30,10 @@
   
 
   
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
 
   
         <link rel="index" title="Index"
@@ -192,10 +196,18 @@
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Compilers"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.compilers.Compilers">[docs]</a><span class="k">class</span> <span class="nc">Compilers</span><span class="p">(</span><span class="n">GenericXML</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">machobj</span><span class="p">,</span> <span class="n">infile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">compiler</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mpilib</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">extra_machines_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Compilers"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.compilers.Compilers">[docs]</a><span class="k">class</span> <span class="nc">Compilers</span><span class="p">(</span><span class="n">GenericXML</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">machobj</span><span class="p">,</span>
+        <span class="n">infile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">compiler</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">mpilib</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">files</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">version</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">extra_machines_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        initialize an object</span>
 
@@ -204,6 +216,11 @@
 <span class="sd">        found, the contents of this file will be appended to the standard</span>
 <span class="sd">        config_compilers.xml. An empty string is treated the same as None.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">expect</span><span class="p">(</span>
+            <span class="s2">&quot;CIME_NO_CMAKE_MACRO&quot;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">,</span>
+            <span class="s2">&quot;Should not be using config_compilers.xml without CIME_NO_CMAKE_MACRO&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">infile</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">files</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -219,27 +236,27 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_version</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_version</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_machobj</span> <span class="o">=</span> <span class="n">machobj</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">machine</span>  <span class="o">=</span> <span class="n">machobj</span><span class="o">.</span><span class="n">get_machine_name</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">machine</span> <span class="o">=</span> <span class="n">machobj</span><span class="o">.</span><span class="n">get_machine_name</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">os</span> <span class="o">=</span> <span class="n">machobj</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;OS&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">compiler</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">compiler</span> <span class="o">=</span> <span class="n">machobj</span><span class="o">.</span><span class="n">get_default_compiler</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">compiler</span>       <span class="o">=</span> <span class="n">compiler</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">compiler</span> <span class="o">=</span> <span class="n">compiler</span>
 
         <span class="k">if</span> <span class="n">mpilib</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">compiler</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">mpilib</span> <span class="o">=</span> <span class="n">machobj</span><span class="o">.</span><span class="n">get_default_MPIlib</span><span class="p">()</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">mpilib</span> <span class="o">=</span> <span class="n">machobj</span><span class="o">.</span><span class="n">get_default_MPIlib</span><span class="p">(</span><span class="n">attributes</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;compiler&#39;</span><span class="p">:</span><span class="n">compiler</span><span class="p">})</span>
+                <span class="n">mpilib</span> <span class="o">=</span> <span class="n">machobj</span><span class="o">.</span><span class="n">get_default_MPIlib</span><span class="p">(</span><span class="n">attributes</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;compiler&quot;</span><span class="p">:</span> <span class="n">compiler</span><span class="p">})</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mpilib</span> <span class="o">=</span> <span class="n">mpilib</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">compiler_nodes</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1"># Listed from last to first</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">compiler_nodes</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Listed from last to first</span>
         <span class="c1"># Append the contents of $HOME/.cime/config_compilers.xml if it exists.</span>
         <span class="c1">#</span>
         <span class="c1"># Also append the contents of a config_compilers.xml file in the directory given by</span>
         <span class="c1"># extra_machines_dir, if present.</span>
         <span class="c1">#</span>
         <span class="c1"># This could cause problems if node matches are repeated when only one is expected.</span>
-        <span class="n">infile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;HOME&quot;</span><span class="p">),</span><span class="s2">&quot;.cime&quot;</span><span class="p">,</span><span class="s2">&quot;config_compilers.xml&quot;</span><span class="p">)</span>
+        <span class="n">infile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;HOME&quot;</span><span class="p">),</span> <span class="s2">&quot;.cime&quot;</span><span class="p">,</span> <span class="s2">&quot;config_compilers.xml&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">infile</span><span class="p">):</span>
             <span class="n">GenericXML</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infile</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">extra_machines_dir</span><span class="p">:</span>
@@ -252,9 +269,19 @@
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_version</span> <span class="o">&gt;</span> <span class="mf">1.0</span><span class="p">:</span>
             <span class="n">schema_db</span> <span class="o">=</span> <span class="n">GenericXML</span><span class="p">(</span><span class="n">infile</span><span class="o">=</span><span class="n">schema</span><span class="p">)</span>
-            <span class="n">compiler_vars</span> <span class="o">=</span> <span class="n">schema_db</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span><span class="s2">&quot;{http://www.w3.org/2001/XMLSchema}group&quot;</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;compilerVars&quot;</span><span class="p">})</span>
-            <span class="n">choice</span>  <span class="o">=</span> <span class="n">schema_db</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;{http://www.w3.org/2001/XMLSchema}choice&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">compiler_vars</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">flag_vars</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">schema_db</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">schema_db</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="n">choice</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span><span class="s2">&quot;flagsVar&quot;</span><span class="p">}))</span>
+            <span class="n">compiler_vars</span> <span class="o">=</span> <span class="n">schema_db</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span>
+                <span class="s2">&quot;{http://www.w3.org/2001/XMLSchema}group&quot;</span><span class="p">,</span>
+                <span class="n">attributes</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;compilerVars&quot;</span><span class="p">},</span>
+            <span class="p">)</span>
+            <span class="n">choice</span> <span class="o">=</span> <span class="n">schema_db</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;{http://www.w3.org/2001/XMLSchema}choice&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">compiler_vars</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">flag_vars</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span>
+                <span class="n">schema_db</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">schema_db</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span>
+                    <span class="n">root</span><span class="o">=</span><span class="n">choice</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;flagsVar&quot;</span><span class="p">}</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
 
 <div class="viewcode-block" id="Compilers.get_compiler"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.compilers.Compilers.get_compiler">[docs]</a>    <span class="k">def</span> <span class="nf">get_compiler</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -266,17 +293,30 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return data on a node for a compiler</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">expect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">compiler_nodes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Compiler not set, use parent get_node?&quot;</span><span class="p">)</span>
+        <span class="n">expect</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">compiler_nodes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Compiler not set, use parent get_node?&quot;</span>
+        <span class="p">)</span>
         <span class="k">for</span> <span class="n">compiler_node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">compiler_nodes</span><span class="p">:</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_optional_child</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">nodename</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="n">attributes</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">compiler_node</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_optional_child</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="n">nodename</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="n">attributes</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">compiler_node</span>
+            <span class="p">)</span>
             <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">result</span>
 
         <span class="k">return</span> <span class="kc">None</span></div>
 
     <span class="k">def</span> <span class="nf">_is_compatible</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compiler_node</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">machine</span><span class="p">,</span> <span class="n">os_</span><span class="p">,</span> <span class="n">mpilib</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">xmlid</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="p">[</span> <span class="p">(</span><span class="s2">&quot;COMPILER&quot;</span><span class="p">,</span> <span class="n">compiler</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;MACH&quot;</span><span class="p">,</span> <span class="n">machine</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;OS&quot;</span><span class="p">,</span> <span class="n">os_</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;MPILIB&quot;</span><span class="p">,</span> <span class="n">mpilib</span><span class="p">)</span> <span class="p">]:</span>
-            <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="n">compiler_node</span><span class="p">,</span> <span class="n">xmlid</span><span class="p">)</span> <span class="ow">and</span> <span class="n">value</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">compiler_node</span><span class="p">,</span> <span class="n">xmlid</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">xmlid</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="p">[</span>
+            <span class="p">(</span><span class="s2">&quot;COMPILER&quot;</span><span class="p">,</span> <span class="n">compiler</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;MACH&quot;</span><span class="p">,</span> <span class="n">machine</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;OS&quot;</span><span class="p">,</span> <span class="n">os_</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;MPILIB&quot;</span><span class="p">,</span> <span class="n">mpilib</span><span class="p">),</span>
+        <span class="p">]:</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="n">compiler_node</span><span class="p">,</span> <span class="n">xmlid</span><span class="p">)</span>
+                <span class="ow">and</span> <span class="n">value</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">compiler_node</span><span class="p">,</span> <span class="n">xmlid</span><span class="p">)</span>
+            <span class="p">):</span>
                 <span class="k">return</span> <span class="kc">False</span>
 
         <span class="k">return</span> <span class="kc">True</span>
@@ -284,17 +324,18 @@
 <div class="viewcode-block" id="Compilers.set_compiler"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.compilers.Compilers.set_compiler">[docs]</a>    <span class="k">def</span> <span class="nf">set_compiler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">machine</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">os_</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mpilib</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets the compiler block in the Compilers object</span>
-<span class="sd">        &gt;&gt;&gt; from CIME.XML.machines import Machines</span>
-<span class="sd">        &gt;&gt;&gt; compobj = Compilers(Machines(machine=&quot;melvin&quot;))</span>
-<span class="sd">        &gt;&gt;&gt; compobj.set_compiler(&quot;gnu&quot;)</span>
-<span class="sd">        &gt;&gt;&gt; compobj.get_compiler()</span>
-<span class="sd">        &#39;gnu&#39;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">machine</span> <span class="o">=</span> <span class="n">machine</span> <span class="k">if</span> <span class="n">machine</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">machine</span>
-        <span class="n">os_</span>     <span class="o">=</span> <span class="n">os_</span> <span class="k">if</span> <span class="n">os_</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">os</span>
-        <span class="n">mpilib</span>  <span class="o">=</span> <span class="n">mpilib</span> <span class="k">if</span> <span class="n">mpilib</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">mpilib</span>
+        <span class="n">os_</span> <span class="o">=</span> <span class="n">os_</span> <span class="k">if</span> <span class="n">os_</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">os</span>
+        <span class="n">mpilib</span> <span class="o">=</span> <span class="n">mpilib</span> <span class="k">if</span> <span class="n">mpilib</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">mpilib</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">compiler</span> <span class="o">!=</span> <span class="n">compiler</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">machine</span> <span class="o">!=</span> <span class="n">machine</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">os</span> <span class="o">!=</span> <span class="n">os_</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">mpilib</span> <span class="o">!=</span> <span class="n">mpilib</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">compiler_nodes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">compiler</span> <span class="o">!=</span> <span class="n">compiler</span>
+            <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">machine</span> <span class="o">!=</span> <span class="n">machine</span>
+            <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">os</span> <span class="o">!=</span> <span class="n">os_</span>
+            <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">mpilib</span> <span class="o">!=</span> <span class="n">mpilib</span>
+            <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">compiler_nodes</span> <span class="ow">is</span> <span class="kc">None</span>
+        <span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">compiler_nodes</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="n">nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;compiler&quot;</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
@@ -304,16 +345,18 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">compiler_nodes</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">compiler</span> <span class="o">=</span> <span class="n">compiler</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">machine</span>  <span class="o">=</span> <span class="n">machine</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">os</span>       <span class="o">=</span> <span class="n">os_</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">mpilib</span>   <span class="o">=</span> <span class="n">mpilib</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">machine</span> <span class="o">=</span> <span class="n">machine</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">os</span> <span class="o">=</span> <span class="n">os_</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mpilib</span> <span class="o">=</span> <span class="n">mpilib</span></div>
 
-    <span class="c1">#pylint: disable=arguments-differ</span>
+    <span class="c1"># pylint: disable=arguments-differ</span>
 <div class="viewcode-block" id="Compilers.get_value"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.compilers.Compilers.get_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">resolved</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get Value of fields in the config_compilers.xml file</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">expect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">compiler_nodes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Compiler object has no compiler defined&quot;</span><span class="p">)</span>
+        <span class="n">expect</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">compiler_nodes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Compiler object has no compiler defined&quot;</span>
+        <span class="p">)</span>
         <span class="n">expect</span><span class="p">(</span><span class="n">subgroup</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;This class does not support subgroups&quot;</span><span class="p">)</span>
         <span class="n">value</span> <span class="o">=</span> <span class="kc">None</span>
 
@@ -329,9 +372,16 @@
 
         <span class="k">return</span> <span class="n">value</span></div>
 
-<div class="viewcode-block" id="Compilers.write_macros_file"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.compilers.Compilers.write_macros_file">[docs]</a>    <span class="k">def</span> <span class="nf">write_macros_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">macros_file</span><span class="o">=</span><span class="s2">&quot;Macros.make&quot;</span><span class="p">,</span> <span class="n">output_format</span><span class="o">=</span><span class="s2">&quot;make&quot;</span><span class="p">,</span> <span class="n">xml</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Compilers.write_macros_file"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.compilers.Compilers.write_macros_file">[docs]</a>    <span class="k">def</span> <span class="nf">write_macros_file</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">macros_file</span><span class="o">=</span><span class="s2">&quot;Macros.make&quot;</span><span class="p">,</span> <span class="n">output_format</span><span class="o">=</span><span class="s2">&quot;make&quot;</span><span class="p">,</span> <span class="n">xml</span><span class="o">=</span><span class="kc">None</span>
+    <span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_version</span> <span class="o">&lt;=</span> <span class="mf">1.0</span><span class="p">:</span>
-            <span class="n">expect</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;config_compilers.xml version &#39;</span><span class="si">{}</span><span class="s2">&#39; is no longer supported&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_version</span><span class="p">))</span>
+            <span class="n">expect</span><span class="p">(</span>
+                <span class="kc">False</span><span class="p">,</span>
+                <span class="s2">&quot;config_compilers.xml version &#39;</span><span class="si">{}</span><span class="s2">&#39; is no longer supported&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_version</span>
+                <span class="p">),</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">output_format</span> <span class="o">==</span> <span class="s2">&quot;make&quot;</span><span class="p">:</span>
                 <span class="n">format_</span> <span class="o">=</span> <span class="s2">&quot;Makefile&quot;</span>
@@ -362,9 +412,10 @@
         <span class="k">elif</span> <span class="n">build_system</span> <span class="o">==</span> <span class="s2">&quot;CMake&quot;</span><span class="p">:</span>
             <span class="n">writer</span> <span class="o">=</span> <span class="n">CMakeMacroWriter</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">expect</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span>
-                   <span class="s2">&quot;Unrecognized build system provided to write_macros: &quot;</span> <span class="o">+</span>
-                   <span class="n">build_system</span><span class="p">)</span>
+            <span class="n">expect</span><span class="p">(</span>
+                <span class="kc">False</span><span class="p">,</span>
+                <span class="s2">&quot;Unrecognized build system provided to write_macros: &quot;</span> <span class="o">+</span> <span class="n">build_system</span><span class="p">,</span>
+            <span class="p">)</span>
 
         <span class="c1"># Start processing the file.</span>
         <span class="n">value_lists</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
@@ -387,29 +438,31 @@
         <span class="k">while</span> <span class="n">value_lists</span><span class="p">:</span>
             <span class="c1"># Variables that are ready to be written.</span>
             <span class="n">ready_variables</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="n">var_name</span> <span class="k">for</span> <span class="n">var_name</span> <span class="ow">in</span> <span class="n">value_lists</span>
+                <span class="n">var_name</span>
+                <span class="k">for</span> <span class="n">var_name</span> <span class="ow">in</span> <span class="n">value_lists</span>
                 <span class="k">if</span> <span class="n">value_lists</span><span class="p">[</span><span class="n">var_name</span><span class="p">]</span><span class="o">.</span><span class="n">dependencies</span><span class="p">()</span> <span class="o">&lt;=</span> <span class="n">vars_written</span>
             <span class="p">]</span>
-            <span class="n">expect</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ready_variables</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span>
-                   <span class="s2">&quot;The file </span><span class="si">{}</span><span class="s2"> has bad $VAR references. &quot;</span>
-                   <span class="s2">&quot;Check for circular references or variables that &quot;</span>
-                   <span class="s2">&quot;are used in a $VAR but not actually defined.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">))</span>
+            <span class="n">expect</span><span class="p">(</span>
+                <span class="nb">len</span><span class="p">(</span><span class="n">ready_variables</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="s2">&quot;The file </span><span class="si">{}</span><span class="s2"> has bad $VAR references. &quot;</span>
+                <span class="s2">&quot;Check for circular references or variables that &quot;</span>
+                <span class="s2">&quot;are used in a $VAR but not actually defined.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">),</span>
+            <span class="p">)</span>
             <span class="n">big_normal_trees</span> <span class="o">=</span> <span class="p">{}</span>
             <span class="n">big_append_tree</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">for</span> <span class="n">var_name</span> <span class="ow">in</span> <span class="n">ready_variables</span><span class="p">:</span>
                 <span class="c1"># Note that we&#39;re writing this variable.</span>
                 <span class="n">vars_written</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">var_name</span><span class="p">)</span>
                 <span class="c1"># Make the conditional trees and write them out.</span>
-                <span class="n">normal_trees</span><span class="p">,</span> <span class="n">append_tree</span> <span class="o">=</span> \
-                    <span class="n">value_lists</span><span class="p">[</span><span class="n">var_name</span><span class="p">]</span><span class="o">.</span><span class="n">to_cond_trees</span><span class="p">()</span>
+                <span class="n">normal_trees</span><span class="p">,</span> <span class="n">append_tree</span> <span class="o">=</span> <span class="n">value_lists</span><span class="p">[</span><span class="n">var_name</span><span class="p">]</span><span class="o">.</span><span class="n">to_cond_trees</span><span class="p">()</span>
                 <span class="k">for</span> <span class="n">spec</span> <span class="ow">in</span> <span class="n">normal_trees</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">spec</span> <span class="ow">in</span> <span class="n">big_normal_trees</span><span class="p">:</span>
-                        <span class="n">big_normal_trees</span><span class="p">[</span><span class="n">spec</span><span class="p">]</span> <span class="o">=</span> <span class="n">merge_optional_trees</span><span class="p">(</span><span class="n">normal_trees</span><span class="p">[</span><span class="n">spec</span><span class="p">],</span>
-                                                                      <span class="n">big_normal_trees</span><span class="p">[</span><span class="n">spec</span><span class="p">])</span>
+                        <span class="n">big_normal_trees</span><span class="p">[</span><span class="n">spec</span><span class="p">]</span> <span class="o">=</span> <span class="n">merge_optional_trees</span><span class="p">(</span>
+                            <span class="n">normal_trees</span><span class="p">[</span><span class="n">spec</span><span class="p">],</span> <span class="n">big_normal_trees</span><span class="p">[</span><span class="n">spec</span><span class="p">]</span>
+                        <span class="p">)</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="n">big_normal_trees</span><span class="p">[</span><span class="n">spec</span><span class="p">]</span> <span class="o">=</span> <span class="n">normal_trees</span><span class="p">[</span><span class="n">spec</span><span class="p">]</span>
-                <span class="n">big_append_tree</span> <span class="o">=</span> <span class="n">merge_optional_trees</span><span class="p">(</span><span class="n">append_tree</span><span class="p">,</span>
-                                                        <span class="n">big_append_tree</span><span class="p">)</span>
+                <span class="n">big_append_tree</span> <span class="o">=</span> <span class="n">merge_optional_trees</span><span class="p">(</span><span class="n">append_tree</span><span class="p">,</span> <span class="n">big_append_tree</span><span class="p">)</span>
                 <span class="c1"># Remove this variable from the list of variables to handle</span>
                 <span class="c1"># next iteration.</span>
                 <span class="k">del</span> <span class="n">value_lists</span><span class="p">[</span><span class="n">var_name</span><span class="p">]</span>
@@ -457,6 +510,7 @@
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/doctools.js"></script>

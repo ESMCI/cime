@@ -30,6 +30,10 @@
   
 
   
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
 
   
         <link rel="index" title="Index"
@@ -192,15 +196,18 @@
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
-<div class="viewcode-block" id="NCK"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.nck.NCK">[docs]</a><span class="k">class</span> <span class="nc">NCK</span><span class="p">(</span><span class="n">SystemTestsCompareTwo</span><span class="p">):</span>
 
+<div class="viewcode-block" id="NCK"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.nck.NCK">[docs]</a><span class="k">class</span> <span class="nc">NCK</span><span class="p">(</span><span class="n">SystemTestsCompareTwo</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_comp_classes</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">SystemTestsCompareTwo</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span>
-                                       <span class="n">separate_builds</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-                                       <span class="n">run_two_suffix</span> <span class="o">=</span> <span class="s1">&#39;multiinst&#39;</span><span class="p">,</span>
-                                       <span class="n">run_one_description</span> <span class="o">=</span> <span class="s1">&#39;one instance&#39;</span><span class="p">,</span>
-                                       <span class="n">run_two_description</span> <span class="o">=</span> <span class="s1">&#39;two instances&#39;</span><span class="p">)</span>
+        <span class="n">SystemTestsCompareTwo</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">case</span><span class="p">,</span>
+            <span class="n">separate_builds</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">run_two_suffix</span><span class="o">=</span><span class="s2">&quot;multiinst&quot;</span><span class="p">,</span>
+            <span class="n">run_one_description</span><span class="o">=</span><span class="s2">&quot;one instance&quot;</span><span class="p">,</span>
+            <span class="n">run_two_description</span><span class="o">=</span><span class="s2">&quot;two instances&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_common_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># We start by halving the number of tasks for both cases. This ensures</span>
@@ -213,30 +220,29 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_comp_classes</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;CPL&quot;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">comp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_comp_classes</span><span class="p">:</span>
             <span class="n">ntasks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;NTASKS_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">))</span>
-            <span class="k">if</span> <span class="p">(</span> <span class="n">ntasks</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;NTASKS_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">ntasks</span><span class="o">/</span><span class="mi">2</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">ntasks</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;NTASKS_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">ntasks</span> <span class="o">/</span> <span class="mi">2</span><span class="p">))</span>
             <span class="c1"># the following assures that both cases use the same number of total tasks</span>
             <span class="n">rootpe</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;ROOTPE_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">))</span>
-            <span class="k">if</span> <span class="p">(</span> <span class="n">rootpe</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;ROOTPE_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">rootpe</span><span class="o">+</span><span class="n">ntasks</span><span class="o">/</span><span class="mi">2</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">rootpe</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;ROOTPE_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">rootpe</span> <span class="o">+</span> <span class="n">ntasks</span> <span class="o">/</span> <span class="mi">2</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">_case_one_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">comp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_comp_classes</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;NINST_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
 
-
     <span class="k">def</span> <span class="nf">_case_two_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">comp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_comp_classes</span><span class="p">:</span>
-            <span class="k">if</span> <span class="p">(</span><span class="n">comp</span> <span class="o">==</span> <span class="s2">&quot;ESP&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">comp</span> <span class="o">==</span> <span class="s2">&quot;ESP&quot;</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;NINST_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;NINST_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
 
             <span class="n">ntasks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;NTASKS_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">))</span>
             <span class="n">rootpe</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;ROOTPE_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">))</span>
-            <span class="k">if</span> <span class="p">(</span> <span class="n">rootpe</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;ROOTPE_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">rootpe</span><span class="o">-</span><span class="n">ntasks</span><span class="p">))</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;NTASKS_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">),</span> <span class="n">ntasks</span><span class="o">*</span><span class="mi">2</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">rootpe</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;ROOTPE_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">rootpe</span> <span class="o">-</span> <span class="n">ntasks</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;NTASKS_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">),</span> <span class="n">ntasks</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">case_setup</span><span class="p">(</span><span class="n">test_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 </pre></div>
 
@@ -277,6 +283,7 @@
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/doctools.js"></script>

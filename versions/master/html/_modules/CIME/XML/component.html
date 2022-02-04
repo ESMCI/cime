@@ -30,6 +30,10 @@
   
 
   
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
 
   
         <link rel="index" title="Index"
@@ -188,26 +192,29 @@
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Component"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.component.Component">[docs]</a><span class="k">class</span> <span class="nc">Component</span><span class="p">(</span><span class="n">EntryID</span><span class="p">):</span>
 
+<div class="viewcode-block" id="Component"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.component.Component">[docs]</a><span class="k">class</span> <span class="nc">Component</span><span class="p">(</span><span class="n">EntryID</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infile</span><span class="p">,</span> <span class="n">comp_class</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        initialize a Component obect from the component xml file in infile</span>
 <span class="sd">        associate the component class with comp_class if provided.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_comp_class</span> <span class="o">=</span> <span class="n">comp_class</span>
-        <span class="k">if</span> <span class="n">infile</span> <span class="o">==</span> <span class="s1">&#39;testingonly&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">infile</span> <span class="o">==</span> <span class="s2">&quot;testingonly&quot;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">infile</span>
             <span class="k">return</span>
         <span class="n">files</span> <span class="o">=</span> <span class="n">Files</span><span class="p">()</span>
         <span class="n">schema</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">EntryID</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infile</span><span class="p">)</span>
-        <span class="n">schema</span> <span class="o">=</span> <span class="n">files</span><span class="o">.</span><span class="n">get_schema</span><span class="p">(</span><span class="s2">&quot;CONFIG_</span><span class="si">{}</span><span class="s2">_FILE&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp_class</span><span class="p">),</span> <span class="n">attributes</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;version&quot;</span><span class="p">:</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_version</span><span class="p">())})</span>
+        <span class="n">schema</span> <span class="o">=</span> <span class="n">files</span><span class="o">.</span><span class="n">get_schema</span><span class="p">(</span>
+            <span class="s2">&quot;CONFIG_</span><span class="si">{}</span><span class="s2">_FILE&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp_class</span><span class="p">),</span>
+            <span class="n">attributes</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_version</span><span class="p">())},</span>
+        <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">schema</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">validate_xml_file</span><span class="p">(</span><span class="n">infile</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span>
 
-    <span class="c1">#pylint: disable=arguments-differ</span>
+    <span class="c1"># pylint: disable=arguments-differ</span>
 <div class="viewcode-block" id="Component.get_value"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.component.Component.get_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">resolved</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">expect</span><span class="p">(</span><span class="n">subgroup</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;This class does not support subgroups&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">EntryID</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">attribute</span><span class="p">,</span> <span class="n">resolved</span><span class="p">)</span></div>
@@ -218,9 +225,9 @@
 <span class="sd">        from the entries in the model CONFIG_CPL_FILE</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">components</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">comps_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span><span class="s2">&quot;entry&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span><span class="s2">&quot;COMP_CLASSES&quot;</span><span class="p">})</span>
+        <span class="n">comps_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span><span class="s2">&quot;entry&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;COMP_CLASSES&quot;</span><span class="p">})</span>
         <span class="n">comps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_default_value</span><span class="p">(</span><span class="n">comps_node</span><span class="p">)</span>
-        <span class="n">components</span> <span class="o">=</span> <span class="n">comps</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+        <span class="n">components</span> <span class="o">=</span> <span class="n">comps</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">components</span></div>
 
     <span class="k">def</span> <span class="nf">_get_value_match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">exact_match</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -234,7 +241,7 @@
         <span class="n">match_count</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">match_values</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">expect</span><span class="p">(</span><span class="ow">not</span> <span class="n">exact_match</span><span class="p">,</span> <span class="s2">&quot; exact_match not implemented in this method&quot;</span><span class="p">)</span>
-        <span class="n">expect</span><span class="p">(</span><span class="n">node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span><span class="s2">&quot; Empty node in _get_value_match&quot;</span><span class="p">)</span>
+        <span class="n">expect</span><span class="p">(</span><span class="n">node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot; Empty node in _get_value_match&quot;</span><span class="p">)</span>
         <span class="n">values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_optional_child</span><span class="p">(</span><span class="s2">&quot;values&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">node</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">values</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span>
@@ -254,12 +261,16 @@
 
         <span class="k">for</span> <span class="n">valnode</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">values</span><span class="p">):</span>
             <span class="c1"># loop through all the keys in valnode (value nodes) attributes</span>
-            <span class="k">for</span> <span class="n">key</span><span class="p">,</span><span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">attrib</span><span class="p">(</span><span class="n">valnode</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">attrib</span><span class="p">(</span><span class="n">valnode</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="c1"># determine if key is in attributes dictionary</span>
                 <span class="n">match_count</span> <span class="o">=</span> <span class="mi">0</span>
                 <span class="k">if</span> <span class="n">attributes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">attributes</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">attributes</span><span class="p">[</span><span class="n">key</span><span class="p">]):</span>
-                        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Value </span><span class="si">{}</span><span class="s2"> and key </span><span class="si">{}</span><span class="s2"> match with value </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">attributes</span><span class="p">[</span><span class="n">key</span><span class="p">]))</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                            <span class="s2">&quot;Value </span><span class="si">{}</span><span class="s2"> and key </span><span class="si">{}</span><span class="s2"> match with value </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                <span class="n">value</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">attributes</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+                            <span class="p">)</span>
+                        <span class="p">)</span>
                         <span class="n">match_count</span> <span class="o">+=</span> <span class="mi">1</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="n">match_count</span> <span class="o">=</span> <span class="mi">0</span>
@@ -292,14 +303,17 @@
                             <span class="n">match_max</span> <span class="o">=</span> <span class="n">match_count</span>
                             <span class="n">match_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">valnode</span><span class="p">)</span>
                     <span class="k">else</span><span class="p">:</span>
-                        <span class="n">expect</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;match attribute can only have a value of &#39;last&#39; or &#39;first&#39;&quot;</span><span class="p">)</span>
+                        <span class="n">expect</span><span class="p">(</span>
+                            <span class="kc">False</span><span class="p">,</span>
+                            <span class="s2">&quot;match attribute can only have a value of &#39;last&#39; or &#39;first&#39;&quot;</span><span class="p">,</span>
+                        <span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">match_values</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">match_value</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">match_values</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">match_value</span>
 
-    <span class="c1">#pylint: disable=arguments-differ</span>
+    <span class="c1"># pylint: disable=arguments-differ</span>
 <div class="viewcode-block" id="Component.get_description"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.component.Component.get_description">[docs]</a>    <span class="k">def</span> <span class="nf">get_description</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compsetname</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_version</span><span class="p">()</span> <span class="o">==</span> <span class="mf">3.0</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_description_v3</span><span class="p">(</span><span class="n">compsetname</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_comp_class</span><span class="p">)</span>
@@ -308,7 +322,7 @@
 
 <div class="viewcode-block" id="Component.get_forcing_description"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.component.Component.get_forcing_description">[docs]</a>    <span class="k">def</span> <span class="nf">get_forcing_description</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compsetname</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_version</span><span class="p">()</span> <span class="o">==</span> <span class="mf">3.0</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_description_v3</span><span class="p">(</span><span class="n">compsetname</span><span class="p">,</span> <span class="s1">&#39;forcing&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_description_v3</span><span class="p">(</span><span class="n">compsetname</span><span class="p">,</span> <span class="s2">&quot;forcing&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="s2">&quot;&quot;</span></div>
 
@@ -329,60 +343,75 @@
 
 <span class="sd">        component descriptions are matched to the compsetname using a set method</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">expect</span><span class="p">(</span><span class="n">comp_class</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span><span class="s2">&quot;comp_class argument required for version3 files&quot;</span><span class="p">)</span>
+        <span class="n">expect</span><span class="p">(</span>
+            <span class="n">comp_class</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;comp_class argument required for version3 files&quot;</span>
+        <span class="p">)</span>
         <span class="n">comp_class</span> <span class="o">=</span> <span class="n">comp_class</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
         <span class="n">rootnode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span><span class="s2">&quot;description&quot;</span><span class="p">)</span>
         <span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="n">desc_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="s2">&quot;desc&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">rootnode</span><span class="p">)</span>
 
-        <span class="n">modifier_mode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">rootnode</span><span class="p">,</span> <span class="s1">&#39;modifier_mode&#39;</span><span class="p">)</span>
+        <span class="n">modifier_mode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">rootnode</span><span class="p">,</span> <span class="s2">&quot;modifier_mode&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">modifier_mode</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">modifier_mode</span> <span class="o">=</span> <span class="s1">&#39;*&#39;</span>
-        <span class="n">expect</span><span class="p">(</span><span class="n">modifier_mode</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;*&#39;</span><span class="p">,</span><span class="s1">&#39;1&#39;</span><span class="p">,</span><span class="s1">&#39;?&#39;</span><span class="p">,</span><span class="s1">&#39;+&#39;</span><span class="p">),</span>
-               <span class="s2">&quot;Invalid modifier_mode </span><span class="si">{}</span><span class="s2"> in file </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">modifier_mode</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">))</span>
+            <span class="n">modifier_mode</span> <span class="o">=</span> <span class="s2">&quot;*&quot;</span>
+        <span class="n">expect</span><span class="p">(</span>
+            <span class="n">modifier_mode</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="s2">&quot;?&quot;</span><span class="p">,</span> <span class="s2">&quot;+&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;Invalid modifier_mode </span><span class="si">{}</span><span class="s2"> in file </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">modifier_mode</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">),</span>
+        <span class="p">)</span>
         <span class="n">optiondesc</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">if</span> <span class="n">comp_class</span> <span class="o">==</span> <span class="s2">&quot;forcing&quot;</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">desc_nodes</span><span class="p">:</span>
-                <span class="n">forcing</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="s1">&#39;forcing&#39;</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">forcing</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">compsetname</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">forcing</span><span class="o">+</span><span class="s1">&#39;_&#39;</span><span class="p">):</span>
-                    <span class="n">expect</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">desc</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">,</span>
-                           <span class="s2">&quot;Too many matches on forcing field </span><span class="si">{}</span><span class="s2"> in file </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span>\
-                               <span class="nb">format</span><span class="p">(</span><span class="n">forcing</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">))</span>
+                <span class="n">forcing</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="s2">&quot;forcing&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">forcing</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">compsetname</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">forcing</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span><span class="p">):</span>
+                    <span class="n">expect</span><span class="p">(</span>
+                        <span class="nb">len</span><span class="p">(</span><span class="n">desc</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span>
+                        <span class="s2">&quot;Too many matches on forcing field </span><span class="si">{}</span><span class="s2"> in file </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                            <span class="n">forcing</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span>
+                        <span class="p">),</span>
+                    <span class="p">)</span>
                     <span class="n">desc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">desc</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">desc</span> <span class="o">=</span> <span class="n">compsetname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">desc</span> <span class="o">=</span> <span class="n">compsetname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
             <span class="k">return</span> <span class="n">desc</span>
-
 
         <span class="c1"># first pass just make a hash of the option descriptions</span>
         <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">desc_nodes</span><span class="p">:</span>
-            <span class="n">option</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="s1">&#39;option&#39;</span><span class="p">)</span>
+            <span class="n">option</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="s2">&quot;option&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">option</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">optiondesc</span><span class="p">[</span><span class="n">option</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
 
-        <span class="c1">#second pass find a comp_class match</span>
+        <span class="c1"># second pass find a comp_class match</span>
         <span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">desc_nodes</span><span class="p">:</span>
             <span class="n">compdesc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">comp_class</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">compdesc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">opt_parts</span> <span class="o">=</span> <span class="p">[</span> <span class="n">x</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">&quot;]&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">compdesc</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;[%&quot;</span><span class="p">)</span> <span class="p">]</span>
+                <span class="n">opt_parts</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">&quot;]&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">compdesc</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;[%&quot;</span><span class="p">)]</span>
                 <span class="n">parts</span> <span class="o">=</span> <span class="n">opt_parts</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;%&quot;</span><span class="p">)</span>
                 <span class="n">reqset</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span>
-                <span class="n">fullset</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">parts</span><span class="o">+</span><span class="n">opt_parts</span><span class="p">)</span>
-                <span class="n">match</span><span class="p">,</span> <span class="n">complist</span> <span class="o">=</span>  <span class="bp">self</span><span class="o">.</span><span class="n">_get_description_match</span><span class="p">(</span><span class="n">compsetname</span><span class="p">,</span> <span class="n">reqset</span><span class="p">,</span> <span class="n">fullset</span><span class="p">,</span> <span class="n">modifier_mode</span><span class="p">)</span>
+                <span class="n">fullset</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">parts</span> <span class="o">+</span> <span class="n">opt_parts</span><span class="p">)</span>
+
+                <span class="n">match</span><span class="p">,</span> <span class="n">complist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_description_match</span><span class="p">(</span>
+                    <span class="n">compsetname</span><span class="p">,</span> <span class="n">reqset</span><span class="p">,</span> <span class="n">fullset</span><span class="p">,</span> <span class="n">modifier_mode</span>
+                <span class="p">)</span>
                 <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
                     <span class="n">desc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
                     <span class="k">for</span> <span class="n">opt</span> <span class="ow">in</span> <span class="n">complist</span><span class="p">:</span>
                         <span class="k">if</span> <span class="n">opt</span> <span class="ow">in</span> <span class="n">optiondesc</span><span class="p">:</span>
                             <span class="n">desc</span> <span class="o">+=</span> <span class="n">optiondesc</span><span class="p">[</span><span class="n">opt</span><span class="p">]</span>
 
-
         <span class="c1"># cpl and esp components may not have a description</span>
-        <span class="k">if</span> <span class="n">comp_class</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;cpl&#39;</span><span class="p">,</span><span class="s1">&#39;esp&#39;</span><span class="p">]:</span>
-            <span class="n">expect</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">desc</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span>
-                   <span class="s2">&quot;No description found for comp_class </span><span class="si">{}</span><span class="s2"> matching compsetname </span><span class="si">{}</span><span class="s2"> in file </span><span class="si">{}</span><span class="s2">, expected match in </span><span class="si">{}</span><span class="s2"> % </span><span class="si">{}</span><span class="s2">&quot;</span>\
-                       <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp_class</span><span class="p">,</span><span class="n">compsetname</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">reqset</span><span class="p">),</span> <span class="nb">list</span><span class="p">(</span><span class="n">opt_parts</span><span class="p">)))</span>
+        <span class="k">if</span> <span class="n">comp_class</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;cpl&quot;</span><span class="p">,</span> <span class="s2">&quot;esp&quot;</span><span class="p">]:</span>
+            <span class="n">expect</span><span class="p">(</span>
+                <span class="nb">len</span><span class="p">(</span><span class="n">desc</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="s2">&quot;No description found for comp_class </span><span class="si">{}</span><span class="s2"> matching compsetname </span><span class="si">{}</span><span class="s2"> in file </span><span class="si">{}</span><span class="s2">, expected match in </span><span class="si">{}</span><span class="s2"> % </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">comp_class</span><span class="p">,</span>
+                    <span class="n">compsetname</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span>
+                    <span class="nb">list</span><span class="p">(</span><span class="n">reqset</span><span class="p">),</span>
+                    <span class="nb">list</span><span class="p">(</span><span class="n">opt_parts</span><span class="p">),</span>
+                <span class="p">),</span>
+            <span class="p">)</span>
         <span class="k">return</span> <span class="n">desc</span>
 
     <span class="k">def</span> <span class="nf">_get_description_match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compsetname</span><span class="p">,</span> <span class="n">reqset</span><span class="p">,</span> <span class="n">fullset</span><span class="p">,</span> <span class="n">modifier_mode</span><span class="p">):</span>
@@ -413,25 +442,46 @@
 <span class="sd">        (False, None)</span>
 <span class="sd">        &gt;&gt;&gt; obj._get_description_match(&quot;1850_CAM50%WCCM_Barn&quot;,set([&quot;CAM50&quot;, &quot;WCCM&quot;]), set([&quot;CAM50&quot;,&quot;WCCM&quot;,&quot;RCO2&quot;]), &quot;+&quot;)</span>
 <span class="sd">        (True, [&#39;CAM50&#39;, &#39;WCCM&#39;])</span>
+<span class="sd">        &gt;&gt;&gt; obj._get_description_match(&quot;scn:1850_atm:CAM50%WCCM_Barn&quot;,set([&quot;CAM50&quot;, &quot;WCCM&quot;]), set([&quot;CAM50&quot;,&quot;WCCM&quot;,&quot;RCO2&quot;]), &quot;+&quot;)</span>
+<span class="sd">        (True, [&#39;CAM50&#39;, &#39;WCCM&#39;])</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">match</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="n">comparts</span> <span class="o">=</span> <span class="n">compsetname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)</span>
+        <span class="n">comparts</span> <span class="o">=</span> <span class="n">compsetname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span>
         <span class="n">matchcomplist</span> <span class="o">=</span> <span class="kc">None</span>
-
         <span class="k">for</span> <span class="n">comp</span> <span class="ow">in</span> <span class="n">comparts</span><span class="p">:</span>
-            <span class="n">complist</span> <span class="o">=</span> <span class="n">comp</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;%&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="s2">&quot;:&quot;</span> <span class="ow">in</span> <span class="n">comp</span><span class="p">:</span>
+                <span class="n">comp</span> <span class="o">=</span> <span class="n">comp</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">complist</span> <span class="o">=</span> <span class="n">comp</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;%&quot;</span><span class="p">)</span>
             <span class="n">cset</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">complist</span><span class="p">)</span>
+
             <span class="k">if</span> <span class="n">cset</span> <span class="o">==</span> <span class="n">reqset</span> <span class="ow">or</span> <span class="p">(</span><span class="n">cset</span> <span class="o">&gt;</span> <span class="n">reqset</span> <span class="ow">and</span> <span class="n">cset</span> <span class="o">&lt;=</span> <span class="n">fullset</span><span class="p">):</span>
-                <span class="k">if</span> <span class="n">modifier_mode</span> <span class="o">==</span> <span class="s1">&#39;1&#39;</span><span class="p">:</span>
-                    <span class="n">expect</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">complist</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">,</span>
-                           <span class="s2">&quot;Expected exactly one modifer found </span><span class="si">{}</span><span class="s2"> in </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">complist</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">complist</span><span class="p">))</span>
-                <span class="k">elif</span> <span class="n">modifier_mode</span> <span class="o">==</span> <span class="s1">&#39;+&#39;</span><span class="p">:</span>
-                    <span class="n">expect</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">complist</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">,</span>
-                           <span class="s2">&quot;Expected one or more modifers found </span><span class="si">{}</span><span class="s2"> in </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">complist</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">reqset</span><span class="p">)))</span>
-                <span class="k">elif</span> <span class="n">modifier_mode</span> <span class="o">==</span> <span class="s1">&#39;?&#39;</span><span class="p">:</span>
-                    <span class="n">expect</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">complist</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">2</span><span class="p">,</span>
-                           <span class="s2">&quot;Expected 0 or one modifers found </span><span class="si">{}</span><span class="s2"> in </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">complist</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">complist</span><span class="p">))</span>
-                <span class="n">expect</span><span class="p">(</span><span class="ow">not</span> <span class="n">match</span><span class="p">,</span><span class="s2">&quot;Found multiple matches in file </span><span class="si">{}</span><span class="s2"> for </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span><span class="n">comp</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">modifier_mode</span> <span class="o">==</span> <span class="s2">&quot;1&quot;</span><span class="p">:</span>
+                    <span class="n">expect</span><span class="p">(</span>
+                        <span class="nb">len</span><span class="p">(</span><span class="n">complist</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">,</span>
+                        <span class="s2">&quot;Expected exactly one modifer found </span><span class="si">{}</span><span class="s2"> in </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                            <span class="nb">len</span><span class="p">(</span><span class="n">complist</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">complist</span>
+                        <span class="p">),</span>
+                    <span class="p">)</span>
+                <span class="k">elif</span> <span class="n">modifier_mode</span> <span class="o">==</span> <span class="s2">&quot;+&quot;</span><span class="p">:</span>
+                    <span class="n">expect</span><span class="p">(</span>
+                        <span class="nb">len</span><span class="p">(</span><span class="n">complist</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">,</span>
+                        <span class="s2">&quot;Expected one or more modifers found </span><span class="si">{}</span><span class="s2"> in </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                            <span class="nb">len</span><span class="p">(</span><span class="n">complist</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">reqset</span><span class="p">)</span>
+                        <span class="p">),</span>
+                    <span class="p">)</span>
+                <span class="k">elif</span> <span class="n">modifier_mode</span> <span class="o">==</span> <span class="s2">&quot;?&quot;</span><span class="p">:</span>
+                    <span class="n">expect</span><span class="p">(</span>
+                        <span class="nb">len</span><span class="p">(</span><span class="n">complist</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">2</span><span class="p">,</span>
+                        <span class="s2">&quot;Expected 0 or one modifers found </span><span class="si">{}</span><span class="s2"> in </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                            <span class="nb">len</span><span class="p">(</span><span class="n">complist</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">complist</span>
+                        <span class="p">),</span>
+                    <span class="p">)</span>
+                <span class="n">expect</span><span class="p">(</span>
+                    <span class="ow">not</span> <span class="n">match</span><span class="p">,</span>
+                    <span class="s2">&quot;Found multiple matches in file </span><span class="si">{}</span><span class="s2"> for </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="n">comp</span>
+                    <span class="p">),</span>
+                <span class="p">)</span>
                 <span class="n">match</span> <span class="o">=</span> <span class="kc">True</span>
                 <span class="n">matchcomplist</span> <span class="o">=</span> <span class="n">complist</span>
                 <span class="c1"># found a match</span>
@@ -460,7 +510,7 @@
         <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">entries</span><span class="p">:</span>
             <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">)</span>
             <span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span><span class="s2">&quot;desc&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">entry</span><span class="p">))</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;   </span><span class="si">{:20s}</span><span class="s2"> : </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">text</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)))</span></div>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;   </span><span class="si">{:20s}</span><span class="s2"> : </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">text</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)))</span></div>
 
 <div class="viewcode-block" id="Component.return_values"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.component.Component.return_values">[docs]</a>    <span class="k">def</span> <span class="nf">return_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -473,7 +523,7 @@
         <span class="k">if</span> <span class="n">helpnode</span><span class="p">:</span>
             <span class="n">helptext</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">helpnode</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">helptext</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+            <span class="n">helptext</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="n">entries</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="s2">&quot;entry&quot;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">entries</span><span class="p">:</span>
             <span class="n">item</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
@@ -484,15 +534,17 @@
             <span class="n">group</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span><span class="s2">&quot;group&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">entry</span><span class="p">))</span>
             <span class="n">filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span><span class="s2">&quot;file&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">entry</span><span class="p">))</span>
             <span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span><span class="s2">&quot;desc&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">entry</span><span class="p">))</span>
-            <span class="n">item</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span><span class="n">name</span><span class="p">,</span>
-                    <span class="s2">&quot;datatype&quot;</span><span class="p">:</span><span class="n">datatype</span><span class="p">,</span>
-                    <span class="s2">&quot;valid_values&quot;</span><span class="p">:</span><span class="n">valid_values</span><span class="p">,</span>
-                    <span class="s2">&quot;value&quot;</span><span class="p">:</span><span class="n">default_value</span><span class="p">,</span>
-                    <span class="s2">&quot;group&quot;</span><span class="p">:</span><span class="n">group</span><span class="p">,</span>
-                    <span class="s2">&quot;filename&quot;</span><span class="p">:</span><span class="n">filename</span><span class="p">,</span>
-                    <span class="s2">&quot;desc&quot;</span><span class="p">:</span><span class="n">text</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)}</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
+                <span class="s2">&quot;datatype&quot;</span><span class="p">:</span> <span class="n">datatype</span><span class="p">,</span>
+                <span class="s2">&quot;valid_values&quot;</span><span class="p">:</span> <span class="n">valid_values</span><span class="p">,</span>
+                <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">default_value</span><span class="p">,</span>
+                <span class="s2">&quot;group&quot;</span><span class="p">:</span> <span class="n">group</span><span class="p">,</span>
+                <span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="n">filename</span><span class="p">,</span>
+                <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="n">text</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">),</span>
+            <span class="p">}</span>
             <span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
-        <span class="n">entry_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;items&quot;</span> <span class="p">:</span> <span class="n">items</span><span class="p">}</span>
+        <span class="n">entry_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;items&quot;</span><span class="p">:</span> <span class="n">items</span><span class="p">}</span>
 
         <span class="k">return</span> <span class="n">helptext</span><span class="p">,</span> <span class="n">entry_dict</span></div></div>
 </pre></div>
@@ -534,6 +586,7 @@
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/doctools.js"></script>

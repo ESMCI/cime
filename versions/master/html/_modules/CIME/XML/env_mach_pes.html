@@ -30,6 +30,10 @@
   
 
   
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
 
   
         <link rel="index" title="Index"
@@ -186,16 +190,25 @@
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
-<div class="viewcode-block" id="EnvMachPes"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_pes.EnvMachPes">[docs]</a><span class="k">class</span> <span class="nc">EnvMachPes</span><span class="p">(</span><span class="n">EnvBase</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case_root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">infile</span><span class="o">=</span><span class="s2">&quot;env_mach_pes.xml&quot;</span><span class="p">,</span> <span class="n">components</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">comp_interface</span><span class="o">=</span><span class="s2">&quot;mct&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="EnvMachPes"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_pes.EnvMachPes">[docs]</a><span class="k">class</span> <span class="nc">EnvMachPes</span><span class="p">(</span><span class="n">EnvBase</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">case_root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">infile</span><span class="o">=</span><span class="s2">&quot;env_mach_pes.xml&quot;</span><span class="p">,</span>
+        <span class="n">components</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">read_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">comp_interface</span><span class="o">=</span><span class="s2">&quot;mct&quot;</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        initialize an object interface to file env_mach_pes.xml in the case directory</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_components</span> <span class="o">=</span> <span class="n">components</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_comp_interface</span> <span class="o">=</span> <span class="n">comp_interface</span>
 
-        <span class="n">schema</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">get_cime_root</span><span class="p">(),</span> <span class="s2">&quot;config&quot;</span><span class="p">,</span> <span class="s2">&quot;xml_schemas&quot;</span><span class="p">,</span> <span class="s2">&quot;env_mach_pes.xsd&quot;</span><span class="p">)</span>
+        <span class="n">schema</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="n">get_cime_root</span><span class="p">(),</span> <span class="s2">&quot;config&quot;</span><span class="p">,</span> <span class="s2">&quot;xml_schemas&quot;</span><span class="p">,</span> <span class="s2">&quot;env_mach_pes.xsd&quot;</span>
+        <span class="p">)</span>
         <span class="n">EnvBase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case_root</span><span class="p">,</span> <span class="n">infile</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="n">read_only</span><span class="p">)</span>
 
 <div class="viewcode-block" id="EnvMachPes.add_comment"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_pes.EnvMachPes.add_comment">[docs]</a>    <span class="k">def</span> <span class="nf">add_comment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">comment</span><span class="p">):</span>
@@ -206,7 +219,14 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">remove_child</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add_child</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EnvMachPes.get_value"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_pes.EnvMachPes.get_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">resolved</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">max_mpitasks_per_node</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span> <span class="c1"># pylint: disable=arguments-differ</span>
+<div class="viewcode-block" id="EnvMachPes.get_value"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_pes.EnvMachPes.get_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">vid</span><span class="p">,</span>
+        <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">resolved</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">subgroup</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">max_mpitasks_per_node</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>  <span class="c1"># pylint: disable=arguments-differ</span>
         <span class="c1"># Special variable NINST_MAX is used to determine the number of</span>
         <span class="c1"># drivers in multi-driver mode.</span>
         <span class="k">if</span> <span class="n">vid</span> <span class="o">==</span> <span class="s2">&quot;NINST_MAX&quot;</span><span class="p">:</span>
@@ -223,7 +243,7 @@
             <span class="k">if</span> <span class="n">max_mpitasks_per_node</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">max_mpitasks_per_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MAX_MPITASKS_PER_NODE&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">value</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">value</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="o">*</span><span class="n">value</span><span class="o">*</span><span class="n">max_mpitasks_per_node</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">value</span> <span class="o">*</span> <span class="n">max_mpitasks_per_node</span>
         <span class="c1"># in the nuopc driver there is only one NINST value</span>
         <span class="c1"># so that NINST_{comp} = NINST</span>
         <span class="k">if</span> <span class="s2">&quot;NINST_&quot;</span> <span class="ow">in</span> <span class="n">vid</span> <span class="ow">and</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -242,21 +262,28 @@
                 <span class="k">if</span> <span class="n">comp</span> <span class="o">==</span> <span class="s2">&quot;CPL&quot;</span><span class="p">:</span>
                     <span class="k">continue</span>
                 <span class="n">ninst</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;NINST_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">))</span>
-                <span class="n">expect</span><span class="p">(</span><span class="n">ninst</span> <span class="o">==</span> <span class="n">ninst_max</span><span class="p">,</span>
-                       <span class="s2">&quot;All components must have the same NINST value in multi_driver mode.  NINST_</span><span class="si">{}</span><span class="s2">=</span><span class="si">{}</span><span class="s2"> shoud be </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">,</span><span class="n">ninst</span><span class="p">,</span><span class="n">ninst_max</span><span class="p">))</span>
+                <span class="n">expect</span><span class="p">(</span>
+                    <span class="n">ninst</span> <span class="o">==</span> <span class="n">ninst_max</span><span class="p">,</span>
+                    <span class="s2">&quot;All components must have the same NINST value in multi_driver mode.  NINST_</span><span class="si">{}</span><span class="s2">=</span><span class="si">{}</span><span class="s2"> shoud be </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">comp</span><span class="p">,</span> <span class="n">ninst</span><span class="p">,</span> <span class="n">ninst_max</span>
+                    <span class="p">),</span>
+                <span class="p">)</span>
         <span class="k">if</span> <span class="s2">&quot;NTASKS&quot;</span> <span class="ow">in</span> <span class="n">vid</span> <span class="ow">or</span> <span class="s2">&quot;NTHRDS&quot;</span> <span class="ow">in</span> <span class="n">vid</span><span class="p">:</span>
             <span class="n">expect</span><span class="p">(</span><span class="n">value</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;Cannot set NTASKS or NTHRDS to 0&quot;</span><span class="p">)</span>
 
-
-        <span class="k">return</span> <span class="n">EnvBase</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="n">subgroup</span><span class="p">,</span> <span class="n">ignore_type</span><span class="o">=</span><span class="n">ignore_type</span><span class="p">)</span></div>
-
+        <span class="k">return</span> <span class="n">EnvBase</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="n">subgroup</span><span class="p">,</span> <span class="n">ignore_type</span><span class="o">=</span><span class="n">ignore_type</span>
+        <span class="p">)</span></div>
 
 <div class="viewcode-block" id="EnvMachPes.get_max_thread_count"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_pes.EnvMachPes.get_max_thread_count">[docs]</a>    <span class="k">def</span> <span class="nf">get_max_thread_count</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">comp_classes</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39; Find the maximum number of openmp threads for any component in the case &#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Find the maximum number of openmp threads for any component in the case&quot;&quot;&quot;</span>
         <span class="n">max_threads</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="k">for</span> <span class="n">comp</span> <span class="ow">in</span> <span class="n">comp_classes</span><span class="p">:</span>
-            <span class="n">threads</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;NTHRDS&quot;</span><span class="p">,</span><span class="n">attribute</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;compclass&quot;</span><span class="p">:</span><span class="n">comp</span><span class="p">})</span>
-            <span class="n">expect</span><span class="p">(</span><span class="n">threads</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Error no thread count found for component class </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">))</span>
+            <span class="n">threads</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;NTHRDS&quot;</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;compclass&quot;</span><span class="p">:</span> <span class="n">comp</span><span class="p">})</span>
+            <span class="n">expect</span><span class="p">(</span>
+                <span class="n">threads</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="s2">&quot;Error no thread count found for component class </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">),</span>
+            <span class="p">)</span>
             <span class="k">if</span> <span class="n">threads</span> <span class="o">&gt;</span> <span class="n">max_threads</span><span class="p">:</span>
                 <span class="n">max_threads</span> <span class="o">=</span> <span class="n">threads</span>
         <span class="k">return</span> <span class="n">max_threads</span></div>
@@ -267,36 +294,42 @@
         <span class="k">if</span> <span class="n">maxinst</span><span class="p">:</span>
             <span class="n">comp_interface</span> <span class="o">=</span> <span class="s2">&quot;nuopc&quot;</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">comp_interface</span> <span class="o">=</span> <span class="s1">&#39;unknown&#39;</span>
+            <span class="n">comp_interface</span> <span class="o">=</span> <span class="s2">&quot;unknown&quot;</span>
             <span class="n">maxinst</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="k">for</span> <span class="n">comp</span> <span class="ow">in</span> <span class="n">comp_classes</span><span class="p">:</span>
-            <span class="n">ntasks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;NTASKS&quot;</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;compclass&quot;</span><span class="p">:</span><span class="n">comp</span><span class="p">})</span>
-            <span class="n">rootpe</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;ROOTPE&quot;</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;compclass&quot;</span><span class="p">:</span><span class="n">comp</span><span class="p">})</span>
-            <span class="n">pstrid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;PSTRID&quot;</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;compclass&quot;</span><span class="p">:</span><span class="n">comp</span><span class="p">})</span>
+            <span class="n">ntasks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;NTASKS&quot;</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;compclass&quot;</span><span class="p">:</span> <span class="n">comp</span><span class="p">})</span>
+            <span class="n">rootpe</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;ROOTPE&quot;</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;compclass&quot;</span><span class="p">:</span> <span class="n">comp</span><span class="p">})</span>
+            <span class="n">pstrid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;PSTRID&quot;</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;compclass&quot;</span><span class="p">:</span> <span class="n">comp</span><span class="p">})</span>
             <span class="n">esmf_aware_threading</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;ESMF_AWARE_THREADING&quot;</span><span class="p">)</span>
             <span class="c1"># mct is unaware of threads and they should not be counted here</span>
             <span class="c1"># if esmf is thread aware they are included</span>
             <span class="k">if</span> <span class="n">comp_interface</span> <span class="o">==</span> <span class="s2">&quot;nuopc&quot;</span> <span class="ow">and</span> <span class="n">esmf_aware_threading</span><span class="p">:</span>
-                <span class="n">nthrds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;NTHRDS&quot;</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;compclass&quot;</span><span class="p">:</span><span class="n">comp</span><span class="p">})</span>
+                <span class="n">nthrds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;NTHRDS&quot;</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;compclass&quot;</span><span class="p">:</span> <span class="n">comp</span><span class="p">})</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">nthrds</span> <span class="o">=</span> <span class="mi">1</span>
 
-            <span class="k">if</span> <span class="n">comp</span> <span class="o">!=</span> <span class="s2">&quot;CPL&quot;</span> <span class="ow">and</span> <span class="n">comp_interface</span><span class="o">!=</span><span class="s2">&quot;nuopc&quot;</span><span class="p">:</span>
-                <span class="n">ninst</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;NINST&quot;</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;compclass&quot;</span><span class="p">:</span><span class="n">comp</span><span class="p">})</span>
+            <span class="k">if</span> <span class="n">comp</span> <span class="o">!=</span> <span class="s2">&quot;CPL&quot;</span> <span class="ow">and</span> <span class="n">comp_interface</span> <span class="o">!=</span> <span class="s2">&quot;nuopc&quot;</span><span class="p">:</span>
+                <span class="n">ninst</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;NINST&quot;</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;compclass&quot;</span><span class="p">:</span> <span class="n">comp</span><span class="p">})</span>
                 <span class="n">maxinst</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">maxinst</span><span class="p">,</span> <span class="n">ninst</span><span class="p">)</span>
-            <span class="n">tt</span> <span class="o">=</span> <span class="n">rootpe</span> <span class="o">+</span> <span class="n">nthrds</span><span class="o">*</span><span class="p">((</span><span class="n">ntasks</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">pstrid</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">tt</span> <span class="o">=</span> <span class="n">rootpe</span> <span class="o">+</span> <span class="n">nthrds</span> <span class="o">*</span> <span class="p">((</span><span class="n">ntasks</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">pstrid</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
             <span class="n">total_tasks</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">tt</span><span class="p">,</span> <span class="n">total_tasks</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MULTI_DRIVER&quot;</span><span class="p">):</span>
             <span class="n">total_tasks</span> <span class="o">*=</span> <span class="n">maxinst</span>
         <span class="k">return</span> <span class="n">total_tasks</span></div>
 
 <div class="viewcode-block" id="EnvMachPes.get_tasks_per_node"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_pes.EnvMachPes.get_tasks_per_node">[docs]</a>    <span class="k">def</span> <span class="nf">get_tasks_per_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">total_tasks</span><span class="p">,</span> <span class="n">max_thread_count</span><span class="p">):</span>
-        <span class="n">expect</span><span class="p">(</span><span class="n">total_tasks</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span><span class="s2">&quot;totaltasks &gt; 0 expected, totaltasks = </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">total_tasks</span><span class="p">))</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_comp_interface</span> <span class="o">==</span> <span class="s1">&#39;nuopc&#39;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;ESMF_AWARE_THREADING&quot;</span><span class="p">):</span>
+        <span class="n">expect</span><span class="p">(</span>
+            <span class="n">total_tasks</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;totaltasks &gt; 0 expected, totaltasks = </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">total_tasks</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_comp_interface</span> <span class="o">==</span> <span class="s2">&quot;nuopc&quot;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;ESMF_AWARE_THREADING&quot;</span><span class="p">):</span>
             <span class="n">tasks_per_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MAX_MPITASKS_PER_NODE&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">tasks_per_node</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MAX_TASKS_PER_NODE&quot;</span><span class="p">)</span><span class="o">//</span> <span class="n">max_thread_count</span><span class="p">,</span>
-                                 <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MAX_MPITASKS_PER_NODE&quot;</span><span class="p">),</span> <span class="n">total_tasks</span><span class="p">)</span>
+            <span class="n">tasks_per_node</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MAX_TASKS_PER_NODE&quot;</span><span class="p">)</span> <span class="o">//</span> <span class="n">max_thread_count</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MAX_MPITASKS_PER_NODE&quot;</span><span class="p">),</span>
+                <span class="n">total_tasks</span><span class="p">,</span>
+            <span class="p">)</span>
         <span class="k">return</span> <span class="n">tasks_per_node</span> <span class="k">if</span> <span class="n">tasks_per_node</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">1</span></div>
 
 <div class="viewcode-block" id="EnvMachPes.get_total_nodes"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_pes.EnvMachPes.get_total_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">get_total_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">total_tasks</span><span class="p">,</span> <span class="n">max_thread_count</span><span class="p">):</span>
@@ -304,7 +337,7 @@
 <span class="sd">        Return (num_active_nodes, num_spare_nodes)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># threads have already been included in nuopc interface</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_comp_interface</span> <span class="o">==</span> <span class="s1">&#39;nuopc&#39;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;ESMF_AWARE_THREADING&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_comp_interface</span> <span class="o">==</span> <span class="s2">&quot;nuopc&quot;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;ESMF_AWARE_THREADING&quot;</span><span class="p">):</span>
             <span class="n">max_thread_count</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="n">tasks_per_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_tasks_per_node</span><span class="p">(</span><span class="n">total_tasks</span><span class="p">,</span> <span class="n">max_thread_count</span><span class="p">)</span>
         <span class="n">num_nodes</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">total_tasks</span><span class="p">)</span> <span class="o">/</span> <span class="n">tasks_per_node</span><span class="p">))</span>
@@ -318,9 +351,9 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;ALLOCATE_SPARE_NODES&quot;</span><span class="p">):</span>
             <span class="n">ten_pct</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">num_nodes</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.1</span><span class="p">))</span>
             <span class="k">if</span> <span class="n">ten_pct</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="k">return</span> <span class="mi">1</span> <span class="c1"># Always provide at lease one spare node</span>
+                <span class="k">return</span> <span class="mi">1</span>  <span class="c1"># Always provide at lease one spare node</span>
             <span class="k">elif</span> <span class="n">ten_pct</span> <span class="o">&gt;</span> <span class="mi">10</span><span class="p">:</span>
-                <span class="k">return</span> <span class="mi">10</span> <span class="c1"># Never provide more than 10 spare nodes</span>
+                <span class="k">return</span> <span class="mi">10</span>  <span class="c1"># Never provide more than 10 spare nodes</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">ten_pct</span>
         <span class="k">else</span><span class="p">:</span>
@@ -364,6 +397,7 @@
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/doctools.js"></script>

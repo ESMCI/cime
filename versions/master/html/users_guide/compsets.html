@@ -5,7 +5,8 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <title>2. Component sets &mdash; CIME master documentation</title>
@@ -29,6 +30,10 @@
     <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   
 
+  
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   
 
   
@@ -202,7 +207,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="component-sets">
+  <section id="component-sets">
 <span id="compsets"></span><h1><span class="section-number">2. </span>Component sets<a class="headerlink" href="#component-sets" title="Permalink to this headline">¶</a></h1>
 <p>In CIME, multiple components can define compsets that are targeted to their model development needs.</p>
 <p>Each component supports a set of compset longnames that are used in testing and supported in out of the box configurations.</p>
@@ -234,7 +239,7 @@ the <strong>primary component</strong> As an example, the primary component for 
 land and cice (in prescribed mode) and a data ocean is the atmosphere component (for cesm this is CAM) because the compset
 is defined, using the above example, in <code class="docutils literal notranslate"><span class="pre">$SRCROOT/components/cam/cime_config/config_compsets.xml</span></code>
 In a compset where all components are prognostic, the primary component will be <strong>allactive</strong>.</p>
-<div class="section" id="compset-longname">
+<section id="compset-longname">
 <span id="defining-compsets"></span><h2><span class="section-number">2.1. </span>Compset longname<a class="headerlink" href="#compset-longname" title="Permalink to this headline">¶</a></h2>
 <p>Each config_compsets.xml file has a list of allowed component sets in the form of a longname and an alias.</p>
 <p>A compset longname has this form:</p>
@@ -260,8 +265,8 @@ In a compset where all components are prognostic, the primary component will be 
 For example, DOCN%DOM is the DOCN data ocean (rather than slab-ocean) mode.
 <strong>All</strong> the possible %phys choices for each component are listed by calling <a class="reference external" href="../Tools_user/query_config.html">query_config –compsets</a>.
 <strong>All</strong> data models have a %phys option that corresponds to the data model mode.</p>
-</div>
-<div class="section" id="component-specific-settings-in-a-compset">
+</section>
+<section id="component-specific-settings-in-a-compset">
 <span id="defining-component-specific-compset-settings"></span><h2><span class="section-number">2.2. </span>Component specific settings in a compset<a class="headerlink" href="#component-specific-settings-in-a-compset" title="Permalink to this headline">¶</a></h2>
 <p>Every model component also contains a <strong>config_component.xml</strong> file that has two functions:</p>
 <ol class="arabic simple">
@@ -311,8 +316,8 @@ For example, DOCN%DOM is the DOCN data ocean (rather than slab-ocean) mode.
 <p>If the compset’s atm component attribute is <code class="docutils literal notranslate"><span class="pre">datm</span></code>, the file <code class="docutils literal notranslate"><span class="pre">$CIMEROOT/components/data_comps/datm/cime_config/config_component.xml</span></code> specifies all possible component settings for <code class="docutils literal notranslate"><span class="pre">DATM</span></code>.</p>
 <p>The schema for every <strong>config_component.xml</strong> file has a <code class="docutils literal notranslate"><span class="pre">&lt;description&gt;</span></code> node that specifies all possible values that can follow the <code class="docutils literal notranslate"><span class="pre">%</span></code> character in the compset name.</p>
 <p>To list the possible values, use the <a class="reference external" href="../Tools_user/query_config.html">query_config –component datm</a> command.</p>
-</div>
-<div class="section" id="creating-new-compsets">
+</section>
+<section id="creating-new-compsets">
 <span id="id1"></span><h2><span class="section-number">2.3. </span>Creating New Compsets<a class="headerlink" href="#creating-new-compsets" title="Permalink to this headline">¶</a></h2>
 <p>A description of how CIME interprets a compset name is given in the section <a class="reference internal" href="#defining-compsets"><span class="std std-ref">Compset longname</span></a> .</p>
 <p>To create a new compset, you will at a minimum have to:</p>
@@ -372,8 +377,8 @@ To enable this, you will need to do the following:</p>
 <p class="admonition-title">Todo</p>
 <p>Add additional examples for creating a case</p>
 </div>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
@@ -422,6 +427,7 @@ To enable this, you will need to do the following:</p>
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>

@@ -30,6 +30,10 @@
   
 
   
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
 
   
         <link rel="index" title="Index"
@@ -186,31 +190,31 @@
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 <span class="c1"># pylint: disable=super-init-not-called</span>
-<div class="viewcode-block" id="EnvArchive"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_archive.EnvArchive">[docs]</a><span class="k">class</span> <span class="nc">EnvArchive</span><span class="p">(</span><span class="n">ArchiveBase</span><span class="p">,</span><span class="n">EnvBase</span><span class="p">):</span>
-
+<div class="viewcode-block" id="EnvArchive"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_archive.EnvArchive">[docs]</a><span class="k">class</span> <span class="nc">EnvArchive</span><span class="p">(</span><span class="n">ArchiveBase</span><span class="p">,</span> <span class="n">EnvBase</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case_root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">infile</span><span class="o">=</span><span class="s2">&quot;env_archive.xml&quot;</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        initialize an object interface to file env_archive.xml in the case directory</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">schema</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">get_cime_root</span><span class="p">(),</span> <span class="s2">&quot;config&quot;</span><span class="p">,</span> <span class="s2">&quot;xml_schemas&quot;</span><span class="p">,</span> <span class="s2">&quot;env_archive.xsd&quot;</span><span class="p">)</span>
+        <span class="n">schema</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="n">get_cime_root</span><span class="p">(),</span> <span class="s2">&quot;config&quot;</span><span class="p">,</span> <span class="s2">&quot;xml_schemas&quot;</span><span class="p">,</span> <span class="s2">&quot;env_archive.xsd&quot;</span>
+        <span class="p">)</span>
         <span class="n">EnvBase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case_root</span><span class="p">,</span> <span class="n">infile</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="n">read_only</span><span class="p">)</span>
 
-
 <div class="viewcode-block" id="EnvArchive.get_entries"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_archive.EnvArchive.get_entries">[docs]</a>    <span class="k">def</span> <span class="nf">get_entries</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="s1">&#39;comp_archive_spec&#39;</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="s2">&quot;comp_archive_spec&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="EnvArchive.get_entry_info"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_archive.EnvArchive.get_entry_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_entry_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">archive_entry</span><span class="p">):</span>
-        <span class="n">compname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">archive_entry</span><span class="p">,</span> <span class="s1">&#39;compname&#39;</span><span class="p">)</span>
-        <span class="n">compclass</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">archive_entry</span><span class="p">,</span> <span class="s1">&#39;compclass&#39;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">compname</span><span class="p">,</span><span class="n">compclass</span></div>
+        <span class="n">compname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">archive_entry</span><span class="p">,</span> <span class="s2">&quot;compname&quot;</span><span class="p">)</span>
+        <span class="n">compclass</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">archive_entry</span><span class="p">,</span> <span class="s2">&quot;compclass&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">compname</span><span class="p">,</span> <span class="n">compclass</span></div>
 
 <div class="viewcode-block" id="EnvArchive.get_rpointer_contents"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_archive.EnvArchive.get_rpointer_contents">[docs]</a>    <span class="k">def</span> <span class="nf">get_rpointer_contents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">archive_entry</span><span class="p">):</span>
         <span class="n">rpointer_items</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">rpointer_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="s1">&#39;rpointer&#39;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">archive_entry</span><span class="p">)</span>
+        <span class="n">rpointer_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="s2">&quot;rpointer&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">archive_entry</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">rpointer_node</span> <span class="ow">in</span> <span class="n">rpointer_nodes</span><span class="p">:</span>
-            <span class="n">file_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span><span class="s1">&#39;rpointer_file&#39;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">rpointer_node</span><span class="p">)</span>
-            <span class="n">content_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span><span class="s1">&#39;rpointer_content&#39;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">rpointer_node</span><span class="p">)</span>
-            <span class="n">rpointer_items</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">file_node</span><span class="p">),</span><span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">content_node</span><span class="p">)])</span>
+            <span class="n">file_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span><span class="s2">&quot;rpointer_file&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">rpointer_node</span><span class="p">)</span>
+            <span class="n">content_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span><span class="s2">&quot;rpointer_content&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">rpointer_node</span><span class="p">)</span>
+            <span class="n">rpointer_items</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">file_node</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">content_node</span><span class="p">)])</span>
         <span class="k">return</span> <span class="n">rpointer_items</span></div>
 
 <div class="viewcode-block" id="EnvArchive.get_type_info"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_archive.EnvArchive.get_type_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_type_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">):</span>
@@ -254,6 +258,7 @@
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/doctools.js"></script>

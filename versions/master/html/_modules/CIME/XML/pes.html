@@ -30,6 +30,10 @@
   
 
   
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
 
   
         <link rel="index" title="Index"
@@ -187,8 +191,8 @@
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Pes"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.pes.Pes">[docs]</a><span class="k">class</span> <span class="nc">Pes</span><span class="p">(</span><span class="n">GenericXML</span><span class="p">):</span>
 
+<div class="viewcode-block" id="Pes"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.pes.Pes">[docs]</a><span class="k">class</span> <span class="nc">Pes</span><span class="p">(</span><span class="n">GenericXML</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infile</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        initialize a files object given input pes specification file</span>
@@ -199,7 +203,7 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;DEBUG: infile is </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">infile</span><span class="p">))</span>
         <span class="n">GenericXML</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infile</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Pes.find_pes_layout"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.pes.Pes.find_pes_layout">[docs]</a>    <span class="k">def</span> <span class="nf">find_pes_layout</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">compset</span><span class="p">,</span> <span class="n">machine</span><span class="p">,</span> <span class="n">pesize_opts</span><span class="o">=</span><span class="s1">&#39;M&#39;</span><span class="p">,</span> <span class="n">mpilib</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Pes.find_pes_layout"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.pes.Pes.find_pes_layout">[docs]</a>    <span class="k">def</span> <span class="nf">find_pes_layout</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">compset</span><span class="p">,</span> <span class="n">machine</span><span class="p">,</span> <span class="n">pesize_opts</span><span class="o">=</span><span class="s2">&quot;M&quot;</span><span class="p">,</span> <span class="n">mpilib</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">opes_ntasks</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">opes_nthrds</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">opes_rootpe</span> <span class="o">=</span> <span class="p">{}</span>
@@ -212,8 +216,17 @@
         <span class="n">overrides</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_optional_child</span><span class="p">(</span><span class="s2">&quot;overrides&quot;</span><span class="p">)</span>
         <span class="n">ocomments</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">overrides</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">o_grid_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="s2">&quot;grid&quot;</span><span class="p">,</span> <span class="n">root</span> <span class="o">=</span> <span class="n">overrides</span><span class="p">)</span>
-            <span class="n">opes_ntasks</span><span class="p">,</span> <span class="n">opes_nthrds</span><span class="p">,</span> <span class="n">opes_rootpe</span><span class="p">,</span> <span class="n">opes_pstrid</span><span class="p">,</span> <span class="n">oother_settings</span><span class="p">,</span> <span class="n">ocomments</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_matches</span><span class="p">(</span><span class="n">o_grid_nodes</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">compset</span><span class="p">,</span> <span class="n">machine</span><span class="p">,</span> <span class="n">pesize_opts</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+            <span class="n">o_grid_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="s2">&quot;grid&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">overrides</span><span class="p">)</span>
+            <span class="p">(</span>
+                <span class="n">opes_ntasks</span><span class="p">,</span>
+                <span class="n">opes_nthrds</span><span class="p">,</span>
+                <span class="n">opes_rootpe</span><span class="p">,</span>
+                <span class="n">opes_pstrid</span><span class="p">,</span>
+                <span class="n">oother_settings</span><span class="p">,</span>
+                <span class="n">ocomments</span><span class="p">,</span>
+            <span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_matches</span><span class="p">(</span>
+                <span class="n">o_grid_nodes</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">compset</span><span class="p">,</span> <span class="n">machine</span><span class="p">,</span> <span class="n">pesize_opts</span><span class="p">,</span> <span class="kc">True</span>
+            <span class="p">)</span>
 
         <span class="c1"># Get all the nodes</span>
         <span class="n">grid_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="s2">&quot;grid&quot;</span><span class="p">)</span>
@@ -223,8 +236,14 @@
             <span class="n">gn_set</span><span class="o">.</span><span class="n">difference_update</span><span class="p">(</span><span class="n">ogn_set</span><span class="p">)</span>
             <span class="n">grid_nodes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">gn_set</span><span class="p">)</span>
 
-
-        <span class="n">pes_ntasks</span><span class="p">,</span> <span class="n">pes_nthrds</span><span class="p">,</span> <span class="n">pes_rootpe</span><span class="p">,</span> <span class="n">pes_pstrid</span><span class="p">,</span> <span class="n">other_settings</span><span class="p">,</span> <span class="n">comments</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_matches</span><span class="p">(</span><span class="n">grid_nodes</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">compset</span><span class="p">,</span> <span class="n">machine</span><span class="p">,</span> <span class="n">pesize_opts</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="p">(</span>
+            <span class="n">pes_ntasks</span><span class="p">,</span>
+            <span class="n">pes_nthrds</span><span class="p">,</span>
+            <span class="n">pes_rootpe</span><span class="p">,</span>
+            <span class="n">pes_pstrid</span><span class="p">,</span>
+            <span class="n">other_settings</span><span class="p">,</span>
+            <span class="n">comments</span><span class="p">,</span>
+        <span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_matches</span><span class="p">(</span><span class="n">grid_nodes</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">compset</span><span class="p">,</span> <span class="n">machine</span><span class="p">,</span> <span class="n">pesize_opts</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
         <span class="n">pes_ntasks</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">opes_ntasks</span><span class="p">)</span>
         <span class="n">pes_nthrds</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">opes_nthrds</span><span class="p">)</span>
         <span class="n">pes_rootpe</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">opes_rootpe</span><span class="p">)</span>
@@ -232,7 +251,6 @@
         <span class="n">other_settings</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">oother_settings</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">ocomments</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">comments</span> <span class="o">=</span> <span class="n">ocomments</span>
-
 
         <span class="k">if</span> <span class="n">mpilib</span> <span class="o">==</span> <span class="s2">&quot;mpi-serial&quot;</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">iter</span><span class="p">(</span><span class="n">pes_ntasks</span><span class="p">):</span>
@@ -254,19 +272,27 @@
 
         <span class="k">return</span> <span class="n">pes_ntasks</span><span class="p">,</span> <span class="n">pes_nthrds</span><span class="p">,</span> <span class="n">pes_rootpe</span><span class="p">,</span> <span class="n">pes_pstrid</span><span class="p">,</span> <span class="n">other_settings</span><span class="p">,</span> <span class="n">comments</span></div>
 
-    <span class="k">def</span> <span class="nf">_find_matches</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grid_nodes</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">compset</span><span class="p">,</span> <span class="n">machine</span><span class="p">,</span> <span class="n">pesize_opts</span><span class="p">,</span> <span class="n">override</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_find_matches</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">grid_nodes</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">compset</span><span class="p">,</span> <span class="n">machine</span><span class="p">,</span> <span class="n">pesize_opts</span><span class="p">,</span> <span class="n">override</span><span class="o">=</span><span class="kc">False</span>
+    <span class="p">):</span>
         <span class="n">grid_choice</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">mach_choice</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">compset_choice</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">pesize_choice</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">max_points</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
-        <span class="n">pes_ntasks</span><span class="p">,</span> <span class="n">pes_nthrds</span><span class="p">,</span> <span class="n">pes_rootpe</span><span class="p">,</span> <span class="n">pes_pstrid</span><span class="p">,</span> <span class="n">other_settings</span> <span class="o">=</span> <span class="p">{},</span> <span class="p">{},</span> <span class="p">{},</span> <span class="p">{},</span> <span class="p">{}</span>
+        <span class="n">pes_ntasks</span><span class="p">,</span> <span class="n">pes_nthrds</span><span class="p">,</span> <span class="n">pes_rootpe</span><span class="p">,</span> <span class="n">pes_pstrid</span><span class="p">,</span> <span class="n">other_settings</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">{},</span>
+            <span class="p">{},</span>
+            <span class="p">{},</span>
+            <span class="p">{},</span>
+            <span class="p">{},</span>
+        <span class="p">)</span>
         <span class="n">pe_select</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">comment</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">for</span> <span class="n">grid_node</span> <span class="ow">in</span> <span class="n">grid_nodes</span><span class="p">:</span>
             <span class="n">grid_match</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">grid_node</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">grid_match</span> <span class="o">==</span> <span class="s2">&quot;any&quot;</span> <span class="ow">or</span>  <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">grid_match</span><span class="p">,</span><span class="n">grid</span><span class="p">):</span>
-                <span class="n">mach_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="s2">&quot;mach&quot;</span><span class="p">,</span><span class="n">root</span><span class="o">=</span><span class="n">grid_node</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">grid_match</span> <span class="o">==</span> <span class="s2">&quot;any&quot;</span> <span class="ow">or</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">grid_match</span><span class="p">,</span> <span class="n">grid</span><span class="p">):</span>
+                <span class="n">mach_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="s2">&quot;mach&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">grid_node</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">mach_node</span> <span class="ow">in</span> <span class="n">mach_nodes</span><span class="p">:</span>
                     <span class="n">mach_match</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">mach_node</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">)</span>
                     <span class="k">if</span> <span class="n">mach_match</span> <span class="o">==</span> <span class="s2">&quot;any&quot;</span> <span class="ow">or</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">mach_match</span><span class="p">,</span> <span class="n">machine</span><span class="p">):</span>
@@ -274,13 +300,23 @@
                         <span class="k">for</span> <span class="n">pes_node</span> <span class="ow">in</span> <span class="n">pes_nodes</span><span class="p">:</span>
                             <span class="n">pesize_match</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pes_node</span><span class="p">,</span> <span class="s2">&quot;pesize&quot;</span><span class="p">)</span>
                             <span class="n">compset_match</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pes_node</span><span class="p">,</span> <span class="s2">&quot;compset&quot;</span><span class="p">)</span>
-                            <span class="k">if</span> <span class="p">(</span><span class="n">pesize_match</span> <span class="o">==</span> <span class="s2">&quot;any&quot;</span> <span class="ow">or</span> <span class="p">(</span><span class="n">pesize_opts</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> \
-                                                          <span class="n">pesize_match</span> <span class="o">==</span> <span class="n">pesize_opts</span><span class="p">))</span> <span class="ow">and</span> \
-                                                          <span class="p">(</span><span class="n">compset_match</span> <span class="o">==</span> <span class="s2">&quot;any&quot;</span> <span class="ow">or</span> \
-                                                           <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">compset_match</span><span class="p">,</span><span class="n">compset</span><span class="p">)):</span>
+                            <span class="k">if</span> <span class="p">(</span>
+                                <span class="n">pesize_match</span> <span class="o">==</span> <span class="s2">&quot;any&quot;</span>
+                                <span class="ow">or</span> <span class="p">(</span>
+                                    <span class="n">pesize_opts</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                                    <span class="ow">and</span> <span class="n">pesize_match</span> <span class="o">==</span> <span class="n">pesize_opts</span>
+                                <span class="p">)</span>
+                            <span class="p">)</span> <span class="ow">and</span> <span class="p">(</span>
+                                <span class="n">compset_match</span> <span class="o">==</span> <span class="s2">&quot;any&quot;</span>
+                                <span class="ow">or</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">compset_match</span><span class="p">,</span> <span class="n">compset</span><span class="p">)</span>
+                            <span class="p">):</span>
 
-                                <span class="n">points</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">grid_match</span><span class="o">!=</span><span class="s2">&quot;any&quot;</span><span class="p">)</span><span class="o">*</span><span class="mi">3</span><span class="o">+</span><span class="nb">int</span><span class="p">(</span><span class="n">mach_match</span><span class="o">!=</span><span class="s2">&quot;any&quot;</span><span class="p">)</span><span class="o">*</span><span class="mi">7</span><span class="o">+</span>\
-                                    <span class="nb">int</span><span class="p">(</span><span class="n">compset_match</span><span class="o">!=</span><span class="s2">&quot;any&quot;</span><span class="p">)</span><span class="o">*</span><span class="mi">2</span><span class="o">+</span><span class="nb">int</span><span class="p">(</span><span class="n">pesize_match</span><span class="o">!=</span><span class="s2">&quot;any&quot;</span><span class="p">)</span>
+                                <span class="n">points</span> <span class="o">=</span> <span class="p">(</span>
+                                    <span class="nb">int</span><span class="p">(</span><span class="n">grid_match</span> <span class="o">!=</span> <span class="s2">&quot;any&quot;</span><span class="p">)</span> <span class="o">*</span> <span class="mi">3</span>
+                                    <span class="o">+</span> <span class="nb">int</span><span class="p">(</span><span class="n">mach_match</span> <span class="o">!=</span> <span class="s2">&quot;any&quot;</span><span class="p">)</span> <span class="o">*</span> <span class="mi">7</span>
+                                    <span class="o">+</span> <span class="nb">int</span><span class="p">(</span><span class="n">compset_match</span> <span class="o">!=</span> <span class="s2">&quot;any&quot;</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span>
+                                    <span class="o">+</span> <span class="nb">int</span><span class="p">(</span><span class="n">pesize_match</span> <span class="o">!=</span> <span class="s2">&quot;any&quot;</span><span class="p">)</span>
+                                <span class="p">)</span>
                                 <span class="k">if</span> <span class="n">override</span> <span class="ow">and</span> <span class="n">points</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                                     <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="n">pes_node</span><span class="p">):</span>
                                         <span class="n">vid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
@@ -289,17 +325,25 @@
                                             <span class="n">comment</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
                                         <span class="k">elif</span> <span class="s2">&quot;ntasks&quot;</span> <span class="ow">in</span> <span class="n">vid</span><span class="p">:</span>
                                             <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="n">node</span><span class="p">):</span>
-                                                <span class="n">pes_ntasks</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="n">child</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">()]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">child</span><span class="p">))</span>
+                                                <span class="n">pes_ntasks</span><span class="p">[</span>
+                                                    <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="n">child</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+                                                <span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">child</span><span class="p">))</span>
                                         <span class="k">elif</span> <span class="s2">&quot;nthrds&quot;</span> <span class="ow">in</span> <span class="n">vid</span><span class="p">:</span>
                                             <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="n">node</span><span class="p">):</span>
-                                                <span class="n">pes_nthrds</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="n">child</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">()]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">child</span><span class="p">))</span>
+                                                <span class="n">pes_nthrds</span><span class="p">[</span>
+                                                    <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="n">child</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+                                                <span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">child</span><span class="p">))</span>
                                         <span class="k">elif</span> <span class="s2">&quot;rootpe&quot;</span> <span class="ow">in</span> <span class="n">vid</span><span class="p">:</span>
                                             <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="n">node</span><span class="p">):</span>
-                                                <span class="n">pes_rootpe</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="n">child</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">()]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">child</span><span class="p">))</span>
+                                                <span class="n">pes_rootpe</span><span class="p">[</span>
+                                                    <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="n">child</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+                                                <span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">child</span><span class="p">))</span>
                                         <span class="k">elif</span> <span class="s2">&quot;pstrid&quot;</span> <span class="ow">in</span> <span class="n">vid</span><span class="p">:</span>
                                             <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="n">node</span><span class="p">):</span>
-                                                <span class="n">pes_pstrid</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="n">child</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">()]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">child</span><span class="p">))</span>
-                                    <span class="c1"># if the value is already upper case its something else we are trying to set</span>
+                                                <span class="n">pes_pstrid</span><span class="p">[</span>
+                                                    <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="n">child</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+                                                <span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">child</span><span class="p">))</span>
+                                        <span class="c1"># if the value is already upper case its something else we are trying to set</span>
                                         <span class="k">elif</span> <span class="n">vid</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
                                             <span class="n">other_settings</span><span class="p">[</span><span class="n">vid</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
 
@@ -312,12 +356,31 @@
                                         <span class="n">compset_choice</span> <span class="o">=</span> <span class="n">compset_match</span>
                                         <span class="n">pesize_choice</span> <span class="o">=</span> <span class="n">pesize_match</span>
                                     <span class="k">elif</span> <span class="n">points</span> <span class="o">==</span> <span class="n">max_points</span><span class="p">:</span>
-                                        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;mach_choice </span><span class="si">{}</span><span class="s2"> mach_match </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mach_choice</span><span class="p">,</span> <span class="n">mach_match</span><span class="p">))</span>
-                                        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;grid_choice </span><span class="si">{}</span><span class="s2"> grid_match </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">grid_choice</span><span class="p">,</span> <span class="n">grid_match</span><span class="p">))</span>
-                                        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;compset_choice </span><span class="si">{}</span><span class="s2"> compset_match </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">compset_choice</span><span class="p">,</span> <span class="n">compset_match</span><span class="p">))</span>
-                                        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;pesize_choice </span><span class="si">{}</span><span class="s2"> pesize_match </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pesize_choice</span><span class="p">,</span> <span class="n">pesize_match</span><span class="p">))</span>
+                                        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                                            <span class="s2">&quot;mach_choice </span><span class="si">{}</span><span class="s2"> mach_match </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                                <span class="n">mach_choice</span><span class="p">,</span> <span class="n">mach_match</span>
+                                            <span class="p">)</span>
+                                        <span class="p">)</span>
+                                        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                                            <span class="s2">&quot;grid_choice </span><span class="si">{}</span><span class="s2"> grid_match </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                                <span class="n">grid_choice</span><span class="p">,</span> <span class="n">grid_match</span>
+                                            <span class="p">)</span>
+                                        <span class="p">)</span>
+                                        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                                            <span class="s2">&quot;compset_choice </span><span class="si">{}</span><span class="s2"> compset_match </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                                <span class="n">compset_choice</span><span class="p">,</span> <span class="n">compset_match</span>
+                                            <span class="p">)</span>
+                                        <span class="p">)</span>
+                                        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                                            <span class="s2">&quot;pesize_choice </span><span class="si">{}</span><span class="s2"> pesize_match </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                                <span class="n">pesize_choice</span><span class="p">,</span> <span class="n">pesize_match</span>
+                                            <span class="p">)</span>
+                                        <span class="p">)</span>
                                         <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;points = </span><span class="si">{:d}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">points</span><span class="p">))</span>
-                                        <span class="n">expect</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;More than one PE layout matches given PE specs&quot;</span><span class="p">)</span>
+                                        <span class="n">expect</span><span class="p">(</span>
+                                            <span class="kc">False</span><span class="p">,</span>
+                                            <span class="s2">&quot;More than one PE layout matches given PE specs&quot;</span><span class="p">,</span>
+                                        <span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">override</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="n">pe_select</span><span class="p">):</span>
                 <span class="n">vid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
@@ -336,18 +399,18 @@
                 <span class="k">elif</span> <span class="s2">&quot;pstrid&quot;</span> <span class="ow">in</span> <span class="n">vid</span><span class="p">:</span>
                     <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="n">node</span><span class="p">):</span>
                         <span class="n">pes_pstrid</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="n">child</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">()]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">child</span><span class="p">))</span>
-            <span class="c1"># if the value is already upper case its something else we are trying to set</span>
+                <span class="c1"># if the value is already upper case its something else we are trying to set</span>
                 <span class="k">elif</span> <span class="n">vid</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
                     <span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">node</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
                     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
                         <span class="n">other_settings</span><span class="p">[</span><span class="n">vid</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">grid_choice</span> <span class="o">!=</span> <span class="s1">&#39;any&#39;</span> <span class="ow">or</span> <span class="n">logger</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">):</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Pes setting: grid match    is </span><span class="si">{}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">grid_choice</span> <span class="p">))</span>
-            <span class="k">if</span> <span class="n">mach_choice</span> <span class="o">!=</span> <span class="s1">&#39;any&#39;</span> <span class="ow">or</span> <span class="n">logger</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">grid_choice</span> <span class="o">!=</span> <span class="s2">&quot;any&quot;</span> <span class="ow">or</span> <span class="n">logger</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">):</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Pes setting: grid match    is </span><span class="si">{}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">grid_choice</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">mach_choice</span> <span class="o">!=</span> <span class="s2">&quot;any&quot;</span> <span class="ow">or</span> <span class="n">logger</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">):</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Pes setting: machine match is </span><span class="si">{}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mach_choice</span><span class="p">))</span>
-            <span class="k">if</span> <span class="n">compset_choice</span> <span class="o">!=</span> <span class="s1">&#39;any&#39;</span> <span class="ow">or</span> <span class="n">logger</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">compset_choice</span> <span class="o">!=</span> <span class="s2">&quot;any&quot;</span> <span class="ow">or</span> <span class="n">logger</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">):</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Pes setting: compset_match is </span><span class="si">{}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">compset_choice</span><span class="p">))</span>
-            <span class="k">if</span> <span class="n">pesize_choice</span> <span class="o">!=</span> <span class="s1">&#39;any&#39;</span> <span class="ow">or</span> <span class="n">logger</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">pesize_choice</span> <span class="o">!=</span> <span class="s2">&quot;any&quot;</span> <span class="ow">or</span> <span class="n">logger</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">):</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Pes setting: pesize match  is </span><span class="si">{}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pesize_choice</span><span class="p">))</span>
 
         <span class="k">return</span> <span class="n">pes_ntasks</span><span class="p">,</span> <span class="n">pes_nthrds</span><span class="p">,</span> <span class="n">pes_rootpe</span><span class="p">,</span> <span class="n">pes_pstrid</span><span class="p">,</span> <span class="n">other_settings</span><span class="p">,</span> <span class="n">comment</span></div>
@@ -390,6 +453,7 @@
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/doctools.js"></script>

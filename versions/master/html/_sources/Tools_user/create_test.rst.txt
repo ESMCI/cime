@@ -2,7 +2,7 @@
 .. _create_test:
 
 ####################################################
-create_test 
+create_test
 ####################################################
 
 **create_test** is a script in CIMEROOT/scripts.

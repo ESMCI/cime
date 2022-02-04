@@ -30,6 +30,10 @@
   
 
   
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
 
   
         <link rel="index" title="Index"
@@ -183,53 +187,55 @@
 
 <span class="c1">###############################################################################</span>
 <span class="k">def</span> <span class="nf">_normalize_string_value</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">case</span><span class="p">):</span>
-<span class="c1">###############################################################################</span>
+    <span class="c1">###############################################################################</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Some of the strings are inherently prone to diffs, like file</span>
 <span class="sd">    paths, etc. This function attempts to normalize that data so that</span>
 <span class="sd">    it will not cause diffs.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Any occurance of case must be normalized because test-ids might not match</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">case</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="n">case_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">[.]([GC])[.]([^./\s]+)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">case</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">case</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">case_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">[.]([GC])[.]([^./\s]+)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">case</span><span class="p">))</span>
         <span class="n">value</span> <span class="o">=</span> <span class="n">case_re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">.ACTION.TESTID&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">case</span><span class="p">),</span> <span class="n">value</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;/&quot;</span> <span class="ow">in</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">if</span> <span class="s2">&quot;/&quot;</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
         <span class="c1"># File path, just return the basename</span>
         <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="p">(</span><span class="s2">&quot;username&quot;</span> <span class="ow">in</span> <span class="n">value</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s1">&#39;&#39;</span>
-    <span class="k">elif</span> <span class="p">(</span><span class="s2">&quot;.log.&quot;</span> <span class="ow">in</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">elif</span> <span class="s2">&quot;username&quot;</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">elif</span> <span class="s2">&quot;.log.&quot;</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
         <span class="c1"># Remove the part that&#39;s prone to diff</span>
         <span class="n">components</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">components</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">value</span>
 
+
 <span class="c1">###############################################################################</span>
 <span class="k">def</span> <span class="nf">_skip_comments_and_whitespace</span><span class="p">(</span><span class="n">lines</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
-<span class="c1">###############################################################################</span>
+    <span class="c1">###############################################################################</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Starting at idx, return next valid idx of lines that contains real data</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">idx</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">)):</span>
+    <span class="k">if</span> <span class="n">idx</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">idx</span>
 
-    <span class="n">comment_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^[#!]&#39;</span><span class="p">)</span>
+    <span class="n">comment_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^[#!]&quot;</span><span class="p">)</span>
 
     <span class="n">lines_slice</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="n">idx</span><span class="p">:]</span>
     <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines_slice</span><span class="p">:</span>
         <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">comment_re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">line</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">comment_re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">line</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
             <span class="n">idx</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">idx</span>
 
     <span class="k">return</span> <span class="n">idx</span>
 
+
 <span class="c1">###############################################################################</span>
 <span class="k">def</span> <span class="nf">_compare_data</span><span class="p">(</span><span class="n">gold_lines</span><span class="p">,</span> <span class="n">comp_lines</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">offset_method</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="c1">###############################################################################</span>
+    <span class="c1">###############################################################################</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    &gt;&gt;&gt; teststr = &#39;&#39;&#39;</span>
 <span class="sd">    ... data1</span>
@@ -272,33 +278,35 @@
     <span class="n">cnt</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">gidx</span><span class="p">,</span> <span class="n">cidx</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
     <span class="n">gnum</span><span class="p">,</span> <span class="n">cnum</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">gold_lines</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">comp_lines</span><span class="p">)</span>
-    <span class="k">while</span> <span class="p">(</span><span class="n">gidx</span> <span class="o">&lt;</span> <span class="n">gnum</span> <span class="ow">or</span> <span class="n">cidx</span> <span class="o">&lt;</span> <span class="n">cnum</span><span class="p">):</span>
+    <span class="k">while</span> <span class="n">gidx</span> <span class="o">&lt;</span> <span class="n">gnum</span> <span class="ow">or</span> <span class="n">cidx</span> <span class="o">&lt;</span> <span class="n">cnum</span><span class="p">:</span>
         <span class="n">gidx</span> <span class="o">=</span> <span class="n">_skip_comments_and_whitespace</span><span class="p">(</span><span class="n">gold_lines</span><span class="p">,</span> <span class="n">gidx</span><span class="p">)</span>
         <span class="n">cidx</span> <span class="o">=</span> <span class="n">_skip_comments_and_whitespace</span><span class="p">(</span><span class="n">comp_lines</span><span class="p">,</span> <span class="n">cidx</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="p">(</span><span class="n">gidx</span> <span class="o">==</span> <span class="n">gnum</span><span class="p">):</span>
-            <span class="k">if</span> <span class="p">(</span><span class="n">cidx</span> <span class="o">==</span> <span class="n">cnum</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">gidx</span> <span class="o">==</span> <span class="n">gnum</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">cidx</span> <span class="o">==</span> <span class="n">cnum</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">comments</span><span class="p">,</span> <span class="n">cnt</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">comments</span> <span class="o">+=</span> <span class="s2">&quot;Found extra lines</span><span class="se">\n</span><span class="s2">&quot;</span>
                 <span class="n">comments</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">comp_lines</span><span class="p">[</span><span class="n">cidx</span><span class="p">:])</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
                 <span class="k">return</span> <span class="n">comments</span><span class="p">,</span> <span class="n">cnt</span>
-        <span class="k">elif</span> <span class="p">(</span><span class="n">cidx</span> <span class="o">==</span> <span class="n">cnum</span><span class="p">):</span>
+        <span class="k">elif</span> <span class="n">cidx</span> <span class="o">==</span> <span class="n">cnum</span><span class="p">:</span>
             <span class="n">comments</span> <span class="o">+=</span> <span class="s2">&quot;Missing lines</span><span class="se">\n</span><span class="s2">&quot;</span>
             <span class="n">comments</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">gold_lines</span><span class="p">[</span><span class="n">gidx</span><span class="p">:</span><span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
             <span class="k">return</span> <span class="n">comments</span><span class="p">,</span> <span class="n">cnt</span>
 
         <span class="n">gold_value</span> <span class="o">=</span> <span class="n">gold_lines</span><span class="p">[</span><span class="n">gidx</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-        <span class="n">gold_value</span> <span class="o">=</span> <span class="n">gold_value</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">,</span><span class="s2">&quot;&#39;&quot;</span><span class="p">)</span>
+        <span class="n">gold_value</span> <span class="o">=</span> <span class="n">gold_value</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">,</span> <span class="s2">&quot;&#39;&quot;</span><span class="p">)</span>
         <span class="n">comp_value</span> <span class="o">=</span> <span class="n">comp_lines</span><span class="p">[</span><span class="n">cidx</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-        <span class="n">comp_value</span> <span class="o">=</span> <span class="n">comp_value</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">,</span><span class="s2">&quot;&#39;&quot;</span><span class="p">)</span>
+        <span class="n">comp_value</span> <span class="o">=</span> <span class="n">comp_value</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">,</span> <span class="s2">&quot;&#39;&quot;</span><span class="p">)</span>
 
         <span class="n">norm_gold_value</span> <span class="o">=</span> <span class="n">_normalize_string_value</span><span class="p">(</span><span class="n">gold_value</span><span class="p">,</span> <span class="n">case</span><span class="p">)</span>
         <span class="n">norm_comp_value</span> <span class="o">=</span> <span class="n">_normalize_string_value</span><span class="p">(</span><span class="n">comp_value</span><span class="p">,</span> <span class="n">case</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="p">(</span><span class="n">norm_gold_value</span> <span class="o">!=</span> <span class="n">norm_comp_value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">norm_gold_value</span> <span class="o">!=</span> <span class="n">norm_comp_value</span><span class="p">:</span>
             <span class="n">comments</span> <span class="o">+=</span> <span class="s2">&quot;Inequivalent lines </span><span class="si">{}</span><span class="s2"> != </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">gold_value</span><span class="p">,</span> <span class="n">comp_value</span><span class="p">)</span>
-            <span class="n">comments</span> <span class="o">+=</span> <span class="s2">&quot;  NORMALIZED: </span><span class="si">{}</span><span class="s2"> != </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">norm_gold_value</span><span class="p">,</span> <span class="n">norm_comp_value</span><span class="p">)</span>
+            <span class="n">comments</span> <span class="o">+=</span> <span class="s2">&quot;  NORMALIZED: </span><span class="si">{}</span><span class="s2"> != </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">norm_gold_value</span><span class="p">,</span> <span class="n">norm_comp_value</span>
+            <span class="p">)</span>
             <span class="n">cnt</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="k">if</span> <span class="n">offset_method</span> <span class="ow">and</span> <span class="p">(</span><span class="n">norm_gold_value</span> <span class="o">!=</span> <span class="n">norm_comp_value</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">gnum</span> <span class="o">&gt;</span> <span class="n">cnum</span><span class="p">:</span>
@@ -311,9 +319,10 @@
 
     <span class="k">return</span> <span class="n">comments</span><span class="p">,</span> <span class="n">cnt</span>
 
+
 <span class="c1">###############################################################################</span>
 <div class="viewcode-block" id="compare_files"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.simple_compare.compare_files">[docs]</a><span class="k">def</span> <span class="nf">compare_files</span><span class="p">(</span><span class="n">gold_file</span><span class="p">,</span> <span class="n">compare_file</span><span class="p">,</span> <span class="n">case</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="c1">###############################################################################</span>
+    <span class="c1">###############################################################################</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns true if files are the same, comments are returned too:</span>
 <span class="sd">    (success, comments)</span>
@@ -321,21 +330,26 @@
     <span class="n">expect</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">gold_file</span><span class="p">),</span> <span class="s2">&quot;File not found: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">gold_file</span><span class="p">))</span>
     <span class="n">expect</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">compare_file</span><span class="p">),</span> <span class="s2">&quot;File not found: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">compare_file</span><span class="p">))</span>
 
-    <span class="n">comments</span><span class="p">,</span> <span class="n">cnt</span> <span class="o">=</span> <span class="n">_compare_data</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">gold_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">readlines</span><span class="p">(),</span>
-                             <span class="nb">open</span><span class="p">(</span><span class="n">compare_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">readlines</span><span class="p">(),</span> <span class="n">case</span><span class="p">)</span>
+    <span class="n">comments</span><span class="p">,</span> <span class="n">cnt</span> <span class="o">=</span> <span class="n">_compare_data</span><span class="p">(</span>
+        <span class="nb">open</span><span class="p">(</span><span class="n">gold_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">readlines</span><span class="p">(),</span> <span class="nb">open</span><span class="p">(</span><span class="n">compare_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">readlines</span><span class="p">(),</span> <span class="n">case</span>
+    <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">cnt</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">comments2</span><span class="p">,</span> <span class="n">cnt2</span> <span class="o">=</span> <span class="n">_compare_data</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">gold_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">readlines</span><span class="p">(),</span>
-                                        <span class="nb">open</span><span class="p">(</span><span class="n">compare_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">readlines</span><span class="p">(),</span>
-                                        <span class="n">case</span><span class="p">,</span> <span class="n">offset_method</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">comments2</span><span class="p">,</span> <span class="n">cnt2</span> <span class="o">=</span> <span class="n">_compare_data</span><span class="p">(</span>
+            <span class="nb">open</span><span class="p">(</span><span class="n">gold_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">readlines</span><span class="p">(),</span>
+            <span class="nb">open</span><span class="p">(</span><span class="n">compare_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">readlines</span><span class="p">(),</span>
+            <span class="n">case</span><span class="p">,</span>
+            <span class="n">offset_method</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="k">if</span> <span class="n">cnt2</span> <span class="o">&lt;</span> <span class="n">cnt</span><span class="p">:</span>
             <span class="n">comments</span> <span class="o">=</span> <span class="n">comments2</span>
 
     <span class="k">return</span> <span class="n">comments</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">comments</span></div>
 
+
 <span class="c1">###############################################################################</span>
 <div class="viewcode-block" id="compare_runconfigfiles"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.simple_compare.compare_runconfigfiles">[docs]</a><span class="k">def</span> <span class="nf">compare_runconfigfiles</span><span class="p">(</span><span class="n">gold_file</span><span class="p">,</span> <span class="n">compare_file</span><span class="p">,</span> <span class="n">case</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="c1">###############################################################################</span>
+    <span class="c1">###############################################################################</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns true if files are the same, comments are returned too:</span>
 <span class="sd">    (success, comments)</span>
@@ -343,7 +357,7 @@
     <span class="n">expect</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">gold_file</span><span class="p">),</span> <span class="s2">&quot;File not found: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">gold_file</span><span class="p">))</span>
     <span class="n">expect</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">compare_file</span><span class="p">),</span> <span class="s2">&quot;File not found: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">compare_file</span><span class="p">))</span>
 
-    <span class="c1">#create dictionary&#39;s of the runconfig files and compare them</span>
+    <span class="c1"># create dictionary&#39;s of the runconfig files and compare them</span>
     <span class="n">gold_dict</span> <span class="o">=</span> <span class="n">_parse_runconfig</span><span class="p">(</span><span class="n">gold_file</span><span class="p">)</span>
     <span class="n">compare_dict</span> <span class="o">=</span> <span class="n">_parse_runconfig</span><span class="p">(</span><span class="n">compare_file</span><span class="p">)</span>
 
@@ -358,27 +372,28 @@
 
     <span class="k">return</span> <span class="n">comments</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">comments</span></div>
 
+
 <span class="k">def</span> <span class="nf">_parse_runconfig</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
     <span class="n">runconfig</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">inrunseq</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">insubsection</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">subsection_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\s*(\S+)::&#39;</span><span class="p">)</span>
-    <span class="n">group_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\s*(\S+)\s*:\s*(\S+)&#39;</span><span class="p">)</span>
-    <span class="n">var_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\s*(\S+)\s*=\s*(\S+)&#39;</span><span class="p">)</span>
+    <span class="n">subsection_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\s*(\S+)::&quot;</span><span class="p">)</span>
+    <span class="n">group_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\s*(\S+)\s*:\s*(\S+)&quot;</span><span class="p">)</span>
+    <span class="n">var_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\s*(\S+)\s*=\s*(\S+)&quot;</span><span class="p">)</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">fd</span><span class="p">:</span>
             <span class="c1"># remove comments</span>
-            <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;#&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
             <span class="n">subsection_match</span> <span class="o">=</span> <span class="n">subsection_re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
             <span class="n">group_match</span> <span class="o">=</span> <span class="n">group_re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
             <span class="n">var_match</span> <span class="o">=</span> <span class="n">var_re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\s*runSeq\s*::&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
-                <span class="n">runconfig</span><span class="p">[</span><span class="s1">&#39;runSeq&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\s*runSeq\s*::&quot;</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+                <span class="n">runconfig</span><span class="p">[</span><span class="s2">&quot;runSeq&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
                 <span class="n">inrunseq</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="k">elif</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\s*::\s*&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+            <span class="k">elif</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\s*::\s*&quot;</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
                 <span class="n">inrunseq</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="k">elif</span> <span class="n">inrunseq</span><span class="p">:</span>
-                <span class="n">runconfig</span><span class="p">[</span><span class="s1">&#39;runSeq&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+                <span class="n">runconfig</span><span class="p">[</span><span class="s2">&quot;runSeq&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">subsection_match</span><span class="p">:</span>
                 <span class="n">insubsection</span> <span class="o">=</span> <span class="n">subsection_match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
                 <span class="n">runconfig</span><span class="p">[</span><span class="n">insubsection</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
@@ -388,19 +403,20 @@
                 <span class="n">runconfig</span><span class="p">[</span><span class="n">insubsection</span><span class="p">][</span><span class="n">var_match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)]</span> <span class="o">=</span> <span class="n">var_match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">runconfig</span>
 
+
 <div class="viewcode-block" id="findDiff"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.simple_compare.findDiff">[docs]</a><span class="k">def</span> <span class="nf">findDiff</span><span class="p">(</span><span class="n">d1</span><span class="p">,</span> <span class="n">d2</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">case</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="n">comment</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
     <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">d1</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">d2</span><span class="p">:</span>
             <span class="n">comment</span> <span class="o">+=</span> <span class="n">path</span> <span class="o">+</span> <span class="s2">&quot;:</span><span class="se">\n</span><span class="s2">&quot;</span>
-            <span class="n">comment</span> <span class="o">+=</span>  <span class="n">k</span> <span class="o">+</span> <span class="s2">&quot; as key not in d2</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">comment</span> <span class="o">+=</span> <span class="n">k</span> <span class="o">+</span> <span class="s2">&quot; as key not in d2</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">d1</span><span class="p">[</span><span class="n">k</span><span class="p">])</span> <span class="ow">is</span> <span class="nb">dict</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">path</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
                     <span class="n">path</span> <span class="o">=</span> <span class="n">k</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">path</span> <span class="o">=</span> <span class="n">path</span> <span class="o">+</span> <span class="s2">&quot;-&gt;&quot;</span> <span class="o">+</span> <span class="n">k</span>
-                <span class="n">comment</span> <span class="o">+=</span> <span class="n">findDiff</span><span class="p">(</span><span class="n">d1</span><span class="p">[</span><span class="n">k</span><span class="p">],</span><span class="n">d2</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">case</span><span class="o">=</span><span class="n">case</span><span class="p">)</span>
+                <span class="n">comment</span> <span class="o">+=</span> <span class="n">findDiff</span><span class="p">(</span><span class="n">d1</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">d2</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">case</span><span class="o">=</span><span class="n">case</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">case</span> <span class="ow">in</span> <span class="n">d1</span><span class="p">[</span><span class="n">k</span><span class="p">]:</span>
                     <span class="k">pass</span>
@@ -409,9 +425,9 @@
                 <span class="k">elif</span> <span class="s2">&quot;logfile&quot;</span> <span class="ow">in</span> <span class="n">k</span><span class="p">:</span>
                     <span class="k">pass</span>
                 <span class="k">elif</span> <span class="n">d1</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">!=</span> <span class="n">d2</span><span class="p">[</span><span class="n">k</span><span class="p">]:</span>
-                    <span class="n">comment</span> <span class="o">+=</span> <span class="n">path</span><span class="o">+</span><span class="s2">&quot;:</span><span class="se">\n</span><span class="s2">&quot;</span>
-                    <span class="n">comment</span> <span class="o">+=</span> <span class="s2">&quot; - </span><span class="si">{}</span><span class="s2"> : </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="n">d1</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
-                    <span class="n">comment</span> <span class="o">+=</span> <span class="s2">&quot; + </span><span class="si">{}</span><span class="s2"> : </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="n">d2</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+                    <span class="n">comment</span> <span class="o">+=</span> <span class="n">path</span> <span class="o">+</span> <span class="s2">&quot;:</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="n">comment</span> <span class="o">+=</span> <span class="s2">&quot; - </span><span class="si">{}</span><span class="s2"> : </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">d1</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+                    <span class="n">comment</span> <span class="o">+=</span> <span class="s2">&quot; + </span><span class="si">{}</span><span class="s2"> : </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">d2</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
     <span class="k">return</span> <span class="n">comment</span></div>
 </pre></div>
 
@@ -452,6 +468,7 @@
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>

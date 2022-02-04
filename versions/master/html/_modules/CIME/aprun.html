@@ -30,6 +30,10 @@
   
 
   
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
 
   
         <link rel="index" title="Index"
@@ -189,11 +193,20 @@
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <span class="c1">###############################################################################</span>
-<span class="k">def</span> <span class="nf">_get_aprun_cmd_for_case_impl</span><span class="p">(</span><span class="n">ntasks</span><span class="p">,</span> <span class="n">nthreads</span><span class="p">,</span> <span class="n">rootpes</span><span class="p">,</span> <span class="n">pstrids</span><span class="p">,</span>
-                                 <span class="n">max_tasks_per_node</span><span class="p">,</span> <span class="n">max_mpitasks_per_node</span><span class="p">,</span>
-                                 <span class="n">pio_numtasks</span><span class="p">,</span> <span class="n">pio_async_interface</span><span class="p">,</span>
-                                 <span class="n">compiler</span><span class="p">,</span> <span class="n">machine</span><span class="p">,</span> <span class="n">run_exe</span><span class="p">):</span>
-<span class="c1">###############################################################################</span>
+<span class="k">def</span> <span class="nf">_get_aprun_cmd_for_case_impl</span><span class="p">(</span>
+    <span class="n">ntasks</span><span class="p">,</span>
+    <span class="n">nthreads</span><span class="p">,</span>
+    <span class="n">rootpes</span><span class="p">,</span>
+    <span class="n">pstrids</span><span class="p">,</span>
+    <span class="n">max_tasks_per_node</span><span class="p">,</span>
+    <span class="n">max_mpitasks_per_node</span><span class="p">,</span>
+    <span class="n">pio_numtasks</span><span class="p">,</span>
+    <span class="n">pio_async_interface</span><span class="p">,</span>
+    <span class="n">compiler</span><span class="p">,</span>
+    <span class="n">machine</span><span class="p">,</span>
+    <span class="n">run_exe</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="c1">###############################################################################</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    No one really understands this code, but we can at least test it.</span>
 
@@ -249,13 +262,23 @@
             <span class="n">maxt</span><span class="p">[</span><span class="n">c1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
 
     <span class="c1"># Compute task and thread settings for batch commands</span>
-    <span class="n">tasks_per_node</span><span class="p">,</span> <span class="n">min_tasks_per_node</span><span class="p">,</span> <span class="n">task_count</span><span class="p">,</span> <span class="n">thread_count</span><span class="p">,</span> <span class="n">max_thread_count</span><span class="p">,</span> <span class="n">total_node_count</span><span class="p">,</span> <span class="n">total_task_count</span><span class="p">,</span> <span class="n">aprun_args</span> <span class="o">=</span> \
-        <span class="mi">0</span><span class="p">,</span> <span class="n">max_mpitasks_per_node</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">maxt</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">maxt</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;&quot;</span>
+    <span class="p">(</span>
+        <span class="n">tasks_per_node</span><span class="p">,</span>
+        <span class="n">min_tasks_per_node</span><span class="p">,</span>
+        <span class="n">task_count</span><span class="p">,</span>
+        <span class="n">thread_count</span><span class="p">,</span>
+        <span class="n">max_thread_count</span><span class="p">,</span>
+        <span class="n">total_node_count</span><span class="p">,</span>
+        <span class="n">total_task_count</span><span class="p">,</span>
+        <span class="n">aprun_args</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_mpitasks_per_node</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">maxt</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">maxt</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
     <span class="n">c1list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">total_tasks</span><span class="p">))</span>
     <span class="n">c1list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">c1</span> <span class="ow">in</span> <span class="n">c1list</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">c1</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">maxt</span><span class="p">[</span><span class="n">c1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">thread_count</span><span class="p">:</span>
-            <span class="n">tasks_per_node</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">max_mpitasks_per_node</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">max_tasks_per_node</span> <span class="o">/</span> <span class="n">thread_count</span><span class="p">))</span>
+            <span class="n">tasks_per_node</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span>
+                <span class="n">max_mpitasks_per_node</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">max_tasks_per_node</span> <span class="o">/</span> <span class="n">thread_count</span><span class="p">)</span>
+            <span class="p">)</span>
 
             <span class="n">tasks_per_node</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">task_count</span><span class="p">,</span> <span class="n">tasks_per_node</span><span class="p">)</span>
 
@@ -267,7 +290,13 @@
                 <span class="k">if</span> <span class="n">compiler</span> <span class="o">==</span> <span class="s2">&quot;intel&quot;</span><span class="p">:</span>
                     <span class="n">aprun_args</span> <span class="o">+=</span> <span class="s2">&quot; -cc numa_node&quot;</span>
 
-            <span class="n">aprun_args</span> <span class="o">+=</span> <span class="s2">&quot; -n </span><span class="si">{:d}</span><span class="s2"> -N </span><span class="si">{:d}</span><span class="s2"> -d </span><span class="si">{:d}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">task_count</span><span class="p">,</span> <span class="n">tasks_per_node</span><span class="p">,</span> <span class="n">thread_count</span><span class="p">,</span> <span class="n">run_exe</span><span class="p">,</span> <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="n">c1</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;:&quot;</span><span class="p">)</span>
+            <span class="n">aprun_args</span> <span class="o">+=</span> <span class="s2">&quot; -n </span><span class="si">{:d}</span><span class="s2"> -N </span><span class="si">{:d}</span><span class="s2"> -d </span><span class="si">{:d}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">task_count</span><span class="p">,</span>
+                <span class="n">tasks_per_node</span><span class="p">,</span>
+                <span class="n">thread_count</span><span class="p">,</span>
+                <span class="n">run_exe</span><span class="p">,</span>
+                <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="n">c1</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;:&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
 
             <span class="n">node_count</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">task_count</span><span class="p">)</span> <span class="o">/</span> <span class="n">tasks_per_node</span><span class="p">))</span>
             <span class="n">total_node_count</span> <span class="o">+=</span> <span class="n">node_count</span>
@@ -284,11 +313,18 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">task_count</span> <span class="o">+=</span> <span class="mi">1</span>
 
-    <span class="k">return</span> <span class="n">aprun_args</span><span class="p">,</span> <span class="n">total_node_count</span><span class="p">,</span> <span class="n">total_task_count</span><span class="p">,</span> <span class="n">min_tasks_per_node</span><span class="p">,</span> <span class="n">max_thread_count</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="n">aprun_args</span><span class="p">,</span>
+        <span class="n">total_node_count</span><span class="p">,</span>
+        <span class="n">total_task_count</span><span class="p">,</span>
+        <span class="n">min_tasks_per_node</span><span class="p">,</span>
+        <span class="n">max_thread_count</span><span class="p">,</span>
+    <span class="p">)</span>
+
 
 <span class="c1">###############################################################################</span>
 <div class="viewcode-block" id="get_aprun_cmd_for_case"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.aprun.get_aprun_cmd_for_case">[docs]</a><span class="k">def</span> <span class="nf">get_aprun_cmd_for_case</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">run_exe</span><span class="p">,</span> <span class="n">overrides</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="c1">###############################################################################</span>
+    <span class="c1">###############################################################################</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Given a case, construct and return the aprun command and optimized node count</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -296,28 +332,33 @@
     <span class="n">ntasks</span><span class="p">,</span> <span class="n">nthreads</span><span class="p">,</span> <span class="n">rootpes</span><span class="p">,</span> <span class="n">pstrids</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">models</span><span class="p">:</span>
         <span class="n">model</span> <span class="o">=</span> <span class="s2">&quot;CPL&quot;</span> <span class="k">if</span> <span class="n">model</span> <span class="o">==</span> <span class="s2">&quot;DRV&quot;</span> <span class="k">else</span> <span class="n">model</span>
-        <span class="k">for</span> <span class="n">the_list</span><span class="p">,</span> <span class="n">item_name</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">([</span><span class="n">ntasks</span><span class="p">,</span> <span class="n">nthreads</span><span class="p">,</span> <span class="n">rootpes</span><span class="p">,</span> <span class="n">pstrids</span><span class="p">],</span>
-                                       <span class="p">[</span><span class="s2">&quot;NTASKS&quot;</span><span class="p">,</span> <span class="s2">&quot;NTHRDS&quot;</span><span class="p">,</span> <span class="s2">&quot;ROOTPE&quot;</span><span class="p">,</span> <span class="s2">&quot;PSTRID&quot;</span><span class="p">]):</span>
+        <span class="k">for</span> <span class="n">the_list</span><span class="p">,</span> <span class="n">item_name</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">ntasks</span><span class="p">,</span> <span class="n">nthreads</span><span class="p">,</span> <span class="n">rootpes</span><span class="p">,</span> <span class="n">pstrids</span><span class="p">],</span>
+            <span class="p">[</span><span class="s2">&quot;NTASKS&quot;</span><span class="p">,</span> <span class="s2">&quot;NTHRDS&quot;</span><span class="p">,</span> <span class="s2">&quot;ROOTPE&quot;</span><span class="p">,</span> <span class="s2">&quot;PSTRID&quot;</span><span class="p">],</span>
+        <span class="p">):</span>
             <span class="n">the_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">item_name</span><span class="p">,</span> <span class="n">model</span><span class="p">])))</span>
     <span class="n">max_tasks_per_node</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MAX_TASKS_PER_NODE&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">overrides</span><span class="p">:</span>
-        <span class="k">if</span> <span class="s1">&#39;max_tasks_per_node&#39;</span> <span class="ow">in</span> <span class="n">overrides</span><span class="p">:</span>
-            <span class="n">max_tasks_per_node</span> <span class="o">=</span> <span class="n">overrides</span><span class="p">[</span><span class="s1">&#39;max_tasks_per_node&#39;</span><span class="p">]</span> 
-        <span class="k">if</span> <span class="s1">&#39;total_tasks&#39;</span> <span class="ow">in</span> <span class="n">overrides</span><span class="p">:</span>
-            <span class="n">ntasks</span> <span class="o">=</span> <span class="p">[</span><span class="n">overrides</span><span class="p">[</span><span class="s1">&#39;total_tasks&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">x</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">ntasks</span><span class="p">]</span>
-        <span class="k">if</span> <span class="s1">&#39;thread_count&#39;</span> <span class="ow">in</span> <span class="n">overrides</span><span class="p">:</span>
-            <span class="n">nthreads</span> <span class="o">=</span> <span class="p">[</span><span class="n">overrides</span><span class="p">[</span><span class="s1">&#39;thread_count&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">x</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">nthreads</span><span class="p">]</span>
-    
+        <span class="k">if</span> <span class="s2">&quot;max_tasks_per_node&quot;</span> <span class="ow">in</span> <span class="n">overrides</span><span class="p">:</span>
+            <span class="n">max_tasks_per_node</span> <span class="o">=</span> <span class="n">overrides</span><span class="p">[</span><span class="s2">&quot;max_tasks_per_node&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s2">&quot;total_tasks&quot;</span> <span class="ow">in</span> <span class="n">overrides</span><span class="p">:</span>
+            <span class="n">ntasks</span> <span class="o">=</span> <span class="p">[</span><span class="n">overrides</span><span class="p">[</span><span class="s2">&quot;total_tasks&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">x</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">ntasks</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s2">&quot;thread_count&quot;</span> <span class="ow">in</span> <span class="n">overrides</span><span class="p">:</span>
+            <span class="n">nthreads</span> <span class="o">=</span> <span class="p">[</span><span class="n">overrides</span><span class="p">[</span><span class="s2">&quot;thread_count&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">x</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">nthreads</span><span class="p">]</span>
 
-
-    <span class="k">return</span> <span class="n">_get_aprun_cmd_for_case_impl</span><span class="p">(</span><span class="n">ntasks</span><span class="p">,</span> <span class="n">nthreads</span><span class="p">,</span> <span class="n">rootpes</span><span class="p">,</span> <span class="n">pstrids</span><span class="p">,</span>
-                                        <span class="n">max_tasks_per_node</span><span class="p">,</span>
-                                        <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MAX_MPITASKS_PER_NODE&quot;</span><span class="p">),</span>
-                                        <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;PIO_NUMTASKS&quot;</span><span class="p">),</span>
-                                        <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;PIO_ASYNC_INTERFACE&quot;</span><span class="p">),</span>
-                                        <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;COMPILER&quot;</span><span class="p">),</span>
-                                        <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MACH&quot;</span><span class="p">),</span>
-                                        <span class="n">run_exe</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">_get_aprun_cmd_for_case_impl</span><span class="p">(</span>
+        <span class="n">ntasks</span><span class="p">,</span>
+        <span class="n">nthreads</span><span class="p">,</span>
+        <span class="n">rootpes</span><span class="p">,</span>
+        <span class="n">pstrids</span><span class="p">,</span>
+        <span class="n">max_tasks_per_node</span><span class="p">,</span>
+        <span class="k">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MAX_MPITASKS_PER_NODE&quot;</span><span class="p">),</span>
+        <span class="k">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;PIO_NUMTASKS&quot;</span><span class="p">),</span>
+        <span class="k">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;PIO_ASYNC_INTERFACE&quot;</span><span class="p">),</span>
+        <span class="k">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;COMPILER&quot;</span><span class="p">),</span>
+        <span class="k">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MACH&quot;</span><span class="p">),</span>
+        <span class="n">run_exe</span><span class="p">,</span>
+    <span class="p">)</span></div>
 </pre></div>
 
            </div>
@@ -357,6 +398,7 @@
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>

@@ -1,0 +1,876 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>CIME.tests.test_sys_cmake_macros &mdash; CIME master documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="CIME master documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> CIME
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                
+                  <div class="version-dropdown">
+                    <select class="version-list" id="version-list">
+                      <option value=''>master</option>
+                      
+                        
+                      
+                        
+                          <option value="">[placeholder]</option>
+                        
+                      
+                    </select>
+                  </div>
+                
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../what_cime/index.html">What is CIME?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../users_guide/index.html">Case Control System Part 1: Basic Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../users_guide/index.html#case-control-system-part-2-configuration-porting-testing-and-use-cases">Case Control System Part 2: Configuration, Porting, Testing and Use Cases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../build_cpl/index.html">Building a Coupled Model with CIME</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../misc_tools/index.html">Miscellaneous Tools</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../glossary/index.html">Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Tools_user/index.html">User Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../xml_files/index.html">XML Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../CIME_api/modules.html">CIME</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Tools_api/modules.html">Tools</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">CIME</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>CIME.tests.test_sys_cmake_macros</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for CIME.tests.test_sys_cmake_macros</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+
+<span class="kn">from</span> <span class="nn">CIME</span> <span class="kn">import</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">CIME.tests</span> <span class="kn">import</span> <span class="n">base</span>
+<span class="kn">from</span> <span class="nn">CIME.tests</span> <span class="kn">import</span> <span class="n">utils</span> <span class="k">as</span> <span class="n">test_utils</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.compilers</span> <span class="kn">import</span> <span class="n">Compilers</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+
+
+<div class="viewcode-block" id="TestCMakeMacros"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_cmake_macros.TestCMakeMacros">[docs]</a><span class="k">class</span> <span class="nc">TestCMakeMacros</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">BaseTestCase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;CMake macros tests.</span>
+
+<span class="sd">    This class contains tests of the CMake output of Build.</span>
+
+<span class="sd">    This class simply inherits all of the methods of TestMakeOutput, but changes</span>
+<span class="sd">    the definition of xml_to_tester to create a CMakeTester instead.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TestCMakeMacros.xml_to_tester"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_cmake_macros.TestCMakeMacros.xml_to_tester">[docs]</a>    <span class="k">def</span> <span class="nf">xml_to_tester</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xml_string</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Helper that directly converts an XML string to a MakefileTester.&quot;&quot;&quot;</span>
+        <span class="n">test_xml</span> <span class="o">=</span> <span class="n">test_utils</span><span class="o">.</span><span class="n">_wrap_config_compilers_xml</span><span class="p">(</span><span class="n">xml_string</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">NO_CMAKE</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">skipTest</span><span class="p">(</span><span class="s2">&quot;Skipping cmake test&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">test_utils</span><span class="o">.</span><span class="n">CMakeTester</span><span class="p">(</span>
+                <span class="bp">self</span><span class="p">,</span> <span class="n">test_utils</span><span class="o">.</span><span class="n">get_macros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_maker</span><span class="p">,</span> <span class="n">test_xml</span><span class="p">,</span> <span class="s2">&quot;CMake&quot;</span><span class="p">)</span>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestCMakeMacros.setUp"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_cmake_macros.TestCMakeMacros.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="s2">&quot;CIME_NO_CMAKE_MACRO&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">skipTest</span><span class="p">(</span><span class="s2">&quot;Skipping test of old macro system&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_os</span> <span class="o">=</span> <span class="s2">&quot;SomeOS&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_machine</span> <span class="o">=</span> <span class="s2">&quot;mymachine&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_compiler</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">MACHINE</span><span class="o">.</span><span class="n">get_default_compiler</span><span class="p">()</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">TEST_COMPILER</span> <span class="ow">is</span> <span class="kc">None</span>
+            <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">TEST_COMPILER</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_mpilib</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">MACHINE</span><span class="o">.</span><span class="n">get_default_MPIlib</span><span class="p">(</span><span class="n">attributes</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;compiler&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_compiler</span><span class="p">})</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">TEST_MPILIB</span> <span class="ow">is</span> <span class="kc">None</span>
+            <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">TEST_MPILIB</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_maker</span> <span class="o">=</span> <span class="n">Compilers</span><span class="p">(</span>
+            <span class="n">test_utils</span><span class="o">.</span><span class="n">MockMachines</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">test_machine</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_os</span><span class="p">),</span> <span class="n">version</span><span class="o">=</span><span class="mf">2.0</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestCMakeMacros.test_generic_item"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_cmake_macros.TestCMakeMacros.test_generic_item">[docs]</a>    <span class="k">def</span> <span class="nf">test_generic_item</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The macro writer can write out a single generic item.&quot;&quot;&quot;</span>
+        <span class="n">xml_string</span> <span class="o">=</span> <span class="s2">&quot;&lt;compiler&gt;&lt;SUPPORTS_CXX&gt;FALSE&lt;/SUPPORTS_CXX&gt;&lt;/compiler&gt;&quot;</span>
+        <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xml_to_tester</span><span class="p">(</span><span class="n">xml_string</span><span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span><span class="s2">&quot;SUPPORTS_CXX&quot;</span><span class="p">,</span> <span class="s2">&quot;FALSE&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestCMakeMacros.test_machine_specific_item"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_cmake_macros.TestCMakeMacros.test_machine_specific_item">[docs]</a>    <span class="k">def</span> <span class="nf">test_machine_specific_item</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The macro writer can pick out a machine-specific item.&quot;&quot;&quot;</span>
+        <span class="n">xml1</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;compiler MACH=&quot;</span><span class="si">{}</span><span class="s2">&quot;&gt;&lt;SUPPORTS_CXX&gt;TRUE&lt;/SUPPORTS_CXX&gt;&lt;/compiler&gt;&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">test_machine</span>
+        <span class="p">)</span>
+        <span class="n">xml2</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;compiler&gt;&lt;SUPPORTS_CXX&gt;FALSE&lt;/SUPPORTS_CXX&gt;&lt;/compiler&gt;&quot;&quot;&quot;</span>
+        <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xml_to_tester</span><span class="p">(</span><span class="n">xml1</span> <span class="o">+</span> <span class="n">xml2</span><span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span><span class="s2">&quot;SUPPORTS_CXX&quot;</span><span class="p">,</span> <span class="s2">&quot;TRUE&quot;</span><span class="p">)</span>
+        <span class="c1"># Do this a second time, but with elements in the reverse order, to</span>
+        <span class="c1"># ensure that the code is not &quot;cheating&quot; by taking the first match.</span>
+        <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xml_to_tester</span><span class="p">(</span><span class="n">xml2</span> <span class="o">+</span> <span class="n">xml1</span><span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span><span class="s2">&quot;SUPPORTS_CXX&quot;</span><span class="p">,</span> <span class="s2">&quot;TRUE&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestCMakeMacros.test_ignore_non_match"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_cmake_macros.TestCMakeMacros.test_ignore_non_match">[docs]</a>    <span class="k">def</span> <span class="nf">test_ignore_non_match</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The macro writer ignores an entry with the wrong machine name.&quot;&quot;&quot;</span>
+        <span class="n">xml1</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;compiler MACH=&quot;bad&quot;&gt;&lt;SUPPORTS_CXX&gt;TRUE&lt;/SUPPORTS_CXX&gt;&lt;/compiler&gt;&quot;&quot;&quot;</span>
+        <span class="n">xml2</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;compiler&gt;&lt;SUPPORTS_CXX&gt;FALSE&lt;/SUPPORTS_CXX&gt;&lt;/compiler&gt;&quot;&quot;&quot;</span>
+        <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xml_to_tester</span><span class="p">(</span><span class="n">xml1</span> <span class="o">+</span> <span class="n">xml2</span><span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span><span class="s2">&quot;SUPPORTS_CXX&quot;</span><span class="p">,</span> <span class="s2">&quot;FALSE&quot;</span><span class="p">)</span>
+        <span class="c1"># Again, double-check that we don&#39;t just get lucky with the order.</span>
+        <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xml_to_tester</span><span class="p">(</span><span class="n">xml2</span> <span class="o">+</span> <span class="n">xml1</span><span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span><span class="s2">&quot;SUPPORTS_CXX&quot;</span><span class="p">,</span> <span class="s2">&quot;FALSE&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestCMakeMacros.test_os_specific_item"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_cmake_macros.TestCMakeMacros.test_os_specific_item">[docs]</a>    <span class="k">def</span> <span class="nf">test_os_specific_item</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The macro writer can pick out an OS-specific item.&quot;&quot;&quot;</span>
+        <span class="n">xml1</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sd">&quot;&quot;&quot;&lt;compiler OS=&quot;{}&quot;&gt;&lt;SUPPORTS_CXX&gt;TRUE&lt;/SUPPORTS_CXX&gt;&lt;/compiler&gt;&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">test_os</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">xml2</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;compiler&gt;&lt;SUPPORTS_CXX&gt;FALSE&lt;/SUPPORTS_CXX&gt;&lt;/compiler&gt;&quot;&quot;&quot;</span>
+        <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xml_to_tester</span><span class="p">(</span><span class="n">xml1</span> <span class="o">+</span> <span class="n">xml2</span><span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span><span class="s2">&quot;SUPPORTS_CXX&quot;</span><span class="p">,</span> <span class="s2">&quot;TRUE&quot;</span><span class="p">)</span>
+        <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xml_to_tester</span><span class="p">(</span><span class="n">xml2</span> <span class="o">+</span> <span class="n">xml1</span><span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span><span class="s2">&quot;SUPPORTS_CXX&quot;</span><span class="p">,</span> <span class="s2">&quot;TRUE&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestCMakeMacros.test_mach_other_compiler"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_cmake_macros.TestCMakeMacros.test_mach_other_compiler">[docs]</a>    <span class="k">def</span> <span class="nf">test_mach_other_compiler</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The macro writer compiler-specific logic works as expected.&quot;&quot;&quot;</span>
+        <span class="n">xml1</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;compiler COMPILER=&quot;</span><span class="si">{}</span><span class="s2">&quot;&gt;&lt;CFLAGS&gt;&lt;base&gt;a b c&lt;/base&gt;&lt;/CFLAGS&gt;&lt;/compiler&gt;&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">test_compiler</span>
+        <span class="p">)</span>
+        <span class="n">xml2</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;compiler MACH=&quot;</span><span class="si">{}</span><span class="s2">&quot; COMPILER=&quot;other&quot;&gt;&lt;CFLAGS&gt;&lt;base&gt;x y z&lt;/base&gt;&lt;/CFLAGS&gt;&lt;/compiler&gt;&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">test_machine</span>
+        <span class="p">)</span>
+        <span class="n">xml3</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;compiler MACH=&quot;</span><span class="si">{}</span><span class="s2">&quot; COMPILER=&quot;</span><span class="si">{}</span><span class="s2">&quot;&gt;&lt;CFLAGS&gt;&lt;append&gt;x y z&lt;/append&gt;&lt;/CFLAGS&gt;&lt;/compiler&gt;&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">test_machine</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_compiler</span>
+        <span class="p">)</span>
+        <span class="n">xml4</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;compiler MACH=&quot;</span><span class="si">{}</span><span class="s2">&quot; COMPILER=&quot;</span><span class="si">{}</span><span class="s2">&quot;&gt;&lt;CFLAGS&gt;&lt;base&gt;x y z&lt;/base&gt;&lt;/CFLAGS&gt;&lt;/compiler&gt;&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">test_machine</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_compiler</span>
+        <span class="p">)</span>
+        <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xml_to_tester</span><span class="p">(</span><span class="n">xml1</span><span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span>
+            <span class="s2">&quot;CFLAGS&quot;</span><span class="p">,</span> <span class="s2">&quot;a b c&quot;</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;COMPILER&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_compiler</span><span class="p">}</span>
+        <span class="p">)</span>
+        <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xml_to_tester</span><span class="p">(</span><span class="n">xml1</span> <span class="o">+</span> <span class="n">xml2</span><span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span>
+            <span class="s2">&quot;CFLAGS&quot;</span><span class="p">,</span> <span class="s2">&quot;a b c&quot;</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;COMPILER&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_compiler</span><span class="p">}</span>
+        <span class="p">)</span>
+        <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xml_to_tester</span><span class="p">(</span><span class="n">xml2</span> <span class="o">+</span> <span class="n">xml1</span><span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span>
+            <span class="s2">&quot;CFLAGS&quot;</span><span class="p">,</span> <span class="s2">&quot;a b c&quot;</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;COMPILER&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_compiler</span><span class="p">}</span>
+        <span class="p">)</span>
+        <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xml_to_tester</span><span class="p">(</span><span class="n">xml1</span> <span class="o">+</span> <span class="n">xml3</span><span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span>
+            <span class="s2">&quot;CFLAGS&quot;</span><span class="p">,</span> <span class="s2">&quot;a b c x y z&quot;</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;COMPILER&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_compiler</span><span class="p">}</span>
+        <span class="p">)</span>
+        <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xml_to_tester</span><span class="p">(</span><span class="n">xml1</span> <span class="o">+</span> <span class="n">xml4</span><span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span>
+            <span class="s2">&quot;CFLAGS&quot;</span><span class="p">,</span> <span class="s2">&quot;x y z&quot;</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;COMPILER&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_compiler</span><span class="p">}</span>
+        <span class="p">)</span>
+        <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xml_to_tester</span><span class="p">(</span><span class="n">xml4</span> <span class="o">+</span> <span class="n">xml1</span><span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span>
+            <span class="s2">&quot;CFLAGS&quot;</span><span class="p">,</span> <span class="s2">&quot;x y z&quot;</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;COMPILER&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_compiler</span><span class="p">}</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestCMakeMacros.test_mach_beats_os"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_cmake_macros.TestCMakeMacros.test_mach_beats_os">[docs]</a>    <span class="k">def</span> <span class="nf">test_mach_beats_os</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The macro writer chooses machine-specific over os-specific matches.&quot;&quot;&quot;</span>
+        <span class="n">xml1</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;compiler OS=&quot;</span><span class="si">{}</span><span class="s2">&quot;&gt;&lt;SUPPORTS_CXX&gt;FALSE&lt;/SUPPORTS_CXX&gt;&lt;/compiler&gt;&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">test_os</span>
+        <span class="p">)</span>
+        <span class="n">xml2</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;compiler MACH=&quot;</span><span class="si">{}</span><span class="s2">&quot;&gt;&lt;SUPPORTS_CXX&gt;TRUE&lt;/SUPPORTS_CXX&gt;&lt;/compiler&gt;&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">test_machine</span>
+        <span class="p">)</span>
+        <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xml_to_tester</span><span class="p">(</span><span class="n">xml1</span> <span class="o">+</span> <span class="n">xml2</span><span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span><span class="s2">&quot;SUPPORTS_CXX&quot;</span><span class="p">,</span> <span class="s2">&quot;TRUE&quot;</span><span class="p">)</span>
+        <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xml_to_tester</span><span class="p">(</span><span class="n">xml2</span> <span class="o">+</span> <span class="n">xml1</span><span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span><span class="s2">&quot;SUPPORTS_CXX&quot;</span><span class="p">,</span> <span class="s2">&quot;TRUE&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestCMakeMacros.test_mach_and_os_beats_mach"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_cmake_macros.TestCMakeMacros.test_mach_and_os_beats_mach">[docs]</a>    <span class="k">def</span> <span class="nf">test_mach_and_os_beats_mach</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The macro writer chooses the most-specific match possible.&quot;&quot;&quot;</span>
+        <span class="n">xml1</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;compiler MACH=&quot;</span><span class="si">{}</span><span class="s2">&quot;&gt;&lt;SUPPORTS_CXX&gt;FALSE&lt;/SUPPORTS_CXX&gt;&lt;/compiler&gt;&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">test_machine</span>
+        <span class="p">)</span>
+        <span class="n">xml2</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;compiler MACH=&quot;</span><span class="si">{}</span><span class="s2">&quot; OS=&quot;</span><span class="si">{}</span><span class="s2">&quot;&gt;&lt;SUPPORTS_CXX&gt;TRUE&lt;/SUPPORTS_CXX&gt;&lt;/compiler&gt;&quot;&quot;&quot;</span>
+        <span class="n">xml2</span> <span class="o">=</span> <span class="n">xml2</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">test_machine</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_os</span><span class="p">)</span>
+        <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xml_to_tester</span><span class="p">(</span><span class="n">xml1</span> <span class="o">+</span> <span class="n">xml2</span><span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span><span class="s2">&quot;SUPPORTS_CXX&quot;</span><span class="p">,</span> <span class="s2">&quot;TRUE&quot;</span><span class="p">)</span>
+        <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xml_to_tester</span><span class="p">(</span><span class="n">xml2</span> <span class="o">+</span> <span class="n">xml1</span><span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span><span class="s2">&quot;SUPPORTS_CXX&quot;</span><span class="p">,</span> <span class="s2">&quot;TRUE&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestCMakeMacros.test_build_time_attribute"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_cmake_macros.TestCMakeMacros.test_build_time_attribute">[docs]</a>    <span class="k">def</span> <span class="nf">test_build_time_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The macro writer writes conditionals for build-time choices.&quot;&quot;&quot;</span>
+        <span class="n">xml1</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;compiler&gt;&lt;MPI_PATH MPILIB=&quot;mpich&quot;&gt;/path/to/mpich&lt;/MPI_PATH&gt;&lt;/compiler&gt;&quot;&quot;&quot;</span>
+        <span class="n">xml2</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;compiler&gt;&lt;MPI_PATH MPILIB=&quot;openmpi&quot;&gt;/path/to/openmpi&lt;/MPI_PATH&gt;&lt;/compiler&gt;&quot;&quot;&quot;</span>
+        <span class="n">xml3</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;compiler&gt;&lt;MPI_PATH&gt;/path/to/default&lt;/MPI_PATH&gt;&lt;/compiler&gt;&quot;&quot;&quot;</span>
+        <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xml_to_tester</span><span class="p">(</span><span class="n">xml1</span> <span class="o">+</span> <span class="n">xml2</span> <span class="o">+</span> <span class="n">xml3</span><span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span><span class="s2">&quot;MPI_PATH&quot;</span><span class="p">,</span> <span class="s2">&quot;/path/to/default&quot;</span><span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span>
+            <span class="s2">&quot;MPI_PATH&quot;</span><span class="p">,</span> <span class="s2">&quot;/path/to/mpich&quot;</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;MPILIB&quot;</span><span class="p">:</span> <span class="s2">&quot;mpich&quot;</span><span class="p">}</span>
+        <span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span>
+            <span class="s2">&quot;MPI_PATH&quot;</span><span class="p">,</span> <span class="s2">&quot;/path/to/openmpi&quot;</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;MPILIB&quot;</span><span class="p">:</span> <span class="s2">&quot;openmpi&quot;</span><span class="p">}</span>
+        <span class="p">)</span>
+        <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xml_to_tester</span><span class="p">(</span><span class="n">xml3</span> <span class="o">+</span> <span class="n">xml2</span> <span class="o">+</span> <span class="n">xml1</span><span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span><span class="s2">&quot;MPI_PATH&quot;</span><span class="p">,</span> <span class="s2">&quot;/path/to/default&quot;</span><span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span>
+            <span class="s2">&quot;MPI_PATH&quot;</span><span class="p">,</span> <span class="s2">&quot;/path/to/mpich&quot;</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;MPILIB&quot;</span><span class="p">:</span> <span class="s2">&quot;mpich&quot;</span><span class="p">}</span>
+        <span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span>
+            <span class="s2">&quot;MPI_PATH&quot;</span><span class="p">,</span> <span class="s2">&quot;/path/to/openmpi&quot;</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;MPILIB&quot;</span><span class="p">:</span> <span class="s2">&quot;openmpi&quot;</span><span class="p">}</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestCMakeMacros.test_reject_duplicate_defaults"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_cmake_macros.TestCMakeMacros.test_reject_duplicate_defaults">[docs]</a>    <span class="k">def</span> <span class="nf">test_reject_duplicate_defaults</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The macro writer dies if given many defaults.&quot;&quot;&quot;</span>
+        <span class="n">xml1</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;compiler&gt;&lt;MPI_PATH&gt;/path/to/default&lt;/MPI_PATH&gt;&lt;/compiler&gt;&quot;&quot;&quot;</span>
+        <span class="n">xml2</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;compiler&gt;&lt;MPI_PATH&gt;/path/to/other_default&lt;/MPI_PATH&gt;&lt;/compiler&gt;&quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaisesRegex</span><span class="p">(</span>
+            <span class="n">utils</span><span class="o">.</span><span class="n">CIMEError</span><span class="p">,</span>
+            <span class="s2">&quot;Variable MPI_PATH is set ambiguously in config_compilers.xml.&quot;</span><span class="p">,</span>
+        <span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">xml_to_tester</span><span class="p">(</span><span class="n">xml1</span> <span class="o">+</span> <span class="n">xml2</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestCMakeMacros.test_reject_duplicates"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_cmake_macros.TestCMakeMacros.test_reject_duplicates">[docs]</a>    <span class="k">def</span> <span class="nf">test_reject_duplicates</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The macro writer dies if given many matches for a given configuration.&quot;&quot;&quot;</span>
+        <span class="n">xml1</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;compiler&gt;&lt;MPI_PATH MPILIB=&quot;mpich&quot;&gt;/path/to/mpich&lt;/MPI_PATH&gt;&lt;/compiler&gt;&quot;&quot;&quot;</span>
+        <span class="n">xml2</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;compiler&gt;&lt;MPI_PATH MPILIB=&quot;mpich&quot;&gt;/path/to/mpich2&lt;/MPI_PATH&gt;&lt;/compiler&gt;&quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaisesRegex</span><span class="p">(</span>
+            <span class="n">utils</span><span class="o">.</span><span class="n">CIMEError</span><span class="p">,</span>
+            <span class="s2">&quot;Variable MPI_PATH is set ambiguously in config_compilers.xml.&quot;</span><span class="p">,</span>
+        <span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">xml_to_tester</span><span class="p">(</span><span class="n">xml1</span> <span class="o">+</span> <span class="n">xml2</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestCMakeMacros.test_reject_ambiguous"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_cmake_macros.TestCMakeMacros.test_reject_ambiguous">[docs]</a>    <span class="k">def</span> <span class="nf">test_reject_ambiguous</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The macro writer dies if given an ambiguous set of matches.&quot;&quot;&quot;</span>
+        <span class="n">xml1</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;compiler&gt;&lt;MPI_PATH MPILIB=&quot;mpich&quot;&gt;/path/to/mpich&lt;/MPI_PATH&gt;&lt;/compiler&gt;&quot;&quot;&quot;</span>
+        <span class="n">xml2</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;compiler&gt;&lt;MPI_PATH DEBUG=&quot;FALSE&quot;&gt;/path/to/mpi-debug&lt;/MPI_PATH&gt;&lt;/compiler&gt;&quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaisesRegex</span><span class="p">(</span>
+            <span class="n">utils</span><span class="o">.</span><span class="n">CIMEError</span><span class="p">,</span>
+            <span class="s2">&quot;Variable MPI_PATH is set ambiguously in config_compilers.xml.&quot;</span><span class="p">,</span>
+        <span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">xml_to_tester</span><span class="p">(</span><span class="n">xml1</span> <span class="o">+</span> <span class="n">xml2</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestCMakeMacros.test_compiler_changeable_at_build_time"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_cmake_macros.TestCMakeMacros.test_compiler_changeable_at_build_time">[docs]</a>    <span class="k">def</span> <span class="nf">test_compiler_changeable_at_build_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The macro writer writes information for multiple compilers.&quot;&quot;&quot;</span>
+        <span class="n">xml1</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;compiler&gt;&lt;SUPPORTS_CXX&gt;FALSE&lt;/SUPPORTS_CXX&gt;&lt;/compiler&gt;&quot;&quot;&quot;</span>
+        <span class="n">xml2</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sd">&quot;&quot;&quot;&lt;compiler COMPILER=&quot;gnu&quot;&gt;&lt;SUPPORTS_CXX&gt;TRUE&lt;/SUPPORTS_CXX&gt;&lt;/compiler&gt;&quot;&quot;&quot;</span>
+        <span class="p">)</span>
+        <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xml_to_tester</span><span class="p">(</span><span class="n">xml1</span> <span class="o">+</span> <span class="n">xml2</span><span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span><span class="s2">&quot;SUPPORTS_CXX&quot;</span><span class="p">,</span> <span class="s2">&quot;TRUE&quot;</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;COMPILER&quot;</span><span class="p">:</span> <span class="s2">&quot;gnu&quot;</span><span class="p">})</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span><span class="s2">&quot;SUPPORTS_CXX&quot;</span><span class="p">,</span> <span class="s2">&quot;FALSE&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestCMakeMacros.test_base_flags"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_cmake_macros.TestCMakeMacros.test_base_flags">[docs]</a>    <span class="k">def</span> <span class="nf">test_base_flags</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Test that we get &quot;base&quot; compiler flags.&quot;&quot;&quot;</span>
+        <span class="n">xml1</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;compiler&gt;&lt;FFLAGS&gt;&lt;base&gt;-O2&lt;/base&gt;&lt;/FFLAGS&gt;&lt;/compiler&gt;&quot;&quot;&quot;</span>
+        <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xml_to_tester</span><span class="p">(</span><span class="n">xml1</span><span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span><span class="s2">&quot;FFLAGS&quot;</span><span class="p">,</span> <span class="s2">&quot;-O2&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestCMakeMacros.test_machine_specific_base_flags"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_cmake_macros.TestCMakeMacros.test_machine_specific_base_flags">[docs]</a>    <span class="k">def</span> <span class="nf">test_machine_specific_base_flags</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Test selection among base compiler flag sets based on machine.&quot;&quot;&quot;</span>
+        <span class="n">xml1</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;compiler&gt;&lt;FFLAGS&gt;&lt;base&gt;-O2&lt;/base&gt;&lt;/FFLAGS&gt;&lt;/compiler&gt;&quot;&quot;&quot;</span>
+        <span class="n">xml2</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;compiler MACH=&quot;</span><span class="si">{}</span><span class="s2">&quot;&gt;&lt;FFLAGS&gt;&lt;base&gt;-O3&lt;/base&gt;&lt;/FFLAGS&gt;&lt;/compiler&gt;&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">test_machine</span>
+        <span class="p">)</span>
+        <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xml_to_tester</span><span class="p">(</span><span class="n">xml1</span> <span class="o">+</span> <span class="n">xml2</span><span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span><span class="s2">&quot;FFLAGS&quot;</span><span class="p">,</span> <span class="s2">&quot;-O3&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestCMakeMacros.test_build_time_base_flags"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_cmake_macros.TestCMakeMacros.test_build_time_base_flags">[docs]</a>    <span class="k">def</span> <span class="nf">test_build_time_base_flags</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Test selection of base flags based on build-time attributes.&quot;&quot;&quot;</span>
+        <span class="n">xml1</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;compiler&gt;&lt;FFLAGS&gt;&lt;base&gt;-O2&lt;/base&gt;&lt;/FFLAGS&gt;&lt;/compiler&gt;&quot;&quot;&quot;</span>
+        <span class="n">xml2</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;compiler&gt;&lt;FFLAGS&gt;&lt;base DEBUG=&quot;TRUE&quot;&gt;-O3&lt;/base&gt;&lt;/FFLAGS&gt;&lt;/compiler&gt;&quot;&quot;&quot;</span>
+        <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xml_to_tester</span><span class="p">(</span><span class="n">xml1</span> <span class="o">+</span> <span class="n">xml2</span><span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span><span class="s2">&quot;FFLAGS&quot;</span><span class="p">,</span> <span class="s2">&quot;-O2&quot;</span><span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span><span class="s2">&quot;FFLAGS&quot;</span><span class="p">,</span> <span class="s2">&quot;-O3&quot;</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;DEBUG&quot;</span><span class="p">:</span> <span class="s2">&quot;TRUE&quot;</span><span class="p">})</span></div>
+
+<div class="viewcode-block" id="TestCMakeMacros.test_build_time_base_flags_same_parent"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_cmake_macros.TestCMakeMacros.test_build_time_base_flags_same_parent">[docs]</a>    <span class="k">def</span> <span class="nf">test_build_time_base_flags_same_parent</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Test selection of base flags in the same parent element.&quot;&quot;&quot;</span>
+        <span class="n">xml1</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;base&gt;-O2&lt;/base&gt;&quot;&quot;&quot;</span>
+        <span class="n">xml2</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;base DEBUG=&quot;TRUE&quot;&gt;-O3&lt;/base&gt;&quot;&quot;&quot;</span>
+        <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xml_to_tester</span><span class="p">(</span>
+            <span class="s2">&quot;&lt;compiler&gt;&lt;FFLAGS&gt;&quot;</span> <span class="o">+</span> <span class="n">xml1</span> <span class="o">+</span> <span class="n">xml2</span> <span class="o">+</span> <span class="s2">&quot;&lt;/FFLAGS&gt;&lt;/compiler&gt;&quot;</span>
+        <span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span><span class="s2">&quot;FFLAGS&quot;</span><span class="p">,</span> <span class="s2">&quot;-O2&quot;</span><span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span><span class="s2">&quot;FFLAGS&quot;</span><span class="p">,</span> <span class="s2">&quot;-O3&quot;</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;DEBUG&quot;</span><span class="p">:</span> <span class="s2">&quot;TRUE&quot;</span><span class="p">})</span>
+        <span class="c1"># Check for order independence here, too.</span>
+        <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xml_to_tester</span><span class="p">(</span>
+            <span class="s2">&quot;&lt;compiler&gt;&lt;FFLAGS&gt;&quot;</span> <span class="o">+</span> <span class="n">xml2</span> <span class="o">+</span> <span class="n">xml1</span> <span class="o">+</span> <span class="s2">&quot;&lt;/FFLAGS&gt;&lt;/compiler&gt;&quot;</span>
+        <span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span><span class="s2">&quot;FFLAGS&quot;</span><span class="p">,</span> <span class="s2">&quot;-O2&quot;</span><span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span><span class="s2">&quot;FFLAGS&quot;</span><span class="p">,</span> <span class="s2">&quot;-O3&quot;</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;DEBUG&quot;</span><span class="p">:</span> <span class="s2">&quot;TRUE&quot;</span><span class="p">})</span></div>
+
+<div class="viewcode-block" id="TestCMakeMacros.test_append_flags"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_cmake_macros.TestCMakeMacros.test_append_flags">[docs]</a>    <span class="k">def</span> <span class="nf">test_append_flags</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Test appending flags to a list.&quot;&quot;&quot;</span>
+        <span class="n">xml1</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;compiler&gt;&lt;FFLAGS&gt;&lt;base&gt;-delicious&lt;/base&gt;&lt;/FFLAGS&gt;&lt;/compiler&gt;&quot;&quot;&quot;</span>
+        <span class="n">xml2</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;compiler&gt;&lt;FFLAGS&gt;&lt;append&gt;-cake&lt;/append&gt;&lt;/FFLAGS&gt;&lt;/compiler&gt;&quot;&quot;&quot;</span>
+        <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xml_to_tester</span><span class="p">(</span><span class="n">xml1</span> <span class="o">+</span> <span class="n">xml2</span><span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span><span class="s2">&quot;FFLAGS&quot;</span><span class="p">,</span> <span class="s2">&quot;-delicious -cake&quot;</span><span class="p">)</span>
+        <span class="c1"># Order independence, as usual.</span>
+        <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xml_to_tester</span><span class="p">(</span><span class="n">xml2</span> <span class="o">+</span> <span class="n">xml1</span><span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span><span class="s2">&quot;FFLAGS&quot;</span><span class="p">,</span> <span class="s2">&quot;-delicious -cake&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestCMakeMacros.test_machine_specific_append_flags"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_cmake_macros.TestCMakeMacros.test_machine_specific_append_flags">[docs]</a>    <span class="k">def</span> <span class="nf">test_machine_specific_append_flags</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Test appending flags that are either more or less machine-specific.&quot;&quot;&quot;</span>
+        <span class="n">xml1</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;compiler&gt;&lt;FFLAGS&gt;&lt;append&gt;-delicious&lt;/append&gt;&lt;/FFLAGS&gt;&lt;/compiler&gt;&quot;&quot;&quot;</span>
+        <span class="n">xml2</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;compiler MACH=&quot;</span><span class="si">{}</span><span class="s2">&quot;&gt;&lt;FFLAGS&gt;&lt;append&gt;-cake&lt;/append&gt;&lt;/FFLAGS&gt;&lt;/compiler&gt;&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">test_machine</span>
+        <span class="p">)</span>
+        <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xml_to_tester</span><span class="p">(</span><span class="n">xml1</span> <span class="o">+</span> <span class="n">xml2</span><span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_matches</span><span class="p">(</span>
+            <span class="s2">&quot;FFLAGS&quot;</span><span class="p">,</span> <span class="s2">&quot;^(-delicious -cake|-cake -delicious)$&quot;</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestCMakeMacros.test_machine_specific_base_keeps_append_flags"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_cmake_macros.TestCMakeMacros.test_machine_specific_base_keeps_append_flags">[docs]</a>    <span class="k">def</span> <span class="nf">test_machine_specific_base_keeps_append_flags</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Test that machine-specific base flags don&#39;t override default append flags.&quot;&quot;&quot;</span>
+        <span class="n">xml1</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;compiler&gt;&lt;FFLAGS&gt;&lt;append&gt;-delicious&lt;/append&gt;&lt;/FFLAGS&gt;&lt;/compiler&gt;&quot;&quot;&quot;</span>
+        <span class="n">xml2</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;compiler MACH=&quot;</span><span class="si">{}</span><span class="s2">&quot;&gt;&lt;FFLAGS&gt;&lt;base&gt;-cake&lt;/base&gt;&lt;/FFLAGS&gt;&lt;/compiler&gt;&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">test_machine</span>
+        <span class="p">)</span>
+        <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xml_to_tester</span><span class="p">(</span><span class="n">xml1</span> <span class="o">+</span> <span class="n">xml2</span><span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span><span class="s2">&quot;FFLAGS&quot;</span><span class="p">,</span> <span class="s2">&quot;-cake -delicious&quot;</span><span class="p">)</span>
+        <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xml_to_tester</span><span class="p">(</span><span class="n">xml2</span> <span class="o">+</span> <span class="n">xml1</span><span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span><span class="s2">&quot;FFLAGS&quot;</span><span class="p">,</span> <span class="s2">&quot;-cake -delicious&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestCMakeMacros.test_machine_specific_base_and_append_flags"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_cmake_macros.TestCMakeMacros.test_machine_specific_base_and_append_flags">[docs]</a>    <span class="k">def</span> <span class="nf">test_machine_specific_base_and_append_flags</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Test that machine-specific base flags coexist with machine-specific append flags.&quot;&quot;&quot;</span>
+        <span class="n">xml1</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;compiler MACH=&quot;</span><span class="si">{}</span><span class="s2">&quot;&gt;&lt;FFLAGS&gt;&lt;append&gt;-delicious&lt;/append&gt;&lt;/FFLAGS&gt;&lt;/compiler&gt;&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">test_machine</span>
+        <span class="p">)</span>
+        <span class="n">xml2</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;compiler MACH=&quot;</span><span class="si">{}</span><span class="s2">&quot;&gt;&lt;FFLAGS&gt;&lt;base&gt;-cake&lt;/base&gt;&lt;/FFLAGS&gt;&lt;/compiler&gt;&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">test_machine</span>
+        <span class="p">)</span>
+        <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xml_to_tester</span><span class="p">(</span><span class="n">xml1</span> <span class="o">+</span> <span class="n">xml2</span><span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span><span class="s2">&quot;FFLAGS&quot;</span><span class="p">,</span> <span class="s2">&quot;-cake -delicious&quot;</span><span class="p">)</span>
+        <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xml_to_tester</span><span class="p">(</span><span class="n">xml2</span> <span class="o">+</span> <span class="n">xml1</span><span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span><span class="s2">&quot;FFLAGS&quot;</span><span class="p">,</span> <span class="s2">&quot;-cake -delicious&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestCMakeMacros.test_append_flags_without_base"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_cmake_macros.TestCMakeMacros.test_append_flags_without_base">[docs]</a>    <span class="k">def</span> <span class="nf">test_append_flags_without_base</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Test appending flags to a value set before Macros is included.&quot;&quot;&quot;</span>
+        <span class="n">xml1</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;compiler&gt;&lt;FFLAGS&gt;&lt;append&gt;-cake&lt;/append&gt;&lt;/FFLAGS&gt;&lt;/compiler&gt;&quot;&quot;&quot;</span>
+        <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xml_to_tester</span><span class="p">(</span><span class="n">xml1</span><span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span>
+            <span class="s2">&quot;FFLAGS&quot;</span><span class="p">,</span> <span class="s2">&quot;-delicious -cake&quot;</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;FFLAGS&quot;</span><span class="p">:</span> <span class="s2">&quot;-delicious&quot;</span><span class="p">}</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestCMakeMacros.test_build_time_append_flags"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_cmake_macros.TestCMakeMacros.test_build_time_append_flags">[docs]</a>    <span class="k">def</span> <span class="nf">test_build_time_append_flags</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Test build_time selection of compiler flags.&quot;&quot;&quot;</span>
+        <span class="n">xml1</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;compiler&gt;&lt;FFLAGS&gt;&lt;append&gt;-cake&lt;/append&gt;&lt;/FFLAGS&gt;&lt;/compiler&gt;&quot;&quot;&quot;</span>
+        <span class="n">xml2</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;compiler&gt;&lt;FFLAGS&gt;&lt;append DEBUG=&quot;TRUE&quot;&gt;-and-pie&lt;/append&gt;&lt;/FFLAGS&gt;&lt;/compiler&gt;&quot;&quot;&quot;</span>
+        <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xml_to_tester</span><span class="p">(</span><span class="n">xml1</span> <span class="o">+</span> <span class="n">xml2</span><span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span><span class="s2">&quot;FFLAGS&quot;</span><span class="p">,</span> <span class="s2">&quot;-cake&quot;</span><span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_matches</span><span class="p">(</span>
+            <span class="s2">&quot;FFLAGS&quot;</span><span class="p">,</span> <span class="s2">&quot;^(-cake -and-pie|-and-pie -cake)$&quot;</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;DEBUG&quot;</span><span class="p">:</span> <span class="s2">&quot;TRUE&quot;</span><span class="p">}</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestCMakeMacros.test_environment_variable_insertion"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_cmake_macros.TestCMakeMacros.test_environment_variable_insertion">[docs]</a>    <span class="k">def</span> <span class="nf">test_environment_variable_insertion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Test that ENV{..} inserts environment variables.&quot;&quot;&quot;</span>
+        <span class="c1"># DO it again with $ENV{} style</span>
+        <span class="n">xml1</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;compiler&gt;&lt;LDFLAGS&gt;&lt;append&gt;-L$ENV</span><span class="si">{NETCDF}</span><span class="s2"> -lnetcdf&lt;/append&gt;&lt;/LDFLAGS&gt;&lt;/compiler&gt;&quot;&quot;&quot;</span>
+        <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xml_to_tester</span><span class="p">(</span><span class="n">xml1</span><span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span>
+            <span class="s2">&quot;LDFLAGS&quot;</span><span class="p">,</span> <span class="s2">&quot;-L/path/to/netcdf -lnetcdf&quot;</span><span class="p">,</span> <span class="n">env</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;NETCDF&quot;</span><span class="p">:</span> <span class="s2">&quot;/path/to/netcdf&quot;</span><span class="p">}</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestCMakeMacros.test_shell_command_insertion"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_cmake_macros.TestCMakeMacros.test_shell_command_insertion">[docs]</a>    <span class="k">def</span> <span class="nf">test_shell_command_insertion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Test that $SHELL insert shell command output.&quot;&quot;&quot;</span>
+        <span class="n">xml1</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;compiler&gt;&lt;FFLAGS&gt;&lt;base&gt;-O$SHELL{echo 2} -fast&lt;/base&gt;&lt;/FFLAGS&gt;&lt;/compiler&gt;&quot;&quot;&quot;</span>
+        <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xml_to_tester</span><span class="p">(</span><span class="n">xml1</span><span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span><span class="s2">&quot;FFLAGS&quot;</span><span class="p">,</span> <span class="s2">&quot;-O2 -fast&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestCMakeMacros.test_multiple_shell_commands"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_cmake_macros.TestCMakeMacros.test_multiple_shell_commands">[docs]</a>    <span class="k">def</span> <span class="nf">test_multiple_shell_commands</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Test that more than one $SHELL element can be used.&quot;&quot;&quot;</span>
+        <span class="n">xml1</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;compiler&gt;&lt;FFLAGS&gt;&lt;base&gt;-O$SHELL{echo 2} -$SHELL{echo fast}&lt;/base&gt;&lt;/FFLAGS&gt;&lt;/compiler&gt;&quot;&quot;&quot;</span>
+        <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xml_to_tester</span><span class="p">(</span><span class="n">xml1</span><span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span><span class="s2">&quot;FFLAGS&quot;</span><span class="p">,</span> <span class="s2">&quot;-O2 -fast&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestCMakeMacros.test_env_and_shell_command"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_cmake_macros.TestCMakeMacros.test_env_and_shell_command">[docs]</a>    <span class="k">def</span> <span class="nf">test_env_and_shell_command</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Test that $ENV works inside $SHELL elements.&quot;&quot;&quot;</span>
+        <span class="n">xml1</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;compiler&gt;&lt;FFLAGS&gt;&lt;base&gt;-O$SHELL{echo $ENV</span><span class="si">{OPT_LEVEL}</span><span class="s2">} -fast&lt;/base&gt;&lt;/FFLAGS&gt;&lt;/compiler&gt;&quot;&quot;&quot;</span>
+        <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xml_to_tester</span><span class="p">(</span><span class="n">xml1</span><span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span><span class="s2">&quot;FFLAGS&quot;</span><span class="p">,</span> <span class="s2">&quot;-O2 -fast&quot;</span><span class="p">,</span> <span class="n">env</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;OPT_LEVEL&quot;</span><span class="p">:</span> <span class="s2">&quot;2&quot;</span><span class="p">})</span></div>
+
+<div class="viewcode-block" id="TestCMakeMacros.test_config_variable_insertion"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_cmake_macros.TestCMakeMacros.test_config_variable_insertion">[docs]</a>    <span class="k">def</span> <span class="nf">test_config_variable_insertion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Test that $VAR insert variables from config_compilers.&quot;&quot;&quot;</span>
+        <span class="c1"># Construct an absurd chain of references just to sure that we don&#39;t</span>
+        <span class="c1"># pass by accident, e.g. outputting things in the right order just due</span>
+        <span class="c1"># to good luck in a hash somewhere.</span>
+        <span class="n">xml1</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;MPI_LIB_NAME&gt;stuff-$</span><span class="si">{MPI_PATH}</span><span class="s2">-stuff&lt;/MPI_LIB_NAME&gt;&quot;&quot;&quot;</span>
+        <span class="n">xml2</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;MPI_PATH&gt;$</span><span class="si">{MPICC}</span><span class="s2">&lt;/MPI_PATH&gt;&quot;&quot;&quot;</span>
+        <span class="n">xml3</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;MPICC&gt;$</span><span class="si">{MPICXX}</span><span class="s2">&lt;/MPICC&gt;&quot;&quot;&quot;</span>
+        <span class="n">xml4</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;MPICXX&gt;$</span><span class="si">{MPIFC}</span><span class="s2">&lt;/MPICXX&gt;&quot;&quot;&quot;</span>
+        <span class="n">xml5</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;MPIFC&gt;mpicc&lt;/MPIFC&gt;&quot;&quot;&quot;</span>
+        <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xml_to_tester</span><span class="p">(</span>
+            <span class="s2">&quot;&lt;compiler&gt;&quot;</span> <span class="o">+</span> <span class="n">xml1</span> <span class="o">+</span> <span class="n">xml2</span> <span class="o">+</span> <span class="n">xml3</span> <span class="o">+</span> <span class="n">xml4</span> <span class="o">+</span> <span class="n">xml5</span> <span class="o">+</span> <span class="s2">&quot;&lt;/compiler&gt;&quot;</span>
+        <span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span><span class="s2">&quot;MPI_LIB_NAME&quot;</span><span class="p">,</span> <span class="s2">&quot;stuff-mpicc-stuff&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestCMakeMacros.test_config_reject_self_references"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_cmake_macros.TestCMakeMacros.test_config_reject_self_references">[docs]</a>    <span class="k">def</span> <span class="nf">test_config_reject_self_references</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Test that $VAR self-references are rejected.&quot;&quot;&quot;</span>
+        <span class="c1"># This is a special case of the next test, which also checks circular</span>
+        <span class="c1"># references.</span>
+        <span class="n">xml1</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;MPI_LIB_NAME&gt;$</span><span class="si">{MPI_LIB_NAME}</span><span class="s2">&lt;/MPI_LIB_NAME&gt;&quot;&quot;&quot;</span>
+        <span class="n">err_msg</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;.* has bad \$VAR references. Check for circular references or variables that are used in a \$VAR but not actually defined.&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaisesRegex</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">CIMEError</span><span class="p">,</span> <span class="n">err_msg</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">xml_to_tester</span><span class="p">(</span><span class="s2">&quot;&lt;compiler&gt;&quot;</span> <span class="o">+</span> <span class="n">xml1</span> <span class="o">+</span> <span class="s2">&quot;&lt;/compiler&gt;&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestCMakeMacros.test_config_reject_cyclical_references"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_cmake_macros.TestCMakeMacros.test_config_reject_cyclical_references">[docs]</a>    <span class="k">def</span> <span class="nf">test_config_reject_cyclical_references</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Test that cyclical $VAR references are rejected.&quot;&quot;&quot;</span>
+        <span class="n">xml1</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;MPI_LIB_NAME&gt;$</span><span class="si">{MPI_PATH}</span><span class="s2">&lt;/MPI_LIB_NAME&gt;&quot;&quot;&quot;</span>
+        <span class="n">xml2</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;MPI_PATH&gt;$</span><span class="si">{MPI_LIB_NAME}</span><span class="s2">&lt;/MPI_PATH&gt;&quot;&quot;&quot;</span>
+        <span class="n">err_msg</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;.* has bad \$VAR references. Check for circular references or variables that are used in a \$VAR but not actually defined.&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaisesRegex</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">CIMEError</span><span class="p">,</span> <span class="n">err_msg</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">xml_to_tester</span><span class="p">(</span><span class="s2">&quot;&lt;compiler&gt;&quot;</span> <span class="o">+</span> <span class="n">xml1</span> <span class="o">+</span> <span class="n">xml2</span> <span class="o">+</span> <span class="s2">&quot;&lt;/compiler&gt;&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestCMakeMacros.test_variable_insertion_with_machine_specific_setting"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_cmake_macros.TestCMakeMacros.test_variable_insertion_with_machine_specific_setting">[docs]</a>    <span class="k">def</span> <span class="nf">test_variable_insertion_with_machine_specific_setting</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Test that machine-specific $VAR dependencies are correct.&quot;&quot;&quot;</span>
+        <span class="n">xml1</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;compiler&gt;&lt;MPI_LIB_NAME&gt;something&lt;/MPI_LIB_NAME&gt;&lt;/compiler&gt;&quot;&quot;&quot;</span>
+        <span class="n">xml2</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;compiler MACH=&quot;</span><span class="si">{}</span><span class="s2">&quot;&gt;&lt;MPI_LIB_NAME&gt;$MPI_PATH&lt;/MPI_LIB_NAME&gt;&lt;/compiler&gt;&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">test_machine</span>
+        <span class="p">)</span>
+        <span class="n">xml3</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;compiler&gt;&lt;MPI_PATH&gt;$</span><span class="si">{MPI_LIB_NAME}</span><span class="s2">&lt;/MPI_PATH&gt;&lt;/compiler&gt;&quot;&quot;&quot;</span>
+        <span class="n">err_msg</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;.* has bad \$VAR references. Check for circular references or variables that are used in a \$VAR but not actually defined.&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaisesRegex</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">CIMEError</span><span class="p">,</span> <span class="n">err_msg</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">xml_to_tester</span><span class="p">(</span><span class="n">xml1</span> <span class="o">+</span> <span class="n">xml2</span> <span class="o">+</span> <span class="n">xml3</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestCMakeMacros.test_override_with_machine_and_new_attributes"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_cmake_macros.TestCMakeMacros.test_override_with_machine_and_new_attributes">[docs]</a>    <span class="k">def</span> <span class="nf">test_override_with_machine_and_new_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Test that overrides with machine-specific settings with added attributes work correctly.&quot;&quot;&quot;</span>
+        <span class="n">xml1</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">&lt;compiler COMPILER=&quot;</span><span class="si">{}</span><span class="s2">&quot;&gt;</span>
+<span class="s2">  &lt;SCC&gt;icc&lt;/SCC&gt;</span>
+<span class="s2">  &lt;MPICXX&gt;mpicxx&lt;/MPICXX&gt;</span>
+<span class="s2">  &lt;MPIFC&gt;mpif90&lt;/MPIFC&gt;</span>
+<span class="s2">  &lt;MPICC&gt;mpicc&lt;/MPICC&gt;</span>
+<span class="s2">&lt;/compiler&gt;&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">test_compiler</span>
+        <span class="p">)</span>
+        <span class="n">xml2</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">&lt;compiler COMPILER=&quot;</span><span class="si">{}</span><span class="s2">&quot; MACH=&quot;</span><span class="si">{}</span><span class="s2">&quot;&gt;</span>
+<span class="s2">  &lt;MPICXX&gt;mpifoo&lt;/MPICXX&gt;</span>
+<span class="s2">  &lt;MPIFC MPILIB=&quot;</span><span class="si">{}</span><span class="s2">&quot;&gt;mpiffoo&lt;/MPIFC&gt;</span>
+<span class="s2">  &lt;MPICC MPILIB=&quot;NOT_MY_MPI&quot;&gt;mpifouc&lt;/MPICC&gt;</span>
+<span class="s2">&lt;/compiler&gt;</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">test_compiler</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_machine</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_mpilib</span>
+        <span class="p">)</span>
+
+        <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xml_to_tester</span><span class="p">(</span><span class="n">xml1</span> <span class="o">+</span> <span class="n">xml2</span><span class="p">)</span>
+
+        <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span>
+            <span class="s2">&quot;SCC&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;icc&quot;</span><span class="p">,</span>
+            <span class="n">var</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;COMPILER&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_compiler</span><span class="p">,</span> <span class="s2">&quot;MPILIB&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_mpilib</span><span class="p">},</span>
+        <span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span>
+            <span class="s2">&quot;MPICXX&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;mpifoo&quot;</span><span class="p">,</span>
+            <span class="n">var</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;COMPILER&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_compiler</span><span class="p">,</span> <span class="s2">&quot;MPILIB&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_mpilib</span><span class="p">},</span>
+        <span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span>
+            <span class="s2">&quot;MPIFC&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;mpiffoo&quot;</span><span class="p">,</span>
+            <span class="n">var</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;COMPILER&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_compiler</span><span class="p">,</span> <span class="s2">&quot;MPILIB&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_mpilib</span><span class="p">},</span>
+        <span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span>
+            <span class="s2">&quot;MPICC&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;mpicc&quot;</span><span class="p">,</span>
+            <span class="n">var</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;COMPILER&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_compiler</span><span class="p">,</span> <span class="s2">&quot;MPILIB&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_mpilib</span><span class="p">},</span>
+        <span class="p">)</span>
+
+        <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xml_to_tester</span><span class="p">(</span><span class="n">xml2</span> <span class="o">+</span> <span class="n">xml1</span><span class="p">)</span>
+
+        <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span>
+            <span class="s2">&quot;SCC&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;icc&quot;</span><span class="p">,</span>
+            <span class="n">var</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;COMPILER&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_compiler</span><span class="p">,</span> <span class="s2">&quot;MPILIB&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_mpilib</span><span class="p">},</span>
+        <span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span>
+            <span class="s2">&quot;MPICXX&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;mpifoo&quot;</span><span class="p">,</span>
+            <span class="n">var</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;COMPILER&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_compiler</span><span class="p">,</span> <span class="s2">&quot;MPILIB&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_mpilib</span><span class="p">},</span>
+        <span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span>
+            <span class="s2">&quot;MPIFC&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;mpiffoo&quot;</span><span class="p">,</span>
+            <span class="n">var</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;COMPILER&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_compiler</span><span class="p">,</span> <span class="s2">&quot;MPILIB&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_mpilib</span><span class="p">},</span>
+        <span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span>
+            <span class="s2">&quot;MPICC&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;mpicc&quot;</span><span class="p">,</span>
+            <span class="n">var</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;COMPILER&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_compiler</span><span class="p">,</span> <span class="s2">&quot;MPILIB&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_mpilib</span><span class="p">},</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestCMakeMacros.test_override_with_machine_and_same_attributes"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_cmake_macros.TestCMakeMacros.test_override_with_machine_and_same_attributes">[docs]</a>    <span class="k">def</span> <span class="nf">test_override_with_machine_and_same_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Test that machine-specific conditional overrides with the same attribute work correctly.&quot;&quot;&quot;</span>
+        <span class="n">xml1</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">&lt;compiler COMPILER=&quot;</span><span class="si">{}</span><span class="s2">&quot;&gt;</span>
+<span class="s2">  &lt;MPIFC MPILIB=&quot;</span><span class="si">{}</span><span class="s2">&quot;&gt;mpifc&lt;/MPIFC&gt;</span>
+<span class="s2">&lt;/compiler&gt;&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">test_compiler</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_mpilib</span>
+        <span class="p">)</span>
+        <span class="n">xml2</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">&lt;compiler MACH=&quot;</span><span class="si">{}</span><span class="s2">&quot; COMPILER=&quot;</span><span class="si">{}</span><span class="s2">&quot;&gt;</span>
+<span class="s2">  &lt;MPIFC MPILIB=&quot;</span><span class="si">{}</span><span class="s2">&quot;&gt;mpif90&lt;/MPIFC&gt;</span>
+<span class="s2">&lt;/compiler&gt;</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">test_machine</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_compiler</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_mpilib</span>
+        <span class="p">)</span>
+
+        <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xml_to_tester</span><span class="p">(</span><span class="n">xml1</span> <span class="o">+</span> <span class="n">xml2</span><span class="p">)</span>
+
+        <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span>
+            <span class="s2">&quot;MPIFC&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;mpif90&quot;</span><span class="p">,</span>
+            <span class="n">var</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;COMPILER&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_compiler</span><span class="p">,</span> <span class="s2">&quot;MPILIB&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_mpilib</span><span class="p">},</span>
+        <span class="p">)</span>
+
+        <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xml_to_tester</span><span class="p">(</span><span class="n">xml2</span> <span class="o">+</span> <span class="n">xml1</span><span class="p">)</span>
+
+        <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span>
+            <span class="s2">&quot;MPIFC&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;mpif90&quot;</span><span class="p">,</span>
+            <span class="n">var</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;COMPILER&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_compiler</span><span class="p">,</span> <span class="s2">&quot;MPILIB&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_mpilib</span><span class="p">},</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestCMakeMacros.test_appends_not_overriden"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_cmake_macros.TestCMakeMacros.test_appends_not_overriden">[docs]</a>    <span class="k">def</span> <span class="nf">test_appends_not_overriden</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Test that machine-specific base value changes don&#39;t interfere with appends.&quot;&quot;&quot;</span>
+        <span class="n">xml1</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">&lt;compiler COMPILER=&quot;</span><span class="si">{}</span><span class="s2">&quot;&gt;</span>
+<span class="s2"> &lt;FFLAGS&gt;</span>
+<span class="s2">   &lt;base&gt;-base1&lt;/base&gt;</span>
+<span class="s2">   &lt;append DEBUG=&quot;FALSE&quot;&gt;-debug1&lt;/append&gt;</span>
+<span class="s2"> &lt;/FFLAGS&gt;</span>
+<span class="s2">&lt;/compiler&gt;&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">test_compiler</span>
+        <span class="p">)</span>
+
+        <span class="n">xml2</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">&lt;compiler MACH=&quot;</span><span class="si">{}</span><span class="s2">&quot; COMPILER=&quot;</span><span class="si">{}</span><span class="s2">&quot;&gt;</span>
+<span class="s2"> &lt;FFLAGS&gt;</span>
+<span class="s2">   &lt;base&gt;-base2&lt;/base&gt;</span>
+<span class="s2">   &lt;append DEBUG=&quot;TRUE&quot;&gt;-debug2&lt;/append&gt;</span>
+<span class="s2"> &lt;/FFLAGS&gt;</span>
+<span class="s2">&lt;/compiler&gt;&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">test_machine</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_compiler</span>
+        <span class="p">)</span>
+
+        <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xml_to_tester</span><span class="p">(</span><span class="n">xml1</span> <span class="o">+</span> <span class="n">xml2</span><span class="p">)</span>
+
+        <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span>
+            <span class="s2">&quot;FFLAGS&quot;</span><span class="p">,</span> <span class="s2">&quot;-base2&quot;</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;COMPILER&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_compiler</span><span class="p">}</span>
+        <span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span>
+            <span class="s2">&quot;FFLAGS&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;-base2 -debug2&quot;</span><span class="p">,</span>
+            <span class="n">var</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;COMPILER&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_compiler</span><span class="p">,</span> <span class="s2">&quot;DEBUG&quot;</span><span class="p">:</span> <span class="s2">&quot;TRUE&quot;</span><span class="p">},</span>
+        <span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span>
+            <span class="s2">&quot;FFLAGS&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;-base2 -debug1&quot;</span><span class="p">,</span>
+            <span class="n">var</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;COMPILER&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_compiler</span><span class="p">,</span> <span class="s2">&quot;DEBUG&quot;</span><span class="p">:</span> <span class="s2">&quot;FALSE&quot;</span><span class="p">},</span>
+        <span class="p">)</span>
+
+        <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xml_to_tester</span><span class="p">(</span><span class="n">xml2</span> <span class="o">+</span> <span class="n">xml1</span><span class="p">)</span>
+
+        <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span>
+            <span class="s2">&quot;FFLAGS&quot;</span><span class="p">,</span> <span class="s2">&quot;-base2&quot;</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;COMPILER&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_compiler</span><span class="p">}</span>
+        <span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span>
+            <span class="s2">&quot;FFLAGS&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;-base2 -debug2&quot;</span><span class="p">,</span>
+            <span class="n">var</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;COMPILER&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_compiler</span><span class="p">,</span> <span class="s2">&quot;DEBUG&quot;</span><span class="p">:</span> <span class="s2">&quot;TRUE&quot;</span><span class="p">},</span>
+        <span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span>
+            <span class="s2">&quot;FFLAGS&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;-base2 -debug1&quot;</span><span class="p">,</span>
+            <span class="n">var</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;COMPILER&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_compiler</span><span class="p">,</span> <span class="s2">&quot;DEBUG&quot;</span><span class="p">:</span> <span class="s2">&quot;FALSE&quot;</span><span class="p">},</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestCMakeMacros.test_multilevel_specificity"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_cmake_macros.TestCMakeMacros.test_multilevel_specificity">[docs]</a>    <span class="k">def</span> <span class="nf">test_multilevel_specificity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Check that settings with multiple levels of machine-specificity can be resolved.&quot;&quot;&quot;</span>
+        <span class="n">xml1</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">&lt;compiler&gt;</span>
+<span class="s2"> &lt;MPIFC DEBUG=&quot;FALSE&quot;&gt;mpifc&lt;/MPIFC&gt;</span>
+<span class="s2">&lt;/compiler&gt;&quot;&quot;&quot;</span>
+
+        <span class="n">xml2</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">&lt;compiler OS=&quot;</span><span class="si">{}</span><span class="s2">&quot;&gt;</span>
+<span class="s2"> &lt;MPIFC MPILIB=&quot;</span><span class="si">{}</span><span class="s2">&quot;&gt;mpif03&lt;/MPIFC&gt;</span>
+<span class="s2">&lt;/compiler&gt;&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">test_os</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_mpilib</span>
+        <span class="p">)</span>
+
+        <span class="n">xml3</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">&lt;compiler MACH=&quot;</span><span class="si">{}</span><span class="s2">&quot;&gt;</span>
+<span class="s2"> &lt;MPIFC DEBUG=&quot;TRUE&quot;&gt;mpif90&lt;/MPIFC&gt;</span>
+<span class="s2">&lt;/compiler&gt;&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">test_machine</span>
+        <span class="p">)</span>
+
+        <span class="c1"># To verify order-independence, test every possible ordering of blocks.</span>
+        <span class="n">testers</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">testers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xml_to_tester</span><span class="p">(</span><span class="n">xml1</span> <span class="o">+</span> <span class="n">xml2</span> <span class="o">+</span> <span class="n">xml3</span><span class="p">))</span>
+        <span class="n">testers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xml_to_tester</span><span class="p">(</span><span class="n">xml1</span> <span class="o">+</span> <span class="n">xml3</span> <span class="o">+</span> <span class="n">xml2</span><span class="p">))</span>
+        <span class="n">testers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xml_to_tester</span><span class="p">(</span><span class="n">xml2</span> <span class="o">+</span> <span class="n">xml1</span> <span class="o">+</span> <span class="n">xml3</span><span class="p">))</span>
+        <span class="n">testers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xml_to_tester</span><span class="p">(</span><span class="n">xml2</span> <span class="o">+</span> <span class="n">xml3</span> <span class="o">+</span> <span class="n">xml1</span><span class="p">))</span>
+        <span class="n">testers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xml_to_tester</span><span class="p">(</span><span class="n">xml3</span> <span class="o">+</span> <span class="n">xml1</span> <span class="o">+</span> <span class="n">xml2</span><span class="p">))</span>
+        <span class="n">testers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xml_to_tester</span><span class="p">(</span><span class="n">xml3</span> <span class="o">+</span> <span class="n">xml2</span> <span class="o">+</span> <span class="n">xml1</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">tester</span> <span class="ow">in</span> <span class="n">testers</span><span class="p">:</span>
+            <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span>
+                <span class="s2">&quot;MPIFC&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;mpif90&quot;</span><span class="p">,</span>
+                <span class="n">var</span><span class="o">=</span><span class="p">{</span>
+                    <span class="s2">&quot;COMPILER&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_compiler</span><span class="p">,</span>
+                    <span class="s2">&quot;MPILIB&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_mpilib</span><span class="p">,</span>
+                    <span class="s2">&quot;DEBUG&quot;</span><span class="p">:</span> <span class="s2">&quot;TRUE&quot;</span><span class="p">,</span>
+                <span class="p">},</span>
+            <span class="p">)</span>
+            <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span>
+                <span class="s2">&quot;MPIFC&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;mpif03&quot;</span><span class="p">,</span>
+                <span class="n">var</span><span class="o">=</span><span class="p">{</span>
+                    <span class="s2">&quot;COMPILER&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_compiler</span><span class="p">,</span>
+                    <span class="s2">&quot;MPILIB&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_mpilib</span><span class="p">,</span>
+                    <span class="s2">&quot;DEBUG&quot;</span><span class="p">:</span> <span class="s2">&quot;FALSE&quot;</span><span class="p">,</span>
+                <span class="p">},</span>
+            <span class="p">)</span>
+            <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span>
+                <span class="s2">&quot;MPIFC&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;mpifc&quot;</span><span class="p">,</span>
+                <span class="n">var</span><span class="o">=</span><span class="p">{</span>
+                    <span class="s2">&quot;COMPILER&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_compiler</span><span class="p">,</span>
+                    <span class="s2">&quot;MPILIB&quot;</span><span class="p">:</span> <span class="s2">&quot;NON_MATCHING_MPI&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;DEBUG&quot;</span><span class="p">:</span> <span class="s2">&quot;FALSE&quot;</span><span class="p">,</span>
+                <span class="p">},</span>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestCMakeMacros.test_remove_dependency_issues"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_cmake_macros.TestCMakeMacros.test_remove_dependency_issues">[docs]</a>    <span class="k">def</span> <span class="nf">test_remove_dependency_issues</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Check that overridden settings don&#39;t cause inter-variable dependencies.&quot;&quot;&quot;</span>
+        <span class="n">xml1</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">&lt;compiler&gt;</span>
+<span class="s2"> &lt;MPIFC&gt;$</span><span class="si">{SFC}</span><span class="s2">&lt;/MPIFC&gt;</span>
+<span class="s2">&lt;/compiler&gt;&quot;&quot;&quot;</span>
+
+        <span class="n">xml2</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">&lt;compiler MACH=&quot;{}&quot;&gt;&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">test_machine</span>
+            <span class="p">)</span>
+            <span class="o">+</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2"> &lt;SFC&gt;$</span><span class="si">{MPIFC}</span><span class="s2">&lt;/SFC&gt;</span>
+<span class="s2"> &lt;MPIFC&gt;mpif90&lt;/MPIFC&gt;</span>
+<span class="s2">&lt;/compiler&gt;&quot;&quot;&quot;</span>
+        <span class="p">)</span>
+
+        <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xml_to_tester</span><span class="p">(</span><span class="n">xml1</span> <span class="o">+</span> <span class="n">xml2</span><span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span><span class="s2">&quot;SFC&quot;</span><span class="p">,</span> <span class="s2">&quot;mpif90&quot;</span><span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span><span class="s2">&quot;MPIFC&quot;</span><span class="p">,</span> <span class="s2">&quot;mpif90&quot;</span><span class="p">)</span>
+
+        <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xml_to_tester</span><span class="p">(</span><span class="n">xml2</span> <span class="o">+</span> <span class="n">xml1</span><span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span><span class="s2">&quot;SFC&quot;</span><span class="p">,</span> <span class="s2">&quot;mpif90&quot;</span><span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assert_variable_equals</span><span class="p">(</span><span class="s2">&quot;MPIFC&quot;</span><span class="p">,</span> <span class="s2">&quot;mpif90&quot;</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+     
+<script>var version_json_loc = "../../../../../versions.json";</script>
+
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/pop_ver.js"></script>
+    
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

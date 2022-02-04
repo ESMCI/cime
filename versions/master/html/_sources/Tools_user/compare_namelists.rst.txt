@@ -2,7 +2,7 @@
 .. _compare_namelists:
 
 ####################################################
-compare_namelists 
+compare_namelists
 ####################################################
 
 **compare_namelists** is a script in CIMEROOT/scripts/Tools.

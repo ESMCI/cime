@@ -30,6 +30,10 @@
   
 
   
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
 
   
         <link rel="index" title="Index"
@@ -190,8 +194,8 @@
 <span class="kn">import</span> <span class="nn">six_additions</span>
 <span class="kn">from</span> <span class="nn">CIME</span> <span class="kn">import</span> <span class="n">test_status</span>
 
-<div class="viewcode-block" id="CustomAssertionsTestStatus"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.custom_assertions_test_status.CustomAssertionsTestStatus">[docs]</a><span class="k">class</span> <span class="nc">CustomAssertionsTestStatus</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
 
+<div class="viewcode-block" id="CustomAssertionsTestStatus"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.custom_assertions_test_status.CustomAssertionsTestStatus">[docs]</a><span class="k">class</span> <span class="nc">CustomAssertionsTestStatus</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
 <div class="viewcode-block" id="CustomAssertionsTestStatus.assert_status_of_phase"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.custom_assertions_test_status.CustomAssertionsTestStatus.assert_status_of_phase">[docs]</a>    <span class="k">def</span> <span class="nf">assert_status_of_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">test_name</span><span class="p">,</span> <span class="n">xfail</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Asserts that &#39;output&#39; contains a line showing the given</span>
 <span class="sd">        status for the given phase for the given test_name.</span>
@@ -203,16 +207,21 @@
 <span class="sd">        - &#39;expected&#39;: After the phase, the line should contain &#39;(EXPECTED FAILURE)&#39;</span>
 <span class="sd">        - &#39;unexpected&#39;: After the phase, the line should contain &#39;(UNEXPECTED&#39;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">expected</span> <span class="o">=</span> <span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^ *</span><span class="si">{}</span><span class="s1"> +&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">status</span><span class="p">))</span> <span class="o">+</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_test_name_and_phase_regex</span><span class="p">(</span><span class="n">test_name</span><span class="p">,</span> <span class="n">phase</span><span class="p">))</span>
+        <span class="n">expected</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;^ *</span><span class="si">{}</span><span class="s2"> +&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">status</span><span class="p">)</span>
+        <span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_test_name_and_phase_regex</span><span class="p">(</span><span class="n">test_name</span><span class="p">,</span> <span class="n">phase</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">xfail</span> <span class="o">==</span> <span class="s1">&#39;no&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">xfail</span> <span class="o">==</span> <span class="s2">&quot;no&quot;</span><span class="p">:</span>
             <span class="c1"># There should be no other text after the testname and phase regex</span>
-            <span class="n">expected</span> <span class="o">+=</span> <span class="sa">r</span><span class="s1">&#39; *$&#39;</span>
-        <span class="k">elif</span> <span class="n">xfail</span> <span class="o">==</span> <span class="s1">&#39;expected&#39;</span><span class="p">:</span>
-            <span class="n">expected</span> <span class="o">+=</span> <span class="sa">r</span><span class="s1">&#39; *</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">test_status</span><span class="o">.</span><span class="n">TEST_EXPECTED_FAILURE_COMMENT</span><span class="p">))</span>
-        <span class="k">elif</span> <span class="n">xfail</span> <span class="o">==</span> <span class="s1">&#39;unexpected&#39;</span><span class="p">:</span>
-            <span class="n">expected</span> <span class="o">+=</span> <span class="sa">r</span><span class="s1">&#39; *</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">test_status</span><span class="o">.</span><span class="n">TEST_UNEXPECTED_FAILURE_COMMENT_START</span><span class="p">))</span>
+            <span class="n">expected</span> <span class="o">+=</span> <span class="sa">r</span><span class="s2">&quot; *$&quot;</span>
+        <span class="k">elif</span> <span class="n">xfail</span> <span class="o">==</span> <span class="s2">&quot;expected&quot;</span><span class="p">:</span>
+            <span class="n">expected</span> <span class="o">+=</span> <span class="sa">r</span><span class="s2">&quot; *</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">test_status</span><span class="o">.</span><span class="n">TEST_EXPECTED_FAILURE_COMMENT</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">xfail</span> <span class="o">==</span> <span class="s2">&quot;unexpected&quot;</span><span class="p">:</span>
+            <span class="n">expected</span> <span class="o">+=</span> <span class="sa">r</span><span class="s2">&quot; *</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">test_status</span><span class="o">.</span><span class="n">TEST_UNEXPECTED_FAILURE_COMMENT_START</span><span class="p">)</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">expect</span><span class="p">(</span><span class="n">xfail</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Unhandled value of xfail argument&quot;</span><span class="p">)</span>
 
@@ -222,9 +231,10 @@
 <div class="viewcode-block" id="CustomAssertionsTestStatus.assert_phase_absent"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.custom_assertions_test_status.CustomAssertionsTestStatus.assert_phase_absent">[docs]</a>    <span class="k">def</span> <span class="nf">assert_phase_absent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">test_name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Asserts that &#39;output&#39; does not contain a status line for the</span>
 <span class="sd">        given phase and test_name&quot;&quot;&quot;</span>
-        <span class="n">expected</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^.* +&#39;</span> <span class="o">+</span>
-                              <span class="bp">self</span><span class="o">.</span><span class="n">_test_name_and_phase_regex</span><span class="p">(</span><span class="n">test_name</span><span class="p">,</span> <span class="n">phase</span><span class="p">),</span>
-                              <span class="n">flags</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">MULTILINE</span><span class="p">)</span>
+        <span class="n">expected</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+            <span class="sa">r</span><span class="s2">&quot;^.* +&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_test_name_and_phase_regex</span><span class="p">(</span><span class="n">test_name</span><span class="p">,</span> <span class="n">phase</span><span class="p">),</span>
+            <span class="n">flags</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">MULTILINE</span><span class="p">,</span>
+        <span class="p">)</span>
 
         <span class="n">six_additions</span><span class="o">.</span><span class="n">assertNotRegex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">expected</span><span class="p">)</span></div>
 
@@ -238,16 +248,22 @@
                 <span class="n">status</span> <span class="o">=</span> <span class="n">test_status</span><span class="o">.</span><span class="n">TEST_FAIL_STATUS</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">status</span> <span class="o">=</span> <span class="n">test_status</span><span class="o">.</span><span class="n">TEST_PASS_STATUS</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">assert_status_of_phase</span><span class="p">(</span><span class="n">output</span><span class="o">=</span><span class="n">output</span><span class="p">,</span>
-                                        <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="p">,</span>
-                                        <span class="n">phase</span><span class="o">=</span><span class="n">phase</span><span class="p">,</span>
-                                        <span class="n">test_name</span><span class="o">=</span><span class="n">test_name</span><span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assert_status_of_phase</span><span class="p">(</span>
+                <span class="n">output</span><span class="o">=</span><span class="n">output</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="n">phase</span><span class="p">,</span> <span class="n">test_name</span><span class="o">=</span><span class="n">test_name</span>
+            <span class="p">)</span></div>
 
-<div class="viewcode-block" id="CustomAssertionsTestStatus.assert_num_expected_unexpected_fails"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.custom_assertions_test_status.CustomAssertionsTestStatus.assert_num_expected_unexpected_fails">[docs]</a>    <span class="k">def</span> <span class="nf">assert_num_expected_unexpected_fails</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">num_expected</span><span class="p">,</span> <span class="n">num_unexpected</span><span class="p">):</span>
+<div class="viewcode-block" id="CustomAssertionsTestStatus.assert_num_expected_unexpected_fails"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.custom_assertions_test_status.CustomAssertionsTestStatus.assert_num_expected_unexpected_fails">[docs]</a>    <span class="k">def</span> <span class="nf">assert_num_expected_unexpected_fails</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">num_expected</span><span class="p">,</span> <span class="n">num_unexpected</span>
+    <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Asserts that the number of occurrences of expected and unexpected fails in</span>
 <span class="sd">        &#39;output&#39; matches the given numbers&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">test_status</span><span class="o">.</span><span class="n">TEST_EXPECTED_FAILURE_COMMENT</span><span class="p">),</span> <span class="n">num_expected</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">test_status</span><span class="o">.</span><span class="n">TEST_UNEXPECTED_FAILURE_COMMENT_START</span><span class="p">),</span> <span class="n">num_unexpected</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="n">output</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">test_status</span><span class="o">.</span><span class="n">TEST_EXPECTED_FAILURE_COMMENT</span><span class="p">),</span> <span class="n">num_expected</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="n">output</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">test_status</span><span class="o">.</span><span class="n">TEST_UNEXPECTED_FAILURE_COMMENT_START</span><span class="p">),</span>
+            <span class="n">num_unexpected</span><span class="p">,</span>
+        <span class="p">)</span></div>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_test_name_and_phase_regex</span><span class="p">(</span><span class="n">test_name</span><span class="p">,</span> <span class="n">phase</span><span class="p">):</span>
@@ -259,7 +275,7 @@
         <span class="c1"># changing. By making its regex shared as much as possible with</span>
         <span class="c1"># the regex in assert_status_of_phase, we decrease the chances</span>
         <span class="c1"># of these false passes.</span>
-        <span class="k">return</span> <span class="sa">r</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> +</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">test_name</span><span class="p">),</span> <span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">phase</span><span class="p">))</span></div>
+        <span class="k">return</span> <span class="sa">r</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> +</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">test_name</span><span class="p">),</span> <span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">phase</span><span class="p">))</span></div>
 </pre></div>
 
            </div>
@@ -299,6 +315,7 @@
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/doctools.js"></script>

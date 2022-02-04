@@ -2,7 +2,7 @@
 .. _simple_compare:
 
 ####################################################
-simple_compare 
+simple_compare
 ####################################################
 
 **simple_compare** is a script in CIMEROOT/scripts/Tools.

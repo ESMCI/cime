@@ -5,7 +5,8 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <title>2. CIME Load Balancing Tool &mdash; CIME master documentation</title>
@@ -29,6 +30,10 @@
     <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   
 
+  
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   
 
   
@@ -194,7 +199,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="cime-load-balancing-tool">
+  <section id="cime-load-balancing-tool">
 <span id="load-balancing-tool"></span><h1><span class="section-number">2. </span>CIME Load Balancing Tool<a class="headerlink" href="#cime-load-balancing-tool" title="Permalink to this headline">¶</a></h1>
 <blockquote>
 <div><p>Originally Developed by Sheri Mickelson <a class="reference external" href="mailto:mickelso&#37;&#52;&#48;ucar&#46;edu">mickelso<span>&#64;</span>ucar<span>&#46;</span>edu</a>
@@ -229,7 +234,7 @@ steps:</p>
 <li><p>…  wait for jobs to run …</p></li>
 <li><p>$ ./load_balancing_solve.py –total-tasks &lt;N&gt; –blocksize 8</p></li>
 </ol>
-<div class="section" id="running-simulations-using-load-balancing-submit-py">
+<section id="running-simulations-using-load-balancing-submit-py">
 <h2><span class="section-number">2.1. </span>Running simulations using load_balancing_submit.py<a class="headerlink" href="#running-simulations-using-load-balancing-submit-py" title="Permalink to this headline">¶</a></h2>
 <p>Simulations can be run on a given system by executing the load_balancing_tool.py
 script, located in cime/tools/load_balancing_tool/load_balancing_tool_submit.py.
@@ -277,7 +282,7 @@ directly forwarded to the passed:</p>
 <span class="o">--</span><span class="n">extra</span><span class="o">-</span><span class="n">options</span><span class="o">-</span><span class="n">file</span>
      <span class="n">Add</span> <span class="n">extra</span> <span class="n">xml</span> <span class="n">options</span> <span class="n">to</span> <span class="n">the</span> <span class="n">timing</span> <span class="n">runs</span> <span class="kn">from</span> <span class="nn">a</span> <span class="n">user</span> <span class="n">file</span><span class="p">,</span>
      <span class="n">these</span> <span class="n">options</span> <span class="n">will</span> <span class="n">be</span> <span class="nb">set</span> <span class="n">after</span> <span class="n">create_newcase</span> <span class="ow">and</span> <span class="n">before</span>
-     <span class="n">case</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span>
+     <span class="k">case</span><span class="o">.</span><span class="n">setup</span><span class="o">.</span>
      <span class="n">This</span> <span class="n">text</span> <span class="n">file</span> <span class="n">should</span> <span class="n">have</span> <span class="n">one</span> <span class="n">variable</span> <span class="n">per</span> <span class="n">line</span> <span class="ow">in</span>
      <span class="n">the</span> <span class="nb">format</span> <span class="o">&lt;</span><span class="n">var</span><span class="o">&gt;=&lt;</span><span class="n">value</span><span class="o">&gt;.</span> <span class="n">Example</span><span class="p">:</span>
 
@@ -286,8 +291,8 @@ directly forwarded to the passed:</p>
      <span class="n">DOUT_S</span><span class="o">=</span><span class="n">FALSE</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="optimizing-the-layout-using-load-balacing-solve-py">
+</section>
+<section id="optimizing-the-layout-using-load-balacing-solve-py">
 <h2><span class="section-number">2.2. </span>Optimizing the layout using load_balacing_solve.py<a class="headerlink" href="#optimizing-the-layout-using-load-balacing-solve-py" title="Permalink to this headline">¶</a></h2>
 <p>Reads timing data created with load_balancing_submit.py (or otherwise,
 see –timing-files option) and solves an mixed integer optimization problem
@@ -349,8 +354,8 @@ all timing data have the same threading structure (i.e. all ATM runs use two thr
     <span class="n">Write</span> <span class="n">the</span> <span class="n">solution</span> <span class="n">PE</span> <span class="n">layout</span> <span class="n">to</span> <span class="n">a</span> <span class="n">potential</span> <span class="n">pe</span> <span class="n">xml</span> <span class="n">file</span><span class="o">.</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="more-about-the-algorithm">
+</section>
+<section id="more-about-the-algorithm">
 <h2><span class="section-number">2.3. </span>More about the algorithm<a class="headerlink" href="#more-about-the-algorithm" title="Permalink to this headline">¶</a></h2>
 <p>Before solving the mixed-integer linear program, a model of the cost vs ntasks
 function is constructed for each component.</p>
@@ -434,8 +439,8 @@ follows from the layout:</p>
 <p>This MILP is solved using the PuLP python interface to the COIN-CBC solver
 <a class="reference external" href="https://pythonhosted.org/PuLP/">https://pythonhosted.org/PuLP/</a>
 <a class="reference external" href="https://www.coin-or.org/Cbc/">https://www.coin-or.org/Cbc/</a></p>
-</div>
-<div class="section" id="extending-the-load-balancing-tool">
+</section>
+<section id="extending-the-load-balancing-tool">
 <h2><span class="section-number">2.4. </span>Extending the Load Balancing Tool<a class="headerlink" href="#extending-the-load-balancing-tool" title="Permalink to this headline">¶</a></h2>
 <p>The file $CIME_DIR/tools/load_balancing_tool/optimize_model.py
 contains a base class OptimizeModel as well as an implementation class
@@ -504,8 +509,8 @@ line argument (see test for atm_lnd)</p></li>
 <li><p>make pull request</p></li>
 </ol>
 </div></blockquote>
-</div>
-<div class="section" id="testing">
+</section>
+<section id="testing">
 <h2><span class="section-number">2.5. </span>Testing<a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></h2>
 <p>To run the provided test suite:</p>
 <blockquote>
@@ -546,8 +551,8 @@ $ ./tests/load_balancing_test.py
 </li>
 </ol>
 </div></blockquote>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
@@ -596,6 +601,7 @@ $ ./tests/load_balancing_test.py
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>

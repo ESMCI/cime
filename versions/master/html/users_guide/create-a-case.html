@@ -5,7 +5,8 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <title>2. Creating a Case &mdash; CIME master documentation</title>
@@ -29,6 +30,10 @@
     <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   
 
+  
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   
 
   
@@ -199,7 +204,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="creating-a-case">
+  <section id="creating-a-case">
 <span id="id1"></span><h1><span class="section-number">2. </span>Creating a Case<a class="headerlink" href="#creating-a-case" title="Permalink to this headline">¶</a></h1>
 <p>This and following sections provide more detail about the basic commands of the CIME Case Control System: <strong>create_newcase</strong>,
 <strong>case.setup</strong>, <strong>case.build</strong> and <strong>case.submit</strong>. On a supported system, you can configure, build and run many complex
@@ -209,7 +214,7 @@ climate model configurations with only these 4 commands.</p>
 </pre></div>
 </div>
 <p>If you are not on an out-of-the box CIME-supported platform, you will need to <a class="reference internal" href="porting-cime.html#porting"><span class="std std-ref">port</span></a> CIME to your system before proceeding.</p>
-<div class="section" id="calling-create-newcase">
+<section id="calling-create-newcase">
 <h2><span class="section-number">2.1. </span>Calling <strong>create_newcase</strong><a class="headerlink" href="#calling-create-newcase" title="Permalink to this headline">¶</a></h2>
 <p>The first step in creating a CIME-based experiment is to use <a class="reference external" href="../Tools_user/create_newcase.html">create_newcase</a>.</p>
 <p>See the options for <a class="reference external" href="../Tools_user/create_newcase.html">create_newcase</a> in the  <strong>help</strong> text.:</p>
@@ -236,8 +241,8 @@ metadata that will be used in filenames, internal metadata and directory paths. 
 the directory where you execute create_newcase. If <code class="docutils literal notranslate"><span class="pre">CASENAME</span></code> is a relative or absolute
 path, <code class="docutils literal notranslate"><span class="pre">CASEROOT</span></code> is created there, and the name of the case will be the last component
 of the path.</p>
-</div>
-<div class="section" id="results-of-calling-create-newcase">
+</section>
+<section id="results-of-calling-create-newcase">
 <h2><span class="section-number">2.2. </span>Results of calling <strong>create_newcase</strong><a class="headerlink" href="#results-of-calling-create-newcase" title="Permalink to this headline">¶</a></h2>
 <p>Suppose <strong>create_newcase</strong> was called as follows.
 Here, $CIMEROOT is the full pathname of the root directory of the CIME distribution:</p>
@@ -399,8 +404,8 @@ This is a good place to keep track of runtime problems and changes.”</p>
 </dl>
 </li>
 </ul>
-</div>
-<div class="section" id="locked-files-in-your-case-directory">
+</section>
+<section id="locked-files-in-your-case-directory">
 <h2><span class="section-number">2.3. </span>Locked files in your case directory<a class="headerlink" href="#locked-files-in-your-case-directory" title="Permalink to this headline">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">$CASEROOT</span></code> xml files are organized so that variables can be
 locked at certain points after they have been resolved (used) in other
@@ -429,8 +434,8 @@ you call <a class="reference external" href="../Tools_user/case.setup.html">case
 <li><p>Variables in <strong>env_run.xml</strong>, <strong>env_batch.xml</strong> and <strong>env_archive.xml</strong> are never locked, and most can be changed at any time.</p></li>
 <li><p>There are some exceptions in the <strong>env_batch.xml</strong> file.</p></li>
 </ul>
-</div>
-<div class="section" id="adding-a-user-mods-dir-argument-to-create-newcase">
+</section>
+<section id="adding-a-user-mods-dir-argument-to-create-newcase">
 <h2><span class="section-number">2.4. </span>Adding a –user-mods-dir argument to <strong>create_newcase</strong><a class="headerlink" href="#adding-a-user-mods-dir-argument-to-create-newcase" title="Permalink to this headline">¶</a></h2>
 <p>A user may want to customize a target case with a combination of
 <code class="docutils literal notranslate"><span class="pre">user_nl_xxx</span></code> file modifications and/or <code class="docutils literal notranslate"><span class="pre">SourceMods</span></code> for some
@@ -449,8 +454,8 @@ disk with a set of changes that will be applied to each case.</p>
 <p>When the user calls <strong>create_newcase</strong> with the <code class="docutils literal notranslate"><span class="pre">--user-mods-dir</span></code> pointing to the
 full pathname of the directory containing these changes, then the <code class="docutils literal notranslate"><span class="pre">CASEROOT</span></code> will be
 created with these changes applied.</p>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
@@ -499,6 +504,7 @@ created with these changes applied.</p>
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>

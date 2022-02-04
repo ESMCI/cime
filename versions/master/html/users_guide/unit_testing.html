@@ -5,7 +5,8 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <title>9. Fortran Unit Testing &mdash; CIME master documentation</title>
@@ -29,6 +30,10 @@
     <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   
 
+  
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   
 
   
@@ -224,11 +229,11 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="fortran-unit-testing">
+  <section id="fortran-unit-testing">
 <span id="unit-testing"></span><h1><span class="section-number">9. </span>Fortran Unit Testing<a class="headerlink" href="#fortran-unit-testing" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="introduction">
+<section id="introduction">
 <h2><span class="section-number">9.1. </span>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="what-is-a-unit-test">
+<section id="what-is-a-unit-test">
 <h3><span class="section-number">9.1.1. </span>What is a unit test?<a class="headerlink" href="#what-is-a-unit-test" title="Permalink to this headline">¶</a></h3>
 <p>A unit test is a fast, self-verifying test of a small piece of code.
 A single unit test typically covers 10s to 100s of lines of code; a single function or small module, for example.
@@ -241,8 +246,8 @@ It typically runs in milliseconds and produces a simple pass/fail result.</p>
 <li><p>Provide executable documentation of the intended behavior of a piece of code.</p></li>
 <li><p>Support development on your desktop machine.</p></li>
 </ul>
-</div>
-<div class="section" id="overview-of-unit-test-support-in-cime">
+</section>
+<section id="overview-of-unit-test-support-in-cime">
 <h3><span class="section-number">9.1.2. </span>Overview of unit test support in CIME<a class="headerlink" href="#overview-of-unit-test-support-in-cime" title="Permalink to this headline">¶</a></h3>
 <p>CIME comes with a set of tools to support building and running unit tests.
 These consist of:</p>
@@ -251,9 +256,9 @@ These consist of:</p>
 <li><p>A Python script that provides a simple front end for the CMake-based tests.</p></li>
 </ol>
 <p>The Fortran unit tests use <a class="reference external" href="https://github.com/Goddard-Fortran-Ecosystem/pFUnit">pFUnit</a>, which is a Fortran testing framework that follows conventions of other xUnit frameworks.</p>
-</div>
-</div>
-<div class="section" id="running-cime-s-fortran-unit-tests">
+</section>
+</section>
+<section id="running-cime-s-fortran-unit-tests">
 <span id="running-unit-tests"></span><h2><span class="section-number">9.2. </span>Running CIME’s Fortran unit tests<a class="headerlink" href="#running-cime-s-fortran-unit-tests" title="Permalink to this headline">¶</a></h2>
 <p>These instructions assume that you are using a machine that already has pFUnit installed, along with the necessary support in CIME.
 If that is not the case, see <a class="reference internal" href="#adding-machine-support"><span class="std std-ref">How to add unit testing support on your machine</span></a>.</p>
@@ -292,8 +297,8 @@ Running CTest tests for __command_line_test__/__command_line_test__.
 </pre></div>
 </div>
 <p>These unit tests are run automatically as part of <strong>scripts_regression_tests</strong> on machines that have a serial build of pFUnit available for the default compiler.</p>
-</div>
-<div class="section" id="how-to-add-unit-testing-support-on-your-machine">
+</section>
+<section id="how-to-add-unit-testing-support-on-your-machine">
 <span id="adding-machine-support"></span><h2><span class="section-number">9.3. </span>How to add unit testing support on your machine<a class="headerlink" href="#how-to-add-unit-testing-support-on-your-machine" title="Permalink to this headline">¶</a></h2>
 <p>The following instructions assume that you have ported CIME to your
 machine by following the instructions in
@@ -306,7 +311,7 @@ That is the default that <strong>run_tests.py</strong> and that is required for 
 <p>Optionally, you can also provide pFUnit builds with other supported compilers on your machine.
 You can also provide additional pFUnit builds with other combinations of MPI and OpenMP on or off.
 At this time, however, no unit tests require parallel support so no benefit is gained by providing MPI-enabled builds.</p>
-<div class="section" id="building-pfunit">
+<section id="building-pfunit">
 <h3><span class="section-number">9.3.1. </span>Building pFUnit<a class="headerlink" href="#building-pfunit" title="Permalink to this headline">¶</a></h3>
 <p>For a serial build of pFUnit, follow these instructions:</p>
 <ol class="arabic">
@@ -355,8 +360,8 @@ variables, e.g., with:</p>
 </ol>
 <p>You can repeat this process with different compiler environments and/or different choices of <code class="docutils literal notranslate"><span class="pre">-DMPI</span></code> and <code class="docutils literal notranslate"><span class="pre">-DOPENMP</span></code> in the cmake step. (Each of them can have the value <code class="docutils literal notranslate"><span class="pre">NO</span></code> or <code class="docutils literal notranslate"><span class="pre">YES</span></code>.)
 Make sure to choose a different installation directory for each build by setting the <code class="docutils literal notranslate"><span class="pre">PFUNIT</span></code> variable differently.</p>
-</div>
-<div class="section" id="adding-to-the-xml-file">
+</section>
+<section id="adding-to-the-xml-file">
 <h3><span class="section-number">9.3.2. </span>Adding to the xml file<a class="headerlink" href="#adding-to-the-xml-file" title="Permalink to this headline">¶</a></h3>
 <p>After you build pFUnit, tell CIME about your build or builds.
 To do this, specify the appropriate path(s) using the <code class="docutils literal notranslate"><span class="pre">PFUNIT_PATH</span></code> element in ** <em>MACH*_*COMPILER</em>.cmake** file.</p>
@@ -367,17 +372,17 @@ To do this, specify the appropriate path(s) using the <code class="docutils lite
 </ul>
 <p>The <code class="docutils literal notranslate"><span class="pre">compile_threaded</span></code> attribute should be either <code class="docutils literal notranslate"><span class="pre">TRUE</span></code> or <code class="docutils literal notranslate"><span class="pre">FALSE</span></code> depending on the value of <code class="docutils literal notranslate"><span class="pre">-DOPENMP</span></code>.</p>
 <p>Once you have specified the path for your build(s), you should be able to run the unit tests by following the instructions in <a class="reference internal" href="#running-unit-tests"><span class="std std-ref">Running CIME’s Fortran unit tests</span></a>.</p>
-</div>
-</div>
-<div class="section" id="how-to-write-a-new-unit-test">
+</section>
+</section>
+<section id="how-to-write-a-new-unit-test">
 <h2><span class="section-number">9.4. </span>How to write a new unit test<a class="headerlink" href="#how-to-write-a-new-unit-test" title="Permalink to this headline">¶</a></h2>
 <div class="admonition-todo admonition" id="id1">
 <p class="admonition-title">Todo</p>
 <p>Need to write this section. This will draw on some of the information in sections 3 and 4 of <a class="reference external" href="https://github.com/NCAR/cesm_unit_test_tutorial">https://github.com/NCAR/cesm_unit_test_tutorial</a> (though without the clm and cam stuff).</p>
 </div>
 <p>It should also introduce the role of .pf files, which are referenced several paragraphs later as if already explained.</p>
-</div>
-<div class="section" id="general-guidelines-for-writing-unit-tests">
+</section>
+<section id="general-guidelines-for-writing-unit-tests">
 <h2><span class="section-number">9.5. </span>General guidelines for writing unit tests<a class="headerlink" href="#general-guidelines-for-writing-unit-tests" title="Permalink to this headline">¶</a></h2>
 <p>Unit tests typically test a small piece of code, on the order of 10-100 lines, as in a single function or small class.</p>
 <p>Good unit tests are <strong>“FIRST”</strong>:
@@ -409,10 +414,10 @@ subroutines in the <strong>.pf</strong> file, which your tests can call. This ai
 and maintainability of your tests. pFUnit knows which subroutines are tests and which are
 “helper” routines because of the <code class="docutils literal notranslate"><span class="pre">&#64;Test</span></code> directives: You only add a <code class="docutils literal notranslate"><span class="pre">&#64;Test</span></code> directive
 for your tests, not for your helper routines.</p>
-</div>
-<div class="section" id="more-details-on-writing-pfunit-based-unit-tests">
+</section>
+<section id="more-details-on-writing-pfunit-based-unit-tests">
 <h2><span class="section-number">9.6. </span>More details on writing pFUnit-based unit tests<a class="headerlink" href="#more-details-on-writing-pfunit-based-unit-tests" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="assertion-methods">
+<section id="assertion-methods">
 <h3><span class="section-number">9.6.1. </span>Assertion methods<a class="headerlink" href="#assertion-methods" title="Permalink to this headline">¶</a></h3>
 <p>pFUnit provides many assertion methods that you can use in the Verify step.
 Here are some of the most useful:</p>
@@ -460,8 +465,8 @@ tolerance for real-valued comparisons.</p>
 <p>All of the assertion methods also accept an optional <code class="docutils literal notranslate"><span class="pre">message</span></code> argument, which prints
 a string if the assertion fails. If no message is provided, you will be pointed to the
 file and line number of the failed assertion.</p>
-</div>
-<div class="section" id="defining-a-test-class-in-order-to-define-setup-and-teardown-methods">
+</section>
+<section id="defining-a-test-class-in-order-to-define-setup-and-teardown-methods">
 <h3><span class="section-number">9.6.2. </span>Defining a test class in order to define setUp and tearDown methods<a class="headerlink" href="#defining-a-test-class-in-order-to-define-setup-and-teardown-methods" title="Permalink to this headline">¶</a></h3>
 <p>As noted in the comments in <strong>test_circle.pf</strong>, defining a test class is optional.
 However, defining a minimal test class as shown here with <code class="docutils literal notranslate"><span class="pre">TestCircle</span></code> allows you
@@ -477,13 +482,13 @@ end type TestCircle
 <p>If you define this test class, you also need to:</p>
 <ul>
 <li><p>Define <em>setUp</em> and <em>tearDown</em> subroutines. These can start out empty:</p>
-<div class="highlight-Fortran notranslate"><div class="highlight"><pre><span></span><span class="k">subroutine </span><span class="n">setUp</span><span class="p">(</span><span class="n">this</span><span class="p">)</span>
-  <span class="k">class</span><span class="p">(</span><span class="n">TestCircle</span><span class="p">),</span> <span class="k">intent</span><span class="p">(</span><span class="n">inout</span><span class="p">)</span> <span class="kd">::</span> <span class="n">this</span>
-<span class="k">end subroutine </span><span class="n">setUp</span>
+<div class="highlight-Fortran notranslate"><div class="highlight"><pre><span></span><span class="k">subroutine </span><span class="n">setUp</span><span class="p">(</span><span class="n">this</span><span class="p">)</span><span class="w"></span>
+<span class="w">  </span><span class="k">class</span><span class="p">(</span><span class="n">TestCircle</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">inout</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">this</span><span class="w"></span>
+<span class="k">end subroutine </span><span class="n">setUp</span><span class="w"></span>
 
-<span class="k">subroutine </span><span class="n">tearDown</span><span class="p">(</span><span class="n">this</span><span class="p">)</span>
-  <span class="k">class</span><span class="p">(</span><span class="n">TestCircle</span><span class="p">),</span> <span class="k">intent</span><span class="p">(</span><span class="n">inout</span><span class="p">)</span> <span class="kd">::</span> <span class="n">this</span>
-<span class="k">end subroutine </span><span class="n">tearDown</span>
+<span class="k">subroutine </span><span class="n">tearDown</span><span class="p">(</span><span class="n">this</span><span class="p">)</span><span class="w"></span>
+<span class="w">  </span><span class="k">class</span><span class="p">(</span><span class="n">TestCircle</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">inout</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">this</span><span class="w"></span>
+<span class="k">end subroutine </span><span class="n">tearDown</span><span class="w"></span>
 </pre></div>
 </div>
 </li>
@@ -501,7 +506,7 @@ you want the tearDown method to deallocate a variable, the variable cannot be lo
 to your test subroutine. Instead, you make the variable a member of the class, so
 that the tearDown method can access it.</p>
 <p>Here is an example. Say you have this variable in your test class:</p>
-<div class="highlight-Fortran notranslate"><div class="highlight"><pre><span></span><span class="kt">real</span><span class="p">(</span><span class="n">r8</span><span class="p">),</span> <span class="k">pointer</span> <span class="kd">::</span> <span class="n">somedata</span><span class="p">(:)</span>
+<div class="highlight-Fortran notranslate"><div class="highlight"><pre><span></span><span class="kt">real</span><span class="p">(</span><span class="n">r8</span><span class="p">),</span><span class="w"> </span><span class="k">pointer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">somedata</span><span class="p">(:)</span><span class="w"></span>
 </pre></div>
 </div>
 <p>The setUp method can create <code class="docutils literal notranslate"><span class="pre">somedata</span></code> if it needs to be the same
@@ -509,18 +514,18 @@ for every test.</p>
 <p>Alternatively, it can be created in each test routine that needs it if it
 differs from test to test. (Some tests don’t need it at all.) In that situation,
 create it like this:</p>
-<div class="highlight-Fortran notranslate"><div class="highlight"><pre><span></span><span class="k">allocate</span><span class="p">(</span><span class="n">this</span><span class="p">%</span><span class="n">somedata</span><span class="p">(</span><span class="mi">5</span><span class="p">))</span>
-<span class="n">this</span><span class="p">%</span><span class="n">somedata</span><span class="p">(:)</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">]</span>
+<div class="highlight-Fortran notranslate"><div class="highlight"><pre><span></span><span class="k">allocate</span><span class="p">(</span><span class="n">this</span><span class="p">%</span><span class="n">somedata</span><span class="p">(</span><span class="mi">5</span><span class="p">))</span><span class="w"></span>
+<span class="n">this</span><span class="p">%</span><span class="n">somedata</span><span class="p">(:)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">]</span><span class="w"></span>
 </pre></div>
 </div>
 <p>Your tearDown method then can have code like this:</p>
-<div class="highlight-Fortran notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="p">(</span><span class="nb">associated</span><span class="p">(</span><span class="n">this</span><span class="p">%</span><span class="n">somedata</span><span class="p">))</span> <span class="k">then</span>
-<span class="k">  deallocate</span><span class="p">(</span><span class="n">this</span><span class="p">%</span><span class="n">somedata</span><span class="p">)</span>
-<span class="k">end if</span>
+<div class="highlight-Fortran notranslate"><div class="highlight"><pre><span></span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">associated</span><span class="p">(</span><span class="n">this</span><span class="p">%</span><span class="n">somedata</span><span class="p">))</span><span class="w"> </span><span class="k">then</span>
+<span class="k">  deallocate</span><span class="p">(</span><span class="n">this</span><span class="p">%</span><span class="n">somedata</span><span class="p">)</span><span class="w"></span>
+<span class="k">end if</span><span class="w"></span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="more-on-test-teardown">
+</section>
+<section id="more-on-test-teardown">
 <h3><span class="section-number">9.6.3. </span>More on test teardown<a class="headerlink" href="#more-on-test-teardown" title="Permalink to this headline">¶</a></h3>
 <p>As stated in <a class="reference internal" href="#defining-a-test-class-in-order-to-define-setup-and-teardown-methods">Defining a test class in order to define setUp and tearDown methods</a>,
 code in the tearDown method is executed after each test, often to do cleanup operations.</p>
@@ -551,11 +556,11 @@ variables.</p>
 indirectly by a routine you are testing. If your test has allocated or modified
 any global variables, it is important to reset them to their initial state in the
 teardown portion of the test.</p>
-</div>
-</div>
-<div class="section" id="finding-more-documentation-and-examples">
+</section>
+</section>
+<section id="finding-more-documentation-and-examples">
 <h2><span class="section-number">9.7. </span>Finding more documentation and examples<a class="headerlink" href="#finding-more-documentation-and-examples" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="more-detailed-examples-in-cime">
+<section id="more-detailed-examples-in-cime">
 <h3><span class="section-number">9.7.1. </span>More detailed examples in CIME<a class="headerlink" href="#more-detailed-examples-in-cime" title="Permalink to this headline">¶</a></h3>
 <p>There are many examples of unit tests in CIME, some simple and some quite complex.
 You can find them by looking for files with the “.pf” extension:</p>
@@ -564,8 +569,8 @@ You can find them by looking for files with the “.pf” extension:</p>
 </div>
 <p>You can also see examples of the unit test build scripts by viewing the
 <strong>CMakeLists.txt</strong> files throughout the source tree.</p>
-</div>
-<div class="section" id="other-pfunit-documentation-sources">
+</section>
+<section id="other-pfunit-documentation-sources">
 <h3><span class="section-number">9.7.2. </span>Other pFUnit documentation sources<a class="headerlink" href="#other-pfunit-documentation-sources" title="Permalink to this headline">¶</a></h3>
 <p>Extensive documentation and examples are included in the following when you obtain
 pFUnit from <a class="reference external" href="https://github.com/Goddard-Fortran-Ecosystem/pFUnit">https://github.com/Goddard-Fortran-Ecosystem/pFUnit</a>:</p>
@@ -577,17 +582,17 @@ pFUnit from <a class="reference external" href="https://github.com/Goddard-Fortr
 <p>The tests are tests of the pFUnit code itself, written in pFUnit. They demonstrate
 many uses of pFUnit features. Other documentation includes additional assertion
 methods that are available.</p>
-</div>
-<div class="section" id="documentation-of-the-unit-test-build-system">
+</section>
+<section id="documentation-of-the-unit-test-build-system">
 <h3><span class="section-number">9.7.3. </span>Documentation of the unit test build system<a class="headerlink" href="#documentation-of-the-unit-test-build-system" title="Permalink to this headline">¶</a></h3>
 <p>The CMake build infrastructure is in <strong>$CIMEROOT/src/externals/CMake</strong>.</p>
 <p>The infrastructure for building and running tests with <strong>run_tests.py</strong> is in
 <strong>$CIMEROOT/scripts/fortran_unit_testing</strong>. That directory also contains general
 documentation about how to use the CIME unit test infrastructure (in the
 <strong>README</strong> file) and examples (in the <strong>Examples</strong> directory).</p>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
            </div>
@@ -636,6 +641,7 @@ documentation about how to use the CIME unit test infrastructure (in the
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>

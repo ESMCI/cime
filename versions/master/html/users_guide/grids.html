@@ -5,7 +5,8 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <title>3. Model grids &mdash; CIME master documentation</title>
@@ -29,6 +30,10 @@
     <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   
 
+  
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   
 
   
@@ -201,7 +206,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="model-grids">
+  <section id="model-grids">
 <span id="grids"></span><h1><span class="section-number">3. </span>Model grids<a class="headerlink" href="#model-grids" title="Permalink to this headline">¶</a></h1>
 <p>CIME looks at the xml node <code class="docutils literal notranslate"><span class="pre">GRIDS_SPEC_FILE</span></code> in  <strong>$CIMEROOT/config/$models/config_files.xml</strong> file to identify supported out-of-the-box model grids for the target model.</p>
 <p>The node has the following contents:</p>
@@ -215,7 +220,7 @@
 &lt;/entry&gt;
 </pre></div>
 </div>
-<div class="section" id="grid-longname">
+<section id="grid-longname">
 <h2><span class="section-number">3.1. </span>Grid longname<a class="headerlink" href="#grid-longname" title="Permalink to this headline">¶</a></h2>
 <p>CIME model grids generally are associated with a specific combination of atmosphere, land, land-ice, river-runoff and ocean/ice grids. The naming convention for these grids uses only atmosphere, land, and ocean/ice grid specifications.</p>
 <p>A model grid longname has the form:</p>
@@ -257,8 +262,8 @@ The alias for this grid is ne30_g16.</p>
 <li><p>“oRSS[x]to[y]” is an MPAS grid with grid spacing from x to y kilometers.</p></li>
 <li><p>“oEC[x]to[y]” is an MPAS grid with grid spacing from x to y kilometers.</p></li>
 </ul>
-</div>
-<div class="section" id="adding-grids">
+</section>
+<section id="adding-grids">
 <span id="adding-cases"></span><h2><span class="section-number">3.2. </span>Adding grids<a class="headerlink" href="#adding-grids" title="Permalink to this headline">¶</a></h2>
 <dl id="adding-a-grid">
 <dt>CIME supports numerous out-of-the box model resolutions. To see the grids that are supported, call <a class="reference external" href="../Tools_user/query_config.html">query_config</a> as shown below.</dt><dd><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">query_config</span> <span class="o">--</span><span class="n">grids</span>
@@ -274,7 +279,7 @@ The steps for adding a new component grid to the model system follow. This proce
 <li><p>The first step is to generate SCRIP grid files for the atmosphere, land, ocean, land-ice, river and wave component grids that will comprise your model grid.
 If you are introducing just one new grid, you can leverage SCRIP grid files that are already in place for the other components.
 There is no supported functionality for creating the SCRIP format file.</p></li>
-<li><p>Build the <strong>check_map</strong> utility by following the instructions in <strong>$CCSMROOT/mapping/check_maps/INSTALL</strong>. Also confirm that the ESMF toolkit is installed on your machine.</p>
+<li><p>Build the <strong>check_map</strong> utility by following the instructions in <strong>$CIMEROOT/tools/mapping/check_maps/INSTALL</strong>. Also confirm that the ESMF toolkit is installed on your machine.</p>
 <p>When you add new user-defined grid files, you also need to generate a set of mapping files so the coupler can send data from a component on one grid to a component on another grid.
 There is an ESMF tool that tests the mapping file by comparing a mapping of a smooth function to its true value on the destination grid.
 We have tweaked this utility to test a suite of smooth functions, as well as ensure conservation (when the map is conservative).
@@ -293,11 +298,11 @@ Before generating mapping functions it is <em>highly recommended</em> that you b
 </ol>
 <blockquote>
 <div><p>Using the SCRIP grid files from Step 1, generate a set of conservative (area-averaged) and non-conservative (patch and bilinear) mapping files.</p>
-<p>You can do this by calling <strong>gen_cesm_maps.sh</strong> in <code class="docutils literal notranslate"><span class="pre">$CCSMROOT/tools/mapping/gen_mapping_files/</span></code>.
+<p>You can do this by calling <strong>gen_cesm_maps.sh</strong> in <code class="docutils literal notranslate"><span class="pre">$CIMEROOT/tools/mapping/gen_mapping_files/</span></code>.
 This script generates all the mapping files needed except <code class="docutils literal notranslate"><span class="pre">rof</span> <span class="pre">-&gt;</span> <span class="pre">ocn</span></code>, which is discussed below.
 This script uses the ESMF offline weight generation utility, which you must build <em>prior</em> to running <strong>gen_cesm_maps.sh</strong>.</p>
 <dl>
-<dt>The <strong>README</strong> file in the <strong>gen_mapping_files/</strong> directory describes how to run <strong>gen_cesm_maps.sh</strong>. The basic usage is shown here:</dt><dd><div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; cd $CCSMROOT/mapping/gen_mapping_files
+<dt>The <strong>README</strong> file in the <strong>gen_mapping_files/</strong> directory describes how to run <strong>gen_cesm_maps.sh</strong>. The basic usage is shown here:</dt><dd><div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; cd $CIMEROOT/tools/mapping/gen_mapping_files
 &gt; ./gen_cesm_maps.sh \
    --fileocn  &lt;input SCRIP ocn_grid full pathname&gt;  \
    --fileatm  &lt;input SCRIP atm grid full pathname&gt;  \
@@ -331,7 +336,7 @@ If you also omit the runoff grid, then only the 5 atm&lt;-&gt;ocn maps will be g
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>ESMF_RegridWeightGen runs in parallel, and the <code class="docutils literal notranslate"><span class="pre">gen_cesm_maps.sh</span></code> script has been written to run on yellowstone.
-To run on any other machine, you may need to add some environment variables to <code class="docutils literal notranslate"><span class="pre">$CCSMROOT/mapping/gen_mapping_files/gen_ESMF_mapping_file/create_ESMF_map.sh</span></code> – search for hostname to see where to edit the file.</p>
+To run on any other machine, you may need to add some environment variables to <code class="docutils literal notranslate"><span class="pre">$CIMEROOT/tools/mapping/gen_mapping_files/gen_ESMF_mapping_file/create_ESMF_map.sh</span></code> – search for hostname to see where to edit the file.</p>
 </div>
 </dd>
 </dl>
@@ -339,7 +344,7 @@ To run on any other machine, you may need to add some environment variables to <
 <ol class="arabic" start="4">
 <li><p>Generate atmosphere, land and ocean / ice domain files.</p>
 <p>Using the conservative ocean to land and ocean to atmosphere mapping files created in the previous step, you can create domain files for the atmosphere, land, and ocean; these are basically grid files with consistent masks and fractions.
-You make these files by calling <strong>gen_domain</strong> in <strong>$CCSMROOT/mapping/gen_domain_files</strong>.
+You make these files by calling <strong>gen_domain</strong> in <strong>$CIMEROOT/tools/mapping/gen_domain_files</strong>.
 The <strong>INSTALL</strong> file in the <strong>gen_domain_files/</strong> directory describes how to build the <strong>gen_domain</strong> executable. The <strong>README</strong> file in the same directory explains how to use the tool. The basic usage is:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="o">./</span><span class="n">gen_domain</span> <span class="o">-</span><span class="n">m</span> <span class="o">../</span><span class="n">gen_mapping_files</span><span class="o">/</span><span class="n">map_ocnname_TO_lndname_aave</span><span class="o">.</span><span class="n">yymmdd</span><span class="o">.</span><span class="n">nc</span> <span class="o">-</span><span class="n">o</span> <span class="n">ocnname</span> <span class="o">-</span><span class="n">l</span> <span class="n">lndname</span>
 <span class="o">&gt;</span> <span class="o">./</span><span class="n">gen_domain</span> <span class="o">-</span><span class="n">m</span> <span class="o">../</span><span class="n">gen_mapping_files</span><span class="o">/</span><span class="n">map_ocnname_TO_atmname_aave</span><span class="o">.</span><span class="n">yymmdd</span><span class="o">.</span><span class="n">nc</span> <span class="o">-</span><span class="n">o</span> <span class="n">ocnname</span> <span class="o">-</span><span class="n">l</span> <span class="n">atmname</span>
@@ -367,14 +372,14 @@ The process for mapping from the runoff grid to the ocean grid is currently unde
 At this time, if you are running with a new ocean or runoff grid, please contact Michael Levy (mlevy_AT_ucar_DOT_edu) for assistance. If you are running with standard ocean and runoff grids, the mapping file should already exist and you do not need to generate it.</p></li>
 <li><p>CESM specific: If you are adding a new atmosphere grid, this means you are also generating a new land grid, and you will need to create a new CLM surface dataset. (Otherwise you can skip this step).
 You need to first generate mapping files for CLM surface dataset (since this is a non-standard grid).</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>  &gt; cd $CCSMROOT/models/lnd/clm/tools/mkmapdata
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>  &gt; cd $CIMEROOT/../components/clm/tools/mkmapdata
   &gt; ./mkmapdata.sh --gridfile &lt;lnd SCRIP grid file&gt; --res &lt;atm resolution name&gt; --gridtype global
 
 These mapping files are then used to generate CLM surface dataset. Below is an example for a current day surface dataset (model year 2000).
 
 ::
 
-   &gt; cd  $CCSMROOT/models/lnd/clm/tools/mksurfdata_map
+   &gt; cd $CIMEROOT/../components/clm/tools/mksurfdata_map
    &gt; ./mksurfdata.pl -res usrspec -usr_gname &lt;atm resolution name&gt; -usr_gdate yymmdd -y 2000
 </pre></div>
 </div>
@@ -399,8 +404,8 @@ You will need to:</p>
 </div>
 </li>
 </ol>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
@@ -449,6 +454,7 @@ You will need to:</p>
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>

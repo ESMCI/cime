@@ -30,6 +30,10 @@
   
 
   
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
 
   
         <link rel="index" title="Index"
@@ -178,9 +182,11 @@
             
   <h1>Source code for CIME.BuildTools.macroconditiontree</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="kn">import</span> <span class="o">*</span>
+
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
-<div class="viewcode-block" id="MacroConditionTree"><a class="viewcode-back" href="../../../CIME_api/CIME.BuildTools.html#CIME.BuildTools.macroconditiontree.MacroConditionTree">[docs]</a><span class="k">class</span> <span class="nc">MacroConditionTree</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span> <span class="c1"># pylint: disable=too-many-instance-attributes</span>
+
+<div class="viewcode-block" id="MacroConditionTree"><a class="viewcode-back" href="../../../CIME_api/CIME.BuildTools.html#CIME.BuildTools.macroconditiontree.MacroConditionTree">[docs]</a><span class="k">class</span> <span class="nc">MacroConditionTree</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>  <span class="c1"># pylint: disable=too-many-instance-attributes</span>
 
     <span class="sd">&quot;&quot;&quot;Tree containing the various possible settings of a specific macro.</span>
 
@@ -227,11 +233,12 @@
             <span class="k">for</span> <span class="n">setting</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">setting</span><span class="o">.</span><span class="n">do_append</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_do_append</span> <span class="o">=</span> <span class="kc">False</span>
-                    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> \
-                        <span class="s2">&quot;Internal error in macros: An ambiguity was &quot;</span> \
-                        <span class="s2">&quot;found after the ambiguity check was complete, &quot;</span> \
-                        <span class="s2">&quot;or there is a mixture of appending and initial &quot;</span> \
+                    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="p">(</span>
+                        <span class="s2">&quot;Internal error in macros: An ambiguity was &quot;</span>
+                        <span class="s2">&quot;found after the ambiguity check was complete, &quot;</span>
+                        <span class="s2">&quot;or there is a mixture of appending and initial &quot;</span>
                         <span class="s2">&quot;settings in the condition tree.&quot;</span>
+                    <span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_assignments</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">name</span><span class="p">,</span> <span class="n">setting</span><span class="o">.</span><span class="n">value</span><span class="p">))</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_set_up</span> <span class="o">+=</span> <span class="n">setting</span><span class="o">.</span><span class="n">set_up</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_tear_down</span> <span class="o">+=</span> <span class="n">setting</span><span class="o">.</span><span class="n">tear_down</span>
@@ -252,8 +259,7 @@
                     <span class="n">partition</span><span class="p">[</span><span class="n">cond_val</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">setting</span><span class="p">]</span>
             <span class="n">branches</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
             <span class="k">for</span> <span class="n">cond_val</span> <span class="ow">in</span> <span class="n">partition</span><span class="p">:</span>
-                <span class="n">branches</span><span class="p">[</span><span class="n">cond_val</span><span class="p">]</span> <span class="o">=</span> \
-                            <span class="n">MacroConditionTree</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">partition</span><span class="p">[</span><span class="n">cond_val</span><span class="p">])</span>
+                <span class="n">branches</span><span class="p">[</span><span class="n">cond_val</span><span class="p">]</span> <span class="o">=</span> <span class="n">MacroConditionTree</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">partition</span><span class="p">[</span><span class="n">cond_val</span><span class="p">])</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_branches</span> <span class="o">=</span> <span class="n">branches</span>
 
     <span class="c1"># pylint shouldn&#39;t concern itself with the way that we access other, since</span>
@@ -267,10 +273,11 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_leaf</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">other</span><span class="o">.</span><span class="n">_is_leaf</span><span class="p">:</span>
-                <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_append</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_do_append</span><span class="p">,</span> \
-                    <span class="s2">&quot;Internal error in macros: Tried to merge an &quot;</span> \
-                    <span class="s2">&quot;appending tree with a tree containing initial &quot;</span>\
+                <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_append</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_do_append</span><span class="p">,</span> <span class="p">(</span>
+                    <span class="s2">&quot;Internal error in macros: Tried to merge an &quot;</span>
+                    <span class="s2">&quot;appending tree with a tree containing initial &quot;</span>
                     <span class="s2">&quot;settings.&quot;</span>
+                <span class="p">)</span>
                 <span class="c1"># If both are leaves, just merge the values.</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_assignments</span> <span class="o">+=</span> <span class="n">other</span><span class="o">.</span><span class="n">_assignments</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_set_up</span> <span class="o">+=</span> <span class="n">other</span><span class="o">.</span><span class="n">_set_up</span>
@@ -300,11 +307,13 @@
                 <span class="c1"># their sets of branches.</span>
                 <span class="k">for</span> <span class="p">(</span><span class="n">cond_val</span><span class="p">,</span> <span class="n">other_branch</span><span class="p">)</span> <span class="ow">in</span> <span class="n">other</span><span class="o">.</span><span class="n">_branches</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                     <span class="k">if</span> <span class="n">cond_val</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_branches</span><span class="p">:</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">_branches</span><span class="p">[</span><span class="n">cond_val</span><span class="p">]</span> <span class="o">=</span> \
-                            <span class="bp">self</span><span class="o">.</span><span class="n">_branches</span><span class="p">[</span><span class="n">cond_val</span><span class="p">]</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">other_branch</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_branches</span><span class="p">[</span><span class="n">cond_val</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_branches</span><span class="p">[</span><span class="n">cond_val</span><span class="p">]</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span>
+                            <span class="n">other_branch</span>
+                        <span class="p">)</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">_branches</span><span class="p">[</span><span class="n">cond_val</span><span class="p">]</span> <span class="o">=</span> <span class="n">other_branch</span>
                 <span class="k">return</span> <span class="bp">self</span></div>
+
     <span class="c1"># pylint:enable=protected-access</span>
 
 <div class="viewcode-block" id="MacroConditionTree.write_out"><a class="viewcode-back" href="../../../CIME_api/CIME.BuildTools.html#CIME.BuildTools.macroconditiontree.MacroConditionTree.write_out">[docs]</a>    <span class="k">def</span> <span class="nf">write_out</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">writer</span><span class="p">):</span>
@@ -337,6 +346,7 @@
                 <span class="n">writer</span><span class="o">.</span><span class="n">start_ifeq</span><span class="p">(</span><span class="n">env_ref</span><span class="p">,</span> <span class="n">cond_val</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_branches</span><span class="p">[</span><span class="n">cond_val</span><span class="p">]</span><span class="o">.</span><span class="n">write_out</span><span class="p">(</span><span class="n">writer</span><span class="p">)</span>
                 <span class="n">writer</span><span class="o">.</span><span class="n">end_ifeq</span><span class="p">()</span></div></div>
+
 
 <div class="viewcode-block" id="merge_optional_trees"><a class="viewcode-back" href="../../../CIME_api/CIME.BuildTools.html#CIME.BuildTools.macroconditiontree.merge_optional_trees">[docs]</a><span class="k">def</span> <span class="nf">merge_optional_trees</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="n">big_tree</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Merge two MacroConditionTrees when one or both objects may be `None`.&quot;&quot;&quot;</span>
@@ -386,6 +396,7 @@
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/doctools.js"></script>

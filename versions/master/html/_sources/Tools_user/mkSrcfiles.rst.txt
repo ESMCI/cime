@@ -2,7 +2,7 @@
 .. _mkSrcfiles:
 
 ####################################################
-mkSrcfiles 
+mkSrcfiles
 ####################################################
 
 **mkSrcfiles** is a script in CIMEROOT/scripts/Tools.

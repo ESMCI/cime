@@ -30,6 +30,10 @@
   
 
   
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
 
   
         <link rel="index" title="Index"
@@ -186,8 +190,8 @@
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
-<div class="viewcode-block" id="NODEFAIL"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.nodefail.NODEFAIL">[docs]</a><span class="k">class</span> <span class="nc">NODEFAIL</span><span class="p">(</span><span class="n">ERS</span><span class="p">):</span>
 
+<div class="viewcode-block" id="NODEFAIL"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.nodefail.NODEFAIL">[docs]</a><span class="k">class</span> <span class="nc">NODEFAIL</span><span class="p">(</span><span class="n">ERS</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        initialize an object interface to the ERS system test</span>
@@ -195,7 +199,7 @@
         <span class="n">ERS</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_fail_sentinel</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">),</span> <span class="s2">&quot;FAIL_SENTINEL&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_fail_str</span>      <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;NODE_FAIL_REGEX&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fail_str</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;NODE_FAIL_REGEX&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_restart_fake_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Swap out model.exe for one that emits node failures</span>
@@ -206,28 +210,29 @@
             <span class="n">logname</span> <span class="o">=</span> <span class="s2">&quot;drv&quot;</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">logname</span> <span class="o">=</span> <span class="s2">&quot;cpl&quot;</span>
-        <span class="n">fake_exe</span> <span class="o">=</span> \
-<span class="sd">&quot;&quot;&quot;#!/bin/bash</span>
+        <span class="n">fake_exe</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;#!/bin/bash</span>
 
-<span class="sd">fail_sentinel={0}</span>
-<span class="sd">cpl_log={1}/{4}.log.$LID</span>
-<span class="sd">model_log={1}/{2}.log.$LID</span>
-<span class="sd">touch $cpl_log</span>
-<span class="sd">touch $fail_sentinel</span>
-<span class="sd">declare -i num_fails=$(cat $fail_sentinel | wc -l)</span>
-<span class="sd">declare -i times_to_fail=${{NODEFAIL_NUM_FAILS:-3}}</span>
+<span class="s2">fail_sentinel=</span><span class="si">{0}</span><span class="s2"></span>
+<span class="s2">cpl_log=</span><span class="si">{1}</span><span class="s2">/</span><span class="si">{4}</span><span class="s2">.log.$LID</span>
+<span class="s2">model_log=</span><span class="si">{1}</span><span class="s2">/</span><span class="si">{2}</span><span class="s2">.log.$LID</span>
+<span class="s2">touch $cpl_log</span>
+<span class="s2">touch $fail_sentinel</span>
+<span class="s2">declare -i num_fails=$(cat $fail_sentinel | wc -l)</span>
+<span class="s2">declare -i times_to_fail=${{NODEFAIL_NUM_FAILS:-3}}</span>
 
-<span class="sd">if ((num_fails &lt; times_to_fail)); then</span>
-<span class="sd">  echo FAKE FAIL &gt;&gt; $cpl_log</span>
-<span class="sd">  echo FAIL &gt;&gt; $fail_sentinel</span>
-<span class="sd">  echo &#39;{3}&#39; &gt;&gt; $model_log</span>
-<span class="sd">  sleep 1</span>
-<span class="sd">  exit -1</span>
-<span class="sd">else</span>
-<span class="sd">  echo Insta pass</span>
-<span class="sd">  echo SUCCESSFUL TERMINATION &gt; $cpl_log</span>
-<span class="sd">fi</span>
-<span class="sd">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fail_sentinel</span><span class="p">,</span> <span class="n">rundir</span><span class="p">,</span> <span class="n">get_model</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fail_str</span><span class="p">,</span> <span class="n">logname</span><span class="p">)</span>
+<span class="s2">if ((num_fails &lt; times_to_fail)); then</span>
+<span class="s2">  echo FAKE FAIL &gt;&gt; $cpl_log</span>
+<span class="s2">  echo FAIL &gt;&gt; $fail_sentinel</span>
+<span class="s2">  echo &#39;</span><span class="si">{3}</span><span class="s2">&#39; &gt;&gt; $model_log</span>
+<span class="s2">  sleep 1</span>
+<span class="s2">  exit -1</span>
+<span class="s2">else</span>
+<span class="s2">  echo Insta pass</span>
+<span class="s2">  echo SUCCESSFUL TERMINATION &gt; $cpl_log</span>
+<span class="s2">fi</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fail_sentinel</span><span class="p">,</span> <span class="n">rundir</span><span class="p">,</span> <span class="n">get_model</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fail_str</span><span class="p">,</span> <span class="n">logname</span>
+        <span class="p">)</span>
 
         <span class="n">fake_exe_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">exeroot</span><span class="p">,</span> <span class="s2">&quot;fake.sh&quot;</span><span class="p">)</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fake_exe_file</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
@@ -297,6 +302,7 @@
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/doctools.js"></script>

@@ -30,6 +30,10 @@
   
 
   
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
 
   
         <link rel="index" title="Index"
@@ -195,7 +199,7 @@
 
 <span class="c1">###############################################################################</span>
 <div class="viewcode-block" id="PRE"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.pre.PRE">[docs]</a><span class="k">class</span> <span class="nc">PRE</span><span class="p">(</span><span class="n">SystemTestsCompareTwo</span><span class="p">):</span>
-<span class="c1">###############################################################################</span>
+    <span class="c1">###############################################################################</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Implementation of the CIME pause/resume test: Tests having driver</span>
 <span class="sd">    &#39;pause&#39; (write cpl and/or other restart file(s)) and &#39;resume&#39;</span>
@@ -205,23 +209,27 @@
 
     <span class="c1">###########################################################################</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">):</span>
-    <span class="c1">###########################################################################</span>
-        <span class="n">SystemTestsCompareTwo</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span>
-                                       <span class="n">separate_builds</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                                       <span class="n">run_two_suffix</span><span class="o">=</span><span class="s1">&#39;pr&#39;</span><span class="p">,</span>
-                                       <span class="n">run_one_description</span><span class="o">=</span><span class="s1">&#39;no pause/resume&#39;</span><span class="p">,</span>
-                                       <span class="n">run_two_description</span><span class="o">=</span><span class="s1">&#39;pause/resume&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_stopopt</span>  <span class="o">=</span> <span class="s1">&#39;&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_stopn</span>    <span class="o">=</span> <span class="mi">0</span>
+        <span class="c1">###########################################################################</span>
+        <span class="n">SystemTestsCompareTwo</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">case</span><span class="p">,</span>
+            <span class="n">separate_builds</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">run_two_suffix</span><span class="o">=</span><span class="s2">&quot;pr&quot;</span><span class="p">,</span>
+            <span class="n">run_one_description</span><span class="o">=</span><span class="s2">&quot;no pause/resume&quot;</span><span class="p">,</span>
+            <span class="n">run_two_description</span><span class="o">=</span><span class="s2">&quot;pause/resume&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stopopt</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stopn</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cprnc_exe</span> <span class="o">=</span> <span class="kc">None</span>
+
     <span class="c1">###########################################################################</span>
     <span class="k">def</span> <span class="nf">_case_one_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-    <span class="c1">###########################################################################</span>
+        <span class="c1">###########################################################################</span>
         <span class="k">pass</span>
 
     <span class="c1">###########################################################################</span>
     <span class="k">def</span> <span class="nf">_case_two_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-    <span class="c1">###########################################################################</span>
+        <span class="c1">###########################################################################</span>
         <span class="c1"># Set up a pause/resume run</span>
         <span class="n">stopopt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case1</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;STOP_OPTION&quot;</span><span class="p">)</span>
         <span class="n">stopn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case1</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;STOP_N&quot;</span><span class="p">)</span>
@@ -246,10 +254,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
 
     <span class="c1">###########################################################################</span>
-<div class="viewcode-block" id="PRE.run_phase"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.pre.PRE.run_phase">[docs]</a>    <span class="k">def</span> <span class="nf">run_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="c1"># pylint: disable=arguments-differ</span>
-    <span class="c1">###########################################################################</span>
+<div class="viewcode-block" id="PRE.run_phase"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.pre.PRE.run_phase">[docs]</a>    <span class="k">def</span> <span class="nf">run_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c1"># pylint: disable=arguments-differ</span>
+        <span class="c1">###########################################################################</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_activate_case2</span><span class="p">()</span>
-        <span class="n">should_match</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;DESP_MODE&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;NOCHANGE&quot;</span><span class="p">)</span>
+        <span class="n">should_match</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;DESP_MODE&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;NOCHANGE&quot;</span>
         <span class="n">SystemTestsCompareTwo</span><span class="o">.</span><span class="n">run_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">success_change</span><span class="o">=</span><span class="ow">not</span> <span class="n">should_match</span><span class="p">)</span>
         <span class="c1"># Look for expected coupler restart files</span>
         <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -272,33 +280,52 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">ninst</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;NINST_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">))</span>
 
-            <span class="n">comp_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">&#39;COMP_</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">))</span>
-            <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">ninst</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">comp_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;COMP_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">ninst</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">ninst</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-                    <span class="n">rname</span> <span class="o">=</span> <span class="s1">&#39;*.</span><span class="si">{}</span><span class="s1">.r.*&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp_name</span><span class="p">)</span>
+                    <span class="n">rname</span> <span class="o">=</span> <span class="s2">&quot;*.</span><span class="si">{}</span><span class="s2">.r.*&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp_name</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">rname</span> <span class="o">=</span> <span class="s1">&#39;*.</span><span class="si">{}</span><span class="s1">_</span><span class="si">{:04d}</span><span class="s1">.r.*&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp_name</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
+                    <span class="n">rname</span> <span class="o">=</span> <span class="s2">&quot;*.</span><span class="si">{}</span><span class="s2">_</span><span class="si">{:04d}</span><span class="s2">.r.*&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp_name</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
 
                 <span class="n">restart_files_1</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rundir1</span><span class="p">,</span> <span class="n">rname</span><span class="p">))</span>
-                <span class="n">expect</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">restart_files_1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">),</span> <span class="s2">&quot;No case1 restart files for </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">))</span>
+                <span class="n">expect</span><span class="p">(</span>
+                    <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">restart_files_1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">),</span>
+                    <span class="s2">&quot;No case1 restart files for </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">),</span>
+                <span class="p">)</span>
                 <span class="n">restart_files_2</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rundir2</span><span class="p">,</span> <span class="n">rname</span><span class="p">))</span>
-                <span class="n">expect</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">restart_files_2</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">restart_files_1</span><span class="p">)),</span>
-                       <span class="s2">&quot;No pause (restart) files found in case2 for </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">))</span>
+                <span class="n">expect</span><span class="p">(</span>
+                    <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">restart_files_2</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">restart_files_1</span><span class="p">)),</span>
+                    <span class="s2">&quot;No pause (restart) files found in case2 for </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">),</span>
+                <span class="p">)</span>
                 <span class="c1"># Do cprnc of restart files.</span>
                 <span class="n">rfile1</span> <span class="o">=</span> <span class="n">restart_files_1</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">restart_files_1</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
                 <span class="c1"># rfile2 has to match rfile1 (same time string)</span>
                 <span class="n">parts</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">rfile1</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
-                <span class="n">glob_str</span> <span class="o">=</span> <span class="s2">&quot;*.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span><span class="o">-</span><span class="mi">4</span><span class="p">:]))</span>
+                <span class="n">glob_str</span> <span class="o">=</span> <span class="s2">&quot;*.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span> <span class="o">-</span> <span class="mi">4</span> <span class="p">:]))</span>
                 <span class="n">restart_files_2</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rundir2</span><span class="p">,</span> <span class="n">glob_str</span><span class="p">))</span>
-                <span class="n">expect</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">restart_files_2</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">),</span>
-                       <span class="s2">&quot;Missing case2 restart file, </span><span class="si">{}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">glob_str</span><span class="p">)</span>
+                <span class="n">expect</span><span class="p">(</span>
+                    <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">restart_files_2</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">),</span>
+                    <span class="s2">&quot;Missing case2 restart file, </span><span class="si">{}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="n">glob_str</span><span class="p">,</span>
+                <span class="p">)</span>
                 <span class="n">rfile2</span> <span class="o">=</span> <span class="n">restart_files_2</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-                <span class="n">ok</span> <span class="o">=</span> <span class="n">cprnc</span><span class="p">(</span><span class="n">comp</span><span class="p">,</span> <span class="n">rfile1</span><span class="p">,</span> <span class="n">rfile2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="p">,</span> <span class="n">rundir2</span><span class="p">,</span> <span class="n">cprnc_exe</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_cprnc_exe</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;CPRNC result for </span><span class="si">{}</span><span class="s2">: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">rfile1</span><span class="p">),</span> <span class="s2">&quot;PASS&quot;</span> <span class="k">if</span> <span class="p">(</span><span class="n">ok</span> <span class="o">==</span> <span class="n">should_match</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;FAIL&quot;</span><span class="p">))</span>
+                <span class="n">ok</span> <span class="o">=</span> <span class="n">cprnc</span><span class="p">(</span>
+                    <span class="n">comp</span><span class="p">,</span> <span class="n">rfile1</span><span class="p">,</span> <span class="n">rfile2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="p">,</span> <span class="n">rundir2</span><span class="p">,</span> <span class="n">cprnc_exe</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_cprnc_exe</span>
+                <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="s2">&quot;CPRNC result for </span><span class="si">{}</span><span class="s2">: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">rfile1</span><span class="p">),</span>
+                        <span class="s2">&quot;PASS&quot;</span> <span class="k">if</span> <span class="p">(</span><span class="n">ok</span> <span class="o">==</span> <span class="n">should_match</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;FAIL&quot;</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
                 <span class="n">compare_ok</span> <span class="o">=</span> <span class="n">compare_ok</span> <span class="ow">and</span> <span class="p">(</span><span class="n">should_match</span> <span class="o">==</span> <span class="n">ok</span><span class="p">)</span>
 
-        <span class="n">expect</span><span class="p">(</span><span class="n">compare_ok</span><span class="p">,</span>
-               <span class="s2">&quot;Not all restart files </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;matched&quot;</span> <span class="k">if</span> <span class="n">should_match</span> <span class="k">else</span> <span class="s2">&quot;failed to match&quot;</span><span class="p">))</span></div></div>
+        <span class="n">expect</span><span class="p">(</span>
+            <span class="n">compare_ok</span><span class="p">,</span>
+            <span class="s2">&quot;Not all restart files </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="s2">&quot;matched&quot;</span> <span class="k">if</span> <span class="n">should_match</span> <span class="k">else</span> <span class="s2">&quot;failed to match&quot;</span>
+            <span class="p">),</span>
+        <span class="p">)</span></div></div>
 </pre></div>
 
            </div>
@@ -338,6 +365,7 @@
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/doctools.js"></script>

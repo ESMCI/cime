@@ -30,6 +30,10 @@
   
 
   
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
 
   
         <link rel="index" title="Index"
@@ -190,9 +194,15 @@
 <span class="kn">import</span> <span class="nn">hashlib</span>
 
 <span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">CIME.namelist</span> <span class="kn">import</span> <span class="n">Namelist</span><span class="p">,</span> <span class="n">parse</span><span class="p">,</span> \
-    <span class="n">character_literal_to_string</span><span class="p">,</span> <span class="n">string_to_character_literal</span><span class="p">,</span> \
-    <span class="n">expand_literal_list</span><span class="p">,</span> <span class="n">compress_literal_list</span><span class="p">,</span> <span class="n">merge_literal_lists</span>
+<span class="kn">from</span> <span class="nn">CIME.namelist</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Namelist</span><span class="p">,</span>
+    <span class="n">parse</span><span class="p">,</span>
+    <span class="n">character_literal_to_string</span><span class="p">,</span>
+    <span class="n">string_to_character_literal</span><span class="p">,</span>
+    <span class="n">expand_literal_list</span><span class="p">,</span>
+    <span class="n">compress_literal_list</span><span class="p">,</span>
+    <span class="n">merge_literal_lists</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">CIME.XML.namelist_definition</span> <span class="kn">import</span> <span class="n">NamelistDefinition</span>
 <span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="n">expect</span><span class="p">,</span> <span class="n">safe_copy</span>
 <span class="kn">from</span> <span class="nn">CIME.XML.stream</span> <span class="kn">import</span> <span class="n">Stream</span>
@@ -237,13 +247,14 @@
 <span class="s2">&lt;/file&gt;</span>
 <span class="s2">&quot;&quot;&quot;</span>
 
+
 <div class="viewcode-block" id="NamelistGenerator"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator">[docs]</a><span class="k">class</span> <span class="nc">NamelistGenerator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot;Utility class for generating namelists for a given component.&quot;&quot;&quot;</span>
 
     <span class="n">_streams_variables</span> <span class="o">=</span> <span class="p">[]</span>
 
-    <span class="c1">#pylint:disable=too-many-arguments</span>
+    <span class="c1"># pylint:disable=too-many-arguments</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">definition_files</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Construct a namelist generator.</span>
 
@@ -255,7 +266,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Save off important information from inputs.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_case</span> <span class="o">=</span> <span class="n">case</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_din_loc_root</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">&#39;DIN_LOC_ROOT&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_din_loc_root</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;DIN_LOC_ROOT&quot;</span><span class="p">)</span>
 
         <span class="c1"># Create definition object - this will validate the xml schema in the definition file</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_definition</span> <span class="o">=</span> <span class="n">NamelistDefinition</span><span class="p">(</span><span class="n">definition_files</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">files</span><span class="o">=</span><span class="n">files</span><span class="p">)</span>
@@ -281,8 +292,14 @@
     <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span><span class="p">):</span>
         <span class="k">return</span> <span class="kc">False</span>
 
-<div class="viewcode-block" id="NamelistGenerator.init_defaults"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.init_defaults">[docs]</a>    <span class="k">def</span> <span class="nf">init_defaults</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infiles</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">skip_groups</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">skip_entry_loop</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                      <span class="n">skip_default_for_groups</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="NamelistGenerator.init_defaults"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.init_defaults">[docs]</a>    <span class="k">def</span> <span class="nf">init_defaults</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">infiles</span><span class="p">,</span>
+        <span class="n">config</span><span class="p">,</span>
+        <span class="n">skip_groups</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">skip_entry_loop</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">skip_default_for_groups</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return array of names of all definition nodes</span>
 
 <span class="sd">        infiles should be a list of file paths, each one giving namelist settings that</span>
@@ -372,23 +389,26 @@
 
 <span class="sd">        Does nothing if the string appears to be quoted already.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">string</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span> <span class="ow">or</span> \
-           <span class="p">(</span><span class="n">string</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">,</span> <span class="s2">&quot;&#39;&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">string</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">string</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]):</span>
+        <span class="k">if</span> <span class="n">string</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span> <span class="ow">or</span> <span class="p">(</span><span class="n">string</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">,</span> <span class="s2">&quot;&#39;&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">string</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">string</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]):</span>
             <span class="n">string</span> <span class="o">=</span> <span class="n">string_to_character_literal</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">string</span></div>
 
     <span class="k">def</span> <span class="nf">_to_python_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">literals</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Transform a literal list as needed for `get_value`.&quot;&quot;&quot;</span>
-        <span class="n">var_type</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">var_size</span><span class="p">,</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_definition</span><span class="o">.</span><span class="n">split_type_string</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="p">(</span>
+            <span class="n">var_type</span><span class="p">,</span>
+            <span class="n">_</span><span class="p">,</span>
+            <span class="n">var_size</span><span class="p">,</span>
+        <span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_definition</span><span class="o">.</span><span class="n">split_type_string</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">literals</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">literals</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">values</span> <span class="o">=</span> <span class="n">expand_literal_list</span><span class="p">(</span><span class="n">literals</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="s2">&quot;&quot;</span>
 
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">scalar</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">values</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">scalar</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">scalar</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
                 <span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="k">elif</span> <span class="n">var_type</span> <span class="o">==</span> <span class="s1">&#39;character&#39;</span><span class="p">:</span>
+            <span class="k">elif</span> <span class="n">var_type</span> <span class="o">==</span> <span class="s2">&quot;character&quot;</span><span class="p">:</span>
                 <span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">character_literal_to_string</span><span class="p">(</span><span class="n">scalar</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">var_size</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
@@ -402,14 +422,18 @@
 <span class="sd">        This is the inverse of `_to_python_value`, except that many of the</span>
 <span class="sd">        changes have potentially already been performed.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">var_type</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">var_size</span><span class="p">,</span> <span class="o">=</span>  <span class="bp">self</span><span class="o">.</span><span class="n">_definition</span><span class="o">.</span><span class="n">split_type_string</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="p">(</span>
+            <span class="n">var_type</span><span class="p">,</span>
+            <span class="n">_</span><span class="p">,</span>
+            <span class="n">var_size</span><span class="p">,</span>
+        <span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_definition</span><span class="o">.</span><span class="n">split_type_string</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">var_size</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
             <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="n">values</span><span class="p">]</span>
 
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">scalar</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">values</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">scalar</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-            <span class="k">elif</span> <span class="n">var_type</span> <span class="o">==</span> <span class="s1">&#39;character&#39;</span><span class="p">:</span>
+            <span class="k">elif</span> <span class="n">var_type</span> <span class="o">==</span> <span class="s2">&quot;character&quot;</span><span class="p">:</span>
                 <span class="n">expect</span><span class="p">(</span><span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">scalar</span><span class="p">,</span> <span class="nb">list</span><span class="p">),</span> <span class="n">name</span><span class="p">)</span>
                 <span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">quote_string</span><span class="p">(</span><span class="n">scalar</span><span class="p">)</span>
 
@@ -454,7 +478,11 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">var_group</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_definition</span><span class="o">.</span><span class="n">get_group</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
         <span class="n">literals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_to_namelist_literals</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
-        <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">var_size</span><span class="p">,</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_definition</span><span class="o">.</span><span class="n">split_type_string</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="p">(</span>
+            <span class="n">_</span><span class="p">,</span>
+            <span class="n">_</span><span class="p">,</span>
+            <span class="n">var_size</span><span class="p">,</span>
+        <span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_definition</span><span class="o">.</span><span class="n">split_type_string</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">literals</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">literals</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_namelist</span><span class="o">.</span><span class="n">set_variable_value</span><span class="p">(</span><span class="n">var_group</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">literals</span><span class="p">,</span> <span class="n">var_size</span><span class="p">)</span></div>
 
@@ -487,38 +515,46 @@
 <span class="sd">           exists. This behavior is suppressed within single-quoted strings</span>
 <span class="sd">           (similar to parameter expansion in shell scripts).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">default</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_definition</span><span class="o">.</span><span class="n">get_value_match</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="n">config</span><span class="p">,</span> <span class="n">exact_match</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">default</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_definition</span><span class="o">.</span><span class="n">get_value_match</span><span class="p">(</span>
+            <span class="n">name</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="n">config</span><span class="p">,</span> <span class="n">exact_match</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
         <span class="k">if</span> <span class="n">default</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">expect</span><span class="p">(</span><span class="n">allow_none</span><span class="p">,</span> <span class="s2">&quot;No default value found for </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="n">default</span> <span class="o">=</span> <span class="n">expand_literal_list</span><span class="p">(</span><span class="n">default</span><span class="p">)</span>
 
-        <span class="n">var_type</span><span class="p">,</span><span class="n">_</span><span class="p">,</span><span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_definition</span><span class="o">.</span><span class="n">split_type_string</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">var_type</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_definition</span><span class="o">.</span><span class="n">split_type_string</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">scalar</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">default</span><span class="p">):</span>
             <span class="c1"># Skip single-quoted strings.</span>
-            <span class="k">if</span> <span class="n">var_type</span> <span class="o">==</span> <span class="s1">&#39;character&#39;</span> <span class="ow">and</span> <span class="n">scalar</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span> <span class="ow">and</span> \
-               <span class="n">scalar</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">scalar</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;&#39;&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="n">var_type</span> <span class="o">==</span> <span class="s2">&quot;character&quot;</span>
+                <span class="ow">and</span> <span class="n">scalar</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span>
+                <span class="ow">and</span> <span class="n">scalar</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">scalar</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;&#39;&quot;</span>
+            <span class="p">):</span>
                 <span class="k">continue</span>
             <span class="n">match</span> <span class="o">=</span> <span class="n">_var_ref_re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">scalar</span><span class="p">)</span>
             <span class="k">while</span> <span class="n">match</span><span class="p">:</span>
-                <span class="n">env_val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">))</span>
+                <span class="n">env_val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">))</span>
                 <span class="k">if</span> <span class="n">env_val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="n">scalar</span> <span class="o">=</span> <span class="n">scalar</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">env_val</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
                     <span class="n">match</span> <span class="o">=</span> <span class="n">_var_ref_re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">scalar</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">scalar</span> <span class="o">=</span> <span class="kc">None</span>
-                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Namelist default for variable </span><span class="si">{}</span><span class="s2"> refers to unknown XML variable </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span>
-                       <span class="nb">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">)))</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                        <span class="s2">&quot;Namelist default for variable </span><span class="si">{}</span><span class="s2"> refers to unknown XML variable </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                            <span class="n">name</span><span class="p">,</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
                     <span class="n">match</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="n">default</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">scalar</span>
 
         <span class="c1"># Deal with missing quotes.</span>
 
-        <span class="k">if</span> <span class="n">var_type</span> <span class="o">==</span> <span class="s1">&#39;character&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">var_type</span> <span class="o">==</span> <span class="s2">&quot;character&quot;</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">scalar</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">default</span><span class="p">):</span>
                 <span class="c1"># Preserve null values.</span>
-                <span class="k">if</span> <span class="n">scalar</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">scalar</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
                     <span class="n">default</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">quote_string</span><span class="p">(</span><span class="n">scalar</span><span class="p">)</span>
 
         <span class="n">default</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_to_python_value</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span>
@@ -535,7 +571,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_streams_namelists</span><span class="p">[</span><span class="s2">&quot;streams&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span></div>
 
 <div class="viewcode-block" id="NamelistGenerator.new_instance"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.new_instance">[docs]</a>    <span class="k">def</span> <span class="nf">new_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Clean the object just enough to introduce a new instance &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Clean the object just enough to introduce a new instance&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">clean_streams</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_namelist</span><span class="o">.</span><span class="n">clean_groups</span><span class="p">()</span></div>
 
@@ -570,10 +606,10 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span><span class="p">:</span>
                 <span class="k">continue</span>
             <span class="k">if</span> <span class="s2">&quot;</span><span class="si">%g</span><span class="s2">lc&quot;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">&#39;GLC_NEC&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;GLC_NEC&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="n">glc_nec_indices</span> <span class="o">=</span> <span class="p">[]</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">glc_nec_indices</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">&#39;GLC_NEC&#39;</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+                    <span class="n">glc_nec_indices</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;GLC_NEC&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">glc_nec_indices</span><span class="p">:</span>
                     <span class="n">new_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%g</span><span class="s2">lc&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{:02d}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">)))</span>
             <span class="k">else</span><span class="p">:</span>
@@ -589,7 +625,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">month_start</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="n">month</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">month</span> <span class="o">==</span> <span class="mi">12</span><span class="p">:</span>
-            <span class="n">next_year</span> <span class="o">=</span> <span class="n">year</span><span class="o">+</span><span class="mi">1</span>
+            <span class="n">next_year</span> <span class="o">=</span> <span class="n">year</span> <span class="o">+</span> <span class="mi">1</span>
             <span class="n">next_month</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">next_year</span> <span class="o">=</span> <span class="n">year</span>
@@ -631,19 +667,21 @@
             <span class="k">if</span> <span class="n">match</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">new_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
                 <span class="k">continue</span>
-            <span class="k">if</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;digits&#39;</span><span class="p">):</span>
-                <span class="n">year_format</span> <span class="o">=</span> <span class="s2">&quot;{:0&quot;</span><span class="o">+</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;digits&#39;</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;d}&quot;</span>
+            <span class="k">if</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">&quot;digits&quot;</span><span class="p">):</span>
+                <span class="n">year_format</span> <span class="o">=</span> <span class="s2">&quot;{:0&quot;</span> <span class="o">+</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">&quot;digits&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;d}&quot;</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">year_format</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{:04d}</span><span class="s2">&quot;</span>
-            <span class="k">for</span> <span class="n">year</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">year_start</span><span class="p">,</span> <span class="n">year_end</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
-                <span class="k">if</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;day&#39;</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">year</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">year_start</span><span class="p">,</span> <span class="n">year_end</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">&quot;day&quot;</span><span class="p">):</span>
                     <span class="k">for</span> <span class="n">month</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">13</span><span class="p">):</span>
                         <span class="n">days</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_days_in_month</span><span class="p">(</span><span class="n">month</span><span class="p">)</span>
-                        <span class="k">for</span> <span class="n">day</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">days</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
-                            <span class="n">date_string</span> <span class="o">=</span> <span class="p">(</span><span class="n">year_format</span> <span class="o">+</span> <span class="s2">&quot;-</span><span class="si">{:02d}</span><span class="s2">-</span><span class="si">{:02d}</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="n">month</span><span class="p">,</span> <span class="n">day</span><span class="p">)</span>
+                        <span class="k">for</span> <span class="n">day</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">days</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                            <span class="n">date_string</span> <span class="o">=</span> <span class="p">(</span><span class="n">year_format</span> <span class="o">+</span> <span class="s2">&quot;-</span><span class="si">{:02d}</span><span class="s2">-</span><span class="si">{:02d}</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                <span class="n">year</span><span class="p">,</span> <span class="n">month</span><span class="p">,</span> <span class="n">day</span>
+                            <span class="p">)</span>
                             <span class="n">new_line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">date_string</span><span class="p">)</span>
                             <span class="n">new_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_line</span><span class="p">)</span>
-                <span class="k">elif</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;month&#39;</span><span class="p">):</span>
+                <span class="k">elif</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">&quot;month&quot;</span><span class="p">):</span>
                     <span class="k">for</span> <span class="n">month</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">13</span><span class="p">):</span>
                         <span class="n">date_string</span> <span class="o">=</span> <span class="p">(</span><span class="n">year_format</span> <span class="o">+</span> <span class="s2">&quot;-</span><span class="si">{:02d}</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="n">month</span><span class="p">)</span>
                         <span class="n">new_line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">date_string</span><span class="p">)</span>
@@ -659,13 +697,18 @@
         <span class="n">expect</span><span class="p">(</span><span class="n">delimiter</span> <span class="ow">and</span> <span class="ow">not</span> <span class="s2">&quot; &quot;</span> <span class="ow">in</span> <span class="n">delimiter</span><span class="p">,</span> <span class="s2">&quot;Missing or badly formed delimiter&quot;</span><span class="p">)</span>
         <span class="n">pred</span> <span class="o">=</span> <span class="s2">&quot;&lt;</span><span class="si">{}</span><span class="s2">&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">delimiter</span><span class="p">)</span>
         <span class="n">postd</span> <span class="o">=</span> <span class="s2">&quot;&lt;/</span><span class="si">{}</span><span class="s2">&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">delimiter</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">n</span><span class="p">,</span><span class="n">_</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">list_to_deliminate</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">list_to_deliminate</span><span class="p">):</span>
             <span class="n">list_to_deliminate</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">pred</span> <span class="o">+</span> <span class="n">list_to_deliminate</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">+</span> <span class="n">postd</span>
         <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">      &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">list_to_deliminate</span><span class="p">)</span>
 
-
-<div class="viewcode-block" id="NamelistGenerator.create_stream_file_and_update_shr_strdata_nml"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.create_stream_file_and_update_shr_strdata_nml">[docs]</a>    <span class="k">def</span> <span class="nf">create_stream_file_and_update_shr_strdata_nml</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">caseroot</span><span class="p">,</span> <span class="c1">#pylint:disable=too-many-locals</span>
-                           <span class="n">stream</span><span class="p">,</span> <span class="n">stream_path</span><span class="p">,</span> <span class="n">data_list_path</span><span class="p">):</span>
+<div class="viewcode-block" id="NamelistGenerator.create_stream_file_and_update_shr_strdata_nml"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.create_stream_file_and_update_shr_strdata_nml">[docs]</a>    <span class="k">def</span> <span class="nf">create_stream_file_and_update_shr_strdata_nml</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">config</span><span class="p">,</span>
+        <span class="n">caseroot</span><span class="p">,</span>  <span class="c1"># pylint:disable=too-many-locals</span>
+        <span class="n">stream</span><span class="p">,</span>
+        <span class="n">stream_path</span><span class="p">,</span>
+        <span class="n">data_list_path</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Write the pseudo-XML file corresponding to a given stream.</span>
 
 <span class="sd">        Arguments:</span>
@@ -680,12 +723,13 @@
 
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">stream_path</span><span class="p">):</span>
             <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">stream_path</span><span class="p">)</span>
-        <span class="n">user_stream_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="s2">&quot;user_&quot;</span><span class="o">+</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">stream_path</span><span class="p">))</span>
+        <span class="n">user_stream_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="n">caseroot</span><span class="p">,</span> <span class="s2">&quot;user_&quot;</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">stream_path</span><span class="p">)</span>
+        <span class="p">)</span>
 
         <span class="c1"># Use the user&#39;s stream file, or create one if necessary.</span>
         <span class="n">config</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="n">config</span><span class="p">[</span><span class="s2">&quot;stream&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">stream</span>
-
 
         <span class="c1"># Stream-specific configuration.</span>
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">user_stream_path</span><span class="p">):</span>
@@ -718,7 +762,7 @@
             <span class="n">domain_filenames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sub_paths</span><span class="p">(</span><span class="n">domain_filenames</span><span class="p">,</span> <span class="n">year_start</span><span class="p">,</span> <span class="n">year_end</span><span class="p">)</span>
 
             <span class="c1"># Overwrite domain_file if should be set from stream data</span>
-            <span class="k">if</span> <span class="n">domain_filenames</span> <span class="o">==</span> <span class="s1">&#39;null&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">domain_filenames</span> <span class="o">==</span> <span class="s2">&quot;null&quot;</span><span class="p">:</span>
                 <span class="n">domain_filepath</span> <span class="o">=</span> <span class="n">data_filepath</span>
                 <span class="n">domain_filenames</span> <span class="o">=</span> <span class="n">data_filenames</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
 
@@ -732,27 +776,27 @@
                 <span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="p">,</span>
             <span class="p">)</span>
 
-            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">stream_path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">stream_file</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">stream_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">stream_file</span><span class="p">:</span>
                 <span class="n">stream_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">stream_file_text</span><span class="p">)</span>
 
         <span class="n">lines_hash</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_input_file_hash</span><span class="p">(</span><span class="n">data_list_path</span><span class="p">)</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">data_list_path</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">input_data_list</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">data_list_path</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">input_data_list</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">filename</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">domain_filenames</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)):</span>
-                <span class="k">if</span> <span class="n">filename</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">filename</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
                     <span class="k">continue</span>
                 <span class="n">filepath</span><span class="p">,</span> <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">filepath</span><span class="p">:</span>
                     <span class="n">filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">domain_filepath</span><span class="p">,</span> <span class="n">filename</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
-                <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;domain</span><span class="si">{:d}</span><span class="s2"> = </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">filepath</span><span class="p">)</span>
-                <span class="n">hashValue</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+                <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;domain</span><span class="si">{:d}</span><span class="s2"> = </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">filepath</span><span class="p">)</span>
+                <span class="n">hashValue</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
                 <span class="k">if</span> <span class="n">hashValue</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">lines_hash</span><span class="p">:</span>
                     <span class="n">input_data_list</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">filename</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">data_filenames</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)):</span>
-                <span class="k">if</span> <span class="n">filename</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">filename</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
                     <span class="k">continue</span>
                 <span class="n">filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_filepath</span><span class="p">,</span> <span class="n">filename</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
-                <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;file</span><span class="si">{:d}</span><span class="s2"> = </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">filepath</span><span class="p">)</span>
-                <span class="n">hashValue</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+                <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;file</span><span class="si">{:d}</span><span class="s2"> = </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">filepath</span><span class="p">)</span>
+                <span class="n">hashValue</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
                 <span class="k">if</span> <span class="n">hashValue</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">lines_hash</span><span class="p">:</span>
                     <span class="n">input_data_list</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_shr_strdata_nml</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">stream</span><span class="p">,</span> <span class="n">stream_path</span><span class="p">)</span></div>
@@ -763,23 +807,34 @@
 <span class="sd">        This should be done once per stream, and it shouldn&#39;t usually be called</span>
 <span class="sd">        directly, since `create_stream_file` calls this method itself.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">assert</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;stream&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">stream</span><span class="p">,</span> \
-            <span class="s2">&quot;config stream is </span><span class="si">{}</span><span class="s2">, but input stream is </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;stream&#39;</span><span class="p">],</span> <span class="n">stream</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="n">config</span><span class="p">[</span><span class="s2">&quot;stream&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">stream</span>
+        <span class="p">),</span> <span class="s2">&quot;config stream is </span><span class="si">{}</span><span class="s2">, but input stream is </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">config</span><span class="p">[</span><span class="s2">&quot;stream&quot;</span><span class="p">],</span> <span class="n">stream</span>
+        <span class="p">)</span>
         <span class="c1"># Double-check the years for sanity.</span>
         <span class="n">year_start</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_default</span><span class="p">(</span><span class="s2">&quot;strm_year_start&quot;</span><span class="p">,</span> <span class="n">config</span><span class="p">))</span>
         <span class="n">year_end</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_default</span><span class="p">(</span><span class="s2">&quot;strm_year_end&quot;</span><span class="p">,</span> <span class="n">config</span><span class="p">))</span>
         <span class="n">year_align</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_default</span><span class="p">(</span><span class="s2">&quot;strm_year_align&quot;</span><span class="p">,</span> <span class="n">config</span><span class="p">))</span>
-        <span class="n">expect</span><span class="p">(</span><span class="n">year_end</span> <span class="o">&gt;=</span> <span class="n">year_start</span><span class="p">,</span>
-               <span class="s2">&quot;Stream </span><span class="si">{}</span><span class="s2"> starts at year </span><span class="si">{:d}</span><span class="s2">, but ends at earlier year </span><span class="si">{:d}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">year_start</span><span class="p">,</span> <span class="n">year_end</span><span class="p">))</span>
+        <span class="n">expect</span><span class="p">(</span>
+            <span class="n">year_end</span> <span class="o">&gt;=</span> <span class="n">year_start</span><span class="p">,</span>
+            <span class="s2">&quot;Stream </span><span class="si">{}</span><span class="s2"> starts at year </span><span class="si">{:d}</span><span class="s2">, but ends at earlier year </span><span class="si">{:d}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">stream</span><span class="p">,</span> <span class="n">year_start</span><span class="p">,</span> <span class="n">year_end</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
         <span class="c1"># Add to streams file.</span>
-        <span class="n">stream_string</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> </span><span class="si">{:d}</span><span class="s2"> </span><span class="si">{:d}</span><span class="s2"> </span><span class="si">{:d}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">stream_path</span><span class="p">),</span>
-                                                   <span class="n">year_align</span><span class="p">,</span> <span class="n">year_start</span><span class="p">,</span>
-                                                   <span class="n">year_end</span><span class="p">)</span>
+        <span class="n">stream_string</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> </span><span class="si">{:d}</span><span class="s2"> </span><span class="si">{:d}</span><span class="s2"> </span><span class="si">{:d}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">stream_path</span><span class="p">),</span> <span class="n">year_align</span><span class="p">,</span> <span class="n">year_start</span><span class="p">,</span> <span class="n">year_end</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_streams_namelists</span><span class="p">[</span><span class="s2">&quot;streams&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stream_string</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">variable</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_streams_variables</span><span class="p">:</span>
             <span class="n">default</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_default</span><span class="p">(</span><span class="n">variable</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
-            <span class="n">expect</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">default</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span>
-                   <span class="s2">&quot;Stream </span><span class="si">{}</span><span class="s2"> had multiple settings for variable </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">variable</span><span class="p">))</span>
+            <span class="n">expect</span><span class="p">(</span>
+                <span class="nb">len</span><span class="p">(</span><span class="n">default</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="s2">&quot;Stream </span><span class="si">{}</span><span class="s2"> had multiple settings for variable </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">stream</span><span class="p">,</span> <span class="n">variable</span>
+                <span class="p">),</span>
+            <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_streams_namelists</span><span class="p">[</span><span class="n">variable</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">default</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div>
 
 <div class="viewcode-block" id="NamelistGenerator.set_abs_file_path"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.set_abs_file_path">[docs]</a>    <span class="k">def</span> <span class="nf">set_abs_file_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">):</span>
@@ -828,18 +883,22 @@
             <span class="n">have_value</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="n">default_literals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_to_namelist_literals</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span>
             <span class="n">current_literals</span> <span class="o">=</span> <span class="n">merge_literal_lists</span><span class="p">(</span><span class="n">default_literals</span><span class="p">,</span> <span class="n">current_literals</span><span class="p">)</span>
-        <span class="n">expect</span><span class="p">(</span><span class="n">have_value</span><span class="p">,</span> <span class="s2">&quot;No default value found for </span><span class="si">{}</span><span class="s2"> with attributes </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-            <span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_definition</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">()))</span>
+        <span class="n">expect</span><span class="p">(</span>
+            <span class="n">have_value</span><span class="p">,</span>
+            <span class="s2">&quot;No default value found for </span><span class="si">{}</span><span class="s2"> with attributes </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_definition</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">()</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
 
         <span class="c1"># Go through file names and prepend input data root directory for</span>
         <span class="c1"># absolute pathnames.</span>
         <span class="n">var_type</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">var_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_definition</span><span class="o">.</span><span class="n">split_type_string</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">var_type</span> <span class="o">==</span> <span class="s2">&quot;character&quot;</span> <span class="ow">and</span> <span class="n">ignore_abs_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">var_input_pathname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_definition</span><span class="o">.</span><span class="n">get_input_pathname</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">var_input_pathname</span> <span class="o">==</span> <span class="s1">&#39;abs&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">var_input_pathname</span> <span class="o">==</span> <span class="s2">&quot;abs&quot;</span><span class="p">:</span>
                 <span class="n">current_literals</span> <span class="o">=</span> <span class="n">expand_literal_list</span><span class="p">(</span><span class="n">current_literals</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">literal</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">current_literals</span><span class="p">):</span>
-                    <span class="k">if</span> <span class="n">literal</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">literal</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
                         <span class="k">continue</span>
                     <span class="n">file_path</span> <span class="o">=</span> <span class="n">character_literal_to_string</span><span class="p">(</span><span class="n">literal</span><span class="p">)</span>
                     <span class="n">abs_file_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_to_abs_file_path</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
@@ -864,28 +923,34 @@
         <span class="c1"># components with multiple grids (e.g., GLC).</span>
         <span class="k">for</span> <span class="n">one_file_path</span> <span class="ow">in</span> <span class="n">file_path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">GRID_SEP</span><span class="p">):</span>
             <span class="c1"># NOTE - these are hard-coded here and a better way is to make these extensible</span>
-            <span class="k">if</span> <span class="n">one_file_path</span> <span class="o">==</span> <span class="s1">&#39;UNSET&#39;</span> <span class="ow">or</span> <span class="n">one_file_path</span> <span class="o">==</span> <span class="s1">&#39;idmap&#39;</span> <span class="ow">or</span> <span class="n">one_file_path</span> <span class="o">==</span> <span class="s1">&#39;idmap_ignore&#39;</span> <span class="ow">or</span> <span class="n">one_file_path</span> <span class="o">==</span> <span class="s1">&#39;unset&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="n">one_file_path</span> <span class="o">==</span> <span class="s2">&quot;UNSET&quot;</span>
+                <span class="ow">or</span> <span class="n">one_file_path</span> <span class="o">==</span> <span class="s2">&quot;idmap&quot;</span>
+                <span class="ow">or</span> <span class="n">one_file_path</span> <span class="o">==</span> <span class="s2">&quot;idmap_ignore&quot;</span>
+                <span class="ow">or</span> <span class="n">one_file_path</span> <span class="o">==</span> <span class="s2">&quot;unset&quot;</span>
+            <span class="p">):</span>
                 <span class="n">abs_file_paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">one_file_path</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">one_file_path</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;null&#39;</span><span class="p">,</span><span class="s1">&#39;create_mesh&#39;</span><span class="p">):</span>
+            <span class="k">elif</span> <span class="n">one_file_path</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;null&quot;</span><span class="p">,</span> <span class="s2">&quot;create_mesh&quot;</span><span class="p">):</span>
                 <span class="n">abs_file_paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">one_file_path</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">one_abs_file_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_abs_file_path</span><span class="p">(</span><span class="n">one_file_path</span><span class="p">)</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">one_abs_file_path</span><span class="p">):</span>
-                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;File not found: </span><span class="si">{}</span><span class="s2"> = </span><span class="si">{}</span><span class="s2">, will attempt to download in check_input_data phase&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                        <span class="n">name</span><span class="p">,</span> <span class="n">one_abs_file_path</span><span class="p">))</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                        <span class="s2">&quot;File not found: </span><span class="si">{}</span><span class="s2"> = </span><span class="si">{}</span><span class="s2">, will attempt to download in check_input_data phase&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                            <span class="n">name</span><span class="p">,</span> <span class="n">one_abs_file_path</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
                 <span class="n">abs_file_paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">one_abs_file_path</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">GRID_SEP</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">abs_file_paths</span><span class="p">)</span>
 
 <div class="viewcode-block" id="NamelistGenerator.create_shr_strdata_nml"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.create_shr_strdata_nml">[docs]</a>    <span class="k">def</span> <span class="nf">create_shr_strdata_nml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Set defaults for `shr_strdata_nml` variables other than the variable domainfile &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Set defaults for `shr_strdata_nml` variables other than the variable domainfile&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_default</span><span class="p">(</span><span class="s2">&quot;datamode&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;datamode&quot;</span><span class="p">)</span> <span class="o">!=</span> <span class="s1">&#39;NULL&#39;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">add_default</span><span class="p">(</span><span class="s2">&quot;streams&quot;</span><span class="p">,</span>
-                             <span class="n">value</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_streams_namelists</span><span class="p">[</span><span class="s2">&quot;streams&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;datamode&quot;</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">&quot;NULL&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_default</span><span class="p">(</span><span class="s2">&quot;streams&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_streams_namelists</span><span class="p">[</span><span class="s2">&quot;streams&quot;</span><span class="p">])</span>
             <span class="k">for</span> <span class="n">variable</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_streams_variables</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">add_default</span><span class="p">(</span><span class="n">variable</span><span class="p">,</span>
-                                 <span class="n">value</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_streams_namelists</span><span class="p">[</span><span class="n">variable</span><span class="p">])</span></div>
+                <span class="bp">self</span><span class="o">.</span><span class="n">add_default</span><span class="p">(</span><span class="n">variable</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_streams_namelists</span><span class="p">[</span><span class="n">variable</span><span class="p">])</span></div>
 
 <div class="viewcode-block" id="NamelistGenerator.get_group_variables"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.get_group_variables">[docs]</a>    <span class="k">def</span> <span class="nf">get_group_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group_name</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_namelist</span><span class="o">.</span><span class="n">get_group_variables</span><span class="p">(</span><span class="n">group_name</span><span class="p">)</span></div>
@@ -895,8 +960,8 @@
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">data_list_path</span><span class="p">):</span>
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">data_list_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">input_data_list</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">input_data_list</span><span class="p">:</span>
-                    <span class="n">hashValue</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
-                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span> <span class="s2">&quot;Found line </span><span class="si">{}</span><span class="s2"> with hash </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">line</span><span class="p">,</span><span class="n">hashValue</span><span class="p">))</span>
+                    <span class="n">hashValue</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Found line </span><span class="si">{}</span><span class="s2"> with hash </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">hashValue</span><span class="p">))</span>
                     <span class="n">lines_hash</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">hashValue</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">lines_hash</span>
 
@@ -907,20 +972,28 @@
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">data_list_path</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">input_data_list</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">group_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_namelist</span><span class="o">.</span><span class="n">get_group_names</span><span class="p">():</span>
                 <span class="k">for</span> <span class="n">variable_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_namelist</span><span class="o">.</span><span class="n">get_variable_names</span><span class="p">(</span><span class="n">group_name</span><span class="p">):</span>
-                    <span class="n">input_pathname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_definition</span><span class="o">.</span><span class="n">get_node_element_info</span><span class="p">(</span><span class="n">variable_name</span><span class="p">,</span> <span class="s2">&quot;input_pathname&quot;</span><span class="p">)</span>
+                    <span class="n">input_pathname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_definition</span><span class="o">.</span><span class="n">get_node_element_info</span><span class="p">(</span>
+                        <span class="n">variable_name</span><span class="p">,</span> <span class="s2">&quot;input_pathname&quot;</span>
+                    <span class="p">)</span>
                     <span class="k">if</span> <span class="n">input_pathname</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                         <span class="c1"># This is where we end up for all variables that are paths</span>
                         <span class="c1"># to input data files.</span>
-                        <span class="n">literals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_namelist</span><span class="o">.</span><span class="n">get_variable_value</span><span class="p">(</span><span class="n">group_name</span><span class="p">,</span> <span class="n">variable_name</span><span class="p">)</span>
+                        <span class="n">literals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_namelist</span><span class="o">.</span><span class="n">get_variable_value</span><span class="p">(</span>
+                            <span class="n">group_name</span><span class="p">,</span> <span class="n">variable_name</span>
+                        <span class="p">)</span>
                         <span class="k">for</span> <span class="n">literal</span> <span class="ow">in</span> <span class="n">literals</span><span class="p">:</span>
                             <span class="n">file_path</span> <span class="o">=</span> <span class="n">character_literal_to_string</span><span class="p">(</span><span class="n">literal</span><span class="p">)</span>
-                            <span class="bp">self</span><span class="o">.</span><span class="n">_add_file_to_input_data_list</span><span class="p">(</span><span class="n">input_data_list</span><span class="o">=</span><span class="n">input_data_list</span><span class="p">,</span>
-                                                              <span class="n">variable_name</span><span class="o">=</span><span class="n">variable_name</span><span class="p">,</span>
-                                                              <span class="n">file_path</span><span class="o">=</span><span class="n">file_path</span><span class="p">,</span>
-                                                              <span class="n">input_pathname</span><span class="o">=</span><span class="n">input_pathname</span><span class="p">,</span>
-                                                              <span class="n">lines_hash</span><span class="o">=</span><span class="n">lines_hash</span><span class="p">)</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">_add_file_to_input_data_list</span><span class="p">(</span>
+                                <span class="n">input_data_list</span><span class="o">=</span><span class="n">input_data_list</span><span class="p">,</span>
+                                <span class="n">variable_name</span><span class="o">=</span><span class="n">variable_name</span><span class="p">,</span>
+                                <span class="n">file_path</span><span class="o">=</span><span class="n">file_path</span><span class="p">,</span>
+                                <span class="n">input_pathname</span><span class="o">=</span><span class="n">input_pathname</span><span class="p">,</span>
+                                <span class="n">lines_hash</span><span class="o">=</span><span class="n">lines_hash</span><span class="p">,</span>
+                            <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_add_file_to_input_data_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data_list</span><span class="p">,</span> <span class="n">variable_name</span><span class="p">,</span> <span class="n">file_path</span><span class="p">,</span> <span class="n">input_pathname</span><span class="p">,</span> <span class="n">lines_hash</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_add_file_to_input_data_list</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">input_data_list</span><span class="p">,</span> <span class="n">variable_name</span><span class="p">,</span> <span class="n">file_path</span><span class="p">,</span> <span class="n">input_pathname</span><span class="p">,</span> <span class="n">lines_hash</span>
+    <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Add one file to the input data list, if needed</span>
 
 <span class="sd">        It&#39;s possible that file_path actually contains multiple files delimited by</span>
@@ -938,24 +1011,27 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">one_file_path</span> <span class="ow">in</span> <span class="n">file_path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">GRID_SEP</span><span class="p">):</span>
             <span class="c1"># NOTE - these are hard-coded here and a better way is to make these extensible</span>
-            <span class="k">if</span> <span class="n">one_file_path</span> <span class="o">==</span> <span class="s1">&#39;UNSET&#39;</span> <span class="ow">or</span> <span class="n">one_file_path</span> <span class="o">==</span> <span class="s1">&#39;idmap&#39;</span> <span class="ow">or</span> <span class="n">one_file_path</span> <span class="o">==</span> <span class="s1">&#39;idmap_ignore&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="n">one_file_path</span> <span class="o">==</span> <span class="s2">&quot;UNSET&quot;</span>
+                <span class="ow">or</span> <span class="n">one_file_path</span> <span class="o">==</span> <span class="s2">&quot;idmap&quot;</span>
+                <span class="ow">or</span> <span class="n">one_file_path</span> <span class="o">==</span> <span class="s2">&quot;idmap_ignore&quot;</span>
+            <span class="p">):</span>
                 <span class="k">continue</span>
-            <span class="k">if</span> <span class="n">input_pathname</span> <span class="o">==</span> <span class="s1">&#39;abs&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">input_pathname</span> <span class="o">==</span> <span class="s2">&quot;abs&quot;</span><span class="p">:</span>
                 <span class="c1"># No further mangling needed for absolute paths.</span>
                 <span class="c1"># At this point, there are overwrites that should be ignored</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="n">one_file_path</span><span class="p">):</span>
                     <span class="k">continue</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">pass</span>
-            <span class="k">elif</span> <span class="n">input_pathname</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;rel:&#39;</span><span class="p">):</span>
+            <span class="k">elif</span> <span class="n">input_pathname</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;rel:&quot;</span><span class="p">):</span>
                 <span class="c1"># The part past &quot;rel&quot; is the name of a variable that</span>
                 <span class="c1"># this variable specifies its path relative to.</span>
                 <span class="n">root_var</span> <span class="o">=</span> <span class="n">input_pathname</span><span class="p">[</span><span class="mi">4</span><span class="p">:]</span>
                 <span class="n">root_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">root_var</span><span class="p">)</span>
                 <span class="n">one_file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root_dir</span><span class="p">,</span> <span class="n">one_file_path</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">expect</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span>
-                       <span class="s2">&quot;Bad input_pathname value: </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">input_pathname</span><span class="p">))</span>
+                <span class="n">expect</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;Bad input_pathname value: </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">input_pathname</span><span class="p">))</span>
 
             <span class="c1"># Write to the input data list.</span>
             <span class="c1">#</span>
@@ -963,14 +1039,16 @@
             <span class="c1"># seems okay for check_input_data, but if it becomes a problem, we could</span>
             <span class="c1"># change this, e.g., appending an index to the end of variable_name.</span>
             <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> = </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">variable_name</span><span class="p">,</span> <span class="n">one_file_path</span><span class="p">)</span>
-            <span class="n">hashValue</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+            <span class="n">hashValue</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">hashValue</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">lines_hash</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Adding line </span><span class="si">{}</span><span class="s2"> with hash </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">string</span><span class="p">,</span><span class="n">hashValue</span><span class="p">))</span>
-                <span class="n">input_data_list</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">string</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Adding line </span><span class="si">{}</span><span class="s2"> with hash </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">hashValue</span><span class="p">))</span>
+                <span class="n">input_data_list</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">string</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Line already in file </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">string</span><span class="p">))</span>
 
-<div class="viewcode-block" id="NamelistGenerator.write_output_file"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.write_output_file">[docs]</a>    <span class="k">def</span> <span class="nf">write_output_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">namelist_file</span><span class="p">,</span> <span class="n">data_list_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">groups</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sorted_groups</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="NamelistGenerator.write_output_file"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.write_output_file">[docs]</a>    <span class="k">def</span> <span class="nf">write_output_file</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">namelist_file</span><span class="p">,</span> <span class="n">data_list_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">groups</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sorted_groups</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Write out the namelists and input data files.</span>
 
 <span class="sd">        The `namelist_file` and `modelio_file` are the locations to which the</span>
@@ -994,27 +1072,36 @@
         <span class="k">if</span> <span class="n">data_list_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_write_input_files</span><span class="p">(</span><span class="n">data_list_path</span><span class="p">)</span></div>
 
-
     <span class="c1"># For MCT</span>
-<div class="viewcode-block" id="NamelistGenerator.add_nmlcontents"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.add_nmlcontents">[docs]</a>    <span class="k">def</span> <span class="nf">add_nmlcontents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">group</span><span class="p">,</span> <span class="n">append</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">format_</span><span class="o">=</span><span class="s2">&quot;nmlcontents&quot;</span><span class="p">,</span> <span class="n">sorted_groups</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Write only contents of nml group &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_namelist</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">groups</span><span class="o">=</span><span class="p">[</span><span class="n">group</span><span class="p">],</span> <span class="n">append</span><span class="o">=</span><span class="n">append</span><span class="p">,</span> <span class="n">format_</span><span class="o">=</span><span class="n">format_</span><span class="p">,</span> <span class="n">sorted_groups</span><span class="o">=</span><span class="n">sorted_groups</span><span class="p">)</span></div>
+<div class="viewcode-block" id="NamelistGenerator.add_nmlcontents"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.add_nmlcontents">[docs]</a>    <span class="k">def</span> <span class="nf">add_nmlcontents</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">group</span><span class="p">,</span> <span class="n">append</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">format_</span><span class="o">=</span><span class="s2">&quot;nmlcontents&quot;</span><span class="p">,</span> <span class="n">sorted_groups</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Write only contents of nml group&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_namelist</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
+            <span class="n">filename</span><span class="p">,</span>
+            <span class="n">groups</span><span class="o">=</span><span class="p">[</span><span class="n">group</span><span class="p">],</span>
+            <span class="n">append</span><span class="o">=</span><span class="n">append</span><span class="p">,</span>
+            <span class="n">format_</span><span class="o">=</span><span class="n">format_</span><span class="p">,</span>
+            <span class="n">sorted_groups</span><span class="o">=</span><span class="n">sorted_groups</span><span class="p">,</span>
+        <span class="p">)</span></div>
 
 <div class="viewcode-block" id="NamelistGenerator.write_seq_maps"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.write_seq_maps">[docs]</a>    <span class="k">def</span> <span class="nf">write_seq_maps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Write mct out seq_maps.rc&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Write mct out seq_maps.rc&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_namelist</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">groups</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;seq_maps&quot;</span><span class="p">],</span> <span class="n">format_</span><span class="o">=</span><span class="s2">&quot;rc&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="NamelistGenerator.write_modelio_file"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.write_modelio_file">[docs]</a>    <span class="k">def</span> <span class="nf">write_modelio_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Write mct component modelio files&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Write mct component modelio files&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_namelist</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">groups</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;modelio&quot;</span><span class="p">,</span> <span class="s2">&quot;pio_inparm&quot;</span><span class="p">],</span> <span class="n">format_</span><span class="o">=</span><span class="s2">&quot;nml&quot;</span><span class="p">)</span></div>
 
     <span class="c1"># For NUOPC</span>
 <div class="viewcode-block" id="NamelistGenerator.write_nuopc_modelio_file"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.write_nuopc_modelio_file">[docs]</a>    <span class="k">def</span> <span class="nf">write_nuopc_modelio_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Write nuopc component modelio files&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Write nuopc component modelio files&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_namelist</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">groups</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;pio_inparm&quot;</span><span class="p">],</span> <span class="n">format_</span><span class="o">=</span><span class="s2">&quot;nml&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="NamelistGenerator.write_nuopc_config_file"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.write_nuopc_config_file">[docs]</a>    <span class="k">def</span> <span class="nf">write_nuopc_config_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">data_list_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sorted_groups</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Write the nuopc config file&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="NamelistGenerator.write_nuopc_config_file"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.write_nuopc_config_file">[docs]</a>    <span class="k">def</span> <span class="nf">write_nuopc_config_file</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">data_list_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sorted_groups</span><span class="o">=</span><span class="kc">False</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Write the nuopc config file&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_definition</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_namelist</span><span class="p">)</span>
         <span class="n">groups</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_namelist</span><span class="o">.</span><span class="n">get_group_names</span><span class="p">()</span>
         <span class="c1"># write the config file</span>
@@ -1061,6 +1148,7 @@
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>

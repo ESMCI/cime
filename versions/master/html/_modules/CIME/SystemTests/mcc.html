@@ -30,6 +30,10 @@
   
 
   
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
 
   
         <link rel="index" title="Index"
@@ -190,20 +194,22 @@
 
 
 <div class="viewcode-block" id="MCC"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.mcc.MCC">[docs]</a><span class="k">class</span> <span class="nc">MCC</span><span class="p">(</span><span class="n">SystemTestsCompareTwo</span><span class="p">):</span>
-
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_comp_classes</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_test_instances</span> <span class="o">=</span> <span class="mi">3</span>
-        <span class="n">SystemTestsCompareTwo</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span>
-                                       <span class="n">separate_builds</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-                                       <span class="n">run_two_suffix</span> <span class="o">=</span> <span class="s1">&#39;single_instance&#39;</span><span class="p">,</span>
-                                       <span class="n">run_two_description</span> <span class="o">=</span> <span class="s1">&#39;single instance&#39;</span><span class="p">,</span>
-                                       <span class="n">run_one_description</span> <span class="o">=</span> <span class="s1">&#39;multi driver&#39;</span><span class="p">)</span>
+        <span class="n">SystemTestsCompareTwo</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">case</span><span class="p">,</span>
+            <span class="n">separate_builds</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">run_two_suffix</span><span class="o">=</span><span class="s2">&quot;single_instance&quot;</span><span class="p">,</span>
+            <span class="n">run_two_description</span><span class="o">=</span><span class="s2">&quot;single instance&quot;</span><span class="p">,</span>
+            <span class="n">run_one_description</span><span class="o">=</span><span class="s2">&quot;multi driver&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_case_one_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># The multicoupler case will increase the number of tasks by the</span>
         <span class="c1"># number of requested couplers.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;MULTI_DRIVER&quot;</span><span class="p">,</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;MULTI_DRIVER&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;NINST&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_test_instances</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_case_two_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -247,6 +253,7 @@
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/doctools.js"></script>

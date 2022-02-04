@@ -30,6 +30,10 @@
   
 
   
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
 
   
         <link rel="index" title="Index"
@@ -195,6 +199,7 @@
 
 <span class="kn">import</span> <span class="nn">glob</span><span class="o">,</span> <span class="nn">six</span>
 
+
 <div class="viewcode-block" id="check_pelayouts_require_rebuild"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.check_pelayouts_require_rebuild">[docs]</a><span class="k">def</span> <span class="nf">check_pelayouts_require_rebuild</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">models</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create if we require a rebuild, expects cwd is caseroot</span>
@@ -203,25 +208,36 @@
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">locked_pes</span><span class="p">):</span>
         <span class="c1"># Look to see if $comp_PE_CHANGE_REQUIRES_REBUILD is defined</span>
         <span class="c1"># for any component</span>
-        <span class="n">env_mach_pes_locked</span> <span class="o">=</span> <span class="n">EnvMachPes</span><span class="p">(</span><span class="n">infile</span><span class="o">=</span><span class="n">locked_pes</span><span class="p">,</span> <span class="n">components</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_values</span><span class="p">(</span><span class="s2">&quot;COMP_CLASSES&quot;</span><span class="p">))</span>
+        <span class="n">env_mach_pes_locked</span> <span class="o">=</span> <span class="n">EnvMachPes</span><span class="p">(</span>
+            <span class="n">infile</span><span class="o">=</span><span class="n">locked_pes</span><span class="p">,</span> <span class="n">components</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_values</span><span class="p">(</span><span class="s2">&quot;COMP_CLASSES&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
         <span class="k">for</span> <span class="n">comp</span> <span class="ow">in</span> <span class="n">models</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_PE_CHANGE_REQUIRES_REBUILD&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">)):</span>
                 <span class="c1"># Changing these values in env_mach_pes.xml will force</span>
                 <span class="c1"># you to clean the corresponding component</span>
-                <span class="n">old_tasks</span>   <span class="o">=</span> <span class="n">env_mach_pes_locked</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;NTASKS_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">))</span>
+                <span class="n">old_tasks</span> <span class="o">=</span> <span class="n">env_mach_pes_locked</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;NTASKS_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">))</span>
                 <span class="n">old_threads</span> <span class="o">=</span> <span class="n">env_mach_pes_locked</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;NTHRDS_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">))</span>
-                <span class="n">old_inst</span>    <span class="o">=</span> <span class="n">env_mach_pes_locked</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;NINST_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">))</span>
+                <span class="n">old_inst</span> <span class="o">=</span> <span class="n">env_mach_pes_locked</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;NINST_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">))</span>
 
-                <span class="n">new_tasks</span>   <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;NTASKS_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">))</span>
+                <span class="n">new_tasks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;NTASKS_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">))</span>
                 <span class="n">new_threads</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;NTHRDS_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">))</span>
-                <span class="n">new_inst</span>    <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;NINST_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">))</span>
+                <span class="n">new_inst</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;NINST_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">))</span>
 
-                <span class="k">if</span> <span class="n">old_tasks</span> <span class="o">!=</span> <span class="n">new_tasks</span> <span class="ow">or</span> <span class="n">old_threads</span> <span class="o">!=</span> <span class="n">new_threads</span> <span class="ow">or</span> <span class="n">old_inst</span> <span class="o">!=</span> <span class="n">new_inst</span><span class="p">:</span>
-                    <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> pe change requires clean build </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">,</span> <span class="n">old_tasks</span><span class="p">,</span> <span class="n">new_tasks</span><span class="p">))</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="n">old_tasks</span> <span class="o">!=</span> <span class="n">new_tasks</span>
+                    <span class="ow">or</span> <span class="n">old_threads</span> <span class="o">!=</span> <span class="n">new_threads</span>
+                    <span class="ow">or</span> <span class="n">old_inst</span> <span class="o">!=</span> <span class="n">new_inst</span>
+                <span class="p">):</span>
+                    <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                        <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> pe change requires clean build </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                            <span class="n">comp</span><span class="p">,</span> <span class="n">old_tasks</span><span class="p">,</span> <span class="n">new_tasks</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
                     <span class="n">cleanflag</span> <span class="o">=</span> <span class="n">comp</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
                     <span class="n">clean</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cleanlist</span><span class="o">=</span><span class="p">[</span><span class="n">cleanflag</span><span class="p">])</span>
 
         <span class="n">unlock_file</span><span class="p">(</span><span class="s2">&quot;env_mach_pes.xml&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">))</span></div>
+
 
 <div class="viewcode-block" id="check_lockedfile"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.check_lockedfile">[docs]</a><span class="k">def</span> <span class="nf">check_lockedfile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filebase</span><span class="p">):</span>
     <span class="n">caseroot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">)</span>
@@ -230,21 +246,23 @@
     <span class="n">lfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="s2">&quot;LockedFiles&quot;</span><span class="p">,</span> <span class="n">filebase</span><span class="p">)</span>
     <span class="n">components</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_values</span><span class="p">(</span><span class="s2">&quot;COMP_CLASSES&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">cfile</span><span class="p">):</span>
-        <span class="n">objname</span> <span class="o">=</span> <span class="n">filebase</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">objname</span> <span class="o">=</span> <span class="n">filebase</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">objname</span> <span class="o">==</span> <span class="s2">&quot;env_build&quot;</span><span class="p">:</span>
-            <span class="n">f1obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_env</span><span class="p">(</span><span class="s1">&#39;build&#39;</span><span class="p">)</span>
+            <span class="n">f1obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_env</span><span class="p">(</span><span class="s2">&quot;build&quot;</span><span class="p">)</span>
             <span class="n">f2obj</span> <span class="o">=</span> <span class="n">EnvBuild</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="n">lfile</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">objname</span> <span class="o">==</span> <span class="s2">&quot;env_mach_pes&quot;</span><span class="p">:</span>
-            <span class="n">f1obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_env</span><span class="p">(</span><span class="s1">&#39;mach_pes&#39;</span><span class="p">)</span>
+            <span class="n">f1obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_env</span><span class="p">(</span><span class="s2">&quot;mach_pes&quot;</span><span class="p">)</span>
             <span class="n">f2obj</span> <span class="o">=</span> <span class="n">EnvMachPes</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="n">lfile</span><span class="p">,</span> <span class="n">components</span><span class="o">=</span><span class="n">components</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">objname</span> <span class="o">==</span> <span class="s2">&quot;env_case&quot;</span><span class="p">:</span>
-            <span class="n">f1obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_env</span><span class="p">(</span><span class="s1">&#39;case&#39;</span><span class="p">)</span>
+            <span class="n">f1obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_env</span><span class="p">(</span><span class="s2">&quot;case&quot;</span><span class="p">)</span>
             <span class="n">f2obj</span> <span class="o">=</span> <span class="n">EnvCase</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="n">lfile</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">objname</span> <span class="o">==</span> <span class="s2">&quot;env_batch&quot;</span><span class="p">:</span>
-            <span class="n">f1obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_env</span><span class="p">(</span><span class="s1">&#39;batch&#39;</span><span class="p">)</span>
+            <span class="n">f1obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_env</span><span class="p">(</span><span class="s2">&quot;batch&quot;</span><span class="p">)</span>
             <span class="n">f2obj</span> <span class="o">=</span> <span class="n">EnvBatch</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="n">lfile</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Locked XML file &#39;</span><span class="si">{}</span><span class="s2">&#39; is not current being handled&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filebase</span><span class="p">))</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;Locked XML file &#39;</span><span class="si">{}</span><span class="s2">&#39; is not current being handled&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filebase</span><span class="p">)</span>
+            <span class="p">)</span>
             <span class="k">return</span>
 
         <span class="n">diffs</span> <span class="o">=</span> <span class="n">f1obj</span><span class="o">.</span><span class="n">compare_xml</span><span class="p">(</span><span class="n">f2obj</span><span class="p">)</span>
@@ -254,29 +272,41 @@
             <span class="n">toggle_build_status</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">diffs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
                 <span class="k">if</span> <span class="n">key</span> <span class="o">!=</span> <span class="s2">&quot;BUILD_COMPLETE&quot;</span><span class="p">:</span>
-                    <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;  found difference in </span><span class="si">{}</span><span class="s2"> : case </span><span class="si">{}</span><span class="s2"> locked </span><span class="si">{}</span><span class="s2">&quot;</span>
-                                    <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">repr</span><span class="p">(</span><span class="n">diffs</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">repr</span><span class="p">(</span><span class="n">diffs</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">1</span><span class="p">])))</span>
+                    <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                        <span class="s2">&quot;  found difference in </span><span class="si">{}</span><span class="s2"> : case </span><span class="si">{}</span><span class="s2"> locked </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                            <span class="n">key</span><span class="p">,</span> <span class="nb">repr</span><span class="p">(</span><span class="n">diffs</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">repr</span><span class="p">(</span><span class="n">diffs</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
                     <span class="n">toggle_build_status</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="k">if</span> <span class="n">objname</span> <span class="o">==</span> <span class="s2">&quot;env_mach_pes&quot;</span><span class="p">:</span>
                 <span class="n">expect</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;Invoke case.setup --reset &quot;</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">objname</span> <span class="o">==</span> <span class="s2">&quot;env_case&quot;</span><span class="p">:</span>
-                <span class="n">expect</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;Cannot change file env_case.xml, please&quot;</span>
-                       <span class="s2">&quot; recover the original copy from LockedFiles&quot;</span><span class="p">)</span>
+                <span class="n">expect</span><span class="p">(</span>
+                    <span class="kc">False</span><span class="p">,</span>
+                    <span class="s2">&quot;Cannot change file env_case.xml, please&quot;</span>
+                    <span class="s2">&quot; recover the original copy from LockedFiles&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
             <span class="k">elif</span> <span class="n">objname</span> <span class="o">==</span> <span class="s2">&quot;env_build&quot;</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">toggle_build_status</span><span class="p">:</span>
                     <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Setting build complete to False&quot;</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;BUILD_COMPLETE&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
                     <span class="k">if</span> <span class="s2">&quot;PIO_VERSION&quot;</span> <span class="ow">in</span> <span class="n">diffs</span><span class="p">:</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;BUILD_STATUS&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-                        <span class="n">logging</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">&quot;Changing PIO_VERSION requires running &quot;</span>
-                                         <span class="s2">&quot;case.build --clean-all and rebuilding&quot;</span><span class="p">)</span>
+                        <span class="n">logging</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span>
+                            <span class="s2">&quot;Changing PIO_VERSION requires running &quot;</span>
+                            <span class="s2">&quot;case.build --clean-all and rebuilding&quot;</span>
+                        <span class="p">)</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;BUILD_STATUS&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 
             <span class="k">elif</span> <span class="n">objname</span> <span class="o">==</span> <span class="s2">&quot;env_batch&quot;</span><span class="p">:</span>
-                <span class="n">expect</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;Batch configuration has changed, please run case.setup --reset&quot;</span><span class="p">)</span>
+                <span class="n">expect</span><span class="p">(</span>
+                    <span class="kc">False</span><span class="p">,</span>
+                    <span class="s2">&quot;Batch configuration has changed, please run case.setup --reset&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">expect</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;&#39;</span><span class="si">{}</span><span class="s2">&#39; diff was not handled&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">objname</span><span class="p">))</span></div>
+
 
 <div class="viewcode-block" id="check_lockedfiles"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.check_lockedfiles">[docs]</a><span class="k">def</span> <span class="nf">check_lockedfiles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -291,7 +321,7 @@
     <span class="k">for</span> <span class="n">lfile</span> <span class="ow">in</span> <span class="n">lockedfiles</span><span class="p">:</span>
         <span class="n">fpart</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">lfile</span><span class="p">)</span>
         <span class="c1"># ignore files used for tests such as env_mach_pes.ERP1.xml by looking for extra dots in the name</span>
-        <span class="k">if</span> <span class="n">fpart</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">fpart</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">continue</span>
 
         <span class="n">do_skip</span> <span class="o">=</span> <span class="kc">False</span>
@@ -341,6 +371,7 @@
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/doctools.js"></script>

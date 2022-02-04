@@ -2,7 +2,7 @@
 .. _cs.status:
 
 ####################################################
-cs.status 
+cs.status
 ####################################################
 
 **cs.status** is a script in CIMEROOT/scripts/Tools.

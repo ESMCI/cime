@@ -30,6 +30,10 @@
   
 
   
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
 
   
         <link rel="index" title="Index"
@@ -185,8 +189,8 @@
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
-<div class="viewcode-block" id="ERS2"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.ers2.ERS2">[docs]</a><span class="k">class</span> <span class="nc">ERS2</span><span class="p">(</span><span class="n">SystemTestsCommon</span><span class="p">):</span>
 
+<div class="viewcode-block" id="ERS2"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.ers2.ERS2">[docs]</a><span class="k">class</span> <span class="nc">ERS2</span><span class="p">(</span><span class="n">SystemTestsCommon</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        initialize an object interface to the ERS2 system test</span>
@@ -194,38 +198,46 @@
         <span class="n">SystemTestsCommon</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_ers2_first_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">stop_n</span>      <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;STOP_N&quot;</span><span class="p">)</span>
+        <span class="n">stop_n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;STOP_N&quot;</span><span class="p">)</span>
         <span class="n">stop_option</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;STOP_OPTION&quot;</span><span class="p">)</span>
-        <span class="n">rest_n</span>      <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;REST_N&quot;</span><span class="p">)</span>
+        <span class="n">rest_n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;REST_N&quot;</span><span class="p">)</span>
 
         <span class="c1"># Don&#39;t need restarts for first run</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;REST_OPTION&quot;</span><span class="p">,</span><span class="s2">&quot;never&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;REST_OPTION&quot;</span><span class="p">,</span> <span class="s2">&quot;never&quot;</span><span class="p">)</span>
 
         <span class="n">expect</span><span class="p">(</span><span class="n">stop_n</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;Bad STOP_N: </span><span class="si">{:d}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">stop_n</span><span class="p">))</span>
         <span class="n">expect</span><span class="p">(</span><span class="n">stop_n</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;ERROR: stop_n value </span><span class="si">{:d}</span><span class="s2"> too short&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">stop_n</span><span class="p">))</span>
 
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;doing an </span><span class="si">{0}</span><span class="s2"> </span><span class="si">{1}</span><span class="s2"> initial test with restart file at </span><span class="si">{2}</span><span class="s2"> </span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">stop_n</span><span class="p">),</span> <span class="n">stop_option</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">rest_n</span><span class="p">)))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="s2">&quot;doing an </span><span class="si">{0}</span><span class="s2"> </span><span class="si">{1}</span><span class="s2"> initial test with restart file at </span><span class="si">{2}</span><span class="s2"> </span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">stop_n</span><span class="p">),</span> <span class="n">stop_option</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">rest_n</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">run_indv</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_ers2_second_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">stop_n</span>      <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;STOP_N&quot;</span><span class="p">)</span>
+        <span class="n">stop_n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;STOP_N&quot;</span><span class="p">)</span>
         <span class="n">stop_option</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;STOP_OPTION&quot;</span><span class="p">)</span>
 
-        <span class="n">rest_n</span> <span class="o">=</span> <span class="n">stop_n</span><span class="o">/</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">rest_n</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">stop_n</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
         <span class="n">stop_new</span> <span class="o">=</span> <span class="n">rest_n</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;REST_OPTION&quot;</span><span class="p">,</span><span class="n">stop_option</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;REST_OPTION&quot;</span><span class="p">,</span> <span class="n">stop_option</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;STOP_N&quot;</span><span class="p">,</span> <span class="n">stop_new</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;doing first part </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> restart test&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">stop_new</span><span class="p">),</span> <span class="n">stop_option</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="s2">&quot;doing first part </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> restart test&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">stop_new</span><span class="p">),</span> <span class="n">stop_option</span><span class="p">)</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">run_indv</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;intermediate&quot;</span><span class="p">)</span>
 
-        <span class="n">stop_new</span> <span class="o">=</span> <span class="n">stop_n</span> <span class="o">-</span> <span class="n">rest_n</span>
+        <span class="n">stop_new</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">stop_n</span> <span class="o">-</span> <span class="n">rest_n</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;STOP_N&quot;</span><span class="p">,</span> <span class="n">stop_new</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;CONTINUE_RUN&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;REST_OPTION&quot;</span><span class="p">,</span><span class="s2">&quot;never&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;REST_OPTION&quot;</span><span class="p">,</span> <span class="s2">&quot;never&quot;</span><span class="p">)</span>
 
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;doing second part </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> restart test&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">stop_new</span><span class="p">),</span> <span class="n">stop_option</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="s2">&quot;doing second part </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> restart test&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">stop_new</span><span class="p">),</span> <span class="n">stop_option</span><span class="p">)</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">run_indv</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;rest&quot;</span><span class="p">)</span>
 
         <span class="c1"># Compare restart file</span>
@@ -273,6 +285,7 @@
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/doctools.js"></script>

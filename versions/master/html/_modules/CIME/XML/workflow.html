@@ -30,6 +30,10 @@
   
 
   
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
 
   
         <link rel="index" title="Index"
@@ -188,8 +192,8 @@
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Workflow"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.workflow.Workflow">[docs]</a><span class="k">class</span> <span class="nc">Workflow</span><span class="p">(</span><span class="n">GenericXML</span><span class="p">):</span>
 
+<div class="viewcode-block" id="Workflow"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.workflow.Workflow">[docs]</a><span class="k">class</span> <span class="nc">Workflow</span><span class="p">(</span><span class="n">GenericXML</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        initialize an object</span>
@@ -204,9 +208,9 @@
 
         <span class="n">GenericXML</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infile</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">)</span>
 
-        <span class="c1">#Append the contents of $HOME/.cime/config_workflow.xml if it exists</span>
-        <span class="c1">#This could cause problems if node matchs are repeated when only one is expected</span>
-        <span class="n">infile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;HOME&quot;</span><span class="p">),</span><span class="s2">&quot;.cime&quot;</span><span class="p">,</span><span class="s2">&quot;config_workflow.xml&quot;</span><span class="p">)</span>
+        <span class="c1"># Append the contents of $HOME/.cime/config_workflow.xml if it exists</span>
+        <span class="c1"># This could cause problems if node matchs are repeated when only one is expected</span>
+        <span class="n">infile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;HOME&quot;</span><span class="p">),</span> <span class="s2">&quot;.cime&quot;</span><span class="p">,</span> <span class="s2">&quot;config_workflow.xml&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">infile</span><span class="p">):</span>
             <span class="n">GenericXML</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infile</span><span class="p">)</span>
 
@@ -220,8 +224,13 @@
         <span class="n">findmore</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="n">prepend</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">while</span> <span class="n">findmore</span><span class="p">:</span>
-            <span class="n">bnode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_optional_child</span><span class="p">(</span><span class="s2">&quot;workflow_jobs&quot;</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span><span class="n">workflowid</span><span class="p">})</span>
-            <span class="n">expect</span><span class="p">(</span><span class="n">bnode</span><span class="p">,</span><span class="s2">&quot;No workflow </span><span class="si">{}</span><span class="s2"> found in file </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">workflowid</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">))</span>
+            <span class="n">bnode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_optional_child</span><span class="p">(</span>
+                <span class="s2">&quot;workflow_jobs&quot;</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">workflowid</span><span class="p">}</span>
+            <span class="p">)</span>
+            <span class="n">expect</span><span class="p">(</span>
+                <span class="n">bnode</span><span class="p">,</span>
+                <span class="s2">&quot;No workflow </span><span class="si">{}</span><span class="s2"> found in file </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">workflowid</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">),</span>
+            <span class="p">)</span>
             <span class="k">if</span> <span class="n">prepend</span><span class="p">:</span>
                 <span class="n">bnodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">bnode</span><span class="p">]</span> <span class="o">+</span> <span class="n">bnodes</span>
             <span class="k">else</span><span class="p">:</span>
@@ -243,7 +252,7 @@
                     <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="n">jnode</span><span class="p">):</span>
                         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="n">child</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;runtime_parameters&quot;</span><span class="p">:</span>
                             <span class="n">attrib</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">attrib</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
-                            <span class="k">if</span> <span class="n">attrib</span> <span class="ow">and</span> <span class="n">attrib</span> <span class="o">==</span> <span class="p">{</span><span class="s1">&#39;MACH&#39;</span> <span class="p">:</span> <span class="n">machine</span><span class="p">}:</span>
+                            <span class="k">if</span> <span class="n">attrib</span> <span class="ow">and</span> <span class="n">attrib</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;MACH&quot;</span><span class="p">:</span> <span class="n">machine</span><span class="p">}:</span>
                                 <span class="k">for</span> <span class="n">rtchild</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="n">child</span><span class="p">):</span>
                                     <span class="n">jdict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="n">rtchild</span><span class="p">)]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">rtchild</span><span class="p">)</span>
                             <span class="k">elif</span> <span class="ow">not</span> <span class="n">attrib</span><span class="p">:</span>
@@ -296,6 +305,7 @@
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/doctools.js"></script>

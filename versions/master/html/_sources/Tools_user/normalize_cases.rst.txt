@@ -2,7 +2,7 @@
 .. _normalize_cases:
 
 ####################################################
-normalize_cases 
+normalize_cases
 ####################################################
 
 **normalize_cases** is a script in CIMEROOT/scripts/Tools.

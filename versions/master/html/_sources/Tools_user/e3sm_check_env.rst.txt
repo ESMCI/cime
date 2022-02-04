@@ -2,7 +2,7 @@
 .. _e3sm_check_env:
 
 ####################################################
-e3sm_check_env 
+e3sm_check_env
 ####################################################
 
 **e3sm_check_env** is a script in CIMEROOT/scripts/Tools.

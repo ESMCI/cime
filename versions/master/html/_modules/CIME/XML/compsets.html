@@ -30,6 +30,10 @@
   
 
   
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
 
   
         <link rel="index" title="Index"
@@ -188,8 +192,8 @@
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Compsets"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.compsets.Compsets">[docs]</a><span class="k">class</span> <span class="nc">Compsets</span><span class="p">(</span><span class="n">GenericXML</span><span class="p">):</span>
 
+<div class="viewcode-block" id="Compsets"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.compsets.Compsets">[docs]</a><span class="k">class</span> <span class="nc">Compsets</span><span class="p">(</span><span class="n">GenericXML</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">files</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">files</span> <span class="o">=</span> <span class="n">Files</span><span class="p">()</span>
@@ -208,21 +212,23 @@
         <span class="n">science_support</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
-            <span class="n">alias</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_element_text</span><span class="p">(</span><span class="s2">&quot;alias&quot;</span><span class="p">,</span><span class="n">root</span><span class="o">=</span><span class="n">node</span><span class="p">)</span>
-            <span class="n">lname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_element_text</span><span class="p">(</span><span class="s2">&quot;lname&quot;</span><span class="p">,</span><span class="n">root</span><span class="o">=</span><span class="n">node</span><span class="p">)</span>
+            <span class="n">alias</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_element_text</span><span class="p">(</span><span class="s2">&quot;alias&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">node</span><span class="p">)</span>
+            <span class="n">lname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_element_text</span><span class="p">(</span><span class="s2">&quot;lname&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">node</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">alias</span> <span class="o">==</span> <span class="n">name</span> <span class="ow">or</span> <span class="n">lname</span> <span class="o">==</span> <span class="n">name</span><span class="p">:</span>
                 <span class="n">science_support_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="s2">&quot;science_support&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">node</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">snode</span> <span class="ow">in</span> <span class="n">science_support_nodes</span><span class="p">:</span>
                     <span class="n">science_support</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">snode</span><span class="p">,</span> <span class="s2">&quot;grid&quot;</span><span class="p">))</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Found node match with alias: </span><span class="si">{}</span><span class="s2"> and lname: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">alias</span><span class="p">,</span> <span class="n">lname</span><span class="p">))</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                    <span class="s2">&quot;Found node match with alias: </span><span class="si">{}</span><span class="s2"> and lname: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">alias</span><span class="p">,</span> <span class="n">lname</span><span class="p">)</span>
+                <span class="p">)</span>
                 <span class="k">return</span> <span class="p">(</span><span class="n">lname</span><span class="p">,</span> <span class="n">alias</span><span class="p">,</span> <span class="n">science_support</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="p">[</span><span class="kc">False</span><span class="p">])</span></div>
 
 <div class="viewcode-block" id="Compsets.get_compset_var_settings"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.compsets.Compsets.get_compset_var_settings">[docs]</a>    <span class="k">def</span> <span class="nf">get_compset_var_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compset</span><span class="p">,</span> <span class="n">grid</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Variables can be set in config_compsets.xml in entry id settings with compset and grid attributes</span>
 <span class="sd">        find and return id value pairs here</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">entries</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_optional_child</span><span class="p">(</span><span class="s2">&quot;entries&quot;</span><span class="p">)</span>
         <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="n">entries</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -230,13 +236,15 @@
             <span class="c1"># Get an empty entryid obj to use</span>
             <span class="n">entryidobj</span> <span class="o">=</span> <span class="n">EntryID</span><span class="p">()</span>
             <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
-                <span class="n">value</span> <span class="o">=</span> <span class="n">entryidobj</span><span class="o">.</span><span class="n">get_default_value</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;grid&quot;</span><span class="p">:</span><span class="n">grid</span><span class="p">,</span> <span class="s2">&quot;compset&quot;</span><span class="p">:</span><span class="n">compset</span><span class="p">})</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">entryidobj</span><span class="o">.</span><span class="n">get_default_value</span><span class="p">(</span>
+                    <span class="n">node</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;grid&quot;</span><span class="p">:</span> <span class="n">grid</span><span class="p">,</span> <span class="s2">&quot;compset&quot;</span><span class="p">:</span> <span class="n">compset</span><span class="p">}</span>
+                <span class="p">)</span>
                 <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">),</span> <span class="n">value</span><span class="p">))</span>
 
         <span class="k">return</span> <span class="n">result</span></div>
 
-    <span class="c1">#pylint: disable=arguments-differ</span>
+    <span class="c1"># pylint: disable=arguments-differ</span>
 <div class="viewcode-block" id="Compsets.get_value"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.compsets.Compsets.get_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">resolved</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">expect</span><span class="p">(</span><span class="n">subgroup</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;This class does not support subgroups&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;help&quot;</span><span class="p">:</span>
@@ -248,7 +256,11 @@
             <span class="n">nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="s2">&quot;compset&quot;</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">node</span><span class="p">:</span>
-                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span> <span class="p">(</span><span class="s2">&quot;Here child is </span><span class="si">{}</span><span class="s2"> with value </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="n">child</span><span class="p">),</span><span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">child</span><span class="p">)))</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                        <span class="s2">&quot;Here child is </span><span class="si">{}</span><span class="s2"> with value </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="n">child</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
                     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="n">child</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;alias&quot;</span><span class="p">:</span>
                         <span class="n">alias</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
                     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="n">child</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;lname&quot;</span><span class="p">:</span>
@@ -266,15 +278,19 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;       Compset Alias: Compset Long Name &quot;</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;       --------------------------------------&quot;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">compset</span> <span class="ow">in</span> <span class="n">compsets</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;   </span><span class="si">{:20}</span><span class="s2"> : </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span><span class="s2">&quot;alias&quot;</span><span class="p">,</span><span class="n">root</span><span class="o">=</span><span class="n">compset</span><span class="p">)),</span>
-                                               <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span><span class="s2">&quot;lname&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">compset</span><span class="p">))))</span></div>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="s2">&quot;   </span><span class="si">{:20}</span><span class="s2"> : </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span><span class="s2">&quot;alias&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">compset</span><span class="p">)),</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span><span class="s2">&quot;lname&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">compset</span><span class="p">)),</span>
+                <span class="p">)</span>
+            <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Compsets.get_compset_longnames"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.compsets.Compsets.get_compset_longnames">[docs]</a>    <span class="k">def</span> <span class="nf">get_compset_longnames</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">compset_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="s2">&quot;compset&quot;</span><span class="p">)</span>
         <span class="n">longnames</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">comp</span> <span class="ow">in</span> <span class="n">compset_nodes</span><span class="p">:</span>
             <span class="n">longnames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span><span class="s2">&quot;lname&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">comp</span><span class="p">)))</span>
-        <span class="k">return</span><span class="p">(</span><span class="n">longnames</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="n">longnames</span></div></div>
 </pre></div>
 
            </div>
@@ -314,6 +330,7 @@
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/doctools.js"></script>

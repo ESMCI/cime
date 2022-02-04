@@ -30,6 +30,10 @@
   
 
   
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
 
   
         <link rel="index" title="Index"
@@ -193,9 +197,16 @@
 <span class="c1"># get_type) otherwise need to implement own functions and make GenericXML parent class</span>
 <div class="viewcode-block" id="EnvMachSpecific"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_specific.EnvMachSpecific">[docs]</a><span class="k">class</span> <span class="nc">EnvMachSpecific</span><span class="p">(</span><span class="n">EnvBase</span><span class="p">):</span>
     <span class="c1"># pylint: disable=unused-argument</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caseroot</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">infile</span><span class="o">=</span><span class="s2">&quot;env_mach_specific.xml&quot;</span><span class="p">,</span>
-                 <span class="n">components</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">unit_testing</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                 <span class="n">standalone_configure</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">comp_interface</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">caseroot</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">infile</span><span class="o">=</span><span class="s2">&quot;env_mach_specific.xml&quot;</span><span class="p">,</span>
+        <span class="n">components</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">unit_testing</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">read_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">standalone_configure</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">comp_interface</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        initialize an object interface to file env_mach_specific.xml in the case directory</span>
 
@@ -203,29 +214,38 @@
 <span class="sd">        standalone_configure: logical - whether this is being called from the standalone</span>
 <span class="sd">            configure utility, outside of a case</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">schema</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">get_cime_root</span><span class="p">(),</span> <span class="s2">&quot;config&quot;</span><span class="p">,</span> <span class="s2">&quot;xml_schemas&quot;</span><span class="p">,</span> <span class="s2">&quot;env_mach_specific.xsd&quot;</span><span class="p">)</span>
+        <span class="n">schema</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="n">get_cime_root</span><span class="p">(),</span> <span class="s2">&quot;config&quot;</span><span class="p">,</span> <span class="s2">&quot;xml_schemas&quot;</span><span class="p">,</span> <span class="s2">&quot;env_mach_specific.xsd&quot;</span>
+        <span class="p">)</span>
         <span class="n">EnvBase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caseroot</span><span class="p">,</span> <span class="n">infile</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="n">read_only</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_allowed_mpi_attributes</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;compiler&quot;</span><span class="p">,</span> <span class="s2">&quot;mpilib&quot;</span><span class="p">,</span> <span class="s2">&quot;threaded&quot;</span><span class="p">,</span> <span class="s2">&quot;unit_testing&quot;</span><span class="p">,</span> <span class="s2">&quot;queue&quot;</span><span class="p">,</span> <span class="s2">&quot;comp_interface&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_allowed_mpi_attributes</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;compiler&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;mpilib&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;threaded&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;unit_testing&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;queue&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;comp_interface&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_comp_interface</span> <span class="o">=</span> <span class="n">comp_interface</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_unit_testing</span> <span class="o">=</span> <span class="n">unit_testing</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_standalone_configure</span> <span class="o">=</span> <span class="n">standalone_configure</span>
 
 <div class="viewcode-block" id="EnvMachSpecific.populate"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_specific.EnvMachSpecific.populate">[docs]</a>    <span class="k">def</span> <span class="nf">populate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">machobj</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Add entries to the file using information from a Machines object.</span>
-<span class="sd">           mpilib must match attributes if set</span>
+<span class="sd">        mpilib must match attributes if set</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">items</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;module_system&quot;</span><span class="p">,</span> <span class="s2">&quot;environment_variables&quot;</span><span class="p">,</span> <span class="s2">&quot;resource_limits&quot;</span><span class="p">,</span> <span class="s2">&quot;mpirun&quot;</span><span class="p">)</span>
         <span class="n">default_run_suffix</span> <span class="o">=</span> <span class="n">machobj</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span><span class="s2">&quot;default_run_suffix&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">machobj</span><span class="o">.</span><span class="n">root</span><span class="p">)</span>
 
-        <span class="n">group_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_child</span><span class="p">(</span><span class="s2">&quot;group&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span><span class="s2">&quot;compliant_values&quot;</span><span class="p">})</span>
-        <span class="n">settings</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;run_exe&quot;</span><span class="p">:</span><span class="kc">None</span><span class="p">,</span><span class="s2">&quot;run_misc_suffix&quot;</span><span class="p">:</span><span class="kc">None</span><span class="p">}</span>
+        <span class="n">group_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_child</span><span class="p">(</span><span class="s2">&quot;group&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;compliant_values&quot;</span><span class="p">})</span>
+        <span class="n">settings</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;run_exe&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;run_misc_suffix&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
 
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
             <span class="n">nodes</span> <span class="o">=</span> <span class="n">machobj</span><span class="o">.</span><span class="n">get_first_child_nodes</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">item</span> <span class="o">==</span> <span class="s2">&quot;environment_variables&quot;</span><span class="p">:</span>
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="n">example_text</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;This section is for the user to specify any additional machine-specific env var, or to overwite existing ones.</span><span class="se">\n</span><span class="s2">  &lt;environment_variables&gt;</span><span class="se">\n</span><span class="s2">    &lt;env name=&quot;NAME&quot;&gt;ARGUMENT&lt;/env&gt;</span><span class="se">\n</span><span class="s2">  &lt;/environment_variables&gt;</span><span class="se">\n</span><span class="s2">  &quot;&quot;&quot;</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">make_child_comment</span><span class="p">(</span><span class="n">text</span> <span class="o">=</span> <span class="n">example_text</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">make_child_comment</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">example_text</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">item</span> <span class="o">==</span> <span class="s2">&quot;mpirun&quot;</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
@@ -251,18 +271,32 @@
                 <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">add_child</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
 
-        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;run_exe&quot;</span><span class="p">,</span><span class="s2">&quot;run_misc_suffix&quot;</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;run_exe&quot;</span><span class="p">,</span> <span class="s2">&quot;run_misc_suffix&quot;</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">settings</span><span class="p">[</span><span class="n">item</span><span class="p">]:</span>
                 <span class="n">value</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="n">item</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">machobj</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span><span class="s2">&quot;default_&quot;</span><span class="o">+</span><span class="n">item</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">default_run_suffix</span><span class="p">))</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span>
+                    <span class="n">machobj</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span><span class="s2">&quot;default_&quot;</span> <span class="o">+</span> <span class="n">item</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">default_run_suffix</span><span class="p">)</span>
+                <span class="p">)</span>
 
-            <span class="n">entity_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_child</span><span class="p">(</span><span class="s2">&quot;entry&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span><span class="n">item</span><span class="p">,</span><span class="s2">&quot;value&quot;</span><span class="p">:</span><span class="n">value</span><span class="p">},</span> <span class="n">root</span><span class="o">=</span><span class="n">group_node</span><span class="p">)</span>
+            <span class="n">entity_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_child</span><span class="p">(</span>
+                <span class="s2">&quot;entry&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">item</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">value</span><span class="p">},</span> <span class="n">root</span><span class="o">=</span><span class="n">group_node</span>
+            <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">make_child</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">entity_node</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;char&quot;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">make_child</span><span class="p">(</span><span class="s2">&quot;desc&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">entity_node</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;executable name&quot;</span> <span class="k">if</span> <span class="n">item</span> <span class="o">==</span> <span class="s2">&quot;run_exe&quot;</span> <span class="k">else</span> <span class="s2">&quot;redirect for job output&quot;</span><span class="p">))</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">make_child</span><span class="p">(</span>
+                <span class="s2">&quot;desc&quot;</span><span class="p">,</span>
+                <span class="n">root</span><span class="o">=</span><span class="n">entity_node</span><span class="p">,</span>
+                <span class="n">text</span><span class="o">=</span><span class="p">(</span>
+                    <span class="s2">&quot;executable name&quot;</span>
+                    <span class="k">if</span> <span class="n">item</span> <span class="o">==</span> <span class="s2">&quot;run_exe&quot;</span>
+                    <span class="k">else</span> <span class="s2">&quot;redirect for job output&quot;</span>
+                <span class="p">),</span>
+            <span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_get_modules_for_case</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">job</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="n">module_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="s2">&quot;modules&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span><span class="s2">&quot;module_system&quot;</span><span class="p">))</span>
+        <span class="n">module_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span>
+            <span class="s2">&quot;modules&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span><span class="s2">&quot;module_system&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
         <span class="n">modules_to_load</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">module_nodes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">modules_to_load</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_module_actions</span><span class="p">(</span><span class="n">module_nodes</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">job</span><span class="o">=</span><span class="n">job</span><span class="p">)</span>
@@ -285,11 +319,13 @@
         <span class="c1"># Do the modules so we can refer to env vars set by the modules</span>
         <span class="c1"># in the environment_variables block</span>
         <span class="n">modules_to_load</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_modules_for_case</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">modules_to_load</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_load_modules</span><span class="p">(</span><span class="n">modules_to_load</span><span class="p">,</span> <span class="n">force_method</span><span class="o">=</span><span class="n">force_method</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">modules_to_load</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_load_modules</span><span class="p">(</span>
+                <span class="n">modules_to_load</span><span class="p">,</span> <span class="n">force_method</span><span class="o">=</span><span class="n">force_method</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span>
+            <span class="p">)</span>
 
         <span class="n">envs_to_set</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_envs_for_case</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">job</span><span class="o">=</span><span class="n">job</span><span class="p">)</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">envs_to_set</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">envs_to_set</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_load_envs</span><span class="p">(</span><span class="n">envs_to_set</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_get_resources_for_case</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
@@ -303,19 +339,23 @@
             <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
                 <span class="n">attr</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">resource</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
                 <span class="n">limits</span> <span class="o">=</span> <span class="n">resource</span><span class="o">.</span><span class="n">getrlimit</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Setting resource.</span><span class="si">{}</span><span class="s2"> to </span><span class="si">{}</span><span class="s2"> from </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">limits</span><span class="p">))</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                    <span class="s2">&quot;Setting resource.</span><span class="si">{}</span><span class="s2"> to </span><span class="si">{}</span><span class="s2"> from </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">limits</span><span class="p">)</span>
+                <span class="p">)</span>
                 <span class="n">limits</span> <span class="o">=</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">val</span><span class="p">),</span> <span class="n">limits</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
                 <span class="n">resource</span><span class="o">.</span><span class="n">setrlimit</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">limits</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_load_modules</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">modules_to_load</span><span class="p">,</span> <span class="n">force_method</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="n">module_system</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_module_system_type</span><span class="p">()</span> <span class="k">if</span> <span class="n">force_method</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">force_method</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">module_system</span> <span class="o">==</span> <span class="s2">&quot;module&quot;</span><span class="p">):</span>
+        <span class="n">module_system</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_module_system_type</span><span class="p">()</span> <span class="k">if</span> <span class="n">force_method</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">force_method</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">module_system</span> <span class="o">==</span> <span class="s2">&quot;module&quot;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_load_module_modules</span><span class="p">(</span><span class="n">modules_to_load</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="p">(</span><span class="n">module_system</span> <span class="o">==</span> <span class="s2">&quot;soft&quot;</span><span class="p">):</span>
+        <span class="k">elif</span> <span class="n">module_system</span> <span class="o">==</span> <span class="s2">&quot;soft&quot;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_load_modules_generic</span><span class="p">(</span><span class="n">modules_to_load</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="p">(</span><span class="n">module_system</span> <span class="o">==</span> <span class="s2">&quot;generic&quot;</span><span class="p">):</span>
+        <span class="k">elif</span> <span class="n">module_system</span> <span class="o">==</span> <span class="s2">&quot;generic&quot;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_load_modules_generic</span><span class="p">(</span><span class="n">modules_to_load</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="p">(</span><span class="n">module_system</span> <span class="o">==</span> <span class="s2">&quot;none&quot;</span><span class="p">):</span>
+        <span class="k">elif</span> <span class="n">module_system</span> <span class="o">==</span> <span class="s2">&quot;none&quot;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_load_none_modules</span><span class="p">(</span><span class="n">modules_to_load</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">expect</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;Unhandled module system &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">module_system</span><span class="p">))</span>
@@ -332,14 +372,16 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">source_cmd</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
 
-        <span class="k">if</span> <span class="p">(</span><span class="n">module_system</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;module&quot;</span><span class="p">]):</span>
-            <span class="k">return</span> <span class="n">run_cmd_no_fail</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">module list&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">source_cmd</span><span class="p">),</span> <span class="n">combine_output</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="p">(</span><span class="n">module_system</span> <span class="o">==</span> <span class="s2">&quot;soft&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">module_system</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;module&quot;</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="n">run_cmd_no_fail</span><span class="p">(</span>
+                <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">module list&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">source_cmd</span><span class="p">),</span> <span class="n">combine_output</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">module_system</span> <span class="o">==</span> <span class="s2">&quot;soft&quot;</span><span class="p">:</span>
             <span class="c1"># Does soft really not provide this capability?</span>
             <span class="k">return</span> <span class="s2">&quot;&quot;</span>
-        <span class="k">elif</span> <span class="p">(</span><span class="n">module_system</span> <span class="o">==</span> <span class="s2">&quot;generic&quot;</span><span class="p">):</span>
+        <span class="k">elif</span> <span class="n">module_system</span> <span class="o">==</span> <span class="s2">&quot;generic&quot;</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">run_cmd_no_fail</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">use -lv&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">source_cmd</span><span class="p">))</span>
-        <span class="k">elif</span> <span class="p">(</span><span class="n">module_system</span> <span class="o">==</span> <span class="s2">&quot;none&quot;</span><span class="p">):</span>
+        <span class="k">elif</span> <span class="n">module_system</span> <span class="o">==</span> <span class="s2">&quot;none&quot;</span><span class="p">:</span>
             <span class="k">return</span> <span class="s2">&quot;&quot;</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">expect</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;Unhandled module system &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">module_system</span><span class="p">))</span></div>
@@ -355,15 +397,17 @@
 
 <div class="viewcode-block" id="EnvMachSpecific.get_overrides_nodes"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_specific.EnvMachSpecific.get_overrides_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">get_overrides_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">):</span>
         <span class="n">overrides</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="n">overrides</span><span class="p">[</span><span class="s2">&quot;num_nodes&quot;</span><span class="p">]</span>   <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">num_nodes</span>
+        <span class="n">overrides</span><span class="p">[</span><span class="s2">&quot;num_nodes&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">num_nodes</span>
         <span class="n">fnm</span> <span class="o">=</span> <span class="s2">&quot;env_mach_specific.xml&quot;</span>
-        <span class="n">output_text</span> <span class="o">=</span> <span class="n">transform_vars</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">fnm</span><span class="p">,</span><span class="s2">&quot;r&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">(),</span> <span class="n">case</span><span class="o">=</span><span class="n">case</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">overrides</span><span class="o">=</span><span class="n">overrides</span><span class="p">)</span>
+        <span class="n">output_text</span> <span class="o">=</span> <span class="n">transform_vars</span><span class="p">(</span>
+            <span class="nb">open</span><span class="p">(</span><span class="n">fnm</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">(),</span> <span class="n">case</span><span class="o">=</span><span class="n">case</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">overrides</span><span class="o">=</span><span class="n">overrides</span>
+        <span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Updating file </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fnm</span><span class="p">))</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fnm</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
             <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">output_text</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">overrides</span></div>
 
-<div class="viewcode-block" id="EnvMachSpecific.make_env_mach_specific_file"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_specific.EnvMachSpecific.make_env_mach_specific_file">[docs]</a>    <span class="k">def</span> <span class="nf">make_env_mach_specific_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="EnvMachSpecific.make_env_mach_specific_file"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_specific.EnvMachSpecific.make_env_mach_specific_file">[docs]</a>    <span class="k">def</span> <span class="nf">make_env_mach_specific_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Writes .env_mach_specific.sh or .env_mach_specific.csh</span>
 
 <span class="sd">        Args:</span>
@@ -374,10 +418,14 @@
         <span class="n">module_system</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_module_system_type</span><span class="p">()</span>
         <span class="n">sh_init_cmd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_module_system_init_path</span><span class="p">(</span><span class="n">shell</span><span class="p">)</span>
         <span class="n">sh_mod_cmd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_module_system_cmd_path</span><span class="p">(</span><span class="n">shell</span><span class="p">)</span>
-        <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;# This file is for user convenience only and is not used by the model&quot;</span><span class="p">]</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;# This file is for user convenience only and is not used by the model&quot;</span>
+        <span class="p">]</span>
 
         <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;# Changes to this file will be ignored and overwritten&quot;</span><span class="p">)</span>
-        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;# Changes to the environment should be made in env_mach_specific.xml&quot;</span><span class="p">)</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="s2">&quot;# Changes to the environment should be made in env_mach_specific.xml&quot;</span>
+        <span class="p">)</span>
         <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;# Run ./case.setup --reset to regenerate this file&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">sh_init_cmd</span><span class="p">:</span>
             <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;source </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sh_init_cmd</span><span class="p">))</span>
@@ -399,7 +447,11 @@
                 <span class="n">lines</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_module_commands</span><span class="p">(</span><span class="n">modules_to_load</span><span class="p">,</span> <span class="n">shell</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">action</span><span class="p">,</span> <span class="n">argument</span> <span class="ow">in</span> <span class="n">modules_to_load</span><span class="p">:</span>
-                    <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sh_mod_cmd</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="n">argument</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">argument</span><span class="p">))</span>
+                    <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                            <span class="n">sh_mod_cmd</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="n">argument</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">argument</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">envs_to_set</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">env_name</span><span class="p">,</span> <span class="n">env_value</span> <span class="ow">in</span> <span class="n">envs_to_set</span><span class="p">:</span>
@@ -432,8 +484,8 @@
                 <span class="n">logger_func</span><span class="p">(</span><span class="s2">&quot;Unsetting Environment </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">env_name</span><span class="p">))</span>
             <span class="k">elif</span> <span class="n">env_value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">env_name</span> <span class="o">==</span> <span class="s2">&quot;source&quot;</span><span class="p">:</span>
-                    <span class="n">shell</span><span class="p">,</span> <span class="n">cmd</span> <span class="o">=</span> <span class="n">env_value</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_source_shell_file</span><span class="p">(</span><span class="s2">&quot;source &quot;</span><span class="o">+</span><span class="n">cmd</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+                    <span class="n">shell</span><span class="p">,</span> <span class="n">cmd</span> <span class="o">=</span> <span class="n">env_value</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_source_shell_file</span><span class="p">(</span><span class="s2">&quot;source &quot;</span> <span class="o">+</span> <span class="n">cmd</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
                         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Setting Environment </span><span class="si">{}</span><span class="s2">=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">env_name</span><span class="p">,</span> <span class="n">env_value</span><span class="p">))</span>
@@ -450,42 +502,59 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_actions</span><span class="p">(</span><span class="n">resource_nodes</span><span class="p">,</span> <span class="s2">&quot;resource&quot;</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">job</span><span class="o">=</span><span class="n">job</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_compute_actions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">child_tag</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">job</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span> <span class="c1"># list of tuples (&quot;name&quot;, &quot;argument&quot;)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># list of tuples (&quot;name&quot;, &quot;argument&quot;)</span>
         <span class="n">compiler</span><span class="p">,</span> <span class="n">mpilib</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;COMPILER&quot;</span><span class="p">),</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MPILIB&quot;</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
-            <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_match_attribs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attrib</span><span class="p">(</span><span class="n">node</span><span class="p">),</span> <span class="n">case</span><span class="p">,</span> <span class="n">job</span><span class="o">=</span><span class="n">job</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_match_attribs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attrib</span><span class="p">(</span><span class="n">node</span><span class="p">),</span> <span class="n">case</span><span class="p">,</span> <span class="n">job</span><span class="o">=</span><span class="n">job</span><span class="p">):</span>
                 <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="n">node</span><span class="p">):</span>
-                    <span class="n">expect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="n">child</span><span class="p">)</span> <span class="o">==</span> <span class="n">child_tag</span><span class="p">,</span> <span class="s2">&quot;Expected </span><span class="si">{}</span><span class="s2"> element&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">child_tag</span><span class="p">))</span>
-                    <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_match_attribs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attrib</span><span class="p">(</span><span class="n">child</span><span class="p">),</span> <span class="n">case</span><span class="p">,</span> <span class="n">job</span><span class="o">=</span><span class="n">job</span><span class="p">)):</span>
+                    <span class="n">expect</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="n">child</span><span class="p">)</span> <span class="o">==</span> <span class="n">child_tag</span><span class="p">,</span>
+                        <span class="s2">&quot;Expected </span><span class="si">{}</span><span class="s2"> element&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">child_tag</span><span class="p">),</span>
+                    <span class="p">)</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_match_attribs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attrib</span><span class="p">(</span><span class="n">child</span><span class="p">),</span> <span class="n">case</span><span class="p">,</span> <span class="n">job</span><span class="o">=</span><span class="n">job</span><span class="p">):</span>
                         <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
                         <span class="k">if</span> <span class="n">val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                             <span class="c1"># We allow a couple special substitutions for these fields</span>
-                            <span class="k">for</span> <span class="n">repl_this</span><span class="p">,</span> <span class="n">repl_with</span> <span class="ow">in</span> <span class="p">[(</span><span class="s2">&quot;$COMPILER&quot;</span><span class="p">,</span> <span class="n">compiler</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;$MPILIB&quot;</span><span class="p">,</span> <span class="n">mpilib</span><span class="p">)]:</span>
+                            <span class="k">for</span> <span class="n">repl_this</span><span class="p">,</span> <span class="n">repl_with</span> <span class="ow">in</span> <span class="p">[</span>
+                                <span class="p">(</span><span class="s2">&quot;$COMPILER&quot;</span><span class="p">,</span> <span class="n">compiler</span><span class="p">),</span>
+                                <span class="p">(</span><span class="s2">&quot;$MPILIB&quot;</span><span class="p">,</span> <span class="n">mpilib</span><span class="p">),</span>
+                            <span class="p">]:</span>
                                 <span class="n">val</span> <span class="o">=</span> <span class="n">val</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">repl_this</span><span class="p">,</span> <span class="n">repl_with</span><span class="p">)</span>
 
                             <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_resolved_value</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
-                            <span class="n">expect</span><span class="p">(</span><span class="s2">&quot;$&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">val</span><span class="p">,</span> <span class="s2">&quot;Not safe to leave unresolved items in env var value: &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">val</span><span class="p">))</span>
+                            <span class="n">expect</span><span class="p">(</span>
+                                <span class="s2">&quot;$&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">val</span><span class="p">,</span>
+                                <span class="s2">&quot;Not safe to leave unresolved items in env var value: &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                    <span class="n">val</span>
+                                <span class="p">),</span>
+                            <span class="p">)</span>
 
                         <span class="c1"># intentional unindent, result is appended even if val is None</span>
                         <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">)</span>
                         <span class="k">if</span> <span class="n">name</span><span class="p">:</span>
-                            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span> <span class="p">)</span>
+                            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">name</span><span class="p">,</span> <span class="n">val</span><span class="p">))</span>
                         <span class="k">else</span><span class="p">:</span>
-                            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="p">(</span><span class="s2">&quot;source&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="s2">&quot;source&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">val</span><span class="p">)</span> <span class="p">)</span>
+                            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                                <span class="p">(</span><span class="s2">&quot;source&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="s2">&quot;source&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">val</span><span class="p">)</span>
+                            <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">result</span>
 
     <span class="k">def</span> <span class="nf">_match_attribs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribs</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">job</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="c1"># check for matches with case-vars</span>
         <span class="k">for</span> <span class="n">attrib</span> <span class="ow">in</span> <span class="n">attribs</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">attrib</span> <span class="o">==</span> <span class="s2">&quot;unit_testing&quot;</span><span class="p">:</span> <span class="c1"># special case</span>
+            <span class="k">if</span> <span class="n">attrib</span> <span class="o">==</span> <span class="s2">&quot;unit_testing&quot;</span><span class="p">:</span>  <span class="c1"># special case</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_match</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_unit_testing</span><span class="p">,</span> <span class="n">attribs</span><span class="p">[</span><span class="s2">&quot;unit_testing&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()):</span>
                     <span class="k">return</span> <span class="kc">False</span>
             <span class="k">elif</span> <span class="n">attrib</span> <span class="o">==</span> <span class="s2">&quot;queue&quot;</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">job</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="n">val</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;JOB_QUEUE&quot;</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="n">job</span><span class="p">)</span>
-                    <span class="n">expect</span><span class="p">(</span><span class="n">val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Cannot match attrib &#39;</span><span class="si">%s</span><span class="s2">&#39;, case has no value for it&quot;</span> <span class="o">%</span> <span class="n">attrib</span><span class="o">.</span><span class="n">upper</span><span class="p">())</span>
+                    <span class="n">expect</span><span class="p">(</span>
+                        <span class="n">val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span>
+                        <span class="s2">&quot;Cannot match attrib &#39;</span><span class="si">%s</span><span class="s2">&#39;, case has no value for it&quot;</span>
+                        <span class="o">%</span> <span class="n">attrib</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span>
+                    <span class="p">)</span>
                     <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_match</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">attribs</span><span class="p">[</span><span class="n">attrib</span><span class="p">]):</span>
                         <span class="k">return</span> <span class="kc">False</span>
             <span class="k">elif</span> <span class="n">attrib</span> <span class="o">==</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span>
@@ -494,7 +563,11 @@
                 <span class="k">pass</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">val</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">attrib</span><span class="o">.</span><span class="n">upper</span><span class="p">())</span>
-                <span class="n">expect</span><span class="p">(</span><span class="n">val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Cannot match attrib &#39;</span><span class="si">%s</span><span class="s2">&#39;, case has no value for it&quot;</span> <span class="o">%</span> <span class="n">attrib</span><span class="o">.</span><span class="n">upper</span><span class="p">())</span>
+                <span class="n">expect</span><span class="p">(</span>
+                    <span class="n">val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span>
+                    <span class="s2">&quot;Cannot match attrib &#39;</span><span class="si">%s</span><span class="s2">&#39;, case has no value for it&quot;</span>
+                    <span class="o">%</span> <span class="n">attrib</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span>
+                <span class="p">)</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_match</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">attribs</span><span class="p">[</span><span class="n">attrib</span><span class="p">]):</span>
                     <span class="k">return</span> <span class="kc">False</span>
 
@@ -502,14 +575,18 @@
 
     <span class="k">def</span> <span class="nf">_match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">my_value</span><span class="p">,</span> <span class="n">xml_value</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">xml_value</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;!&quot;</span><span class="p">):</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">xml_value</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">+</span> <span class="s2">&quot;$&quot;</span><span class="p">,</span><span class="nb">str</span><span class="p">(</span><span class="n">my_value</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">xml_value</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">+</span> <span class="s2">&quot;$&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">my_value</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">my_value</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">my_value</span><span class="p">:</span> <span class="n">result</span> <span class="o">=</span> <span class="n">xml_value</span> <span class="o">==</span> <span class="s2">&quot;TRUE&quot;</span>
-            <span class="k">else</span><span class="p">:</span> <span class="n">result</span> <span class="o">=</span> <span class="n">xml_value</span> <span class="o">==</span> <span class="s2">&quot;FALSE&quot;</span>
+            <span class="k">if</span> <span class="n">my_value</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">xml_value</span> <span class="o">==</span> <span class="s2">&quot;TRUE&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">xml_value</span> <span class="o">==</span> <span class="s2">&quot;FALSE&quot;</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">xml_value</span> <span class="o">+</span> <span class="s2">&quot;$&quot;</span><span class="p">,</span><span class="nb">str</span><span class="p">(</span><span class="n">my_value</span><span class="p">))</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">xml_value</span> <span class="o">+</span> <span class="s2">&quot;$&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">my_value</span><span class="p">))</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
 
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;(env_mach_specific) _match </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">my_value</span><span class="p">,</span> <span class="n">xml_value</span><span class="p">,</span> <span class="n">result</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+            <span class="s2">&quot;(env_mach_specific) _match </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">my_value</span><span class="p">,</span> <span class="n">xml_value</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+        <span class="p">)</span>
         <span class="k">return</span> <span class="n">result</span>
 
     <span class="k">def</span> <span class="nf">_get_module_commands</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">modules_to_load</span><span class="p">,</span> <span class="n">shell</span><span class="p">):</span>
@@ -517,7 +594,7 @@
         <span class="n">mod_cmd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_module_system_cmd_path</span><span class="p">(</span><span class="n">shell</span><span class="p">)</span>
         <span class="n">cmds</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">last_action</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="n">last_cmd</span>    <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">last_cmd</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="c1"># Normally, we will try to combine or batch module commands together...</span>
         <span class="c1">#</span>
@@ -546,7 +623,9 @@
                 <span class="k">if</span> <span class="n">last_cmd</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="n">cmds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">last_cmd</span><span class="p">)</span>
 
-                <span class="n">last_cmd</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mod_cmd</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="n">argument</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">argument</span><span class="p">)</span>
+                <span class="n">last_cmd</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">mod_cmd</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="n">argument</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">argument</span>
+                <span class="p">)</span>
                 <span class="n">last_action</span> <span class="o">=</span> <span class="n">action</span>
 
         <span class="k">if</span> <span class="n">last_cmd</span><span class="p">:</span>
@@ -559,8 +638,10 @@
         <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_module_commands</span><span class="p">(</span><span class="n">modules_to_load</span><span class="p">,</span> <span class="s2">&quot;python&quot;</span><span class="p">):</span>
             <span class="n">logger_func</span><span class="p">(</span><span class="s2">&quot;module command is </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cmd</span><span class="p">))</span>
             <span class="n">stat</span><span class="p">,</span> <span class="n">py_module_code</span><span class="p">,</span> <span class="n">errout</span> <span class="o">=</span> <span class="n">run_cmd</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
-            <span class="n">expect</span><span class="p">(</span><span class="n">stat</span><span class="o">==</span><span class="mi">0</span> <span class="ow">and</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">errout</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">allow_error</span><span class="p">()),</span>
-                   <span class="s2">&quot;module command </span><span class="si">{}</span><span class="s2"> failed with message:</span><span class="se">\n</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">errout</span><span class="p">))</span>
+            <span class="n">expect</span><span class="p">(</span>
+                <span class="n">stat</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">errout</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">allow_error</span><span class="p">()),</span>
+                <span class="s2">&quot;module command </span><span class="si">{}</span><span class="s2"> failed with message:</span><span class="se">\n</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">errout</span><span class="p">),</span>
+            <span class="p">)</span>
             <span class="n">exec</span><span class="p">(</span><span class="n">py_module_code</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_load_modules_generic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">modules_to_load</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -579,8 +660,10 @@
         <span class="k">if</span> <span class="s2">&quot;SOFTENV_LOAD&quot;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
             <span class="n">cmd</span> <span class="o">+=</span> <span class="s2">&quot; &amp;&amp; source $SOFTENV_LOAD&quot;</span>
 
-        <span class="k">for</span> <span class="n">action</span><span class="p">,</span><span class="n">argument</span> <span class="ow">in</span> <span class="n">modules_to_load</span><span class="p">:</span>
-            <span class="n">cmd</span> <span class="o">+=</span> <span class="s2">&quot; &amp;&amp; </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sh_mod_cmd</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="n">argument</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">argument</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">action</span><span class="p">,</span> <span class="n">argument</span> <span class="ow">in</span> <span class="n">modules_to_load</span><span class="p">:</span>
+            <span class="n">cmd</span> <span class="o">+=</span> <span class="s2">&quot; &amp;&amp; </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">sh_mod_cmd</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="n">argument</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">argument</span>
+            <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_source_shell_file</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
 
@@ -596,7 +679,7 @@
         <span class="c1"># Parse the output to set the os.environ dictionary</span>
         <span class="c1">###################################################</span>
         <span class="n">newenv</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">output</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\0</span><span class="s1">&#39;</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">output</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\0</span><span class="s2">&quot;</span><span class="p">):</span>
             <span class="k">if</span> <span class="s2">&quot;=&quot;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
                 <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
                 <span class="n">newenv</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
@@ -620,21 +703,25 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        No Action required</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">expect</span><span class="p">(</span><span class="ow">not</span> <span class="n">modules_to_load</span><span class="p">,</span>
-               <span class="s2">&quot;Module system was specified as &#39;none&#39; yet there are modules that need to be loaded?&quot;</span><span class="p">)</span>
+        <span class="n">expect</span><span class="p">(</span>
+            <span class="ow">not</span> <span class="n">modules_to_load</span><span class="p">,</span>
+            <span class="s2">&quot;Module system was specified as &#39;none&#39; yet there are modules that need to be loaded?&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_mach_specific_header</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        write a shell module file for this case.</span>
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="n">header</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;</span>
-<span class="s1">#!/usr/bin/env </span><span class="si">{}</span><span class="s1"></span>
-<span class="s1">#===============================================================================</span>
-<span class="s1"># Automatically generated module settings for $self-&gt;{{machine}}</span>
-<span class="s1"># DO NOT EDIT THIS FILE DIRECTLY!  Please edit env_mach_specific.xml</span>
-<span class="s1"># in your CASEROOT. This file is overwritten every time modules are loaded!</span>
-<span class="s1">#===============================================================================</span>
-<span class="s1">&#39;&#39;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">shell</span><span class="p">)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">header</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">#!/usr/bin/env </span><span class="si">{}</span><span class="s2"></span>
+<span class="s2">#===============================================================================</span>
+<span class="s2"># Automatically generated module settings for $self-&gt;{{machine}}</span>
+<span class="s2"># DO NOT EDIT THIS FILE DIRECTLY!  Please edit env_mach_specific.xml</span>
+<span class="s2"># in your CASEROOT. This file is overwritten every time modules are loaded!</span>
+<span class="s2">#===============================================================================</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">shell</span>
+        <span class="p">)</span>
         <span class="n">header</span> <span class="o">+=</span> <span class="s2">&quot;source </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_module_system_init_path</span><span class="p">(</span><span class="n">shell</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">header</span>
 
@@ -657,11 +744,15 @@
         <span class="k">return</span> <span class="n">value</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;TRUE&quot;</span> <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">False</span></div>
 
 <div class="viewcode-block" id="EnvMachSpecific.get_module_system_init_path"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_specific.EnvMachSpecific.get_module_system_init_path">[docs]</a>    <span class="k">def</span> <span class="nf">get_module_system_init_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lang</span><span class="p">):</span>
-        <span class="n">init_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_optional_child</span><span class="p">(</span><span class="s2">&quot;init_path&quot;</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;lang&quot;</span><span class="p">:</span><span class="n">lang</span><span class="p">},</span> <span class="n">root</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span><span class="s2">&quot;module_system&quot;</span><span class="p">))</span>
+        <span class="n">init_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_optional_child</span><span class="p">(</span>
+            <span class="s2">&quot;init_path&quot;</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;lang&quot;</span><span class="p">:</span> <span class="n">lang</span><span class="p">},</span> <span class="n">root</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span><span class="s2">&quot;module_system&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">init_nodes</span><span class="p">)</span> <span class="k">if</span> <span class="n">init_nodes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span></div>
 
 <div class="viewcode-block" id="EnvMachSpecific.get_module_system_cmd_path"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_specific.EnvMachSpecific.get_module_system_cmd_path">[docs]</a>    <span class="k">def</span> <span class="nf">get_module_system_cmd_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lang</span><span class="p">):</span>
-        <span class="n">cmd_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_optional_child</span><span class="p">(</span><span class="s2">&quot;cmd_path&quot;</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;lang&quot;</span><span class="p">:</span><span class="n">lang</span><span class="p">},</span> <span class="n">root</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span><span class="s2">&quot;module_system&quot;</span><span class="p">))</span>
+        <span class="n">cmd_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_optional_child</span><span class="p">(</span>
+            <span class="s2">&quot;cmd_path&quot;</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;lang&quot;</span><span class="p">:</span> <span class="n">lang</span><span class="p">},</span> <span class="n">root</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span><span class="s2">&quot;module_system&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">cmd_nodes</span><span class="p">)</span> <span class="k">if</span> <span class="n">cmd_nodes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span></div>
 
 <div class="viewcode-block" id="EnvMachSpecific.get_mpirun"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_specific.EnvMachSpecific.get_mpirun">[docs]</a>    <span class="k">def</span> <span class="nf">get_mpirun</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">attribs</span><span class="p">,</span> <span class="n">job</span><span class="p">,</span> <span class="n">exe_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">overrides</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -681,7 +772,10 @@
             <span class="n">is_default</span> <span class="o">=</span> <span class="kc">False</span>
 
             <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">attribs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="n">expect</span><span class="p">(</span><span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_allowed_mpi_attributes</span><span class="p">,</span> <span class="s2">&quot;Unexpected key </span><span class="si">{}</span><span class="s2"> in mpirun attributes&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">))</span>
+                <span class="n">expect</span><span class="p">(</span>
+                    <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_allowed_mpi_attributes</span><span class="p">,</span>
+                    <span class="s2">&quot;Unexpected key </span><span class="si">{}</span><span class="s2"> in mpirun attributes&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">),</span>
+                <span class="p">)</span>
                 <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">xml_attribs</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">xml_attribs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;false&quot;</span><span class="p">:</span>
                         <span class="n">xml_attrib</span> <span class="o">=</span> <span class="kc">False</span>
@@ -692,7 +786,11 @@
 
                     <span class="k">if</span> <span class="n">xml_attrib</span> <span class="o">==</span> <span class="n">value</span><span class="p">:</span>
                         <span class="n">matches</span> <span class="o">+=</span> <span class="mi">1</span>
-                    <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;mpilib&quot;</span> <span class="ow">and</span> <span class="n">value</span> <span class="o">!=</span> <span class="s2">&quot;mpi-serial&quot;</span> <span class="ow">and</span> <span class="n">xml_attrib</span> <span class="o">==</span> <span class="s2">&quot;default&quot;</span><span class="p">:</span>
+                    <span class="k">elif</span> <span class="p">(</span>
+                        <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;mpilib&quot;</span>
+                        <span class="ow">and</span> <span class="n">value</span> <span class="o">!=</span> <span class="s2">&quot;mpi-serial&quot;</span>
+                        <span class="ow">and</span> <span class="n">xml_attrib</span> <span class="o">==</span> <span class="s2">&quot;default&quot;</span>
+                    <span class="p">):</span>
                         <span class="n">is_default</span> <span class="o">=</span> <span class="kc">True</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="n">all_match</span> <span class="o">=</span> <span class="kc">False</span>
@@ -709,11 +807,17 @@
                         <span class="n">best_num_matched</span> <span class="o">=</span> <span class="n">matches</span>
 
         <span class="c1"># if there are no special arguments required for mpi-serial it need not have an entry in config_machines.xml</span>
-        <span class="k">if</span> <span class="s2">&quot;mpilib&quot;</span> <span class="ow">in</span> <span class="n">attribs</span> <span class="ow">and</span> <span class="n">attribs</span><span class="p">[</span><span class="s2">&quot;mpilib&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;mpi-serial&quot;</span> <span class="ow">and</span> <span class="n">best_match</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="p">,[],</span><span class="kc">None</span><span class="p">,</span><span class="kc">None</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="s2">&quot;mpilib&quot;</span> <span class="ow">in</span> <span class="n">attribs</span>
+            <span class="ow">and</span> <span class="n">attribs</span><span class="p">[</span><span class="s2">&quot;mpilib&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;mpi-serial&quot;</span>
+            <span class="ow">and</span> <span class="n">best_match</span> <span class="ow">is</span> <span class="kc">None</span>
+        <span class="p">):</span>
+            <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="p">[],</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
 
-        <span class="n">expect</span><span class="p">(</span><span class="n">best_match</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">default_match</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span>
-               <span class="s2">&quot;Could not find a matching MPI for attributes: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">attribs</span><span class="p">))</span>
+        <span class="n">expect</span><span class="p">(</span>
+            <span class="n">best_match</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">default_match</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s2">&quot;Could not find a matching MPI for attributes: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">attribs</span><span class="p">),</span>
+        <span class="p">)</span>
 
         <span class="n">the_match</span> <span class="o">=</span> <span class="n">best_match</span> <span class="k">if</span> <span class="n">best_match</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">default_match</span>
 
@@ -723,23 +827,28 @@
             <span class="k">if</span> <span class="n">arg_node</span><span class="p">:</span>
                 <span class="n">arg_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="s2">&quot;arg&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">arg_node</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">arg_node</span> <span class="ow">in</span> <span class="n">arg_nodes</span><span class="p">:</span>
-                    <span class="n">arg_value</span> <span class="o">=</span> <span class="n">transform_vars</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">arg_node</span><span class="p">),</span>
-                                               <span class="n">case</span><span class="o">=</span><span class="n">case</span><span class="p">,</span>
-                                               <span class="n">subgroup</span><span class="o">=</span><span class="n">job</span><span class="p">,</span><span class="n">overrides</span><span class="o">=</span><span class="n">overrides</span><span class="p">,</span>
-                                               <span class="n">default</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">arg_node</span><span class="p">,</span> <span class="s2">&quot;default&quot;</span><span class="p">))</span>
+                    <span class="n">arg_value</span> <span class="o">=</span> <span class="n">transform_vars</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">arg_node</span><span class="p">),</span>
+                        <span class="n">case</span><span class="o">=</span><span class="n">case</span><span class="p">,</span>
+                        <span class="n">subgroup</span><span class="o">=</span><span class="n">job</span><span class="p">,</span>
+                        <span class="n">overrides</span><span class="o">=</span><span class="n">overrides</span><span class="p">,</span>
+                        <span class="n">default</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">arg_node</span><span class="p">,</span> <span class="s2">&quot;default&quot;</span><span class="p">),</span>
+                    <span class="p">)</span>
                     <span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">arg_value</span><span class="p">)</span>
 
         <span class="n">exec_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span><span class="s2">&quot;executable&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">the_match</span><span class="p">)</span>
-        <span class="n">expect</span><span class="p">(</span><span class="n">exec_node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span><span class="s2">&quot;No executable found&quot;</span><span class="p">)</span>
+        <span class="n">expect</span><span class="p">(</span><span class="n">exec_node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;No executable found&quot;</span><span class="p">)</span>
         <span class="n">executable</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">exec_node</span><span class="p">)</span>
         <span class="n">run_exe</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">run_misc_suffix</span> <span class="o">=</span> <span class="kc">None</span>
 
-        <span class="n">run_exe_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_optional_child</span><span class="p">(</span><span class="s1">&#39;run_exe&#39;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">the_match</span><span class="p">)</span>
+        <span class="n">run_exe_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_optional_child</span><span class="p">(</span><span class="s2">&quot;run_exe&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">the_match</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">run_exe_node</span><span class="p">:</span>
             <span class="n">run_exe</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">run_exe_node</span><span class="p">)</span>
 
-        <span class="n">run_misc_suffix_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_optional_child</span><span class="p">(</span><span class="s1">&#39;run_misc_suffix&#39;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">the_match</span><span class="p">)</span>
+        <span class="n">run_misc_suffix_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_optional_child</span><span class="p">(</span>
+            <span class="s2">&quot;run_misc_suffix&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">the_match</span>
+        <span class="p">)</span>
         <span class="k">if</span> <span class="n">run_misc_suffix_node</span><span class="p">:</span>
             <span class="n">run_misc_suffix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">run_misc_suffix_node</span><span class="p">)</span>
 
@@ -786,6 +895,7 @@
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/doctools.js"></script>

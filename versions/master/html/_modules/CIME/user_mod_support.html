@@ -30,6 +30,10 @@
   
 
   
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
 
   
         <link rel="index" title="Index"
@@ -187,8 +191,9 @@
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
+
 <div class="viewcode-block" id="apply_user_mods"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.user_mod_support.apply_user_mods">[docs]</a><span class="k">def</span> <span class="nf">apply_user_mods</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="n">user_mods_path</span><span class="p">,</span> <span class="n">keepexe</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Recursivlely apply user_mods to caseroot - this includes updating user_nl_xxx,</span>
 <span class="sd">    updating SourceMods and creating case shell_commands and xmlchange_cmds files</span>
 
@@ -199,9 +204,11 @@
 
 <span class="sd">    keepexe is an optional argument that is needed for cases where apply_user_mods is</span>
 <span class="sd">    called from create_clone</span>
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="n">case_shell_command_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span><span class="s2">&quot;shell_commands&quot;</span><span class="p">),</span>
-                           <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span><span class="s2">&quot;xmlchange_cmnds&quot;</span><span class="p">)]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">case_shell_command_files</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="s2">&quot;shell_commands&quot;</span><span class="p">),</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="s2">&quot;xmlchange_cmnds&quot;</span><span class="p">),</span>
+    <span class="p">]</span>
     <span class="k">for</span> <span class="n">shell_command_file</span> <span class="ow">in</span> <span class="n">case_shell_command_files</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">shell_command_file</span><span class="p">):</span>
             <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">shell_command_file</span><span class="p">)</span>
@@ -217,7 +224,7 @@
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;include_dirs are </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">include_dirs</span><span class="p">))</span>
     <span class="k">for</span> <span class="n">include_dir</span> <span class="ow">in</span> <span class="n">include_dirs</span><span class="p">:</span>
         <span class="c1"># write user_nl_xxx file in caseroot</span>
-        <span class="k">for</span> <span class="n">user_nl</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">iglob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">include_dir</span><span class="p">,</span><span class="s2">&quot;user_nl_*&quot;</span><span class="p">)):</span>
+        <span class="k">for</span> <span class="n">user_nl</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">iglob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">include_dir</span><span class="p">,</span> <span class="s2">&quot;user_nl_*&quot;</span><span class="p">)):</span>
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">include_dir</span><span class="p">,</span> <span class="n">user_nl</span><span class="p">),</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
                 <span class="n">newcontents</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">newcontents</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
@@ -230,40 +237,62 @@
                 <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">newcontents</span><span class="p">)</span>
 
         <span class="c1"># update SourceMods in caseroot</span>
-        <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">files</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">include_dir</span><span class="p">,</span><span class="n">followlinks</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">topdown</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">files</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">include_dir</span><span class="p">,</span> <span class="n">followlinks</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">topdown</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
             <span class="k">if</span> <span class="s2">&quot;src&quot;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">root</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">keepexe</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">expect</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span>
-                           <span class="s2">&quot;cannot have any source mods in </span><span class="si">{}</span><span class="s2"> if keepexe is an option&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">user_mods_path</span><span class="p">))</span>
+                    <span class="n">expect</span><span class="p">(</span>
+                        <span class="kc">False</span><span class="p">,</span>
+                        <span class="s2">&quot;cannot have any source mods in </span><span class="si">{}</span><span class="s2"> if keepexe is an option&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                            <span class="n">user_mods_path</span>
+                        <span class="p">),</span>
+                    <span class="p">)</span>
                 <span class="k">for</span> <span class="n">sfile</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
-                    <span class="n">source_mods</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span><span class="n">sfile</span><span class="p">)</span>
+                    <span class="n">source_mods</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">sfile</span><span class="p">)</span>
                     <span class="n">case_source_mods</span> <span class="o">=</span> <span class="n">source_mods</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">include_dir</span><span class="p">,</span> <span class="n">caseroot</span><span class="p">)</span>
                     <span class="c1"># We overwrite any existing SourceMods file so that later</span>
                     <span class="c1"># include_dirs take precedence over earlier ones</span>
                     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">case_source_mods</span><span class="p">):</span>
-                        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;WARNING: Overwriting existing SourceMods in </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">case_source_mods</span><span class="p">))</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                            <span class="s2">&quot;WARNING: Overwriting existing SourceMods in </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                <span class="n">case_source_mods</span>
+                            <span class="p">)</span>
+                        <span class="p">)</span>
                     <span class="k">else</span><span class="p">:</span>
-                        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Adding SourceMod to case </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">case_source_mods</span><span class="p">))</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                            <span class="s2">&quot;Adding SourceMod to case </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">case_source_mods</span><span class="p">)</span>
+                        <span class="p">)</span>
                     <span class="k">try</span><span class="p">:</span>
                         <span class="n">safe_copy</span><span class="p">(</span><span class="n">source_mods</span><span class="p">,</span> <span class="n">case_source_mods</span><span class="p">)</span>
                     <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-                        <span class="n">expect</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;Could not write file </span><span class="si">{}</span><span class="s2"> in caseroot </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">case_source_mods</span><span class="p">,</span><span class="n">caseroot</span><span class="p">))</span>
+                        <span class="n">expect</span><span class="p">(</span>
+                            <span class="kc">False</span><span class="p">,</span>
+                            <span class="s2">&quot;Could not write file </span><span class="si">{}</span><span class="s2"> in caseroot </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                <span class="n">case_source_mods</span><span class="p">,</span> <span class="n">caseroot</span>
+                            <span class="p">),</span>
+                        <span class="p">)</span>
 
         <span class="c1"># create xmlchange_cmnds and shell_commands in caseroot</span>
-        <span class="n">shell_command_files</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">include_dir</span><span class="p">,</span><span class="s2">&quot;shell_commands&quot;</span><span class="p">))</span> <span class="o">+</span>\
-                              <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">include_dir</span><span class="p">,</span><span class="s2">&quot;xmlchange_cmnds&quot;</span><span class="p">))</span>
+        <span class="n">shell_command_files</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">include_dir</span><span class="p">,</span> <span class="s2">&quot;shell_commands&quot;</span><span class="p">)</span>
+        <span class="p">)</span> <span class="o">+</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">include_dir</span><span class="p">,</span> <span class="s2">&quot;xmlchange_cmnds&quot;</span><span class="p">))</span>
         <span class="k">for</span> <span class="n">shell_commands_file</span> <span class="ow">in</span> <span class="n">shell_command_files</span><span class="p">:</span>
             <span class="n">case_shell_commands</span> <span class="o">=</span> <span class="n">shell_commands_file</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">include_dir</span><span class="p">,</span> <span class="n">caseroot</span><span class="p">)</span>
             <span class="c1"># add commands from both shell_commands and xmlchange_cmnds to</span>
             <span class="c1"># the same file (caseroot/shell_commands)</span>
-            <span class="n">case_shell_commands</span> <span class="o">=</span> <span class="n">case_shell_commands</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;xmlchange_cmnds&quot;</span><span class="p">,</span><span class="s2">&quot;shell_commands&quot;</span><span class="p">)</span>
+            <span class="n">case_shell_commands</span> <span class="o">=</span> <span class="n">case_shell_commands</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
+                <span class="s2">&quot;xmlchange_cmnds&quot;</span><span class="p">,</span> <span class="s2">&quot;shell_commands&quot;</span>
+            <span class="p">)</span>
             <span class="c1"># Note that use of xmlchange_cmnds has been deprecated and will soon</span>
             <span class="c1"># be removed altogether, so new tests should rely on shell_commands</span>
             <span class="k">if</span> <span class="n">shell_commands_file</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;xmlchange_cmnds&quot;</span><span class="p">):</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;xmlchange_cmnds is deprecated and will be removed &quot;</span> <span class="o">+</span>\
-                            <span class="s2">&quot;in a future release; please rename </span><span class="si">{}</span><span class="s2"> shell_commands&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">shell_commands_file</span><span class="p">))</span>
-            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">shell_commands_file</span><span class="p">,</span><span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
-                <span class="n">new_shell_commands</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;xmlchange&quot;</span><span class="p">,</span><span class="s2">&quot;xmlchange --force&quot;</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="s2">&quot;xmlchange_cmnds is deprecated and will be removed &quot;</span>
+                    <span class="o">+</span> <span class="s2">&quot;in a future release; please rename </span><span class="si">{}</span><span class="s2"> shell_commands&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">shell_commands_file</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">shell_commands_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
+                <span class="n">new_shell_commands</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;xmlchange&quot;</span><span class="p">,</span> <span class="s2">&quot;xmlchange --force&quot;</span><span class="p">)</span>
             <span class="c1"># By appending the new commands to the end, settings from later</span>
             <span class="c1"># include_dirs take precedence over earlier ones</span>
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">case_shell_commands</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
@@ -272,23 +301,26 @@
     <span class="k">for</span> <span class="n">shell_command_file</span> <span class="ow">in</span> <span class="n">case_shell_command_files</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">shell_command_file</span><span class="p">):</span>
             <span class="n">os</span><span class="o">.</span><span class="n">chmod</span><span class="p">(</span><span class="n">shell_command_file</span><span class="p">,</span> <span class="mo">0o777</span><span class="p">)</span>
-            <span class="n">run_cmd_no_fail</span><span class="p">(</span><span class="n">shell_command_file</span><span class="p">,</span><span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+            <span class="n">run_cmd_no_fail</span><span class="p">(</span><span class="n">shell_command_file</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="build_include_dirs_list"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.user_mod_support.build_include_dirs_list">[docs]</a><span class="k">def</span> <span class="nf">build_include_dirs_list</span><span class="p">(</span><span class="n">user_mods_path</span><span class="p">,</span> <span class="n">include_dirs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    If user_mods_path has a file &quot;include_user_mods&quot; read that</span>
 <span class="sd">    file and add directories to the include_dirs, recursively check</span>
 <span class="sd">    each of those directories for further directories.</span>
 <span class="sd">    The file may also include comments deleneated with # in the first column</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">include_dirs</span> <span class="o">=</span> <span class="p">[]</span> <span class="k">if</span> <span class="n">include_dirs</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">include_dirs</span>
-    <span class="k">if</span> <span class="n">user_mods_path</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">user_mods_path</span> <span class="o">==</span> <span class="s1">&#39;UNSET&#39;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">user_mods_path</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">user_mods_path</span> <span class="o">==</span> <span class="s2">&quot;UNSET&quot;</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">include_dirs</span>
-    <span class="n">expect</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="n">user_mods_path</span><span class="p">),</span>
-           <span class="s2">&quot;Expected full directory path, got &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">user_mods_path</span><span class="p">))</span>
-    <span class="n">expect</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">user_mods_path</span><span class="p">),</span>
-           <span class="s2">&quot;Directory not found </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">user_mods_path</span><span class="p">))</span>
+    <span class="n">expect</span><span class="p">(</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="n">user_mods_path</span><span class="p">),</span>
+        <span class="s2">&quot;Expected full directory path, got &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">user_mods_path</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">expect</span><span class="p">(</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">user_mods_path</span><span class="p">),</span> <span class="s2">&quot;Directory not found </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">user_mods_path</span><span class="p">)</span>
+    <span class="p">)</span>
     <span class="n">norm_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="n">user_mods_path</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">dir_</span> <span class="ow">in</span> <span class="n">include_dirs</span><span class="p">:</span>
@@ -298,7 +330,7 @@
 
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Adding user mods directory </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">norm_path</span><span class="p">))</span>
     <span class="n">include_dirs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">norm_path</span><span class="p">)</span>
-    <span class="n">include_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">norm_path</span><span class="p">,</span><span class="s2">&quot;include_user_mods&quot;</span><span class="p">)</span>
+    <span class="n">include_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">norm_path</span><span class="p">,</span> <span class="s2">&quot;include_user_mods&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">include_file</span><span class="p">):</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">include_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">newpath</span> <span class="ow">in</span> <span class="n">fd</span><span class="p">:</span>
@@ -309,7 +341,11 @@
                     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="n">newpath</span><span class="p">):</span>
                         <span class="n">build_include_dirs_list</span><span class="p">(</span><span class="n">newpath</span><span class="p">,</span> <span class="n">include_dirs</span><span class="p">)</span>
                     <span class="k">else</span><span class="p">:</span>
-                        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Could not resolve path &#39;</span><span class="si">{}</span><span class="s2">&#39; in file &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">newpath</span><span class="p">,</span> <span class="n">include_file</span><span class="p">))</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                            <span class="s2">&quot;Could not resolve path &#39;</span><span class="si">{}</span><span class="s2">&#39; in file &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                <span class="n">newpath</span><span class="p">,</span> <span class="n">include_file</span>
+                            <span class="p">)</span>
+                        <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">include_dirs</span></div>
 </pre></div>
@@ -351,6 +387,7 @@
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>

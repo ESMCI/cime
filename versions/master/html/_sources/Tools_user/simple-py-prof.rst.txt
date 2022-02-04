@@ -2,7 +2,7 @@
 .. _simple-py-prof:
 
 ####################################################
-simple-py-prof 
+simple-py-prof
 ####################################################
 
 **simple-py-prof** is a script in CIMEROOT/scripts/Tools.

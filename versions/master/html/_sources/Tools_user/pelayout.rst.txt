@@ -2,7 +2,7 @@
 .. _pelayout:
 
 ####################################################
-pelayout 
+pelayout
 ####################################################
 
 **pelayout** is a script in CIMEROOT/scripts/Tools.

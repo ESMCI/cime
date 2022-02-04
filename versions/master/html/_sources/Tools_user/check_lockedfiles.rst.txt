@@ -2,7 +2,7 @@
 .. _check_lockedfiles:
 
 ####################################################
-check_lockedfiles 
+check_lockedfiles
 ####################################################
 
 **check_lockedfiles** is a script in CIMEROOT/scripts/Tools.

@@ -30,6 +30,10 @@
   
 
   
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
 
   
         <link rel="index" title="Index"
@@ -182,6 +186,7 @@
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
+
 <div class="viewcode-block" id="PossibleValues"><a class="viewcode-back" href="../../../CIME_api/CIME.BuildTools.html#CIME.BuildTools.possiblevalues.PossibleValues">[docs]</a><span class="k">class</span> <span class="nc">PossibleValues</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot;Holds a list of settings for a single &quot;Macros&quot; variable.</span>
@@ -290,16 +295,19 @@
 
 <span class="sd">        This function raises an error if an ambiguity is found.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">)):</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">)):</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_specificities</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_specificities</span><span class="p">[</span><span class="n">j</span><span class="p">]:</span>
                     <span class="k">continue</span>
                 <span class="n">other</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
-                <span class="n">expect</span><span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">is_ambiguous_with</span><span class="p">(</span><span class="n">other</span><span class="p">),</span>
-                       <span class="s2">&quot;Variable &quot;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="o">+</span><span class="s2">&quot; is set ambiguously in &quot;</span>
-                       <span class="s2">&quot;config_compilers.xml. Check the file for these &quot;</span>
-                       <span class="s2">&quot;conflicting settings: </span><span class="se">\n</span><span class="s2">1: </span><span class="si">{}</span><span class="se">\n</span><span class="s2">2: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                           <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">conditions</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">conditions</span><span class="p">))</span></div>
+                <span class="n">expect</span><span class="p">(</span>
+                    <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">is_ambiguous_with</span><span class="p">(</span><span class="n">other</span><span class="p">),</span>
+                    <span class="s2">&quot;Variable &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot; is set ambiguously in &quot;</span>
+                    <span class="s2">&quot;config_compilers.xml. Check the file for these &quot;</span>
+                    <span class="s2">&quot;conflicting settings: </span><span class="se">\n</span><span class="s2">1: </span><span class="si">{}</span><span class="se">\n</span><span class="s2">2: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">conditions</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">conditions</span>
+                    <span class="p">),</span>
+                <span class="p">)</span></div>
 
 <div class="viewcode-block" id="PossibleValues.dependencies"><a class="viewcode-back" href="../../../CIME_api/CIME.BuildTools.html#CIME.BuildTools.possiblevalues.PossibleValues.dependencies">[docs]</a>    <span class="k">def</span> <span class="nf">dependencies</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Returns a set of names of variables needed to set this variable.&quot;&quot;&quot;</span>
@@ -327,9 +335,11 @@
         <span class="c1"># Build trees, starting from the least specific and working up.</span>
         <span class="n">normal_trees</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">specificity</span> <span class="ow">in</span> <span class="n">specificities</span><span class="p">:</span>
-            <span class="n">settings_for_tree</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-                                 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">))</span>
-                                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_specificities</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">specificity</span><span class="p">]</span>
+            <span class="n">settings_for_tree</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">))</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_specificities</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">specificity</span>
+            <span class="p">]</span>
             <span class="n">normal_trees</span><span class="p">[</span><span class="n">specificity</span><span class="p">]</span> <span class="o">=</span> <span class="n">MacroConditionTree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">settings_for_tree</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">append_settings</span><span class="p">:</span>
             <span class="n">append_tree</span> <span class="o">=</span> <span class="n">MacroConditionTree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">append_settings</span><span class="p">)</span>
@@ -375,6 +385,7 @@
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/doctools.js"></script>

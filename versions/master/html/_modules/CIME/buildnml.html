@@ -30,6 +30,10 @@
   
 
   
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
 
   
         <link rel="index" title="Index"
@@ -184,7 +188,11 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="n">expect</span><span class="p">,</span> <span class="n">parse_args_and_handle_standard_logging_options</span><span class="p">,</span> <span class="n">setup_standard_logging_options</span>
+<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">expect</span><span class="p">,</span>
+    <span class="n">parse_args_and_handle_standard_logging_options</span><span class="p">,</span>
+    <span class="n">setup_standard_logging_options</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="n">safe_copy</span>
 <span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">argparse</span><span class="o">,</span> <span class="nn">glob</span>
 
@@ -192,35 +200,37 @@
 
 <span class="c1">###############################################################################</span>
 <div class="viewcode-block" id="parse_input"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.buildnml.parse_input">[docs]</a><span class="k">def</span> <span class="nf">parse_input</span><span class="p">(</span><span class="n">argv</span><span class="p">):</span>
-<span class="c1">###############################################################################</span>
+    <span class="c1">###############################################################################</span>
 
     <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">()</span>
 
     <span class="n">setup_standard_logging_options</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
 
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;caseroot&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span>
-                        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Case directory&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;caseroot&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Case directory&quot;</span><span class="p">)</span>
 
     <span class="n">args</span> <span class="o">=</span> <span class="n">parse_args_and_handle_standard_logging_options</span><span class="p">(</span><span class="n">argv</span><span class="p">,</span> <span class="n">parser</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">args</span><span class="o">.</span><span class="n">caseroot</span></div>
 
+
 <span class="c1">###############################################################################</span>
-<span class="c1">#pylint: disable=unused-argument</span>
+<span class="c1"># pylint: disable=unused-argument</span>
 <div class="viewcode-block" id="build_xcpl_nml"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.buildnml.build_xcpl_nml">[docs]</a><span class="k">def</span> <span class="nf">build_xcpl_nml</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">caseroot</span><span class="p">,</span> <span class="n">compname</span><span class="p">):</span>
-<span class="c1">###############################################################################</span>
+    <span class="c1">###############################################################################</span>
     <span class="n">compclasses</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_values</span><span class="p">(</span><span class="s2">&quot;COMP_CLASSES&quot;</span><span class="p">)</span>
     <span class="n">compclass</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">for</span> <span class="n">compclass</span> <span class="ow">in</span> <span class="n">compclasses</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;COMP_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">compclass</span><span class="p">))</span> <span class="o">==</span> <span class="n">compname</span><span class="p">:</span>
             <span class="k">break</span>
-    <span class="n">expect</span><span class="p">(</span><span class="n">compclass</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span>
-           <span class="s2">&quot;Could not identify compclass for compname </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">compname</span><span class="p">))</span>
+    <span class="n">expect</span><span class="p">(</span>
+        <span class="n">compclass</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="s2">&quot;Could not identify compclass for compname </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">compname</span><span class="p">),</span>
+    <span class="p">)</span>
     <span class="n">rundir</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">)</span>
     <span class="n">comp_interface</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;COMP_INTERFACE&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">comp_interface</span> <span class="o">!=</span> <span class="s2">&quot;nuopc&quot;</span><span class="p">:</span>
-        <span class="n">ninst</span>  <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;NINST_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">compclass</span><span class="o">.</span><span class="n">upper</span><span class="p">()))</span>
+        <span class="n">ninst</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;NINST_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">compclass</span><span class="o">.</span><span class="n">upper</span><span class="p">()))</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">ninst</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;NINST&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">ninst</span><span class="p">:</span>
@@ -231,7 +241,7 @@
 
     <span class="k">if</span> <span class="n">comp_interface</span> <span class="o">!=</span> <span class="s2">&quot;nuopc&quot;</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">compname</span> <span class="o">==</span> <span class="s2">&quot;xrof&quot;</span><span class="p">:</span>
-            <span class="n">flood_mode</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">&#39;XROF_FLOOD_MODE&#39;</span><span class="p">)</span>
+            <span class="n">flood_mode</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;XROF_FLOOD_MODE&quot;</span><span class="p">)</span>
         <span class="n">extras</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">dtype</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="n">npes</span> <span class="o">=</span> <span class="mi">0</span>
@@ -239,10 +249,10 @@
         <span class="k">if</span> <span class="n">compname</span> <span class="o">==</span> <span class="s2">&quot;xatm&quot;</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">ny</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="n">dtype</span> <span class="o">=</span> <span class="mi">2</span>
-            <span class="n">extras</span> <span class="o">=</span> <span class="p">[[</span><span class="s2">&quot;24&quot;</span><span class="p">,</span>
-                       <span class="s2">&quot;ncpl  number of communications w/coupler per dat&quot;</span><span class="p">],</span>
-                      <span class="p">[</span><span class="s2">&quot;0.0&quot;</span><span class="p">,</span>
-                       <span class="s2">&quot;simul time proxy (secs): time between cpl comms&quot;</span><span class="p">]]</span>
+            <span class="n">extras</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="p">[</span><span class="s2">&quot;24&quot;</span><span class="p">,</span> <span class="s2">&quot;ncpl  number of communications w/coupler per dat&quot;</span><span class="p">],</span>
+                <span class="p">[</span><span class="s2">&quot;0.0&quot;</span><span class="p">,</span> <span class="s2">&quot;simul time proxy (secs): time between cpl comms&quot;</span><span class="p">],</span>
+            <span class="p">]</span>
         <span class="k">elif</span> <span class="n">compname</span> <span class="o">==</span> <span class="s2">&quot;xglc&quot;</span> <span class="ow">or</span> <span class="n">compname</span> <span class="o">==</span> <span class="s2">&quot;xice&quot;</span><span class="p">:</span>
             <span class="n">dtype</span> <span class="o">=</span> <span class="mi">2</span>
         <span class="k">elif</span> <span class="n">compname</span> <span class="o">==</span> <span class="s2">&quot;xlnd&quot;</span><span class="p">:</span>
@@ -264,25 +274,34 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_in_</span><span class="si">{:04d}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">compname</span><span class="p">,</span> <span class="n">i</span><span class="p">))</span>
 
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">infile</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">infile</span><span class="p">:</span>
             <span class="n">infile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{:&lt;20d}</span><span class="s2"> ! i-direction global dimension</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nx</span><span class="p">))</span>
             <span class="n">infile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{:&lt;20d}</span><span class="s2"> ! j-direction global dimension</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ny</span><span class="p">))</span>
             <span class="k">if</span> <span class="n">comp_interface</span> <span class="o">!=</span> <span class="s2">&quot;nuopc&quot;</span><span class="p">:</span>
-                <span class="n">infile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{:&lt;20d}</span><span class="s2"> ! decomp_type  1=1d-by-lat, 2=1d-by-lon, 3=2d, 4=2d evensquare, 11=segmented</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dtype</span><span class="p">))</span>
+                <span class="n">infile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
+                    <span class="s2">&quot;</span><span class="si">{:&lt;20d}</span><span class="s2"> ! decomp_type  1=1d-by-lat, 2=1d-by-lon, 3=2d, 4=2d evensquare, 11=segmented</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">dtype</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
                 <span class="n">infile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{:&lt;20d}</span><span class="s2"> ! num of pes for i (type 3 only)</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">npes</span><span class="p">))</span>
-                <span class="n">infile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{:&lt;20d}</span><span class="s2"> ! length of segments (type 4 only)</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">length</span><span class="p">))</span>
+                <span class="n">infile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
+                    <span class="s2">&quot;</span><span class="si">{:&lt;20d}</span><span class="s2"> ! length of segments (type 4 only)</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">length</span><span class="p">)</span>
+                <span class="p">)</span>
                 <span class="k">for</span> <span class="n">extra</span> <span class="ow">in</span> <span class="n">extras</span><span class="p">:</span>
                     <span class="n">infile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{:&lt;20s}</span><span class="s2"> ! </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">extra</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">extra</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span></div>
 
+
 <span class="c1">###############################################################################</span>
 <div class="viewcode-block" id="create_namelist_infile"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.buildnml.create_namelist_infile">[docs]</a><span class="k">def</span> <span class="nf">create_namelist_infile</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">user_nl_file</span><span class="p">,</span> <span class="n">namelist_infile</span><span class="p">,</span> <span class="n">infile_text</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
-<span class="c1">###############################################################################</span>
+    <span class="c1">###############################################################################</span>
     <span class="n">lines_input</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">user_nl_file</span><span class="p">):</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">user_nl_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file_usernl</span><span class="p">:</span>
             <span class="n">lines_input</span> <span class="o">=</span> <span class="n">file_usernl</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;WARNING: No file </span><span class="si">{}</span><span class="s2"> found in case directory&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">user_nl_file</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+            <span class="s2">&quot;WARNING: No file </span><span class="si">{}</span><span class="s2"> found in case directory&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">user_nl_file</span><span class="p">)</span>
+        <span class="p">)</span>
 
     <span class="n">lines_output</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">lines_output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&amp;comp_inparm </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -302,18 +321,19 @@
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">namelist_infile</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file_infile</span><span class="p">:</span>
         <span class="n">file_infile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines_output</span><span class="p">))</span></div>
 
+
 <div class="viewcode-block" id="copy_inputs_to_rundir"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.buildnml.copy_inputs_to_rundir">[docs]</a><span class="k">def</span> <span class="nf">copy_inputs_to_rundir</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="n">compname</span><span class="p">,</span> <span class="n">confdir</span><span class="p">,</span> <span class="n">rundir</span><span class="p">,</span> <span class="n">inst_string</span><span class="p">):</span>
 
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">rundir</span><span class="p">):</span>
         <span class="n">filename</span> <span class="o">=</span> <span class="n">compname</span> <span class="o">+</span> <span class="s2">&quot;_in&quot;</span>
-        <span class="n">file_src</span>  <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">confdir</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="n">file_src</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">confdir</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
         <span class="n">file_dest</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">inst_string</span><span class="p">:</span>
             <span class="n">file_dest</span> <span class="o">+=</span> <span class="n">inst_string</span>
-        <span class="n">safe_copy</span><span class="p">(</span><span class="n">file_src</span><span class="p">,</span><span class="n">file_dest</span><span class="p">)</span>
+        <span class="n">safe_copy</span><span class="p">(</span><span class="n">file_src</span><span class="p">,</span> <span class="n">file_dest</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">xmlfile</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">confdir</span><span class="p">,</span> <span class="s2">&quot;*streams*.xml&quot;</span><span class="p">)):</span>
-            <span class="n">casexml</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">xmlfile</span><span class="p">))</span>
+            <span class="n">casexml</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">xmlfile</span><span class="p">))</span>
             <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">casexml</span><span class="p">):</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Using </span><span class="si">{}</span><span class="s2"> for </span><span class="si">{}</span><span class="s2"> streams&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">casexml</span><span class="p">,</span> <span class="n">compname</span><span class="p">))</span>
                 <span class="n">safe_copy</span><span class="p">(</span><span class="n">casexml</span><span class="p">,</span> <span class="n">rundir</span><span class="p">)</span>
@@ -358,6 +378,7 @@
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>

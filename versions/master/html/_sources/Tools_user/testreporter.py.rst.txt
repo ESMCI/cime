@@ -2,7 +2,7 @@
 .. _testreporter.py:
 
 ####################################################
-testreporter.py 
+testreporter.py
 ####################################################
 
 **testreporter.py** is a script in CIMEROOT/scripts/Tools.

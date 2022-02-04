@@ -2,7 +2,7 @@
 .. _check_case:
 
 ####################################################
-check_case 
+check_case
 ####################################################
 
 **check_case** is a script in CIMEROOT/scripts/Tools.

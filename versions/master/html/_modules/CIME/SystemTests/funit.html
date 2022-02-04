@@ -30,6 +30,10 @@
   
 
   
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
 
   
         <link rel="index" title="Index"
@@ -189,18 +193,18 @@
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
-<div class="viewcode-block" id="FUNIT"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.funit.FUNIT">[docs]</a><span class="k">class</span> <span class="nc">FUNIT</span><span class="p">(</span><span class="n">SystemTestsCommon</span><span class="p">):</span>
 
+<div class="viewcode-block" id="FUNIT"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.funit.FUNIT">[docs]</a><span class="k">class</span> <span class="nc">FUNIT</span><span class="p">(</span><span class="n">SystemTestsCommon</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        initialize an object interface to the FUNIT system test</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">SystemTestsCommon</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">)</span>
-        <span class="n">case</span><span class="o">.</span><span class="n">load_env</span><span class="p">()</span>
+        <span class="k">case</span><span class="o">.</span><span class="n">load_env</span><span class="p">()</span>
 
 <div class="viewcode-block" id="FUNIT.build_phase"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.funit.FUNIT.build_phase">[docs]</a>    <span class="k">def</span> <span class="nf">build_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sharedlib_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">model_only</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">sharedlib_only</span><span class="p">:</span>
-            <span class="n">exeroot</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;EXEROOT&quot;</span><span class="p">)</span>
+            <span class="n">exeroot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;EXEROOT&quot;</span><span class="p">)</span>
             <span class="n">logfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">exeroot</span><span class="p">,</span> <span class="s2">&quot;funit.bldlog&quot;</span><span class="p">)</span>
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">logfile</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
                 <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;No-op</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -215,18 +219,27 @@
 
 <div class="viewcode-block" id="FUNIT.run_phase"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.funit.FUNIT.run_phase">[docs]</a>    <span class="k">def</span> <span class="nf">run_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
-        <span class="n">rundir</span>   <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">)</span>
-        <span class="n">exeroot</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;EXEROOT&quot;</span><span class="p">)</span>
-        <span class="n">mach</span>     <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MACH&quot;</span><span class="p">)</span>
+        <span class="n">rundir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">)</span>
+        <span class="n">exeroot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;EXEROOT&quot;</span><span class="p">)</span>
+        <span class="n">mach</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MACH&quot;</span><span class="p">)</span>
 
         <span class="n">log</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="s2">&quot;funit.log&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">log</span><span class="p">):</span>
             <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">log</span><span class="p">)</span>
 
         <span class="n">test_spec_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_test_spec_dir</span><span class="p">()</span>
-        <span class="n">unit_test_tool</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">get_cime_root</span><span class="p">(),</span><span class="s2">&quot;scripts&quot;</span><span class="p">,</span><span class="s2">&quot;fortran_unit_testing&quot;</span><span class="p">,</span><span class="s2">&quot;run_tests.py&quot;</span><span class="p">))</span>
-        <span class="n">args</span> <span class="o">=</span> <span class="s2">&quot;--build-dir </span><span class="si">{}</span><span class="s2"> --test-spec-dir </span><span class="si">{}</span><span class="s2"> --machine </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">exeroot</span><span class="p">,</span> <span class="n">test_spec_dir</span><span class="p">,</span> <span class="n">mach</span><span class="p">)</span>
-        <span class="n">stat</span> <span class="o">=</span> <span class="n">run_cmd</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> &gt;&amp; funit.log&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">unit_test_tool</span><span class="p">,</span> <span class="n">args</span><span class="p">),</span> <span class="n">from_dir</span><span class="o">=</span><span class="n">rundir</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">unit_test_tool</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="n">get_cime_root</span><span class="p">(),</span> <span class="s2">&quot;scripts&quot;</span><span class="p">,</span> <span class="s2">&quot;fortran_unit_testing&quot;</span><span class="p">,</span> <span class="s2">&quot;run_tests.py&quot;</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="s2">&quot;--build-dir </span><span class="si">{}</span><span class="s2"> --test-spec-dir </span><span class="si">{}</span><span class="s2"> --machine </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">exeroot</span><span class="p">,</span> <span class="n">test_spec_dir</span><span class="p">,</span> <span class="n">mach</span>
+        <span class="p">)</span>
+
+        <span class="n">stat</span> <span class="o">=</span> <span class="n">run_cmd</span><span class="p">(</span>
+            <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> &gt;&amp; funit.log&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">unit_test_tool</span><span class="p">,</span> <span class="n">args</span><span class="p">),</span> <span class="n">from_dir</span><span class="o">=</span><span class="n">rundir</span>
+        <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 
         <span class="n">append_testlog</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="s2">&quot;funit.log&quot;</span><span class="p">),</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
 
@@ -281,6 +294,7 @@
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/doctools.js"></script>

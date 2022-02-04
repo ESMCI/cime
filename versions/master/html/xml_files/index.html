@@ -5,7 +5,8 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <title>XML Files &mdash; CIME master documentation</title>
@@ -29,6 +30,10 @@
     <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   
 
+  
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   
 
   
@@ -117,8 +122,6 @@
 <li class="toctree-l2"><a class="reference internal" href="e3sm.html">E3SM Coupled Model XML Files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cesm.html">CESM Coupled Model XML Files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="common.html">Common XML Files</a></li>
-<li class="toctree-l2"><a class="reference internal" href="components.html">Data, Stub and Driver Component XML Files</a></li>
-<li class="toctree-l2"><a class="reference internal" href="drivers.html">Driver XML Files</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../CIME_api/modules.html">CIME</a></li>
@@ -186,7 +189,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="xml-files">
+  <section id="xml-files">
 <span id="id1"></span><h1>XML Files<a class="headerlink" href="#xml-files" title="Permalink to this headline">¶</a></h1>
 <p>CIME includes a number of XML files used for configuration of a case.
 General Users should never need to modify the XML files in the
@@ -201,14 +204,10 @@ in the CIMEROOT/config/xml_schemas directory that can be used with
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="e3sm.html">E3SM Coupled Model XML Files</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="e3sm.html#cimeroot-config-e3sm">CIMEROOT/config/e3sm</a></li>
-<li class="toctree-l2"><a class="reference internal" href="e3sm.html#cimeroot-config-e3sm-allactive">CIMEROOT/config/e3sm/allactive</a></li>
-<li class="toctree-l2"><a class="reference internal" href="e3sm.html#cimeroot-config-e3sm-machines">CIMEROOT/config/e3sm/machines</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="cesm.html">CESM Coupled Model XML Files</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="cesm.html#cimeroot-config-cesm">CIMEROOT/config/cesm</a></li>
-<li class="toctree-l2"><a class="reference internal" href="cesm.html#cimeroot-config-cesm-machines">CIMEROOT/config/cesm/machines</a></li>
-<li class="toctree-l2"><a class="reference internal" href="cesm.html#allactive-srcroot-cime-config">allactive SRCROOT/cime_config</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="common.html">Common XML Files</a><ul>
@@ -216,25 +215,9 @@ in the CIMEROOT/config/xml_schemas directory that can be used with
 <li class="toctree-l2"><a class="reference internal" href="common.html#cimeroot-config-config-tests-xml">CIMEROOT/config/config_tests.xml</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="components.html">Data, Stub and Driver Component XML Files</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="atmosphere.html">CIME Atmosphere Data and Stub XML Files</a></li>
-<li class="toctree-l2"><a class="reference internal" href="esp.html">CIME ESP Data and Stub XML Files</a></li>
-<li class="toctree-l2"><a class="reference internal" href="land.html">CIME Land Data and Stub XML Files</a></li>
-<li class="toctree-l2"><a class="reference internal" href="landice.html">CIME Land Ice Data and Stub XML Files</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ocean.html">CIME Ocean Data and Stub XML Files</a></li>
-<li class="toctree-l2"><a class="reference internal" href="river.html">CIME River Runoff Data and Stub XML Files</a></li>
-<li class="toctree-l2"><a class="reference internal" href="seaice.html">CIME Sea Ice Data and Stub XML Files</a></li>
-<li class="toctree-l2"><a class="reference internal" href="wave.html">CIME Wave Data and Stub XML Files</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="drivers.html">Driver XML Files</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="drivers.html#cimeroot-src-drivers-mct-cime-config">CIMEROOT/src/drivers/mct/cime_config</a></li>
-<li class="toctree-l2"><a class="reference internal" href="drivers.html#cimeroot-src-drivers-mct-cime-config-namelist-definition-xml">CIMEROOT/src/drivers/mct/cime_config/namelist_definition_*.xml</a></li>
-</ul>
-</li>
 </ul>
 </div>
-</div>
+</section>
 
 
            </div>
@@ -283,6 +266,7 @@ in the CIMEROOT/config/xml_schemas directory that can be used with
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>

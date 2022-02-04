@@ -5,7 +5,8 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <title>query_config &mdash; CIME master documentation</title>
@@ -29,6 +30,10 @@
     <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   
 
+  
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   
 
   
@@ -121,13 +126,9 @@
 <li class="toctree-l2"><a class="reference internal" href="case.build.html">case.build</a></li>
 <li class="toctree-l2"><a class="reference internal" href="case.cmpgen_namelists.html">case.cmpgen_namelists</a></li>
 <li class="toctree-l2"><a class="reference internal" href="case.qstatus.html">case.qstatus</a></li>
-<li class="toctree-l2"><a class="reference internal" href="case.run.html">case.run</a></li>
 <li class="toctree-l2"><a class="reference internal" href="case.setup.html">case.setup</a></li>
-<li class="toctree-l2"><a class="reference internal" href="case.st_archive.html">case.st_archive</a></li>
 <li class="toctree-l2"><a class="reference internal" href="case.submit.html">case.submit</a></li>
-<li class="toctree-l2"><a class="reference internal" href="case.test.html">case.test</a></li>
 <li class="toctree-l2"><a class="reference internal" href="case_diff.html">case_diff</a></li>
-<li class="toctree-l2"><a class="reference internal" href="casper.html">casper</a></li>
 <li class="toctree-l2"><a class="reference internal" href="check_case.html">check_case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="check_input_data.html">check_input_data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="check_lockedfiles.html">check_lockedfiles</a></li>
@@ -164,7 +165,6 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="query_testlists.html">query_testlists</a></li>
-<li class="toctree-l2"><a class="reference internal" href="rc.template.html">rc.template</a></li>
 <li class="toctree-l2"><a class="reference internal" href="save_provenance.html">save_provenance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="simple-py-prof.html">simple-py-prof</a></li>
 <li class="toctree-l2"><a class="reference internal" href="simple_compare.html">simple_compare</a></li>
@@ -243,46 +243,35 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="query-config">
+  <section id="query-config">
 <span id="id1"></span><h1>query_config<a class="headerlink" href="#query-config" title="Permalink to this headline">¶</a></h1>
 <p><strong>query_config</strong> is a script in CIMEROOT/scripts.</p>
 <div class="toctree-wrapper compound">
 </div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ ./query_config --help
-usage: query_config [-h] [-d] [-v] [-s] [--xml]
-                    [--compsets [{all,allactive,drv,cam,ufsatm,cism,clm,cice6,cice,pop,mom,nemo,allactive,drv,cam,ufsatm,cism,clm,cice6,cice,pop,mom,nemo,allactive,drv,cam,ufsatm,cism,clm,cice6,cice,pop,mom,nemo}]]
-                    [--components [{all,None,cpl,drv,None,cpl,drv,datm,datm,satm,satm,xatm,xatm,cam,ufsatm,clm,dlnd,dlnd,slnd,slnd,xlnd,xlnd,cice6,cice,dice,dice,sice,sice,xice,xice,pop,mom,nemo,docn,docn,socn,socn,xocn,xocn,rtm,mosart,mizuroute,drof,drof,srof,srof,xrof,xrof,cism,dglc,sglc,sglc,xglc,xglc,ww3dev,ww3,dwav,dwav,swav,swav,xwav,xwav,siac,siac,xiac,xiac,desp,desp,sesp,sesp,None,cpl,drv,None,cpl,drv,datm,datm,satm,satm,xatm,xatm,cam,ufsatm,clm,dlnd,dlnd,slnd,slnd,xlnd,xlnd,cice6,cice,dice,dice,sice,sice,xice,xice,pop,mom,nemo,docn,docn,socn,socn,xocn,xocn,rtm,mosart,mizuroute,drof,drof,srof,srof,xrof,xrof,cism,dglc,sglc,sglc,xglc,xglc,ww3dev,ww3,dwav,dwav,swav,swav,xwav,xwav,desp,desp,sesp,sesp,None,cpl,drv,None,cpl,drv,datm,datm,satm,satm,xatm,xatm,cam,ufsatm,clm,dlnd,dlnd,slnd,slnd,xlnd,xlnd,cice6,cice,dice,dice,sice,sice,xice,xice,pop,mom,nemo,docn,docn,socn,socn,xocn,xocn,rtm,mosart,mizuroute,drof,drof,srof,srof,xrof,xrof,cism,dglc,sglc,sglc,xglc,xglc,ww3dev,ww3,dwav,dwav,swav,swav,xwav,xwav,desp,desp,sesp,sesp}]]
-                    [--grids]
-                    [--machines [{all,current,aleph,athena,bluewaters,centos7-linux,casper,cheyenne,coeus,constance,container,cori-haswell,cori-knl,daint,eastwind,edison,euler2,euler3,euler4,frontera,gaea,greenplanet-sib29,greenplanet-sky24,hobart,homebrew,izumi,laramie,lawrencium-lr3,lawrencium-lr2,lonestar5,melvin,mira,modex,olympus,pleiades-bro,pleiades-has,pleiades-san,pleiades-ivy,sandia-srn-sems,sandiatoss3,stampede2-skx,stampede2-knl,swan,theia,theta,thunder,ubuntu-latest,zeus,bishorn}]]
-                    [--long] [--comp_interface {mct,nuopc,moab}]
-
-Displays information about available compsets, component settings, grids and/or
-machines. Typically run with one of the arguments --compsets, --settings,
---grids or --machines; if you specify more than one of these arguments,
-information will be listed for each.
-
-optional arguments:
-  -h, --help            show this help message and exit
-  -d, --debug           Print debug information (very verbose) to file /Users/sacks/cime/scripts/query_config.log
-  -v, --verbose         Add additional context (time and file) to log messages
-  -s, --silent          Print only warnings and error messages
-  --xml                 Output in xml format.
-  --compsets [{all,allactive,drv,cam,ufsatm,cism,clm,cice6,cice,pop,mom,nemo,allactive,drv,cam,ufsatm,cism,clm,cice6,cice,pop,mom,nemo,allactive,drv,cam,ufsatm,cism,clm,cice6,cice,pop,mom,nemo}]
-                        Query compsets corresponding to the target component for the cesm model. If no component is given, lists compsets defined by all components
-  --components [{all,None,cpl,drv,None,cpl,drv,datm,datm,satm,satm,xatm,xatm,cam,ufsatm,clm,dlnd,dlnd,slnd,slnd,xlnd,xlnd,cice6,cice,dice,dice,sice,sice,xice,xice,pop,mom,nemo,docn,docn,socn,socn,xocn,xocn,rtm,mosart,mizuroute,drof,drof,srof,srof,xrof,xrof,cism,dglc,sglc,sglc,xglc,xglc,ww3dev,ww3,dwav,dwav,swav,swav,xwav,xwav,siac,siac,xiac,xiac,desp,desp,sesp,sesp,None,cpl,drv,None,cpl,drv,datm,datm,satm,satm,xatm,xatm,cam,ufsatm,clm,dlnd,dlnd,slnd,slnd,xlnd,xlnd,cice6,cice,dice,dice,sice,sice,xice,xice,pop,mom,nemo,docn,docn,socn,socn,xocn,xocn,rtm,mosart,mizuroute,drof,drof,srof,srof,xrof,xrof,cism,dglc,sglc,sglc,xglc,xglc,ww3dev,ww3,dwav,dwav,swav,swav,xwav,xwav,desp,desp,sesp,sesp,None,cpl,drv,None,cpl,drv,datm,datm,satm,satm,xatm,xatm,cam,ufsatm,clm,dlnd,dlnd,slnd,slnd,xlnd,xlnd,cice6,cice,dice,dice,sice,sice,xice,xice,pop,mom,nemo,docn,docn,socn,socn,xocn,xocn,rtm,mosart,mizuroute,drof,drof,srof,srof,xrof,xrof,cism,dglc,sglc,sglc,xglc,xglc,ww3dev,ww3,dwav,dwav,swav,swav,xwav,xwav,desp,desp,sesp,sesp}]
-                        Query component settings corresponding to the target component for cesm model.
-                        If the option is empty, then the lists settings defined by all components is output
-  --grids               Query supported model grids for cesm model.
-  --machines [{all,current,aleph,athena,bluewaters,centos7-linux,casper,cheyenne,coeus,constance,container,cori-haswell,cori-knl,daint,eastwind,edison,euler2,euler3,euler4,frontera,gaea,greenplanet-sib29,greenplanet-sky24,hobart,homebrew,izumi,laramie,lawrencium-lr3,lawrencium-lr2,lonestar5,melvin,mira,modex,olympus,pleiades-bro,pleiades-has,pleiades-san,pleiades-ivy,sandia-srn-sems,sandiatoss3,stampede2-skx,stampede2-knl,swan,theia,theta,thunder,ubuntu-latest,zeus,bishorn}]
-                        Query supported machines for cesm model.
-                        If option is left empty then all machines are listed,
-                        If the option is &#39;current&#39; then only the current machine details are listed.
-  --long                Provide long output for queries
-  --comp_interface {mct,nuopc,moab}
-                        Coupler/Driver interface
+Traceback (most recent call last):
+  File &quot;/home/titters/devel/E3SM/cime/master/scripts/./query_config&quot;, line 486, in &lt;module&gt;
+    _main_func(__doc__)
+  File &quot;/home/titters/devel/E3SM/cime/master/scripts/./query_config&quot;, line 464, in _main_func
+    grids, compsets, components, machines, long_output, xml, files = parse_command_line(
+  File &quot;/home/titters/devel/E3SM/cime/master/scripts/./query_config&quot;, line 233, in parse_command_line
+    files[comp_interface] = Files(comp_interface=comp_interface)
+  File &quot;/home/titters/devel/E3SM/cime/master/scripts/Tools/../../scripts/lib/CIME/XML/files.py&quot;, line 28, in __init__
+    EntryID.__init__(self, infile, schema=schema)
+  File &quot;/home/titters/devel/E3SM/cime/master/scripts/Tools/../../scripts/lib/CIME/XML/entry_id.py&quot;, line 17, in __init__
+    GenericXML.__init__(self, infile, schema, read_only=read_only)
+  File &quot;/home/titters/devel/E3SM/cime/master/scripts/Tools/../../scripts/lib/CIME/XML/generic_xml.py&quot;, line 79, in __init__
+    self.read(infile, schema)
+  File &quot;/home/titters/devel/E3SM/cime/master/scripts/Tools/../../scripts/lib/CIME/XML/generic_xml.py&quot;, line 137, in read
+    self.validate_xml_file(infile, schema)
+  File &quot;/home/titters/devel/E3SM/cime/master/scripts/Tools/../../scripts/lib/CIME/XML/generic_xml.py&quot;, line 704, in validate_xml_file
+    os.path.isfile(xmllint),
+  File &quot;/opt/hostedtoolcache/Python/3.10.2/x64/lib/python3.10/genericpath.py&quot;, line 30, in isfile
+    st = os.stat(path)
+TypeError: stat: path should be string, bytes, os.PathLike or integer, not NoneType
 </pre></div>
 </div>
-</div>
+</section>
 
 
            </div>
@@ -331,6 +320,7 @@ optional arguments:
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>

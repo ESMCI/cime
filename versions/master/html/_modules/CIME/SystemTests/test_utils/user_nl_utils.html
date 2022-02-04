@@ -30,6 +30,10 @@
   
 
   
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  
 
   
         <link rel="index" title="Index"
@@ -184,6 +188,7 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">glob</span>
 
+
 <div class="viewcode-block" id="append_to_user_nl_files"><a class="viewcode-back" href="../../../../CIME_api/CIME.SystemTests.test_utils.html#CIME.SystemTests.test_utils.user_nl_utils.append_to_user_nl_files">[docs]</a><span class="k">def</span> <span class="nf">append_to_user_nl_files</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="n">component</span><span class="p">,</span> <span class="n">contents</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Append the string given by &#39;contents&#39; to the end of each user_nl file for</span>
@@ -209,11 +214,12 @@
     <span class="n">files</span> <span class="o">=</span> <span class="n">_get_list_of_user_nl_files</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="n">component</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">files</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;No user_nl files found for component &#39;</span> <span class="o">+</span> <span class="n">component</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;No user_nl files found for component &quot;</span> <span class="o">+</span> <span class="n">component</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">one_file</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">one_file</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">user_nl_file</span><span class="p">:</span>
-            <span class="n">user_nl_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">contents</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span></div>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">one_file</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">user_nl_file</span><span class="p">:</span>
+            <span class="n">user_nl_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">contents</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
 
 <span class="k">def</span> <span class="nf">_get_list_of_user_nl_files</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">component</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Get a list of all user_nl files in the current path for the component</span>
@@ -224,7 +230,7 @@
 <span class="sd">    The list of returned files gives their full path.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">file_pattern</span> <span class="o">=</span> <span class="s1">&#39;user_nl_&#39;</span> <span class="o">+</span> <span class="n">component</span> <span class="o">+</span> <span class="s1">&#39;*&#39;</span>
+    <span class="n">file_pattern</span> <span class="o">=</span> <span class="s2">&quot;user_nl_&quot;</span> <span class="o">+</span> <span class="n">component</span> <span class="o">+</span> <span class="s2">&quot;*&quot;</span>
     <span class="n">file_list</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">file_pattern</span><span class="p">))</span>
 
     <span class="k">return</span> <span class="n">file_list</span>
@@ -267,6 +273,7 @@
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
         <script src="../../../../_static/jquery.js"></script>
         <script src="../../../../_static/underscore.js"></script>
         <script src="../../../../_static/doctools.js"></script>

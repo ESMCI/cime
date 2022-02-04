@@ -2,7 +2,7 @@
 .. _bless_test_results:
 
 ####################################################
-bless_test_results 
+bless_test_results
 ####################################################
 
 **bless_test_results** is a script in CIMEROOT/scripts/Tools.

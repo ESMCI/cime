@@ -2,7 +2,7 @@
 .. _archive_metadata:
 
 ####################################################
-archive_metadata 
+archive_metadata
 ####################################################
 
 **archive_metadata** is a script in CIMEROOT/scripts/Tools.

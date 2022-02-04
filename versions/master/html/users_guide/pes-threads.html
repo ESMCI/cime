@@ -5,7 +5,8 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <title>5. Controlling processors and threads &mdash; CIME master documentation</title>
@@ -29,6 +30,10 @@
     <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   
 
+  
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   
 
   
@@ -203,7 +208,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="controlling-processors-and-threads">
+  <section id="controlling-processors-and-threads">
 <span id="pesthreads"></span><h1><span class="section-number">5. </span>Controlling processors and threads<a class="headerlink" href="#controlling-processors-and-threads" title="Permalink to this headline">¶</a></h1>
 <p>Once a compset and resolution for a case has been defined, CIME
 provides ways to define the processor layout the case will use.</p>
@@ -213,7 +218,7 @@ unique models (atm, lnd, rof, ocn, ice, glc, wav, cpl) that are
 managed independently by the CIME driver, each with a unique MPI
 communicator.  In addition, the driver runs on the union of all
 processors and controls the sequencing and hardware partitioning.</p>
-<div class="section" id="pe-settings-for-a-case">
+<section id="pe-settings-for-a-case">
 <span id="defining-pes"></span><h2><span class="section-number">5.1. </span>pe-settings for a case<a class="headerlink" href="#pe-settings-for-a-case" title="Permalink to this headline">¶</a></h2>
 <p>CIME looks at the xml element <code class="docutils literal notranslate"><span class="pre">PES_SPEC_FILE</span></code> in the <strong>$CIMEROOT/config/$model/config_files.xml</strong> file to determine where
 to find the supported out-of-the-box model pe-settings for the primary component (See <a class="reference internal" href="compsets.html#compsets"><span class="std std-ref">Compsets</span></a> for definition of primary component.)</p>
@@ -261,8 +266,8 @@ processor setting.</p>
 </li>
 </ol>
 <p>When <a class="reference external" href="../Tools_user/create_newcase.html">create_newcase</a>  is called, it outputs the matches that are found in determining the best out-of-the-box pe-layout.</p>
-</div>
-<div class="section" id="setting-the-pe-layout">
+</section>
+<section id="setting-the-pe-layout">
 <h2><span class="section-number">5.2. </span>Setting the PE layout<a class="headerlink" href="#setting-the-pe-layout" title="Permalink to this headline">¶</a></h2>
 <p>Optimizing the throughput and efficiency of a CIME experiment often
 involves customizing the processor (PE) layout. (See <a class="reference internal" href="#optimizing-processor-layout"><span class="std std-ref">load
@@ -343,8 +348,8 @@ model can also run concurrently with the atmosphere model.</p>
 <p class="admonition-title">Note</p>
 <p>if <strong>env_mach_pes.xml</strong> is modified after <a class="reference external" href="../Tools_user/case.setup.html">case.setup</a>  has been called, then you must run <a class="reference external" href="../Tools_user/case.setup.html">case.setup –reset</a> and the call <a class="reference external" href="../Tools_user/case.build.html">case.build</a>.  <strong>case.build</strong> will only recompile any source code that depends on values in <strong>env_mach_pes.xml</strong></p>
 </div>
-</div>
-<div class="section" id="case-resource-allocation">
+</section>
+<section id="case-resource-allocation">
 <h2><span class="section-number">5.3. </span>Case Resource Allocation<a class="headerlink" href="#case-resource-allocation" title="Permalink to this headline">¶</a></h2>
 <p>Resources for your case will be allocated according to the following logic.</p>
 <ul class="simple">
@@ -375,8 +380,8 @@ out on hardware processors 255-311. Hardware processors 64-254 would
 be allocated but completely idle.</p>
 <p>We strongly encourage you to use the <a class="reference external" href="../Tools_user/preview_run.html">preview_run</a> script to review the environment
 and job submit commands for your case.</p>
-</div>
-<div class="section" id="optimizing-processor-layout">
+</section>
+<section id="optimizing-processor-layout">
 <span id="id2"></span><h2><span class="section-number">5.4. </span>Optimizing processor layout<a class="headerlink" href="#optimizing-processor-layout" title="Permalink to this headline">¶</a></h2>
 <p>Load balancing is the practice of specifying a processor layout for a given model configuration
 (compset, grid, and so on) to maximize simulation speed while minimizing processor idle time.
@@ -467,8 +472,8 @@ when running with mixed active and data models.</p>
 <li><p>Assume that hardware performance can vary due to contention on the interconnect, file systems, or other areas. If you are unsure of a timing result, run cases multiple times.</p></li>
 </ul>
 <p>The pe-layout and the associated timings are found in the  <a class="reference internal" href="timers.html#model-timing-data"><span class="std std-ref">timing files</span></a> generated for your run.</p>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
@@ -517,6 +522,7 @@ when running with mixed active and data models.</p>
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>

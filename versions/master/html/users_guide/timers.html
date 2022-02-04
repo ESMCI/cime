@@ -5,7 +5,8 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <title>7. Timers and timing &mdash; CIME master documentation</title>
@@ -29,6 +30,10 @@
     <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   
 
+  
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   
 
   
@@ -202,11 +207,11 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="timers-and-timing">
+  <section id="timers-and-timing">
 <span id="timers"></span><h1><span class="section-number">7. </span>Timers and timing<a class="headerlink" href="#timers-and-timing" title="Permalink to this headline">¶</a></h1>
 <p>CIME includes a copy of the General Purpose Timing Library (GPTL) and timers are placed throughout the CIME driver.  CIME-driven models typically
 also have GPTL timers in their code and very detailed timing information can be obtained.</p>
-<div class="section" id="model-timing-data">
+<section id="model-timing-data">
 <span id="id1"></span><h2><span class="section-number">7.1. </span>Model timing data<a class="headerlink" href="#model-timing-data" title="Permalink to this headline">¶</a></h2>
 <p>Every model run produces three types of timing output that you can examine:</p>
 <ol class="arabic">
@@ -215,14 +220,14 @@ also have GPTL timers in their code and very detailed timing information can be 
 The following describes the most important parts of this timing file:</p>
 <p>An example timing file of this type is:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">----------------</span> <span class="n">TIMING</span> <span class="n">PROFILE</span> <span class="o">---------------------</span>
-<span class="n">Case</span>        <span class="p">:</span> <span class="n">b</span><span class="o">.</span><span class="n">e20</span><span class="o">.</span><span class="n">BHIST</span><span class="o">.</span><span class="n">f09_g17</span><span class="o">.</span><span class="mi">20</span><span class="n">thC</span><span class="o">.</span><span class="mi">297_02</span>
-<span class="n">LID</span>         <span class="p">:</span> <span class="mf">9459679.</span><span class="n">chadmin1</span><span class="o">.</span><span class="mi">180517</span><span class="o">-</span><span class="mi">114852</span>
+<span class="n">Case</span>        <span class="p">:</span> <span class="n">b</span><span class="o">.</span><span class="n">e20</span><span class="o">.</span><span class="n">BHIST</span><span class="o">.</span><span class="n">f09_g17</span><span class="mf">.20</span><span class="n">thC</span><span class="mf">.297_02</span>
+<span class="n">LID</span>         <span class="p">:</span> <span class="mf">9459679.</span><span class="n">chadmin1</span><span class="mf">.180517</span><span class="o">-</span><span class="mi">114852</span>
 <span class="n">Machine</span>     <span class="p">:</span> <span class="n">cheyenne</span>
-<span class="n">Caseroot</span>    <span class="p">:</span> <span class="o">/</span><span class="n">glade</span><span class="o">/</span><span class="n">p</span><span class="o">/</span><span class="n">cesmdata</span><span class="o">/</span><span class="n">cseg</span><span class="o">/</span><span class="n">runs</span><span class="o">/</span><span class="n">cesm2_0</span><span class="o">/</span><span class="n">b</span><span class="o">.</span><span class="n">e20</span><span class="o">.</span><span class="n">BHIST</span><span class="o">.</span><span class="n">f09_g17</span><span class="o">.</span><span class="mi">20</span><span class="n">thC</span><span class="o">.</span><span class="mi">297_02</span>
-<span class="n">Timeroot</span>    <span class="p">:</span> <span class="o">/</span><span class="n">glade</span><span class="o">/</span><span class="n">p</span><span class="o">/</span><span class="n">cesmdata</span><span class="o">/</span><span class="n">cseg</span><span class="o">/</span><span class="n">runs</span><span class="o">/</span><span class="n">cesm2_0</span><span class="o">/</span><span class="n">b</span><span class="o">.</span><span class="n">e20</span><span class="o">.</span><span class="n">BHIST</span><span class="o">.</span><span class="n">f09_g17</span><span class="o">.</span><span class="mi">20</span><span class="n">thC</span><span class="o">.</span><span class="mi">297_02</span><span class="o">/</span><span class="n">Tools</span>
+<span class="n">Caseroot</span>    <span class="p">:</span> <span class="o">/</span><span class="n">glade</span><span class="o">/</span><span class="n">p</span><span class="o">/</span><span class="n">cesmdata</span><span class="o">/</span><span class="n">cseg</span><span class="o">/</span><span class="n">runs</span><span class="o">/</span><span class="n">cesm2_0</span><span class="o">/</span><span class="n">b</span><span class="o">.</span><span class="n">e20</span><span class="o">.</span><span class="n">BHIST</span><span class="o">.</span><span class="n">f09_g17</span><span class="mf">.20</span><span class="n">thC</span><span class="mf">.297_02</span>
+<span class="n">Timeroot</span>    <span class="p">:</span> <span class="o">/</span><span class="n">glade</span><span class="o">/</span><span class="n">p</span><span class="o">/</span><span class="n">cesmdata</span><span class="o">/</span><span class="n">cseg</span><span class="o">/</span><span class="n">runs</span><span class="o">/</span><span class="n">cesm2_0</span><span class="o">/</span><span class="n">b</span><span class="o">.</span><span class="n">e20</span><span class="o">.</span><span class="n">BHIST</span><span class="o">.</span><span class="n">f09_g17</span><span class="mf">.20</span><span class="n">thC</span><span class="mf">.297_02</span><span class="o">/</span><span class="n">Tools</span>
 <span class="n">User</span>        <span class="p">:</span> <span class="n">hannay</span>
 <span class="n">Curr</span> <span class="n">Date</span>   <span class="p">:</span> <span class="n">Thu</span> <span class="n">May</span> <span class="mi">17</span> <span class="mi">12</span><span class="p">:</span><span class="mi">42</span><span class="p">:</span><span class="mi">27</span> <span class="mi">2018</span>
-<span class="n">grid</span>        <span class="p">:</span> <span class="n">a</span><span class="o">%</span><span class="mf">0.9</span><span class="n">x1</span><span class="o">.</span><span class="mi">25</span><span class="n">_l</span><span class="o">%</span><span class="mf">0.9</span><span class="n">x1</span><span class="o">.</span><span class="mi">25</span><span class="n">_oi</span><span class="o">%</span><span class="n">gx1v7_r</span><span class="o">%</span><span class="n">r05_g</span><span class="o">%</span><span class="n">gland4_w</span><span class="o">%</span><span class="n">ww3a_m</span><span class="o">%</span><span class="n">gx1v7</span>
+<span class="n">grid</span>        <span class="p">:</span> <span class="n">a</span><span class="o">%</span><span class="mf">0.9</span><span class="n">x1</span><span class="mf">.25</span><span class="n">_l</span><span class="o">%</span><span class="mf">0.9</span><span class="n">x1</span><span class="mf">.25</span><span class="n">_oi</span><span class="o">%</span><span class="n">gx1v7_r</span><span class="o">%</span><span class="n">r05_g</span><span class="o">%</span><span class="n">gland4_w</span><span class="o">%</span><span class="n">ww3a_m</span><span class="o">%</span><span class="n">gx1v7</span>
 <span class="n">compset</span>     <span class="p">:</span> <span class="n">HIST_CAM60_CLM50</span><span class="o">%</span><span class="n">BGC</span><span class="o">-</span><span class="n">CROP_CICE_POP2</span><span class="o">%</span><span class="n">ECO_MOSART_CISM2</span><span class="o">%</span><span class="n">NOEVOLVE_WW3_BGC</span><span class="o">%</span><span class="n">BDRD</span>
 <span class="n">run_type</span>    <span class="p">:</span> <span class="n">hybrid</span><span class="p">,</span> <span class="n">continue_run</span> <span class="o">=</span> <span class="n">FALSE</span> <span class="p">(</span><span class="n">inittype</span> <span class="o">=</span> <span class="n">TRUE</span><span class="p">)</span>
 <span class="n">stop_option</span> <span class="p">:</span> <span class="n">nyears</span><span class="p">,</span> <span class="n">stop_n</span> <span class="o">=</span> <span class="mi">1</span>
@@ -306,8 +311,8 @@ month. This file will appear either in <strong>$RUNDIR</strong> or in
 </li>
 </ol>
 <p>The xml variable <code class="docutils literal notranslate"><span class="pre">CHECK_TIMING</span></code>, if set to <code class="docutils literal notranslate"><span class="pre">TRUE</span></code> (the default) will produce the timing files in the <strong>$CASEROOT/timing</strong> directory.</p>
-</div>
-<div class="section" id="controlling-timers">
+</section>
+<section id="controlling-timers">
 <h2><span class="section-number">7.2. </span>Controlling timers<a class="headerlink" href="#controlling-timers" title="Permalink to this headline">¶</a></h2>
 <p>User customization of timers is done via the xml variables <code class="docutils literal notranslate"><span class="pre">TIMER_LEVEL</span></code> and <code class="docutils literal notranslate"><span class="pre">TIMER_DETAIL</span></code>.</p>
 <ul>
@@ -332,8 +337,8 @@ add the following line in your <strong>$CASEROOT/user_nl_cpl</strong>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">profile_barriers</span> <span class="o">=</span> <span class="o">.</span><span class="n">true</span><span class="o">.</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="advice-on-setting-your-wallclock-time">
+</section>
+<section id="advice-on-setting-your-wallclock-time">
 <h2><span class="section-number">7.3. </span>Advice on setting your wallclock time<a class="headerlink" href="#advice-on-setting-your-wallclock-time" title="Permalink to this headline">¶</a></h2>
 <dl>
 <dt>When you look at the <strong>$model_timing.$CASE.$datestamp</strong> file for “Model Throughput”, you will find output like this:</dt><dd><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Overall</span> <span class="n">Metrics</span><span class="p">:</span>
@@ -361,8 +366,8 @@ year/job. In this example, set your wallclock at 12 hours and invoke
 <span class="o">&gt;./</span><span class="n">xmlchange</span> <span class="n">REST_N</span><span class="o">=</span><span class="mi">1</span>
 </pre></div>
 </div>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
@@ -411,6 +416,7 @@ year/job. In this example, set your wallclock at 12 hours and invoke
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>

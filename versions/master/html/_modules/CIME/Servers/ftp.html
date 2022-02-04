@@ -30,6 +30,10 @@
   
 
   
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
 
   
         <link rel="index" title="Index"
@@ -192,30 +196,38 @@
 <span class="c1"># I think that multiple inheritence would be useful here, but I couldnt make it work</span>
 <span class="c1"># in a py2/3 compatible way.</span>
 <div class="viewcode-block" id="FTP"><a class="viewcode-back" href="../../../CIME_api/CIME.Servers.html#CIME.Servers.ftp.FTP">[docs]</a><span class="k">class</span> <span class="nc">FTP</span><span class="p">(</span><span class="n">GenericServer</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">passwd</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">server</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">passwd</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">server</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">user</span><span class="p">:</span>
-            <span class="n">user</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+            <span class="n">user</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">passwd</span><span class="p">:</span>
-            <span class="n">passwd</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
-        <span class="n">expect</span><span class="p">(</span><span class="n">server</span><span class="p">,</span><span class="s2">&quot; Must call via ftp_login function&quot;</span><span class="p">)</span>
-        <span class="n">root_address</span> <span class="o">=</span> <span class="n">address</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">passwd</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">expect</span><span class="p">(</span><span class="n">server</span><span class="p">,</span> <span class="s2">&quot; Must call via ftp_login function&quot;</span><span class="p">)</span>
+        <span class="n">root_address</span> <span class="o">=</span> <span class="n">address</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ftp</span> <span class="o">=</span> <span class="n">server</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ftp_server</span> <span class="o">=</span> <span class="n">address</span>
         <span class="n">stat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ftp</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">passwd</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;login stat </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">stat</span><span class="p">))</span>
         <span class="k">if</span> <span class="s2">&quot;Login successful&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">stat</span><span class="p">:</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;FAIL: Could not login to ftp server </span><span class="si">{}</span><span class="se">\n</span><span class="s2"> error </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">stat</span><span class="p">))</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;FAIL: Could not login to ftp server </span><span class="si">{}</span><span class="se">\n</span><span class="s2"> error </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">address</span><span class="p">,</span> <span class="n">stat</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span>
 
         <span class="n">stat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ftp</span><span class="o">.</span><span class="n">cwd</span><span class="p">(</span><span class="n">root_address</span><span class="p">)</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;cwd </span><span class="si">{}</span><span class="s2"> stat </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">root_address</span><span class="p">,</span><span class="n">stat</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;cwd </span><span class="si">{}</span><span class="s2"> stat </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">root_address</span><span class="p">,</span> <span class="n">stat</span><span class="p">))</span>
         <span class="k">if</span> <span class="s2">&quot;Directory successfully changed&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">stat</span><span class="p">:</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;FAIL: Could not cd to server root directory </span><span class="si">{}</span><span class="se">\n</span><span class="s2"> error </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">root_address</span><span class="p">,</span> <span class="n">stat</span><span class="p">))</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;FAIL: Could not cd to server root directory </span><span class="si">{}</span><span class="se">\n</span><span class="s2"> error </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">root_address</span><span class="p">,</span> <span class="n">stat</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="FTP.ftp_login"><a class="viewcode-back" href="../../../CIME_api/CIME.Servers.html#CIME.Servers.ftp.FTP.ftp_login">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">ftp_login</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">passwd</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
-        <span class="n">ftp_server</span><span class="p">,</span> <span class="n">root_address</span> <span class="o">=</span> <span class="n">address</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">ftp_login</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">passwd</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+        <span class="n">ftp_server</span><span class="p">,</span> <span class="n">root_address</span> <span class="o">=</span> <span class="n">address</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;server address </span><span class="si">{}</span><span class="s2"> root path </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ftp_server</span><span class="p">,</span> <span class="n">root_address</span><span class="p">))</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">with</span> <span class="n">Timeout</span><span class="p">(</span><span class="mi">60</span><span class="p">):</span>
@@ -244,22 +256,29 @@
 
         <span class="k">if</span> <span class="n">rel_path</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">stat</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">stat</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">stat</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">rel_path</span><span class="p">):</span>
-                <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;FAIL: File </span><span class="si">{}</span><span class="s2"> not found.</span><span class="se">\n</span><span class="s2">error </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rel_path</span><span class="p">,</span> <span class="n">stat</span><span class="p">))</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="s2">&quot;FAIL: File </span><span class="si">{}</span><span class="s2"> not found.</span><span class="se">\n</span><span class="s2">error </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rel_path</span><span class="p">,</span> <span class="n">stat</span><span class="p">)</span>
+                <span class="p">)</span>
                 <span class="k">return</span> <span class="kc">False</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="FTP.getfile"><a class="viewcode-back" href="../../../CIME_api/CIME.Servers.html#CIME.Servers.ftp.FTP.getfile">[docs]</a>    <span class="k">def</span> <span class="nf">getfile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rel_path</span><span class="p">,</span> <span class="n">full_path</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">stat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ftp</span><span class="o">.</span><span class="n">retrbinary</span><span class="p">(</span><span class="s1">&#39;RETR </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rel_path</span><span class="p">),</span> <span class="nb">open</span><span class="p">(</span><span class="n">full_path</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">write</span><span class="p">)</span>
+            <span class="n">stat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ftp</span><span class="o">.</span><span class="n">retrbinary</span><span class="p">(</span>
+                <span class="s2">&quot;RETR </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rel_path</span><span class="p">),</span> <span class="nb">open</span><span class="p">(</span><span class="n">full_path</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">write</span>
+            <span class="p">)</span>
         <span class="k">except</span> <span class="n">all_ftp_errors</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">full_path</span><span class="p">):</span>
                 <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">full_path</span><span class="p">)</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;ERROR from ftp server, trying next server&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">False</span>
 
-        <span class="k">if</span> <span class="p">(</span><span class="n">stat</span> <span class="o">!=</span> <span class="s1">&#39;226 Transfer complete.&#39;</span><span class="p">):</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;FAIL: Failed to retreve file &#39;</span><span class="si">{}</span><span class="s2">&#39; from FTP repo &#39;</span><span class="si">{}</span><span class="s2">&#39; stat=</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span>
-                            <span class="nb">format</span><span class="p">(</span><span class="n">rel_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ftp_server</span><span class="p">,</span> <span class="n">stat</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">stat</span> <span class="o">!=</span> <span class="s2">&quot;226 Transfer complete.&quot;</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;FAIL: Failed to retreve file &#39;</span><span class="si">{}</span><span class="s2">&#39; from FTP repo &#39;</span><span class="si">{}</span><span class="s2">&#39; stat=</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">rel_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ftp_server</span><span class="p">,</span> <span class="n">stat</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
             <span class="k">return</span> <span class="kc">False</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
@@ -271,7 +290,7 @@
             <span class="k">return</span> <span class="kc">False</span>
 
         <span class="k">for</span> <span class="n">_file</span> <span class="ow">in</span> <span class="n">stat</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">getfile</span><span class="p">(</span><span class="n">_file</span><span class="p">,</span> <span class="n">full_path</span><span class="o">+</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="o">+</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">_file</span><span class="p">))</span></div></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">getfile</span><span class="p">(</span><span class="n">_file</span><span class="p">,</span> <span class="n">full_path</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">sep</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">_file</span><span class="p">))</span></div></div>
 </pre></div>
 
            </div>
@@ -311,6 +330,7 @@
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/doctools.js"></script>

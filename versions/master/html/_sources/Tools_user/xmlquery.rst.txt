@@ -2,7 +2,7 @@
 .. _xmlquery:
 
 ####################################################
-xmlquery 
+xmlquery
 ####################################################
 
 **xmlquery** is a script in CIMEROOT/scripts/Tools.

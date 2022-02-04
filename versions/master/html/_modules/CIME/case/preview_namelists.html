@@ -30,6 +30,10 @@
   
 
   
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
 
   
         <link rel="index" title="Index"
@@ -183,19 +187,21 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="n">run_sub_or_cmd</span><span class="p">,</span> <span class="n">safe_copy</span>
+<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="n">import_and_run_sub_or_cmd</span><span class="p">,</span> <span class="n">safe_copy</span>
 <span class="kn">import</span> <span class="nn">time</span><span class="o">,</span> <span class="nn">glob</span>
+
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
 
 <div class="viewcode-block" id="create_dirs"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.create_dirs">[docs]</a><span class="k">def</span> <span class="nf">create_dirs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Make necessary directories for case</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Get data from XML</span>
-    <span class="n">exeroot</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;EXEROOT&quot;</span><span class="p">)</span>
-    <span class="n">libroot</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;LIBROOT&quot;</span><span class="p">)</span>
-    <span class="n">incroot</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;INCROOT&quot;</span><span class="p">)</span>
-    <span class="n">rundir</span>   <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">)</span>
+    <span class="n">exeroot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;EXEROOT&quot;</span><span class="p">)</span>
+    <span class="n">libroot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;LIBROOT&quot;</span><span class="p">)</span>
+    <span class="n">incroot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;INCROOT&quot;</span><span class="p">)</span>
+    <span class="n">rundir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">)</span>
     <span class="n">caseroot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">)</span>
     <span class="n">docdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="s2">&quot;CaseDocs&quot;</span><span class="p">)</span>
     <span class="n">dirs_to_make</span> <span class="o">=</span> <span class="p">[]</span>
@@ -207,7 +213,7 @@
     <span class="n">dirs_to_make</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">exeroot</span><span class="p">,</span> <span class="n">libroot</span><span class="p">,</span> <span class="n">incroot</span><span class="p">,</span> <span class="n">rundir</span><span class="p">,</span> <span class="n">docdir</span><span class="p">])</span>
 
     <span class="k">for</span> <span class="n">dir_to_make</span> <span class="ow">in</span> <span class="n">dirs_to_make</span><span class="p">:</span>
-        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">dir_to_make</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">islink</span><span class="p">(</span><span class="n">dir_to_make</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">dir_to_make</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">islink</span><span class="p">(</span><span class="n">dir_to_make</span><span class="p">):</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Making dir &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dir_to_make</span><span class="p">))</span>
                 <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">dir_to_make</span><span class="p">)</span>
@@ -215,12 +221,18 @@
                 <span class="c1"># In a multithreaded situation, we may have lost a race to create this dir.</span>
                 <span class="c1"># We do not want to crash if that&#39;s the case.</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">dir_to_make</span><span class="p">):</span>
-                    <span class="n">expect</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;Could not make directory &#39;</span><span class="si">{}</span><span class="s2">&#39;, error: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dir_to_make</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+                    <span class="n">expect</span><span class="p">(</span>
+                        <span class="kc">False</span><span class="p">,</span>
+                        <span class="s2">&quot;Could not make directory &#39;</span><span class="si">{}</span><span class="s2">&#39;, error: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                            <span class="n">dir_to_make</span><span class="p">,</span> <span class="n">e</span>
+                        <span class="p">),</span>
+                    <span class="p">)</span>
 
     <span class="c1"># As a convenience write the location of the case directory in the bld and run directories</span>
     <span class="k">for</span> <span class="n">dir_</span> <span class="ow">in</span> <span class="p">(</span><span class="n">exeroot</span><span class="p">,</span> <span class="n">rundir</span><span class="p">):</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dir_</span><span class="p">,</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">),</span><span class="s2">&quot;w+&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
-            <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">caseroot</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span></div>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dir_</span><span class="p">,</span> <span class="s2">&quot;CASEROOT&quot;</span><span class="p">),</span> <span class="s2">&quot;w+&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
+            <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">caseroot</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
 
 <div class="viewcode-block" id="create_namelists"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.create_namelists">[docs]</a><span class="k">def</span> <span class="nf">create_namelists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -248,46 +260,62 @@
     <span class="n">models</span> <span class="o">+=</span> <span class="p">[</span><span class="n">models</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)]</span>
     <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">models</span><span class="p">:</span>
         <span class="n">model_str</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;  </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">),</span><span class="n">model_str</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;  </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">),</span> <span class="n">model_str</span><span class="p">))</span>
         <span class="n">config_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CONFIG_</span><span class="si">{}</span><span class="s2">_FILE&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">model_str</span><span class="o">.</span><span class="n">upper</span><span class="p">()))</span>
         <span class="n">config_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">config_file</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">model_str</span> <span class="o">==</span> <span class="s2">&quot;cpl&quot;</span><span class="p">:</span>
             <span class="n">compname</span> <span class="o">=</span> <span class="s2">&quot;drv&quot;</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">compname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;COMP_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">model_str</span><span class="o">.</span><span class="n">upper</span><span class="p">()))</span>
-        <span class="k">if</span> <span class="n">component</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">component</span> <span class="o">==</span> <span class="n">model_str</span> <span class="ow">or</span> <span class="n">compname</span><span class="o">==</span><span class="s2">&quot;ufsatm&quot;</span><span class="p">:</span>
-            <span class="c1"># first look in the case SourceMods directory</span>
-            <span class="n">cmd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="s2">&quot;SourceMods&quot;</span><span class="p">,</span> <span class="s2">&quot;src.&quot;</span><span class="o">+</span><span class="n">compname</span><span class="p">,</span> <span class="s2">&quot;buildnml&quot;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">cmd</span><span class="p">):</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">WARNING: Using local buildnml file </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cmd</span><span class="p">))</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># otherwise look in the component config_dir</span>
-                <span class="n">cmd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">config_dir</span><span class="p">,</span> <span class="s2">&quot;buildnml&quot;</span><span class="p">)</span>
-            <span class="n">expect</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">cmd</span><span class="p">),</span> <span class="s2">&quot;Could not find buildnml file for component </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">compname</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">component</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">component</span> <span class="o">==</span> <span class="n">model_str</span> <span class="ow">or</span> <span class="n">compname</span> <span class="o">==</span> <span class="s2">&quot;ufsatm&quot;</span><span class="p">:</span>
+            <span class="n">cmd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">config_dir</span><span class="p">,</span> <span class="s2">&quot;buildnml&quot;</span><span class="p">)</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Create namelist for component </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">compname</span><span class="p">))</span>
-            <span class="n">run_sub_or_cmd</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="p">(</span><span class="n">caseroot</span><span class="p">),</span> <span class="s2">&quot;buildnml&quot;</span><span class="p">,</span>
-                           <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caseroot</span><span class="p">,</span> <span class="n">compname</span><span class="p">),</span> <span class="n">case</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+            <span class="n">import_and_run_sub_or_cmd</span><span class="p">(</span>
+                <span class="n">cmd</span><span class="p">,</span>
+                <span class="p">(</span><span class="n">caseroot</span><span class="p">),</span>
+                <span class="s2">&quot;buildnml&quot;</span><span class="p">,</span>
+                <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caseroot</span><span class="p">,</span> <span class="n">compname</span><span class="p">),</span>
+                <span class="n">config_dir</span><span class="p">,</span>
+                <span class="n">compname</span><span class="p">,</span>
+                <span class="n">case</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
+            <span class="p">)</span>
 
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Finished creating component namelists, component </span><span class="si">{}</span><span class="s2"> models = </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">component</span><span class="p">,</span> <span class="n">models</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+            <span class="s2">&quot;Finished creating component namelists, component </span><span class="si">{}</span><span class="s2"> models = </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">component</span><span class="p">,</span> <span class="n">models</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
 
     <span class="c1"># Save namelists to docdir</span>
-    <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">docdir</span><span class="p">)):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">docdir</span><span class="p">):</span>
         <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">docdir</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">docdir</span><span class="p">,</span> <span class="s2">&quot;README&quot;</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
-                <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot; CESM Resolved Namelist Files</span><span class="se">\n</span><span class="s2">   For documentation only DO NOT MODIFY</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
+                    <span class="s2">&quot; CESM Resolved Namelist Files</span><span class="se">\n</span><span class="s2">   For documentation only DO NOT MODIFY</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
         <span class="k">except</span> <span class="p">(</span><span class="ne">OSError</span><span class="p">,</span> <span class="ne">IOError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">expect</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;Failed to write </span><span class="si">{}</span><span class="s2">/README: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">docdir</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
 
-    <span class="k">for</span> <span class="n">cpglob</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;*_in_[0-9]*&quot;</span><span class="p">,</span> <span class="s2">&quot;*modelio*&quot;</span><span class="p">,</span> <span class="s2">&quot;*_in&quot;</span><span class="p">,</span> <span class="s2">&quot;nuopc.runconfig&quot;</span><span class="p">,</span>
-                   <span class="s2">&quot;*streams*txt*&quot;</span><span class="p">,</span> <span class="s2">&quot;*streams.xml&quot;</span><span class="p">,</span> <span class="s2">&quot;*stxt&quot;</span><span class="p">,</span> <span class="s2">&quot;*maps.rc&quot;</span><span class="p">,</span> <span class="s2">&quot;*cism*.config*&quot;</span><span class="p">,</span> <span class="s2">&quot;nuopc.runseq&quot;</span><span class="p">]:</span>
+    <span class="k">for</span> <span class="n">cpglob</span> <span class="ow">in</span> <span class="p">[</span>
+        <span class="s2">&quot;*_in_[0-9]*&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;*modelio*&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;*_in&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;nuopc.runconfig&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;*streams*txt*&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;*streams.xml&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;*stxt&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;*maps.rc&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;*cism*.config*&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;nuopc.runseq&quot;</span><span class="p">,</span>
+    <span class="p">]:</span>
         <span class="k">for</span> <span class="n">file_to_copy</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="n">cpglob</span><span class="p">)):</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Copy file from &#39;</span><span class="si">{}</span><span class="s2">&#39; to &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">file_to_copy</span><span class="p">,</span> <span class="n">docdir</span><span class="p">))</span>
             <span class="n">safe_copy</span><span class="p">(</span><span class="n">file_to_copy</span><span class="p">,</span> <span class="n">docdir</span><span class="p">)</span>
 
     <span class="c1"># Copy over chemistry mechanism docs if they exist</span>
     <span class="n">atmconf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;COMP_ATM&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;conf&quot;</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">casebuild</span><span class="p">,</span> <span class="n">atmconf</span><span class="p">))):</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">casebuild</span><span class="p">,</span> <span class="n">atmconf</span><span class="p">)):</span>
         <span class="k">for</span> <span class="n">file_to_copy</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">casebuild</span><span class="p">,</span> <span class="n">atmconf</span><span class="p">,</span> <span class="s2">&quot;*chem_mech*&quot;</span><span class="p">)):</span>
             <span class="n">safe_copy</span><span class="p">(</span><span class="n">file_to_copy</span><span class="p">,</span> <span class="n">docdir</span><span class="p">)</span></div>
 </pre></div>
@@ -329,6 +357,7 @@
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/doctools.js"></script>

@@ -5,7 +5,8 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <title>4. Defining the machine &mdash; CIME master documentation</title>
@@ -29,6 +30,10 @@
     <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   
 
+  
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   
 
   
@@ -204,7 +209,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="defining-the-machine">
+  <section id="defining-the-machine">
 <span id="machine"></span><h1><span class="section-number">4. </span>Defining the machine<a class="headerlink" href="#defining-the-machine" title="Permalink to this headline">¶</a></h1>
 <p>CIME looks at the xml node <code class="docutils literal notranslate"><span class="pre">MACHINE_SPEC_FILE</span></code> in the <strong>config_files.xml</strong> file to identify supported out-of-the-box machines for the target model. The node has the following contents:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;entry id=&quot;MACHINES_SPEC_FILE&quot;&gt;
@@ -218,7 +223,7 @@
 </pre></div>
 </div>
 <p>You can supplement what is in the MACHINES_SPEC_FILE by adding a config_machines.xml file to your CIME config directory.</p>
-<div class="section" id="config-machines-xml-machine-specific-file">
+<section id="config-machines-xml-machine-specific-file">
 <span id="machinefile"></span><h2><span class="section-number">4.1. </span>config_machines.xml - machine specific file<a class="headerlink" href="#config-machines-xml-machine-specific-file" title="Permalink to this headline">¶</a></h2>
 <p>Each <code class="docutils literal notranslate"><span class="pre">&lt;machine&gt;</span></code> tag requires the following input:</p>
 <ul>
@@ -277,8 +282,8 @@ These specify the arguments to the mpi executable and are dependent on your mpi 
 </dl>
 </li>
 </ul>
-</div>
-<div class="section" id="batch-system-definition">
+</section>
+<section id="batch-system-definition">
 <h2><span class="section-number">4.2. </span>Batch system definition<a class="headerlink" href="#batch-system-definition" title="Permalink to this headline">¶</a></h2>
 <p>CIME looks at the xml node <code class="docutils literal notranslate"><span class="pre">BATCH_SPEC_FILE</span></code> in the <strong>config_files.xml</strong> file to identify supported out-of-the-box batch system details for the target model. The node has the following contents:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;entry id=&quot;BATCH_SPEC_FILE&quot;&gt;
@@ -291,8 +296,8 @@ These specify the arguments to the mpi executable and are dependent on your mpi 
 &lt;/entry&gt;
 </pre></div>
 </div>
-</div>
-<div class="section" id="config-batch-xml-batch-directives">
+</section>
+<section id="config-batch-xml-batch-directives">
 <span id="batchfile"></span><h2><span class="section-number">4.3. </span>config_batch.xml - batch directives<a class="headerlink" href="#config-batch-xml-batch-directives" title="Permalink to this headline">¶</a></h2>
 <p>The <strong>config_batch.xml</strong> schema is defined in <strong>$CIMEROOT/config/xml_schemas/config_batch.xsd</strong>.</p>
 <p>CIME supports these batch systems: pbs, cobalt, lsf and slurm.</p>
@@ -312,8 +317,8 @@ These specify the arguments to the mpi executable and are dependent on your mpi 
 </ol>
 <p>By default the CIME workflow consists of two jobs (<strong>case.run</strong>, <strong>case.st_archive</strong>).</p>
 <p>In addition, there is <strong>case.test</strong> job that is used by the CIME system test workflow.</p>
-</div>
-<div class="section" id="compiler-settings">
+</section>
+<section id="compiler-settings">
 <span id="defining-compiler-settings"></span><h2><span class="section-number">4.4. </span>Compiler settings<a class="headerlink" href="#compiler-settings" title="Permalink to this headline">¶</a></h2>
 <p>CIME looks at the xml element <code class="docutils literal notranslate"><span class="pre">CMAKE_MACROS_DIR</span></code> in the <strong>config_files.xml</strong> file to identify supported out-of-the-box compiler details for the target model. The node has the following contents:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;entry id=&quot;CMAKE_MACROS_DIR&quot;&gt;
@@ -326,8 +331,8 @@ These specify the arguments to the mpi executable and are dependent on your mpi 
 </pre></div>
 </div>
 <p>Additional compilers are made avilable by adding cmake macros files to the directory pointed to by CMAKE_MACROS_DIR or to your $HOME/.cime directory.</p>
-</div>
-<div class="section" id="config-compilers-xml-compiler-paths-and-options-deprecated-use-cmake-macros">
+</section>
+<section id="config-compilers-xml-compiler-paths-and-options-deprecated-use-cmake-macros">
 <span id="compilerfile"></span><h2><span class="section-number">4.5. </span>config_compilers.xml - compiler paths and options <strong>DEPRECATED use cmake_macros</strong><a class="headerlink" href="#config-compilers-xml-compiler-paths-and-options-deprecated-use-cmake-macros" title="Permalink to this headline">¶</a></h2>
 <p>The <strong>config_compilers.xml</strong> file defines compiler flags for building CIME (and also CESM and E3SM prognostic CIME-driven components).</p>
 <ol class="arabic simple">
@@ -360,8 +365,8 @@ As an example, the following entry in <strong>config_compilers.xml</strong> woul
 </div>
 </li>
 </ul>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
@@ -410,6 +415,7 @@ As an example, the following entry in <strong>config_compilers.xml</strong> woul
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>

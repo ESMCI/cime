@@ -30,6 +30,10 @@
   
 
   
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
 
   
         <link rel="index" title="Index"
@@ -189,8 +193,8 @@
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Machines"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.machines.Machines">[docs]</a><span class="k">class</span> <span class="nc">Machines</span><span class="p">(</span><span class="n">GenericXML</span><span class="p">):</span>
 
+<div class="viewcode-block" id="Machines"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.machines.Machines">[docs]</a><span class="k">class</span> <span class="nc">Machines</span><span class="p">(</span><span class="n">GenericXML</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">machine</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">extra_machines_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        initialize an object</span>
@@ -229,7 +233,9 @@
         <span class="c1"># extra_machines_dir, if present.</span>
         <span class="c1">#</span>
         <span class="c1"># This could cause problems if node matches are repeated when only one is expected.</span>
-        <span class="n">local_infile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;HOME&quot;</span><span class="p">),</span><span class="s2">&quot;.cime&quot;</span><span class="p">,</span><span class="s2">&quot;config_machines.xml&quot;</span><span class="p">)</span>
+        <span class="n">local_infile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;HOME&quot;</span><span class="p">),</span> <span class="s2">&quot;.cime&quot;</span><span class="p">,</span> <span class="s2">&quot;config_machines.xml&quot;</span>
+        <span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Infile: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">local_infile</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">local_infile</span><span class="p">):</span>
             <span class="n">GenericXML</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">local_infile</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span>
@@ -250,14 +256,25 @@
                     <span class="n">machine</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">probe_machine_name</span><span class="p">()</span>
                     <span class="k">if</span> <span class="n">machine</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                         <span class="k">for</span> <span class="n">potential_model</span> <span class="ow">in</span> <span class="n">get_all_cime_models</span><span class="p">():</span>
-                            <span class="n">local_infile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">get_cime_root</span><span class="p">(),</span> <span class="s2">&quot;config&quot;</span><span class="p">,</span><span class="n">potential_model</span><span class="p">,</span><span class="s2">&quot;machines&quot;</span><span class="p">,</span><span class="s2">&quot;config_machines.xml&quot;</span><span class="p">)</span>
+                            <span class="n">local_infile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                                <span class="n">get_cime_root</span><span class="p">(),</span>
+                                <span class="s2">&quot;config&quot;</span><span class="p">,</span>
+                                <span class="n">potential_model</span><span class="p">,</span>
+                                <span class="s2">&quot;machines&quot;</span><span class="p">,</span>
+                                <span class="s2">&quot;config_machines.xml&quot;</span><span class="p">,</span>
+                            <span class="p">)</span>
                             <span class="k">if</span> <span class="n">local_infile</span> <span class="o">!=</span> <span class="n">infile</span><span class="p">:</span>
                                 <span class="n">GenericXML</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">local_infile</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span>
                                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">probe_machine_name</span><span class="p">()</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                                     <span class="n">supported_models</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">potential_model</span><span class="p">)</span>
                                 <span class="n">GenericXML</span><span class="o">.</span><span class="n">change_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infile</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span>
 
-        <span class="n">expect</span><span class="p">(</span><span class="n">machine</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Could not initialize machine object from </span><span class="si">{}</span><span class="s2"> or </span><span class="si">{}</span><span class="s2">. This machine is not available for the target CIME_MODEL. The supported CIME_MODELS that can be used are: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">infile</span><span class="p">,</span> <span class="n">local_infile</span><span class="p">,</span> <span class="n">supported_models</span><span class="p">))</span>
+        <span class="n">expect</span><span class="p">(</span>
+            <span class="n">machine</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s2">&quot;Could not initialize machine object from </span><span class="si">{}</span><span class="s2"> or </span><span class="si">{}</span><span class="s2">. This machine is not available for the target CIME_MODEL. The supported CIME_MODELS that can be used are: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">infile</span><span class="p">,</span> <span class="n">local_infile</span><span class="p">,</span> <span class="n">supported_models</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_machine</span><span class="p">(</span><span class="n">machine</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Machines.get_child"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.machines.Machines.get_child">[docs]</a>    <span class="k">def</span> <span class="nf">get_child</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">err_msg</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -302,7 +319,7 @@
 <span class="sd">        Return a list of machines defined for a given CIME_MODEL</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">machines</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">nodes</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="s2">&quot;machine&quot;</span><span class="p">)</span>
+        <span class="n">nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="s2">&quot;machine&quot;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
             <span class="n">mach</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="s2">&quot;MACH&quot;</span><span class="p">)</span>
             <span class="n">machines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mach</span><span class="p">)</span>
@@ -329,9 +346,13 @@
                 <span class="n">names_not_found</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nametomatch</span><span class="p">)</span>
 
                 <span class="n">names_not_found_quoted</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;&#39;&quot;</span> <span class="o">+</span> <span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;&#39;&quot;</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names_not_found</span><span class="p">]</span>
-                <span class="n">names_not_found_str</span> <span class="o">=</span> <span class="s1">&#39; or &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">names_not_found_quoted</span><span class="p">)</span>
+                <span class="n">names_not_found_str</span> <span class="o">=</span> <span class="s2">&quot; or &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">names_not_found_quoted</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">warn</span><span class="p">:</span>
-                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Could not find machine match for </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">names_not_found_str</span><span class="p">))</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                        <span class="s2">&quot;Could not find machine match for </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                            <span class="n">names_not_found_str</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">machine</span></div>
 
@@ -348,25 +369,38 @@
             <span class="n">machtocheck</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="s2">&quot;MACH&quot;</span><span class="p">)</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;machine is &quot;</span> <span class="o">+</span> <span class="n">machtocheck</span><span class="p">)</span>
             <span class="n">regex_str_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_optional_child</span><span class="p">(</span><span class="s2">&quot;NODENAME_REGEX&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">node</span><span class="p">)</span>
-            <span class="n">regex_str</span> <span class="o">=</span> <span class="n">machtocheck</span> <span class="k">if</span> <span class="n">regex_str_node</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">regex_str_node</span><span class="p">)</span>
-            
+            <span class="n">regex_str</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">machtocheck</span> <span class="k">if</span> <span class="n">regex_str_node</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">regex_str_node</span><span class="p">)</span>
+            <span class="p">)</span>
+
             <span class="k">if</span> <span class="n">regex_str</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;machine regex string is &quot;</span> <span class="o">+</span> <span class="n">regex_str</span><span class="p">)</span>
                 <span class="c1"># an environment variable can be used</span>
                 <span class="k">if</span> <span class="n">regex_str</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;$ENV&quot;</span><span class="p">):</span>
-                    <span class="n">machine</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_resolved_value</span><span class="p">(</span><span class="n">regex_str</span><span class="p">,</span> <span class="n">allow_unresolved_envvars</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="ow">not</span> <span class="n">machine</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;$ENV&quot;</span><span class="p">):</span>
+                    <span class="n">machine_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_resolved_value</span><span class="p">(</span>
+                        <span class="n">regex_str</span><span class="p">,</span> <span class="n">allow_unresolved_envvars</span><span class="o">=</span><span class="kc">True</span>
+                    <span class="p">)</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">machine_value</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;$ENV&quot;</span><span class="p">):</span>
                         <span class="k">try</span><span class="p">:</span>
-                            <span class="n">match</span><span class="p">,</span><span class="n">machine</span> <span class="o">=</span> <span class="n">machine</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
+                            <span class="n">match</span><span class="p">,</span> <span class="n">this_machine</span> <span class="o">=</span> <span class="n">machine_value</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
                         <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-                            <span class="n">expect</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span><span class="s2">&quot;Bad formation of NODENAME_REGEX.  Expected envvar:value, found </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">regex_str</span><span class="p">))</span>
-                        <span class="k">if</span> <span class="n">match</span> <span class="o">==</span> <span class="n">machine</span><span class="p">:</span>
+                            <span class="n">expect</span><span class="p">(</span>
+                                <span class="kc">False</span><span class="p">,</span>
+                                <span class="s2">&quot;Bad formation of NODENAME_REGEX.  Expected envvar:value, found </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                    <span class="n">regex_str</span>
+                                <span class="p">),</span>
+                            <span class="p">)</span>
+                        <span class="k">if</span> <span class="n">match</span> <span class="o">==</span> <span class="n">this_machine</span><span class="p">:</span>
                             <span class="n">machine</span> <span class="o">=</span> <span class="n">machtocheck</span>
                             <span class="k">break</span>
-                <span class="k">else</span><span class="p">:</span>    
+                <span class="k">else</span><span class="p">:</span>
                     <span class="n">regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">regex_str</span><span class="p">)</span>
                     <span class="k">if</span> <span class="n">regex</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">nametomatch</span><span class="p">):</span>
-                        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Found machine: </span><span class="si">{}</span><span class="s2"> matches </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">machtocheck</span><span class="p">,</span> <span class="n">nametomatch</span><span class="p">))</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                            <span class="s2">&quot;Found machine: </span><span class="si">{}</span><span class="s2"> matches </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                <span class="n">machtocheck</span><span class="p">,</span> <span class="n">nametomatch</span>
+                            <span class="p">)</span>
+                        <span class="p">)</span>
                         <span class="n">machine</span> <span class="o">=</span> <span class="n">machtocheck</span>
                         <span class="k">break</span>
 
@@ -387,12 +421,16 @@
         <span class="k">if</span> <span class="n">machine</span> <span class="o">==</span> <span class="s2">&quot;Query&quot;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">machine</span> <span class="o">=</span> <span class="n">machine</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">machine</span> <span class="o">!=</span> <span class="n">machine</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">machine_node</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">machine_node</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">Machines</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span><span class="s2">&quot;machine&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;MACH&quot;</span> <span class="p">:</span> <span class="n">machine</span><span class="p">},</span> <span class="n">err_msg</span><span class="o">=</span><span class="s2">&quot;No machine </span><span class="si">{}</span><span class="s2"> found&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">machine</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">machine_node</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">Machines</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span>
+                <span class="s2">&quot;machine&quot;</span><span class="p">,</span>
+                <span class="p">{</span><span class="s2">&quot;MACH&quot;</span><span class="p">:</span> <span class="n">machine</span><span class="p">},</span>
+                <span class="n">err_msg</span><span class="o">=</span><span class="s2">&quot;No machine </span><span class="si">{}</span><span class="s2"> found&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">machine</span><span class="p">),</span>
+            <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">machine</span> <span class="o">=</span> <span class="n">machine</span>
 
         <span class="k">return</span> <span class="n">machine</span></div>
 
-    <span class="c1">#pylint: disable=arguments-differ</span>
+    <span class="c1"># pylint: disable=arguments-differ</span>
 <div class="viewcode-block" id="Machines.get_value"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.machines.Machines.get_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">resolved</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get Value of fields in the config_machines.xml file</span>
@@ -414,7 +452,9 @@
         <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;MPILIB&quot;</span><span class="p">:</span>
             <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_default_MPIlib</span><span class="p">(</span><span class="n">attributes</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_optional_child</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">machine_node</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="n">attributes</span><span class="p">)</span>
+            <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_optional_child</span><span class="p">(</span>
+                <span class="n">name</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">machine_node</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="n">attributes</span>
+            <span class="p">)</span>
             <span class="k">if</span> <span class="n">node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
 
@@ -440,9 +480,11 @@
         <span class="k">if</span> <span class="n">supported_values</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">supported_values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">listname</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 
-        <span class="n">expect</span><span class="p">(</span><span class="n">supported_values</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span>
-               <span class="s2">&quot;No list found for &quot;</span> <span class="o">+</span> <span class="n">listname</span> <span class="o">+</span> <span class="s2">&quot; on machine &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">machine</span><span class="p">)</span>
-        <span class="n">supported_values</span> <span class="o">=</span> <span class="n">supported_values</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span> <span class="c1">#pylint: disable=no-member</span>
+        <span class="n">expect</span><span class="p">(</span>
+            <span class="n">supported_values</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s2">&quot;No list found for &quot;</span> <span class="o">+</span> <span class="n">listname</span> <span class="o">+</span> <span class="s2">&quot; on machine &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">machine</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">supported_values</span> <span class="o">=</span> <span class="n">supported_values</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>  <span class="c1"># pylint: disable=no-member</span>
 
         <span class="k">if</span> <span class="n">reqval</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">reqval</span> <span class="o">==</span> <span class="s2">&quot;UNSET&quot;</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">supported_values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -457,9 +499,14 @@
 <span class="sd">        Get the compiler to use from the list of COMPILERS</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">cime_config</span> <span class="o">=</span> <span class="n">get_cime_config</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">cime_config</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="s1">&#39;main&#39;</span><span class="p">,</span><span class="s1">&#39;COMPILER&#39;</span><span class="p">):</span>
-            <span class="n">value</span> <span class="o">=</span> <span class="n">cime_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;main&#39;</span><span class="p">,</span> <span class="s1">&#39;COMPILER&#39;</span><span class="p">)</span>
-            <span class="n">expect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_valid_compiler</span><span class="p">(</span><span class="n">value</span><span class="p">),</span> <span class="s2">&quot;User-selected compiler </span><span class="si">{}</span><span class="s2"> is not supported on machine </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">machine</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">cime_config</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="s2">&quot;main&quot;</span><span class="p">,</span> <span class="s2">&quot;COMPILER&quot;</span><span class="p">):</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">cime_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;main&quot;</span><span class="p">,</span> <span class="s2">&quot;COMPILER&quot;</span><span class="p">)</span>
+            <span class="n">expect</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">is_valid_compiler</span><span class="p">(</span><span class="n">value</span><span class="p">),</span>
+                <span class="s2">&quot;User-selected compiler </span><span class="si">{}</span><span class="s2"> is not supported on machine </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">machine</span>
+                <span class="p">),</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_field_from_list</span><span class="p">(</span><span class="s2">&quot;COMPILERS&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">value</span></div>
@@ -470,7 +517,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_field_from_list</span><span class="p">(</span><span class="s2">&quot;MPILIBS&quot;</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="n">attributes</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Machines.is_valid_compiler"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.machines.Machines.is_valid_compiler">[docs]</a>    <span class="k">def</span> <span class="nf">is_valid_compiler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">compiler</span><span class="p">):</span>
+<div class="viewcode-block" id="Machines.is_valid_compiler"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.machines.Machines.is_valid_compiler">[docs]</a>    <span class="k">def</span> <span class="nf">is_valid_compiler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compiler</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check the compiler is valid for the current machine</span>
 
@@ -494,8 +541,11 @@
 <span class="sd">        &gt;&gt;&gt; machobj.is_valid_MPIlib(&quot;fake-mpi&quot;)</span>
 <span class="sd">        False</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">mpilib</span> <span class="o">==</span> <span class="s2">&quot;mpi-serial&quot;</span> <span class="ow">or</span> \
-            <span class="bp">self</span><span class="o">.</span><span class="n">get_field_from_list</span><span class="p">(</span><span class="s2">&quot;MPILIBS&quot;</span><span class="p">,</span> <span class="n">reqval</span><span class="o">=</span><span class="n">mpilib</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="n">attributes</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span></div>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="n">mpilib</span> <span class="o">==</span> <span class="s2">&quot;mpi-serial&quot;</span>
+            <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_field_from_list</span><span class="p">(</span><span class="s2">&quot;MPILIBS&quot;</span><span class="p">,</span> <span class="n">reqval</span><span class="o">=</span><span class="n">mpilib</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="n">attributes</span><span class="p">)</span>
+            <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Machines.has_batch_system"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.machines.Machines.has_batch_system">[docs]</a>    <span class="k">def</span> <span class="nf">has_batch_system</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -512,7 +562,10 @@
         <span class="n">result</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="n">batch_system</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_optional_child</span><span class="p">(</span><span class="s2">&quot;BATCH_SYSTEM&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">machine_node</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">batch_system</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">batch_system</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">batch_system</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">&quot;none&quot;</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">batch_system</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">batch_system</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">&quot;none&quot;</span>
+            <span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Machine </span><span class="si">{}</span><span class="s2"> has batch: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">machine</span><span class="p">,</span> <span class="n">result</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">result</span></div>
 
@@ -536,24 +589,26 @@
         <span class="k">for</span> <span class="n">machine</span> <span class="ow">in</span> <span class="n">machines</span><span class="p">:</span>
             <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">machine</span><span class="p">,</span> <span class="s2">&quot;MACH&quot;</span><span class="p">)</span>
             <span class="n">desc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span><span class="s2">&quot;DESC&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">machine</span><span class="p">)</span>
-            <span class="n">os_</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span><span class="s2">&quot;OS&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">machine</span><span class="p">)</span>
+            <span class="n">os_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span><span class="s2">&quot;OS&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">machine</span><span class="p">)</span>
             <span class="n">compilers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span><span class="s2">&quot;COMPILERS&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">machine</span><span class="p">)</span>
             <span class="n">max_tasks_per_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span><span class="s2">&quot;MAX_TASKS_PER_NODE&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">machine</span><span class="p">)</span>
-            <span class="n">max_mpitasks_per_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span><span class="s2">&quot;MAX_MPITASKS_PER_NODE&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">machine</span><span class="p">)</span>
+            <span class="n">max_mpitasks_per_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span>
+                <span class="s2">&quot;MAX_MPITASKS_PER_NODE&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">machine</span>
+            <span class="p">)</span>
             <span class="n">max_gpus_per_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span><span class="s2">&quot;MAX_GPUS_PER_NODE&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">machine</span><span class="p">)</span>
 
-            <span class="nb">print</span><span class="p">(</span> <span class="s2">&quot;  </span><span class="si">{}</span><span class="s2"> : </span><span class="si">{}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span> <span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">desc</span><span class="p">)))</span>
-            <span class="nb">print</span><span class="p">(</span> <span class="s2">&quot;      os             &quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">os_</span><span class="p">))</span>
-            <span class="nb">print</span><span class="p">(</span> <span class="s2">&quot;      compilers      &quot;</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">compilers</span><span class="p">))</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  </span><span class="si">{}</span><span class="s2"> : </span><span class="si">{}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">desc</span><span class="p">)))</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;      os             &quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">os_</span><span class="p">))</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;      compilers      &quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">compilers</span><span class="p">))</span>
             <span class="k">if</span> <span class="n">max_mpitasks_per_node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;      pes/node       &quot;</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">max_mpitasks_per_node</span><span class="p">))</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;      pes/node       &quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">max_mpitasks_per_node</span><span class="p">))</span>
             <span class="k">if</span> <span class="n">max_tasks_per_node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;      max_tasks/node &quot;</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">max_tasks_per_node</span><span class="p">))</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;      max_tasks/node &quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">max_tasks_per_node</span><span class="p">))</span>
             <span class="k">if</span> <span class="n">max_gpus_per_node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;      max_gpus/node &quot;</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">max_gpus_per_node</span><span class="p">))</span></div>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;      max_gpus/node &quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">max_gpus_per_node</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="Machines.return_values"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.machines.Machines.return_values">[docs]</a>    <span class="k">def</span> <span class="nf">return_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; return a dictionary of machine info</span>
+        <span class="sd">&quot;&quot;&quot;return a dictionary of machine info</span>
 <span class="sd">        This routine is used by external tools in https://github.com/NCAR/CESM_xml2html</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">machines</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="s2">&quot;machine&quot;</span><span class="p">)</span>
@@ -562,17 +617,21 @@
         <span class="k">for</span> <span class="n">machine</span> <span class="ow">in</span> <span class="n">machines</span><span class="p">:</span>
             <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">machine</span><span class="p">,</span> <span class="s2">&quot;MACH&quot;</span><span class="p">)</span>
             <span class="n">desc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span><span class="s2">&quot;DESC&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">machine</span><span class="p">)</span>
-            <span class="n">mach_dict</span><span class="p">[(</span><span class="n">name</span><span class="p">,</span><span class="s2">&quot;description&quot;</span><span class="p">)]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">desc</span><span class="p">)</span>
-            <span class="n">os_</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span><span class="s2">&quot;OS&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">machine</span><span class="p">)</span>
-            <span class="n">mach_dict</span><span class="p">[(</span><span class="n">name</span><span class="p">,</span><span class="s2">&quot;os&quot;</span><span class="p">)]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">os_</span><span class="p">)</span>
+            <span class="n">mach_dict</span><span class="p">[(</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;description&quot;</span><span class="p">)]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">desc</span><span class="p">)</span>
+            <span class="n">os_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span><span class="s2">&quot;OS&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">machine</span><span class="p">)</span>
+            <span class="n">mach_dict</span><span class="p">[(</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;os&quot;</span><span class="p">)]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">os_</span><span class="p">)</span>
             <span class="n">compilers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span><span class="s2">&quot;COMPILERS&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">machine</span><span class="p">)</span>
-            <span class="n">mach_dict</span><span class="p">[(</span><span class="n">name</span><span class="p">,</span><span class="s2">&quot;compilers&quot;</span><span class="p">)]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">compilers</span><span class="p">)</span>
+            <span class="n">mach_dict</span><span class="p">[(</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;compilers&quot;</span><span class="p">)]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">compilers</span><span class="p">)</span>
             <span class="n">max_tasks_per_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span><span class="s2">&quot;MAX_TASKS_PER_NODE&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">machine</span><span class="p">)</span>
-            <span class="n">mach_dict</span><span class="p">[(</span><span class="n">name</span><span class="p">,</span><span class="s2">&quot;max_tasks_per_node&quot;</span><span class="p">)]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">max_tasks_per_node</span><span class="p">)</span>
-            <span class="n">max_mpitasks_per_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span><span class="s2">&quot;MAX_MPITASKS_PER_NODE&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">machine</span><span class="p">)</span>
-            <span class="n">mach_dict</span><span class="p">[(</span><span class="n">name</span><span class="p">,</span><span class="s2">&quot;max_mpitasks_per_node&quot;</span><span class="p">)]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">max_mpitasks_per_node</span><span class="p">)</span>
+            <span class="n">mach_dict</span><span class="p">[(</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;max_tasks_per_node&quot;</span><span class="p">)]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">max_tasks_per_node</span><span class="p">)</span>
+            <span class="n">max_mpitasks_per_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span>
+                <span class="s2">&quot;MAX_MPITASKS_PER_NODE&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">machine</span>
+            <span class="p">)</span>
+            <span class="n">mach_dict</span><span class="p">[(</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;max_mpitasks_per_node&quot;</span><span class="p">)]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span>
+                <span class="n">max_mpitasks_per_node</span>
+            <span class="p">)</span>
             <span class="n">max_gpus_per_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span><span class="s2">&quot;MAX_GPUS_PER_NODE&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">machine</span><span class="p">)</span>
-            <span class="n">mach_dict</span><span class="p">[(</span><span class="n">name</span><span class="p">,</span><span class="s2">&quot;max_gpus_per_node&quot;</span><span class="p">)]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">max_gpus_per_node</span><span class="p">)</span>
+            <span class="n">mach_dict</span><span class="p">[(</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;max_gpus_per_node&quot;</span><span class="p">)]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">max_gpus_per_node</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">mach_dict</span></div></div>
 </pre></div>
@@ -614,6 +673,7 @@
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/doctools.js"></script>

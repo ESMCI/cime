@@ -2,7 +2,7 @@
 .. _case.cmpgen_namelists:
 
 ####################################################
-case.cmpgen_namelists 
+case.cmpgen_namelists
 ####################################################
 
 **case.cmpgen_namelists** is a script in CIMEROOT/scripts/Tools.

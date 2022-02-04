@@ -2,7 +2,7 @@
 .. _get_standard_makefile_args:
 
 ####################################################
-get_standard_makefile_args 
+get_standard_makefile_args
 ####################################################
 
 **get_standard_makefile_args** is a script in CIMEROOT/scripts/Tools.

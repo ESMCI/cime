@@ -30,6 +30,10 @@
   
 
   
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
 
   
         <link rel="index" title="Index"
@@ -192,17 +196,20 @@
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
-<div class="viewcode-block" id="NCR"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.ncr.NCR">[docs]</a><span class="k">class</span> <span class="nc">NCR</span><span class="p">(</span><span class="n">SystemTestsCompareTwo</span><span class="p">):</span>
 
+<div class="viewcode-block" id="NCR"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.ncr.NCR">[docs]</a><span class="k">class</span> <span class="nc">NCR</span><span class="p">(</span><span class="n">SystemTestsCompareTwo</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        initialize an NCR test</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">SystemTestsCompareTwo</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span>
-                                       <span class="n">separate_builds</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-                                       <span class="n">run_two_suffix</span> <span class="o">=</span> <span class="s2">&quot;singleinst&quot;</span><span class="p">,</span>
-                                       <span class="n">run_one_description</span> <span class="o">=</span> <span class="s2">&quot;two instances, each with the same number of tasks&quot;</span><span class="p">,</span>
-                                       <span class="n">run_two_description</span> <span class="o">=</span> <span class="s2">&quot;default build&quot;</span><span class="p">)</span>
+        <span class="n">SystemTestsCompareTwo</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">case</span><span class="p">,</span>
+            <span class="n">separate_builds</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">run_two_suffix</span><span class="o">=</span><span class="s2">&quot;singleinst&quot;</span><span class="p">,</span>
+            <span class="n">run_one_description</span><span class="o">=</span><span class="s2">&quot;two instances, each with the same number of tasks&quot;</span><span class="p">,</span>
+            <span class="n">run_two_description</span><span class="o">=</span><span class="s2">&quot;default build&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_comp_classes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Return the components which we need to set things for</span>
@@ -281,6 +288,7 @@
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/doctools.js"></script>

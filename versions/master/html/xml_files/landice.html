@@ -5,7 +5,8 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <title>CIME Land Ice Data and Stub XML Files &mdash; CIME master documentation</title>
@@ -30,15 +31,16 @@
   
 
   
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
 
   
         <link rel="index" title="Index"
               href="../genindex.html"/>
         <link rel="search" title="Search" href="../search.html"/>
-    <link rel="top" title="CIME master documentation" href="../index.html"/>
-        <link rel="up" title="Data, Stub and Driver Component XML Files" href="components.html"/>
-        <link rel="next" title="CIME Ocean Data and Stub XML Files" href="ocean.html"/>
-        <link rel="prev" title="CIME Land Data and Stub XML Files" href="land.html"/> 
+    <link rel="top" title="CIME master documentation" href="../index.html"/> 
 
   
   <script src="../_static/js/modernizr.min.js"></script>
@@ -111,31 +113,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../build_cpl/index.html">Building a Coupled Model with CIME</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../misc_tools/index.html">Miscellaneous Tools</a></li>
 </ul>
-<ul class="current">
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../glossary/index.html">Glossary</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../Tools_user/index.html">User Tools</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="index.html">XML Files</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="e3sm.html">E3SM Coupled Model XML Files</a></li>
-<li class="toctree-l2"><a class="reference internal" href="cesm.html">CESM Coupled Model XML Files</a></li>
-<li class="toctree-l2"><a class="reference internal" href="common.html">Common XML Files</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="components.html">Data, Stub and Driver Component XML Files</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="atmosphere.html">CIME Atmosphere Data and Stub XML Files</a></li>
-<li class="toctree-l3"><a class="reference internal" href="esp.html">CIME ESP Data and Stub XML Files</a></li>
-<li class="toctree-l3"><a class="reference internal" href="land.html">CIME Land Data and Stub XML Files</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">CIME Land Ice Data and Stub XML Files</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#cimeroot-src-components-stub-comps-sglc-cime-config">CIMEROOT/src/components/stub_comps/sglc/cime_config</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#cimeroot-src-components-xcpl-comps-xglc-cime-config">CIMEROOT/src/components/xcpl_comps/xglc/cime_config</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="ocean.html">CIME Ocean Data and Stub XML Files</a></li>
-<li class="toctree-l3"><a class="reference internal" href="river.html">CIME River Runoff Data and Stub XML Files</a></li>
-<li class="toctree-l3"><a class="reference internal" href="seaice.html">CIME Sea Ice Data and Stub XML Files</a></li>
-<li class="toctree-l3"><a class="reference internal" href="wave.html">CIME Wave Data and Stub XML Files</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="drivers.html">Driver XML Files</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">XML Files</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../CIME_api/modules.html">CIME</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../Tools_api/modules.html">Tools</a></li>
 </ul>
@@ -182,10 +163,6 @@
     
       <li><a href="../index.html">Docs</a> &raquo;</li>
         
-          <li><a href="index.html">XML Files</a> &raquo;</li>
-        
-          <li><a href="components.html">Data, Stub and Driver Component XML Files</a> &raquo;</li>
-        
       <li>CIME Land Ice Data and Stub XML Files</li>
     
     
@@ -205,25 +182,25 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="cime-land-ice-data-and-stub-xml-files">
+  <section id="cime-land-ice-data-and-stub-xml-files">
 <span id="landice"></span><h1>CIME Land Ice Data and Stub XML Files<a class="headerlink" href="#cime-land-ice-data-and-stub-xml-files" title="Permalink to this headline">¶</a></h1>
 <p>Land ice component XML files for stub and dead components.
 The land ice component does not currently have a data model.</p>
 <div class="toctree-wrapper compound">
 </div>
-<div class="section" id="cimeroot-src-components-stub-comps-sglc-cime-config">
+<section id="cimeroot-src-components-stub-comps-sglc-cime-config">
 <h2>CIMEROOT/src/components/stub_comps/sglc/cime_config<a class="headerlink" href="#cimeroot-src-components-stub-comps-sglc-cime-config" title="Permalink to this headline">¶</a></h2>
 <p>The land ice stub model, <strong>sglc</strong>, does not output any files in the RUNDIR nor
 does it have any namelist settings.</p>
 <p>XML variables and component descriptions specific to sglc.</p>
-</div>
-<div class="section" id="cimeroot-src-components-xcpl-comps-xglc-cime-config">
+</section>
+<section id="cimeroot-src-components-xcpl-comps-xglc-cime-config">
 <h2>CIMEROOT/src/components/xcpl_comps/xglc/cime_config<a class="headerlink" href="#cimeroot-src-components-xcpl-comps-xglc-cime-config" title="Permalink to this headline">¶</a></h2>
 <p>The land ice dead model, <strong>xglc</strong>, does not output any files in the RUNDIR nor
 does it have any namelist settings.</p>
 <p>XML variables and component descriptions specific to xglc.</p>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
@@ -232,15 +209,6 @@ does it have any namelist settings.</p>
            </div>
           </div>
           <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="ocean.html" class="btn btn-neutral float-right" title="CIME Ocean Data and Stub XML Files" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="land.html" class="btn btn-neutral" title="CIME Land Data and Stub XML Files" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
-    </div>
   
 
   <hr/>
@@ -272,6 +240,7 @@ does it have any namelist settings.</p>
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>

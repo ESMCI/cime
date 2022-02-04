@@ -5,7 +5,8 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <title>E3SM Coupled Model XML Files &mdash; CIME master documentation</title>
@@ -29,6 +30,10 @@
     <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   
 
+  
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   
 
   
@@ -117,14 +122,10 @@
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">XML Files</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">E3SM Coupled Model XML Files</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#cimeroot-config-e3sm">CIMEROOT/config/e3sm</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#cimeroot-config-e3sm-allactive">CIMEROOT/config/e3sm/allactive</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#cimeroot-config-e3sm-machines">CIMEROOT/config/e3sm/machines</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="cesm.html">CESM Coupled Model XML Files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="common.html">Common XML Files</a></li>
-<li class="toctree-l2"><a class="reference internal" href="components.html">Data, Stub and Driver Component XML Files</a></li>
-<li class="toctree-l2"><a class="reference internal" href="drivers.html">Driver XML Files</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../CIME_api/modules.html">CIME</a></li>
@@ -194,14 +195,13 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="e3sm-coupled-model-xml-files">
+  <section id="e3sm-coupled-model-xml-files">
 <span id="e3sm"></span><h1>E3SM Coupled Model XML Files<a class="headerlink" href="#e3sm-coupled-model-xml-files" title="Permalink to this headline">¶</a></h1>
 <p>XML files for E3SM in CIMEROOT/config/e3sm.</p>
 <div class="toctree-wrapper compound">
 </div>
-<div class="section" id="cimeroot-config-e3sm">
+<section id="cimeroot-config-e3sm">
 <h2>CIMEROOT/config/e3sm<a class="headerlink" href="#cimeroot-config-e3sm" title="Permalink to this headline">¶</a></h2>
-<p>E3SM XML settings for short term archiver.</p>
 <p>E3SM XML settings for defining CASEROOT env_*.xml file entries.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;?xml version=&quot;1.0&quot;?&gt;
 
@@ -754,22 +754,8 @@
 &lt;/entry_id&gt;
 </pre></div>
 </div>
-<p>E3SM XML settings for defining supported grids.</p>
-</div>
-<div class="section" id="cimeroot-config-e3sm-allactive">
-<h2>CIMEROOT/config/e3sm/allactive<a class="headerlink" href="#cimeroot-config-e3sm-allactive" title="Permalink to this headline">¶</a></h2>
-<p>E3SM XML settings for all-active component set (compset) configurations.</p>
-<p>E3SM XML settings for all-active test configurations.</p>
-<p>E3SM XML settings for optimized processor elements (PEs) layout configurations.</p>
-</div>
-<div class="section" id="cimeroot-config-e3sm-machines">
-<h2>CIMEROOT/config/e3sm/machines<a class="headerlink" href="#cimeroot-config-e3sm-machines" title="Permalink to this headline">¶</a></h2>
-<p>E3SM XML settings for supported batch queuing systems.</p>
-<p>E3SM XML settings for supported compilers.</p>
-<p>E3SM XML settings for supported machines.</p>
-<p>E3SM XML settings for Parallel Input/Output (PIO) library.</p>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
@@ -818,6 +804,7 @@
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>

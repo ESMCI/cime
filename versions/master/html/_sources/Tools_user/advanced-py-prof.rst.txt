@@ -2,7 +2,7 @@
 .. _advanced-py-prof:
 
 ####################################################
-advanced-py-prof 
+advanced-py-prof
 ####################################################
 
 **advanced-py-prof** is a script in CIMEROOT/scripts/Tools.

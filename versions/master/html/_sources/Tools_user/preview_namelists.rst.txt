@@ -2,7 +2,7 @@
 .. _preview_namelists:
 
 ####################################################
-preview_namelists 
+preview_namelists
 ####################################################
 
 **preview_namelists** is a script in CIMEROOT/scripts/Tools.

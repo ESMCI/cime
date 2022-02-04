@@ -30,6 +30,10 @@
   
 
   
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
 
   
         <link rel="index" title="Index"
@@ -183,12 +187,13 @@
 <span class="c1"># pylint: disable=super-init-not-called</span>
 <span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">CIME.Servers.generic_server</span> <span class="kn">import</span> <span class="n">GenericServer</span>
+
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="WGET"><a class="viewcode-back" href="../../../CIME_api/CIME.Servers.html#CIME.Servers.wget.WGET">[docs]</a><span class="k">class</span> <span class="nc">WGET</span><span class="p">(</span><span class="n">GenericServer</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">passwd</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_args</span> <span class="o">=</span> <span class="s1">&#39;--no-check-certificate &#39;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">passwd</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_args</span> <span class="o">=</span> <span class="s2">&quot;--no-check-certificate &quot;</span>
         <span class="k">if</span> <span class="n">user</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_args</span> <span class="o">+=</span> <span class="s2">&quot;--user </span><span class="si">{}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">passwd</span><span class="p">:</span>
@@ -196,8 +201,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_server_loc</span> <span class="o">=</span> <span class="n">address</span>
 
 <div class="viewcode-block" id="WGET.wget_login"><a class="viewcode-back" href="../../../CIME_api/CIME.Servers.html#CIME.Servers.wget.WGET.wget_login">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">wget_login</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">passwd</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
-        <span class="n">args</span> <span class="o">=</span> <span class="s1">&#39;--no-check-certificate &#39;</span>
+    <span class="k">def</span> <span class="nf">wget_login</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">passwd</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="s2">&quot;--no-check-certificate &quot;</span>
         <span class="k">if</span> <span class="n">user</span><span class="p">:</span>
             <span class="n">args</span> <span class="o">+=</span> <span class="s2">&quot;--user </span><span class="si">{}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">passwd</span><span class="p">:</span>
@@ -206,12 +211,19 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">err</span> <span class="o">=</span> <span class="n">run_cmd</span><span class="p">(</span><span class="s2">&quot;wget </span><span class="si">{}</span><span class="s2"> --spider </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">address</span><span class="p">),</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">60</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">except</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Could not connect to repo &#39;</span><span class="si">{0}</span><span class="s2">&#39;</span><span class="se">\n</span><span class="s2">This is most likely either a proxy, or network issue .&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">address</span><span class="p">))</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;Could not connect to repo &#39;</span><span class="si">{0}</span><span class="s2">&#39;</span><span class="se">\n</span><span class="s2">This is most likely either a proxy, or network issue .&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">address</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">err</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Could not connect to repo &#39;</span><span class="si">{0}</span><span class="s2">&#39;</span><span class="se">\n</span><span class="s2">This is most likely either a proxy, or network issue .&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">address</span><span class="p">))</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;Could not connect to repo &#39;</span><span class="si">{0}</span><span class="s2">&#39;</span><span class="se">\n</span><span class="s2">This is most likely either a proxy, or network issue .&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">address</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span>
-
 
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">passwd</span><span class="o">=</span><span class="n">passwd</span><span class="p">)</span></div>
 
@@ -219,17 +231,26 @@
         <span class="n">full_url</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_server_loc</span><span class="p">,</span> <span class="n">rel_path</span><span class="p">)</span>
         <span class="n">stat</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">run_cmd</span><span class="p">(</span><span class="s2">&quot;wget </span><span class="si">{}</span><span class="s2"> --spider </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_args</span><span class="p">,</span> <span class="n">full_url</span><span class="p">))</span>
 
-        <span class="k">if</span> <span class="p">(</span><span class="n">stat</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">):</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;FAIL: Repo &#39;</span><span class="si">{}</span><span class="s2">&#39; does not have file &#39;</span><span class="si">{}</span><span class="s2">&#39;</span><span class="se">\n</span><span class="s2">Reason:</span><span class="si">{}</span><span class="se">\n</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_server_loc</span><span class="p">,</span> <span class="n">full_url</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">err</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">stat</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;FAIL: Repo &#39;</span><span class="si">{}</span><span class="s2">&#39; does not have file &#39;</span><span class="si">{}</span><span class="s2">&#39;</span><span class="se">\n</span><span class="s2">Reason:</span><span class="si">{}</span><span class="se">\n</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_server_loc</span><span class="p">,</span> <span class="n">full_url</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">err</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
             <span class="k">return</span> <span class="kc">False</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="WGET.getfile"><a class="viewcode-back" href="../../../CIME_api/CIME.Servers.html#CIME.Servers.wget.WGET.getfile">[docs]</a>    <span class="k">def</span> <span class="nf">getfile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rel_path</span><span class="p">,</span> <span class="n">full_path</span><span class="p">):</span>
         <span class="n">full_url</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_server_loc</span><span class="p">,</span> <span class="n">rel_path</span><span class="p">)</span>
-        <span class="n">stat</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">errput</span> <span class="o">=</span> \
-                <span class="n">run_cmd</span><span class="p">(</span><span class="s2">&quot;wget </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> -nc --output-document </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_args</span><span class="p">,</span> <span class="n">full_url</span><span class="p">,</span> <span class="n">full_path</span><span class="p">))</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">stat</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">):</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;wget failed with output: </span><span class="si">{}</span><span class="s2"> and errput </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">errput</span><span class="p">))</span>
+        <span class="n">stat</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">errput</span> <span class="o">=</span> <span class="n">run_cmd</span><span class="p">(</span>
+            <span class="s2">&quot;wget </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> -nc --output-document </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_args</span><span class="p">,</span> <span class="n">full_url</span><span class="p">,</span> <span class="n">full_path</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">stat</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;wget failed with output: </span><span class="si">{}</span><span class="s2"> and errput </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">errput</span><span class="p">)</span>
+            <span class="p">)</span>
             <span class="c1"># wget puts an empty file if it fails.</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">full_path</span><span class="p">)</span>
@@ -242,12 +263,16 @@
 
 <div class="viewcode-block" id="WGET.getdirectory"><a class="viewcode-back" href="../../../CIME_api/CIME.Servers.html#CIME.Servers.wget.WGET.getdirectory">[docs]</a>    <span class="k">def</span> <span class="nf">getdirectory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rel_path</span><span class="p">,</span> <span class="n">full_path</span><span class="p">):</span>
         <span class="n">full_url</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_server_loc</span><span class="p">,</span> <span class="n">rel_path</span><span class="p">)</span>
-        <span class="n">stat</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">errput</span> <span class="o">=</span> \
-            <span class="n">run_cmd</span><span class="p">(</span><span class="s2">&quot;wget  </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> -r -N --no-directories &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_args</span><span class="p">,</span> <span class="n">full_url</span><span class="o">+</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">),</span> <span class="n">from_dir</span><span class="o">=</span><span class="n">full_path</span><span class="p">)</span>
+        <span class="n">stat</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">errput</span> <span class="o">=</span> <span class="n">run_cmd</span><span class="p">(</span>
+            <span class="s2">&quot;wget  </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> -r -N --no-directories &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_args</span><span class="p">,</span> <span class="n">full_url</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">),</span>
+            <span class="n">from_dir</span><span class="o">=</span><span class="n">full_path</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">errput</span><span class="p">)</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">stat</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">):</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;wget failed with output: </span><span class="si">{}</span><span class="s2"> and errput </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">errput</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">stat</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;wget failed with output: </span><span class="si">{}</span><span class="s2"> and errput </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">errput</span><span class="p">)</span>
+            <span class="p">)</span>
             <span class="c1"># wget puts an empty file if it fails.</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">full_path</span><span class="p">)</span>
@@ -296,6 +321,7 @@
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/doctools.js"></script>

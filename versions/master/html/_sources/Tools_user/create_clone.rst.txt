@@ -2,7 +2,7 @@
 .. _create_clone:
 
 ####################################################
-create_clone 
+create_clone
 ####################################################
 
 **create_clone** is a script in CIMEROOT/scripts.

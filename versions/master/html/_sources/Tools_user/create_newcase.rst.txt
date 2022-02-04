@@ -2,7 +2,7 @@
 .. _create_newcase:
 
 ####################################################
-create_newcase 
+create_newcase
 ####################################################
 
 **create_newcase** is a script in CIMEROOT/scripts.

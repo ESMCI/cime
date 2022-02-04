@@ -30,6 +30,10 @@
   
 
   
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
 
   
         <link rel="index" title="Index"
@@ -233,16 +237,18 @@
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
-<div class="viewcode-block" id="SystemTestsCompareTwo"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.system_tests_compare_two.SystemTestsCompareTwo">[docs]</a><span class="k">class</span> <span class="nc">SystemTestsCompareTwo</span><span class="p">(</span><span class="n">SystemTestsCommon</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-                 <span class="n">case</span><span class="p">,</span>
-                 <span class="n">separate_builds</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-                 <span class="n">run_two_suffix</span> <span class="o">=</span> <span class="s1">&#39;test&#39;</span><span class="p">,</span>
-                 <span class="n">run_one_description</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
-                 <span class="n">run_two_description</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
-                 <span class="n">multisubmit</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-                 <span class="n">ignore_fieldlist_diffs</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="SystemTestsCompareTwo"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.system_tests_compare_two.SystemTestsCompareTwo">[docs]</a><span class="k">class</span> <span class="nc">SystemTestsCompareTwo</span><span class="p">(</span><span class="n">SystemTestsCommon</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">case</span><span class="p">,</span>
+        <span class="n">separate_builds</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">run_two_suffix</span><span class="o">=</span><span class="s2">&quot;test&quot;</span><span class="p">,</span>
+        <span class="n">run_one_description</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">run_two_description</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">multisubmit</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">ignore_fieldlist_diffs</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize a SystemTestsCompareTwo object. Individual test cases that</span>
 <span class="sd">        inherit from SystemTestsCompareTwo MUST call this __init__ method.</span>
@@ -284,10 +290,12 @@
         <span class="c1"># be set in the call to the constructor just like run_two_suffix</span>
         <span class="c1"># currently is. Or, if these tools are rewritten to work without any</span>
         <span class="c1"># suffix, then run_one_suffix can be removed entirely.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_run_one_suffix</span> <span class="o">=</span> <span class="s1">&#39;base&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_run_one_suffix</span> <span class="o">=</span> <span class="s2">&quot;base&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_run_two_suffix</span> <span class="o">=</span> <span class="n">run_two_suffix</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span>
-        <span class="n">expect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_run_two_suffix</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_one_suffix</span><span class="p">,</span>
-               <span class="s2">&quot;ERROR: Must have different suffixes for run one and run two&quot;</span><span class="p">)</span>
+        <span class="n">expect</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_run_two_suffix</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_one_suffix</span><span class="p">,</span>
+            <span class="s2">&quot;ERROR: Must have different suffixes for run one and run two&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_run_one_description</span> <span class="o">=</span> <span class="n">run_one_description</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_run_two_description</span> <span class="o">=</span> <span class="n">run_two_description</span>
@@ -304,7 +312,9 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_setup_cases_if_not_yet_done</span><span class="p">()</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_multisubmit</span> <span class="o">=</span> <span class="n">multisubmit</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case1</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;BATCH_SYSTEM&quot;</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">&quot;none&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_multisubmit</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">multisubmit</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case1</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;BATCH_SYSTEM&quot;</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">&quot;none&quot;</span>
+        <span class="p">)</span>
 
     <span class="c1"># ========================================================================</span>
     <span class="c1"># Methods that MUST be implemented by specific tests that inherit from this</span>
@@ -384,8 +394,9 @@
                 <span class="k">if</span> <span class="n">get_model</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;e3sm&quot;</span><span class="p">:</span>
                     <span class="c1"># We need to turn off this change for E3SM because it breaks</span>
                     <span class="c1"># the MPAS build system</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_case2</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;SHAREDLIBROOT&quot;</span><span class="p">,</span>
-                                          <span class="bp">self</span><span class="o">.</span><span class="n">_case1</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;SHAREDLIBROOT&quot;</span><span class="p">))</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_case2</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span>
+                        <span class="s2">&quot;SHAREDLIBROOT&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case1</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;SHAREDLIBROOT&quot;</span><span class="p">)</span>
+                    <span class="p">)</span>
 
                 <span class="bp">self</span><span class="o">.</span><span class="n">build_indv</span><span class="p">(</span><span class="n">sharedlib_only</span><span class="o">=</span><span class="n">sharedlib_only</span><span class="p">,</span> <span class="n">model_only</span><span class="o">=</span><span class="n">model_only</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
@@ -395,11 +406,13 @@
                 <span class="c1"># valid value for this build, update case2 to reflect this change</span>
                 <span class="k">for</span> <span class="n">comp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case1</span><span class="o">.</span><span class="n">get_values</span><span class="p">(</span><span class="s2">&quot;COMP_CLASSES&quot;</span><span class="p">):</span>
                     <span class="n">comp_pio_typename</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_PIO_TYPENAME&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_case2</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">comp_pio_typename</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case1</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">comp_pio_typename</span><span class="p">))</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_case2</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span>
+                        <span class="n">comp_pio_typename</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case1</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">comp_pio_typename</span><span class="p">)</span>
+                    <span class="p">)</span>
 
                 <span class="c1"># The following is needed when _case_two_setup has a case_setup call</span>
                 <span class="c1"># despite sharing the build (e.g., to change NTHRDS)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_case2</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;BUILD_COMPLETE&quot;</span><span class="p">,</span><span class="kc">True</span><span class="p">)</span></div>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_case2</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;BUILD_COMPLETE&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SystemTestsCompareTwo.run_phase"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.system_tests_compare_two.SystemTestsCompareTwo.run_phase">[docs]</a>    <span class="k">def</span> <span class="nf">run_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">success_change</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>  <span class="c1"># pylint: disable=arguments-differ</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -409,41 +422,44 @@
         <span class="n">is_first_run</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case1</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;IS_FIRST_RUN&quot;</span><span class="p">)</span>
 
         <span class="n">compare_phase_name</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_</span><span class="si">{}</span><span class="s2">_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-            <span class="n">COMPARE_PHASE</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_run_one_suffix</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_run_two_suffix</span><span class="p">)</span>
+            <span class="n">COMPARE_PHASE</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_one_suffix</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_two_suffix</span>
+        <span class="p">)</span>
 
         <span class="c1"># On a batch system with a multisubmit test &quot;RESUBMIT&quot; is used to track</span>
         <span class="c1"># which phase is being ran. By the end of the test it equals 0. If the</span>
-        <span class="c1"># the test fails in a way where the RUN_PHASE is PEND then &quot;RESUBMIT&quot; </span>
-        <span class="c1"># does not get reset to 1 on a rerun and the first phase is skiped </span>
-        <span class="c1"># causing the COMPARE_PHASE to fail. This ensures that &quot;RESUBMIT&quot; will </span>
+        <span class="c1"># the test fails in a way where the RUN_PHASE is PEND then &quot;RESUBMIT&quot;</span>
+        <span class="c1"># does not get reset to 1 on a rerun and the first phase is skiped</span>
+        <span class="c1"># causing the COMPARE_PHASE to fail. This ensures that &quot;RESUBMIT&quot; will</span>
         <span class="c1"># get reset if the test state is not correct for a rerun.</span>
         <span class="c1"># NOTE: &quot;IS_FIRST_RUN&quot; is reset in &quot;case_submit.py&quot;</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">is_first_run</span> <span class="ow">and</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_multisubmit</span> <span class="ow">and</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_case1</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RESUBMIT&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">is_first_run</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_multisubmit</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case1</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RESUBMIT&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
+        <span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_resetup_case</span><span class="p">(</span><span class="n">RUN_PHASE</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-        <span class="n">first_phase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case1</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RESUBMIT&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="c1"># Only relevant for multi-submit tests</span>
+        <span class="n">first_phase</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_case1</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RESUBMIT&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="p">)</span>  <span class="c1"># Only relevant for multi-submit tests</span>
         <span class="n">run_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case1</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUN_TYPE&quot;</span><span class="p">)</span>
 
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;_multisubmit </span><span class="si">{}</span><span class="s2"> first phase </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_multisubmit</span><span class="p">,</span> <span class="n">first_phase</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="s2">&quot;_multisubmit </span><span class="si">{}</span><span class="s2"> first phase </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_multisubmit</span><span class="p">,</span> <span class="n">first_phase</span><span class="p">)</span>
+        <span class="p">)</span>
 
         <span class="c1"># First run</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_multisubmit</span> <span class="ow">or</span> <span class="n">first_phase</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Doing first run: &#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_one_description</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Doing first run: &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_one_description</span><span class="p">)</span>
 
             <span class="c1"># Add a PENDing compare phase so that we&#39;ll notice if the second part of compare two</span>
             <span class="c1"># doesn&#39;t run.</span>
             <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span>
-                    <span class="n">compare_phase_name</span><span class="p">,</span>
-                    <span class="n">TEST_PEND_STATUS</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span><span class="n">compare_phase_name</span><span class="p">,</span> <span class="n">TEST_PEND_STATUS</span><span class="p">)</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">_activate_case1</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_case_one_custom_prerun_action</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">run_indv</span><span class="p">(</span><span class="n">suffix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_one_suffix</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">run_indv</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_run_one_suffix</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_case_one_custom_postrun_action</span><span class="p">()</span>
 
         <span class="c1"># Second run</span>
@@ -453,7 +469,7 @@
             <span class="c1"># not a with statement, so it&#39;s not in a writeable state, so we need to use a with</span>
             <span class="c1"># statement here to put it in a writeable state.</span>
             <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case2</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Doing second run: &#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_two_description</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Doing second run: &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_two_description</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_activate_case2</span><span class="p">()</span>
                 <span class="c1"># This assures that case two namelists are populated</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_skip_pnl</span> <span class="o">=</span> <span class="kc">False</span>
@@ -462,15 +478,18 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">_case2</span><span class="o">.</span><span class="n">check_case</span><span class="p">()</span>
 
                 <span class="bp">self</span><span class="o">.</span><span class="n">_case_two_custom_prerun_action</span><span class="p">()</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">run_indv</span><span class="p">(</span><span class="n">suffix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_two_suffix</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">run_indv</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_run_two_suffix</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_case_two_custom_postrun_action</span><span class="p">()</span>
             <span class="c1"># Compare results</span>
             <span class="c1"># Case1 is the &quot;main&quot; case, and we need to do the comparisons from there</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_activate_case1</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_link_to_case2_output</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_component_compare_test</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_run_one_suffix</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_two_suffix</span><span class="p">,</span>
-                                         <span class="n">success_change</span><span class="o">=</span><span class="n">success_change</span><span class="p">,</span>
-                                         <span class="n">ignore_fieldlist_diffs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_ignore_fieldlist_diffs</span><span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_component_compare_test</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_run_one_suffix</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_run_two_suffix</span><span class="p">,</span>
+                <span class="n">success_change</span><span class="o">=</span><span class="n">success_change</span><span class="p">,</span>
+                <span class="n">ignore_fieldlist_diffs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_ignore_fieldlist_diffs</span><span class="p">,</span>
+            <span class="p">)</span></div>
 
 <div class="viewcode-block" id="SystemTestsCompareTwo.copy_case1_restarts_to_case2"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.system_tests_compare_two.SystemTestsCompareTwo.copy_case1_restarts_to_case2">[docs]</a>    <span class="k">def</span> <span class="nf">copy_case1_restarts_to_case2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -482,9 +501,11 @@
 <span class="sd">        files.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">rundir2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case2</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_case1</span><span class="o">.</span><span class="n">archive_last_restarts</span><span class="p">(</span><span class="n">archive_restdir</span> <span class="o">=</span> <span class="n">rundir2</span><span class="p">,</span>
-                                          <span class="n">rundir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_case1</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">),</span>
-                                          <span class="n">link_to_restart_files</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_case1</span><span class="o">.</span><span class="n">archive_last_restarts</span><span class="p">(</span>
+            <span class="n">archive_restdir</span><span class="o">=</span><span class="n">rundir2</span><span class="p">,</span>
+            <span class="n">rundir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_case1</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">),</span>
+            <span class="n">link_to_restart_files</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span></div>
 
     <span class="c1"># ========================================================================</span>
     <span class="c1"># Private methods</span>
@@ -515,8 +536,11 @@
         <span class="c1"># $CIME_OUTPUT_ROOT/$CASE/ is not accidentally shared between</span>
         <span class="c1"># case1 and case2. (Currently nothing is placed here, but this</span>
         <span class="c1"># helps prevent future problems.)</span>
-        <span class="n">output_root2</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_case1</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CIME_OUTPUT_ROOT&quot;</span><span class="p">),</span>
-                                    <span class="bp">self</span><span class="o">.</span><span class="n">_case1</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASE&quot;</span><span class="p">),</span> <span class="s2">&quot;case2_output_root&quot;</span><span class="p">)</span>
+        <span class="n">output_root2</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_case1</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CIME_OUTPUT_ROOT&quot;</span><span class="p">),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_case1</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASE&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;case2_output_root&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="k">return</span> <span class="n">output_root2</span>
 
     <span class="k">def</span> <span class="nf">_get_case2_exeroot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -581,10 +605,11 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_case2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case1</span><span class="o">.</span><span class="n">create_clone</span><span class="p">(</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_caseroot2</span><span class="p">,</span>
-                    <span class="n">keepexe</span> <span class="o">=</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_separate_builds</span><span class="p">,</span>
-                    <span class="n">cime_output_root</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_output_root2</span><span class="p">(),</span>
-                    <span class="n">exeroot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_case2_exeroot</span><span class="p">(),</span>
-                    <span class="n">rundir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_case2_rundir</span><span class="p">())</span>
+                    <span class="n">keepexe</span><span class="o">=</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_separate_builds</span><span class="p">,</span>
+                    <span class="n">cime_output_root</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_output_root2</span><span class="p">(),</span>
+                    <span class="n">exeroot</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_case2_exeroot</span><span class="p">(),</span>
+                    <span class="n">rundir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_case2_rundir</span><span class="p">(),</span>
+                <span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_write_info_to_case2_output_root</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_setup_cases</span><span class="p">()</span>
             <span class="k">except</span> <span class="ne">BaseException</span><span class="p">:</span>
@@ -599,10 +624,12 @@
                 <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_caseroot2</span><span class="p">):</span>
                     <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_caseroot2</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_activate_case1</span><span class="p">()</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;WARNING: Test case setup failed. Case2 has been removed, &quot;</span>
-                               <span class="s2">&quot;but the main case may be in an inconsistent state. &quot;</span>
-                               <span class="s2">&quot;If you want to rerun this test, you should create &quot;</span>
-                               <span class="s2">&quot;a new test rather than trying to rerun this one.&quot;</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="s2">&quot;WARNING: Test case setup failed. Case2 has been removed, &quot;</span>
+                    <span class="s2">&quot;but the main case may be in an inconsistent state. &quot;</span>
+                    <span class="s2">&quot;If you want to rerun this test, you should create &quot;</span>
+                    <span class="s2">&quot;a new test rather than trying to rerun this one.&quot;</span>
+                <span class="p">)</span>
                 <span class="k">raise</span>
 
     <span class="k">def</span> <span class="nf">_case_from_existing_caseroot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caseroot</span><span class="p">):</span>
@@ -648,10 +675,16 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">readme_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
                 <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;This directory is typically empty.</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
-                <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;case2&#39;s run dir is here: </span><span class="si">{}</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_case2</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">)))</span>
-                <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;case2&#39;s bld dir is here: </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_case2</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;EXEROOT&quot;</span><span class="p">)))</span>
+                <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
+                    <span class="s2">&quot;case2&#39;s run dir is here: </span><span class="si">{}</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_case2</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">)</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+                <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
+                    <span class="s2">&quot;case2&#39;s bld dir is here: </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_case2</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;EXEROOT&quot;</span><span class="p">)</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
         <span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
             <span class="c1"># It&#39;s not a big deal if we can&#39;t write the README file</span>
             <span class="c1"># (e.g., because the directory doesn&#39;t exist or isn&#39;t</span>
@@ -721,14 +754,13 @@
         <span class="n">rundir2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case2</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">)</span>
         <span class="n">run2suffix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_two_suffix</span>
 
-        <span class="n">pattern</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">*.nc.</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">casename2</span><span class="p">,</span> <span class="n">run2suffix</span><span class="p">)</span>
+        <span class="n">pattern</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">*.nc.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">casename2</span><span class="p">,</span> <span class="n">run2suffix</span><span class="p">)</span>
         <span class="n">case2_files</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rundir2</span><span class="p">,</span> <span class="n">pattern</span><span class="p">))</span>
         <span class="k">for</span> <span class="n">one_file</span> <span class="ow">in</span> <span class="n">case2_files</span><span class="p">:</span>
             <span class="n">file_basename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">one_file</span><span class="p">)</span>
             <span class="n">modified_basename</span> <span class="o">=</span> <span class="n">file_basename</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">casename2</span><span class="p">,</span> <span class="n">casename1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
             <span class="n">one_link</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rundir1</span><span class="p">,</span> <span class="n">modified_basename</span><span class="p">)</span>
-            <span class="k">if</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">islink</span><span class="p">(</span><span class="n">one_link</span><span class="p">)</span> <span class="ow">and</span>
-                <span class="n">os</span><span class="o">.</span><span class="n">readlink</span><span class="p">(</span><span class="n">one_link</span><span class="p">)</span> <span class="o">==</span> <span class="n">one_file</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">islink</span><span class="p">(</span><span class="n">one_link</span><span class="p">)</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">readlink</span><span class="p">(</span><span class="n">one_link</span><span class="p">)</span> <span class="o">==</span> <span class="n">one_file</span><span class="p">:</span>
                 <span class="c1"># Link is already set up correctly: do nothing</span>
                 <span class="c1"># (os.symlink raises an exception if you try to replace an</span>
                 <span class="c1"># existing file)</span>
@@ -774,6 +806,7 @@
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/doctools.js"></script>

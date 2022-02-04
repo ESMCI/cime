@@ -5,7 +5,8 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <title>1. CESM-ECT (CESM Ensemble Consistency Test): &mdash; CIME master documentation</title>
@@ -29,6 +30,10 @@
     <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   
 
+  
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   
 
   
@@ -191,7 +196,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="cesm-ect-cesm-ensemble-consistency-test">
+  <section id="cesm-ect-cesm-ensemble-consistency-test">
 <span id="ensemble-consistency-test"></span><h1><span class="section-number">1. </span>CESM-ECT (CESM Ensemble Consistency Test):<a class="headerlink" href="#cesm-ect-cesm-ensemble-consistency-test" title="Permalink to this headline">¶</a></h1>
 <p>CESM-ECT is a suite of tests to determine whether a new
 simulation set up (new machine, compiler, etc.) is statistically
@@ -210,7 +215,7 @@ subdirectory or <a class="reference external" href="https://github.com/NCAR/PyCE
 you can upload the (3) generated runs for comparison to our ensemble.
 Please see the webpage at <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2/verification/">http://www.cesm.ucar.edu/models/cesm2/verification/</a>
 for further instructions.</p>
-<div class="section" id="creating-or-obtaining-a-summary-file">
+<section id="creating-or-obtaining-a-summary-file">
 <h2><span class="section-number">1.1. </span>Creating or obtaining a summary file:<a class="headerlink" href="#creating-or-obtaining-a-summary-file" title="Permalink to this headline">¶</a></h2>
 <p>Before the test can be run, a summary file is needed of the ensemble
 runs to which the comparison will be made. Ensemble summary files
@@ -259,8 +264,8 @@ file (<em>.cam.h0.</em>) for CAM-ECT and UF-CAM-ECT) or monthly pop history file
 Next create the ensemble summary using the pyCECT tool pyEnsSum.py (for CAM-ECT and
 UF-CAM-ECT) or pyEnsSumPop.py (for POP-ECT).  For details see README_pyEnsSum.rst
 and README_pyEnsSumPop.rst with the pyCECT tools.</p>
-</div>
-<div class="section" id="creating-test-runs">
+</section>
+<section id="creating-test-runs">
 <h2><span class="section-number">1.2. </span>Creating test runs:<a class="headerlink" href="#creating-test-runs" title="Permalink to this headline">¶</a></h2>
 <p>(1) Once an ensemble summary file has been created or chosen to
 use from $CESMDATAROOT/inputdata/validation, the simulation
@@ -279,8 +284,8 @@ For example, for UF-CAM-ECT:</p>
 <p>python ensemble.py –case /glade/scratch/cesm_user/cesm_tag/popcase.cesm_tag.000 –ect pop –mach cheyenne  –project P99999999 –compset   G –res T62_g17</p>
 <p>(3) Next verify the new simulation(s) with the pyCECT tool pyCECT.py (see
 README_pyCECT.rst with the pyCECT tools).</p>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
@@ -329,6 +334,7 @@ README_pyCECT.rst with the pyCECT tools).</p>
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>

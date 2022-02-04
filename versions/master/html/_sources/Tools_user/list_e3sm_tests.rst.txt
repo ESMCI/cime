@@ -2,7 +2,7 @@
 .. _list_e3sm_tests:
 
 ####################################################
-list_e3sm_tests 
+list_e3sm_tests
 ####################################################
 
 **list_e3sm_tests** is a script in CIMEROOT/scripts/Tools.

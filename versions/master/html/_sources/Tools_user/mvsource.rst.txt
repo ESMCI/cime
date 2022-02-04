@@ -2,7 +2,7 @@
 .. _mvsource:
 
 ####################################################
-mvsource 
+mvsource
 ####################################################
 
 **mvsource** is a script in CIMEROOT/scripts/Tools.

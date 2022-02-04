@@ -2,7 +2,7 @@
 .. _generate_cylc_workflow.py:
 
 ####################################################
-generate_cylc_workflow.py 
+generate_cylc_workflow.py
 ####################################################
 
 **generate_cylc_workflow.py** is a script in CIMEROOT/scripts/Tools.

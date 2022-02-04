@@ -2,7 +2,7 @@
 .. _get_case_env:
 
 ####################################################
-get_case_env 
+get_case_env
 ####################################################
 
 **get_case_env** is a script in CIMEROOT/scripts/Tools.

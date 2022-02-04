@@ -2,7 +2,7 @@
 .. _code_checker:
 
 ####################################################
-code_checker 
+code_checker
 ####################################################
 
 **code_checker** is a script in CIMEROOT/scripts/Tools.

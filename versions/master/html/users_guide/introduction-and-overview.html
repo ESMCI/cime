@@ -5,7 +5,8 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <title>1. Introduction &mdash; CIME master documentation</title>
@@ -29,6 +30,10 @@
     <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   
 
+  
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   
 
   
@@ -200,11 +205,11 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="introduction">
+  <section id="introduction">
 <span id="introduction-and-overview"></span><h1><span class="section-number">1. </span>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
 <p>Part 1 of this guide explains the basic commands in the CIME Case Control System
 that are needed to get a model running.</p>
-<div class="section" id="prerequisites">
+<section id="prerequisites">
 <h2><span class="section-number">1.1. </span>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
 <p>Part 1 of this guide assumes that CIME or a CIME-driven model and the necessary input files
 have been installed on the computer you are using. If that is not the case, see <a class="reference internal" href="porting-cime.html#porting"><span class="std std-ref">Porting CIME</span></a>.</p>
@@ -222,8 +227,8 @@ like this:</p>
 </pre></div>
 </div>
 <p>Consult your local documentation if you need to update your python version.</p>
-</div>
-<div class="section" id="key-terms-and-concepts">
+</section>
+<section id="key-terms-and-concepts">
 <h2><span class="section-number">1.2. </span>Key Terms and concepts<a class="headerlink" href="#key-terms-and-concepts" title="Permalink to this headline">¶</a></h2>
 <p>The following key terms and concepts are ingrained in CIME and used frequently in this documentation.
 See the <a class="reference internal" href="../glossary/index.html#glossary"><span class="std std-ref">Glossary</span></a> for a more complete list of terms.</p>
@@ -274,8 +279,8 @@ the model source code and version-controlled together, its possible to match sup
 versions of the model source code, promoting reproducibility and provenance.  An out-of-the-box case is also called a <em>base case</em></p>
 </dd>
 </dl>
-</div>
-<div class="section" id="cime-and-your-environment">
+</section>
+<section id="cime-and-your-environment">
 <h2><span class="section-number">1.3. </span>CIME and your environment<a class="headerlink" href="#cime-and-your-environment" title="Permalink to this headline">¶</a></h2>
 <p>Before using any CIME commands, set the <code class="docutils literal notranslate"><span class="pre">CIME_MODEL</span></code> environment variable. In bash, use <strong>export</strong> as shown and replace
 <strong>&lt;model&gt;</strong> with the appropriate text. Current possibilities are “e3sm” or “cesm.”</p>
@@ -290,8 +295,8 @@ For variables that can be set in more than one way, the order of precedence is:<
 <li><p>variable is set in <code class="docutils literal notranslate"><span class="pre">$HOME/.cime/config</span></code> as explained further <a class="reference internal" href="cime-config.html#customizing-cime"><span class="std std-ref">here</span></a>.</p></li>
 <li><p>variable is set in a <code class="docutils literal notranslate"><span class="pre">$CASEROOT</span></code> xml file</p></li>
 </ul>
-</div>
-<div class="section" id="quick-start">
+</section>
+<section id="quick-start">
 <h2><span class="section-number">1.4. </span>Quick start<a class="headerlink" href="#quick-start" title="Permalink to this headline">¶</a></h2>
 <p>To see an example of how a case is created, configured, built and run with CIME, execute the following commands. (This assumes that CIME has been ported to your current machine).</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">cd</span> <span class="n">cime</span><span class="o">/</span><span class="n">scripts</span>
@@ -308,8 +313,8 @@ For variables that can be set in more than one way, the order of precedence is:<
 </pre></div>
 </div>
 <p>Repeat the command until you see the message <code class="docutils literal notranslate"><span class="pre">case.run</span> <span class="pre">success</span></code>.</p>
-</div>
-<div class="section" id="discovering-available-cases-with-query-config">
+</section>
+<section id="discovering-available-cases-with-query-config">
 <h2><span class="section-number">1.5. </span>Discovering available cases with <strong>query_config</strong><a class="headerlink" href="#discovering-available-cases-with-query-config" title="Permalink to this headline">¶</a></h2>
 <p>Your CIME-driven model has many more possible cases besides the simple one in the above Quick Start.</p>
 <p>Use the utility <a class="reference external" href="../Tools_user/query_config.html">query_config</a>  to see which out-of-the-box compsets, components, grids and machines are available for your model.</p>
@@ -371,8 +376,8 @@ For variables that can be set in more than one way, the order of precedence is:<
 </pre></div>
 </div>
 <p>For more details on how CIME determines the output for query_config, see <a class="reference internal" href="compsets.html#compsets"><span class="std std-ref">Component Sets</span></a>.</p>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
@@ -421,6 +426,7 @@ For variables that can be set in more than one way, the order of precedence is:<
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>

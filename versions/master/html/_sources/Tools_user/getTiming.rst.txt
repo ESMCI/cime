@@ -2,7 +2,7 @@
 .. _getTiming:
 
 ####################################################
-getTiming 
+getTiming
 ####################################################
 
 **getTiming** is a script in CIMEROOT/scripts/Tools.
