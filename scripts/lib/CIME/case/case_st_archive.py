@@ -531,7 +531,7 @@ def _archive_restarts_date_comp(
     # the compname is drv but the files are named cpl
     if compname == "drv":
         compname = "cpl"
-    if compname == "cice6":
+    if compname == "cice5":
         compname = "cice"
     if compname == "ww3dev":
         compname = "ww3"

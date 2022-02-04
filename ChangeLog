@@ -1,5 +1,29 @@
 ======================================================================
 
+Originator: David Bailey
+Date: 1-27-22
+Tag: cime6.0.1?
+Answer Changes: Yes. CICE6 is not bfb with CICE5
+Tests: aux_cice and aux_cice5
+Dependencies:
+
+cice5_*
+cice6_*
+cam*
+
+Brief Summary:
+    - CICE6 becomes the default sea ice component
+    - CICE5 becomes an option component and can only be used in long
+      compset names
+
+
+	modified:   ChangeLog
+	modified:   config/cesm/config_files.xml
+	modified:   scripts/lib/CIME/XML/archive_base.py
+	modified:   scripts/lib/CIME/case/case_st_archive.py
+
+======================================================================
+
 Originator: Chris Fischer
 Date: 1-11-22
 Tag: cime6.0.13
