@@ -25,8 +25,7 @@ jobs:
           python-version: '3.x'
       - name: install dependencies
         run: |
-          pip install sphinx sphinxcontrib-programoutput
-          pip install git+https://github.com/esmci/sphinx_rtd_theme.git@version-dropdown-with-fixes
+          pip install -r ${GITHUB_WORKSPACE}/master/doc/requirements.txt
       - name: build documentation
         run: |
           ls -la
