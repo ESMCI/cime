@@ -17,6 +17,7 @@ jobs:
           path: 'master/'
       - uses: actions/checkout@v2
         with:
+          repository: ESMCI/cime
           path: 'gh-pages/'
           ref: gh-pages
       - uses: actions/setup-python@v2
