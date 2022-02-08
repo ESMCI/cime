@@ -1,6 +1,29 @@
 ======================================================================
 
 Originator: Chris Fischer
+Date: 2-8-2022
+Tag: cime5.6.39
+Answer Changes: None
+Tests:  hand testing on izumi 
+Dependencies:
+
+Brief Summary:
+    - Fix izumi jobid matching pattern.
+
+User interface changes: 
+
+PR summary: git log --oneline --first-parent [previous_tag]..master 
+66a25e28f Merge pull request #4176 from jedwards4b/izumi_batch_fix
+
+Modified files: git diff --name-status [previous_tag]
+M       config/cesm/machines/config_batch.xml
+
+
+======================================================================
+
+======================================================================
+
+Originator: Chris Fischer
 Date: 2-2-2022
 Tag: cime5.6.38
 Answer Changes: None
