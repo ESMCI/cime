@@ -22,7 +22,7 @@ Table of contents
    misc_tools/index.rst
 
 Appendices
----------
+----------
 .. toctree::
    :maxdepth: 2
 
