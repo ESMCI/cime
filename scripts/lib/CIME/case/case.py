@@ -162,6 +162,10 @@ class Case(object):
 
         # check if case has been configured and if so initialize derived
         if self.get_value("CASEROOT") is not None:
+            mach = self.get_value("MACH")
+            machobj = Machines()
+            probed_machine = machobj.probe_machine_name()
+            expect(mach == probed_machine, f"Current machine {probed_machine} does not match case machine {mach}.")
             self.initialize_derived_attributes()
 
     def check_if_comp_var(self, vid):
