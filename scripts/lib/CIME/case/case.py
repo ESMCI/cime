@@ -119,7 +119,7 @@ class Case(object):
         self._env_generic_files = []
         self._files = []
         self._comp_interface = None
-        self._non_local=non_local
+        self._non_local = non_local
         self.read_xml()
 
         if record:
