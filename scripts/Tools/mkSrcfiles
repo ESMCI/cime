@@ -6,7 +6,8 @@
 # this script tries to open in the current directory.  The current
 # directory is prepended to the specified list of directories.  If Filepath
 # doesn't exist then only the source files in the current directory are
-# listed.
+# listed. If directories contain file .exclude then source files listed
+# in that file are omitted from the source list.
 # The list of source files is written to the file Srcfiles.
 
 # Check usage:
@@ -25,13 +26,8 @@ my $excludeDir = '';
 my $foundExclude = 0;
 foreach $dir (@paths) {  # (could check that directories exist here)
 
-    # TMMF 01-2018
-    # the following sets up .excludes if exists
-    # Blunt force. Didn't want to require any "use" statements since there are none.
-    # At this point, GEOS-Chem is the only dir tree that has dependency subdirs in
-    # Filepath generated for CAM by CIME.
+    # Set up .excludes if exists
     if ( (-e "$dir/.exclude") && (open(EXCLUDE,"$dir/.exclude") ) ) {
-        #@excludes = <EXCLUDE>;
         push @excludes, <EXCLUDE>;
         close( EXCLUDE );
         $excludeDir = $dir;
@@ -68,7 +64,7 @@ foreach $dir (@paths) {
             next;
             }
         }
-        # If filename is in local exclude file, don't add to list. - TMMF
+        # If filename is in local .exclude file, do not add to list
         if ($useExclude) {
             my $matches = grep { /$filename/ } @excludes;
             if ($matches) {
@@ -81,7 +77,7 @@ foreach $dir (@paths) {
         }
     }
 
-    # No exclusion func for templates - TMMF
+    # No exclusion func for templates
     @templates = glob("$dir/*.F90.in");
     foreach $filename (@templates) {
         $filename =~ s!.*/!!;                   # remove part before last slash
