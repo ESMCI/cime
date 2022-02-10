@@ -481,6 +481,18 @@ using a fortran linker.
   </LDFLAGS>
 </compiler>
 
+<compiler MACH="arc4" COMPILER="intel">
+  <PNETCDF_PATH>$ENV{NETCDF_HOME}</PNETCDF_PATH>
+  <NETCDF_PATH>$ENV{NETCDF_HOME}</NETCDF_PATH>
+  <SLIBS>
+    <append> -L$ENV{NETCDF_HOME}/lib -lnetcdff -lnetcdf -L$ENV{PNETCDF_PATH}/lib -lpnetcdf -mkl</append>
+  </SLIBS>
+  <LDFLAGS>
+    <append>-mkl </append>
+  </LDFLAGS>
+  <ESMF_LIBDIR>/nobackup/CESM/esmf_8.2.0/lib/libO/Linux.intel.64.intelmpi.default/</ESMF_LIBDIR>
+</compiler>
+
 <compiler MACH="athena">
   <CPPDEFS>
     <!-- these flags enable nano timers -->

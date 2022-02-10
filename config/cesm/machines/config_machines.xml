@@ -116,6 +116,57 @@ This allows using a different mpirun command to launch unit tests
     </environment_variables>
   </machine>
 
+  <machine MACH="arc4">
+    <DESC>A port of CEM to the Leeds ARC4 machine, batch system is sge. CEMAC.</DESC>
+    <NODENAME_REGEX>.*.arc*</NODENAME_REGEX>
+    <OS>LINUX</OS>
+    <COMPILERS>intel</COMPILERS>
+    <MPILIBS>intelmpi,openmpi,mpich</MPILIBS>
+    <CIME_OUTPUT_ROOT>/nobackup/$ENV{USER}/cesm_sims</CIME_OUTPUT_ROOT>
+    <DIN_LOC_ROOT>/nobackup/CESM/inputdata</DIN_LOC_ROOT>
+    <DIN_LOC_ROOT_CLMFORC>/nobackup/CESM/inputdata/atm/datm7</DIN_LOC_ROOT_CLMFORC>
+    <DOUT_S_ROOT>${CIME_OUTPUT_ROOT}/archive/$CASE</DOUT_S_ROOT>
+    <BASELINE_ROOT>${CIME_OUTPUT_ROOT}/cesm_baselines</BASELINE_ROOT>
+    <CCSM_CPRNC>$ENV{CESM_HOME}/cime/tools/cprnc/cprnc</CCSM_CPRNC>
+    <GMAKE>make</GMAKE>
+    <GMAKE_J>16</GMAKE_J>
+    <BATCH_SYSTEM>sge</BATCH_SYSTEM>
+    <SUPPORTED_BY>cemac-at-leeds.ac.uk</SUPPORTED_BY>
+    <MAX_TASKS_PER_NODE>40</MAX_TASKS_PER_NODE>
+    <MAX_MPITASKS_PER_NODE>40</MAX_MPITASKS_PER_NODE>
+    <PROJECT_REQUIRED>FALSE</PROJECT_REQUIRED>
+    <mpirun mpilib="default">
+      <executable>mpirun</executable>
+      <arguments>
+        <arg name="ntasks"> -np {{ total_tasks }} </arg>
+      </arguments>
+    </mpirun>
+
+    <module_system type="module" allow_error="true">
+      <init_path lang="perl">/apps/Modules/default/init/perl.pm</init_path>
+      <init_path lang="python">/apps/Modules/default/init/python.py</init_path>
+      <init_path lang="sh">/apps/Modules/default/init/sh</init_path>
+      <init_path lang="csh">/apps/Modules/default/init/csh</init_path>
+      <cmd_path lang="perl">module</cmd_path>
+      <cmd_path lang="python">module</cmd_path>
+      <cmd_path lang="sh">module</cmd_path>
+      <cmd_path lang="csh">module</cmd_path>
+      <modules compiler="intel">
+        <command name="unload">openmpi</command>
+        <command name="load">intel/19.0.4</command>
+        <command name="load">intelmpi/2019.4.243</command>
+        <command name="load">netcdf/4.6.3</command>
+        <command name="load">esmf</command>
+      </modules>
+    </module_system>
+    <environment_variables>
+      <env name="OMP_STACKSIZE">64M</env>
+    </environment_variables>
+    <resource_limits>
+      <resource name="RLIMIT_STACK">-1</resource>
+    </resource_limits>
+  </machine>
+
   <machine MACH="athena">
     <DESC> CMCC IBM iDataPlex, os is Linux, 16 pes/node, batch system is LSFd mpich</DESC>
     <NODENAME_REGEX>.*.cluster.net</NODENAME_REGEX>
