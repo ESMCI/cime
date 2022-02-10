@@ -534,6 +534,7 @@ class TestCimeCase(base.BaseTestCase):
                 "--project=testproj",
                 test_name,
                 "--mpilib=mpi-serial",
+                "--non_local=True",
             ],
             test_id=self._baseline_name,
             env_changes="unset CIME_GLOBAL_WALLTIME &&",
