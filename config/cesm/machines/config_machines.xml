@@ -123,11 +123,11 @@ This allows using a different mpirun command to launch unit tests
     <COMPILERS>intel</COMPILERS>
     <MPILIBS>intelmpi,openmpi,mpich</MPILIBS>
     <CIME_OUTPUT_ROOT>/nobackup/$ENV{USER}/cesm_sims</CIME_OUTPUT_ROOT>
-    <DIN_LOC_ROOT>/nobackup/CESM/inputdata</DIN_LOC_ROOT>
-    <DIN_LOC_ROOT_CLMFORC>/nobackup/CESM/inputdata/atm/datm7</DIN_LOC_ROOT_CLMFORC>
+    <DIN_LOC_ROOT>$ENV{ARC4_CESM2_ROOT}/inputdata</DIN_LOC_ROOT>
+    <DIN_LOC_ROOT_CLMFORC>$ENV{ARC4_CESM2_ROOT}/inputdata/atm/datm7</DIN_LOC_ROOT_CLMFORC>
     <DOUT_S_ROOT>${CIME_OUTPUT_ROOT}/archive/$CASE</DOUT_S_ROOT>
     <BASELINE_ROOT>${CIME_OUTPUT_ROOT}/cesm_baselines</BASELINE_ROOT>
-    <CCSM_CPRNC>$ENV{CESM_HOME}/cime/tools/cprnc/cprnc</CCSM_CPRNC>
+    <CCSM_CPRNC>${CIMEROOT}/tools/cprnc</CCSM_CPRNC>
     <GMAKE>make</GMAKE>
     <GMAKE_J>16</GMAKE_J>
     <BATCH_SYSTEM>sge</BATCH_SYSTEM>

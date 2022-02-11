@@ -490,7 +490,7 @@ using a fortran linker.
   <LDFLAGS>
     <append>-mkl </append>
   </LDFLAGS>
-  <ESMF_LIBDIR>/nobackup/CESM/esmf_8.2.0/lib/libO/Linux.intel.64.intelmpi.default/</ESMF_LIBDIR>
+  <ESMF_LIBDIR>$ENV{ESMF_LIBDIR}</ESMF_LIBDIR>
 </compiler>
 
 <compiler MACH="athena">
