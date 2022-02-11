@@ -9,6 +9,7 @@ This class inherits from SystemTestsCommon.
 import os
 import json
 import logging
+import shutil
 import xml.etree.ElementTree as ET
 
 from distutils import dir_util
@@ -64,11 +65,10 @@ def perturb_init(infile, field_name, outfile, seed=None):
     rng = np.random.default_rng(seed)
 
     # Perturbation between -1e-14 -- +1e-14, same size as the input field
-    # perturbation = rng.uniform(-1e-14, 1e-14, field_temp[:].shape)
-    perturbation = rng.uniform(-1e-10, 1e-10, field_temp[:].shape)
+    perturbation = rng.uniform(-1e-14, 1e-14, field_temp[:].shape)
     field = field_temp[:] + perturbation
 
-    os.system(f"cp {infile} {outfile}")
+    shutil.copy(infile, outfile)
     with nc.Dataset(outfile, "a") as out_f:
 
         field_out = out_f.variables[field_name]
@@ -93,18 +93,21 @@ def modify_stream(
         input_stream[0].set("filename_template", input_file)
 
     # Add variables to a particular stream (Climatology output by default)
+    clim_stream = list(
+        filter(
+            lambda x: x.get("name") == output_stream_name, streams.getroot().findall("stream")
+        )
+    )
+    clim_stream = clim_stream[0]
     if var_names is not None:
         # Convert the variable name into xml elements
         var_elements = [ET.Element("var", {"name": _var}) for _var in var_names]
-        clim_stream = list(
-            filter(
-                lambda x: x.get("name") == output_stream_name, streams.getroot().findall("stream")
-            )
-        )
-        clim_stream = clim_stream[0]
 
         for clim_element in var_elements:
             clim_stream.append(clim_element)
+
+    # Only output climatology files yearly
+    clim_stream.set("output_interval", "01-00-00_00:00:00")
 
     if input_file is not None or var_elements is not None:
         # Only re-write the stream if changes were made
@@ -187,10 +190,11 @@ class MVKO(SystemTestsCommon):
                 nl_ocn_file.write("config_am_timeseriesstatsmonthlymax_enable = .false.\n")
                 nl_ocn_file.write("config_am_timeseriesstatsmonthlymin_enable = .false.\n")
                 nl_ocn_file.write("config_am_timeseriesstatsmonthly_enable = .false.\n")
-                nl_ocn_file.write("config_am_globalstats_enable = .false.\n")
                 nl_ocn_file.write("config_am_eddyproductvariables_enable = .false.\n")
                 nl_ocn_file.write("config_am_meridionalheattransport_enable = .false.\n")
                 nl_ocn_file.write("config_am_oceanheatcontent_enable = .false.\n")
+                # But we want to make sure globalStats output is on
+                nl_ocn_file.write("config_am_globalstats_enable = .true.\n")
 
             # Set up sea ice namelist to reduce output
             with open("user_nl_{}_{:04d}".format(self.ice_component, iinst), "w") as nl_ice_file:
@@ -198,6 +202,7 @@ class MVKO(SystemTestsCommon):
                     nl_ice_file.write(_config)
                 nl_ice_file.write("config_am_timeseriesstatsdaily_enable = .false.\n")
                 nl_ice_file.write("config_am_timeseriesstatsmonthly_enable = .false.\n")
+                nl_ice_file.write("config_am_regionalstatistics_enable = .false.\n")
 
             if self.ocn_component == "mpaso":
                 # Set up streams file to get perturbed init file and do yearly climatology
@@ -209,8 +214,8 @@ class MVKO(SystemTestsCommon):
                 )
                 # buildnamelist creates the streams file for each instance, copy this to the
                 # SourceMods directory to make changes to the correct version
-                os.system("cp {}/streams.ocean_{:04d} {}".format(rundir, iinst, ocn_stream_file))
-                os.system("cp {}/streams.seaice_{:04d} {}".format(rundir, iinst, ice_stream_file))
+                shutil.copy(f"{rundir}/streams.ocean_{iinst:04d}", ocn_stream_file)
+                shutil.copy(f"{rundir}/streams.seaice_{iinst:04d}", ice_stream_file)
 
                 modify_stream(ocn_stream_file, input_file=pert_file, var_names=OCN_TEST_VARS)
                 modify_stream(ice_stream_file, var_names=ICE_TEST_VARS)
