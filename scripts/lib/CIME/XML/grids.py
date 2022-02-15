@@ -359,10 +359,7 @@ class Grids(GenericXML):
                         # Note: ONLY want to define PTS_DOMAINFILE for land
                         file_node = self.get_optional_child("file", root=domain_node)
                         if file_node is not None:
-                            domain_file = self.text(file_node)
-                            domains["PTS_DOMAINFILE"] = os.path.join(
-                                "$DIN_LOC_ROOT/share/domains", domain_file
-                            )
+                            domains["PTS_DOMAINFILE"] = self.text(file_node)
 
     def _get_gridmaps(self, component_grids, driver, compset):
         """Set all mapping files for config_grids.xml v2 schema
