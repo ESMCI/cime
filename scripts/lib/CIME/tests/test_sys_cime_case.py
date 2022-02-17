@@ -534,13 +534,15 @@ class TestCimeCase(base.BaseTestCase):
                 "--project=testproj",
                 test_name,
                 "--mpilib=mpi-serial",
+                "--non-local",
             ],
             test_id=self._baseline_name,
             env_changes="unset CIME_GLOBAL_WALLTIME &&",
         )
 
         result = self.run_cmd_assert_result(
-            "./xmlquery --value PROJECT --subgroup=case.test", from_dir=casedir
+            "./xmlquery --non-local --value PROJECT --subgroup=case.test",
+            from_dir=casedir,
         )
         self.assertEqual(result, "testproj")
 

@@ -196,36 +196,60 @@ def parse_command_line(args, cimeroot, description):
     # Indicates that create_newcase was called from create_test - do not use otherwise.
     parser.add_argument("--test", "-test", action="store_true", help=argparse.SUPPRESS)
 
-    parser.add_argument("--walltime", default=os.getenv("CIME_GLOBAL_WALLTIME"),
-                        help="Set the wallclock limit for this case in the format (the usual format is HH:MM:SS). "
-                        "\nYou may use env var CIME_GLOBAL_WALLTIME to set this. "
-                        "\nIf CIME_GLOBAL_WALLTIME is not defined in the environment, then the walltime"
-                        "\nwill be the maximum allowed time defined for the queue in config_batch.xml.")
+    parser.add_argument(
+        "--walltime",
+        default=os.getenv("CIME_GLOBAL_WALLTIME"),
+        help="Set the wallclock limit for this case in the format (the usual format is HH:MM:SS). "
+        "\nYou may use env var CIME_GLOBAL_WALLTIME to set this. "
+        "\nIf CIME_GLOBAL_WALLTIME is not defined in the environment, then the walltime"
+        "\nwill be the maximum allowed time defined for the queue in config_batch.xml.",
+    )
 
-    parser.add_argument("-q", "--queue", default=None,
-                        help="Force batch system to use the specified queue. ")
+    parser.add_argument(
+        "-q",
+        "--queue",
+        default=None,
+        help="Force batch system to use the specified queue. ",
+    )
 
-    parser.add_argument("--handle-preexisting-dirs", dest="answer", choices=("a", "r", "u"), default=None,
-                        help="Do not query how to handle pre-existing bld/exe dirs. "
-                        "\nValid options are (a)bort (r)eplace or (u)se existing. "
-                        "\nThis can be useful if you need to run create_newcase non-iteractively.")
+    parser.add_argument(
+        "--handle-preexisting-dirs",
+        dest="answer",
+        choices=("a", "r", "u"),
+        default=None,
+        help="Do not query how to handle pre-existing bld/exe dirs. "
+        "\nValid options are (a)bort (r)eplace or (u)se existing. "
+        "\nThis can be useful if you need to run create_newcase non-iteractively.",
+    )
 
-    parser.add_argument("-i", "--input-dir",
-                        help="Use a non-default location for input files. This will change the xml value of DIN_LOC_ROOT.")
-    parser.add_argument("--driver", default=get_cime_default_driver(),
-                        choices=('mct','nuopc', 'moab'),
-                        help=argparse.SUPPRESS)
+    parser.add_argument(
+        "-i",
+        "--input-dir",
+        help="Use a non-default location for input files. This will change the xml value of DIN_LOC_ROOT.",
+    )
+    parser.add_argument(
+        "--driver",
+        default=get_cime_default_driver(),
+        choices=("mct", "nuopc", "moab"),
+        help=argparse.SUPPRESS,
+    )
 
-    parser.add_argument("-n", "--non-local", action="store_true",
-                        help="Use when you've requested a machine that you aren't on. "
-                        "Will reduce errors for missing directories etc.")
+    parser.add_argument(
+        "-n",
+        "--non-local",
+        action="store_true",
+        help="Use when you've requested a machine that you aren't on. "
+        "Will reduce errors for missing directories etc.",
+    )
 
-    parser.add_argument("--extra-machines-dir",
-                        help="Optional path to a directory containing one or more of:"
-                        "\nconfig_machines.xml, config_compilers.xml, config_batch.xml,"
-                        "\nand a cmake_macros subdirectory containing CMake macros files."
-                        "\nIf provided, the contents of these files will be appended to"
-                        "\nthe standard machine files (and any files in ~/.cime).")
+    parser.add_argument(
+        "--extra-machines-dir",
+        help="Optional path to a directory containing one or more of:"
+        "\nconfig_machines.xml, config_compilers.xml, config_batch.xml,"
+        "\nand a cmake_macros subdirectory containing CMake macros files."
+        "\nIf provided, the contents of these files will be appended to"
+        "\nthe standard machine files (and any files in ~/.cime).",
+    )
 
     parser.add_argument("--case-group", help="Add this case to a case group")
 
@@ -374,7 +398,7 @@ def _main_func(description):
         )
         del os.environ["FROM_CREATE_TEST"]
 
-    with Case(caseroot, read_only=False) as case:
+    with Case(caseroot, read_only=False, non_local=non_local) as case:
         # Configure the Case
         case.create(
             casename,

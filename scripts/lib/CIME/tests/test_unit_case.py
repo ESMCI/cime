@@ -22,7 +22,6 @@ def make_valid_case(path):
 class TestCaseSubmit(unittest.TestCase):
     def test_check_case(self):
         case = mock.MagicMock()
-
         case_submit.check_case(case, chksum=True)
 
         case.check_all_input_data.assert_called_with(chksum=True)
@@ -57,7 +56,7 @@ class TestCaseSubmit(unittest.TestCase):
             ]
 
             make_valid_case(tempdir)
-            with Case(tempdir) as case:
+            with Case(tempdir, non_local=True) as case:
                 case.submit(chksum=True)
 
             _submit.assert_called_with(
