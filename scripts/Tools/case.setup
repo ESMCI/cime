@@ -72,16 +72,25 @@ def parse_command_line(args, description):
         "Use should use this if you have local modifications to these files that you want to keep.",
     )
 
+    parser.add_argument(
+        "-N",
+        "--non-local",
+        action="store_true",
+        help="Use when you've requested a machine that you aren't on. "
+        "Will reduce errors for missing directories etc.",
+    )
+
+
     args = CIME.utils.parse_args_and_handle_standard_logging_options(args, parser)
 
-    return args.caseroot, args.clean, args.test_mode, args.reset, args.keep
+    return args.caseroot, args.clean, args.test_mode, args.reset, args.keep, args.non_local
 
 
 ###############################################################################
 def _main_func(description):
     ###############################################################################
-    caseroot, clean, test_mode, reset, keep = parse_command_line(sys.argv, description)
-    with Case(caseroot, read_only=False, record=True) as case:
+    caseroot, clean, test_mode, reset, keep, non_local = parse_command_line(sys.argv, description)
+    with Case(caseroot, read_only=False, record=True, non_local=non_local) as case:
         case.case_setup(clean=clean, test_mode=test_mode, reset=reset, keep=keep)
 
 

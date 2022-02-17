@@ -783,7 +783,7 @@ class FakeTest(SystemTestsCommon):
     Inheriters of the FakeTest Class are intended to test the code.
 
     All members of the FakeTest Class must
-    have names beginnig with "TEST" this is so that the find_system_test
+    have names beginning with "TEST" this is so that the find_system_test
     in utils.py will work with these classes.
     """
 
@@ -791,6 +791,7 @@ class FakeTest(SystemTestsCommon):
         super(FakeTest, self).__init__(case, expected=expected)
         self._script = None
         self._requires_exe = False
+        self._case._non_local = True
         self._original_exe = self._case.get_value("run_exe")
 
     def _set_script(self, script, requires_exe=False):
