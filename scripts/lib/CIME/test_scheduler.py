@@ -341,7 +341,10 @@ class TestScheduler(object):
                     if os.path.isdir(test_baseline):
                         existing_baselines.append(test_baseline)
                         if allow_baseline_overwrite:
-                            clear_folder(test_baseline)
+                            if self._namelists_only:
+                                clear_folder(os.path.join(test_baseline,"CaseDocs"))
+                            else:
+                                clear_folder(test_baseline)
                 expect(
                     allow_baseline_overwrite or len(existing_baselines) == 0,
                     "Baseline directories already exists {}\n"

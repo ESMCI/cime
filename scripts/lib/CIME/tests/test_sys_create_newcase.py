@@ -271,7 +271,7 @@ class TestCreateNewcase(base.BaseTestCase):
         self.assertTrue(os.path.isfile(os.path.join(casedir, xmlquery)))
 
         # Test command line options
-        with Case(casedir, read_only=True, non_local=True) as case:
+        with Case(casedir, read_only=True) as case:
             STOP_N = case.get_value("STOP_N")
             COMP_CLASSES = case.get_values("COMP_CLASSES")
             BUILD_COMPLETE = case.get_value("BUILD_COMPLETE")

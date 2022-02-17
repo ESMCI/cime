@@ -71,7 +71,7 @@ class TestBlessTestResults(base.BaseTestCase):
             self._create_test(compargs, test_id=test_id, run_errors=True)
 
             # compare_test_results should detect the fail
-            cpr_cmd = "{}/compare_test_results --test-root {} -t {} 2>&1".format(
+            cpr_cmd = "{}/compare_test_results --test-root {} -t {} ".format(
                 self.TOOLS_DIR, self._testroot, test_id
             )
             output = self.run_cmd_assert_result(
@@ -122,7 +122,7 @@ class TestBlessTestResults(base.BaseTestCase):
         self.run_cmd_assert_result("./case.cmpgen_namelists", from_dir=casedir)
 
         # compare_test_results should pass
-        cpr_cmd = "{}/compare_test_results --test-root {} -n -t {} 2>&1".format(
+        cpr_cmd = "{}/compare_test_results --test-root {} -n -t {} ".format(
             self.TOOLS_DIR, self._testroot, test_id
         )
         output = self.run_cmd_assert_result(cpr_cmd)
@@ -130,11 +130,11 @@ class TestBlessTestResults(base.BaseTestCase):
         # use regex
         expected_pattern = re.compile(r"PASS %s[^\s]* NLCOMP" % test_to_change)
         the_match = expected_pattern.search(output)
+        msg=f"Cmd {cpr_cmd} failed to display passed test in output:\n{output}"
         self.assertNotEqual(
             the_match,
             None,
-            msg="Cmd '%s' failed to display passed test in output:\n%s"
-            % (cpr_cmd, output),
+            msg=msg,
         )
 
         # Modify namelist
@@ -183,7 +183,7 @@ class TestBlessTestResults(base.BaseTestCase):
         )
 
         # compare_test_results should fail
-        cpr_cmd = "{}/compare_test_results --test-root {} -n -t {} 2>&1".format(
+        cpr_cmd = "{}/compare_test_results --test-root {} -n -t {} ".format(
             self.TOOLS_DIR, self._testroot, test_id
         )
         output = self.run_cmd_assert_result(
