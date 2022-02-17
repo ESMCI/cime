@@ -541,7 +541,7 @@ class TestCimeCase(base.BaseTestCase):
         )
 
         result = self.run_cmd_assert_result(
-            "./xmlquery --value PROJECT --subgroup=case.test", from_dir=casedir
+            "./xmlquery --non-local --value PROJECT --subgroup=case.test", from_dir=casedir
         )
         self.assertEqual(result, "testproj")
 

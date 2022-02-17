@@ -926,7 +926,7 @@ class TestScheduler(object):
         envtest.write()
         lock_file("env_run.xml", caseroot=test_dir, newname="env_run.orig.xml")
 
-        with Case(test_dir, read_only=False) as case:
+        with Case(test_dir, read_only=False, non_local=self._non_local) as case:
             if self._output_root is None:
                 self._output_root = case.get_value("CIME_OUTPUT_ROOT")
             # if we are running a single test we don't need sharedlibroot
