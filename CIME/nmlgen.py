@@ -116,6 +116,7 @@ class NamelistGenerator(object):
         skip_groups=None,
         skip_entry_loop=False,
         skip_default_for_groups=None,
+        set_group_name=None,
     ):
         """Return array of names of all definition nodes
 
@@ -159,7 +160,10 @@ class NamelistGenerator(object):
 
         if not skip_entry_loop:
             for entry in self._default_nodes:
-                group_name = self._definition.get_group_name(entry)
+                if set_group_name:
+                    group_name = set_group_name
+                else:
+                    group_name = self._definition.get_group_name(entry)
                 if not group_name in skip_default_for_groups:
                     self.add_default(self._definition.get(entry, "id"))
 

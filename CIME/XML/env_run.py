@@ -26,20 +26,22 @@ class EnvRun(EnvBase):
 
         EnvBase.__init__(self, case_root, infile, schema=schema, read_only=read_only)
 
-    def get_value(self, vid, attribute=None, resolved=True, subgroup=None):
-        """
-        Get a value for entry with id attribute vid.
-        or from the values field if the attribute argument is provided
-        and matches.   Special case for pio variables when PIO_ASYNC_INTERFACE is True.
-        """
-        if self._pio_async_interface:
-            vid, comp, iscompvar = self.check_if_comp_var(vid, attribute)
-            if vid != "PIO_ASYNC_INTERFACE" and vid.startswith("PIO") and iscompvar:
-                if comp and comp != "CPL":
-                    logger.warning("Only CPL settings are used for PIO in async mode")
-                subgroup = "CPL"
-
-        return EnvBase.get_value(self, vid, attribute, resolved, subgroup)
+#    def get_value(self, vid, attribute=None, resolved=True, subgroup=None):
+#        """
+#        Get a value for entry with id attribute vid.
+#        or from the values field if the attribute argument is provided
+#        and matches.   Special case for pio variables when PIO_ASYNC_INTERFACE is True.
+#        """
+#        if any(self._pio_async_interface):
+#            vid, comp, iscompvar = self.check_if_comp_var(vid, attribute)
+#            if comp and iscompvar:
+#                
+#            if vid != "PIO_ASYNC_INTERFACE" and vid.startswith("PIO") and iscompvar:
+#                if comp and comp != "CPL":
+#                    logger.warning("Only CPL settings are used for PIO in async mode")
+#                subgroup = "CPL"
+#
+#        return EnvBase.get_value(self, vid, attribute, resolved, subgroup)
 
     def set_value(self, vid, value, subgroup=None, ignore_type=False):
         """
