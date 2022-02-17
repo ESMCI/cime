@@ -130,7 +130,7 @@ class TestBlessTestResults(base.BaseTestCase):
         # use regex
         expected_pattern = re.compile(r"PASS %s[^\s]* NLCOMP" % test_to_change)
         the_match = expected_pattern.search(output)
-        msg=f"Cmd {cpr_cmd} failed to display passed test in output:\n{output}"
+        msg = f"Cmd {cpr_cmd} failed to display passed test in output:\n{output}"
         self.assertNotEqual(
             the_match,
             None,

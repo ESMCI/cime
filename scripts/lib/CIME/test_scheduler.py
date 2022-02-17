@@ -342,7 +342,7 @@ class TestScheduler(object):
                         existing_baselines.append(test_baseline)
                         if allow_baseline_overwrite:
                             if self._namelists_only:
-                                clear_folder(os.path.join(test_baseline,"CaseDocs"))
+                                clear_folder(os.path.join(test_baseline, "CaseDocs"))
                             else:
                                 clear_folder(test_baseline)
                 expect(
