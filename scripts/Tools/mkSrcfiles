@@ -6,7 +6,8 @@
 # this script tries to open in the current directory.  The current
 # directory is prepended to the specified list of directories.  If Filepath
 # doesn't exist then only the source files in the current directory are
-# listed.
+# listed. If directories contain file .exclude then source files listed
+# in that file are omitted from the source list.
 # The list of source files is written to the file Srcfiles.
 
 # Check usage:
@@ -20,9 +21,26 @@ if ( open(FILEPATH,"< Filepath") ) {
 }
 chomp @paths;
 unshift(@paths, '.');
+
+my $excludeDir = '';
+my $foundExclude = 0;
 foreach $dir (@paths) {  # (could check that directories exist here)
+
+    # Set up .excludes if exists
+    if ( (-e "$dir/.exclude") && (open(EXCLUDE,"$dir/.exclude") ) ) {
+        push @excludes, <EXCLUDE>;
+        close( EXCLUDE );
+        $excludeDir = $dir;
+        $foundExclude = 1;
+        print "Found .exclude in: $excludeDir\n";
+    }
+
     $dir =~ s!/?\s*$!!;  # remove / and any whitespace at end of directory name
     ($dir) = glob $dir;  # Expand tildes in path names.
+}
+
+if ($foundExclude) {
+    print "List of files to be excluded:\n @excludes\n\n";
 }
 
 # Loop through the directories and add each filename as a hash key.  This
@@ -31,26 +49,45 @@ foreach $dir (@paths) {  # (could check that directories exist here)
 my $skip_prefix = $ENV{mkSrcfiles_skip_prefix};
 
 foreach $dir (@paths) {
+    my $useExclude = 0;
+    if ($foundExclude) {
+        if (index($dir, $excludeDir) != -1) {
+            $useExclude = 1;
+        }
+    }
     @filenames = (glob("$dir/*.[Ffc]"), glob("$dir/*.[Ff]90"), glob("$dir/*.cpp"));
     foreach $filename (@filenames) {
-	$filename =~ s!.*/!!;                   # remove part before last slash
-	if (defined $skip_prefix){
-	    if ($filename =~ /^${skip_prefix}/){
-		print "WARNING: Skipping file $dir/$filename Source files beginning in $skip_prefix are ignored\n";
-		next;
-	    }
-	}
-	$src{$filename} = 1;
+        $filename =~ s!.*/!!;                   # remove part before last slash
+        if (defined $skip_prefix){
+            if ($filename =~ /^${skip_prefix}/){
+            print "WARNING: Skipping file $dir/$filename Source files beginning in $skip_prefix are ignored\n";
+            next;
+            }
+        }
+        # If filename is in local .exclude file, do not add to list
+        if ($useExclude) {
+            my $matches = grep { /$filename/ } @excludes;
+            if ($matches) {
+                print "Exclusion matched file, $filename in $dir\n\n";
+            }else{
+                $src{$filename} = 1;
+            }
+        }else{
+            $src{$filename} = 1;
+        }
     }
+
+    # No exclusion func for templates
     @templates = glob("$dir/*.F90.in");
     foreach $filename (@templates) {
-	$filename =~ s!.*/!!;                   # remove part before last slash
-	my $dfile = $filename;
-	$dfile =~ s/\.in//;
-	delete $src{$dfile} if(defined $src{$dfile});
-	$src{$filename} = 1;
+        $filename =~ s!.*/!!;                   # remove part before last slash
+        my $dfile = $filename;
+        $dfile =~ s/\.in//;
+        delete $src{$dfile} if(defined $src{$dfile});
+        $src{$filename} = 1;
     }
 }
+@excludes = ();
 
 my @srcfiles;
 my $foundcnt=0;
