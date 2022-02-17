@@ -98,7 +98,7 @@ class Case(object):
         check_input_data,
     )
 
-    def __init__(self, case_root=None, read_only=True, record=False):
+    def __init__(self, case_root=None, read_only=True, record=False, non_local=False):
 
         if case_root is None:
             case_root = os.getcwd()
@@ -120,7 +120,7 @@ class Case(object):
         self._env_generic_files = []
         self._files = []
         self._comp_interface = None
-
+        self._non_local = non_local
         self.read_xml()
 
         srcroot = self.get_value("SRCROOT")
@@ -177,6 +177,15 @@ class Case(object):
 
         # check if case has been configured and if so initialize derived
         if self.get_value("CASEROOT") is not None:
+            if not self._non_local:
+                mach = self.get_value("MACH")
+                machobj = Machines()
+                probed_machine = machobj.probe_machine_name()
+                if probed_machine:
+                    expect(
+                        mach == probed_machine,
+                        f"Current machine {probed_machine} does not match case machine {mach}.",
+                    )
             self.initialize_derived_attributes()
 
     def check_if_comp_var(self, vid):

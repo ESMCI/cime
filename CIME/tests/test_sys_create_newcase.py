@@ -267,19 +267,19 @@ class TestCreateNewcase(base.BaseTestCase):
         self.assertTrue(os.path.isfile(os.path.join(casedir, xmlquery)))
 
         # Test command line options
-        with Case(casedir, read_only=True) as case:
+        with Case(casedir, read_only=True, non_local=True) as case:
             STOP_N = case.get_value("STOP_N")
             COMP_CLASSES = case.get_values("COMP_CLASSES")
             BUILD_COMPLETE = case.get_value("BUILD_COMPLETE")
-            cmd = xmlquery + " STOP_N --value"
+            cmd = xmlquery + " --non-local STOP_N --value"
             output = utils.run_cmd_no_fail(cmd, from_dir=casedir)
             self.assertTrue(output == str(STOP_N), msg="%s != %s" % (output, STOP_N))
-            cmd = xmlquery + " BUILD_COMPLETE --value"
+            cmd = xmlquery + " --non-local BUILD_COMPLETE --value"
             output = utils.run_cmd_no_fail(cmd, from_dir=casedir)
             self.assertTrue(output == "TRUE", msg="%s != %s" % (output, BUILD_COMPLETE))
             # we expect DOCN_MODE to be undefined in this X compset
             # this test assures that we do not try to resolve this as a compvar
-            cmd = xmlquery + " DOCN_MODE --value"
+            cmd = xmlquery + " --non-local DOCN_MODE --value"
             _, output, error = utils.run_cmd(cmd, from_dir=casedir)
             self.assertTrue(
                 error == "ERROR:  No results found for variable DOCN_MODE",
@@ -290,25 +290,25 @@ class TestCreateNewcase(base.BaseTestCase):
 
             for comp in COMP_CLASSES:
                 caseresult = case.get_value("NTASKS_%s" % comp)
-                cmd = xmlquery + " NTASKS_%s --value" % comp
+                cmd = xmlquery + " --non-local NTASKS_%s --value" % comp
                 output = utils.run_cmd_no_fail(cmd, from_dir=casedir)
                 self.assertTrue(
                     output == str(caseresult), msg="%s != %s" % (output, caseresult)
                 )
-                cmd = xmlquery + " NTASKS --subgroup %s --value" % comp
+                cmd = xmlquery + " --non-local NTASKS --subgroup %s --value" % comp
                 output = utils.run_cmd_no_fail(cmd, from_dir=casedir)
                 self.assertTrue(
                     output == str(caseresult), msg="%s != %s" % (output, caseresult)
                 )
             if self.MACHINE.has_batch_system():
                 JOB_QUEUE = case.get_value("JOB_QUEUE", subgroup="case.run")
-                cmd = xmlquery + " JOB_QUEUE --subgroup case.run --value"
+                cmd = xmlquery + " --non-local JOB_QUEUE --subgroup case.run --value"
                 output = utils.run_cmd_no_fail(cmd, from_dir=casedir)
                 self.assertTrue(
                     output == JOB_QUEUE, msg="%s != %s" % (output, JOB_QUEUE)
                 )
 
-            cmd = xmlquery + " --listall"
+            cmd = xmlquery + " --non-local --listall"
             utils.run_cmd_no_fail(cmd, from_dir=casedir)
 
         cls._do_teardown.append(cls._testroot)
@@ -714,11 +714,11 @@ set(NETCDF_PATH /my/netcdf/path)
         cls._do_teardown.append(testdir)
 
         # Run case.setup
-        self.run_cmd_assert_result("./case.setup", from_dir=testdir)
+        self.run_cmd_assert_result("./case.setup --non-local", from_dir=testdir)
 
         # Make sure Macros file contains expected text
 
-        with Case(testdir) as case:
+        with Case(testdir, non_local=True) as case:
             with CmakeTmpBuildDir(macroloc=testdir) as cmaketmp:
                 macros_contents = cmaketmp.get_makefile_vars(case=case)
 

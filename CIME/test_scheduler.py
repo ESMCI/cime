@@ -343,7 +343,10 @@ class TestScheduler(object):
                     if os.path.isdir(test_baseline):
                         existing_baselines.append(test_baseline)
                         if allow_baseline_overwrite:
-                            clear_folder(test_baseline)
+                            if self._namelists_only:
+                                clear_folder(os.path.join(test_baseline, "CaseDocs"))
+                            else:
+                                clear_folder(test_baseline)
                 expect(
                     allow_baseline_overwrite or len(existing_baselines) == 0,
                     "Baseline directories already exists {}\n"
@@ -931,7 +934,7 @@ class TestScheduler(object):
         envtest.write()
         lock_file("env_run.xml", caseroot=test_dir, newname="env_run.orig.xml")
 
-        with Case(test_dir, read_only=False) as case:
+        with Case(test_dir, read_only=False, non_local=self._non_local) as case:
             if self._output_root is None:
                 self._output_root = case.get_value("CIME_OUTPUT_ROOT")
             # if we are running a single test we don't need sharedlibroot

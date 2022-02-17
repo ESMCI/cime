@@ -49,7 +49,7 @@ def bless_namelists(
             create_test_gen_args += " -t {}".format(new_test_id)
 
         stat, out, _ = run_cmd(
-            "{}/create_test {} -n {} --baseline-root {} -o".format(
+            "{}/create_test {} --namelists-only {} --baseline-root {} -o".format(
                 get_scripts_root(), test_name, create_test_gen_args, baseline_root
             ),
             combine_output=True,

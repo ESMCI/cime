@@ -401,7 +401,7 @@ def _main_func(description=None):
         )
         del os.environ["FROM_CREATE_TEST"]
 
-    with Case(caseroot, read_only=False) as case:
+    with Case(caseroot, read_only=False, non_local=non_local) as case:
         # Configure the Case
         case.create(
             casename,
