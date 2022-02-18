@@ -255,7 +255,7 @@ class Machines(GenericXML):
         Get Value of fields in the config_machines.xml file
         """
         if self.machine_node is None:
-            logger.warning("Machine object has no machine defined")
+            logger.debug("Machine object has no machine defined")
             return None
 
         expect(subgroup is None, "This class does not support subgroups")
