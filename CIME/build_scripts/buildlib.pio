@@ -96,7 +96,7 @@ def buildlib(bldroot, installpath, case):
         os.makedirs(pio_dir)
     casetools = case.get_value("CASETOOLS")
     if pio_version == 1 or scorpio_src_root_dir:
-        cmake_opts = '"-D GENF90_PATH=$CIMEROOT/CIME/data/externals/genf90 "'
+        cmake_opts = '"-D GENF90_PATH=$CIMEROOT/CIME/non_py/externals/genf90 "'
     else:
         cmake_opts = '"-D GENF90_PATH=' + srcroot + '/libraries/parallelio/scripts/ "'
 

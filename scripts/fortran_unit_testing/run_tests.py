@@ -245,7 +245,7 @@ def cmake_stage(
             "-DCIMEROOT=" + _CIMEROOT,
             "-DSRC_ROOT=" + get_src_root(),
             "-DCIME_CMAKE_MODULE_DIRECTORY="
-            + os.path.abspath(os.path.join(_CIMEROOT, "CIME", "data", "src", "CMake")),
+            + os.path.abspath(os.path.join(_CIMEROOT, "CIME", "non_py", "src", "CMake")),
             "-DCMAKE_BUILD_TYPE=" + build_type,
             "-DPFUNIT_MPIRUN='" + mpirun_command + "'",
             "-DPFUNIT_PATH=" + pfunit_path,
@@ -257,7 +257,7 @@ def cmake_stage(
 
         if enable_genf90:
             cmake_command.append("-DENABLE_GENF90=ON")
-            genf90_dir = os.path.join(_CIMEROOT, "CIME", "data", "externals", "genf90")
+            genf90_dir = os.path.join(_CIMEROOT, "CIME", "non_py", "externals", "genf90")
             cmake_command.append("-DCMAKE_PROGRAM_PATH=" + genf90_dir)
 
         if not color:
