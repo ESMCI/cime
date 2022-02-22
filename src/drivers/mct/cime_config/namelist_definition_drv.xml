@@ -4246,7 +4246,7 @@
     <category>seq_flux_mct</category>
     <group>seq_flux_mct_inparm</group>
     <desc>
-       Surface albedo for direct radiation
+       Surface albedo for diffuse radiation
     </desc>
     <values>
       <value>0.06</value>
@@ -4259,7 +4259,7 @@
     <category>seq_flux_mct</category>
     <group>seq_flux_mct_inparm</group>
     <desc>
-       Surface albedo for diffuse radiation
+       Surface albedo for direct radiation
     </desc>
     <values>
       <value>0.07</value>

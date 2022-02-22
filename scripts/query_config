@@ -59,7 +59,7 @@ def query_compsets(files, name, xml=False):
     query compset definition give a compset name
     """
     # Determine valid component values by checking the value attributes for COMPSETS_SPEC_FILE
-    components = get_compsets()
+    _, components = get_compsets()
     match_found = None
     all_components = False
     if re.search("^all$", name):  # print all compsets
@@ -74,7 +74,6 @@ def query_compsets(files, name, xml=False):
     # If name is not a valid argument - exit with error
     expect(match_found is not None,
            "Invalid input argument {}, valid input arguments are {}".format(name, components))
-
     if all_components:  # print all compsets
         for component in components:
             # the all_components flag will only print available components
