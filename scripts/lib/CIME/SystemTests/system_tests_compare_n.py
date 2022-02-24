@@ -49,16 +49,18 @@ import shutil, os, glob
 
 logger = logging.getLogger(__name__)
 
-class SystemTestsCompareN(SystemTestsCommon):
 
-    def __init__(self,
-                 case,
-                 N = 2,
-                 separate_builds = False,
-                 run_suffixes = None,
-                 run_descriptions = None,
-                 multisubmit = False,
-                 ignore_fieldlist_diffs = False):
+class SystemTestsCompareN(SystemTestsCommon):
+    def __init__(
+        self,
+        case,
+        N=2,
+        separate_builds=False,
+        run_suffixes=None,
+        run_descriptions=None,
+        multisubmit=False,
+        ignore_fieldlist_diffs=False,
+    ):
         """
         Initialize a SystemTestsCompareN object. Individual test cases that
         inherit from SystemTestsCompareN MUST call this __init__ method.
@@ -87,30 +89,41 @@ class SystemTestsCompareN(SystemTestsCommon):
         self._separate_builds = separate_builds
         self._ignore_fieldlist_diffs = ignore_fieldlist_diffs
 
-        expect(N>1, "Number of cases must be greater than 1.")
-        self._cases = [None]*N
+        expect(N > 1, "Number of cases must be greater than 1.")
+        self._cases = [None] * N
         self.N = N
 
         if run_suffixes:
-            expect(isinstance(run_suffixes, list) and all([isinstance(sfx,str) for sfx in run_suffixes]),
-                "run_suffixes must be a list of strings")
-            expect(len(run_suffixes) == self.N,
-                "run_suffixes list must include {} strings".format(self.N))
-            expect(len(set(run_suffixes)) == len(run_suffixes),
-                "each suffix in run_suffixes must be unique")
+            expect(
+                isinstance(run_suffixes, list)
+                and all([isinstance(sfx, str) for sfx in run_suffixes]),
+                "run_suffixes must be a list of strings",
+            )
+            expect(
+                len(run_suffixes) == self.N,
+                "run_suffixes list must include {} strings".format(self.N),
+            )
+            expect(
+                len(set(run_suffixes)) == len(run_suffixes),
+                "each suffix in run_suffixes must be unique",
+            )
             self._run_suffixes = [sfx.rstrip() for sfx in run_suffixes]
         else:
-            self._run_suffixes = ['base'] + ['subsq_{}'.format(i) for i in range(1,N)]
-
+            self._run_suffixes = ["base"] + ["subsq_{}".format(i) for i in range(1, N)]
 
         if run_descriptions:
-            expect(isinstance(run_descriptions, list) and all([isinstance(dsc,str) for dsc in run_descriptions]),
-                "run_descriptions must be a list of strings")
-            expect(len(run_descriptions) == self.N,
-                   "run_descriptions list must include {} strings".format(self.N))
+            expect(
+                isinstance(run_descriptions, list)
+                and all([isinstance(dsc, str) for dsc in run_descriptions]),
+                "run_descriptions must be a list of strings",
+            )
+            expect(
+                len(run_descriptions) == self.N,
+                "run_descriptions list must include {} strings".format(self.N),
+            )
             self._run_descriptions = run_descriptions
         else:
-            self._run_descriptions = [''] * self.N
+            self._run_descriptions = [""] * self.N
 
         # Set the base case for referencing purposes
         self._cases[0] = self._case
@@ -118,7 +131,9 @@ class SystemTestsCompareN(SystemTestsCommon):
 
         self._setup_cases_if_not_yet_done()
 
-        self._multisubmit = multisubmit and self._cases[0].get_value("BATCH_SYSTEM") != "none"
+        self._multisubmit = (
+            multisubmit and self._cases[0].get_value("BATCH_SYSTEM") != "none"
+        )
 
     # ========================================================================
     # Methods that MUST be implemented by specific tests that inherit from this
@@ -167,11 +182,13 @@ class SystemTestsCompareN(SystemTestsCommon):
         # with a with statement in all the API entrances in CIME. subsequent cases were
         # created via clone, not a with statement, so it's not in a writeable state,
         # so we need to use a with statement here to put it in a writeable state.
-        for i in range(1,self.N):
+        for i in range(1, self.N):
             with self._cases[i]:
                 if self._separate_builds:
                     self._activate_case(0)
-                    self.build_indv(sharedlib_only=sharedlib_only, model_only=model_only)
+                    self.build_indv(
+                        sharedlib_only=sharedlib_only, model_only=model_only
+                    )
                     self._activate_case(i)
                     # Although we're doing separate builds, it still makes sense
                     # to share the sharedlibroot area with case1 so we can reuse
@@ -181,22 +198,30 @@ class SystemTestsCompareN(SystemTestsCommon):
                         # the MPAS build system
                         ## TODO: ^this logic mimics what's done in SystemTestsCompareTwo
                         # Confirm this is needed in SystemTestsCompareN as well.
-                        self._cases[i].set_value("SHAREDLIBROOT",
-                                              self._cases[0].get_value("SHAREDLIBROOT"))
+                        self._cases[i].set_value(
+                            "SHAREDLIBROOT", self._cases[0].get_value("SHAREDLIBROOT")
+                        )
 
-                    self.build_indv(sharedlib_only=sharedlib_only, model_only=model_only)
+                    self.build_indv(
+                        sharedlib_only=sharedlib_only, model_only=model_only
+                    )
                 else:
                     self._activate_case(0)
-                    self.build_indv(sharedlib_only=sharedlib_only, model_only=model_only)
+                    self.build_indv(
+                        sharedlib_only=sharedlib_only, model_only=model_only
+                    )
                     # pio_typename may be changed during the build if the default is not a
                     # valid value for this build, update case i to reflect this change
                     for comp in self._cases[i].get_values("COMP_CLASSES"):
                         comp_pio_typename = "{}_PIO_TYPENAME".format(comp)
-                        self._cases[i].set_value(comp_pio_typename, self._cases[0].get_value(comp_pio_typename))
+                        self._cases[i].set_value(
+                            comp_pio_typename,
+                            self._cases[0].get_value(comp_pio_typename),
+                        )
 
                     # The following is needed when _case_two_setup has a case_setup call
                     # despite sharing the build (e.g., to change NTHRDS)
-                    self._cases[i].set_value("BUILD_COMPLETE",True)
+                    self._cases[i].set_value("BUILD_COMPLETE", True)
 
     def run_phase(self, success_change=False):  # pylint: disable=arguments-differ
         """
@@ -213,34 +238,37 @@ class SystemTestsCompareN(SystemTestsCommon):
         # get reset if the test state is not correct for a rerun.
         # NOTE: "IS_FIRST_RUN" is reset in "case_submit.py"
         ### todo: confirm below code block
-        if (is_first_run and
-                self._multisubmit and
-                self._cases[0].get_value("RESUBMIT") == 0):
+        if (
+            is_first_run
+            and self._multisubmit
+            and self._cases[0].get_value("RESUBMIT") == 0
+        ):
             self._resetup_case(RUN_PHASE, reset=True)
 
-        base_phase = self._cases[0].get_value("RESUBMIT") == 1 # Only relevant for multi-submit tests
+        base_phase = (
+            self._cases[0].get_value("RESUBMIT") == 1
+        )  # Only relevant for multi-submit tests
         run_type = self._cases[0].get_value("RUN_TYPE")
 
-        logger.info("_multisubmit {} first phase {}".format(self._multisubmit, base_phase))
+        logger.info(
+            "_multisubmit {} first phase {}".format(self._multisubmit, base_phase)
+        )
 
         # First run
         if not self._multisubmit or base_phase:
-            logger.info('Doing first run: ' + self._run_descriptions[0])
+            logger.info("Doing first run: " + self._run_descriptions[0])
 
             # Add a PENDing compare phase so that we'll notice if the second part of compare two
             # doesn't run.
             compare_phase_name = "{}_{}_{}".format(
-                COMPARE_PHASE,
-                self._run_suffixes[1],
-                self._run_suffixes[0])
+                COMPARE_PHASE, self._run_suffixes[1], self._run_suffixes[0]
+            )
             with self._test_status:
-                self._test_status.set_status(
-                    compare_phase_name,
-                    TEST_PEND_STATUS)
+                self._test_status.set_status(compare_phase_name, TEST_PEND_STATUS)
 
             self._activate_case(0)
             self._case_custom_prerun_action(0)
-            self.run_indv(suffix = self._run_suffixes[0])
+            self.run_indv(suffix=self._run_suffixes[0])
             self._case_custom_postrun_action(0)
 
         # Subsequent runs
@@ -249,9 +277,9 @@ class SystemTestsCompareN(SystemTestsCommon):
             # with a with statement in all the API entrances in CIME. subsq cases were created
             # via clone, not a with statement, so it's not in a writeable state, so we need to
             # use a with statement here to put it in a writeable state.
-            for i in range(1,self.N):
+            for i in range(1, self.N):
                 with self._cases[i]:
-                    logger.info('Doing run {}: '.format(i) + self._run_descriptions[i])
+                    logger.info("Doing run {}: ".format(i) + self._run_descriptions[i])
                     self._activate_case(i)
                     # This assures that case i namelists are populated
                     self._skip_pnl = False
@@ -260,14 +288,17 @@ class SystemTestsCompareN(SystemTestsCommon):
                         self._cases[i].check_case()
 
                     self._case_custom_prerun_action(i)
-                    self.run_indv(suffix = self._run_suffixes[i])
+                    self.run_indv(suffix=self._run_suffixes[i])
                     self._case_custom_postrun_action(i)
                 # Compare results
                 self._activate_case(0)
                 self._link_to_subsq_case_output(i)
-                self._component_compare_test(self._run_suffixes[i], self._run_suffixes[0],
-                                                success_change=success_change,
-                                                ignore_fieldlist_diffs=self._ignore_fieldlist_diffs)
+                self._component_compare_test(
+                    self._run_suffixes[i],
+                    self._run_suffixes[0],
+                    success_change=success_change,
+                    ignore_fieldlist_diffs=self._ignore_fieldlist_diffs,
+                )
 
     # ========================================================================
     # Private methods
@@ -280,8 +311,10 @@ class SystemTestsCompareN(SystemTestsCommon):
         casename_base = self._cases[0].get_value("CASE")
         caseroot_base = self._get_caseroot()
 
-        return [caseroot_base]+\
-            [os.path.join(caseroot_base, "case{}".format(i), casename_base) for i in range(1,self.N)]
+        return [caseroot_base] + [
+            os.path.join(caseroot_base, "case{}".format(i), casename_base)
+            for i in range(1, self.N)
+        ]
 
     def _get_subsq_output_root(self, i):
         """
@@ -295,10 +328,13 @@ class SystemTestsCompareN(SystemTestsCommon):
         # cases. (Currently nothing is placed here, but this
         # helps prevent future problems.)
 
-        expect(i!=0, "ERROR: cannot call _get_subsq_output_root for the base class")
+        expect(i != 0, "ERROR: cannot call _get_subsq_output_root for the base class")
 
-        output_root_i = os.path.join(self._cases[0].get_value("CIME_OUTPUT_ROOT"),
-                                     self._cases[0].get_value("CASE"), "case{}_output_root".format(i))
+        output_root_i = os.path.join(
+            self._cases[0].get_value("CIME_OUTPUT_ROOT"),
+            self._cases[0].get_value("CASE"),
+            "case{}_output_root".format(i),
+        )
         return output_root_i
 
     def _get_subsq_case_exeroot(self, i):
@@ -308,7 +344,7 @@ class SystemTestsCompareN(SystemTestsCommon):
         Returns None if we should use the default value of exeroot.
         """
 
-        expect(i!=0, "ERROR: cannot call _get_subsq_case_exeroot for the base class")
+        expect(i != 0, "ERROR: cannot call _get_subsq_case_exeroot for the base class")
 
         if self._separate_builds:
             # subsequent case's EXEROOT needs to be somewhere that (1) is unique
@@ -328,7 +364,7 @@ class SystemTestsCompareN(SystemTestsCommon):
         Gets rundir for case i.
         """
 
-        expect(i!=0, "ERROR: cannot call _get_subsq_case_rundir for the base class")
+        expect(i != 0, "ERROR: cannot call _get_subsq_case_rundir for the base class")
 
         # subsequent case's RUNDIR needs to be somewhere that is unique to this
         # case (considering that all cases have the same case
@@ -363,22 +399,23 @@ class SystemTestsCompareN(SystemTestsCommon):
         # to user_nl files multiple times. This is why we want to make sure to just
         # do the test setup once.)
         if os.path.exists(self._caseroots[-1]):
-            for i in range(1,self.N):
+            for i in range(1, self.N):
                 caseroot_i = self._caseroots[i]
                 self._cases[i] = self._case_from_existing_caseroot(caseroot_i)
         else:
             # Create the subsequent cases by cloning the base case.
-            for i in range(1,self.N):
+            for i in range(1, self.N):
                 self._cases[i] = self._cases[0].create_clone(
                     self._caseroots[i],
-                    keepexe = not self._separate_builds,
-                    cime_output_root = self._get_subsq_output_root(i),
-                    exeroot = self._get_subsq_case_exeroot(i),
-                    rundir = self._get_subsq_case_rundir(i))
+                    keepexe=not self._separate_builds,
+                    cime_output_root=self._get_subsq_output_root(i),
+                    exeroot=self._get_subsq_case_exeroot(i),
+                    rundir=self._get_subsq_case_rundir(i),
+                )
                 self._write_info_to_subsq_case_output_root(i)
 
             # Set up all cases, including the base case.
-            for i in range(0,self.N):
+            for i in range(0, self.N):
                 caseroot_i = self._caseroots[i]
                 try:
                     self._setup_case(i)
@@ -394,10 +431,12 @@ class SystemTestsCompareN(SystemTestsCommon):
                     if os.path.isdir(caseroot_i):
                         shutil.rmtree(caseroot_i)
                     self._activate_case(0)
-                    logger.warning("WARNING: Test case setup failed. Case {} has been removed, "
-                                   "but the main case may be in an inconsistent state. "
-                                   "If you want to rerun this test, you should create "
-                                   "a new test rather than trying to rerun this one.".format(i))
+                    logger.warning(
+                        "WARNING: Test case setup failed. Case {} has been removed, "
+                        "but the main case may be in an inconsistent state. "
+                        "If you want to rerun this test, you should create "
+                        "a new test rather than trying to rerun this one.".format(i)
+                    )
                     raise
 
     def _case_from_existing_caseroot(self, caseroot):
@@ -436,10 +475,16 @@ class SystemTestsCompareN(SystemTestsCommon):
         try:
             with open(readme_path, "w") as fd:
                 fd.write("This directory is typically empty.\n\n")
-                fd.write("case's run dir is here: {}\n\n".format(
-                    self._cases[i].get_value("RUNDIR")))
-                fd.write("case's bld dir is here: {}\n".format(
-                    self._cases[i].get_value("EXEROOT")))
+                fd.write(
+                    "case's run dir is here: {}\n\n".format(
+                        self._cases[i].get_value("RUNDIR")
+                    )
+                )
+                fd.write(
+                    "case's bld dir is here: {}\n".format(
+                        self._cases[i].get_value("EXEROOT")
+                    )
+                )
         except IOError:
             # It's not a big deal if we can't write the README file
             # (e.g., because the directory doesn't exist or isn't
@@ -457,7 +502,7 @@ class SystemTestsCompareN(SystemTestsCommon):
         self._activate_case(i)
         self._common_setup()
         self._case_setup(i)
-        if i==0:
+        if i == 0:
             # Flush the case so that, if errors occur later, then at least base case is
             # in a correct, post-setup state. This is important because the mere
             # existence of a cases[-1] directory signals that setup is done. So if the
@@ -492,21 +537,22 @@ class SystemTestsCompareN(SystemTestsCommon):
         overwriting some existing file or link.
         """
 
-        expect(i!=0, "ERROR: cannot call _link_to_subsq_case_output for the base class")
+        expect(
+            i != 0, "ERROR: cannot call _link_to_subsq_case_output for the base class"
+        )
 
         base_casename = self._cases[0].get_value("CASE")
         subsq_casename = self._cases[i].get_value("CASE")
         base_rundir = self._cases[0].get_value("RUNDIR")
         subsq_rundir = self._cases[i].get_value("RUNDIR")
 
-        pattern = '{}*.nc.{}'.format(subsq_casename, self._run_suffixes[i])
+        pattern = "{}*.nc.{}".format(subsq_casename, self._run_suffixes[i])
         subsq_case_files = glob.glob(os.path.join(subsq_rundir, pattern))
         for one_file in subsq_case_files:
             file_basename = os.path.basename(one_file)
             modified_basename = file_basename.replace(subsq_casename, base_casename, 1)
             one_link = os.path.join(base_rundir, modified_basename)
-            if (os.path.islink(one_link) and
-                os.readlink(one_link) == one_file):
+            if os.path.islink(one_link) and os.readlink(one_link) == one_file:
                 # Link is already set up correctly: do nothing
                 # (os.symlink raises an exception if you try to replace an
                 # existing file)
