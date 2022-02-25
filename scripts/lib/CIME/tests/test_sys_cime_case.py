@@ -316,19 +316,19 @@ class TestCimeCase(base.BaseTestCase):
 
         test_name = "ERS.f19_g16_rx1.A"
         casedir = self._create_test(
-            ["--no-setup", "--machine=blues", test_name],
+            ["--no-setup", "--machine=blues", "--non-local", test_name],
             test_id=self._baseline_name,
             env_changes="unset CIME_GLOBAL_WALLTIME &&",
         )
 
         result = self.run_cmd_assert_result(
-            "./xmlquery JOB_WALLCLOCK_TIME --subgroup=case.test --value",
+            "./xmlquery JOB_WALLCLOCK_TIME -N --subgroup=case.test --value",
             from_dir=casedir,
         )
         self.assertEqual(result, "00:10:00")
 
         result = self.run_cmd_assert_result(
-            "./xmlquery JOB_QUEUE --subgroup=case.test --value", from_dir=casedir
+            "./xmlquery JOB_QUEUE -N --subgroup=case.test --value", from_dir=casedir
         )
         self.assertEqual(result, "biggpu")
 
@@ -338,19 +338,19 @@ class TestCimeCase(base.BaseTestCase):
 
         test_name = "ERS_P64.f19_g16_rx1.A"
         casedir = self._create_test(
-            ["--no-setup", "--machine=blues", test_name],
+            ["--no-setup", "--machine=blues", "--non-local", test_name],
             test_id=self._baseline_name,
             env_changes="unset CIME_GLOBAL_WALLTIME &&",
         )
 
         result = self.run_cmd_assert_result(
-            "./xmlquery JOB_WALLCLOCK_TIME --subgroup=case.test --value",
+            "./xmlquery JOB_WALLCLOCK_TIME -N --subgroup=case.test --value",
             from_dir=casedir,
         )
         self.assertEqual(result, "01:00:00")
 
         result = self.run_cmd_assert_result(
-            "./xmlquery JOB_QUEUE --subgroup=case.test --value", from_dir=casedir
+            "./xmlquery JOB_QUEUE -N --subgroup=case.test --value", from_dir=casedir
         )
         self.assertEqual(result, "biggpu")
 
@@ -360,19 +360,19 @@ class TestCimeCase(base.BaseTestCase):
 
         test_name = "ERS_P64.f19_g16_rx1.A"
         casedir = self._create_test(
-            ["--no-setup", "--machine=blues", "--walltime=0:10:00", test_name],
+            ["--no-setup", "--machine=blues", "--non-local", "--walltime=0:10:00", test_name],
             test_id=self._baseline_name,
             env_changes="unset CIME_GLOBAL_WALLTIME &&",
         )
 
         result = self.run_cmd_assert_result(
-            "./xmlquery JOB_WALLCLOCK_TIME --subgroup=case.test --value",
+            "./xmlquery JOB_WALLCLOCK_TIME -N --subgroup=case.test --value",
             from_dir=casedir,
         )
         self.assertEqual(result, "00:10:00")
 
         result = self.run_cmd_assert_result(
-            "./xmlquery JOB_QUEUE --subgroup=case.test --value", from_dir=casedir
+            "./xmlquery JOB_QUEUE -N --subgroup=case.test --value", from_dir=casedir
         )
         self.assertEqual(result, "biggpu")  # Not smart enough to select faster queue
 
@@ -382,19 +382,19 @@ class TestCimeCase(base.BaseTestCase):
 
         test_name = "ERS_P1.f19_g16_rx1.A"
         casedir = self._create_test(
-            ["--no-setup", "--machine=blues", "--walltime=2:00:00", test_name],
+            ["--no-setup", "--machine=blues", "--non-local", "--walltime=2:00:00", test_name],
             test_id=self._baseline_name,
             env_changes="unset CIME_GLOBAL_WALLTIME &&",
         )
 
         result = self.run_cmd_assert_result(
-            "./xmlquery JOB_WALLCLOCK_TIME --subgroup=case.test --value",
+            "./xmlquery JOB_WALLCLOCK_TIME -N --subgroup=case.test --value",
             from_dir=casedir,
         )
         self.assertEqual(result, "01:00:00")
 
         result = self.run_cmd_assert_result(
-            "./xmlquery JOB_QUEUE --subgroup=case.test --value", from_dir=casedir
+            "./xmlquery JOB_QUEUE -N --subgroup=case.test --value", from_dir=casedir
         )
         self.assertEqual(result, "biggpu")
 
@@ -404,30 +404,30 @@ class TestCimeCase(base.BaseTestCase):
 
         test_name = "ERS_P1.f19_g16_rx1.A"
         casedir = self._create_test(
-            ["--no-setup", "--machine=blues", test_name],
+            ["--no-setup", "--machine=blues", "--non-local", test_name],
             test_id=self._baseline_name,
             env_changes="unset CIME_GLOBAL_WALLTIME &&",
         )
 
         self.run_cmd_assert_result(
-            "./xmlchange JOB_QUEUE=slartibartfast --subgroup=case.test",
+            "./xmlchange JOB_QUEUE=slartibartfast -N --subgroup=case.test",
             from_dir=casedir,
             expected_stat=1,
         )
 
         self.run_cmd_assert_result(
-            "./xmlchange JOB_QUEUE=slartibartfast --force --subgroup=case.test",
+            "./xmlchange JOB_QUEUE=slartibartfast -N --force --subgroup=case.test",
             from_dir=casedir,
         )
 
         result = self.run_cmd_assert_result(
-            "./xmlquery JOB_WALLCLOCK_TIME --subgroup=case.test --value",
+            "./xmlquery JOB_WALLCLOCK_TIME -N --subgroup=case.test --value",
             from_dir=casedir,
         )
         self.assertEqual(result, "01:00:00")
 
         result = self.run_cmd_assert_result(
-            "./xmlquery JOB_QUEUE --subgroup=case.test --value", from_dir=casedir
+            "./xmlquery JOB_QUEUE -N --subgroup=case.test --value", from_dir=casedir
         )
         self.assertEqual(result, "slartibartfast")
 
@@ -498,6 +498,7 @@ class TestCimeCase(base.BaseTestCase):
         casedir = self._create_test(
             [
                 "--no-setup",
+                "--non-local",
                 "--machine={}".format(machine),
                 "--compiler={}".format(compiler),
                 "--project e3sm",
@@ -508,13 +509,13 @@ class TestCimeCase(base.BaseTestCase):
         )
 
         result = self.run_cmd_assert_result(
-            "./xmlquery JOB_WALLCLOCK_TIME --subgroup=case.test --value",
+            "./xmlquery JOB_WALLCLOCK_TIME -N --subgroup=case.test --value",
             from_dir=casedir,
         )
         self.assertEqual(result, "09:00:00")
 
         result = self.run_cmd_assert_result(
-            "./xmlquery JOB_QUEUE --subgroup=case.test --value", from_dir=casedir
+            "./xmlquery JOB_QUEUE -N --subgroup=case.test --value", from_dir=casedir
         )
         self.assertEqual(result, "default")
 
