@@ -27,10 +27,10 @@ class WGET(GenericServer):
         try:
             err = run_cmd("wget {} --spider {}".format(args, address), timeout=60)[0]
         except:
-            logger.warning("Could not connect to repo '{0}'\nThis is most likely either a proxy, or network issue .".format(address))
+            logger.warning("1Could not connect to repo '{0}'\nThis is most likely either a proxy, or network issue .".format(address))
             return None
-        if err:
-            logger.warning("Could not connect to repo '{0}'\nThis is most likely either a proxy, or network issue .".format(address))
+#        if err:
+#            logger.warning("2Could not connect to repo '{0}'\nThis is most likely either a proxy, or network issue .".format(address))
             return None
 
 
@@ -58,7 +58,7 @@ class WGET(GenericServer):
                 pass
             return False
         else:
-            logging.info("SUCCESS\n")
+            logging.warning("SUCCESS\n")
             return True
 
     def getdirectory(self, rel_path, full_path):

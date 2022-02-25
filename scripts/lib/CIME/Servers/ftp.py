@@ -27,8 +27,12 @@ class FTP(GenericServer):
         if "Login successful" not in stat:
             logging.warning("FAIL: Could not login to ftp server {}\n error {}".format(address, stat))
             return None
+        try:    
+            stat = self.ftp.cwd(root_address)
+        except all_ftp_errors as err:
+            logging.warning("ftplib returned error {}".format(err))
+            return None
 
-        stat = self.ftp.cwd(root_address)
         logger.debug("cwd {} stat {}".format(root_address,stat))
         if "Directory successfully changed" not in stat:
             logging.warning("FAIL: Could not cd to server root directory {}\n error {}".format(root_address, stat))
