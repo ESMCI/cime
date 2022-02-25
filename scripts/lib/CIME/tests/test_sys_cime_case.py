@@ -360,7 +360,13 @@ class TestCimeCase(base.BaseTestCase):
 
         test_name = "ERS_P64.f19_g16_rx1.A"
         casedir = self._create_test(
-            ["--no-setup", "--machine=blues", "--non-local", "--walltime=0:10:00", test_name],
+            [
+                "--no-setup",
+                "--machine=blues",
+                "--non-local",
+                "--walltime=0:10:00",
+                test_name,
+            ],
             test_id=self._baseline_name,
             env_changes="unset CIME_GLOBAL_WALLTIME &&",
         )
@@ -382,7 +388,13 @@ class TestCimeCase(base.BaseTestCase):
 
         test_name = "ERS_P1.f19_g16_rx1.A"
         casedir = self._create_test(
-            ["--no-setup", "--machine=blues", "--non-local", "--walltime=2:00:00", test_name],
+            [
+                "--no-setup",
+                "--machine=blues",
+                "--non-local",
+                "--walltime=2:00:00",
+                test_name,
+            ],
             test_id=self._baseline_name,
             env_changes="unset CIME_GLOBAL_WALLTIME &&",
         )
