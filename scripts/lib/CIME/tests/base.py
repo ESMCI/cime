@@ -108,11 +108,11 @@ class BaseTestCase(unittest.TestCase):
         )
 
     def run_cmd_assert_result(
-        self, cmd, from_dir=None, expected_stat=0, env=None, verbose=False
+        self, cmd, from_dir=None, expected_stat=0, env=None, verbose=False, shell=True
     ):
         from_dir = os.getcwd() if from_dir is None else from_dir
         stat, output, errput = utils.run_cmd(
-            cmd, from_dir=from_dir, env=env, verbose=verbose
+            cmd, from_dir=from_dir, env=env, verbose=verbose, shell=shell
         )
         if expected_stat == 0:
             expectation = "SHOULD HAVE WORKED, INSTEAD GOT STAT %s" % stat

@@ -2,6 +2,7 @@
 Common functions used by cime python scripts
 Warning: you cannot use CIME Classes in this module as it causes circular dependencies
 """
+import shlex
 import io, logging, gzip, sys, os, time, re, shutil, glob, string, random, importlib, fnmatch
 import importlib.util
 import errno, signal, warnings, filecmp
@@ -648,6 +649,7 @@ def run_cmd(
     combine_output=False,
     timeout=None,
     executable=None,
+    shell=True,
 ):
     """
     Wrapper around subprocess to make it much more convenient to run shell commands
@@ -680,11 +682,14 @@ def run_cmd(
     else:
         stdin = None
 
+    if not shell:
+        cmd = shlex.split(cmd)
+
     if timeout:
         with Timeout(timeout):
             proc = subprocess.Popen(
                 cmd,
-                shell=True,
+                shell=shell,
                 stdout=arg_stdout,
                 stderr=arg_stderr,
                 stdin=stdin,
@@ -697,7 +702,7 @@ def run_cmd(
     else:
         proc = subprocess.Popen(
             cmd,
-            shell=True,
+            shell=shell,
             stdout=arg_stdout,
             stderr=arg_stderr,
             stdin=stdin,
