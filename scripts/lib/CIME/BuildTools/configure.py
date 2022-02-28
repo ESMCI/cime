@@ -23,6 +23,7 @@ from CIME.XML.files import Files
 from CIME.build import CmakeTmpBuildDir
 
 import shutil, glob
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
@@ -87,6 +88,12 @@ def configure(
                 )
                 for extra_cmake_macro in extra_cmake_macros:
                     safe_copy(extra_cmake_macro, new_cmake_macros_dir)
+
+            user_cmake_macros = glob.glob(
+                "{}/.cime/*.cmake".format(Path.home())
+            )
+            for user_cmake_macro in user_cmake_macros:
+                safe_copy(user_cmake_macro, new_cmake_macros_dir)
 
             if form == "Makefile":
                 # Use the cmake macros to generate the make macros
