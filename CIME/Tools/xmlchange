@@ -151,6 +151,14 @@ def parse_command_line(args, description):
         help="Ignore typing checks and store value.",
     )
 
+    parser.add_argument(
+        "-N",
+        "--non-local",
+        action="store_true",
+        help="Use when you've requested a machine that you aren't on. "
+        "Will reduce errors for missing directories etc.",
+    )
+
     parser.add_argument("-loglevel", help="Ignored, only for backwards compatibility.")
 
     args = CIME.utils.parse_args_and_handle_standard_logging_options(args, parser)
@@ -178,6 +186,7 @@ def parse_command_line(args, description):
         args.noecho,
         args.force,
         args.dryrun,
+        args.non_local,
     )
 
 
@@ -264,9 +273,10 @@ def xmlchange(
     noecho,
     force,
     dryrun,
+    non_local,
 ):
 
-    with Case(caseroot, read_only=False, record=True) as case:
+    with Case(caseroot, read_only=False, record=True, non_local=non_local) as case:
         comp_classes = case.get_values("COMP_CLASSES")
         env_test = None
         if (
@@ -323,6 +333,7 @@ def _main_func(description):
         noecho,
         force,
         dry,
+        non_local,
     ) = parse_command_line(sys.argv, description)
 
     xmlchange(
@@ -336,6 +347,7 @@ def _main_func(description):
         noecho,
         force,
         dry,
+        non_local,
     )
 
 
