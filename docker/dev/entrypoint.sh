@@ -134,8 +134,6 @@ function init_cime() {
     # required to using checkout_externals script
     clone_repo "${CESM_REPO}" "/src/CESM" "${CESM_BRANCH:-master}"
 
-    mamba install -c conda-forge -y pytest pytest-cov
-
     fixup_mct "${path}/libraries/mct"
 
     update_cime "${path}"

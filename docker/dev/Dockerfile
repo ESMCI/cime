@@ -21,6 +21,9 @@ RUN mamba install --yes -c conda-forge \
             gxx_linux-64 \
             gfortran_linux-64 \
             openmpi-mpifort \
+            pytest \
+            pytest-cov\
+            vim \
             openssh && \
             rm -rf /opt/conda/pkgs/* && \
             ln -sf /opt/conda/bin/x86_64-conda-linux-gnu-ar /opt/conda/bin/ar && \
