@@ -101,11 +101,11 @@ function init_cesm() {
     if [[ ! -e "${path}" ]]
     then
         clone_repo "${CESM_REPO}" "${path}" "${CESM_BRANCH:-master}"
-
-        cd "${path}"
-
-        "${path}/manage_externals/checkout_externals"
     fi
+
+    cd "${path}"
+
+    "${path}/manage_externals/checkout_externals"
 
     fixup_mct "${path}/libraries/mct"
 
@@ -125,14 +125,14 @@ function init_cime() {
     if [[ ! -e "${path}" ]]
     then
         clone_repo "${CIME_REPO}" "${path}" "${CIME_BRANCH:-master}"
-
-        cd "${path}"
-
-        "/src/CESM/manage_externals/checkout_externals"
     fi
 
     # required to using checkout_externals script
     clone_repo "${CESM_REPO}" "/src/CESM" "${CESM_BRANCH:-master}"
+
+    cd "${path}"
+
+    "/src/CESM/manage_externals/checkout_externals"
 
     fixup_mct "${path}/libraries/mct"
 
@@ -147,6 +147,13 @@ then
     init_cesm
 else
     init_cime
+fi
+
+if [[ -e "/entrypoint_batch.sh" ]]
+then
+    echo "Sourcing batch entrypoint"
+
+    . "/entrypoint_batch.sh"
 fi
 
 exec "${@}"

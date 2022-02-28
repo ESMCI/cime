@@ -5,12 +5,26 @@ The default base image is `condaforge/mambaforge:4.11.0-0`.
 
 The only supported compiler is `gnu` provided by `conda-forge`.
 
+## Targets
+
+There are three possible build targets in the Dockerfile. The `slurm` and `pbs` targets are built on top of the `base`.
+
+| Target | Description
+| ------ | -----------
+| base | Base image with no batch system.
+| slurm | Slurm batch system with configuration and single queue.
+| pbs | PBS batch system with configuration and single queue.
+
 ## Build the container
 ```bash
-docker build -t {image}:{tag} docker/dev/
+docker build -t {image}:{tag} --target {target} docker/dev/
 
 # e.g.
-docker build -t cime:latest docker/dev/
+# Building the base image
+docker build -t cime:latest --target base docker/dev/
+
+# Building the slurm image
+docker build -t cime:latest --target slurm docker/dev
 ```
 
 ### Build with custom base tag

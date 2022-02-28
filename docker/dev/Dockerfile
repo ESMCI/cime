@@ -61,12 +61,11 @@ RUN apt-get update && \
             munge slurmd slurm-client slurmctld && \
             rm -rf /var/lib/apt/lists/*
 
+RUN sed -i"" "s/\(.*<BATCH_SYSTEM>\)[^<]*\(<\/BATCH_SYSTEM>\)/\1slurm\2/g" ~/.cime/config_machines.xml
+
 COPY slurm/slurm.conf /etc/slurm-llnl/
 COPY slurm/config_batch.xml /root/.cime/
-COPY slurm/config_machines.xml /root/.cime/
-COPY slurm/entrypoint.sh /entrypoint.sh
-
-ENTRYPOINT [ "/entrypoint.sh" ]
+COPY slurm/entrypoint_batch.sh /entrypoint_batch.sh
 
 FROM base as pbs
 
@@ -101,9 +100,8 @@ RUN curl -LO https://github.com/openpbs/openpbs/archive/refs/tags/v20.0.1.tar.gz
             make -j8 && \
             make install
 
+RUN sed -i"" "s/\(.*<BATCH_SYSTEM>\)[^<]*\(<\/BATCH_SYSTEM>\)/\1pbs\2/g" ~/.cime/config_machines.xml
+
 COPY pbs/pbs.conf /etc/
 COPY pbs/config_batch.xml /root/.cime/
-COPY pbs/config_machines.xml /root/.cime/
-COPY pbs/entrypoint.sh /entrypoint.sh
-
-ENTRYPOINT [ "/entrypoint.sh" ]
+COPY pbs/entrypoint_batch.sh /entrypoint_batch.sh
