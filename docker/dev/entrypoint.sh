@@ -19,7 +19,7 @@ function clone_repo() {
 
 #######################################
 # Fixes mct/mpeu to use ARFLAGS environment variable
-# 
+#
 # TODO need to make an offical PR this is temporary.
 #######################################
 function fixup_mct {
@@ -63,6 +63,7 @@ function update_cime() {
 #######################################
 function init_e3sm() {
     export CIME_MODEL="e3sm"
+    export LOGNAME="test.log"
 
     local path="/src/E3SM"
 
@@ -83,6 +84,10 @@ function init_e3sm() {
     fixup_mct "${path}/externals/mct"
 
     update_cime "${path}/cime/"
+
+    curl -L --create-dirs -o /storage/inputdata/cpl/gridmaps/oQU240/map_oQU240_to_ne4np4_aave.160614.nc https://web.lcrc.anl.gov/public/e3sm/inputdata/cpl/gridmaps/oQU240/map_oQU240_to_ne4np4_aave.160614.nc
+    curl -L --create-dirs -o /storage/inputdata/share/domains/domain.ocn.ne4np4_oQU240.160614.nc https://web.lcrc.anl.gov/public/e3sm/inputdata/share/domains/domain.ocn.ne4np4_oQU240.160614.nc
+    curl -L --create-dirs -o /storage/inputdata/share/domains/domain.lnd.ne4np4_oQU240.160614.nc https://web.lcrc.anl.gov/public/e3sm/inputdata/share/domains/domain.lnd.ne4np4_oQU240.160614.nc
 }
 
 #######################################
@@ -129,9 +134,11 @@ function init_cime() {
     # required to using checkout_externals script
     clone_repo "${CESM_REPO}" "/src/CESM" "${CESM_BRANCH:-master}"
 
-    mamba install -c conda-forge -y pytest pytest-cov 
+    mamba install -c conda-forge -y pytest pytest-cov
 
     fixup_mct "${path}/libraries/mct"
+
+    update_cime "${path}"
 }
 
 if [[ "${CIME_MODEL}" == "e3sm" ]]
