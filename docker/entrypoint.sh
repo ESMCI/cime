@@ -1,6 +1,10 @@
 #!/bin/bash
 
+set -x
+
+readonly INIT=${INIT:-"true"}
 readonly UPDATE_CIME=${UPDATE_CIME:-"false"}
+readonly GIT_SHALLOW=${GIT_SHALLOW:-"false"}
 
 declare -xr CIME_REPO=${CIME_REPO:-https://github.com/ESMCI/cime}
 declare -xr E3SM_REPO=${E3SM_REPO:-https://github.com/E3SM-Project/E3SM}
@@ -13,8 +17,14 @@ function clone_repo() {
     local repo="${1}"
     local path="${2}"
     local branch="${3}"
+    local extras=""
 
-    git clone -b "${branch}" "${repo}" "${path}" || true
+    if [[ "${GIT_SHALLOW}" == "true" ]]
+    then
+        extras=" --depth 1"
+    fi
+
+    git clone -b "${branch}" ${extras} "${repo}" "${path}" || true
 }
 
 #######################################
@@ -50,6 +60,11 @@ function update_cime() {
 
         git remote set-url origin "${CIME_REPO}"
 
+        if [[ "${GIT_SHALLOW}" == "true" ]]
+        then
+            git remote set-branches origin "*"
+        fi
+
         git fetch origin
 
         git checkout "${CIME_BRANCH:-master}"
@@ -65,7 +80,9 @@ function init_e3sm() {
     export CIME_MODEL="e3sm"
     export LOGNAME="test.log"
 
-    local path="/src/E3SM"
+    local extras=""
+    local path="${INSTALL_PATH:-/src/E3SM}"
+    local cache_path="${CACHE_PATH:-/storage/inputdata}"
 
     if [[ ! -e "${path}" ]]
     then
@@ -78,16 +95,27 @@ function init_e3sm() {
             sed -i".bak" "s/git@github.com:/https:\/\/github.com\//g" "${PWD}/.gitmodules"
         fi
 
-        git submodule update --init
+        if [[ "${GIT_SHALLOW}" == "true" ]]
+        then
+            extras=" --depth 1"
+        fi
+
+        git submodule update --init ${extras}
     fi
 
     fixup_mct "${path}/externals/mct"
 
     update_cime "${path}/cime/"
 
-    curl -L --create-dirs -o /storage/inputdata/cpl/gridmaps/oQU240/map_oQU240_to_ne4np4_aave.160614.nc https://web.lcrc.anl.gov/public/e3sm/inputdata/cpl/gridmaps/oQU240/map_oQU240_to_ne4np4_aave.160614.nc
-    curl -L --create-dirs -o /storage/inputdata/share/domains/domain.ocn.ne4np4_oQU240.160614.nc https://web.lcrc.anl.gov/public/e3sm/inputdata/share/domains/domain.ocn.ne4np4_oQU240.160614.nc
-    curl -L --create-dirs -o /storage/inputdata/share/domains/domain.lnd.ne4np4_oQU240.160614.nc https://web.lcrc.anl.gov/public/e3sm/inputdata/share/domains/domain.lnd.ne4np4_oQU240.160614.nc
+    curl -L --create-dirs \
+        -o ${cache_path}/cpl/gridmaps/oQU240/map_oQU240_to_ne4np4_aave.160614.nc \
+        https://web.lcrc.anl.gov/public/e3sm/inputdata/cpl/gridmaps/oQU240/map_oQU240_to_ne4np4_aave.160614.nc
+    curl -L --create-dirs \
+        -o ${cache_path}/share/domains/domain.ocn.ne4np4_oQU240.160614.nc \
+        https://web.lcrc.anl.gov/public/e3sm/inputdata/share/domains/domain.ocn.ne4np4_oQU240.160614.nc
+    curl -L --create-dirs \
+        -o ${cache_path}/share/domains/domain.lnd.ne4np4_oQU240.160614.nc \
+        https://web.lcrc.anl.gov/public/e3sm/inputdata/share/domains/domain.lnd.ne4np4_oQU240.160614.nc
 }
 
 #######################################
@@ -96,7 +124,7 @@ function init_e3sm() {
 function init_cesm() {
     export CIME_MODEL="cesm"
 
-    local path="/src/CESM"
+    local path="${INSTALL_PATH:-/src/CESM}"
 
     if [[ ! -e "${path}" ]]
     then
@@ -120,7 +148,7 @@ function init_cime() {
     export CIME_MODEL="cesm"
     export ESMFMKFILE="/opt/conda/lib/esmf.mk"
 
-    local path="/src/cime"
+    local path="${INSTALL_PATH:-/src/cime}"
 
     if [[ ! -e "${path}" ]]
     then
@@ -139,16 +167,6 @@ function init_cime() {
     update_cime "${path}"
 }
 
-if [[ "${CIME_MODEL}" == "e3sm" ]]
-then
-    init_e3sm
-elif [[ "${CIME_MODEL}" == "cesm" ]]
-then
-    init_cesm
-else
-    init_cime
-fi
-
 if [[ -e "/entrypoint_batch.sh" ]]
 then
     echo "Sourcing batch entrypoint"
@@ -156,4 +174,17 @@ then
     . "/entrypoint_batch.sh"
 fi
 
-exec "${@}"
+if [[ "${INIT}" == "true" ]]
+then
+    if [[ "${CIME_MODEL}" == "e3sm" ]]
+    then
+        init_e3sm
+    elif [[ "${CIME_MODEL}" == "cesm" ]]
+    then
+        init_cesm
+    else
+        init_cime
+    fi
+
+    exec "${@}"
+fi
