@@ -58,6 +58,8 @@ Environment variables to modify the container environment.
 
 | Name | Description | Default |
 | ---- | ----------- | ------- |
+| INIT | Set to false to skip init | true |
+| GIT_SHALLOW | Performs shallow checkouts, to save time | false |
 | UPDATE_CIME | Setting this will cause the CIME repository to be updated using `CIME_REPO` and `CIME_BRANCH` | "false" |
 | CIME_MODEL | Setting this will change which environment is loaded | |
 | CIME_REPO | CIME repository URL | https://github.com/ESMCI/cime |
