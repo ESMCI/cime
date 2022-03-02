@@ -23,7 +23,7 @@
       <directive> --nodes={{ num_nodes }}</directive>
       <directive> --output={{ job_id }}.%j </directive>
       <directive> --exclusive </directive>
-    </directives> 
+    </directives>
     <queues>
       <queue walltimemax="01:00:00" nodemax="1" default="true" strict="true">debug</queue>
       <queue walltimemax="500:00:00" nodemax="1">debug</queue>
