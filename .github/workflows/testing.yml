@@ -1,0 +1,146 @@
+name: cime testing
+
+on:
+  push:
+    branches:
+      - master
+
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  check_dockerfile_changed:
+    runs-on: ubuntu-latest
+    outputs:
+      changed: ${{ steps.set-output.outputs.changed }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Verify changed files
+        uses: tj-actions/verify-changed-files@v8.8
+        id: verify-changed-files
+        with:
+          files: |
+            docker/*
+      - name: Files changed
+        id: set-output
+        run: echo "::set-output name=changed::${{ steps.verify-changed-files.outputs.files_changed }}"
+
+  build_containers:
+    runs-on: ubuntu-latest
+    needs: check_dockerfile_changed
+    if: ${{ needs.check_dockerfile_changed.outputs.changed }} == true
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Build container
+        run: |
+          echo "Build container"
+
+          docker build -t cime:latest --target base docker/
+      - name: Push container
+        # only push image on a push event to master
+        if: github.event_name == 'push'
+        run: |
+          echo "Push container"
+
+          echo "${{ secrets.DOCKER_HUB_PWD }}" | docker login -u ${{ secrets.DOCKER_HUB_USER }} --password-stdin
+
+          docker tag cime:latest ${{ secrets.DOCKER_HUB_REPO }}/cime:${GITHUB_SHA::7}
+          docker tag cime:latest ${{ secrets.DOCKER_HUB_REPO }}/cime:latest
+
+          docker push ${{ secrets.DOCKER_HUB_REPO }}/cime:${GITHUB_SHA::7}
+          docker push ${{ secrets.DOCKER_HUB_REPO }}/cime:latest
+
+  unit_testing:
+    runs-on: ubuntu-latest
+    needs: build_containers
+    container: cime:latest
+    strategy:
+      matrix:
+        python-version: [3.7, 3.8, 3.9]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Run tests
+        shell: bash
+        env:
+          INIT: "false"
+          CIME_MODEL: "cesm"
+          CIME_DRIVER: "mct"
+        run: |
+          export INSTALL_PATH="$(pwd)"
+
+          mamba install -y python=${{ matrix.python-version }}
+
+          source /entrypoint.sh
+
+          init_cime
+
+          pytest -vvv --machine docker --no-fortran-run scripts/lib/CIME/tests/test_unit*
+
+  e3sm_system_testing:
+    runs-on: ubuntu-latest
+    needs: build_containers
+    container: cime:latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Run tests
+        shell: bash
+        env:
+          INIT: "false"
+          CIME_MODEL: "e3sm"
+          CIME_DRIVER: "mct"
+          UPDATE_CIME: "true"
+          GIT_SHALLOW: "true"
+        run: |
+          export INSTALL_PATH="$(pwd)/E3SM"
+          export CIME_REPO=${GITHUB_REPOSITORY}
+          export CIME_BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF##*/}}
+
+          source /entrypoint.sh
+
+          init_e3sm
+
+          source /opt/conda/etc/profile.d/conda.sh
+
+          conda activate base
+
+          pushd "${PWD}/cime"
+
+          pytest -vvv --machine docker --no-fortran-run scripts/lib/CIME/tests/test_sys*
+
+  cesm_system_testing:
+    runs-on: ubuntu-latest
+    needs: build_containers
+    container: cime:latest
+    strategy:
+      matrix:
+        driver: ["mct", "nuopc"]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Run tests
+        shell: bash
+        env:
+          INIT: "false"
+          CIME_MODEL: "cesm"
+          CIME_DRIVER: ${{ matrix.driver }}
+          UPDATE_CIME: "true"
+          GIT_SHALLOW: "true"
+        run: |
+          export INSTALL_PATH="$(pwd)/cime"
+          export CIME_REPO=${GITHUB_REPOSITORY}
+          export CIME_BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF##*/}}
+
+          source /entrypoint.sh
+
+          init_cime
+
+          source /opt/conda/etc/profile.d/conda.sh
+
+          conda activate base
+
+          pytest -vvv --machine docker --no-fortran-run scripts/lib/CIME/tests/test_sys*
