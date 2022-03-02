@@ -10,6 +10,29 @@ on:
       - master
 
 jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Set up python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      # Offical action is deprecated in favor of pre-commit.ci
+      # Should evaulate switching or just running manually.
+      # - name: Runs pre-commit action
+      #   # Do not run if using act tooling (https://github.com/nektos/act)
+      #   if: ${{ !env.ACT }}
+      #   uses: pre-commit/action@v2.0.3
+      - name: Runs pre-commit
+        run: |
+          pip install pre-commit
+
+          pre-commit run -a
+
+  # Check if there has been a change to any file under docker/
   check_dockerfile_changed:
     runs-on: ubuntu-latest
     outputs:
