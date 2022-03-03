@@ -4,13 +4,22 @@ FROM condaforge/mambaforge:${MAMBAFORGE_VERSION} AS base
 ARG PNETCDF_VERSION=1.12.1
 ENV PNETCDF_VERSION=${PNETCDF_VERSION}
 
+ARG LIBNETCDF_VERSION=4.8.1
+ENV LIBNETCDF_VERSION=${LIBNETCDF_VERSION}
+
+ARG NETCDF_FORTRAN_VERSION=4.5.4
+ENV NETCDF_FORTRAN_VERSION=${NETCDF_FORTRAN_VERSION}
+
+ARG ESMF_VERSION=8.2.0
+ENV ESMF_VERSION=${ESMF_VERSION}
+
 ENV USER=root
 
 SHELL ["/bin/bash", "-c"]
 RUN mamba install --yes -c conda-forge \
-            libnetcdf=*=*openmpi* \
-            netcdf-fortran=*=*openmpi* \
-            esmf=*=*openmpi* \
+            libnetcdf=${LIBNETCDF_VERSION}=*openmpi* \
+            netcdf-fortran=${NETCDF_FORTRAN_VERSION}=*openmpi* \
+            esmf=${ESMF_VERSION}=*openmpi* \
             cmake \
             make \
             wget \

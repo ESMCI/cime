@@ -1,13 +1,39 @@
-# Docker development container
+# Docker development/testing container
 This container is built for development and testing purposes.
 
-The default base image is `condaforge/mambaforge:4.11.0-0`.
+The default base image is version `4.11.0-0` of `condaforge/mambaforge`.
 
-The only supported compiler is `gnu` provided by `conda-forge`.
+The supported compiler is `gnu` provided by `conda-forge`.
+
+The `OpenMPI` version of libraries is installed by default.
+
+## Build the container
+```bash
+docker build -t {image}:{tag} --target {target} docker/
+
+# e.g. building the base image
+docker build -t cime:latest --target base docker/
+```
+
+### Customize the container
+When building the container some features can be customized. Multiple `--build-arg` arguments can be passed.
+
+```bash
+docker build -t {image}:{tag} --build-arg {name}={value} docker/
+```
+
+| Argument | Description | Default
+| -------- | ----------- | -------
+| MAMBAFORGE_VERSION | Version of the condaforge/mambaforge image used as a base | 4.11.0-0
+| PNETCDF_VERSION | Parallel NetCDF version to build | 1.12.1
+| LIBNETCDF_VERSION | Version of libnetcdf, the default will install the latest | 4.8.1
+| NETCDF_FORTRAN_VERSION | Version of netcdf-fortran, the default will install the latest | 4.5.4
+| ESMF_VERSION | Version of ESMF, the default will install the latest | 8.2.0
 
 ## Targets
-
 There are three possible build targets in the Dockerfile. The `slurm` and `pbs` targets are built on top of the `base`.
+
+When running either `slurm` or `pbs` it's important to use the `--hostname docker` argument since both batch systems are looking for a host named docker.
 
 | Target | Description
 | ------ | -----------
@@ -15,21 +41,11 @@ There are three possible build targets in the Dockerfile. The `slurm` and `pbs` 
 | slurm | Slurm batch system with configuration and single queue.
 | pbs | PBS batch system with configuration and single queue.
 
-## Build the container
 ```bash
-docker build -t {image}:{tag} --target {target} docker/dev/
+docker build -t {image}:{tag} --target {target} docker/
 
-# e.g.
-# Building the base image
-docker build -t cime:latest --target base docker/dev/
-
-# Building the slurm image
-docker build -t cime:latest --target slurm docker/dev
-```
-
-### Build with custom base tag
-```bash
-docker build -t {image}:{tag} --build-arg MAMBAFORGE_VERSION={version}
+# e.g building the slurm image
+docker build -t cime:latest --target slurm docker/
 ```
 
 ## Running the container
