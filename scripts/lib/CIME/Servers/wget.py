@@ -29,8 +29,9 @@ class WGET(GenericServer):
         except:
             logger.warning("1Could not connect to repo '{0}'\nThis is most likely either a proxy, or network issue .".format(address))
             return None
-#        if err:
-#            logger.warning("2Could not connect to repo '{0}'\nThis is most likely either a proxy, or network issue .".format(address))
+        
+        if err and not 'storage.neonscience.org' in address:
+            logger.warning("2Could not connect to repo '{0}'\nThis is most likely either a proxy, or network issue .".format(address))
             return None
 
 
