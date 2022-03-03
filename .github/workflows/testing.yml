@@ -55,7 +55,7 @@ jobs:
   build_containers:
     runs-on: ubuntu-latest
     needs: check_dockerfile_changed
-    if: ${{ needs.check_dockerfile_changed.outputs.changed }} == true
+    if: ${{ needs.check_dockerfile_changed.outputs.changed }} == true && ${{ !env.ACT }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -135,8 +135,6 @@ jobs:
           source /opt/conda/etc/profile.d/conda.sh
 
           conda activate base
-
-          pushd "${PWD}/cime"
 
           pytest -vvv --machine docker --no-fortran-run scripts/lib/CIME/tests/test_sys*
 
