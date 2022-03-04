@@ -4,7 +4,7 @@ Interface to the config_machines.xml file.  This class inherits from GenericXML.
 from CIME.XML.standard_module_setup import *
 from CIME.XML.generic_xml import GenericXML
 from CIME.XML.files import Files
-from CIME.utils import convert_to_unknown_type, get_cime_config, get_all_cime_models
+from CIME.utils import convert_to_unknown_type, get_cime_config
 
 import socket
 
@@ -79,7 +79,7 @@ class Machines(GenericXML):
 
         expect(
             machine is not None,
-            f"Could not initialize machine object from {', '.join(checked_files)}. This machine is not available for the target CIME_MODEL."
+            f"Could not initialize machine object from {', '.join(checked_files)}. This machine is not available for the target CIME_MODEL.",
         )
         self.set_machine(machine)
 
