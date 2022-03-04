@@ -68,9 +68,8 @@ RUN apt-get update && \
             DEBIAN_FRONTEND=noninteractive \
             apt-get install -y --no-install-recommends \
             munge slurmd slurm-client slurmctld && \
-            rm -rf /var/lib/apt/lists/*
-
-RUN sed -i"" "s/\(.*<BATCH_SYSTEM>\)[^<]*\(<\/BATCH_SYSTEM>\)/\1slurm\2/g" ~/.cime/config_machines.xml
+            rm -rf /var/lib/apt/lists/* && \
+            sed -i"" "s/\(.*<BATCH_SYSTEM>\)[^<]*\(<\/BATCH_SYSTEM>\)/\1slurm\2/g" ~/.cime/config_machines.xml
 
 COPY slurm/slurm.conf /etc/slurm-llnl/
 COPY slurm/config_batch.xml /root/.cime/
@@ -93,9 +92,8 @@ RUN apt-get update && \
             apt-get install -y python3.7 python3.7-dev && \
             rm -rf /var/lib/apt/lists/*
 
-WORKDIR /src
-
-RUN curl -LO https://github.com/openpbs/openpbs/archive/refs/tags/v20.0.1.tar.gz && \
+RUN mkdir /src && pushd /src && \
+            curl -LO https://github.com/openpbs/openpbs/archive/refs/tags/v20.0.1.tar.gz && \
             tar -xvf v20.0.1.tar.gz  && \
             cd openpbs-20.0.1 && \
             sed -i"" 's/\(#include "list_link.h"\)/\1\n#include <stddef.h>/' /src/openpbs-20.0.1/src/lib/Libifl/list_link.c && \
@@ -107,9 +105,10 @@ RUN curl -LO https://github.com/openpbs/openpbs/archive/refs/tags/v20.0.1.tar.gz
             LIBS="-lpthread -lm -lpython3.7m" \
             ./configure --prefix=/opt/pbs && \
             make -j8 && \
-            make install
-
-RUN sed -i"" "s/\(.*<BATCH_SYSTEM>\)[^<]*\(<\/BATCH_SYSTEM>\)/\1pbs\2/g" ~/.cime/config_machines.xml
+            make install && \
+            popd && \
+            rm -rf /src && \
+            sed -i"" "s/\(.*<BATCH_SYSTEM>\)[^<]*\(<\/BATCH_SYSTEM>\)/\1pbs\2/g" ~/.cime/config_machines.xml
 
 COPY pbs/pbs.conf /etc/
 COPY pbs/config_batch.xml /root/.cime/
