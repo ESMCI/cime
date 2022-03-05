@@ -55,7 +55,7 @@ jobs:
   build_containers:
     runs-on: ubuntu-latest
     needs: check_dockerfile_changed
-    if: ${{ needs.check_dockerfile_changed.outputs.changed }} == true && ${{ ! env.ACT }}
+    if: needs.check_dockerfile_changed.outputs.changed == true && ! env.ACT
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -119,7 +119,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Cache inputdata
-        if: ${{ ! env.ACT }}
+        if: ! env.ACT
         uses: actions/cache@v2
         with:
           path: /tmp/inputdata
@@ -163,7 +163,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Cache inputdata
-        if: ${{ ! env.ACT }}
+        if: ! env.ACT
         uses: actions/cache@v2
         with:
           path: /tmp/inputdata
