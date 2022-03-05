@@ -111,10 +111,19 @@ jobs:
   e3sm_system_testing:
     runs-on: ubuntu-latest
     needs: build_containers
-    container: ${{ secrets.DOCKER_HUB_REPO }}/cime:latest
+    container:
+      image: ${{ secrets.DOCKER_HUB_REPO }}/cime:latest
+      volumes:
+        - /tmp/inputdata:/storage/inputdata
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+      - name: Cache inputdata
+        if: ${{ !env.ACT }}
+        uses: actions/cache@v2
+        with:
+          path: /tmp/inputdata
+          key: e3sm-inputdata
       - name: Run tests
         shell: bash
         env:
@@ -143,13 +152,22 @@ jobs:
   cesm_system_testing:
     runs-on: ubuntu-latest
     needs: build_containers
-    container: ${{ secrets.DOCKER_HUB_REPO }}/cime:latest
+    container:
+      image: ${{ secrets.DOCKER_HUB_REPO }}/cime:latest
+      volumes:
+        - /tmp/inputdata:/storage/inputdata
     strategy:
       matrix:
         driver: ["mct", "nuopc"]
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+      - name: Cache inputdata
+        if: ${{ !env.ACT }}
+        uses: actions/cache@v2
+        with:
+          path: /tmp/inputdata
+          key: cesm-${{ matrix.driver }}-inputdata
       - name: Run tests
         shell: bash
         env:
