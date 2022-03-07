@@ -47,7 +47,6 @@ jobs:
         uses: tj-actions/changed-files@v17.2
         with:
           files: docker/*
-          base_sha: master
 
   # Only build container if there has been a change.
   # Only upload container when merging into master and there has been a change.
