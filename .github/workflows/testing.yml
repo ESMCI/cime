@@ -172,7 +172,6 @@ jobs:
           key: cesm-${{ matrix.driver }}-inputdata
       - name: Run tests
         shell: bash
-        timeout-minutes: 35
         env:
           INIT: "false"
           CIME_MODEL: "cesm"
@@ -181,7 +180,7 @@ jobs:
           GIT_SHALLOW: "true"
         run: |
           export INSTALL_PATH="$(pwd)/cime"
-          export CIME_REPO=https://github.com/jasonb5/cime
+          export CIME_REPO=https://github.com/${{ github.event.pull_request.head.repo.full_name || github.repository }}
           export CIME_BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF##*/}}
 
           source /entrypoint.sh
