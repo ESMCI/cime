@@ -134,7 +134,7 @@ jobs:
           GIT_SHALLOW: "true"
         run: |
           export INSTALL_PATH="$(pwd)/E3SM"
-          export CIME_REPO=https://github.com/${GITHUB_REPOSITORY}
+          export CIME_REPO=https://github.com/${{ github.event.pull_request.head.repo.full_name || github.repository }}
           export CIME_BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF##*/}}
 
           source /entrypoint.sh
@@ -179,7 +179,7 @@ jobs:
           GIT_SHALLOW: "true"
         run: |
           export INSTALL_PATH="$(pwd)/cime"
-          export CIME_REPO=https://github.com/${GITHUB_REPOSITORY}
+          export CIME_REPO=https://github.com/${{ github.event.pull_request.head.repo.full_name || github.repository }}
           export CIME_BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF##*/}}
 
           source /entrypoint.sh
