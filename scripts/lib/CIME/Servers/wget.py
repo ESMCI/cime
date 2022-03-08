@@ -28,11 +28,19 @@ class WGET(GenericServer):
         try:
             err = run_cmd("wget {} --spider {}".format(args, address), timeout=60)[0]
         except:
-            logger.warning("Could not connect to repo '{0}'\nThis is most likely either a proxy, or network issue .(location 1)".format(address))
+            logger.warning(
+                "Could not connect to repo '{0}'\nThis is most likely either a proxy, or network issue .(location 1)".format(
+                    address
+                )
+            )
             return None
-        
-        if err and not 'storage.neonscience.org' in address:
-            logger.warning("Could not connect to repo '{0}'\nThis is most likely either a proxy, or network issue .(location 2)".format(address))
+
+        if err and not "storage.neonscience.org" in address:
+            logger.warning(
+                "Could not connect to repo '{0}'\nThis is most likely either a proxy, or network issue .(location 2)".format(
+                    address
+                )
+            )
             return None
 
         return cls(address, user=user, passwd=passwd)

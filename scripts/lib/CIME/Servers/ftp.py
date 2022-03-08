@@ -31,7 +31,7 @@ class FTP(GenericServer):
                 )
             )
             return None
-        try:    
+        try:
             stat = self.ftp.cwd(root_address)
         except all_ftp_errors as err:
             logging.warning("ftplib returned error {}".format(err))
