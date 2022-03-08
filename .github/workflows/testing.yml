@@ -126,7 +126,7 @@ jobs:
           key: e3sm-inputdata
       - name: Run tests
         shell: bash
-        timeout-minutes: 20
+        timeout-minutes: 25
         env:
           INIT: "false"
           CIME_MODEL: "e3sm"
@@ -172,7 +172,7 @@ jobs:
           key: cesm-${{ matrix.driver }}-inputdata
       - name: Run tests
         shell: bash
-        timeout-minutes: 20
+        timeout-minutes: 25
         env:
           INIT: "false"
           CIME_MODEL: "cesm"
