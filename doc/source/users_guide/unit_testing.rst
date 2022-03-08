@@ -175,7 +175,7 @@ Adding to the xml file
 ~~~~~~~~~~~~~~~~~~~~~~
 
 After you build pFUnit, tell CIME about your build or builds.
-To do this, specify the appropriate path(s) using the ``PFUNIT_PATH`` element in ** *MACH*_*COMPILER*.cmake** file. 
+To do this, specify the appropriate path(s) using the ``PFUNIT_PATH`` element in ** *MACH*_*COMPILER*.cmake** file.
 
 The ``MPILIB`` attribute should be either:
 

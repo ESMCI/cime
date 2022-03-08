@@ -16,7 +16,4 @@ Component XML files in CIMEROOT/src sub-directories.
    ocean.rst
    river.rst
    seaice.rst
-   wave.rst   
-
-
-
+   wave.rst

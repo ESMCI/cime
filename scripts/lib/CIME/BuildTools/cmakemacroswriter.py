@@ -12,6 +12,7 @@ more.
 
 from CIME.BuildTools.macrowriterbase import MacroWriterBase
 from CIME.XML.standard_module_setup import *
+
 logger = logging.getLogger(__name__)
 
 
@@ -64,9 +65,13 @@ class CMakeMacroWriter(MacroWriterBase):
         # counter so that we get a different value next time.
         var_name = "CIME_TEMP_SHELL" + str(self._var_num)
         self._var_num += 1
-        set_up = "execute_process(COMMAND " + command + \
-                 " OUTPUT_VARIABLE " + var_name + \
-                 " OUTPUT_STRIP_TRAILING_WHITESPACE)"
+        set_up = (
+            "execute_process(COMMAND "
+            + command
+            + " OUTPUT_VARIABLE "
+            + var_name
+            + " OUTPUT_STRIP_TRAILING_WHITESPACE)"
+        )
         tear_down = "unset(" + var_name + ")"
         return (set_up, "${" + var_name + "}", tear_down)
 

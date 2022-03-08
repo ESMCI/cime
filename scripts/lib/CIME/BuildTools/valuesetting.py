@@ -2,6 +2,7 @@ from CIME.XML.standard_module_setup import *
 
 logger = logging.getLogger(__name__)
 
+
 class ValueSetting(object):
 
     """Holds data about how a value can be assigned to a variable.
@@ -28,7 +29,9 @@ class ValueSetting(object):
     has_special_case
     """
 
-    def __init__(self, value, do_append, conditions, set_up, tear_down): #  pylint: disable=too-many-arguments
+    def __init__(
+        self, value, do_append, conditions, set_up, tear_down
+    ):  #  pylint: disable=too-many-arguments
         """Create a ValueSetting object by specifying all its data."""
         self.value = value
         self.do_append = do_append

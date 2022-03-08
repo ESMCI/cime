@@ -37,18 +37,19 @@ evv_lib_dir = os.path.abspath(os.path.dirname(evv4esm.__file__))
 logger = logging.getLogger(__name__)
 
 NUMBER_INITIAL_CONDITIONS = 6
-PERTURBATIONS = OrderedDict([('woprt', 0.0),
-                             ('posprt', 1.0e-14),
-                             ('negprt', -1.0e-14),
-                             ])
-FCLD_NC = 'cam.h0.cloud.nc'
-INIT_COND_FILE_TEMPLATE = \
-    "20210915.v2.ne4_oQU240.F2010.{}.{}.0002-{:02d}-01-00000.nc"
-INSTANCE_FILE_TEMPLATE = '{}{}_{:04d}.h0.0001-01-01-00000{}.nc'
+PERTURBATIONS = OrderedDict(
+    [
+        ("woprt", 0.0),
+        ("posprt", 1.0e-14),
+        ("negprt", -1.0e-14),
+    ]
+)
+FCLD_NC = "cam.h0.cloud.nc"
+INIT_COND_FILE_TEMPLATE = "20210915.v2.ne4_oQU240.F2010.{}.{}.0002-{:02d}-01-00000.nc"
+INSTANCE_FILE_TEMPLATE = "{}{}_{:04d}.h0.0001-01-01-00000{}.nc"
 
 
 class PGN(SystemTestsCommon):
-
     def __init__(self, case):
         """
         initialize an object interface to the PGN test
@@ -67,7 +68,7 @@ class PGN(SystemTestsCommon):
 
     def build_phase(self, sharedlib_only=False, model_only=False):
         ninst = NUMBER_INITIAL_CONDITIONS * len(PERTURBATIONS)
-        logger.debug('PGN_INFO: number of instance: '+str(ninst))
+        logger.debug("PGN_INFO: number of instance: " + str(ninst))
 
         default_ninst = self._case.get_value("NINST_ATM")
 
@@ -76,16 +77,17 @@ class PGN(SystemTestsCommon):
             # so it has to happen here.
             if not model_only:
                 # Lay all of the components out concurrently
-                logger.debug("PGN_INFO: Updating NINST for multi-instance in "
-                             "env_mach_pes.xml")
-                for comp in ['ATM', 'OCN', 'WAV', 'GLC', 'ICE', 'ROF', 'LND']:
+                logger.debug(
+                    "PGN_INFO: Updating NINST for multi-instance in " "env_mach_pes.xml"
+                )
+                for comp in ["ATM", "OCN", "WAV", "GLC", "ICE", "ROF", "LND"]:
                     ntasks = self._case.get_value("NTASKS_{}".format(comp))
                     self._case.set_value("ROOTPE_{}".format(comp), 0)
-                    self._case.set_value("NINST_{}".format(comp),  ninst)
-                    self._case.set_value("NTASKS_{}".format(comp), ntasks*ninst)
+                    self._case.set_value("NINST_{}".format(comp), ninst)
+                    self._case.set_value("NTASKS_{}".format(comp), ntasks * ninst)
 
                 self._case.set_value("ROOTPE_CPL", 0)
-                self._case.set_value("NTASKS_CPL", ntasks*ninst)
+                self._case.set_value("NTASKS_CPL", ntasks * ninst)
                 self._case.flush()
 
                 case_setup(self._case, test_mode=False, reset=True)
@@ -98,11 +100,18 @@ class PGN(SystemTestsCommon):
 
         iinst = 1
         for icond in range(1, NUMBER_INITIAL_CONDITIONS + 1):
-            fatm_in = os.path.join(csmdata_atm, INIT_COND_FILE_TEMPLATE.format(self.atmmodIC, 'i', icond))
-            flnd_in = os.path.join(csmdata_lnd, INIT_COND_FILE_TEMPLATE.format(self.lndmodIC, 'r', icond))
+            fatm_in = os.path.join(
+                csmdata_atm, INIT_COND_FILE_TEMPLATE.format(self.atmmodIC, "i", icond)
+            )
+            flnd_in = os.path.join(
+                csmdata_lnd, INIT_COND_FILE_TEMPLATE.format(self.lndmodIC, "r", icond)
+            )
             for iprt in PERTURBATIONS.values():
-                with open('user_nl_{}_{:04d}'.format(self.atmmod, iinst), 'w') as atmnlfile, \
-                        open('user_nl_{}_{:04d}'.format(self.lndmod, iinst), 'w') as lndnlfile:
+                with open(
+                    "user_nl_{}_{:04d}".format(self.atmmod, iinst), "w"
+                ) as atmnlfile, open(
+                    "user_nl_{}_{:04d}".format(self.lndmod, iinst), "w"
+                ) as lndnlfile:
 
                     atmnlfile.write("ncdata  = '{}' \n".format(fatm_in))
                     lndnlfile.write("finidat = '{}' \n".format(flnd_in))
@@ -128,12 +137,14 @@ class PGN(SystemTestsCommon):
         Get variable list for pergro specific output vars
         """
         rundir = self._case.get_value("RUNDIR")
-        prg_fname = 'pergro_ptend_names.txt'
+        prg_fname = "pergro_ptend_names.txt"
         var_file = os.path.join(rundir, prg_fname)
-        CIME.utils.expect(os.path.isfile(var_file),
-                          "File {} does not exist in: {}".format(prg_fname, rundir))
+        CIME.utils.expect(
+            os.path.isfile(var_file),
+            "File {} does not exist in: {}".format(prg_fname, rundir),
+        )
 
-        with open(var_file, 'r') as fvar:
+        with open(var_file, "r") as fvar:
             var_list = fvar.readlines()
 
         return list(map(str.strip, var_list))
@@ -145,19 +156,22 @@ class PGN(SystemTestsCommon):
         cloud
         """
         with self._test_status:
-            self._test_status.set_status(CIME.test_status.BASELINE_PHASE,
-                                         CIME.test_status.TEST_FAIL_STATUS)
+            self._test_status.set_status(
+                CIME.test_status.BASELINE_PHASE, CIME.test_status.TEST_FAIL_STATUS
+            )
 
             logger.debug("PGN_INFO:BASELINE COMPARISON STARTS")
 
             run_dir = self._case.get_value("RUNDIR")
             case_name = self._case.get_value("CASE")
-            base_dir = os.path.join(self._case.get_value("BASELINE_ROOT"),
-                                    self._case.get_value("BASECMP_CASE"))
+            base_dir = os.path.join(
+                self._case.get_value("BASELINE_ROOT"),
+                self._case.get_value("BASECMP_CASE"),
+            )
 
             var_list = self.get_var_list()
 
-            test_name = "{}".format(case_name.split('.')[-1])
+            test_name = "{}".format(case_name.split(".")[-1])
             evv_config = {
                 test_name: {
                     "module": os.path.join(evv_lib_dir, "extensions", "pg.py"),
@@ -177,25 +191,28 @@ class PGN(SystemTestsCommon):
                 }
             }
 
-            json_file = os.path.join(run_dir, '.'.join([case_name, 'json']))
-            with open(json_file, 'w') as config_file:
+            json_file = os.path.join(run_dir, ".".join([case_name, "json"]))
+            with open(json_file, "w") as config_file:
                 json.dump(evv_config, config_file, indent=4)
 
-            evv_out_dir = os.path.join(run_dir, '.'.join([case_name, 'evv']))
-            evv(['-e', json_file, '-o', evv_out_dir])
+            evv_out_dir = os.path.join(run_dir, ".".join([case_name, "evv"]))
+            evv(["-e", json_file, "-o", evv_out_dir])
 
-            with open(os.path.join(evv_out_dir, 'index.json'), 'r') as evv_f:
+            with open(os.path.join(evv_out_dir, "index.json"), "r") as evv_f:
                 evv_status = json.load(evv_f)
 
             comments = ""
-            for evv_elem in evv_status['Data']['Elements']:
-                if evv_elem['Type'] == 'ValSummary' \
-                        and evv_elem['TableTitle'] == 'Perturbation growth test':
-                    comments = "; ".join("{}: {}".format(key, val) for key, val
-                                         in evv_elem['Data'][test_name][''].items())
-                    if evv_elem['Data'][test_name]['']['Test status'].lower() == 'pass':
-                        self._test_status.set_status(CIME.test_status.BASELINE_PHASE,
-                                                     CIME.test_status.TEST_PASS_STATUS)
+            for evv_ele in evv_status["Page"]["elements"]:
+                if "Table" in evv_ele:
+                    comments = "; ".join(
+                        "{}: {}".format(key, val[0])
+                        for key, val in evv_ele["Table"]["data"].items()
+                    )
+                    if evv_ele["Table"]["data"]["Test status"][0].lower() == "pass":
+                        self._test_status.set_status(
+                            CIME.test_status.BASELINE_PHASE,
+                            CIME.test_status.TEST_PASS_STATUS,
+                        )
                     break
 
             status = self._test_status.get_status(CIME.test_status.BASELINE_PHASE)
@@ -205,21 +222,35 @@ class PGN(SystemTestsCommon):
             urlroot = CIME.utils.get_urlroot(mach_obj)
             if htmlroot is not None:
                 with CIME.utils.SharedArea():
-                    dir_util.copy_tree(evv_out_dir, os.path.join(htmlroot, 'evv', case_name), preserve_mode=False)
+                    dir_util.copy_tree(
+                        evv_out_dir,
+                        os.path.join(htmlroot, "evv", case_name),
+                        preserve_mode=False,
+                    )
                 if urlroot is None:
                     urlroot = "[{}_URL]".format(mach_name.capitalize())
                 viewing = "{}/evv/{}/index.html".format(urlroot, case_name)
             else:
-                viewing = "{}\n" \
-                          "    EVV viewing instructions can be found at: " \
-                          "        https://github.com/E3SM-Project/E3SM/blob/master/cime/scripts/" \
-                          "climate_reproducibility/README.md#test-passfail-and-extended-output" \
-                          "".format(evv_out_dir)
+                viewing = (
+                    "{}\n"
+                    "    EVV viewing instructions can be found at: "
+                    "        https://github.com/E3SM-Project/E3SM/blob/master/cime/scripts/"
+                    "climate_reproducibility/README.md#test-passfail-and-extended-output"
+                    "".format(evv_out_dir)
+                )
 
-            comments = "{} {} for test '{}'.\n" \
-                       "    {}\n" \
-                       "    EVV results can be viewed at:\n" \
-                       "        {}".format(CIME.test_status.BASELINE_PHASE, status, test_name, comments, viewing)
+            comments = (
+                "{} {} for test '{}'.\n"
+                "    {}\n"
+                "    EVV results can be viewed at:\n"
+                "        {}".format(
+                    CIME.test_status.BASELINE_PHASE,
+                    status,
+                    test_name,
+                    comments,
+                    viewing,
+                )
+            )
 
             CIME.utils.append_testlog(comments, self._orig_caseroot)
 
@@ -235,28 +266,41 @@ class PGN(SystemTestsCommon):
         logger.debug("PGN_INFO: Case name is:{}".format(casename))
 
         for icond in range(NUMBER_INITIAL_CONDITIONS):
-            for iprt, (prt_name, prt_value) in enumerate(PERTURBATIONS.items()):
+            for iprt, (
+                prt_name,
+                prt_value,  # pylint: disable=unused-variable
+            ) in enumerate(PERTURBATIONS.items()):
                 iinst = pg._sub2instance(icond, iprt, len(PERTURBATIONS))
-                fname = os.path.join(rundir, INSTANCE_FILE_TEMPLATE.format(casename + '.', self.atmmod, iinst, ''))
-                renamed_fname = re.sub(r'\.nc$', '_{}.nc'.format(prt_name), fname)
+                fname = os.path.join(
+                    rundir,
+                    INSTANCE_FILE_TEMPLATE.format(
+                        casename + ".", self.atmmod, iinst, ""
+                    ),
+                )
+                renamed_fname = re.sub(r"\.nc$", "_{}.nc".format(prt_name), fname)
 
                 logger.debug("PGN_INFO: fname to rename:{}".format(fname))
                 logger.debug("PGN_INFO: Renamed file:{}".format(renamed_fname))
                 try:
                     shutil.move(fname, renamed_fname)
                 except IOError:
-                    CIME.utils.expect(os.path.isfile(renamed_fname),
-                                      "ERROR: File {} does not exist".format(renamed_fname))
-                    logger.debug("PGN_INFO: Renamed file already exists:"
-                                 "{}".format(renamed_fname))
+                    CIME.utils.expect(
+                        os.path.isfile(renamed_fname),
+                        "ERROR: File {} does not exist".format(renamed_fname),
+                    )
+                    logger.debug(
+                        "PGN_INFO: Renamed file already exists:"
+                        "{}".format(renamed_fname)
+                    )
 
         logger.debug("PGN_INFO: RUN PHASE ENDS")
 
     def _generate_baseline(self):
         super(PGN, self)._generate_baseline()
 
-        basegen_dir = os.path.join(self._case.get_value("BASELINE_ROOT"),
-                                   self._case.get_value("BASEGEN_CASE"))
+        basegen_dir = os.path.join(
+            self._case.get_value("BASELINE_ROOT"), self._case.get_value("BASEGEN_CASE")
+        )
 
         rundir = self._case.get_value("RUNDIR")
         casename = self._case.get_value("CASE")
@@ -268,23 +312,41 @@ class PGN(SystemTestsCommon):
         for icond in range(NUMBER_INITIAL_CONDITIONS):
             prt_rmse = {}
             for iprt, prt_name in enumerate(PERTURBATIONS):
-                if prt_name == 'woprt':
+                if prt_name == "woprt":
                     continue
                 iinst_ctrl = pg._sub2instance(icond, 0, nprt)
-                ifile_ctrl = os.path.join(rundir,
-                                          INSTANCE_FILE_TEMPLATE.format(casename + '.', self.atmmod, iinst_ctrl, '_woprt'))
+                ifile_ctrl = os.path.join(
+                    rundir,
+                    INSTANCE_FILE_TEMPLATE.format(
+                        casename + ".", self.atmmod, iinst_ctrl, "_woprt"
+                    ),
+                )
 
                 iinst_test = pg._sub2instance(icond, iprt, nprt)
-                ifile_test = os.path.join(rundir,
-                                          INSTANCE_FILE_TEMPLATE.format(casename + '.', self.atmmod, iinst_test, '_' + prt_name))
+                ifile_test = os.path.join(
+                    rundir,
+                    INSTANCE_FILE_TEMPLATE.format(
+                        casename + ".", self.atmmod, iinst_test, "_" + prt_name
+                    ),
+                )
 
-                prt_rmse[prt_name] = pg.variables_rmse(ifile_test, ifile_ctrl, var_list, 't_')
+                prt_rmse[prt_name] = pg.variables_rmse(
+                    ifile_test, ifile_ctrl, var_list, "t_"
+                )
             rmse_prototype[icond] = pd.concat(prt_rmse)
         rmse = pd.concat(rmse_prototype)
-        cld_rmse = np.reshape(rmse.RMSE.values, (NUMBER_INITIAL_CONDITIONS, nprt - 1, nvar))
+        cld_rmse = np.reshape(
+            rmse.RMSE.values, (NUMBER_INITIAL_CONDITIONS, nprt - 1, nvar)
+        )
 
-        pg.rmse_writer(os.path.join(rundir, FCLD_NC),
-                       cld_rmse, list(PERTURBATIONS.keys()), var_list, INIT_COND_FILE_TEMPLATE, "cam")
+        pg.rmse_writer(
+            os.path.join(rundir, FCLD_NC),
+            cld_rmse,
+            list(PERTURBATIONS.keys()),
+            var_list,
+            INIT_COND_FILE_TEMPLATE,
+            "cam",
+        )
 
         logger.debug("PGN_INFO:copy:{} to {}".format(FCLD_NC, basegen_dir))
         shutil.copy(os.path.join(rundir, FCLD_NC), basegen_dir)

@@ -4,10 +4,10 @@
 Testing
 **********
 
-`create_test <../Tools_user/create_test.html>`_ 
-is the tool we use to test both CIME and CIME-driven models. 
-It can be used as an easy way to run a single basic test or an entire suite of tests.  
-`create_test <../Tools_user/create_test.html>`_ runs a test suite in parallel for improved performance.  
+`create_test <../Tools_user/create_test.html>`_
+is the tool we use to test both CIME and CIME-driven models.
+It can be used as an easy way to run a single basic test or an entire suite of tests.
+`create_test <../Tools_user/create_test.html>`_ runs a test suite in parallel for improved performance.
 It is the driver behind the automated nightly testing of cime-driven models.
 
 Running create_test is generally resource intensive, so run it in a manner appropriate for your system,
@@ -18,7 +18,7 @@ It will create and submit additional jobs to the batch queue (if one is availabl
 
 An individual test can be run as::
 
-  $CIMEROOT/scripts/create_test $test_name 
+  $CIMEROOT/scripts/create_test $test_name
 
 Multiple tests can be run similarly, by listing all of the test names on the command line::
 
@@ -31,12 +31,12 @@ or by putting the test names into a file, one name per line::
 A pre-defined suite of tests can by run using the ``--xml`` options to create_test,
 which harvest test names from testlist*.xml files.
 As described in https://github.com/ESCOMP/ctsm/wiki/System-Testing-Guide,
-to determine what pre-defined test suites are available and what tests they contain, 
-you can run query_testlists_. 
+to determine what pre-defined test suites are available and what tests they contain,
+you can run query_testlists_.
 
 Test suites are retrieved in create_test via 3 selection attributes::
 
-    --xml-category your_category   The test category. 
+    --xml-category your_category   The test category.
     --xml-machine  your_machine    The machine.
     --xml-compiler your_compiler   The compiler.
 
@@ -46,7 +46,7 @@ Test suites are retrieved in create_test via 3 selection attributes::
 
 The search for test names can be restricted to a single test list using::
 
-    --xml-testlist your_testlist   
+    --xml-testlist your_testlist
 
 Omitting this results in searching all testlists listed in::
 
@@ -69,30 +69,30 @@ MODIFIERS_         These are changes to the default settings for the test.
                    See the following table and test_scheduler.py.
 GRID               The model grid (can be an alias).
 COMPSET            alias of the compset, or long name, if no ``--xml`` arguments are used.
-MACHINE            This is optional; if this value is not supplied, `create_test <../Tools_user/create_test.html>`_  
-                   will probe the underlying machine. 
+MACHINE            This is optional; if this value is not supplied, `create_test <../Tools_user/create_test.html>`_
+                   will probe the underlying machine.
 COMPILER           If this value is not supplied, use the default compiler for MACHINE.
-GROUP-TESTMODS_    This is optional. This points to a directory with  ``user_nl_xxx`` files or a ``shell_commands`` 
+GROUP-TESTMODS_    This is optional. This points to a directory with  ``user_nl_xxx`` files or a ``shell_commands``
                    that can be used to make namelist and ``XML`` modifications prior to running a test.
                     |
 
 =================  =====================================================================================
-   
+
 .. _TESTTYPE:
-   
+
 ============ =====================================================================================
 TESTTYPE     Description
 ============ =====================================================================================
-   ERS       Exact restart from startup (default 6 days + 5 days) 
-              | Do an 11 day initial test - write a restart at day 6.    (file suffix: base) 
-              | Do a 5 day restart test, starting from restart at day 6. (file suffix: rest) 
+   ERS       Exact restart from startup (default 6 days + 5 days)
+              | Do an 11 day initial test - write a restart at day 6.    (file suffix: base)
+              | Do a 5 day restart test, starting from restart at day 6. (file suffix: rest)
               | Compare component history files '.base' and '.rest' at day 11.
               |    They should be identical.
 
    ERS2      Exact restart from startup  (default 6 days + 5 days).
 
               | Do an 11 day initial test without making restarts. (file suffix: base)
-              | Do an 11 day restart test stopping at day 6 with a restart, 
+              | Do an 11 day restart test stopping at day 6 with a restart,
                 then resuming from restart at day 6. (file suffix: rest)
               | Compare component history files ".base" and ".rest" at day 11.
 
@@ -106,14 +106,14 @@ TESTTYPE     Description
 
    ERRI      Exact restart from startup with resubmit, (default 4 days + 3 days). Tests incomplete logs option for st_archive.
 
-   ERI       hybrid/branch/exact restart test, default (by default STOP_N is 22 days) 
+   ERI       hybrid/branch/exact restart test, default (by default STOP_N is 22 days)
               ref1case
                 Do an initial run for 3 days writing restarts at day 3.
                 ref1case is a clone of the main case.
                 Short term archiving is on.
               ref2case (Suffix hybrid)
                 Do a hybrid run for default 19 days running with ref1 restarts from day 3,
-                and writing restarts at day 10. 
+                and writing restarts at day 10.
                 ref2case is a clone of the main case.
                 Short term archiving is on.
               case
@@ -195,7 +195,7 @@ MODIFIERS    Description
    _I        Marker to distinguish tests with same name - ignored.
 
    _Lo#      Run length set by o (STOP_OPTION) and # (STOP_N).
-              | o = {"y":"nyears", "m":"nmonths",  "d":"ndays", 
+              | o = {"y":"nyears", "m":"nmonths",  "d":"ndays",
               |     \ "h":"nhours", "s":"nseconds", "n":"nsteps"}
 
    _Mx       Set MPI library to x.
@@ -206,7 +206,7 @@ MODIFIERS    Description
 
    _R        For testing in PTS_MODE or Single Column Model (SCM) mode.
              For PTS_MODE, compile with mpi-serial.
- 
+
    _Vx       Set driver to x.
               |
 
@@ -221,10 +221,10 @@ GROUP        A subdirectory of testmods_dirs and the parent directory of various
 `-`          Replaces '/' in the path name where the testmods are found.
 TESTMODS     A subdirectory of GROUP containing files which set non-default values
              of the set-up and run-time variables via namelists or xml_change commands.
-             See "Adding tests": CESM_.  
+             See "Adding tests": CESM_.
              Examples include
 
-              | GROUP-TESTMODS = cam-outfrq9s points to 
+              | GROUP-TESTMODS = cam-outfrq9s points to
               |    $cesm/components/cam/cime_config/testdefs/testmods_dirs/cam/outfrq9s
               | while allactive-defaultio points to
               |    $cesm/cime_config/testmods_dirs/allactive/defaultio
@@ -271,10 +271,10 @@ Query_testlists
 ===================
 .. _query_testlists:
 
-**$CIMEROOT/scripts/query_testlists** gathers descriptions of the tests and testlists available 
+**$CIMEROOT/scripts/query_testlists** gathers descriptions of the tests and testlists available
 for CESM, the components, and projects.
 
-The ``--xml-{compiler,machine,category,testlist}`` arguments can be used 
+The ``--xml-{compiler,machine,category,testlist}`` arguments can be used
 as in create_test (above) to focus the search.
 The 'category' descriptor of a test can be used to run a group of associated tests at the same time.
 The available categories, with the tests they encompass, can be listed by::
@@ -413,7 +413,7 @@ CESM
 
 .. _CESM:
 
-Select a compset to test.  If you need to test a non-standard compset, 
+Select a compset to test.  If you need to test a non-standard compset,
 define an alias for it in the most appropriate config_compsets.xml in ::
 
     $cesm/components/$component/cime_config
@@ -424,7 +424,7 @@ If you want to test non-default namelist or xml variable values for your chosen 
 you might find them in a suitable existing testmods directory (see "branching", this section, for locations).
 If not, then populate a new testmods directory with the needed files (see "contents", below).
 Note; do not use '-' in the testmods directory name because it has a special meaning to create_test.
-Testlists and testmods live in different paths for cime, drv, and components. 
+Testlists and testmods live in different paths for cime, drv, and components.
 The relevant directory branching looks like
 ::
 
@@ -441,7 +441,7 @@ The relevant directory branching looks like
 The contents of each testmods directory can include
 ::
 
-    user_nl_$components    namelist variable=value pairs 
+    user_nl_$components    namelist variable=value pairs
     shell_commands         xmlchange commands
     user_mods              a list of other GROUP-TESTMODS which should be imported
                            but at a lower precedence than the local testmods.
@@ -455,26 +455,49 @@ CIME's scripts regression tests
 ===============================
 .. _`CIME's scripts regression tests`:
 
-**$CIMEROOT/scripts/tests/scripts_regression_tests.py** is the suite of internal tests we run
+**$CIMEROOT/scripts/lib/CIME/tests/scripts_regression_tests.py** is the suite of internal tests we run
 for the stand-alone CIME testing. With no arguments, it will run the full suite. You can limit testing to a specific
 test class or even a specific test within a test class.
 
 Run full suite::
 
-  ./scripts_regression_tests.py
+  python scripts/lib/CIME/tests/scripts_regression_tests.py
 
 Run a test class::
 
-  ./scripts_regression_tests.py K_TestCimeCase
+  python scripts/lib/CIME/tests/scripts_regression_tests.py CIME.tests.test_unit_case
 
 Run a specific test::
 
-  ./scripts_regression_tests.py K_TestCimeCase.test_cime_case
+  python scripts/lib/CIME/tests/scripts_regression_tests.py CIME.tests.test_unit_case.TestCaseSubmit.test_check_case
 
 If a test fails, the unittest module that drives scripts_regression_tests wil note the failure, but
 won't print the output of the test until testing has completed. When there are failures for a
 test, the case directories for that test will not be cleaned up so that the user can do a post-mortem
 analysis. The user will be notified of the specific directories that will be left for them to
 examine.
+
+The test suite can also be ran with `pytest` and `pytest-cov`. After the test suite is done running
+a coverage report will be presented.
+
+Install dependencies::
+
+  python -m pip install pytest pytest-cov
+
+Run full suite::
+
+  pytest -vvv
+
+Run just unit tests::
+
+  pytest -vvv scripts/lib/CIME/tests/test_unit*
+
+Run a test class::
+
+  pytest -vvv scripts/lib/CIME/tests/test_unit_case.py
+
+Run a specific test::
+
+  pytest -vvv scripts/lib/CIME/tests/test_unit_case.py::TestCaseSubmit::test_check_case
 
 More description can be found in https://github.com/ESCOMP/ctsm/wiki/System-Testing-Guide

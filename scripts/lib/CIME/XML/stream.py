@@ -10,8 +10,8 @@ from CIME.utils import expect
 
 logger = logging.getLogger(__name__)
 
-class Stream(GenericXML):
 
+class Stream(GenericXML):
     def __init__(self, infile=None, files=None):
         """
         initialize an object
@@ -28,7 +28,7 @@ class Stream(GenericXML):
         expect(subgroup is None, "This class does not support subgroups")
         value = None
         node = None
-        names = item.split('/')
+        names = item.split("/")
         node = None
         for name in names:
             node = self.scan_child(name, root=node)
@@ -37,7 +37,7 @@ class Stream(GenericXML):
 
         if value is None:
             # if all else fails
-            #pylint: disable=assignment-from-none
+            # pylint: disable=assignment-from-none
             value = GenericXML.get_value(self, item, attribute, resolved, subgroup)
 
         if resolved:

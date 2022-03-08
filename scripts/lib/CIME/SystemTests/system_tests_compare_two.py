@@ -54,16 +54,18 @@ import shutil, os, glob
 
 logger = logging.getLogger(__name__)
 
-class SystemTestsCompareTwo(SystemTestsCommon):
 
-    def __init__(self,
-                 case,
-                 separate_builds = False,
-                 run_two_suffix = 'test',
-                 run_one_description = '',
-                 run_two_description = '',
-                 multisubmit = False,
-                 ignore_fieldlist_diffs = False):
+class SystemTestsCompareTwo(SystemTestsCommon):
+    def __init__(
+        self,
+        case,
+        separate_builds=False,
+        run_two_suffix="test",
+        run_one_description="",
+        run_two_description="",
+        multisubmit=False,
+        ignore_fieldlist_diffs=False,
+    ):
         """
         Initialize a SystemTestsCompareTwo object. Individual test cases that
         inherit from SystemTestsCompareTwo MUST call this __init__ method.
@@ -105,10 +107,12 @@ class SystemTestsCompareTwo(SystemTestsCommon):
         # be set in the call to the constructor just like run_two_suffix
         # currently is. Or, if these tools are rewritten to work without any
         # suffix, then run_one_suffix can be removed entirely.
-        self._run_one_suffix = 'base'
+        self._run_one_suffix = "base"
         self._run_two_suffix = run_two_suffix.rstrip()
-        expect(self._run_two_suffix != self._run_one_suffix,
-               "ERROR: Must have different suffixes for run one and run two")
+        expect(
+            self._run_two_suffix != self._run_one_suffix,
+            "ERROR: Must have different suffixes for run one and run two",
+        )
 
         self._run_one_description = run_one_description
         self._run_two_description = run_two_description
@@ -125,7 +129,9 @@ class SystemTestsCompareTwo(SystemTestsCommon):
 
         self._setup_cases_if_not_yet_done()
 
-        self._multisubmit = multisubmit and self._case1.get_value("BATCH_SYSTEM") != "none"
+        self._multisubmit = (
+            multisubmit and self._case1.get_value("BATCH_SYSTEM") != "none"
+        )
 
     # ========================================================================
     # Methods that MUST be implemented by specific tests that inherit from this
@@ -205,8 +211,9 @@ class SystemTestsCompareTwo(SystemTestsCommon):
                 if get_model() != "e3sm":
                     # We need to turn off this change for E3SM because it breaks
                     # the MPAS build system
-                    self._case2.set_value("SHAREDLIBROOT",
-                                          self._case1.get_value("SHAREDLIBROOT"))
+                    self._case2.set_value(
+                        "SHAREDLIBROOT", self._case1.get_value("SHAREDLIBROOT")
+                    )
 
                 self.build_indv(sharedlib_only=sharedlib_only, model_only=model_only)
             else:
@@ -216,11 +223,13 @@ class SystemTestsCompareTwo(SystemTestsCommon):
                 # valid value for this build, update case2 to reflect this change
                 for comp in self._case1.get_values("COMP_CLASSES"):
                     comp_pio_typename = "{}_PIO_TYPENAME".format(comp)
-                    self._case2.set_value(comp_pio_typename, self._case1.get_value(comp_pio_typename))
+                    self._case2.set_value(
+                        comp_pio_typename, self._case1.get_value(comp_pio_typename)
+                    )
 
                 # The following is needed when _case_two_setup has a case_setup call
                 # despite sharing the build (e.g., to change NTHRDS)
-                self._case2.set_value("BUILD_COMPLETE",True)
+                self._case2.set_value("BUILD_COMPLETE", True)
 
     def run_phase(self, success_change=False):  # pylint: disable=arguments-differ
         """
@@ -230,41 +239,44 @@ class SystemTestsCompareTwo(SystemTestsCommon):
         is_first_run = self._case1.get_value("IS_FIRST_RUN")
 
         compare_phase_name = "{}_{}_{}".format(
-            COMPARE_PHASE,
-            self._run_one_suffix,
-            self._run_two_suffix)
+            COMPARE_PHASE, self._run_one_suffix, self._run_two_suffix
+        )
 
         # On a batch system with a multisubmit test "RESUBMIT" is used to track
         # which phase is being ran. By the end of the test it equals 0. If the
-        # the test fails in a way where the RUN_PHASE is PEND then "RESUBMIT" 
-        # does not get reset to 1 on a rerun and the first phase is skiped 
-        # causing the COMPARE_PHASE to fail. This ensures that "RESUBMIT" will 
+        # the test fails in a way where the RUN_PHASE is PEND then "RESUBMIT"
+        # does not get reset to 1 on a rerun and the first phase is skiped
+        # causing the COMPARE_PHASE to fail. This ensures that "RESUBMIT" will
         # get reset if the test state is not correct for a rerun.
         # NOTE: "IS_FIRST_RUN" is reset in "case_submit.py"
-        if (is_first_run and
-                self._multisubmit and
-                self._case1.get_value("RESUBMIT") == 0):
+        if (
+            is_first_run
+            and self._multisubmit
+            and self._case1.get_value("RESUBMIT") == 0
+        ):
             self._resetup_case(RUN_PHASE, reset=True)
 
-        first_phase = self._case1.get_value("RESUBMIT") == 1 # Only relevant for multi-submit tests
+        first_phase = (
+            self._case1.get_value("RESUBMIT") == 1
+        )  # Only relevant for multi-submit tests
         run_type = self._case1.get_value("RUN_TYPE")
 
-        logger.info("_multisubmit {} first phase {}".format(self._multisubmit, first_phase))
+        logger.info(
+            "_multisubmit {} first phase {}".format(self._multisubmit, first_phase)
+        )
 
         # First run
         if not self._multisubmit or first_phase:
-            logger.info('Doing first run: ' + self._run_one_description)
+            logger.info("Doing first run: " + self._run_one_description)
 
             # Add a PENDing compare phase so that we'll notice if the second part of compare two
             # doesn't run.
             with self._test_status:
-                self._test_status.set_status(
-                    compare_phase_name,
-                    TEST_PEND_STATUS)
+                self._test_status.set_status(compare_phase_name, TEST_PEND_STATUS)
 
             self._activate_case1()
             self._case_one_custom_prerun_action()
-            self.run_indv(suffix = self._run_one_suffix)
+            self.run_indv(suffix=self._run_one_suffix)
             self._case_one_custom_postrun_action()
 
         # Second run
@@ -274,7 +286,7 @@ class SystemTestsCompareTwo(SystemTestsCommon):
             # not a with statement, so it's not in a writeable state, so we need to use a with
             # statement here to put it in a writeable state.
             with self._case2:
-                logger.info('Doing second run: ' + self._run_two_description)
+                logger.info("Doing second run: " + self._run_two_description)
                 self._activate_case2()
                 # This assures that case two namelists are populated
                 self._skip_pnl = False
@@ -283,15 +295,18 @@ class SystemTestsCompareTwo(SystemTestsCommon):
                     self._case2.check_case()
 
                 self._case_two_custom_prerun_action()
-                self.run_indv(suffix = self._run_two_suffix)
+                self.run_indv(suffix=self._run_two_suffix)
                 self._case_two_custom_postrun_action()
             # Compare results
             # Case1 is the "main" case, and we need to do the comparisons from there
             self._activate_case1()
             self._link_to_case2_output()
-            self._component_compare_test(self._run_one_suffix, self._run_two_suffix,
-                                         success_change=success_change,
-                                         ignore_fieldlist_diffs=self._ignore_fieldlist_diffs)
+            self._component_compare_test(
+                self._run_one_suffix,
+                self._run_two_suffix,
+                success_change=success_change,
+                ignore_fieldlist_diffs=self._ignore_fieldlist_diffs,
+            )
 
     def copy_case1_restarts_to_case2(self):
         """
@@ -303,9 +318,11 @@ class SystemTestsCompareTwo(SystemTestsCommon):
         files.
         """
         rundir2 = self._case2.get_value("RUNDIR")
-        self._case1.archive_last_restarts(archive_restdir = rundir2,
-                                          rundir=self._case1.get_value("RUNDIR"),
-                                          link_to_restart_files = True)
+        self._case1.archive_last_restarts(
+            archive_restdir=rundir2,
+            rundir=self._case1.get_value("RUNDIR"),
+            link_to_restart_files=True,
+        )
 
     # ========================================================================
     # Private methods
@@ -336,8 +353,11 @@ class SystemTestsCompareTwo(SystemTestsCommon):
         # $CIME_OUTPUT_ROOT/$CASE/ is not accidentally shared between
         # case1 and case2. (Currently nothing is placed here, but this
         # helps prevent future problems.)
-        output_root2 = os.path.join(self._case1.get_value("CIME_OUTPUT_ROOT"),
-                                    self._case1.get_value("CASE"), "case2_output_root")
+        output_root2 = os.path.join(
+            self._case1.get_value("CIME_OUTPUT_ROOT"),
+            self._case1.get_value("CASE"),
+            "case2_output_root",
+        )
         return output_root2
 
     def _get_case2_exeroot(self):
@@ -402,10 +422,11 @@ class SystemTestsCompareTwo(SystemTestsCommon):
             try:
                 self._case2 = self._case1.create_clone(
                     self._caseroot2,
-                    keepexe = not self._separate_builds,
-                    cime_output_root = self._get_output_root2(),
-                    exeroot = self._get_case2_exeroot(),
-                    rundir = self._get_case2_rundir())
+                    keepexe=not self._separate_builds,
+                    cime_output_root=self._get_output_root2(),
+                    exeroot=self._get_case2_exeroot(),
+                    rundir=self._get_case2_rundir(),
+                )
                 self._write_info_to_case2_output_root()
                 self._setup_cases()
             except BaseException:
@@ -420,10 +441,12 @@ class SystemTestsCompareTwo(SystemTestsCommon):
                 if os.path.isdir(self._caseroot2):
                     shutil.rmtree(self._caseroot2)
                 self._activate_case1()
-                logger.warning("WARNING: Test case setup failed. Case2 has been removed, "
-                               "but the main case may be in an inconsistent state. "
-                               "If you want to rerun this test, you should create "
-                               "a new test rather than trying to rerun this one.")
+                logger.warning(
+                    "WARNING: Test case setup failed. Case2 has been removed, "
+                    "but the main case may be in an inconsistent state. "
+                    "If you want to rerun this test, you should create "
+                    "a new test rather than trying to rerun this one."
+                )
                 raise
 
     def _case_from_existing_caseroot(self, caseroot):
@@ -469,10 +492,16 @@ class SystemTestsCompareTwo(SystemTestsCommon):
         try:
             with open(readme_path, "w") as fd:
                 fd.write("This directory is typically empty.\n\n")
-                fd.write("case2's run dir is here: {}\n\n".format(
-                    self._case2.get_value("RUNDIR")))
-                fd.write("case2's bld dir is here: {}\n".format(
-                    self._case2.get_value("EXEROOT")))
+                fd.write(
+                    "case2's run dir is here: {}\n\n".format(
+                        self._case2.get_value("RUNDIR")
+                    )
+                )
+                fd.write(
+                    "case2's bld dir is here: {}\n".format(
+                        self._case2.get_value("EXEROOT")
+                    )
+                )
         except IOError:
             # It's not a big deal if we can't write the README file
             # (e.g., because the directory doesn't exist or isn't
@@ -542,14 +571,13 @@ class SystemTestsCompareTwo(SystemTestsCommon):
         rundir2 = self._case2.get_value("RUNDIR")
         run2suffix = self._run_two_suffix
 
-        pattern = '{}*.nc.{}'.format(casename2, run2suffix)
+        pattern = "{}*.nc.{}".format(casename2, run2suffix)
         case2_files = glob.glob(os.path.join(rundir2, pattern))
         for one_file in case2_files:
             file_basename = os.path.basename(one_file)
             modified_basename = file_basename.replace(casename2, casename1, 1)
             one_link = os.path.join(rundir1, modified_basename)
-            if (os.path.islink(one_link) and
-                os.readlink(one_link) == one_file):
+            if os.path.islink(one_link) and os.readlink(one_link) == one_file:
                 # Link is already set up correctly: do nothing
                 # (os.symlink raises an exception if you try to replace an
                 # existing file)

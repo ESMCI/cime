@@ -108,96 +108,198 @@ logger = logging.getLogger("xmlquery")
 unsupported_files = ["env_mach_specific.xml", "env_archive.xml"]
 ###############################################################################
 def parse_command_line(args, description):
-###############################################################################
+    ###############################################################################
     parser = argparse.ArgumentParser(
-        description=description,
-        formatter_class=argparse.RawTextHelpFormatter)
+        description=description, formatter_class=argparse.RawTextHelpFormatter
+    )
 
     CIME.utils.setup_standard_logging_options(parser)
 
     # Set command line options
-    parser.add_argument("variables", nargs="*"  ,
-                        help="Variable name(s) to query from env_*.xml file(s)\n"
-                        "( 'variable_name' from <entry_id id='variable_name'>value</entry_id> ).\n"
-                        "Multiple variables can be given, separated by commas or spaces.\n")
+    parser.add_argument(
+        "variables",
+        nargs="*",
+        help="Variable name(s) to query from env_*.xml file(s)\n"
+        "( 'variable_name' from <entry_id id='variable_name'>value</entry_id> ).\n"
+        "Multiple variables can be given, separated by commas or spaces.\n",
+    )
 
-    parser.add_argument("--caseroot" , "-caseroot", default=os.getcwd(),
-                        help="Case directory to reference.\n"
-                        "Default is current directory.")
+    parser.add_argument(
+        "--caseroot",
+        "-caseroot",
+        default=os.getcwd(),
+        help="Case directory to reference.\n" "Default is current directory.",
+    )
 
-    parser.add_argument("--listall", "-listall" , default=False , action="store_true" ,
-                        help="List all variables and their values.")
+    parser.add_argument(
+        "--listall",
+        "-listall",
+        default=False,
+        action="store_true",
+        help="List all variables and their values.",
+    )
 
-    parser.add_argument("--file" , "-file",
-                        help="The file you want to query. If not given, queries all files.\n"
-                        "Typically used with the --listall option.")
+    parser.add_argument(
+        "--file",
+        "-file",
+        help="The file you want to query. If not given, queries all files.\n"
+        "Typically used with the --listall option.",
+    )
 
-    parser.add_argument("--subgroup","-subgroup",
-                        help="Apply to this subgroup only.")
+    parser.add_argument("--subgroup", "-subgroup", help="Apply to this subgroup only.")
 
-    parser.add_argument("-p", "--partial-match", action="store_true",
-                        help="Allow partial matches of variable names, treats args as regex.")
+    parser.add_argument(
+        "-p",
+        "--partial-match",
+        action="store_true",
+        help="Allow partial matches of variable names, treats args as regex.",
+    )
 
-    parser.add_argument("--no-resolve", "-no-resolve", action="store_true",
-                        help="Do not resolve variable values.")
+    parser.add_argument(
+        "--no-resolve",
+        "-no-resolve",
+        action="store_true",
+        help="Do not resolve variable values.",
+    )
+
+    parser.add_argument(
+        "-N",
+        "--non-local",
+        action="store_true",
+        help="Use when you've requested a machine that you aren't on. "
+        "Will reduce errors for missing directories etc.",
+    )
 
     group = parser.add_mutually_exclusive_group()
 
-    group.add_argument("--full", default=False, action="store_true",
-                       help="Print a full listing for each variable, including value, type,\n"
-                       "valid values, description and file.")
+    group.add_argument(
+        "--full",
+        default=False,
+        action="store_true",
+        help="Print a full listing for each variable, including value, type,\n"
+        "valid values, description and file.",
+    )
 
-    group.add_argument("--fileonly", "-fileonly", default=False, action="store_true",
-                       help="Only print the filename that each variable is defined in.")
+    group.add_argument(
+        "--fileonly",
+        "-fileonly",
+        default=False,
+        action="store_true",
+        help="Only print the filename that each variable is defined in.",
+    )
 
-    group.add_argument("--value", "-value", default=False, action="store_true",
-                       help="Only print one value without newline character.\n"
-                       "If more than one has been found print first value in list.")
+    group.add_argument(
+        "--value",
+        "-value",
+        default=False,
+        action="store_true",
+        help="Only print one value without newline character.\n"
+        "If more than one has been found print first value in list.",
+    )
 
-    group.add_argument("--raw", default=False, action="store_true",
-                       help="Print the complete raw record associated with each variable.")
+    group.add_argument(
+        "--raw",
+        default=False,
+        action="store_true",
+        help="Print the complete raw record associated with each variable.",
+    )
 
-    group.add_argument("--description", default=False, action="store_true",
-                       help="Print the description associated with each variable.")
+    group.add_argument(
+        "--description",
+        default=False,
+        action="store_true",
+        help="Print the description associated with each variable.",
+    )
 
-    group.add_argument("--get-group", default=False, action="store_true",
-                       help="Print the group associated with each variable.")
+    group.add_argument(
+        "--get-group",
+        default=False,
+        action="store_true",
+        help="Print the group associated with each variable.",
+    )
 
-    group.add_argument("--type", default=False, action="store_true",
-                       help="Print the data type associated with each variable.")
+    group.add_argument(
+        "--type",
+        default=False,
+        action="store_true",
+        help="Print the data type associated with each variable.",
+    )
 
-    group.add_argument("--valid-values", default=False, action="store_true",
-                       help="Print the valid values associated with each variable, if defined.")
+    group.add_argument(
+        "--valid-values",
+        default=False,
+        action="store_true",
+        help="Print the valid values associated with each variable, if defined.",
+    )
 
     args = CIME.utils.parse_args_and_handle_standard_logging_options(args, parser)
 
-    if (len(sys.argv) == 1) :
+    if len(sys.argv) == 1:
         parser.print_help()
         exit()
 
     if len(args.variables) == 1:
-        variables = args.variables[0].split(',')
+        variables = args.variables[0].split(",")
     else:
         variables = args.variables
 
-    return variables, args.subgroup, args.caseroot, args.listall, args.fileonly, \
-        args.value, args.no_resolve, args.raw, args.description, args.get_group, args.full, \
-        args.type, args.valid_values, args.partial_match, args.file
+    return (
+        variables,
+        args.subgroup,
+        args.caseroot,
+        args.listall,
+        args.fileonly,
+        args.value,
+        args.no_resolve,
+        args.raw,
+        args.description,
+        args.get_group,
+        args.full,
+        args.type,
+        args.valid_values,
+        args.partial_match,
+        args.file,
+        args.non_local,
+    )
+
 
 def get_value_as_string(case, var, attribute=None, resolved=False, subgroup=None):
-    if var in ["THREAD_COUNT", "TOTAL_TASKS", "TASKS_PER_NODE", "NUM_NODES", "SPARE_NODES", "TASKS_PER_NUMA", "CORES_PER_TASK", "NGPUS_PER_NODE"]:
+    if var in [
+        "THREAD_COUNT",
+        "TOTAL_TASKS",
+        "TASKS_PER_NODE",
+        "NUM_NODES",
+        "SPARE_NODES",
+        "TASKS_PER_NUMA",
+        "CORES_PER_TASK",
+        "NGPUS_PER_NODE",
+    ]:
         value = str(getattr(case, var.lower()))
     else:
         thistype = case.get_type_info(var)
-        value = case.get_value(var, attribute=attribute, resolved=resolved, subgroup=subgroup)
+        value = case.get_value(
+            var, attribute=attribute, resolved=resolved, subgroup=subgroup
+        )
         if value is not None and thistype:
             value = convert_to_string(value, thistype, var)
 
     return value
 
-def xmlquery_sub(case, variables, subgroup=None, fileonly=False,
-                 resolved=True, raw=False, description=False, get_group=False,
-                 full=False, dtype=False, valid_values=False, xmlfile=None):
+
+def xmlquery_sub(
+    case,
+    variables,
+    subgroup=None,
+    fileonly=False,
+    resolved=True,
+    raw=False,
+    description=False,
+    get_group=False,
+    full=False,
+    dtype=False,
+    valid_values=False,
+    xmlfile=None,
+):
     """
     Return list of attributes and their values, print formatted
 
@@ -214,21 +316,22 @@ def xmlquery_sub(case, variables, subgroup=None, fileonly=False,
         else:
             groups = case.get_record_fields(var, "group")
             if not groups:
-                groups = ['none']
+                groups = ["none"]
 
         if xmlfile:
-            expect(xmlfile not in unsupported_files,
-                   "XML file {} is unsupported by this tool."
-                   .format(xmlfile))
+            expect(
+                xmlfile not in unsupported_files,
+                "XML file {} is unsupported by this tool.".format(xmlfile),
+            )
 
             if not groups:
-                value =  case.get_value(var, resolved=resolved)
-                results['none'] = {}
-                results['none'][var] = {}
-                results['none'][var]['value']  = value
+                value = case.get_value(var, resolved=resolved)
+                results["none"] = {}
+                results["none"][var] = {}
+                results["none"][var]["value"] = value
         elif not groups:
-            results['none'] = {}
-            results['none'][var] = {}
+            results["none"] = {}
+            results["none"][var] = {}
 
         for group in groups:
             if not group in results:
@@ -238,7 +341,7 @@ def xmlquery_sub(case, variables, subgroup=None, fileonly=False,
 
             expect(group, "No group found for var {}".format(var))
             if get_group:
-                results[group][var]['get_group'] = group
+                results[group][var]["get_group"] = group
 
             value = get_value_as_string(case, var, resolved=resolved, subgroup=group)
             if value is None:
@@ -247,48 +350,86 @@ def xmlquery_sub(case, variables, subgroup=None, fileonly=False,
                     value = []
                     for comp in comp_classes:
                         try:
-                            nextval = get_value_as_string(case,var, attribute={"compclass" : comp}, resolved=resolved, subgroup=group)
-                        except Exception: # probably want to be more specific
-                            nextval = get_value_as_string(case,var, attribute={"compclass" : comp}, resolved=False, subgroup=group)
+                            nextval = get_value_as_string(
+                                case,
+                                var,
+                                attribute={"compclass": comp},
+                                resolved=resolved,
+                                subgroup=group,
+                            )
+                        except Exception:  # probably want to be more specific
+                            nextval = get_value_as_string(
+                                case,
+                                var,
+                                attribute={"compclass": comp},
+                                resolved=False,
+                                subgroup=group,
+                            )
 
                         if nextval is not None:
                             value.append(comp + ":" + "{}".format(nextval))
                 else:
-                    value = get_value_as_string(case, var, resolved=resolved, subgroup=group)
+                    value = get_value_as_string(
+                        case, var, resolved=resolved, subgroup=group
+                    )
 
             if value is None:
                 if xmlfile:
-                    expect(False, " No results found for variable {} in file {}".format(var, xmlfile))
+                    expect(
+                        False,
+                        " No results found for variable {} in file {}".format(
+                            var, xmlfile
+                        ),
+                    )
                 else:
                     expect(False, " No results found for variable {}".format(var))
 
-            results[group][var]['value'] = value
+            results[group][var]["value"] = value
 
             if raw:
-                results[group][var]['raw'] = case.get_record_fields(var, "raw")
+                results[group][var]["raw"] = case.get_record_fields(var, "raw")
             if description or full:
-                results[group][var]['desc'] = case.get_record_fields(var, "desc")
+                results[group][var]["desc"] = case.get_record_fields(var, "desc")
             if fileonly or full:
-                results[group][var]['file'] = case.get_record_fields(var, "file")
+                results[group][var]["file"] = case.get_record_fields(var, "file")
             if dtype or full:
-                results[group][var]['type'] = case.get_type_info(var)
+                results[group][var]["type"] = case.get_type_info(var)
             if valid_values or full:
-                results[group][var]['valid_values'] = case.get_record_fields(var, "valid_values") #*** this is the problem ***
+                results[group][var]["valid_values"] = case.get_record_fields(
+                    var, "valid_values"
+                )  # *** this is the problem ***
 
     return results
 
+
 def _main_func(description):
     # Initialize command line parser and get command line options
-    variables, subgroup, caseroot, listall,  fileonly, \
-        value, no_resolve, raw, description, get_group, full, dtype, \
-        valid_values, partial_match, xmlfile = parse_command_line(sys.argv, description)
+    (
+        variables,
+        subgroup,
+        caseroot,
+        listall,
+        fileonly,
+        value,
+        no_resolve,
+        raw,
+        description,
+        get_group,
+        full,
+        dtype,
+        valid_values,
+        partial_match,
+        xmlfile,
+        non_local,
+    ) = parse_command_line(sys.argv, description)
 
-    expect(xmlfile not in unsupported_files,
-           "XML file {} is unsupported by this tool."
-           .format(xmlfile))
+    expect(
+        xmlfile not in unsupported_files,
+        "XML file {} is unsupported by this tool.".format(xmlfile),
+    )
 
     # Initialize case ; read in all xml files from caseroot
-    with Case(caseroot) as case:
+    with Case(caseroot, non_local=non_local) as case:
         if listall or partial_match:
             if xmlfile:
                 case.set_file(xmlfile)
@@ -301,7 +442,9 @@ def _main_func(description):
                     for all_variable in all_variables:
                         if regex.search(all_variable):
                             if subgroup is not None:
-                                vargroups = case.get_record_fields(all_variable, "group")
+                                vargroups = case.get_record_fields(
+                                    all_variable, "group"
+                                )
                                 if subgroup not in vargroups:
                                     continue
 
@@ -322,52 +465,74 @@ def _main_func(description):
                 else:
                     variables = all_variables
         expect(variables, "No variables found")
-        results = xmlquery_sub(case, variables, subgroup, fileonly, resolved=not no_resolve,
-                               raw=raw, description=description, get_group=get_group, full=full,
-                               dtype=dtype, valid_values=valid_values, xmlfile=xmlfile)
+        results = xmlquery_sub(
+            case,
+            variables,
+            subgroup,
+            fileonly,
+            resolved=not no_resolve,
+            raw=raw,
+            description=description,
+            get_group=get_group,
+            full=full,
+            dtype=dtype,
+            valid_values=valid_values,
+            xmlfile=xmlfile,
+        )
 
     if full or description:
-        wrapper=textwrap.TextWrapper()
+        wrapper = textwrap.TextWrapper()
         wrapper.subsequent_indent = "\t\t\t"
         wrapper.fix_sentence_endings = True
 
     cnt = 0
     for group in sorted(iter(results)):
-        if (len(variables) > 1 or len(results) > 1 or full) and not get_group and not value:
+        if (
+            (len(variables) > 1 or len(results) > 1 or full)
+            and not get_group
+            and not value
+        ):
             print("\nResults in group {}".format(group))
         for var in variables:
             if var in results[group]:
                 if raw:
-                    print(results[group][var]['raw'])
+                    print(results[group][var]["raw"])
                 elif get_group:
-                    print("\t{}: {}".format(var, results[group][var]['get_group']))
+                    print("\t{}: {}".format(var, results[group][var]["get_group"]))
                 elif value:
                     if cnt > 0:
                         sys.stdout.write(",")
-                    sys.stdout.write("{}".format(results[group][var]['value']))
+                    sys.stdout.write("{}".format(results[group][var]["value"]))
                     cnt += 1
                 elif description:
-                    if results[group][var]['desc'][0] is not None:
-                        desc_text = ' '.join(results[group][var]['desc'][0].split())
+                    if results[group][var]["desc"][0] is not None:
+                        desc_text = " ".join(results[group][var]["desc"][0].split())
                         print("\t{}: {}".format(var, wrapper.fill(desc_text)))
                 elif fileonly:
-                    print("\t{}: {}".format(var, results[group][var]['file']))
+                    print("\t{}: {}".format(var, results[group][var]["file"]))
                 elif dtype:
-                    print("\t{}: {}".format(var, results[group][var]['type']))
+                    print("\t{}: {}".format(var, results[group][var]["type"]))
                 elif valid_values:
-                    if 'valid_values' in results[group][var]:
-                        print("\t{}: {}".format(var, results[group][var]["valid_values"]))
+                    if "valid_values" in results[group][var]:
+                        print(
+                            "\t{}: {}".format(var, results[group][var]["valid_values"])
+                        )
                 elif full:
-                    if results[group][var]['desc'][0] is not None:
-                        desc_text = ' '.join(results[group][var]['desc'][0].split())
-                    print("\t{}: value={}".format(var, results[group][var]['value']))
-                    print("\t\ttype: {}".format(results[group][var]['type'][0]))
-                    if 'valid_values' in results[group][var]:
-                        print("\t\tvalid_values: {}".format(results[group][var]["valid_values"]))
+                    if results[group][var]["desc"][0] is not None:
+                        desc_text = " ".join(results[group][var]["desc"][0].split())
+                    print("\t{}: value={}".format(var, results[group][var]["value"]))
+                    print("\t\ttype: {}".format(results[group][var]["type"][0]))
+                    if "valid_values" in results[group][var]:
+                        print(
+                            "\t\tvalid_values: {}".format(
+                                results[group][var]["valid_values"]
+                            )
+                        )
                     print("\t\tdescription: {}".format(wrapper.fill(desc_text)))
-                    print("\t\tfile: {}".format(results[group][var]['file'][0]))
+                    print("\t\tfile: {}".format(results[group][var]["file"][0]))
                 else:
-                    print("\t{}: {}".format(var, results[group][var]['value']))
+                    print("\t{}: {}".format(var, results[group][var]["value"]))
 
-if (__name__ == "__main__"):
+
+if __name__ == "__main__":
     _main_func(__doc__)

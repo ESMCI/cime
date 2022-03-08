@@ -12,14 +12,17 @@ from CIME.XML.machines import Machines
 
 logger = logging.getLogger(__name__)
 
-class PEA(SystemTestsCompareTwo):
 
+class PEA(SystemTestsCompareTwo):
     def __init__(self, case):
-        SystemTestsCompareTwo.__init__(self, case,
-                                       separate_builds = True,
-                                       run_two_suffix = 'mpi-serial',
-                                       run_one_description = 'default mpi library',
-                                       run_two_description = 'mpi-serial')
+        SystemTestsCompareTwo.__init__(
+            self,
+            case,
+            separate_builds=True,
+            run_two_suffix="mpi-serial",
+            run_one_description="default mpi library",
+            run_two_description="mpi-serial",
+        )
 
     def _common_setup(self):
         for comp in self._case.get_values("COMP_CLASSES"):
@@ -34,11 +37,13 @@ class PEA(SystemTestsCompareTwo):
         mach_name = self._case.get_value("MACH")
         mach_obj = Machines(machine=mach_name)
         if mach_obj.is_valid_MPIlib("mpi-serial"):
-            self._case.set_value("MPILIB","mpi-serial")
+            self._case.set_value("MPILIB", "mpi-serial")
         else:
-            logger.warning("mpi-serial is not supported on machine '{}', "
-                           "so we have to fall back to default MPI and "
-                           "therefore very little is being tested".format(mach_name))
+            logger.warning(
+                "mpi-serial is not supported on machine '{}', "
+                "so we have to fall back to default MPI and "
+                "therefore very little is being tested".format(mach_name)
+            )
 
         if os.path.isfile("Macros"):
             os.remove("Macros")

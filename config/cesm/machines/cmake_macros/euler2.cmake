@@ -1,5 +1,0 @@
-string(APPEND CPPDEFS " -DLINUX")
-set(NETCDF_PATH "$ENV{NETCDF}")
-set(PIO_FILESYSTEM_HINTS "lustre")
-set(PNETCDF_PATH "$ENV{PNETCDF}")
-set(SLIBS "-L$ENV{NETCDF}/lib -lnetcdf -lnetcdff")

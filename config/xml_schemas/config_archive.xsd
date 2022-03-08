@@ -14,6 +14,7 @@
  <xs:element name="rpointer_file" type="xs:string"/>
  <xs:element name="rpointer_content" type="xs:string"/>
  <xs:element name="hist_file_extension" type="xs:string"/>
+ <xs:element name="hist_file_ext_regex" type="xs:string"/>
 
  <!-- definition of complex elements -->
  <xs:element name="rpointer">
@@ -30,6 +31,19 @@
      <xs:sequence>
        <xs:element ref="rest_file_extension" minOccurs="0" maxOccurs="unbounded"/>
        <xs:element ref="hist_file_extension" minOccurs="0" maxOccurs="unbounded"/>
+       <!-- hist_file_ext_regex is used in a specific context: This
+            specifies the regex capture group following the component
+            name that is used to differentiate between different history
+            file streams for a given component. In most cases, this can
+            be excluded, falling back on the general-purpose extension
+            regex, "\w+". However, this is needed in situations where
+            the extension is more complex, such as when there is a
+            multi-part extension with embedded '.' characters. For
+            example, the CISM ice sheet model uses a hist_file_ext_regex
+            of "\w+\.\w+" because its history file names have a two-part
+            extension, with the first part giving the ice sheet name
+            (e.g., gris.h, ais.h). -->
+       <xs:element ref="hist_file_ext_regex" minOccurs="0" maxOccurs="unbounded"/>
        <xs:element ref="rest_history_varname" minOccurs="0" maxOccurs="unbounded"/>
        <xs:element ref="rpointer" minOccurs="0" maxOccurs="unbounded"/>
        <xs:element ref="test_file_names" minOccurs="0" maxOccurs="1"/>

@@ -1,0 +1,4 @@
+sphinx
+sphinxcontrib-programoutput
+git+https://github.com/esmci/sphinx_rtd_theme.git@version-dropdown-with-fixes
+evv4esm

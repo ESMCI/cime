@@ -32,7 +32,7 @@ $ gen_domain -m <filemap>
              [--fminval <fminval>]
              [--fmaxval <fmaxval>]
              [--set-omask]
- 
+
 where:
     filemap = input mapping file name  (character string)
     gridocn = output ocean grid name   (NOT A FILE NAME!)
@@ -119,4 +119,3 @@ NOTES
 
     While this type of manipulation has been requested by the AMWG, it is not
     required by the CESM model, CESM coupler, or the SCRIP map generation tool.
-

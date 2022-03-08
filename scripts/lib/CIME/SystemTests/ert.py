@@ -8,8 +8,8 @@ from CIME.SystemTests.system_tests_common import SystemTestsCommon
 
 logger = logging.getLogger(__name__)
 
-class ERT(SystemTestsCommon):
 
+class ERT(SystemTestsCommon):
     def __init__(self, case):
         """
         initialize an object interface to the ERT system test
@@ -36,7 +36,7 @@ class ERT(SystemTestsCommon):
 
         self._case.set_value("STOP_N", 1)
         self._case.set_value("CONTINUE_RUN", True)
-        self._case.set_value("REST_OPTION","never")
+        self._case.set_value("REST_OPTION", "never")
         self._case.flush()
 
         logger.info("doing an 1 month restart test with no restart files")
