@@ -173,6 +173,11 @@ function init_cime() {
     cd "${install_path}"
 }
 
+if [[ ! -e "${HOME}/.cime" ]]
+then
+    ln -sf "/root/.cime" "${HOME}/.cime"
+fi
+
 if [[ -e "/entrypoint_batch.sh" ]]
 then
     echo "Sourcing batch entrypoint"
