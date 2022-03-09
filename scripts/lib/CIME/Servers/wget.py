@@ -76,7 +76,7 @@ class WGET(GenericServer):
                 pass
             return False
         else:
-            logging.warning("SUCCESS\n")
+            logging.info("SUCCESS\n")
             return True
 
     def getdirectory(self, rel_path, full_path):
