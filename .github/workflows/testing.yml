@@ -119,8 +119,8 @@ jobs:
         if: ${{ ! env.ACT }}
         uses: actions/cache@v2
         with:
-          path: /tmp/inputdata
-          key: e3sm-inputdata-1
+          path: /storage/inputdata
+          key: e3sm-inputdata-2
       - name: Run tests
         shell: bash
         timeout-minutes: 25
@@ -162,8 +162,8 @@ jobs:
         if: ${{ ! env.ACT }}
         uses: actions/cache@v2
         with:
-          path: /tmp/inputdata-${{ matrix.driver }}
-          key: cesm-${{ matrix.driver }}-inputdata-1
+          path: /storage/inputdata
+          key: cesm-${{ matrix.driver }}-inputdata-2
       - name: Run tests
         shell: bash
         env:
