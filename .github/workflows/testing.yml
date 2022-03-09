@@ -157,7 +157,7 @@ jobs:
     container:
       image: jasonb87/cime:latest
       volumes:
-        - /tmp/inputdata:/storage/inputdata
+        - /tmp/inputdata-${{ matrix.driver }}:/storage/inputdata
     strategy:
       matrix:
         driver: ["mct", "nuopc"]
@@ -168,7 +168,7 @@ jobs:
         if: ${{ ! env.ACT }}
         uses: actions/cache@v2
         with:
-          path: /tmp/inputdata
+          path: /tmp/inputdata-${{ matrix.driver }}
           key: cesm-${{ matrix.driver }}-inputdata
       - name: Run tests
         shell: bash
