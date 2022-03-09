@@ -160,7 +160,7 @@ jobs:
         - /tmp/inputdata:/storage/inputdata
     strategy:
       matrix:
-        driver: ["mct"]
+        driver: ["mct", "nuopc"]
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
