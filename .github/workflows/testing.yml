@@ -120,7 +120,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: /tmp/inputdata
-          key: e3sm-inputdata
+          key: e3sm-inputdata-1
       - name: Run tests
         shell: bash
         timeout-minutes: 25
@@ -163,7 +163,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: /tmp/inputdata-${{ matrix.driver }}
-          key: cesm-${{ matrix.driver }}-inputdata
+          key: cesm-${{ matrix.driver }}-inputdata-1
       - name: Run tests
         shell: bash
         env:
