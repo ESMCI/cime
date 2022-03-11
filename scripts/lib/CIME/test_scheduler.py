@@ -342,7 +342,7 @@ class TestScheduler(object):
                     test_baseline = os.path.join(full_baseline_dir, test_name)
                     if os.path.isdir(test_baseline):
                         existing_baselines.append(test_baseline)
-                        if allow_baseline_overwrite and retry == "None":
+                        if allow_baseline_overwrite and retry is None:
                             if self._namelists_only:
                                 clear_folder(os.path.join(test_baseline, "CaseDocs"))
                             else:
