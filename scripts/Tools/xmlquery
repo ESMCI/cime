@@ -162,6 +162,14 @@ def parse_command_line(args, description):
         help="Do not resolve variable values.",
     )
 
+    parser.add_argument(
+        "-N",
+        "--non-local",
+        action="store_true",
+        help="Use when you've requested a machine that you aren't on. "
+        "Will reduce errors for missing directories etc.",
+    )
+
     group = parser.add_mutually_exclusive_group()
 
     group.add_argument(
@@ -251,6 +259,7 @@ def parse_command_line(args, description):
         args.valid_values,
         args.partial_match,
         args.file,
+        args.non_local,
     )
 
 
@@ -411,6 +420,7 @@ def _main_func(description):
         valid_values,
         partial_match,
         xmlfile,
+        non_local,
     ) = parse_command_line(sys.argv, description)
 
     expect(
@@ -419,7 +429,7 @@ def _main_func(description):
     )
 
     # Initialize case ; read in all xml files from caseroot
-    with Case(caseroot) as case:
+    with Case(caseroot, non_local=non_local) as case:
         if listall or partial_match:
             if xmlfile:
                 case.set_file(xmlfile)

@@ -1,6 +1,150 @@
 ======================================================================
 
 Originator: Chris Fischer
+Date: 3-11-2022
+Tag: cime6.0.15
+Answer Changes: None
+Tests: scripts_regression_tests
+Dependencies:
+
+Brief Summary:
+    - Fix generated baseline from disappearing when using --retry.
+    - Comparison test class with arbitrary number of instances.
+    - Fixes extraneous warnings and machine detection
+    - neon inputdata update
+
+User interface changes:
+
+PR summary: git log --oneline --first-parent [previous_tag]..master
+4227e709c Merge pull request #4195 from ESMCI/fischer/retry
+3cbf732a4 Merge pull request #4169 from alperaltuntas/system_tests_compare_multi
+88f216f97 Merge pull request #4187 from jasonb5/fix_machine_warning
+479181641 Merge pull request #4190 from jedwards4b/neon_inputdata_update
+
+
+Modified files: git diff --name-status [previous_tag]
+M       config/cesm/config_files.xml
+M       scripts/create_test
+M       scripts/lib/CIME/Servers/ftp.py
+M       scripts/lib/CIME/Servers/wget.py
+A       scripts/lib/CIME/SystemTests/system_tests_compare_n.py
+M       scripts/lib/CIME/XML/machines.py
+M       scripts/lib/CIME/test_scheduler.py
+
+
+======================================================================
+======================================================================
+
+Originator: Chris Fischer
+Date: 3-1-2022
+Tag: cime6.0.14
+Answer Changes: [None, Round Off, Climate Changing]
+Tests: scripts_regression_tests
+Dependencies:
+
+Brief Summary:
+    - Needed some non-local flags added.
+    - Allow unbounded compilers to modify max tasks per node.
+    - Fix for correct path for PTS_DOMAINFILE.
+    - Check current machine and exit if not case machine.
+    - Use of optional .exclude files for selective exclusion during build.
+    - Automate documentation.
+    - Changes for implementing nemo in cesm2.3.
+    - Need to move version check out of utils.py.
+    - Update tests to get status from new EVV output.
+    - Remove the remaining users of config_compilers.xml.
+    - Reorder fox libraries for nvhpc.
+    - Add missing doctest.
+    - Fixes for a number of fails in scripts_regression for e3sm on mappy.
+    - Update grids.rst, removing $CCSMROOT references.
+    - Remove test_release from test_categories.
+    - Bump pillow from 8.3.2 to 9.0.0 in /tools/statistical_ensemble_test/pyCECT/docs.
+    - Fix removing test directories on failure.
+    - Remove rather than overwrite baseline contents with the create_test -o flag.
+    - Remove trailing whitespace
+
+User interface changes:
+
+PR summary: git log --oneline --first-parent [previous_tag]..master
+fa02da2ae Merge pull request #4185 from ESMCI/jgfouca/fix_e3sm_tests
+bbd38af81 Merge pull request #4184 from ESMCI/azamat/modify-max-unbounded-compilers
+0fda6b095 Merge pull request #4183 from mvertens/feature/fix_scam
+ac3cd93ce Merge pull request #4179 from jedwards4b/check_current_machine
+2bb0deea6 Merge pull request #4180 from CESM-GC/feature/file_build_exclude_list
+4f9ce69d2 Merge pull request #4177 from jasonb5/automate_docs
+108b0cc25 Merge pull request #4170 from ESMCI/peano/nemo_port
+2c4e6fc3e Merge pull request #4168 from jedwards4b/move_version_check
+726136e78 Merge pull request #4166 from ESMCI/mkstratos/evv_fix
+7d0ef4b30 Merge pull request #4161 from ESMCI/jgfouca/remove_remaining_users_of_compilers_xml
+11fb0364b reorder fox libraries for nvhpc
+3f2fe1ab8 Merge pull request #4159 from jasonb5/add_missing_doctest
+6dde219c8 Merge pull request #4156 from ESMCI/jgfouca/e3sm_fixes
+433bdeaac Merge pull request #4147 from johnsonbk/fix_ccsmroot_references
+a4d865847 Merge pull request #4155 from ESMCI/jgfouca/remove_test_release
+ff92490f6 Merge pull request #4158 from ESMCI/dependabot/pip/tools/statistical_ensemble_test/pyCECT/docs/pillow-9.0.0
+334f5622b Merge pull request #4157 from jasonb5/fix_test_directory_removal
+83cc09df4 Merge pull request #4154 from jedwards4b/remove_not_overwrite_baseline
+dd17a1543 Remove trailing whitespace
+
+
+Modified files: git diff --name-status [previous_tag]
+A	.github/workflows/docs.yml
+M	ChangeLog
+M	config/xml_schemas/config_machines.xsd
+A	doc/requirements.txt
+M	doc/source/conf.py
+M	doc/source/index.rst
+M	doc/source/users_guide/grids.rst
+M	doc/source/xml_files/cesm.rst
+M	doc/source/xml_files/e3sm.rst
+M	doc/source/xml_files/index.rst
+M	doc/tools_autodoc.py
+M	scripts/Tools/Makefile
+M	scripts/Tools/case.setup
+M	scripts/Tools/mkDepends
+M	scripts/Tools/mkSrcfiles
+M	scripts/Tools/standard_script_setup.py
+M	scripts/Tools/xmlchange
+M	scripts/Tools/xmlquery
+M	scripts/create_newcase
+M	scripts/fortran_unit_testing/run_tests.py
+M	scripts/lib/CIME/BuildTools/configure.py
+M	scripts/lib/CIME/SystemTests/funit.py
+M	scripts/lib/CIME/SystemTests/mvk.py
+M	scripts/lib/CIME/SystemTests/pgn.py
+M	scripts/lib/CIME/SystemTests/system_tests_common.py
+M	scripts/lib/CIME/SystemTests/tsc.py
+M	scripts/lib/CIME/XML/compilers.py
+M	scripts/lib/CIME/XML/grids.py
+M	scripts/lib/CIME/bless_test_results.py
+M	scripts/lib/CIME/build.py
+M	scripts/lib/CIME/case/case.py
+M	scripts/lib/CIME/test_scheduler.py
+M	scripts/lib/CIME/tests/README
+M	scripts/lib/CIME/tests/base.py
+M	scripts/lib/CIME/tests/scripts_regression_tests.py
+M	scripts/lib/CIME/tests/test_sys_bless_tests_results.py
+M	scripts/lib/CIME/tests/test_sys_cime_case.py
+M	scripts/lib/CIME/tests/test_sys_cmake_macros.py
+M	scripts/lib/CIME/tests/test_sys_create_newcase.py
+M	scripts/lib/CIME/tests/test_sys_grid_generation.py
+M	scripts/lib/CIME/tests/test_sys_jenkins_generic_job.py
+M	scripts/lib/CIME/tests/test_sys_macro_basic.py
+M	scripts/lib/CIME/tests/test_sys_make_macros.py
+M	scripts/lib/CIME/tests/test_sys_test_scheduler.py
+M	scripts/lib/CIME/tests/test_sys_unittest.py
+M	scripts/lib/CIME/tests/test_unit_case.py
+A	scripts/lib/CIME/tests/test_unit_doctest.py
+R100	scripts/lib/CIME/tests/test_xml_env_batch.py	scripts/lib/CIME/tests/test_unit_xml_env_batch.py
+M	scripts/lib/CIME/tests/utils.py
+M	scripts/lib/CIME/utils.py
+M	tools/cprnc/README
+M	tools/mapping/gen_domain_files/test_gen_domain.sh
+M	tools/statistical_ensemble_test/pyCECT/docs/requirements.txt
+======================================================================
+======================================================================
+
+Originator: Chris Fischer
 Date: 1-11-22
 Tag: cime6.0.13
 Answer Changes: None
