@@ -200,6 +200,7 @@ class TestScheduler(object):
         mpilib=None,
         input_dir=None,
         pesfile=None,
+        retry=None,
         mail_user=None,
         mail_type=None,
         allow_pnl=False,
@@ -221,6 +222,7 @@ class TestScheduler(object):
         self._completed_tests = 0
         self._input_dir = input_dir
         self._pesfile = pesfile
+        self._retry = retry
         self._allow_baseline_overwrite = allow_baseline_overwrite
         self._allow_pnl = allow_pnl
         self._non_local = non_local
@@ -342,7 +344,7 @@ class TestScheduler(object):
                     test_baseline = os.path.join(full_baseline_dir, test_name)
                     if os.path.isdir(test_baseline):
                         existing_baselines.append(test_baseline)
-                        if allow_baseline_overwrite:
+                        if allow_baseline_overwrite and retry is None:
                             if self._namelists_only:
                                 clear_folder(os.path.join(test_baseline, "CaseDocs"))
                             else:
