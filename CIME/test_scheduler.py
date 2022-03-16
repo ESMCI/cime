@@ -200,6 +200,7 @@ class TestScheduler(object):
         mpilib=None,
         input_dir=None,
         pesfile=None,
+        run_count=0,
         mail_user=None,
         mail_type=None,
         allow_pnl=False,
@@ -342,7 +343,7 @@ class TestScheduler(object):
                     test_baseline = os.path.join(full_baseline_dir, test_name)
                     if os.path.isdir(test_baseline):
                         existing_baselines.append(test_baseline)
-                        if allow_baseline_overwrite:
+                        if allow_baseline_overwrite and run_count == 0:
                             if self._namelists_only:
                                 clear_folder(os.path.join(test_baseline, "CaseDocs"))
                             else:
