@@ -4,7 +4,7 @@ Interface to the config_machines.xml file.  This class inherits from GenericXML.
 from CIME.XML.standard_module_setup import *
 from CIME.XML.generic_xml import GenericXML
 from CIME.XML.files import Files
-from CIME.utils import convert_to_unknown_type, get_cime_config
+from CIME.utils import convert_to_unknown_type, get_cime_config, get_all_cime_models
 
 import socket
 
@@ -32,7 +32,7 @@ class Machines(GenericXML):
         self.extra_machines_dir = extra_machines_dir
 
         schema = None
-        checked_files = []
+        supported_models = []
         if files is None:
             files = Files()
         if infile is None:
@@ -43,7 +43,6 @@ class Machines(GenericXML):
         self.machines_dir = os.path.dirname(infile)
 
         GenericXML.__init__(self, infile, schema)
-        checked_files.append(infile)
 
         # Append the contents of $HOME/.cime/config_machines.xml if it exists.
         #
@@ -55,17 +54,13 @@ class Machines(GenericXML):
             os.environ.get("HOME"), ".cime", "config_machines.xml"
         )
         logger.debug("Infile: {}".format(local_infile))
-
         if os.path.exists(local_infile):
             GenericXML.read(self, local_infile, schema)
-            checked_files.append(local_infile)
-
         if extra_machines_dir:
             local_infile = os.path.join(extra_machines_dir, "config_machines.xml")
             logger.debug("Infile: {}".format(local_infile))
             if os.path.exists(local_infile):
                 GenericXML.read(self, local_infile, schema)
-                checked_files.append(local_infile)
 
         if machine is None:
             if "CIME_MACHINE" in os.environ:
@@ -76,10 +71,28 @@ class Machines(GenericXML):
                     machine = cime_config.get("main", "machine")
                 if machine is None:
                     machine = self.probe_machine_name()
+                    if machine is None:
+                        for potential_model in get_all_cime_models():
+                            local_infile = os.path.join(
+                                get_cime_root(),
+                                "CIME",
+                                "data",
+                                "config",
+                                potential_model,
+                                "machines",
+                                "config_machines.xml",
+                            )
+                            if local_infile != infile:
+                                GenericXML.read(self, local_infile, schema)
+                                if self.probe_machine_name() is not None:
+                                    supported_models.append(potential_model)
+                                GenericXML.change_file(self, infile, schema)
 
         expect(
             machine is not None,
-            f"Could not initialize machine object from {', '.join(checked_files)}. This machine is not available for the target CIME_MODEL.",
+            "Could not initialize machine object from {} or {}. This machine is not available for the target CIME_MODEL. The supported CIME_MODELS that can be used are: {}".format(
+                infile, local_infile, supported_models
+            ),
         )
         self.set_machine(machine)
 
@@ -154,7 +167,7 @@ class Machines(GenericXML):
                 names_not_found_quoted = ["'" + name + "'" for name in names_not_found]
                 names_not_found_str = " or ".join(names_not_found_quoted)
                 if warn:
-                    logger.debug(
+                    logger.warning(
                         "Could not find machine match for {}".format(
                             names_not_found_str
                         )
@@ -242,7 +255,7 @@ class Machines(GenericXML):
         Get Value of fields in the config_machines.xml file
         """
         if self.machine_node is None:
-            logger.debug("Machine object has no machine defined")
+            logger.warning("Machine object has no machine defined")
             return None
 
         expect(subgroup is None, "This class does not support subgroups")
