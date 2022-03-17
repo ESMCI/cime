@@ -856,33 +856,33 @@ This allows using a different mpirun command to launch unit tests
 
       <modules compiler="cray">
 	<command name="load">PrgEnv-cray</command>
-	<command name="switch">cce cce/8.6.5</command>
+	<command name="switch">cce cce/12.0.3</command>
       </modules>
       <modules compiler="gnu">
 	<command name="load">PrgEnv-gnu</command>
-	<command name="switch">gcc gcc/7.3.0</command>
+	<command name="switch">gcc gcc/8.3.0</command>
       </modules>
       <modules>
 	<command name="load">cray-memkind</command>
-	<command name="swap">craype craype/2.5.18</command>
+	<command name="swap">craype craype/2.6.2</command>
       </modules>
       <modules>
-	<command name="switch">cray-libsci/19.02.1</command>
+	<command name="switch">cray-libsci/20.09.1</command>
       </modules>
       <modules>
-	<command name="load">cray-mpich/7.7.10</command>
+	<command name="load">cray-mpich/7.7.19</command>
       </modules>
       <modules mpilib="mpi-serial">
-	<command name="load">cray-hdf5/1.10.5.2</command>
-	<command name="load">cray-netcdf/4.6.3.2</command>
+	<command name="load">cray-hdf5/1.12.1.1</command>
+	<command name="load">cray-netcdf/4.8.1.1</command>
       </modules>
       <modules mpilib="!mpi-serial">
-	<command name="load">cray-netcdf-hdf5parallel/4.6.3.2</command>
-	<command name="load">cray-hdf5-parallel/1.10.5.2</command>
-	<command name="load">cray-parallel-netcdf/1.11.1.1</command>
+	<command name="load">cray-hdf5-parallel/1.12.1.1</command>
+	<command name="load">cray-netcdf-hdf5parallel/4.8.1.1</command>
+	<command name="load">cray-parallel-netcdf/1.12.2.1</command>
       </modules>
       <modules>
-	<command name="load">cmake/3.21.3</command>
+	<command name="load">cmake/3.22.1</command>
       </modules>
     </module_system>
     <environment_variables>
@@ -949,7 +949,7 @@ This allows using a different mpirun command to launch unit tests
 
       <modules compiler="intel">
 	<command name="load">PrgEnv-intel</command>
-	<command name="switch">intel intel/19.0.3.199</command>
+	<command name="switch">intel intel/19.1.2.254</command>
 	<command name="use">/global/project/projectdirs/ccsm1/modulefiles/cori</command>
       </modules>
       <modules compiler="intel" mpilib="!mpi-serial" >
@@ -965,27 +965,27 @@ This allows using a different mpirun command to launch unit tests
       </modules>
       <modules compiler="gnu">
 	<command name="load">PrgEnv-gnu</command>
-	<command name="switch">gcc gcc/7.3.0</command>
+	<command name="switch">gcc gcc/8.3.0</command>
       </modules>
       <modules>
 	<command name="load">cray-memkind</command>
-	<command name="swap">craype craype/2.5.18</command>
+	<command name="swap">craype craype/2.7.10</command>
 	<command name="load">craype-mic-knl</command>
       </modules>
       <modules>
-	<command name="switch">cray-libsci/19.02.1</command>
+	<command name="switch">cray-libsci/20.09.1</command>
       </modules>
       <modules>
-	<command name="load">cray-mpich/7.7.10</command>
+	<command name="load">cray-mpich/7.7.19</command>
       </modules>
       <modules mpilib="mpi-serial">
-	<command name="load">cray-hdf5/1.10.5.2</command>
-	<command name="load">cray-netcdf/4.6.3.2</command>
+	<command name="load">cray-hdf5/1.12.1.1</command>
+	<command name="load">cray-netcdf/4.8.1.1</command>
       </modules>
       <modules mpilib="!mpi-serial">
-	<command name="load">cray-netcdf-hdf5parallel/4.6.3.2</command>
-	<command name="load">cray-hdf5-parallel/1.10.5.2</command>
-	<command name="load">cray-parallel-netcdf/1.11.1.1</command>
+	<command name="load">cray-netcdf-hdf5parallel/4.8.1.1</command>
+	<command name="load">cray-hdf5-parallel/1.12.1.1</command>
+	<command name="load">cray-parallel-netcdf/1.12.2.1</command>
       </modules>
     </module_system>
     <environment_variables>
