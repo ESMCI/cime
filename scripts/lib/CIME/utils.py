@@ -2,7 +2,7 @@
 Common functions used by cime python scripts
 Warning: you cannot use CIME Classes in this module as it causes circular dependencies
 """
-import io, logging, gzip, sys, os, time, re, shutil, glob, string, random, importlib, fnmatch
+import io, logging, gzip, sys, os, time, re, shutil, glob, string, random, importlib, fnmatch, argparse
 import importlib.util
 import errno, signal, warnings, filecmp
 import stat as statlib
@@ -2383,6 +2383,10 @@ def add_mail_type_args(parser):
         help="When to send user email. Options are: never, all, begin, end, fail.\n"
         "You can specify multiple types with either comma-separated args or multiple -M flags.",
     )
+
+def add_container_arg(parser):
+    parser.add_argument("--container", default=None, help=argparse.SUPPRESS)
+
 
 
 def resolve_mail_type_args(args):

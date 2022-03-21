@@ -86,6 +86,9 @@ def parse_command_line(args, description):
         help="Just print the cmake and ninja commands.",
     )
 
+    # The container argument is hidden and not intended to be invoked by the user
+    parser.add_argument("--container", default=None, help=argparse.SUPPRESS)
+
     mutex_group = parser.add_mutually_exclusive_group()
 
     # TODO mvertens: the following is hard-wired - otherwise it does not work with nuopc
@@ -146,6 +149,8 @@ def parse_command_line(args, description):
         "files in the source tree or in SourceMods.",
     )
 
+
+
     args = CIME.utils.parse_args_and_handle_standard_logging_options(args, parser)
 
     clean_depends = (
@@ -173,6 +178,7 @@ def parse_command_line(args, description):
         args.separate_builds,
         args.ninja,
         args.dry_run,
+        args.container,
     )
 
 
@@ -191,11 +197,17 @@ def _main_func(description):
         separate_builds,
         ninja,
         dry_run,
+        container,
     ) = parse_command_line(sys.argv, description)
 
     success = True
     with Case(caseroot, read_only=False, record=True) as case:
         testname = case.get_value("TESTCASE")
+        container_env = case.get_value("CONTAINER_ENVIRONMENT")
+        if container_env and not container:
+            args = " ".join(sys.argv)
+            CIME.utils.run_cmd(f"{container_env} {args} --container {container_env}", verbose=True)
+            sys.exit(0 if success else 1)
 
         if cleanlist is not None or clean_all or clean_depends is not None:
             build.clean(

@@ -333,7 +333,6 @@ def parse_command_line(args, cimeroot, description):
 def _main_func(description):
     ###############################################################################
     cimeroot = os.path.abspath(CIME.utils.get_cime_root())
-
     (
         casename,
         compset,
