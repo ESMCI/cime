@@ -116,8 +116,6 @@ jobs:
     if: ${{ always() }}
     container: jasonb87/cime:latest
     strategy:
-      # Prevent issues with downloading data
-      max-parallel: 1
       matrix:
         model: ["e3sm", "cesm"]
         driver: ["mct", "nuopc"]
