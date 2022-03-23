@@ -206,6 +206,7 @@ class TestScheduler(object):
         single_exe=False,
         workflow=None,
         chksum=False,
+        container_environment=None,
     ):
         ###########################################################################
         self._cime_root = get_cime_root()
@@ -250,6 +251,7 @@ class TestScheduler(object):
         self._no_build = no_build or no_setup or namelists_only
         self._no_run = no_run or self._no_build
         self._output_root = output_root
+        self._container_environment = container_environment
         # Figure out what project to use
         if project is None:
             self._project = get_project()
@@ -568,6 +570,9 @@ class TestScheduler(object):
     ###########################################################################
     def _shell_cmd_for_phase(self, test, cmd, phase, from_dir=None):
         ###########################################################################
+
+        if "create_newcase" not in cmd and self._container_environment:
+            cmd += f" --container {self._container_environment}"
         while True:
             rc, output, errput = run_cmd(cmd, from_dir=from_dir)
             if rc != 0:
