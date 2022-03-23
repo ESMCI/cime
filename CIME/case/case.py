@@ -212,13 +212,15 @@ class Case(object):
         max_mpitasks_per_node = self.get_value("MAX_MPITASKS_PER_NODE")
         self.async_io = {}
         for comp in comp_classes:
-            self.async_io[comp] = self.get_value("PIO_ASYNC_INTERFACE",subgroup=comp)
+            self.async_io[comp] = self.get_value("PIO_ASYNC_INTERFACE", subgroup=comp)
 
         if any(self.async_io.values()):
             self.iotasks = 1
             for comp in comp_classes:
                 if self.async_io[comp]:
-                    self.iotasks = max(self.iotasks, self.get_value("PIO_NUMTASKS", subgroup=comp))
+                    self.iotasks = max(
+                        self.iotasks, self.get_value("PIO_NUMTASKS", subgroup=comp)
+                    )
 
         self.thread_count = env_mach_pes.get_max_thread_count(comp_classes)
 

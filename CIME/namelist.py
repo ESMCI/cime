@@ -1279,7 +1279,8 @@ class Namelist(object):
             group_names = groups
 
         for group_name in group_names:
-            if ( "_modelio" not in group_name
+            if (
+                "_modelio" not in group_name
                 and "_attributes" not in group_name
                 and "nuopc_" not in group_name
                 and "_no_group" not in group_name
@@ -1333,6 +1334,7 @@ class Namelist(object):
             if indent:
                 out_file.write("::\n\n")
             indent = False
+
 
 class _NamelistEOF(Exception):
 

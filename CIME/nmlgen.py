@@ -170,7 +170,7 @@ class NamelistGenerator(object):
         return [self._definition.get(entry, "id") for entry in self._default_nodes]
 
     def rename_group(self, group, newgroup):
-        """Pass through to namelist definition """
+        """Pass through to namelist definition"""
         return self._definition.rename_group(group, newgroup)
 
     def add_defaults_for_group(self, group):
