@@ -131,7 +131,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: /storage/inputdata
-          key: inputdata
+          key: inputdata-2
       - name: Run tests
         shell: bash
         env:
