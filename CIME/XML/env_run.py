@@ -20,8 +20,11 @@ class EnvRun(EnvBase):
         """
         self._components = components
         self._pio_async_interface = {}
-        for comp in components:
-            self._pio_async_interface[comp] = False
+
+        if components:
+            for comp in components:
+                self._pio_async_interface[comp] = False
+
         schema = os.path.join(utils.get_schema_path(), "env_entry_id.xsd")
 
         EnvBase.__init__(self, case_root, infile, schema=schema, read_only=read_only)
