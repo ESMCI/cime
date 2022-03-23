@@ -169,10 +169,6 @@ class Case(object):
                 if probed_machine:
                     if mach != probed_machine:
                         return
-                    expect(
-                        mach == probed_machine,
-                        f"Current machine {probed_machine} does not match case machine {mach}.",
-                    )
             self.initialize_derived_attributes()
 
     def check_if_comp_var(self, vid):
