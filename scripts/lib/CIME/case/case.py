@@ -163,7 +163,6 @@ class Case(object):
         # check if case has been configured and if so initialize derived
         if self.get_value("CASEROOT") is not None:
             if not self._non_local:
-                container = self.get_value("CONTAINER_ENVIRONMENT")
                 mach = self.get_value("MACH")
                 machobj = Machines()
                 probed_machine = machobj.probe_machine_name()
