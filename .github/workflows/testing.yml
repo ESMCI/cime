@@ -105,56 +105,22 @@ jobs:
 
           pytest -vvv --machine docker --no-fortran-run scripts/lib/CIME/tests/test_unit*
 
-  # Run system tests with E3SM as the model
-  # Still needed as there are E3SM specific tests
-  e3sm-system-testing:
-    runs-on: ubuntu-latest
-    needs: build-containers
-    if: ${{ always() }}
-    container: jasonb87/cime:latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Cache inputdata
-        if: ${{ ! env.ACT }}
-        uses: actions/cache@v2
-        with:
-          path: /storage/inputdata
-          key: e3sm-inputdata-2
-      - name: Run tests
-        shell: bash
-        timeout-minutes: 25
-        env:
-          INIT: "false"
-          CIME_MODEL: "e3sm"
-          CIME_DRIVER: "mct"
-          UPDATE_CIME: "true"
-          GIT_SHALLOW: "true"
-        run: |
-          export INSTALL_PATH="$(pwd)/E3SM"
-          export CIME_REPO=https://github.com/${{ github.event.pull_request.head.repo.full_name || github.repository }}
-          export CIME_BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF##*/}}
-
-          source /entrypoint.sh
-
-          init_e3sm
-
-          source /opt/conda/etc/profile.d/conda.sh
-
-          conda activate base
-
-          pytest -vvv --machine docker --no-fortran-run scripts/lib/CIME/tests/test_sys*
-
-  # Run system tests with CESM as the model
-  # Still needed as there are CESM specific tests
-  cesm-system-testing:
+  # Run system tests
+  system-testing:
     runs-on: ubuntu-latest
     needs: build-containers
     if: ${{ always() }}
     container: jasonb87/cime:latest
     strategy:
+      # Prevent issues with downloading data
+      max-parallel: 1
       matrix:
+        model: ["e3sm", "cesm"]
         driver: ["mct", "nuopc"]
+        exclude:
+          # exclude nuopc driver when running e3sm tests
+          - model: "e3sm"
+            driver: "nuopc"
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -163,12 +129,12 @@ jobs:
         uses: actions/cache@v2
         with:
           path: /storage/inputdata
-          key: cesm-${{ matrix.driver }}-inputdata-2
+          key: inputdata
       - name: Run tests
         shell: bash
         env:
           INIT: "false"
-          CIME_MODEL: "cesm"
+          CIME_MODEL: ${{ matrix.model }}
           CIME_DRIVER: ${{ matrix.driver }}
           UPDATE_CIME: "true"
           GIT_SHALLOW: "true"
@@ -179,7 +145,12 @@ jobs:
 
           source /entrypoint.sh
 
-          init_cime
+          if [[ "${CIME_MODEL}" == "e3sm" ]]
+          then
+            init_e3sm
+          else
+            init_cime
+          fi
 
           source /opt/conda/etc/profile.d/conda.sh
 
