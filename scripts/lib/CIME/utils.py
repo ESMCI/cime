@@ -2384,9 +2384,9 @@ def add_mail_type_args(parser):
         "You can specify multiple types with either comma-separated args or multiple -M flags.",
     )
 
+
 def add_container_arg(parser):
     parser.add_argument("--container", default=None, help=argparse.SUPPRESS)
-
 
 
 def resolve_mail_type_args(args):
