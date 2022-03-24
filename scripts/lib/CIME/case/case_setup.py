@@ -20,6 +20,7 @@ from CIME.utils import (
     safe_copy,
     file_contains_python_function,
     import_from_file,
+    copy_local_macros_to_dir,
 )
 from CIME.utils import batch_jobid
 from CIME.utils import transform_vars
@@ -190,39 +191,9 @@ def _create_macros(
         _create_macros_cmake(
             caseroot, new_cmake_macros_dir, mach_obj, compiler, case_cmake_path
         )
-        # check for macros in extra_machines_dir and in .cime
-        local_macros = []
-        extra_machdir = case.get_value("EXTRA_MACHDIR")
-        if extra_machdir:
-            if os.path.isdir(os.path.join(extra_machdir, "cmake_macros")):
-                local_macros.extend(
-                    glob.glob(os.path.join(extra_machdir, "cmake_macros/*.cmake"))
-                )
-            elif os.path.isfile(os.path.join(extra_machdir, "config_compilers.xml")):
-                logger.warning(
-                    "WARNING: Found directory {} but no cmake macros within, set env variable CIME_NO_CMAKE_MACRO to use deprecated config_compilers method".format(
-                        extra_machdir
-                    )
-                )
-        dotcime = None
-        home = os.environ.get("HOME")
-        if home:
-            dotcime = os.path.join(home, ".cime")
-        if dotcime and os.path.isdir(dotcime):
-            local_macros.extend(glob.glob(dotcime + "/*.cmake"))
-
-        for macro in local_macros:
-            safe_copy(macro, case_cmake_path)
-        if (
-            dotcime
-            and os.path.isfile(os.path.join(dotcime, "config_compilers.xml"))
-            and not local_macros
-        ):
-            logger.warning(
-                "WARNING: Found directory {} but no cmake macros within, set env variable CIME_NO_CMAKE_MACRO to use deprecated config_compilers method".format(
-                    dotcime
-                )
-            )
+        copy_local_macros_to_dir(
+            case_cmake_path, extra_machdir=case.get_value("EXTRA_MACHDIR")
+        )
 
     else:
         if not os.path.isfile("Macros.make"):

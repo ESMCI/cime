@@ -16,7 +16,14 @@ COMPILER, MPILIB, and DEBUG, respectively.
 """
 
 from CIME.XML.standard_module_setup import *
-from CIME.utils import expect, safe_copy, get_model, get_src_root, stringify_bool
+from CIME.utils import (
+    expect,
+    safe_copy,
+    get_model,
+    get_src_root,
+    stringify_bool,
+    copy_local_macros_to_dir,
+)
 from CIME.XML.compilers import Compilers
 from CIME.XML.env_mach_specific import EnvMachSpecific
 from CIME.XML.files import Files
@@ -75,18 +82,13 @@ def configure(
                 safe_copy(
                     os.path.join(new_cmake_macros_dir, "Macros.cmake"), output_dir
                 )
-            if not os.path.exists(os.path.join(output_dir, "cmake_macros")):
-                shutil.copytree(
-                    new_cmake_macros_dir, os.path.join(output_dir, "cmake_macros")
-                )
+            output_cmake_macros_dir = os.path.join(output_dir, "cmake_macros")
+            if not os.path.exists(output_cmake_macros_dir):
+                shutil.copytree(new_cmake_macros_dir, output_cmake_macros_dir)
 
-            # Grab macros from extra machine dir if it was provided
-            if extra_machines_dir:
-                extra_cmake_macros = glob.glob(
-                    "{}/cmake_macros/*.cmake".format(extra_machines_dir)
-                )
-                for extra_cmake_macro in extra_cmake_macros:
-                    safe_copy(extra_cmake_macro, new_cmake_macros_dir)
+            copy_local_macros_to_dir(
+                output_cmake_macros_dir, extra_machdir=extra_machines_dir
+            )
 
             if form == "Makefile":
                 # Use the cmake macros to generate the make macros
