@@ -29,7 +29,7 @@ from CIME.XML.env_mach_specific import EnvMachSpecific
 from CIME.XML.files import Files
 from CIME.build import CmakeTmpBuildDir
 
-import shutil, glob
+import shutil
 
 logger = logging.getLogger(__name__)
 

@@ -27,7 +27,7 @@ from CIME.utils import transform_vars
 from CIME.test_status import *
 from CIME.locked_files import unlock_file, lock_file
 
-import errno, shutil, glob
+import errno, shutil
 
 logger = logging.getLogger(__name__)
 
