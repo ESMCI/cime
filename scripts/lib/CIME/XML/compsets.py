@@ -66,7 +66,7 @@ class Compsets(GenericXML):
         expect(subgroup is None, "This class does not support subgroups")
         if name == "help":
             rootnode = self.get_child("help")
-            helptext = self.text(rootnode)
+            helptext = self.resolved_text(rootnode)
             return helptext
         else:
             compsets = {}
@@ -79,9 +79,9 @@ class Compsets(GenericXML):
                         )
                     )
                     if self.name(child) == "alias":
-                        alias = self.text(child)
+                        alias = self.resolved_text(child)
                     if self.name(child) == "lname":
-                        lname = self.text(child)
+                        lname = self.resolved_text(child)
                 compsets[alias] = lname
             return compsets
 
@@ -97,8 +97,8 @@ class Compsets(GenericXML):
         for compset in compsets:
             logger.info(
                 "   {:20} : {}".format(
-                    self.text(self.get_child("alias", root=compset)),
-                    self.text(self.get_child("lname", root=compset)),
+                    self.resolved_text(self.get_child("alias", root=compset)),
+                    self.resolved_text(self.get_child("lname", root=compset)),
                 )
             )
 
@@ -106,5 +106,5 @@ class Compsets(GenericXML):
         compset_nodes = self.get_children("compset")
         longnames = []
         for comp in compset_nodes:
-            longnames.append(self.text(self.get_child("lname", root=comp)))
+            longnames.append(self.resolved_text(self.get_child("lname", root=comp)))
         return longnames

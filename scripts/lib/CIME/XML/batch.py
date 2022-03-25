@@ -149,7 +149,7 @@ class Batch(GenericXML):
                     name = self.get(jnode, "name")
                     jdict = {}
                     for child in self.get_children(root=jnode):
-                        jdict[self.name(child)] = self.text(child)
+                        jdict[self.name(child)] = self.resolved_text(child)
 
                     jobs.append((name, jdict))
 

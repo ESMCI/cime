@@ -71,14 +71,18 @@ class Workflow(GenericXML):
                             attrib = self.attrib(child)
                             if attrib and attrib == {"MACH": machine}:
                                 for rtchild in self.get_children(root=child):
-                                    jdict[self.name(rtchild)] = self.text(rtchild)
+                                    jdict[self.name(rtchild)] = self.resolved_text(
+                                        rtchild
+                                    )
                             elif not attrib:
                                 for rtchild in self.get_children(root=child):
                                     if self.name(rtchild) not in jdict:
-                                        jdict[self.name(rtchild)] = self.text(rtchild)
+                                        jdict[self.name(rtchild)] = self.resolved_text(
+                                            rtchild
+                                        )
 
                         else:
-                            jdict[self.name(child)] = self.text(child)
+                            jdict[self.name(child)] = self.resolved_text(child)
 
                 jobs.append((name, jdict))
 
