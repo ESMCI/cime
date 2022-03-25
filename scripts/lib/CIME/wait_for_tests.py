@@ -518,7 +518,7 @@ CurlOptions: CURLOPT_SSL_VERIFYPEER_OFF;CURLOPT_SSL_VERIFYHOST_OFF
             cdash_project,
             find_executable("scp"),
             cdash_timestamp,
-            drop_method
+            drop_method,
         )
 
         with open("DartConfiguration.tcl", "w") as dart_fd:
@@ -532,7 +532,12 @@ CurlOptions: CURLOPT_SSL_VERIFYPEER_OFF;CURLOPT_SSL_VERIFYHOST_OFF
             tag_fd.write("{}\n{}\n".format(utc_time, cdash_build_group))
 
         create_cdash_xml_fakes(
-            results, cdash_build_name, cdash_build_group, utc_time, current_time, hostname
+            results,
+            cdash_build_name,
+            cdash_build_group,
+            utc_time,
+            current_time,
+            hostname,
         )
 
         create_cdash_upload_xml(
@@ -546,11 +551,14 @@ CurlOptions: CURLOPT_SSL_VERIFYPEER_OFF;CURLOPT_SSL_VERIFYHOST_OFF
 
         stat, out, _ = run_cmd("ctest -VV -D NightlySubmit", combine_output=True)[0]
         if stat != 0:
-            logging.warning("ctest upload drop method {} failed:\n{}".format(drop_method, out))
+            logging.warning(
+                "ctest upload drop method {} failed:\n{}".format(drop_method, out)
+            )
         else:
             return
 
     expect(False, "All cdash upload attempts failed")
+
 
 ###############################################################################
 def wait_for_test(
