@@ -164,7 +164,11 @@ class Case(object):
         if self.get_value("CASEROOT") is not None:
             if not self._non_local:
                 mach = self.get_value("MACH")
-                machobj = Machines()
+                extra_machdir = self.get_value("EXTRA_MACHDIR")
+                if extra_machdir:
+                    machobj = Machines(machine=mach, extra_machines_dir=extra_machdir)
+                else:
+                    machobj = Machines(machine=mach)
                 probed_machine = machobj.probe_machine_name()
                 if probed_machine:
                     expect(
