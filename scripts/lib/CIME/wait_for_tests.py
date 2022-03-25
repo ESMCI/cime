@@ -482,7 +482,8 @@ def create_cdash_xml(
             "Could not convert hostname '{}' into an E3SM machine name".format(hostname)
         )
 
-    dart_config = """
+    for drop_method in ["https", "http"]:
+        dart_config = """
 SourceDirectory: {0}
 BuildDirectory: {0}
 
@@ -501,7 +502,7 @@ DropLocation: /submit.php?project={3}
 DropSiteUser:
 DropSitePassword:
 DropSiteMode:
-DropMethod: https
+DropMethod: {6}
 TriggerSite:
 ScpCommand: {4}
 
@@ -511,39 +512,45 @@ NightlyStartTime: {5} UTC
 UseLaunchers:
 CurlOptions: CURLOPT_SSL_VERIFYPEER_OFF;CURLOPT_SSL_VERIFYHOST_OFF
 """.format(
-        os.getcwd(),
-        hostname,
-        cdash_build_name,
-        cdash_project,
-        find_executable("scp"),
-        cdash_timestamp,
-    )
+            os.getcwd(),
+            hostname,
+            cdash_build_name,
+            cdash_project,
+            find_executable("scp"),
+            cdash_timestamp,
+            drop_method
+        )
 
-    with open("DartConfiguration.tcl", "w") as dart_fd:
-        dart_fd.write(dart_config)
+        with open("DartConfiguration.tcl", "w") as dart_fd:
+            dart_fd.write(dart_config)
 
-    utc_time = time.strftime("%Y%m%d-%H%M", utc_time_tuple)
-    os.makedirs(os.path.join("Testing", utc_time))
+        utc_time = time.strftime("%Y%m%d-%H%M", utc_time_tuple)
+        os.makedirs(os.path.join("Testing", utc_time))
 
-    # Make tag file
-    with open("Testing/TAG", "w") as tag_fd:
-        tag_fd.write("{}\n{}\n".format(utc_time, cdash_build_group))
+        # Make tag file
+        with open("Testing/TAG", "w") as tag_fd:
+            tag_fd.write("{}\n{}\n".format(utc_time, cdash_build_group))
 
-    create_cdash_xml_fakes(
-        results, cdash_build_name, cdash_build_group, utc_time, current_time, hostname
-    )
+        create_cdash_xml_fakes(
+            results, cdash_build_name, cdash_build_group, utc_time, current_time, hostname
+        )
 
-    create_cdash_upload_xml(
-        results,
-        cdash_build_name,
-        cdash_build_group,
-        utc_time,
-        hostname,
-        force_log_upload,
-    )
+        create_cdash_upload_xml(
+            results,
+            cdash_build_name,
+            cdash_build_group,
+            utc_time,
+            hostname,
+            force_log_upload,
+        )
 
-    run_cmd_no_fail("ctest -VV -D NightlySubmit", verbose=True)
+        stat, out, _ = run_cmd("ctest -VV -D NightlySubmit", combine_output=True)[0]
+        if stat != 0:
+            logging.warning("ctest upload drop method {} failed:\n{}".format(drop_method, out))
+        else:
+            return
 
+    expect(False, "All cdash upload attempts failed")
 
 ###############################################################################
 def wait_for_test(
