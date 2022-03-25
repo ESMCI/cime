@@ -556,9 +556,10 @@ CurlOptions: CURLOPT_SSL_VERIFYPEER_OFF;CURLOPT_SSL_VERIFYHOST_OFF
         stat, out, _ = run_cmd("ctest -VV -D NightlySubmit", combine_output=True)
         if stat != 0:
             logging.warning(
-                "ctest upload drop method {} failed:\n{}".format(drop_method, out)
+                "ctest upload drop method {} FAILED:\n{}".format(drop_method, out)
             )
         else:
+            logging.info("Upload SUCCESS:\n{}".format(out))
             return
 
     expect(False, "All cdash upload attempts failed")
