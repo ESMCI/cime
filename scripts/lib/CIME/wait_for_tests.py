@@ -525,6 +525,10 @@ CurlOptions: CURLOPT_SSL_VERIFYPEER_OFF;CURLOPT_SSL_VERIFYHOST_OFF
             dart_fd.write(dart_config)
 
         utc_time = time.strftime("%Y%m%d-%H%M", utc_time_tuple)
+        testing_dir = os.path.join("Testing", utc_time)
+        if os.path.isdir(testing_dir):
+            shutil.rmtree(testing_dir)
+
         os.makedirs(os.path.join("Testing", utc_time))
 
         # Make tag file
