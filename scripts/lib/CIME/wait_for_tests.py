@@ -549,7 +549,7 @@ CurlOptions: CURLOPT_SSL_VERIFYPEER_OFF;CURLOPT_SSL_VERIFYHOST_OFF
             force_log_upload,
         )
 
-        stat, out, _ = run_cmd("ctest -VV -D NightlySubmit", combine_output=True)[0]
+        stat, out, _ = run_cmd("ctest -VV -D NightlySubmit", combine_output=True)
         if stat != 0:
             logging.warning(
                 "ctest upload drop method {} failed:\n{}".format(drop_method, out)
