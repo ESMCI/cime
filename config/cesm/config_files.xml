@@ -212,7 +212,7 @@
     <type>char</type>
     <default_value>unset</default_value>
     <values>
-      <value component="cice6"                       >$SRCROOT/components/cice6/</value>
+      <value component="cice5"                       >$SRCROOT/components/cice5/</value>
       <value component="cice"                        >$SRCROOT/components/cice/</value>
       <value component="dice" comp_interface="mct"   >$SRCROOT/components/cpl7/components/data_comps_$COMP_INTERFACE/dice</value>
       <value component="dice" comp_interface="nuopc" >$SRCROOT/components/cdeps/dice</value>
@@ -305,7 +305,7 @@
       <value component="ufsatm"    >$COMP_ROOT_DIR_ATM/cime_config/config_compsets.xml</value>
       <value component="cism"      >$COMP_ROOT_DIR_GLC/cime_config/config_compsets.xml</value>
       <value component="clm"       >$COMP_ROOT_DIR_LND/cime_config/config_compsets.xml</value>
-      <value component="cice6"     >$COMP_ROOT_DIR_ICE/cime_config/config_compsets.xml</value>
+      <value component="cice5"     >$COMP_ROOT_DIR_ICE/cime_config/config_compsets.xml</value>
       <value component="cice"      >$COMP_ROOT_DIR_ICE/cime_config/config_compsets.xml</value>
       <value component="pop"       >$COMP_ROOT_DIR_OCN/cime_config/config_compsets.xml</value>
       <value component="mom"       >$COMP_ROOT_DIR_OCN/cime_config/config_compsets.xml</value>
@@ -327,7 +327,7 @@
       <value component="ufsatm"    >$COMP_ROOT_DIR_ATM/cime_config/config_pes.xml</value>
       <value component="cism"      >$COMP_ROOT_DIR_GLC/cime_config/config_pes.xml</value>
       <value component="clm"       >$COMP_ROOT_DIR_LND/cime_config/config_pes.xml</value>
-      <value component="cice6"     >$COMP_ROOT_DIR_ICE/cime_config/config_pes.xml</value>
+      <value component="cice5"     >$COMP_ROOT_DIR_ICE/cime_config/config_pes.xml</value>
       <value component="cice"      >$COMP_ROOT_DIR_ICE/cime_config/config_pes.xml</value>
       <value component="pop"       >$COMP_ROOT_DIR_OCN/cime_config/config_pes.xml</value>
       <value component="mom"       >$COMP_ROOT_DIR_OCN/cime_config/config_pes.xml</value>
@@ -355,7 +355,7 @@
       <value component="cam"       >$COMP_ROOT_DIR_ATM/cime_config/config_archive.xml</value>
       <value component="cism"      >$COMP_ROOT_DIR_GLC/cime_config/config_archive.xml</value>
       <value component="clm"       >$COMP_ROOT_DIR_LND/cime_config/config_archive.xml</value>
-      <value component="cice6"     >$COMP_ROOT_DIR_ICE/cime_config/config_archive.xml</value>
+      <value component="cice5"     >$COMP_ROOT_DIR_ICE/cime_config/config_archive.xml</value>
       <value component="cice"      >$COMP_ROOT_DIR_ICE/cime_config/config_archive.xml</value>
       <value component="pop"       >$COMP_ROOT_DIR_OCN/cime_config/config_archive.xml</value>
       <value component="mom"       >$COMP_ROOT_DIR_OCN/cime_config/config_archive.xml</value>
@@ -380,7 +380,7 @@
       <value component="pop"       >$COMP_ROOT_DIR_OCN/cime_config/SystemTests</value>
       <value component="mom"       >$COMP_ROOT_DIR_OCN/cime_config/SystemTests</value>
       <value component="nemo"      >$COMP_ROOT_DIR_OCN/cime_config/SystemTests</value>
-      <value component="cice6"     >$COMP_ROOT_DIR_ICE/cime_config/SystemTests</value>
+      <value component="cice5"     >$COMP_ROOT_DIR_ICE/cime_config/SystemTests</value>
       <value component="cice"      >$COMP_ROOT_DIR_ICE/cime_config/SystemTests</value>
       <value component="cism"      >$COMP_ROOT_DIR_GLC/cime_config/SystemTests</value>
       <value component="rtm"       >$COMP_ROOT_DIR_ROF/cime_config/SystemTests</value>
@@ -401,7 +401,7 @@
       <value component="cam"       >$COMP_ROOT_DIR_ATM/cime_config/testdefs/testlist_cam.xml</value>
       <value component="cism"      >$COMP_ROOT_DIR_GLC/cime_config/testdefs/testlist_cism.xml</value>
       <value component="clm"       >$COMP_ROOT_DIR_LND/cime_config/testdefs/testlist_clm.xml</value>
-      <value component="cice6"     >$COMP_ROOT_DIR_ICE/cime_config/testdefs/testlist_cice.xml</value>
+      <value component="cice5"     >$COMP_ROOT_DIR_ICE/cime_config/testdefs/testlist_cice.xml</value>
       <value component="cice"      >$COMP_ROOT_DIR_ICE/cime_config/testdefs/testlist_cice.xml</value>
       <value component="pop"       >$COMP_ROOT_DIR_OCN/cime_config/testdefs/testlist_pop.xml</value>
       <value component="mom"       >$COMP_ROOT_DIR_OCN/cime_config/testdefs/testlist_mom.xml</value>
@@ -431,7 +431,7 @@
       <value component="cam"       >$COMP_ROOT_DIR_ATM/cime_config/testdefs/testmods_dirs</value>
       <value component="cism"      >$COMP_ROOT_DIR_GLC/cime_config/testdefs/testmods_dirs</value>
       <value component="clm"       >$COMP_ROOT_DIR_LND/cime_config/testdefs/testmods_dirs</value>
-      <value component="cice6"     >$COMP_ROOT_DIR_ICE/cime_config/testdefs/testmods_dirs</value>
+      <value component="cice5"     >$COMP_ROOT_DIR_ICE/cime_config/testdefs/testmods_dirs</value>
       <value component="cice"      >$COMP_ROOT_DIR_ICE/cime_config/testdefs/testmods_dirs</value>
       <value component="rtm"       >$COMP_ROOT_DIR_ROF/cime_config/testdefs/testmods_dirs</value>
       <value component="mosart"    >$COMP_ROOT_DIR_ROF/cime_config/testdefs/testmods_dirs</value>
@@ -460,7 +460,7 @@
       <value component="cam"      >$COMP_ROOT_DIR_ATM/cime_config/usermods_dirs</value>
       <value component="cism"     >$COMP_ROOT_DIR_GLC/cime_config/usermods_dirs</value>
       <value component="clm"      >$COMP_ROOT_DIR_LND/cime_config/usermods_dirs</value>
-      <value component="cice6"    >$COMP_ROOT_DIR_ICE/cime_config/usermods_dirs</value>
+      <value component="cice5"    >$COMP_ROOT_DIR_ICE/cime_config/usermods_dirs</value>
       <value component="cice"     >$COMP_ROOT_DIR_ICE/cime_config/usermods_dirs</value>
       <value component="rtm"      >$COMP_ROOT_DIR_ROF/cime_config/usermods_dirs</value>
       <value component="mosart"   >$COMP_ROOT_DIR_ROF/cime_config/usermods_dirs</value>
@@ -491,7 +491,7 @@
       <!--  TODO
       <value component="cam"  >$COMP_ROOT_DIR_ATM/bld/namelist_files/namelist_definition.xml</value>
       <value component="cism" >$COMP_ROOT_DIR_GLC/bld/namelist_files/namelist_definition_cism.xml</value>
-      <value component="cice6">$COMP_ROOT_DIR_ICE/cime_config/namelist_definition_cice.xml</value>
+      <value component="cice5">$COMP_ROOT_DIR_ICE/cime_config/namelist_definition_cice.xml</value>
       <value component="cice" >$COMP_ROOT_DIR_ICE/cime_config/namelist_definition_cice.xml</value>
       <value component="clm"  >$COMP_ROOT_DIR_LND/bld/namelist_files/namelist_definition_ctsm.xml</value>
       <value component="pop"  >$COMP_ROOT_DIR_OCN/bld/namelist_files/namelist_definition_pop.xml</value>

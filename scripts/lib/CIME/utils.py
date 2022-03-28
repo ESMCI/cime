@@ -312,6 +312,47 @@ def reset_cime_config():
     _CIMECONFIG = None
 
 
+def copy_local_macros_to_dir(destination, extra_machdir=None):
+    """
+    Copy any local macros files to the path given by 'destination'.
+
+    Local macros files are potentially found in:
+    (1) extra_machdir/cmake_macros/*.cmake
+    (2) $HOME/.cime/*.cmake
+    """
+    local_macros = []
+    if extra_machdir:
+        if os.path.isdir(os.path.join(extra_machdir, "cmake_macros")):
+            local_macros.extend(
+                glob.glob(os.path.join(extra_machdir, "cmake_macros/*.cmake"))
+            )
+        elif os.path.isfile(os.path.join(extra_machdir, "config_compilers.xml")):
+            logger.warning(
+                "WARNING: Found directory {} but no cmake macros within, set env variable CIME_NO_CMAKE_MACRO to use deprecated config_compilers method".format(
+                    extra_machdir
+                )
+            )
+    dotcime = None
+    home = os.environ.get("HOME")
+    if home:
+        dotcime = os.path.join(home, ".cime")
+    if dotcime and os.path.isdir(dotcime):
+        local_macros.extend(glob.glob(dotcime + "/*.cmake"))
+    if (
+        dotcime
+        and os.path.isfile(os.path.join(dotcime, "config_compilers.xml"))
+        and not local_macros
+    ):
+        logger.warning(
+            "WARNING: Found directory {} but no cmake macros within, set env variable CIME_NO_CMAKE_MACRO to use deprecated config_compilers method".format(
+                dotcime
+            )
+        )
+
+    for macro in local_macros:
+        safe_copy(macro, destination)
+
+
 def get_python_libs_location_within_cime():
     """
     From within CIME, return subdirectory of python libraries
