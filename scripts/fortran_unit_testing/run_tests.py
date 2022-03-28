@@ -427,7 +427,7 @@ def _main():
         "{}-DOS={} -DMACH={} -DCOMPILER={} -DDEBUG={} -DMPILIB={} -Dcompile_threaded={} -DCASEROOT={}".format(
             "" if not cmake_args else "{} ".format(cmake_args),
             os_,
-            machine,
+            machobj.get_machine_name(),
             compiler,
             stringify_bool(debug),
             mpilib,

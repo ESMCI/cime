@@ -1,5 +1,39 @@
 ======================================================================
 
+Originatorr: Chris Fischer
+Date: 3-25-2022
+Tag: cime6.0.16
+Answer Changes: all active cice cases, same climate
+Tests: scripts_regression_tests, aux_cice
+Dependencies:
+
+Brief Summary:
+    - Fix run_tests.py when no machine is given.
+    - Changes to CIME to make CICE6 the default component
+    - Bump pillow from 9.0.0 to 9.0.1 in pyCECT documents.
+    - Only clear baselines when run_count is 0 and -o is used.
+
+User interface changes:
+
+PR summary: git log --oneline --first-parent [previous_tag]..master
+0b89e444d Merge pull request #4203 from billsacks/run_tests_no_explicit_machine
+62fede4fd Merge pull request #4172 from dabail10/cime_cice6
+b3d4147ff Merge pull request #4196 from ESMCI/dependabot/pip/tools/statistical_ensemble_test/pyCECT/docs/pillow-9.0.1
+ff645a6d9 Merge pull request #4197 from ESMCI/fischer/retryruncount
+
+Modified files: git diff --name-status [previous_tag]
+M       config/cesm/config_files.xml
+M       scripts/create_test
+M       scripts/fortran_unit_testing/run_tests.py
+M       scripts/lib/CIME/XML/archive_base.py
+M       scripts/lib/CIME/case/case_st_archive.py
+M       scripts/lib/CIME/test_scheduler.py
+M       tools/statistical_ensemble_test/pyCECT/docs/requirements.txt
+
+
+======================================================================
+======================================================================
+
 Originator: Chris Fischer
 Date: 3-1-2022
 Tag: cime6.0.14
