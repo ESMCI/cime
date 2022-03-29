@@ -35,41 +35,6 @@ M       tools/statistical_ensemble_test/pyCECT/docs/requirements.txt
 ======================================================================
 
 Originator: Chris Fischer
-Date: 3-11-2022
-Tag: cime6.0.15
-Answer Changes: None
-Tests: scripts_regression_tests
-Dependencies:
-
-Brief Summary:
-    - Fix generated baseline from disappearing when using --retry.
-    - Comparison test class with arbitrary number of instances.
-    - Fixes extraneous warnings and machine detection
-    - neon inputdata update
-
-User interface changes:
-
-PR summary: git log --oneline --first-parent [previous_tag]..master
-4227e709c Merge pull request #4195 from ESMCI/fischer/retry
-3cbf732a4 Merge pull request #4169 from alperaltuntas/system_tests_compare_multi
-88f216f97 Merge pull request #4187 from jasonb5/fix_machine_warning
-479181641 Merge pull request #4190 from jedwards4b/neon_inputdata_update
-
-
-Modified files: git diff --name-status [previous_tag]
-M       config/cesm/config_files.xml
-M       scripts/create_test
-M       scripts/lib/CIME/Servers/ftp.py
-M       scripts/lib/CIME/Servers/wget.py
-A       scripts/lib/CIME/SystemTests/system_tests_compare_n.py
-M       scripts/lib/CIME/XML/machines.py
-M       scripts/lib/CIME/test_scheduler.py
-
-
-======================================================================
-======================================================================
-
-Originator: Chris Fischer
 Date: 3-1-2022
 Tag: cime6.0.14
 Answer Changes: [None, Round Off, Climate Changing]
