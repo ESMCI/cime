@@ -125,7 +125,9 @@ class Testlist(GenericXML):
                     this_test["options"] = {}
 
                     for onode in optionnodes:
-                        this_test["options"][self.get(onode, "name")] = self.text(onode)
+                        this_test["options"][
+                            self.get(onode, "name")
+                        ] = self.resolved_text(onode)
 
                     # Now get options specific to this machine/compiler
                     options = self.get_optional_child("options", root=mach)
@@ -135,7 +137,9 @@ class Testlist(GenericXML):
                         else self.get_children("option", root=options)
                     )
                     for onode in optionnodes:
-                        this_test["options"][self.get(onode, "name")] = self.text(onode)
+                        this_test["options"][
+                            self.get(onode, "name")
+                        ] = self.resolved_text(onode)
 
                     tests.append(this_test)
 

@@ -67,7 +67,7 @@ class ExpectedFailsFile(GenericXML):
             for pnode in phase_nodes:
                 phase_name = self.attrib(pnode)["name"]
                 status_node = self.get_child("status", root=pnode)
-                status = self.text(status_node)
+                status = self.resolved_text(status_node)
                 # issue and comment elements are not currently parsed
                 if test_name not in xfails:
                     xfails[test_name] = ExpectedFails()

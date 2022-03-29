@@ -53,23 +53,27 @@ class Inputdata(GenericXML):
                     self._servernode = None
 
             if self._servernode:
-                protocol = self.text(self.get_child("protocol", root=self._servernode))
-                address = self.text(self.get_child("address", root=self._servernode))
+                protocol = self.resolved_text(
+                    self.get_child("protocol", root=self._servernode)
+                )
+                address = self.resolved_text(
+                    self.get_child("address", root=self._servernode)
+                )
                 unode = self.get_optional_child("user", root=self._servernode)
                 if unode:
-                    user = self.text(unode)
+                    user = self.resolved_text(unode)
                 invnode = self.get_optional_child("inventory", root=self._servernode)
                 if invnode:
-                    inventory = self.text(invnode)
+                    inventory = self.resolved_text(invnode)
 
                 pnode = self.get_optional_child("password", root=self._servernode)
                 if pnode:
-                    passwd = self.text(pnode)
+                    passwd = self.resolved_text(pnode)
                 csnode = self.get_optional_child("checksum", root=self._servernode)
                 if csnode:
-                    chksum_file = self.text(csnode)
+                    chksum_file = self.resolved_text(csnode)
                 icnode = self.get_optional_child("ic_filepath", root=self._servernode)
                 if icnode:
-                    ic_filepath = self.text(icnode)
+                    ic_filepath = self.resolved_text(icnode)
 
         return protocol, address, user, passwd, chksum_file, ic_filepath, inventory

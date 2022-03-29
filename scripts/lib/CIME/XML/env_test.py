@@ -32,20 +32,18 @@ class EnvTest(EnvBase):
         """
         tnode = self.get_child("test")
         for child in self.get_children(root=tnode):
-            if self.text(child) is not None:
+            child_text = self.resolved_text(child)
+
+            if child_text is not None:
                 logger.debug(
-                    "Setting {} to {} for test".format(
-                        self.name(child), self.text(child)
-                    )
+                    "Setting {} to {} for test".format(self.name(child), child_text)
                 )
-                if "$" in self.text(child):
-                    case.set_value(self.name(child), self.text(child), ignore_type=True)
+                if "$" in child_text:
+                    case.set_value(self.name(child), child_text, ignore_type=True)
                 else:
                     item_type = case.get_type_info(self.name(child))
                     if item_type:
-                        value = convert_to_type(
-                            self.text(child), item_type, self.name(child)
-                        )
+                        value = convert_to_type(child_text, item_type, self.name(child))
                         case.set_value(self.name(child), value)
         case.flush()
         return
@@ -70,7 +68,7 @@ class EnvTest(EnvBase):
         value = None
         idnode = self.get_optional_child(name, root=tnode)
         if idnode is not None:
-            value = self.text(idnode)
+            value = self.resolved_text(idnode)
         return value
 
     def get_step_phase_cnt(self, step):
@@ -85,12 +83,14 @@ class EnvTest(EnvBase):
         settings = []
         if node is not None:
             for child in node:
+                child_text = self.resolved_text(child)
+
                 logger.debug(
                     "Here child is {} with value {}".format(
-                        self.name(child), self.text(child)
+                        self.name(child), child_text
                     )
                 )
-                settings.append((self.name(child), self.text(child)))
+                settings.append((self.name(child), child_text))
 
         return settings
 
