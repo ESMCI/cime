@@ -30,7 +30,9 @@ class EnvArchive(ArchiveBase, EnvBase):
         for rpointer_node in rpointer_nodes:
             file_node = self.get_child("rpointer_file", root=rpointer_node)
             content_node = self.get_child("rpointer_content", root=rpointer_node)
-            rpointer_items.append([self.text(file_node), self.text(content_node)])
+            rpointer_items.append(
+                [self.resolved_text(file_node), self.resolved_text(content_node)]
+            )
         return rpointer_items
 
     def get_type_info(self, vid):

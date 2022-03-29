@@ -381,10 +381,9 @@ class Machines(GenericXML):
         result = False
         batch_system = self.get_optional_child("BATCH_SYSTEM", root=self.machine_node)
         if batch_system is not None:
-            result = (
-                self.text(batch_system) is not None
-                and self.text(batch_system) != "none"
-            )
+            batch_system_value = self.resolved_text(batch_system)
+
+            result = batch_system_value is not None and batch_system_value != "none"
         logger.debug("Machine {} has batch: {}".format(self.machine, result))
         return result
 
@@ -393,7 +392,7 @@ class Machines(GenericXML):
         if node is not None:
             suffix_node = self.get_optional_child(suffix_type, root=node)
             if suffix_node is not None:
-                return self.text(suffix_node)
+                return self.resolved_text(suffix_node)
 
         return None
 
@@ -416,15 +415,17 @@ class Machines(GenericXML):
             )
             max_gpus_per_node = self.get_child("MAX_GPUS_PER_NODE", root=machine)
 
-            print("  {} : {} ".format(name, self.text(desc)))
-            print("      os             ", self.text(os_))
-            print("      compilers      ", self.text(compilers))
+            print("  {} : {} ".format(name, self.resolved_text(desc)))
+            print("      os             ", self.resolved_text(os_))
+            print("      compilers      ", self.resolved_text(compilers))
             if max_mpitasks_per_node is not None:
-                print("      pes/node       ", self.text(max_mpitasks_per_node))
+                print(
+                    "      pes/node       ", self.resolved_text(max_mpitasks_per_node)
+                )
             if max_tasks_per_node is not None:
-                print("      max_tasks/node ", self.text(max_tasks_per_node))
+                print("      max_tasks/node ", self.resolved_text(max_tasks_per_node))
             if max_gpus_per_node is not None:
-                print("      max_gpus/node ", self.text(max_gpus_per_node))
+                print("      max_gpus/node ", self.resolved_text(max_gpus_per_node))
 
     def return_values(self):
         """return a dictionary of machine info
@@ -436,20 +437,24 @@ class Machines(GenericXML):
         for machine in machines:
             name = self.get(machine, "MACH")
             desc = self.get_child("DESC", root=machine)
-            mach_dict[(name, "description")] = self.text(desc)
+            mach_dict[(name, "description")] = self.resolved_text(desc)
             os_ = self.get_child("OS", root=machine)
-            mach_dict[(name, "os")] = self.text(os_)
+            mach_dict[(name, "os")] = self.resolved_text(os_)
             compilers = self.get_child("COMPILERS", root=machine)
-            mach_dict[(name, "compilers")] = self.text(compilers)
+            mach_dict[(name, "compilers")] = self.resolved_text(compilers)
             max_tasks_per_node = self.get_child("MAX_TASKS_PER_NODE", root=machine)
-            mach_dict[(name, "max_tasks_per_node")] = self.text(max_tasks_per_node)
+            mach_dict[(name, "max_tasks_per_node")] = self.resolved_text(
+                max_tasks_per_node
+            )
             max_mpitasks_per_node = self.get_child(
                 "MAX_MPITASKS_PER_NODE", root=machine
             )
-            mach_dict[(name, "max_mpitasks_per_node")] = self.text(
+            mach_dict[(name, "max_mpitasks_per_node")] = self.resolved_text(
                 max_mpitasks_per_node
             )
             max_gpus_per_node = self.get_child("MAX_GPUS_PER_NODE", root=machine)
-            mach_dict[(name, "max_gpus_per_node")] = self.text(max_gpus_per_node)
+            mach_dict[(name, "max_gpus_per_node")] = self.resolved_text(
+                max_gpus_per_node
+            )
 
         return mach_dict

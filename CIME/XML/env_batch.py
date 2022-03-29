@@ -375,7 +375,7 @@ class EnvBatch(EnvBase):
 
                         logger.debug(
                             "Using walltimemax {!r} from default "
-                            "queue {!r}".format(walltime, self.text(queue))
+                            "queue {!r}".format(walltime, self.resolved_text(queue))
                         )
 
                     # Still no walltime, use the hardcoded default
@@ -401,7 +401,7 @@ class EnvBatch(EnvBase):
                             "{!r} is less than queue "
                             "{!r} minimum walltime "
                             "{!r}, job might fail".format(
-                                job, walltime, self.text(queue), walltimemin
+                                job, walltime, self.resolved_text(queue), walltimemin
                             )
                         )
 
@@ -415,7 +415,7 @@ class EnvBatch(EnvBase):
                             "{!r} is more than queue "
                             "{!r} maximum walltime "
                             "{!r}, job might fail".format(
-                                job, walltime, self.text(queue), walltimemax
+                                job, walltime, self.resolved_text(queue), walltimemax
                             )
                         )
 
@@ -426,11 +426,13 @@ class EnvBatch(EnvBase):
                 walltime = format_time(walltime_format, "%H:%M:%S", full_bab_time)
 
             env_workflow.set_value(
-                "JOB_QUEUE", self.text(queue), subgroup=job, ignore_type=False
+                "JOB_QUEUE", self.resolved_text(queue), subgroup=job, ignore_type=False
             )
             env_workflow.set_value("JOB_WALLCLOCK_TIME", walltime, subgroup=job)
             logger.debug(
-                "Job {} queue {} walltime {}".format(job, self.text(queue), walltime)
+                "Job {} queue {} walltime {}".format(
+                    job, self.resolved_text(queue), walltime
+                )
             )
 
     def _match_attribs(self, attribs, case, queue):
@@ -482,7 +484,7 @@ class EnvBatch(EnvBase):
         if self._batchtype != "none" and not queue in self._get_all_queue_names():
             unknown_queue = True
             qnode = self.get_default_queue()
-            default_queue = self.text(qnode)
+            default_queue = self.resolved_text(qnode)
         else:
             unknown_queue = False
 
@@ -1085,7 +1087,7 @@ class EnvBatch(EnvBase):
 
         queue_names = []
         for queue in all_queues:
-            queue_names.append(self.text(queue))
+            queue_names.append(self.resolved_text(queue))
 
         return queue_names
 
@@ -1105,7 +1107,7 @@ class EnvBatch(EnvBase):
             if self.queue_meets_spec(
                 qnode, num_nodes, num_tasks, walltime=walltime, job=job
             ):
-                logger.debug("Selected queue {!r}".format(self.text(qnode)))
+                logger.debug("Selected queue {!r}".format(self.resolved_text(qnode)))
 
                 return qnode
 
@@ -1178,7 +1180,7 @@ class EnvBatch(EnvBase):
             if qsnode is not None:
                 qnodes = self.get_children("queue", root=qsnode)
                 for qnode in qnodes:
-                    if name is None or self.text(qnode) == name:
+                    if name is None or self.resolved_text(qnode) == name:
                         nodes.append(qnode)
                         if self.get(qnode, "default", default="false") == "true":
                             default_idx = len(nodes) - 1
@@ -1208,7 +1210,7 @@ class EnvBatch(EnvBase):
         if batch_query is None:
             logger.warning("Batch queries not supported on this platform")
         else:
-            cmd = self.text(batch_query) + " "
+            cmd = self.resolved_text(batch_query) + " "
             if self.has(batch_query, "per_job_arg"):
                 cmd += self.get(batch_query, "per_job_arg") + " "
 
@@ -1228,7 +1230,7 @@ class EnvBatch(EnvBase):
             logger.warning("Batch cancellation not supported on this platform")
             return False
         else:
-            cmd = self.text(batch_cancel) + " " + str(jobid)
+            cmd = self.resolved_text(batch_cancel) + " " + str(jobid)
 
             status, out, err = run_cmd(cmd)
             if status != 0:
@@ -1251,7 +1253,7 @@ class EnvBatch(EnvBase):
             f1batchnodes = self.get_children(root=bnode)
             for node in f1batchnodes:
                 name = self.name(node)
-                text1 = self.text(node)
+                text1 = self.resolved_text(node)
                 text2 = ""
                 attribs = self.attrib(node)
                 f2matches = other.scan_children(name, attributes=attribs, root=f2bnode)
