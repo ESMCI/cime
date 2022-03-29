@@ -1,7 +1,7 @@
 import os
 import sys
 
-CIMEROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "scripts", "lib"))
+CIMEROOT = os.path.abspath(os.path.join(os.path.dirname(__file__)))
 sys.path.insert(0, CIMEROOT)
 
 import pytest
