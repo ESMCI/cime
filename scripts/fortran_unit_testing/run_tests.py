@@ -3,7 +3,7 @@ from __future__ import print_function
 import os, sys
 
 _CIMEROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../..")
-sys.path.append(os.path.join(_CIMEROOT, "scripts", "Tools"))
+sys.path.append(os.path.join(_CIMEROOT, "CIME", "Tools"))
 sys.path.append(os.path.join(_CIMEROOT, "scripts", "utils", "python"))
 sys.path.append(os.path.join(_CIMEROOT, "scripts", "fortran_unit_testing", "python"))
 
@@ -245,7 +245,7 @@ def cmake_stage(
             "-DCIMEROOT=" + _CIMEROOT,
             "-DSRC_ROOT=" + get_src_root(),
             "-DCIME_CMAKE_MODULE_DIRECTORY="
-            + os.path.abspath(os.path.join(_CIMEROOT, "src", "CMake")),
+            + os.path.abspath(os.path.join(_CIMEROOT, "CIME", "non_py", "src", "CMake")),
             "-DCMAKE_BUILD_TYPE=" + build_type,
             "-DPFUNIT_MPIRUN='" + mpirun_command + "'",
             "-DPFUNIT_PATH=" + pfunit_path,
@@ -257,7 +257,7 @@ def cmake_stage(
 
         if enable_genf90:
             cmake_command.append("-DENABLE_GENF90=ON")
-            genf90_dir = os.path.join(_CIMEROOT, "src", "externals", "genf90")
+            genf90_dir = os.path.join(_CIMEROOT, "CIME", "non_py", "externals", "genf90")
             cmake_command.append("-DCMAKE_PROGRAM_PATH=" + genf90_dir)
 
         if not color:
