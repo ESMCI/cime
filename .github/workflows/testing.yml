@@ -107,7 +107,7 @@ jobs:
 
           init_cime
 
-          pytest -vvv --machine docker --no-fortran-run scripts/lib/CIME/tests/test_unit*
+          pytest -vvv --machine docker --no-fortran-run CIME/tests/test_unit*
 
   # Run system tests
   system-testing:
@@ -158,4 +158,4 @@ jobs:
 
           conda activate base
 
-          pytest -vvv --machine docker --no-fortran-run scripts/lib/CIME/tests/test_sys*
+          pytest -vvv --machine docker --no-fortran-run CIME/tests/test_sys*

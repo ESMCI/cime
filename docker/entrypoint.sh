@@ -126,7 +126,7 @@ function init_e3sm() {
 function init_cesm() {
     export CIME_MODEL="cesm"
 
-    local install_path="${INSTALL_install_path:-/src/CESM}"
+    local install_path="${INSTALL_PATH:-/src/CESM}"
 
     if [[ ! -e "${install_path}" ]]
     then
@@ -134,6 +134,8 @@ function init_cesm() {
     fi
 
     cd "${install_path}"
+
+    rm -rf "/src/cime/CIME/externals/genf90"
 
     "${install_path}/manage_externals/checkout_externals"
 
