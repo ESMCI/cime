@@ -135,8 +135,6 @@ function init_cesm() {
 
     cd "${install_path}"
 
-    rm -rf "/src/cime/CIME/externals/genf90"
-
     "${install_path}/manage_externals/checkout_externals"
 
     fixup_mct "${install_path}/libraries/mct"
@@ -165,6 +163,8 @@ function init_cime() {
     clone_repo "${CESM_REPO}" "/src/CESM" "${CESM_BRANCH:-master}"
 
     cd "${install_path}"
+
+    rm -rf "/src/cime/CIME/non_py/externals/genf90"
 
     "/src/CESM/manage_externals/checkout_externals"
 
