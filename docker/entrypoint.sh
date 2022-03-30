@@ -152,7 +152,7 @@ function init_cime() {
     export CIME_MODEL="cesm"
     export ESMFMKFILE="/opt/conda/lib/esmf.mk"
 
-    local install_path="${INSTALL_install_path:-/src/cime}"
+    local install_path="${INSTALL_PATH:-/src/cime}"
 
     if [[ ! -e "${install_path}" ]]
     then
@@ -164,7 +164,7 @@ function init_cime() {
 
     cd "${install_path}"
 
-    rm -rf "/src/cime/CIME/non_py/externals/genf90"
+    rm -rf "${install_path}/CIME/non_py/externals/genf90"
 
     "/src/CESM/manage_externals/checkout_externals"
 
