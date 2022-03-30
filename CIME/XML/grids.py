@@ -355,10 +355,10 @@ class Grids(GenericXML):
                         mesh_file = self.resolved_text(mesh_node)
                     if mesh_file:
                         _add_grid_info(domains, comp_name + "_DOMAIN_MESH", mesh_file)
-                    if comp_name == "LND":
-                        # Note: ONLY want to define PTS_DOMAINFILE for land
+                    if comp_name == "LND" or comp_name == 'ATM':
+                        # Note: ONLY want to define PTS_DOMAINFILE for land and ATM 
                         file_node = self.get_optional_child("file", root=domain_node)
-                        if file_node is not None:
+                        if file_node is not None and self.text(file_node) != 'unset':
                             domains["PTS_DOMAINFILE"] = self.resolved_text(file_node)
 
     def _get_gridmaps(self, component_grids, driver, compset):
