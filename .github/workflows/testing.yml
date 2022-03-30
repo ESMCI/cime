@@ -67,17 +67,15 @@ jobs:
 
           docker build -t cime:latest --target base docker/
       - name: Push container
-        # only push image on a push event to master
-        if: github.event_name == 'push'
         run: |
           echo "Push container"
 
           echo "${{ secrets.DOCKER_HUB_PWD }}" | docker login -u ${{ secrets.DOCKER_HUB_USER }} --password-stdin
 
-          docker tag cime:latest ${{ secrets.DOCKER_HUB_REPO }}/cime:${GITHUB_SHA::7}
+          docker tag cime:latest ${{ secrets.DOCKER_HUB_REPO }}/cime:$(date +'%Y_%m_%d')_${GITHUB_SHA::7}
           docker tag cime:latest ${{ secrets.DOCKER_HUB_REPO }}/cime:latest
 
-          docker push ${{ secrets.DOCKER_HUB_REPO }}/cime:${GITHUB_SHA::7}
+          docker push ${{ secrets.DOCKER_HUB_REPO }}/cime:$(date +'%Y_%m_%d')_${GITHUB_SHA::7}
           docker push ${{ secrets.DOCKER_HUB_REPO }}/cime:latest
 
   # Runs unit testing under different python versions.
@@ -101,7 +99,7 @@ jobs:
           UPDATE_CIME: "true"
           GIT_SHALLOW: "true"
         run: |
-          export INSTALL_PATH="$(pwd)"
+          export INSTALL_PATH="${PWD}"
           export CIME_REPO=https://github.com/${{ github.event.pull_request.head.repo.full_name || github.repository }}
           export CIME_BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF##*/}}
 
@@ -145,7 +143,7 @@ jobs:
           UPDATE_CIME: "true"
           GIT_SHALLOW: "true"
         run: |
-          export INSTALL_PATH="$(pwd)/cime"
+          export INSTALL_PATH="${PWD}/cime"
           export CIME_REPO=https://github.com/${{ github.event.pull_request.head.repo.full_name || github.repository }}
           export CIME_BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF##*/}}
 
