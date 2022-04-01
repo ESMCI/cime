@@ -220,7 +220,7 @@ class Grids(GenericXML):
 
         for comp_name in component_grids.get_compnames(include_mask=True):
             for grid_name in component_grids.get_comp_gridlist(comp_name):
-                # Determine grid name with no nlev suffix if there is one
+                # Determine grid name with no nlev suffix if there is one 
                 grid_name_nonlev = grid_name
                 levmatch = re.match(atmlevregex, grid_name)
                 if levmatch:
@@ -312,9 +312,6 @@ class Grids(GenericXML):
                     domains[comp_name + "_NX"] = 1
                     domains[comp_name + "_NY"] = 1
 
-            # set up dictionary of domain files for every component
-            _add_grid_info(domains, comp_name + "_GRID", grid_name)
-
             if driver == "mct":
                 # mct
                 file_nodes = self.get_children("file", root=domain_node)
@@ -360,6 +357,9 @@ class Grids(GenericXML):
                         file_node = self.get_optional_child("file", root=domain_node)
                         if file_node is not None and self.text(file_node) != "unset":
                             domains["PTS_DOMAINFILE"] = self.resolved_text(file_node)
+        # set up dictionary of domain files for every component
+        _add_grid_info(domains, comp_name + "_GRID", grid_name)
+
 
     def _get_gridmaps(self, component_grids, driver, compset):
         """Set all mapping files for config_grids.xml v2 schema
