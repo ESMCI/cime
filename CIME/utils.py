@@ -406,7 +406,7 @@ def get_tools_path():
     return os.path.join(cimeroot, "CIME", "Tools")
 
 
-def get_src_root(detected_model=True):
+def get_src_root():
     """
     Return the absolute path to the root of SRCROOT.
 
@@ -415,14 +415,12 @@ def get_src_root(detected_model=True):
 
     if "SRCROOT" in os.environ:
         srcroot = os.environ["SRCROOT"]
-    elif cime_config.has_option("main", "srcroot"):
-        srcroot = cime_config.get("main", "srcroot")
+    elif cime_config.has_option("main", "SRCROOT"):
+        srcroot = cime_config.get("main", "SRCROOT")
     elif "SRCROOT" in GLOBAL:
         srcroot = GLOBAL["SRCROOT"]
     else:
-        if not detected_model:
-            srcroot = os.path.abspath(get_cime_root())
-        elif (
+        if (
             os.path.isdir(os.path.join(get_cime_root(), "share"))
             and get_model() == "cesm"
         ):
@@ -529,7 +527,7 @@ def get_model():
 
     # One last try
     if model is None:
-        srcroot = get_src_root(False)
+        srcroot = get_src_root()
 
         if os.path.isfile(os.path.join(srcroot, "Externals.cfg")):
             model = "cesm"
