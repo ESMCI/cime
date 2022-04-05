@@ -139,32 +139,30 @@ class Pes(GenericXML):
                                         vid = self.name(node)
                                         logger.info("vid is {}".format(vid))
                                         if "comment" in vid:
-                                            comment = self.resolved_text(node)
+                                            comment = self.text(node)
                                         elif "ntasks" in vid:
                                             for child in self.get_children(root=node):
                                                 pes_ntasks[
                                                     self.name(child).upper()
-                                                ] = int(self.resolved_text(child))
+                                                ] = int(self.text(child))
                                         elif "nthrds" in vid:
                                             for child in self.get_children(root=node):
                                                 pes_nthrds[
                                                     self.name(child).upper()
-                                                ] = int(self.resolved_text(child))
+                                                ] = int(self.text(child))
                                         elif "rootpe" in vid:
                                             for child in self.get_children(root=node):
                                                 pes_rootpe[
                                                     self.name(child).upper()
-                                                ] = int(self.resolved_text(child))
+                                                ] = int(self.text(child))
                                         elif "pstrid" in vid:
                                             for child in self.get_children(root=node):
                                                 pes_pstrid[
                                                     self.name(child).upper()
-                                                ] = int(self.resolved_text(child))
+                                                ] = int(self.text(child))
                                         # if the value is already upper case its something else we are trying to set
                                         elif vid == self.name(node):
-                                            other_settings[vid] = self.resolved_text(
-                                                node
-                                            )
+                                            other_settings[vid] = self.text(node)
 
                                 else:
                                     if points > max_points:
@@ -205,32 +203,24 @@ class Pes(GenericXML):
                 vid = self.name(node)
                 logger.debug("vid is {}".format(vid))
                 if "comment" in vid:
-                    comment = self.resolved_text(node)
+                    comment = self.text(node)
                 elif "ntasks" in vid:
                     for child in self.get_children(root=node):
-                        pes_ntasks[self.name(child).upper()] = int(
-                            self.resolved_text(child)
-                        )
+                        pes_ntasks[self.name(child).upper()] = int(self.text(child))
                 elif "nthrds" in vid:
                     for child in self.get_children(root=node):
-                        pes_nthrds[self.name(child).upper()] = int(
-                            self.resolved_text(child)
-                        )
+                        pes_nthrds[self.name(child).upper()] = int(self.text(child))
                 elif "rootpe" in vid:
                     for child in self.get_children(root=node):
-                        pes_rootpe[self.name(child).upper()] = int(
-                            self.resolved_text(child)
-                        )
+                        pes_rootpe[self.name(child).upper()] = int(self.text(child))
                 elif "pstrid" in vid:
                     for child in self.get_children(root=node):
-                        pes_pstrid[self.name(child).upper()] = int(
-                            self.resolved_text(child)
-                        )
+                        pes_pstrid[self.name(child).upper()] = int(self.text(child))
                 # if the value is already upper case its something else we are trying to set
                 elif vid == self.name(node):
-                    text = self.resolved_text(node).strip()
+                    text = self.text(node).strip()
                     if len(text):
-                        other_settings[vid] = self.resolved_text(node)
+                        other_settings[vid] = self.text(node)
             if grid_choice != "any" or logger.isEnabledFor(logging.DEBUG):
                 logger.info("Pes setting: grid match    is {} ".format(grid_choice))
             if mach_choice != "any" or logger.isEnabledFor(logging.DEBUG):

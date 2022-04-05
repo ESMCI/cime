@@ -79,7 +79,7 @@ class EnvMachSpecific(EnvBase):
                         subname = machobj.name(subnode)
                         if subname == "run_exe" or subname == "run_misc_suffix":
                             if match:
-                                settings[subname] = self.resolved_text(subnode)
+                                settings[subname] = self.text(subnode)
                             self.remove_child(subnode, root=mpirunnode)
 
                     self.add_child(mpirunnode)
@@ -91,7 +91,7 @@ class EnvMachSpecific(EnvBase):
             if settings[item]:
                 value = settings[item]
             else:
-                value = self.resolved_text(
+                value = self.text(
                     machobj.get_child("default_" + item, root=default_run_suffix)
                 )
 
@@ -329,7 +329,7 @@ class EnvMachSpecific(EnvBase):
                         "Expected {} element".format(child_tag),
                     )
                     if self._match_attribs(self.attrib(child), case, job=job):
-                        val = self.resolved_text(child)
+                        val = self.text(child)
                         if val is not None:
                             # We allow a couple special substitutions for these fields
                             for repl_this, repl_with in [
@@ -563,13 +563,13 @@ class EnvMachSpecific(EnvBase):
         init_nodes = self.get_optional_child(
             "init_path", attributes={"lang": lang}, root=self.get_child("module_system")
         )
-        return self.resolved_text(init_nodes) if init_nodes is not None else None
+        return self.text(init_nodes) if init_nodes is not None else None
 
     def get_module_system_cmd_path(self, lang):
         cmd_nodes = self.get_optional_child(
             "cmd_path", attributes={"lang": lang}, root=self.get_child("module_system")
         )
-        return self.resolved_text(cmd_nodes) if cmd_nodes is not None else None
+        return self.text(cmd_nodes) if cmd_nodes is not None else None
 
     def get_mpirun(self, case, attribs, job, exe_only=False, overrides=None):
         """
@@ -644,7 +644,7 @@ class EnvMachSpecific(EnvBase):
                 arg_nodes = self.get_children("arg", root=arg_node)
                 for arg_node in arg_nodes:
                     arg_value = transform_vars(
-                        self.resolved_text(arg_node),
+                        self.text(arg_node),
                         case=case,
                         subgroup=job,
                         overrides=overrides,
@@ -654,19 +654,19 @@ class EnvMachSpecific(EnvBase):
 
         exec_node = self.get_child("executable", root=the_match)
         expect(exec_node is not None, "No executable found")
-        executable = self.resolved_text(exec_node)
+        executable = self.text(exec_node)
         run_exe = None
         run_misc_suffix = None
 
         run_exe_node = self.get_optional_child("run_exe", root=the_match)
         if run_exe_node:
-            run_exe = self.resolved_text(run_exe_node)
+            run_exe = self.text(run_exe_node)
 
         run_misc_suffix_node = self.get_optional_child(
             "run_misc_suffix", root=the_match
         )
         if run_misc_suffix_node:
-            run_misc_suffix = self.resolved_text(run_misc_suffix_node)
+            run_misc_suffix = self.text(run_misc_suffix_node)
 
         return executable, args, run_exe, run_misc_suffix
 
