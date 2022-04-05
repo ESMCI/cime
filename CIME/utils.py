@@ -416,26 +416,26 @@ def get_src_root():
     if "SRCROOT" in os.environ:
         srcroot = os.environ["SRCROOT"]
 
-        logger.debug(f"SRCROOT from environment: {srcroot}")
+        logger.debug("SRCROOT from environment: {}".format(srcroot))
     elif cime_config.has_option("main", "SRCROOT"):
         srcroot = cime_config.get("main", "SRCROOT")
 
-        logger.debug(f"SRCROOT from user config: {srcroot}")
+        logger.debug("SRCROOT from user config: {}".format(srcroot))
     elif "SRCROOT" in GLOBAL:
         srcroot = GLOBAL["SRCROOT"]
 
-        logger.debug(f"SRCROOT from internal GLOBAL: {srcroot}")
+        logger.debug("SRCROOT from internal GLOBAL: {}".format(srcroot))
     else:
         # If the share directory exists in the CIME root then it's
         # assumed it's also the source root. This should only
         # occur when the local "Externals.cfg" is used to install
         # requirements for running/testing without a specific model.
-        if (os.path.isdir(os.path.join(get_cime_root(), "share"))):
+        if os.path.isdir(os.path.join(get_cime_root(), "share")):
             srcroot = os.path.abspath(os.path.join(get_cime_root()))
         else:
             srcroot = os.path.abspath(os.path.join(get_cime_root(), ".."))
 
-        logger.debug(f"SRCROOT from implicit detection: {srcroot}")
+        logger.debug("SRCROOT from implicit detection: {}".format(srcroot))
 
     return srcroot
 
