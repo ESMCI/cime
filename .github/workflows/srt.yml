@@ -55,6 +55,7 @@ jobs:
       PNETCDF_PATH: ${HOME}/pnetcdf
       CIME_MODEL: cesm
       CIME_DRIVER: mct
+      CIME_TEST_PLATFORM: ubuntu-latest
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
