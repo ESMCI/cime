@@ -66,6 +66,7 @@ def _extract_times(zipfiles, target_file):
         fd.write(contents)
         fd.write("Total_Build {}".format(str(total_build_time)))
 
+
 def _run_git_cmd_recursively(cmd, srcroot, output):
     """Runs a git command recursively
 
