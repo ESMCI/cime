@@ -104,6 +104,7 @@ jobs:
           CIME_DRIVER: "mct"
           UPDATE_CIME: "true"
           GIT_SHALLOW: "true"
+          CIME_TEST_PLATFORM: ubuntu-latest
         run: |
           export INSTALL_PATH="${PWD}"
           export CIME_REPO=https://github.com/${{ github.event.pull_request.head.repo.full_name || github.repository }}
@@ -148,6 +149,7 @@ jobs:
           CIME_DRIVER: ${{ matrix.driver }}
           UPDATE_CIME: "true"
           GIT_SHALLOW: "true"
+          CIME_TEST_PLATFORM: ubuntu-latest
         run: |
           export INSTALL_PATH="${PWD}/cime"
           export CIME_REPO=https://github.com/${{ github.event.pull_request.head.repo.full_name || github.repository }}
