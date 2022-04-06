@@ -34,6 +34,7 @@ jobs:
       PNETCDF_PATH: ${HOME}/pnetcdf
       ESMF_VERSION: ESMF_8_3_0_beta_snapshot_05
       CIME_MODEL: cesm
+      CIME_TEST_PLATFORM: ubuntu-latest
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
