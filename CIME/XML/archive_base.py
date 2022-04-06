@@ -28,7 +28,7 @@ class ArchiveBase(GenericXML):
         for attname in attnames:
             nodes.extend(self.get_children(attname, root=archive_entry))
         for node in nodes:
-            textvals.append(self.resolved_text(node))
+            textvals.append(self.text(node))
         return textvals
 
     def get_rest_file_extensions(self, archive_entry):
@@ -65,7 +65,7 @@ class ArchiveBase(GenericXML):
         """
         node = self.get_optional_child(name, root=archive_entry)
         if node is not None:
-            return self.resolved_text(node)
+            return self.text(node)
         return None
 
     def get_latest_hist_files(

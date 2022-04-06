@@ -269,9 +269,6 @@ class GenericXML(object):
     def text(self, node):
         return node.xml_element.text
 
-    def resolved_text(self, node):
-        return self.get_resolved_value(self.text(node))
-
     def add_child(self, node, root=None, position=None):
         """
         Add element node to self at root
