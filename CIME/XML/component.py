@@ -72,7 +72,7 @@ class Component(EntryID):
         if val_node is None:
             logger.debug("No default_value for {}".format(self.get(node, "id")))
             return val_node
-        value = self.resolved_text(val_node)
+        value = self.text(val_node)
         if value is not None and len(value) > 0 and value != "UNSET":
             match_values.append(value)
 
@@ -97,30 +97,28 @@ class Component(EntryID):
             if match_count > 0:
                 # append the current result
                 if self.get(values, "modifier") == "additive":
-                    match_values.append(self.resolved_text(valnode))
+                    match_values.append(self.text(valnode))
 
                 # replace the current result if it already contains the new value
                 # otherwise append the current result
                 elif self.get(values, "modifier") == "merge":
-                    val = self.resolved_text(valnode)
-
-                    if val in match_values:
+                    if self.text(valnode) in match_values:
                         del match_values[:]
+                    match_values.append(self.text(valnode))
 
-                    match_values.append(val)
                 else:
                     if match_type == "last":
                         # take the *last* best match
                         if match_count >= match_max:
                             del match_values[:]
                             match_max = match_count
-                            match_value = self.resolved_text(valnode)
+                            match_value = self.text(valnode)
                     elif match_type == "first":
                         # take the *first* best match
                         if match_count > match_max:
                             del match_values[:]
                             match_max = match_count
-                            match_value = self.resolved_text(valnode)
+                            match_value = self.text(valnode)
                     else:
                         expect(
                             False,
@@ -188,7 +186,7 @@ class Component(EntryID):
                             forcing, self.filename
                         ),
                     )
-                    desc = self.resolved_text(node)
+                    desc = self.text(node)
             if desc is None:
                 desc = compsetname.split("_")[0]
             return desc
@@ -197,7 +195,7 @@ class Component(EntryID):
         for node in desc_nodes:
             option = self.get(node, "option")
             if option is not None:
-                optiondesc[option] = self.resolved_text(node)
+                optiondesc[option] = self.text(node)
 
         # second pass find a comp_class match
         desc = ""
@@ -214,7 +212,7 @@ class Component(EntryID):
                     compsetname, reqset, fullset, modifier_mode
                 )
                 if match:
-                    desc = self.resolved_text(node)
+                    desc = self.text(node)
                     for opt in complist:
                         if opt in optiondesc:
                             desc += optiondesc[opt]
@@ -314,7 +312,7 @@ class Component(EntryID):
         for node in desc_nodes:
             compsetmatch = self.get(node, "compset")
             if compsetmatch is not None and re.search(compsetmatch, compsetname):
-                desc += self.resolved_text(node)
+                desc += self.text(node)
 
         return desc
 
@@ -323,12 +321,12 @@ class Component(EntryID):
         print values for help and description in target config_component.xml file
         """
         helpnode = self.get_child("help")
-        helptext = self.resolved_text(helpnode)
+        helptext = self.text(helpnode)
         logger.info(" {}".format(helptext))
         entries = self.get_children("entry")
         for entry in entries:
             name = self.get(entry, "id")
-            text = self.resolved_text(self.get_child("desc", root=entry))
+            text = self.text(self.get_child("desc", root=entry))
             logger.info("   {:20s} : {}".format(name, text.encode("utf-8")))
 
     def return_values(self):
@@ -340,19 +338,19 @@ class Component(EntryID):
         items = list()
         helpnode = self.get_optional_child("help")
         if helpnode:
-            helptext = self.resolved_text(helpnode)
+            helptext = self.text(helpnode)
         else:
             helptext = ""
         entries = self.get_children("entry")
         for entry in entries:
             item = dict()
             name = self.get(entry, "id")
-            datatype = self.resolved_text(self.get_child("type", root=entry))
+            datatype = self.text(self.get_child("type", root=entry))
             valid_values = self.get_valid_values(name)
             default_value = self.get_default_value(node=entry)
-            group = self.resolved_text(self.get_child("group", root=entry))
-            filename = self.resolved_text(self.get_child("file", root=entry))
-            text = self.resolved_text(self.get_child("desc", root=entry))
+            group = self.text(self.get_child("group", root=entry))
+            filename = self.text(self.get_child("file", root=entry))
+            text = self.text(self.get_child("desc", root=entry))
             item = {
                 "name": name,
                 "datatype": datatype,
