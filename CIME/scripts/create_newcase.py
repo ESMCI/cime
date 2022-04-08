@@ -233,8 +233,13 @@ def parse_command_line(args, cimeroot, description):
     )
     if model == "cesm":
         drv_choices = ("mct", "nuopc")
+        drv_help = (
+            "Override the top level driver type and use this one "
+            + "(changes xml variable COMP_INTERFACE) [this is an advanced option]"
+        )
     elif model == "e3sm":
         drv_choices = ("mct", "moab")
+        drv_help = argparse.SUPPRESS
     else:
         drv_choices = None
 
@@ -243,8 +248,7 @@ def parse_command_line(args, cimeroot, description):
             "--driver",
             default=get_cime_default_driver(),
             choices=drv_choices,
-            help="Override the top level driver type and use this one "
-            "(changes xml variable COMP_INTERFACE) [this is an advanced option]",
+            help=drv_help,
         )
 
     parser.add_argument(
