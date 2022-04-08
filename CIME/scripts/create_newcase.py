@@ -238,7 +238,7 @@ def parse_command_line(args, cimeroot, description):
             choices=("mct", "nuopc", "moab"),
             help="Override the top level driver type and use this one "
             "(changes xml variable COMP_INTERFACE) [this is an advanced option]",
-    )
+        )
 
     parser.add_argument(
         "-n",
