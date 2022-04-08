@@ -232,10 +232,17 @@ def parse_command_line(args, cimeroot, description):
         help="Use a non-default location for input files. This will change the xml value of DIN_LOC_ROOT.",
     )
     if model == "cesm":
+        drv_choices = ("mct", "nuopc")
+    elif model == "e3sm":
+        drv_choices = ("mct", "moab")
+    else:
+        drv_choices = None
+
+    if drv_choices is not None:
         parser.add_argument(
             "--driver",
             default=get_cime_default_driver(),
-            choices=("mct", "nuopc", "moab"),
+            choices=drv_choices,
             help="Override the top level driver type and use this one "
             "(changes xml variable COMP_INTERFACE) [this is an advanced option]",
         )
