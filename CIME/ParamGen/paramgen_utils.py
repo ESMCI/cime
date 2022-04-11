@@ -39,6 +39,10 @@ def is_logical_expr(expr):
     """
     Returns True if a string is a logical expression.
 
+    Please note that fortran array syntax allows for
+    the use of parantheses and colons in namelist
+    variable names, which "eval" counts as a syntax error.
+
     Parameters
     ----------
     expr: str
@@ -63,7 +67,7 @@ def is_logical_expr(expr):
 
     try:
         return isinstance(eval(expr),bool)
-    except NameError:
+    except (NameError, SyntaxError):
         return False
 
 def is_formula(expr):
