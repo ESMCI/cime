@@ -762,19 +762,19 @@ This allows using a different mpirun command to launch unit tests
 	<command name="switch">cray-libsci/19.02.1</command>
       </modules>
       <modules>
-	<command name="load">cray-mpich/7.7.8</command>
+	<command name="load">cray-mpich/7.7.10</command>
       </modules>
       <modules mpilib="mpi-serial">
-	<command name="load">cray-hdf5/1.10.5.0</command>
-	<command name="load">cray-netcdf/4.6.3.0</command>
+	<command name="load">cray-hdf5/1.10.5.2</command>
+	<command name="load">cray-netcdf/4.6.3.2</command>
       </modules>
       <modules mpilib="!mpi-serial">
-	<command name="load">cray-netcdf-hdf5parallel/4.6.3.0</command>
-	<command name="load">cray-hdf5-parallel/1.10.5.0</command>
-	<command name="load">cray-parallel-netcdf/1.11.1.0</command>
+	<command name="load">cray-netcdf-hdf5parallel/4.6.3.2</command>
+	<command name="load">cray-hdf5-parallel/1.10.5.2</command>
+	<command name="load">cray-parallel-netcdf/1.11.1.1</command>
       </modules>
       <modules>
-	<command name="load">cmake/3.14.4</command>
+	<command name="load">cmake/3.21.3</command>
       </modules>
     </module_system>
     <environment_variables>
@@ -868,16 +868,16 @@ This allows using a different mpirun command to launch unit tests
 	<command name="switch">cray-libsci/19.02.1</command>
       </modules>
       <modules>
-	<command name="load">cray-mpich/7.7.8</command>
+	<command name="load">cray-mpich/7.7.10</command>
       </modules>
       <modules mpilib="mpi-serial">
-	<command name="load">cray-hdf5/1.10.5.0</command>
-	<command name="load">cray-netcdf/4.6.3.0</command>
+	<command name="load">cray-hdf5/1.10.5.2</command>
+	<command name="load">cray-netcdf/4.6.3.2</command>
       </modules>
       <modules mpilib="!mpi-serial">
-	<command name="load">cray-netcdf-hdf5parallel/4.6.3.0</command>
-	<command name="load">cray-hdf5-parallel/1.10.5.0</command>
-	<command name="load">cray-parallel-netcdf/1.11.1.0</command>
+	<command name="load">cray-netcdf-hdf5parallel/4.6.3.2</command>
+	<command name="load">cray-hdf5-parallel/1.10.5.2</command>
+	<command name="load">cray-parallel-netcdf/1.11.1.1</command>
       </modules>
     </module_system>
     <environment_variables>
