@@ -34,6 +34,7 @@ _CMD_ARGS_FOR_BUILD = (
     "COMPILER",
     "DEBUG",
     "EXEROOT",
+    "RUNDIR",
     "INCROOT",
     "LIBROOT",
     "MACH",
