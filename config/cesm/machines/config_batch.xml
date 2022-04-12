@@ -221,6 +221,41 @@
     </queues>
   </batch_system>
 
+  <batch_system MACH="archer2" type="slurm" >
+    <batch_submit>sbatch</batch_submit>
+    <submit_args>
+      <arg flag="--time" name="$JOB_WALLCLOCK_TIME"/>
+      <arg flag="-q" name="$JOB_QUEUE"/>
+      <arg flag="--account" name="$PROJECT"/>
+    </submit_args>
+
+    <directives queue="standard">
+      <directive>--partition=standard</directive>
+      <directive>--qos=standard</directive>
+      <directive>--export=none</directive>
+    </directives>
+
+    <directives queue="short">
+      <directive>--partition=standard</directive>
+      <directive>--qos=short</directive>
+      <directive>--export=none</directive>
+    </directives>
+
+    <directives queue="serial">
+      <directive>--partition=serial</directive>
+      <directive>--qos=serial</directive>
+      <directive>--export=none</directive>
+    </directives>
+
+    <!-- following will need updating as system develops -->
+    <queues>
+      <queue walltimemax="24:00:00" nodemin="1" nodemax="1024" default="true">standard</queue>
+      <!-- <queue walltimemin="24:00:00" walltimemax="48:00:00" nodemin="1" nodemax="64" >long</queue> -->
+      <queue walltimemax="00:20:00" nodemin="1" nodemax="32">short</queue>
+      <queue walltimemax="24:00:00" nodemin="1" nodemax="1">serial</queue>
+    </queues>
+  </batch_system>
+
   <!-- athena is lsf -->
   <batch_system MACH="athena" type="lsf">
     <batch_env>none</batch_env>
