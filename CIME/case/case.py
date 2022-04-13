@@ -184,12 +184,7 @@ class Case(object):
                     machobj = Machines(machine=mach, extra_machines_dir=extra_machdir)
                 else:
                     machobj = Machines(machine=mach)
-                probed_machine = machobj.probe_machine_name()
-                if probed_machine:
-                    expect(
-                        mach == probed_machine,
-                        f"Current machine {probed_machine} does not match case machine {mach}.",
-                    )
+
             self.initialize_derived_attributes()
 
     def check_if_comp_var(self, vid):
