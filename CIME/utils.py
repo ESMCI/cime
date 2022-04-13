@@ -406,7 +406,7 @@ def get_tools_path():
     return os.path.join(cimeroot, "CIME", "Tools")
 
 
-def get_src_root(detected_model=True):
+def get_src_root():
     """
     Return the absolute path to the root of SRCROOT.
 
@@ -415,22 +415,27 @@ def get_src_root(detected_model=True):
 
     if "SRCROOT" in os.environ:
         srcroot = os.environ["SRCROOT"]
-    elif cime_config.has_option("main", "srcroot"):
-        srcroot = cime_config.get("main", "srcroot")
+
+        logger.debug("SRCROOT from environment: {}".format(srcroot))
+    elif cime_config.has_option("main", "SRCROOT"):
+        srcroot = cime_config.get("main", "SRCROOT")
+
+        logger.debug("SRCROOT from user config: {}".format(srcroot))
     elif "SRCROOT" in GLOBAL:
         srcroot = GLOBAL["SRCROOT"]
+
+        logger.debug("SRCROOT from internal GLOBAL: {}".format(srcroot))
     else:
-        if not detected_model:
-            srcroot = os.path.abspath(get_cime_root())
-        elif (
-            os.path.isdir(os.path.join(get_cime_root(), "share"))
-            and get_model() == "cesm"
-        ):
+        # If the share directory exists in the CIME root then it's
+        # assumed it's also the source root. This should only
+        # occur when the local "Externals.cfg" is used to install
+        # requirements for running/testing without a specific model.
+        if os.path.isdir(os.path.join(get_cime_root(), "share")):
             srcroot = os.path.abspath(os.path.join(get_cime_root()))
         else:
             srcroot = os.path.abspath(os.path.join(get_cime_root(), ".."))
 
-    logger.debug("SRCROOT is " + srcroot)
+        logger.debug("SRCROOT from implicit detection: {}".format(srcroot))
 
     return srcroot
 
@@ -529,7 +534,7 @@ def get_model():
 
     # One last try
     if model is None:
-        srcroot = get_src_root(False)
+        srcroot = get_src_root()
 
         if os.path.isfile(os.path.join(srcroot, "Externals.cfg")):
             model = "cesm"

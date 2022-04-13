@@ -44,6 +44,7 @@ def _get_batch_job_id_for_syslog(case):
 def _extract_times(zipfiles, target_file):
 
     contents = "Target Build_time\n"
+    total_build_time = 0.0
     for zipfile in zipfiles:
         stat, output, _ = run_cmd("zgrep 'built in' {}".format(zipfile))
         if stat == 0:
@@ -54,8 +55,16 @@ def _extract_times(zipfiles, target_file):
                     target, the_time = items[1], items[-2]
                     contents += "{} {}\n".format(target, the_time)
 
+        stat, output, _ = run_cmd("zgrep -E '^user [0-9.]+$' {}".format(zipfile))
+        if stat == 0:
+            for line in output.splitlines():
+                line = line.strip()
+                if line:
+                    total_build_time += float(line.split()[-1])
+
     with open(target_file, "w") as fd:
         fd.write(contents)
+        fd.write("Total_Build {}".format(str(total_build_time)))
 
 
 def _run_git_cmd_recursively(cmd, srcroot, output):

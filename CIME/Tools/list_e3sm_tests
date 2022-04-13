@@ -7,7 +7,7 @@ list tested grids, compsets, etc.
 
 from standard_script_setup import *
 from CIME.utils import expect
-import get_tests
+from CIME import get_tests
 
 import sys, argparse, os
 
