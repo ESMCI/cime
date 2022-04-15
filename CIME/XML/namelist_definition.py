@@ -163,6 +163,11 @@ class NamelistDefinition(EntryID):
     def get_group(self, name):
         return self._group_names[name]
 
+    def rename_group(self, oldgroup, newgroup):
+        for var in self._group_names:
+            if self._group_names[var] == oldgroup:
+                self._group_names[var] = newgroup
+
     def add_attributes(self, attributes):
         self._attributes = attributes
 

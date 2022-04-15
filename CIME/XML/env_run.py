@@ -19,7 +19,12 @@ class EnvRun(EnvBase):
         initialize an object interface to file env_run.xml in the case directory
         """
         self._components = components
-        self._pio_async_interface = False
+        self._pio_async_interface = {}
+
+        if components:
+            for comp in components:
+                self._pio_async_interface[comp] = False
+
         schema = os.path.join(utils.get_schema_path(), "env_entry_id.xsd")
 
         EnvBase.__init__(self, case_root, infile, schema=schema, read_only=read_only)
@@ -30,7 +35,7 @@ class EnvRun(EnvBase):
         or from the values field if the attribute argument is provided
         and matches.   Special case for pio variables when PIO_ASYNC_INTERFACE is True.
         """
-        if self._pio_async_interface:
+        if any(self._pio_async_interface.values()):
             vid, comp, iscompvar = self.check_if_comp_var(vid, attribute)
             if vid.startswith("PIO") and iscompvar:
                 if comp and comp != "CPL":
@@ -45,7 +50,7 @@ class EnvRun(EnvBase):
         Returns the value or None if not found
         subgroup is ignored in the general routine and applied in specific methods
         """
-        if self._pio_async_interface:
+        if any(self._pio_async_interface.values()):
             vid, comp, iscompvar = self.check_if_comp_var(vid, None)
             if vid.startswith("PIO") and iscompvar:
                 if comp and comp != "CPL":
