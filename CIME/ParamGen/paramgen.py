@@ -251,7 +251,7 @@ class ParamGen():
         -------
         >>> ParamGen._is_guarded_dict({True: 'x', 'False': 'y'})
         True
-        >>> ParamGen._is_guarded_dict({ "$OCN_GRID == 'tx0.66v1'": 'x', False: 'y'})
+        >>> ParamGen._is_guarded_dict({ "'tx0.66v1' == 'tx0.66v1'": 'x', False: 'y'})
         True
         >>> ParamGen._is_guarded_dict({'i':'x', 'j':'y'})
         False

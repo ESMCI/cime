@@ -113,7 +113,7 @@ def has_unexpanded_var(expr):
     True
     """
 
-    return isinstance(expr,str) and re.search(r'(\$\w+|\${\w+\})',expr)
+    return isinstance(expr,str) and bool(re.search(r'(\$\w+|\${\w+\})',expr))
 
 def get_expandable_vars(expr):
     """
