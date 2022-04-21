@@ -1280,13 +1280,15 @@ class Namelist(object):
 
         for group_name in group_names:
             if (
-                "_attributes" not in group_name
+                "_modelio" not in group_name
+                and "_attributes" not in group_name
                 and "nuopc_" not in group_name
                 and "_no_group" not in group_name
             ):
                 continue
-            if "_attributes" in group_name:
+            if "_attributes" in group_name or "_modelio" in group_name:
                 out_file.write("{}::\n".format(group_name))
+                indent = True
 
             group = self._groups[group_name]
             for name in sorted(group.keys()):
@@ -1309,7 +1311,7 @@ class Namelist(object):
                         values[0].replace("True", ".true.").replace("False", ".false.")
                     )
 
-                if "_attribute" in group_name:
+                if indent:
                     lines = ["     {}{} {}".format(name, equals, values[0])]
                 else:
                     lines = ["{}{} {}".format(name, equals, values[0])]
@@ -1329,8 +1331,9 @@ class Namelist(object):
                     line = line.replace('"', "")
                     out_file.write(line)
 
-            if "_attribute" in group_name:
+            if indent:
                 out_file.write("::\n\n")
+            indent = False
 
 
 class _NamelistEOF(Exception):
