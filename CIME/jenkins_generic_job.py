@@ -88,9 +88,9 @@ def archive_old_test_data(
         "Machine {} does not support test archiving".format(machine.get_machine_name()),
     )
 
-    # Remove old cs.status, cs.submit. I don't think there's any value to leaving these around
+    # Remove old cs.status. I don't think there's any value to leaving these around
     # or archiving them
-    for old_cs_file in glob.glob("{}/cs.*".format(scratch_root)):
+    for old_cs_file in glob.glob("{}/cs.status.{}[0-9]*".format(test_root, test_id_root)):
         if avoid_test_id not in old_cs_file:
             logging.info("TEST ARCHIVER: Removing {}".format(old_cs_file))
             os.remove(old_cs_file)
@@ -106,7 +106,7 @@ def archive_old_test_data(
         os.mkdir(old_test_archive)
 
     # Archive old data by looking at old test cases
-    for old_case in glob.glob("{}/*{}*{}*".format(test_root, mach_comp, test_id_root)):
+    for old_case in glob.glob("{}/*{}*{}[0-9]*".format(test_root, mach_comp, test_id_root)):
         if avoid_test_id not in old_case:
             logging.info("TEST ARCHIVER: archiving case {}".format(old_case))
             exeroot, rundir, archdir = run_cmd_no_fail(
