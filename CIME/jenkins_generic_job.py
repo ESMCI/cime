@@ -106,7 +106,9 @@ def archive_old_test_data(
         os.mkdir(old_test_archive)
 
     # Archive old data by looking at old test cases
-    for old_case in glob.glob("{}/*{}*{}[0-9]*".format(test_root, mach_comp, test_id_root)):
+    for old_case in glob.glob(
+        "{}/*{}*{}[0-9]*".format(test_root, mach_comp, test_id_root)
+    ):
         if avoid_test_id not in old_case:
             logging.info("TEST ARCHIVER: archiving case {}".format(old_case))
             exeroot, rundir, archdir = run_cmd_no_fail(
