@@ -16,6 +16,6 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           create_annotated_tag: true
           default_bump: patch
-          dry_run: true
+          dry_run: false
           tag_prefix: cime
           custom_tag: 5.6.40
