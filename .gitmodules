@@ -1,3 +1,0 @@
-[submodule "CIME/non_py/externals/genf90"]
-	path = CIME/non_py/externals/genf90
-	url = git@github.com:PARALLELIO/genf90.git
