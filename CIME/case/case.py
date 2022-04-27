@@ -185,6 +185,15 @@ class Case(object):
                 else:
                     machobj = Machines(machine=mach)
 
+                # This check should only be done on systems with a common filesystem but separate login nodes (ncar)
+                if "NCAR_HOST" in os.environ:
+                    probed_machine = machobj.probe_machine_name()
+                    if probed_machine:
+                        expect(
+                            mach == probed_machine,
+                            f"Current machine {probed_machine} does not match case machine {mach}.",
+                        )
+
             self.initialize_derived_attributes()
 
     def check_if_comp_var(self, vid):
@@ -205,9 +214,17 @@ class Case(object):
         env_mach_spec = self.get_env("mach_specific")
         comp_classes = self.get_values("COMP_CLASSES")
         max_mpitasks_per_node = self.get_value("MAX_MPITASKS_PER_NODE")
-        self.async_io = self.get_value("PIO_ASYNC_INTERFACE")
-        if self.async_io:
-            self.iotasks = max(1, self.get_value("PIO_NUMTASKS_CPL"))
+        self.async_io = {}
+        for comp in comp_classes:
+            self.async_io[comp] = self.get_value("PIO_ASYNC_INTERFACE", subgroup=comp)
+
+        if any(self.async_io.values()):
+            self.iotasks = 1
+            for comp in comp_classes:
+                if self.async_io[comp]:
+                    self.iotasks = max(
+                        self.iotasks, self.get_value("PIO_NUMTASKS", subgroup=comp)
+                    )
 
         self.thread_count = env_mach_pes.get_max_thread_count(comp_classes)
 
