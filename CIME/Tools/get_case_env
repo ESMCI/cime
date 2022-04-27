@@ -9,7 +9,7 @@ from standard_script_setup import *
 from CIME.XML.machines import Machines
 from CIME.test_scheduler import TestScheduler
 from CIME.utils import parse_test_name, expect
-import get_tests
+import CIME.get_tests
 
 import argparse, tempfile, shutil
 
@@ -61,10 +61,10 @@ def _main_func(description):
     casename = parse_command_line(sys.argv, description)
 
     compiler = parse_test_name(casename)[5]
-    machine = get_tests.infer_machine_name_from_tests([casename])
+    machine = CIME.get_tests.infer_machine_name_from_tests([casename])
     mach_obj = Machines(machine=machine)
     compiler = mach_obj.get_default_compiler() if compiler is None else compiler
-    full_test_name = get_tests.get_full_test_names(
+    full_test_name = CIME.get_tests.get_full_test_names(
         [casename], mach_obj.get_machine_name(), compiler
     )[0]
 
