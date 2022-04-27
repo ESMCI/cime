@@ -18,3 +18,4 @@ jobs:
           default_bump: patch
           dry_run: false
           tag_prefix: cime
+          custom_tag: 6.0.18
