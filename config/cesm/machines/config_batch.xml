@@ -233,12 +233,14 @@
       <directive>--partition=standard</directive>
       <directive>--qos=standard</directive>
       <directive>--export=none</directive>
+      <directive>--cpus-per-task={{ thread_count }}</directive>
     </directives>
 
     <directives queue="short">
       <directive>--partition=standard</directive>
       <directive>--qos=short</directive>
       <directive>--export=none</directive>
+      <directive>--cpus-per-task={{ thread_count }}</directive>
     </directives>
 
     <directives queue="serial">
