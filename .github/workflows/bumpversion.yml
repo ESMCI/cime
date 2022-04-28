@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - master
-      - maint-5.6
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -18,4 +17,4 @@ jobs:
           default_bump: patch
           dry_run: false
           tag_prefix: cime
-          custom_tag: 6.0.18
+          fetch_all_tags: true
