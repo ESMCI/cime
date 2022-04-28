@@ -18,4 +18,4 @@ jobs:
           default_bump: patch
           dry_run: false
           tag_prefix: cime
-
+          fetch_all_tags: true
