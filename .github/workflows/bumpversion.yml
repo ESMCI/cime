@@ -17,5 +17,5 @@ jobs:
           create_annotated_tag: true
           default_bump: patch
           dry_run: false
-          custom_tag: 6.0.18
           tag_prefix: cime
+          custom_tag: 6.0.18
