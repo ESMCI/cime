@@ -305,11 +305,11 @@ def _post_run_check(case, lid):
         file_prefix = "cpl"
 
     cpl_ninst = 1
-    if case.get_value("MULTI_DRIVER"):
+    if file_prefix != "drv" and case.get_value("MULTI_DRIVER"):
         cpl_ninst = case.get_value("NINST_MAX")
     cpl_logs = []
 
-    if cpl_ninst > 1:
+    if file_prefix != "drv" and cpl_ninst > 1:
         for inst in range(cpl_ninst):
             cpl_logs.append(
                 os.path.join(rundir, file_prefix + "_%04d.log." % (inst + 1) + lid)
