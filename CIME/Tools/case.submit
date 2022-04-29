@@ -104,6 +104,9 @@ def parse_command_line(args, description):
         "--chksum", action="store_true", help="Verifies input data checksums."
     )
 
+    # The container argument is hidden and not intended to be invoked by the user
+    parser.add_argument("--container", default=None, help=argparse.SUPPRESS)
+
     args = CIME.utils.parse_args_and_handle_standard_logging_options(args, parser)
 
     CIME.utils.resolve_mail_type_args(args)
@@ -134,6 +137,7 @@ def parse_command_line(args, description):
         args.batch_args,
         workflow,
         args.chksum,
+        args.container,
     )
 
 
@@ -154,6 +158,7 @@ def _main_func(description, test_args=False):
         batch_args,
         workflow,
         chksum,
+        container,
     ) = parse_command_line(sys.argv, description)
 
     # save these options to a hidden file for use during resubmit
@@ -176,20 +181,27 @@ def _main_func(description, test_args=False):
 
     if not test_args:
         with Case(caseroot, read_only=False, record=True) as case:
-            case.submit(
-                job=job,
-                no_batch=no_batch,
-                prereq=prereq,
-                allow_fail=allow_fail,
-                resubmit=resubmit,
-                resubmit_immediate=resubmit_immediate,
-                skip_pnl=skip_pnl,
-                mail_user=mail_user,
-                mail_type=mail_type,
-                batch_args=batch_args,
-                workflow=workflow,
-                chksum=chksum,
-            )
+            container_env = case.get_value("CONTAINER_ENVIRONMENT")
+            if container_env and not container:
+                args = " ".join(sys.argv)
+                CIME.utils.run_cmd(
+                    f"{container_env} {args} --container {container_env}", verbose=True
+                )
+            else:
+                case.submit(
+                    job=job,
+                    no_batch=no_batch,
+                    prereq=prereq,
+                    allow_fail=allow_fail,
+                    resubmit=resubmit,
+                    resubmit_immediate=resubmit_immediate,
+                    skip_pnl=skip_pnl,
+                    mail_user=mail_user,
+                    mail_type=mail_type,
+                    batch_args=batch_args,
+                    workflow=workflow,
+                    chksum=chksum,
+                )
 
 
 if __name__ == "__main__":

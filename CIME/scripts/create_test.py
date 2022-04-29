@@ -594,6 +594,8 @@ def parse_command_line(args, description):
                         )
 
         mach_obj = Machines(machine=machine_name)
+        # does this machine define a container environment
+        container_environment = mach_obj.get_value("CONTAINER_ENVIRONMENT")
         if args.testargs:
             args.compiler = (
                 mach_obj.get_default_compiler()
@@ -741,6 +743,7 @@ def parse_command_line(args, description):
         args.single_exe,
         args.workflow,
         args.chksum,
+        container_environment,
     )
 
 
@@ -900,6 +903,7 @@ def create_test(
     single_exe,
     workflow,
     chksum,
+    container_environment,
 ):
     ###############################################################################
     impl = TestScheduler(
@@ -940,6 +944,7 @@ def create_test(
         single_exe=single_exe,
         workflow=workflow,
         chksum=chksum,
+        container_environment=container_environment,
     )
 
     success = impl.run_tests(
@@ -1036,6 +1041,7 @@ def _main_func(description=None):
         single_exe,
         workflow,
         chksum,
+        container_environment,
     ) = parse_command_line(sys.argv, description)
 
     success = False
@@ -1087,6 +1093,7 @@ def _main_func(description=None):
             single_exe,
             workflow,
             chksum,
+            container_environment,
         )
         run_count += 1
 
