@@ -227,26 +227,24 @@
       <arg flag="--time" name="$JOB_WALLCLOCK_TIME"/>
       <arg flag="-q" name="$JOB_QUEUE"/>
       <arg flag="--account" name="$PROJECT"/>
+      <arg flag="--export=ALL"/>
     </submit_args>
 
     <directives queue="standard">
       <directive>--partition=standard</directive>
       <directive>--qos=standard</directive>
-      <directive>--export=none</directive>
       <directive>--cpus-per-task={{ thread_count }}</directive>
     </directives>
 
     <directives queue="short">
       <directive>--partition=standard</directive>
       <directive>--qos=short</directive>
-      <directive>--export=none</directive>
       <directive>--cpus-per-task={{ thread_count }}</directive>
     </directives>
 
     <directives queue="serial">
       <directive>--partition=serial</directive>
       <directive>--qos=serial</directive>
-      <directive>--export=none</directive>
     </directives>
 
     <!-- following will need updating as system develops -->
