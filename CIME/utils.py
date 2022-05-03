@@ -1312,6 +1312,30 @@ def get_current_submodule_status(recursive=False, repo=None):
     return output if rc == 0 else "unknown"
 
 
+def copy_globs(globs_to_copy, output_directory, lid=None):
+    """
+    Takes a list of globs and copies all files to `output_directory`.
+
+    Hiddens files become unhidden i.e. removing starting dot.
+
+    Output filename is derviced from the basename of the input path and can
+    be appended with the `lid`.
+
+    """
+    for glob_to_copy in globs_to_copy:
+        for item in glob.glob(glob_to_copy):
+            item_basename = os.path.basename(item).lstrip(".")
+
+            if lid is None:
+                filename = item_basename
+            else:
+                filename = f"{item_basename}.{lid}"
+
+            safe_copy(
+                item, os.path.join(output_directory, filename), preserve_meta=False
+            )
+
+
 def safe_copy(src_path, tgt_path, preserve_meta=True):
     """
     A flexbile and safe copy routine. Will try to copy file and metadata, but this

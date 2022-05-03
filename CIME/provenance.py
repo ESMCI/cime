@@ -16,6 +16,7 @@ from CIME.utils import (
     run_cmd,
     run_cmd_no_fail,
     safe_copy,
+    copy_globs,
 )
 
 import tarfile, getpass, signal, glob, shutil, sys
@@ -412,15 +413,7 @@ def _save_prerun_timing_e3sm(case, lid):
         "software_environment.txt",
     ]
 
-    for glob_to_copy in globs_to_copy:
-        for item in glob.glob(os.path.join(caseroot, glob_to_copy)):
-            safe_copy(
-                item,
-                os.path.join(
-                    case_docs, "{}.{}".format(os.path.basename(item).lstrip("."), lid)
-                ),
-                preserve_meta=False,
-            )
+    copy_globs([os.path.join(caseroot, x) for x in globs_to_copy], case_docs, lid)
 
     # Copy some items from build provenance
     blddir_globs_to_copy = [
@@ -435,25 +428,17 @@ def _save_prerun_timing_e3sm(case, lid):
         "build_times.txt",
     ]
 
-    for blddir_glob_to_copy in blddir_globs_to_copy:
-        for item in glob.glob(os.path.join(blddir, blddir_glob_to_copy)):
-            safe_copy(
-                item,
-                os.path.join(full_timing_dir, os.path.basename(item) + "." + lid),
-                preserve_meta=False,
-            )
+    copy_globs(
+        [os.path.join(blddir, x) for x in blddir_globs_to_copy], full_timing_dir, lid
+    )
 
     rundir_globs_to_copy = [
         "preview_run.log",
     ]
 
-    for rundir_glob_to_copy in rundir_globs_to_copy:
-        for item in glob.glob(os.path.join(rundir, rundir_glob_to_copy)):
-            safe_copy(
-                item,
-                os.path.join(full_timing_dir, os.path.basename(item) + "." + lid),
-                preserve_meta=False,
-            )
+    copy_globs(
+        [os.path.join(rundir, x) for x in rundir_globs_to_copy], full_timing_dir, lid
+    )
 
     # Save state of repo
     from_repo = (

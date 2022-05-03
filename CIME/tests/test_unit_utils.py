@@ -13,6 +13,7 @@ from CIME.utils import (
     import_from_file,
     _line_defines_python_function,
     file_contains_python_function,
+    copy_globs,
 )
 
 
@@ -191,6 +192,29 @@ class TestUtils(unittest.TestCase):
             raise Exception("Something went wrong")
 
         self.error_func = _error_func
+
+    @mock.patch("glob.glob")
+    @mock.patch("CIME.utils.safe_copy")
+    def test_copy_globs(self, safe_copy, glob):
+        glob.side_effect = [
+            [],
+            ["/src/run/test.sh", "/src/run/.hidden.sh"],
+            [
+                "/src/bld/test.nc",
+            ],
+        ]
+
+        copy_globs(["CaseDocs/*", "run/*.sh", "bld/*.nc"], "/storage/output", "uid")
+
+        safe_copy.assert_any_call(
+            "/src/run/test.sh", "/storage/output/test.sh.uid", preserve_meta=False
+        )
+        safe_copy.assert_any_call(
+            "/src/run/.hidden.sh", "/storage/output/hidden.sh.uid", preserve_meta=False
+        )
+        safe_copy.assert_any_call(
+            "/src/bld/test.nc", "/storage/output/test.nc.uid", preserve_meta=False
+        )
 
     def assertMatchAllLines(self, tempdir, test_lines):
         with open(os.path.join(tempdir, "CaseStatus")) as fd:
