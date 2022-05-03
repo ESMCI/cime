@@ -282,12 +282,12 @@
     <values>
       <value component="allactive">$SRCROOT/cime_config/allactive/config_pesall.xml</value>
       <value component="drv"      >$COMP_ROOT_DIR_CPL/cime_config/config_pes.xml</value>
-      <value component="eam"      >$SRCROOT/cime_config/allactive/config_pesall.xml</value>
-      <value component="elm"      >$SRCROOT/cime_config/allactive/config_pesall.xml</value>
-      <value component="cice"     >$SRCROOT/cime_config/allactive/config_pesall.xml</value>
-      <value component="mpaso"    >$SRCROOT/cime_config/allactive/config_pesall.xml</value>
-      <value component="mali"     >$SRCROOT/cime_config/allactive/config_pesall.xml</value>
-      <value component="mpassi"   >$SRCROOT/cime_config/allactive/config_pesall.xml</value>
+      <value component="eam"      >$SRCROOT/components/eam/cime_config/config_pes.xml</value>
+      <value component="elm"      >$SRCROOT/components/elm/cime_config/config_pes.xml</value>
+      <value component="cice"     >$SRCROOT/components/cice/cime_config/config_pes.xml</value>
+      <value component="mpaso"    >$SRCROOT/components/mpas-ocean/cime_config/config_pes.xml</value>
+      <value component="mali"     >$SRCROOT/components/mpas-albany-landice/cime_config/config_pes.xml</value>
+      <value component="mpassi"   >$SRCROOT/components/mpas-seaice/cime_config/config_pes.xml</value>
       <value component="ww3"      >$SRCROOT/cime_config/allactive/config_pesall.xml</value>
     </values>
     <group>case_last</group>
