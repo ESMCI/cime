@@ -514,16 +514,17 @@ using a fortran linker.
 </compiler>
 <compiler MACH="archer2" COMPILER="gnu">
   <FFLAGS>
-    <base>  -mcmodel=medium -std=legacy -fcray-pointer -frecursive </base>
+    <base>  -mcmodel=medium -std=gnu99 -fcray-pointer -frecursive </base>
+    <append compile_threaded="true"> -fopenmp </append>
     <append DEBUG="TRUE"> -g -Wall -Og -fbacktrace -ffpe-trap=zero,overflow -fcheck=bounds </append>
     <append DEBUG="FALSE"> -O2 </append>
-    <append>  -fallow-argument-mismatch -fallow-invalid-boz </append>
-    <append>  -fconvert=big-endian -fconvert=big-endian -ffree-line-length-none -ffixed-line-length-none</append>
-    <!--<append> -ftree-loop-vectorize -ffast-math </append>-->
+    <append> -fallow-argument-mismatch -fallow-invalid-boz </append>
+    <append> -fconvert=big-endian -ffree-line-length-none -ffixed-line-length-none</append>
   </FFLAGS>
   <CFLAGS>
-    <base>  -mcmodel=medium</base>
-    <append DEBUG="TRUE"> -g -Wall -Og -fbacktrace -ffpe-trap=zero,overflow -fcheck=bounds </append>
+    <base> -std=gnu99 -mcmodel=medium</base>
+    <append compile_threaded="true"> -fopenmp </append>
+    <append DEBUG="TRUE"> -g -Wall -Og -fbacktrace -ffpe-trap=invalid,zero,overflow -fcheck=bounds </append>
     <append DEBUG="FALSE"> -O2 </append>
   </CFLAGS>
   <ESMF_LIBDIR>/work/n02/shared/ESMF/esmf_8.2.0/lib/libO/Linux.gfortran.64.mpich.archer2</ESMF_LIBDIR>

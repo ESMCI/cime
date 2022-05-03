@@ -175,7 +175,7 @@ This allows using a different mpirun command to launch unit tests
     <MPILIBS>mpich,mpi-serial</MPILIBS>
     <CIME_OUTPUT_ROOT>$ENV{CESM_ROOT}/runs</CIME_OUTPUT_ROOT>
     <DIN_LOC_ROOT>$ENV{CESM_ROOT}/cesm_inputdata</DIN_LOC_ROOT>
-    <DIN_LOC_ROOT_CLMFORC>$ENV{CESM_ROOT}/cesm_inputdata/atm/datm7</DIN_LOC_ROOT_CLMFORC>
+    <DIN_LOC_ROOT_CLMFORC>${DIN_LOC_ROOT}/atm/datm7</DIN_LOC_ROOT_CLMFORC>
     <DOUT_S_ROOT>$ENV{CESM_ROOT}/archive/$CASE</DOUT_S_ROOT>
     <BASELINE_ROOT>$ENV{CESM_ROOT}/ccsm_baselines</BASELINE_ROOT>
     <CCSM_CPRNC>$ENV{CIMEROOT}/tools/cprnc/cprnc</CCSM_CPRNC>
