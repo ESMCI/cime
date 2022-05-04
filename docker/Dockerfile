@@ -13,6 +13,9 @@ ENV NETCDF_FORTRAN_VERSION=${NETCDF_FORTRAN_VERSION}
 ARG ESMF_VERSION=8.2.0
 ENV ESMF_VERSION=${ESMF_VERSION}
 
+ARG GCC_VERSION=9.4.*
+ENV GCC_VERSION=${GCC_VERSION}
+
 ENV USER=root
 
 SHELL ["/bin/bash", "-c"]
@@ -26,9 +29,9 @@ RUN mamba install --yes -c conda-forge \
             curl \
             subversion \
             m4 \
-            gcc_linux-64 \
-            gxx_linux-64 \
-            gfortran_linux-64 \
+            gcc_linux-64=${GCC_VERSION} \
+            gxx_linux-64=${GCC_VERSION} \
+            gfortran_linux-64=${GCC_VERSION} \
             openmpi-mpifort \
             pytest \
             pytest-cov\
