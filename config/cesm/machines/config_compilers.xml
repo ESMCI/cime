@@ -514,7 +514,7 @@ using a fortran linker.
 </compiler>
 <compiler MACH="archer2" COMPILER="gnu">
   <FFLAGS>
-    <base>  -mcmodel=medium -std=gnu99 -fcray-pointer -frecursive </base>
+    <base>  -mcmodel=medium -std=legacy -fcray-pointer -frecursive </base>
     <append compile_threaded="true"> -fopenmp </append>
     <append DEBUG="TRUE"> -g -Wall -Og -fbacktrace -ffpe-trap=zero,overflow -fcheck=bounds </append>
     <append DEBUG="FALSE"> -O2 </append>

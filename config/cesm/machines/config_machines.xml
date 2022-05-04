@@ -220,7 +220,7 @@ This allows using a different mpirun command to launch unit tests
     </module_system>
 
     <environment_variables>
-      <env name="PERL5LIB">/work/n02/n02/dcase/perl/5.26.2</env>
+      <env name="PERL5LIB">/work/n02/shared/perl/5.26.2</env>
       <env name="OMP_NUM_THREADS">{{ thread_count }} </env>
       <env name="OMP_PLACES">cores </env>
       <env name="OMP_STACKSIZE">2G</env>
