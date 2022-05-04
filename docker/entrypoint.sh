@@ -164,8 +164,6 @@ function init_cime() {
 
     cd "${install_path}"
 
-    rm -rf "${install_path}/CIME/non_py/externals/genf90"
-
     "/src/CESM/manage_externals/checkout_externals"
 
     fixup_mct "${install_path}/libraries/mct"
