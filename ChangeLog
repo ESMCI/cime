@@ -1,5 +1,563 @@
 ======================================================================
 
+Originator: Chris Fischer
+Date: 4-27-2022
+Tag: cime6.0.17
+Answer Changes: None
+Tests: scripts_regression_tests, cesm prealpha
+Dependencies:
+
+Brief Summary:
+    - Make pio_async_interface a compvar.
+    - Fixes a revert from python reorg.
+    - Add help to the --driver option in create_newcase.
+    - Some component builds care about RUNDIR.
+    - Fix error in parsing ESMF_Profile.summary in ESMF 8.3.
+    - Add Total_Build time to end of build_times.txt.
+    - Fixes issue with model detection on E3SM machines.
+    - Revert ignoring special syntax.
+    - Correct ATM_GRID definition for CAM SE grids.
+    - Fix machine check for some unusual cases.
+    - Add a valid PTS_DOMAIN_FILE in aquaplanet mode.
+    - Try multiple ctest drop methods.
+    - Python package reorg.
+    - Fixes special syntax being ignored in XML fields.
+    - Extend configure to get cmake macros files from the .cime directory.
+
+User interface changes:
+    - Add help to the --driver option in create_newcase
+
+PR summary: git log --oneline --first-parent [previous_tag]..master
+e42cdfd75 Merge pull request #4199 from jedwards4b/async_io_in_esmf
+f88e19a48 Merge pull request #4227 from jasonb5/fix_revert
+40b4114f3 Merge pull request #4222 from ekluzek/add_driver_help_to_create_newcase
+bf7e2a1ca Merge pull request #4224 from ESMCI/jgfouca/add_rundir_cmake
+5f41dd0e5 Merge pull request #4225 from jedwards4b/esmf83_timing_fix
+524842660 Merge pull request #4217 from ESMCI/jgfouca/e3sm_prov
+dd48d0627 Merge pull request #4218 from jasonb5/fix_model_detection
+87580b755 Merge pull request #4219 from jasonb5/revert_special_syntax
+3a90325b7 Merge pull request #4215 from jedwards4b/fix_se_grid_def
+77dde7a40 Merge pull request #4206 from billsacks/fix_machine_check
+52fca626d add a valid PTS_DOMAIN_FILE in aquaplanet mode (#4212)
+e6fa10a68 Merge pull request #4207 from ESMCI/jgfouca/ctest_multiple_drop_methods
+d5f998391 Merge pull request #4162 from jasonb5/python_package_reorg
+1dfd2f507 Merge pull request #4209 from jasonb5/fix_special_syntax
+078f1d0ba Merge pull request #4205 from billsacks/configure_gets_macros_from_dotcime
+
+
+Modified files: git diff --name-status [previous_tag]
+M	.github/workflows/srt.yml
+M	.github/workflows/srt_nuopc.yml
+M	.gitignore
+A	.gitmodules
+M	.pre-commit-config.yaml
+R100	scripts/Tools/__init__.py	CIME/BuildTools/__init__.py
+R100	scripts/lib/CIME/BuildTools/cmakemacroswriter.py	CIME/BuildTools/cmakemacroswriter.py
+R091	scripts/lib/CIME/BuildTools/configure.py	CIME/BuildTools/configure.py
+R100	scripts/lib/CIME/BuildTools/macroconditiontree.py	CIME/BuildTools/macroconditiontree.py
+R098	scripts/lib/CIME/BuildTools/macrowriterbase.py	CIME/BuildTools/macrowriterbase.py
+R100	scripts/lib/CIME/BuildTools/makemacroswriter.py	CIME/BuildTools/makemacroswriter.py
+R100	scripts/lib/CIME/BuildTools/possiblevalues.py	CIME/BuildTools/possiblevalues.py
+R100	scripts/lib/CIME/BuildTools/valuesetting.py	CIME/BuildTools/valuesetting.py
+R100	scripts/lib/CIME/Servers/__init__.py	CIME/Servers/__init__.py
+R100	scripts/lib/CIME/Servers/ftp.py	CIME/Servers/ftp.py
+R100	scripts/lib/CIME/Servers/generic_server.py	CIME/Servers/generic_server.py
+R100	scripts/lib/CIME/Servers/gftp.py	CIME/Servers/gftp.py
+R100	scripts/lib/CIME/Servers/svn.py	CIME/Servers/svn.py
+R100	scripts/lib/CIME/Servers/wget.py	CIME/Servers/wget.py
+R100	scripts/lib/CIME/SystemTests/README	CIME/SystemTests/README
+R100	scripts/lib/CIME/BuildTools/__init__.py	CIME/SystemTests/__init__.py
+R100	scripts/lib/CIME/SystemTests/dae.py	CIME/SystemTests/dae.py
+R100	scripts/lib/CIME/SystemTests/eri.py	CIME/SystemTests/eri.py
+R100	scripts/lib/CIME/SystemTests/erio.py	CIME/SystemTests/erio.py
+R100	scripts/lib/CIME/SystemTests/erp.py	CIME/SystemTests/erp.py
+R100	scripts/lib/CIME/SystemTests/err.py	CIME/SystemTests/err.py
+R100	scripts/lib/CIME/SystemTests/erri.py	CIME/SystemTests/erri.py
+R100	scripts/lib/CIME/SystemTests/ers.py	CIME/SystemTests/ers.py
+R100	scripts/lib/CIME/SystemTests/ers2.py	CIME/SystemTests/ers2.py
+R100	scripts/lib/CIME/SystemTests/ert.py	CIME/SystemTests/ert.py
+R100	scripts/lib/CIME/SystemTests/funit.py	CIME/SystemTests/funit.py
+R100	scripts/lib/CIME/SystemTests/homme.py	CIME/SystemTests/homme.py
+R100	scripts/lib/CIME/SystemTests/hommebaseclass.py	CIME/SystemTests/hommebaseclass.py
+R100	scripts/lib/CIME/SystemTests/hommebfb.py	CIME/SystemTests/hommebfb.py
+R100	scripts/lib/CIME/SystemTests/icp.py	CIME/SystemTests/icp.py
+R100	scripts/lib/CIME/SystemTests/irt.py	CIME/SystemTests/irt.py
+R100	scripts/lib/CIME/SystemTests/ldsta.py	CIME/SystemTests/ldsta.py
+R100	scripts/lib/CIME/SystemTests/mcc.py	CIME/SystemTests/mcc.py
+R100	scripts/lib/CIME/SystemTests/mvk.py	CIME/SystemTests/mvk.py
+R100	scripts/lib/CIME/SystemTests/nck.py	CIME/SystemTests/nck.py
+R100	scripts/lib/CIME/SystemTests/ncr.py	CIME/SystemTests/ncr.py
+R100	scripts/lib/CIME/SystemTests/nodefail.py	CIME/SystemTests/nodefail.py
+R100	scripts/lib/CIME/SystemTests/pea.py	CIME/SystemTests/pea.py
+R100	scripts/lib/CIME/SystemTests/pem.py	CIME/SystemTests/pem.py
+R100	scripts/lib/CIME/SystemTests/pet.py	CIME/SystemTests/pet.py
+R100	scripts/lib/CIME/SystemTests/pfs.py	CIME/SystemTests/pfs.py
+R100	scripts/lib/CIME/SystemTests/pgn.py	CIME/SystemTests/pgn.py
+R100	scripts/lib/CIME/SystemTests/pre.py	CIME/SystemTests/pre.py
+R100	scripts/lib/CIME/SystemTests/rep.py	CIME/SystemTests/rep.py
+R100	scripts/lib/CIME/SystemTests/restart_tests.py	CIME/SystemTests/restart_tests.py
+R100	scripts/lib/CIME/SystemTests/seq.py	CIME/SystemTests/seq.py
+R100	scripts/lib/CIME/SystemTests/sms.py	CIME/SystemTests/sms.py
+R099	scripts/lib/CIME/SystemTests/system_tests_common.py	CIME/SystemTests/system_tests_common.py
+R100	scripts/lib/CIME/SystemTests/system_tests_compare_n.py	CIME/SystemTests/system_tests_compare_n.py
+R100	scripts/lib/CIME/SystemTests/system_tests_compare_two.py	CIME/SystemTests/system_tests_compare_two.py
+R100	scripts/lib/CIME/SystemTests/__init__.py	CIME/SystemTests/test_utils/__init__.py
+R100	scripts/lib/CIME/SystemTests/test_utils/user_nl_utils.py	CIME/SystemTests/test_utils/user_nl_utils.py
+R100	scripts/lib/CIME/SystemTests/tsc.py	CIME/SystemTests/tsc.py
+R099	scripts/Tools/Makefile	CIME/Tools/Makefile
+R100	scripts/lib/CIME/SystemTests/test_utils/__init__.py	CIME/Tools/__init__.py
+R100	scripts/Tools/advanced-py-prof	CIME/Tools/advanced-py-prof
+R099	scripts/Tools/archive_metadata	CIME/Tools/archive_metadata
+R100	scripts/Tools/bld_diff	CIME/Tools/bld_diff
+R100	scripts/Tools/bless_test_results	CIME/Tools/bless_test_results
+R100	scripts/Tools/case.build	CIME/Tools/case.build
+R100	scripts/Tools/case.cmpgen_namelists	CIME/Tools/case.cmpgen_namelists
+R100	scripts/Tools/case.qstatus	CIME/Tools/case.qstatus
+R093	scripts/Tools/case.setup	CIME/Tools/case.setup
+R099	scripts/Tools/case.submit	CIME/Tools/case.submit
+R100	scripts/Tools/case_diff	CIME/Tools/case_diff
+R100	scripts/Tools/check_case	CIME/Tools/check_case
+R100	scripts/Tools/check_input_data	CIME/Tools/check_input_data
+R100	scripts/Tools/check_lockedfiles	CIME/Tools/check_lockedfiles
+R100	scripts/Tools/cime_bisect	CIME/Tools/cime_bisect
+R100	scripts/Tools/code_checker	CIME/Tools/code_checker
+R100	scripts/Tools/compare_namelists	CIME/Tools/compare_namelists
+R100	scripts/Tools/compare_test_results	CIME/Tools/compare_test_results
+R100	scripts/Tools/component_compare_baseline	CIME/Tools/component_compare_baseline
+R100	scripts/Tools/component_compare_copy	CIME/Tools/component_compare_copy
+R100	scripts/Tools/component_compare_test	CIME/Tools/component_compare_test
+R100	scripts/Tools/component_generate_baseline	CIME/Tools/component_generate_baseline
+R100	scripts/Tools/concat_daily_hist.csh	CIME/Tools/concat_daily_hist.csh
+R100	scripts/Tools/cs.status	CIME/Tools/cs.status
+R100	scripts/Tools/e3sm_check_env	CIME/Tools/e3sm_check_env
+R100	scripts/Tools/e3sm_compile_wrap.py	CIME/Tools/e3sm_compile_wrap.py
+R100	scripts/Tools/generate_cylc_workflow.py	CIME/Tools/generate_cylc_workflow.py
+R100	scripts/Tools/getTiming	CIME/Tools/getTiming
+R100	scripts/Tools/get_case_env	CIME/Tools/get_case_env
+R100	scripts/Tools/get_standard_makefile_args	CIME/Tools/get_standard_makefile_args
+R099	scripts/Tools/jenkins_generic_job	CIME/Tools/jenkins_generic_job
+R100	scripts/Tools/jenkins_script	CIME/Tools/jenkins_script
+R099	scripts/Tools/list_e3sm_tests	CIME/Tools/list_e3sm_tests
+R100	scripts/Tools/mkDepends	CIME/Tools/mkDepends
+R100	scripts/Tools/mkSrcfiles	CIME/Tools/mkSrcfiles
+R097	scripts/Tools/mvsource	CIME/Tools/mvsource
+R100	scripts/Tools/normalize_cases	CIME/Tools/normalize_cases
+R100	scripts/Tools/pelayout	CIME/Tools/pelayout
+R100	scripts/Tools/preview_namelists	CIME/Tools/preview_namelists
+R100	scripts/Tools/preview_run	CIME/Tools/preview_run
+R100	scripts/Tools/save_provenance	CIME/Tools/save_provenance
+R100	scripts/Tools/simple-py-prof	CIME/Tools/simple-py-prof
+R100	scripts/Tools/simple_compare	CIME/Tools/simple_compare
+R082	scripts/Tools/standard_script_setup.py	CIME/Tools/standard_script_setup.py
+R100	scripts/Tools/testreporter.py	CIME/Tools/testreporter.py
+R100	scripts/Tools/wait_for_tests	CIME/Tools/wait_for_tests
+R100	scripts/Tools/xmlchange	CIME/Tools/xmlchange
+R097	scripts/Tools/xmlconvertors/config_pes_converter.py	CIME/Tools/xmlconvertors/config_pes_converter.py
+R100	scripts/Tools/xmlconvertors/convert-grid-v1-to-v2	CIME/Tools/xmlconvertors/convert-grid-v1-to-v2
+R098	scripts/Tools/xmlconvertors/grid_xml_converter.py	CIME/Tools/xmlconvertors/grid_xml_converter.py
+R100	scripts/Tools/xmlquery	CIME/Tools/xmlquery
+R100	scripts/Tools/xmltestentry	CIME/Tools/xmltestentry
+R100	scripts/lib/CIME/XML/__init__.py	CIME/XML/__init__.py
+R100	scripts/lib/CIME/XML/archive.py	CIME/XML/archive.py
+R100	scripts/lib/CIME/XML/archive_base.py	CIME/XML/archive_base.py
+R100	scripts/lib/CIME/XML/batch.py	CIME/XML/batch.py
+R100	scripts/lib/CIME/XML/compilerblock.py	CIME/XML/compilerblock.py
+R099	scripts/lib/CIME/XML/compilers.py	CIME/XML/compilers.py
+R100	scripts/lib/CIME/XML/component.py	CIME/XML/component.py
+R100	scripts/lib/CIME/XML/compsets.py	CIME/XML/compsets.py
+R099	scripts/lib/CIME/XML/entry_id.py	CIME/XML/entry_id.py
+R092	scripts/lib/CIME/XML/env_archive.py	CIME/XML/env_archive.py
+R100	scripts/lib/CIME/XML/env_base.py	CIME/XML/env_base.py
+R099	scripts/lib/CIME/XML/env_batch.py	CIME/XML/env_batch.py
+R083	scripts/lib/CIME/XML/env_build.py	CIME/XML/env_build.py
+R083	scripts/lib/CIME/XML/env_case.py	CIME/XML/env_case.py
+R098	scripts/lib/CIME/XML/env_mach_pes.py	CIME/XML/env_mach_pes.py
+R098	scripts/lib/CIME/XML/env_mach_specific.py	CIME/XML/env_mach_specific.py
+R085	scripts/lib/CIME/XML/env_run.py	CIME/XML/env_run.py
+R100	scripts/lib/CIME/XML/env_test.py	CIME/XML/env_test.py
+R098	scripts/lib/CIME/XML/env_workflow.py	CIME/XML/env_workflow.py
+R094	scripts/lib/CIME/XML/expected_fails_file.py	CIME/XML/expected_fails_file.py
+R090	scripts/lib/CIME/XML/files.py	CIME/XML/files.py
+R098	scripts/lib/CIME/XML/generic_xml.py	CIME/XML/generic_xml.py
+R099	scripts/lib/CIME/XML/grids.py	CIME/XML/grids.py
+R093	scripts/lib/CIME/XML/headers.py	CIME/XML/headers.py
+R100	scripts/lib/CIME/XML/inputdata.py	CIME/XML/inputdata.py
+R100	scripts/lib/CIME/XML/machines.py	CIME/XML/machines.py
+R099	scripts/lib/CIME/XML/namelist_definition.py	CIME/XML/namelist_definition.py
+R100	scripts/lib/CIME/XML/pes.py	CIME/XML/pes.py
+R100	scripts/lib/CIME/XML/pio.py	CIME/XML/pio.py
+R100	scripts/lib/CIME/XML/standard_module_setup.py	CIME/XML/standard_module_setup.py
+R100	scripts/lib/CIME/XML/stream.py	CIME/XML/stream.py
+R100	scripts/lib/CIME/XML/test_reporter.py	CIME/XML/test_reporter.py
+R100	scripts/lib/CIME/XML/testlist.py	CIME/XML/testlist.py
+R100	scripts/lib/CIME/XML/tests.py	CIME/XML/tests.py
+R100	scripts/lib/CIME/XML/testspec.py	CIME/XML/testspec.py
+R100	scripts/lib/CIME/XML/workflow.py	CIME/XML/workflow.py
+R100	scripts/lib/CIME/__init__.py	CIME/__init__.py
+R100	scripts/lib/CIME/aprun.py	CIME/aprun.py
+R098	scripts/lib/CIME/bless_test_results.py	CIME/bless_test_results.py
+R099	scripts/lib/CIME/build.py	CIME/build.py
+R100	scripts/lib/CIME/tests/__init__.py	CIME/build_scripts/__init__.py
+R083	src/build_scripts/buildlib.cprnc	CIME/build_scripts/buildlib.cprnc
+R066	src/build_scripts/buildlib.gptl	CIME/build_scripts/buildlib.gptl
+R094	src/build_scripts/buildlib.internal_components	CIME/build_scripts/buildlib.internal_components
+R094	src/build_scripts/buildlib.kokkos	CIME/build_scripts/buildlib.kokkos
+R093	src/build_scripts/buildlib.mct	CIME/build_scripts/buildlib.mct
+R094	src/build_scripts/buildlib.mpi-serial	CIME/build_scripts/buildlib.mpi-serial
+R096	src/build_scripts/buildlib.pio	CIME/build_scripts/buildlib.pio
+R094	src/build_scripts/buildlib_cmake.internal_components	CIME/build_scripts/buildlib_cmake.internal_components
+R100	scripts/lib/CIME/buildlib.py	CIME/buildlib.py
+R100	scripts/lib/CIME/buildnml.py	CIME/buildnml.py
+R100	scripts/lib/CIME/case/README	CIME/case/README
+R100	scripts/lib/CIME/case/__init__.py	CIME/case/__init__.py
+R098	scripts/lib/CIME/case/case.py	CIME/case/case.py
+R100	scripts/lib/CIME/case/case_clone.py	CIME/case/case_clone.py
+R100	scripts/lib/CIME/case/case_cmpgen_namelists.py	CIME/case/case_cmpgen_namelists.py
+R100	scripts/lib/CIME/case/case_run.py	CIME/case/case_run.py
+R093	scripts/lib/CIME/case/case_setup.py	CIME/case/case_setup.py
+R100	scripts/lib/CIME/case/case_st_archive.py	CIME/case/case_st_archive.py
+R099	scripts/lib/CIME/case/case_submit.py	CIME/case/case_submit.py
+R100	scripts/lib/CIME/case/case_test.py	CIME/case/case_test.py
+R100	scripts/lib/CIME/case/check_input_data.py	CIME/case/check_input_data.py
+R098	scripts/lib/CIME/case/check_lockedfiles.py	CIME/case/check_lockedfiles.py
+R100	scripts/lib/CIME/case/preview_namelists.py	CIME/case/preview_namelists.py
+R076	scripts/lib/CIME/code_checker.py	CIME/code_checker.py
+R099	scripts/lib/CIME/compare_namelists.py	CIME/compare_namelists.py
+R100	scripts/lib/CIME/compare_test_results.py	CIME/compare_test_results.py
+R100	scripts/lib/CIME/cs_status.py	CIME/cs_status.py
+R088	scripts/lib/CIME/cs_status_creator.py	CIME/cs_status_creator.py
+A	CIME/data/__init__.py
+A	CIME/data/config/__init__.py
+R085	config/cesm/config_files.xml	CIME/data/config/cesm/config_files.xml
+R100	config/config_headers.xml	CIME/data/config/config_headers.xml
+R100	config/config_tests.xml	CIME/data/config/config_tests.xml
+R084	config/e3sm/config_files.xml	CIME/data/config/e3sm/config_files.xml
+R079	config/ufs/config_files.xml	CIME/data/config/ufs/config_files.xml
+R100	config/xml_schemas/cimeteststatus.xsd	CIME/data/config/xml_schemas/cimeteststatus.xsd
+R100	config/xml_schemas/config_archive.xsd	CIME/data/config/xml_schemas/config_archive.xsd
+R100	config/xml_schemas/config_batch.xsd	CIME/data/config/xml_schemas/config_batch.xsd
+R100	config/xml_schemas/config_compilers_v2.xsd	CIME/data/config/xml_schemas/config_compilers_v2.xsd
+R100	config/xml_schemas/config_compsets.xsd	CIME/data/config/xml_schemas/config_compsets.xsd
+R100	config/xml_schemas/config_grids_v2.2.xsd	CIME/data/config/xml_schemas/config_grids_v2.2.xsd
+R100	config/xml_schemas/config_grids_v2.xsd	CIME/data/config/xml_schemas/config_grids_v2.xsd
+R100	config/xml_schemas/config_inputdata.xsd	CIME/data/config/xml_schemas/config_inputdata.xsd
+R100	config/xml_schemas/config_machines.xsd	CIME/data/config/xml_schemas/config_machines.xsd
+R100	config/xml_schemas/config_machines_template.xml	CIME/data/config/xml_schemas/config_machines_template.xml
+R100	config/xml_schemas/config_pes.xsd	CIME/data/config/xml_schemas/config_pes.xsd
+R100	config/xml_schemas/config_workflow.xsd	CIME/data/config/xml_schemas/config_workflow.xsd
+R100	config/xml_schemas/entry_id.xsd	CIME/data/config/xml_schemas/entry_id.xsd
+R100	config/xml_schemas/entry_id_base.xsd	CIME/data/config/xml_schemas/entry_id_base.xsd
+R100	config/xml_schemas/entry_id_base_version3.xsd	CIME/data/config/xml_schemas/entry_id_base_version3.xsd
+R100	config/xml_schemas/entry_id_namelist.xsd	CIME/data/config/xml_schemas/entry_id_namelist.xsd
+R100	config/xml_schemas/entry_id_version3.xsd	CIME/data/config/xml_schemas/entry_id_version3.xsd
+R100	config/xml_schemas/env_archive.xsd	CIME/data/config/xml_schemas/env_archive.xsd
+R100	config/xml_schemas/env_batch.xsd	CIME/data/config/xml_schemas/env_batch.xsd
+R100	config/xml_schemas/env_entry_id.xsd	CIME/data/config/xml_schemas/env_entry_id.xsd
+R100	config/xml_schemas/env_mach_pes.xsd	CIME/data/config/xml_schemas/env_mach_pes.xsd
+R100	config/xml_schemas/env_mach_specific.xsd	CIME/data/config/xml_schemas/env_mach_specific.xsd
+R100	config/xml_schemas/expected_fails_file.xsd	CIME/data/config/xml_schemas/expected_fails_file.xsd
+R100	config/xml_schemas/testlist.xsd	CIME/data/config/xml_schemas/testlist.xsd
+A	CIME/data/templates/__init__.py
+R100	scripts/lib/cs.status.template	CIME/data/templates/cs.status.template
+R100	scripts/lib/cs.submit.template	CIME/data/templates/cs.submit.template
+R100	scripts/lib/testreporter.template	CIME/data/templates/testreporter.template
+R100	scripts/lib/CIME/date.py	CIME/date.py
+R100	scripts/lib/CIME/expected_fails.py	CIME/expected_fails.py
+R099	scripts/lib/get_tests.py	CIME/get_tests.py
+R099	scripts/lib/CIME/get_timing.py	CIME/get_timing.py
+R100	scripts/lib/CIME/hist_utils.py	CIME/hist_utils.py
+R100	scripts/lib/jenkins_generic_job.py	CIME/jenkins_generic_job.py
+R100	scripts/lib/CIME/locked_files.py	CIME/locked_files.py
+R099	scripts/lib/CIME/namelist.py	CIME/namelist.py
+R099	scripts/lib/CIME/nmlgen.py	CIME/nmlgen.py
+R089	tools/cprnc/CMakeLists.txt	CIME/non_py/cprnc/CMakeLists.txt
+R100	tools/cprnc/Depends	CIME/non_py/cprnc/Depends
+R098	tools/cprnc/Makefile	CIME/non_py/cprnc/Makefile
+R099	tools/cprnc/README	CIME/non_py/cprnc/README
+R100	tools/cprnc/compare_vars_mod.F90.in	CIME/non_py/cprnc/compare_vars_mod.F90.in
+R100	tools/cprnc/cprnc.F90	CIME/non_py/cprnc/cprnc.F90
+R100	tools/cprnc/filestruct.F90	CIME/non_py/cprnc/filestruct.F90
+R100	tools/cprnc/prec.F90	CIME/non_py/cprnc/prec.F90
+R100	tools/cprnc/run_tests	CIME/non_py/cprnc/run_tests
+R100	tools/cprnc/summarize_cprnc_diffs	CIME/non_py/cprnc/summarize_cprnc_diffs
+R100	tools/cprnc/test_inputs/README	CIME/non_py/cprnc/test_inputs/README
+R100	tools/cprnc/test_inputs/clm2.h0.subset.control.nc	CIME/non_py/cprnc/test_inputs/clm2.h0.subset.control.nc
+R100	tools/cprnc/test_inputs/clm2.h0.subset.test.nc	CIME/non_py/cprnc/test_inputs/clm2.h0.subset.test.nc
+R100	tools/cprnc/test_inputs/clm2.h1.subset.control.nc	CIME/non_py/cprnc/test_inputs/clm2.h1.subset.control.nc
+R100	tools/cprnc/test_inputs/clm2.h1.subset.test.nc	CIME/non_py/cprnc/test_inputs/clm2.h1.subset.test.nc
+R100	tools/cprnc/test_inputs/control.nc	CIME/non_py/cprnc/test_inputs/control.nc
+R100	tools/cprnc/test_inputs/control_0d.nc	CIME/non_py/cprnc/test_inputs/control_0d.nc
+R100	tools/cprnc/test_inputs/control_attributes.nc	CIME/non_py/cprnc/test_inputs/control_attributes.nc
+R100	tools/cprnc/test_inputs/control_char.nc	CIME/non_py/cprnc/test_inputs/control_char.nc
+R100	tools/cprnc/test_inputs/control_floatDoubleNan.nc	CIME/non_py/cprnc/test_inputs/control_floatDoubleNan.nc
+R100	tools/cprnc/test_inputs/control_int.nc	CIME/non_py/cprnc/test_inputs/control_int.nc
+R100	tools/cprnc/test_inputs/control_multipleTimes_someTimeless.nc	CIME/non_py/cprnc/test_inputs/control_multipleTimes_someTimeless.nc
+R100	tools/cprnc/test_inputs/control_noTime.nc	CIME/non_py/cprnc/test_inputs/control_noTime.nc
+R100	tools/cprnc/test_inputs/copy.nc	CIME/non_py/cprnc/test_inputs/copy.nc
+R100	tools/cprnc/test_inputs/copy_char.nc	CIME/non_py/cprnc/test_inputs/copy_char.nc
+R100	tools/cprnc/test_inputs/cpl.hi.subset.control.nc	CIME/non_py/cprnc/test_inputs/cpl.hi.subset.control.nc
+R100	tools/cprnc/test_inputs/cpl.hi.subset.test.nc	CIME/non_py/cprnc/test_inputs/cpl.hi.subset.test.nc
+R100	tools/cprnc/test_inputs/diffs_0d.nc	CIME/non_py/cprnc/test_inputs/diffs_0d.nc
+R100	tools/cprnc/test_inputs/diffs_in_attribute.nc	CIME/non_py/cprnc/test_inputs/diffs_in_attribute.nc
+R100	tools/cprnc/test_inputs/diffs_in_fill.nc	CIME/non_py/cprnc/test_inputs/diffs_in_fill.nc
+R100	tools/cprnc/test_inputs/diffs_in_nans.nc	CIME/non_py/cprnc/test_inputs/diffs_in_nans.nc
+R100	tools/cprnc/test_inputs/diffs_in_vals.nc	CIME/non_py/cprnc/test_inputs/diffs_in_vals.nc
+R100	tools/cprnc/test_inputs/diffs_in_vals_and_diffs_in_fill.nc	CIME/non_py/cprnc/test_inputs/diffs_in_vals_and_diffs_in_fill.nc
+R100	tools/cprnc/test_inputs/diffs_in_vals_and_extra_and_missing.nc	CIME/non_py/cprnc/test_inputs/diffs_in_vals_and_extra_and_missing.nc
+R100	tools/cprnc/test_inputs/diffs_in_vals_and_fill.nc	CIME/non_py/cprnc/test_inputs/diffs_in_vals_and_fill.nc
+R100	tools/cprnc/test_inputs/extra_variables.nc	CIME/non_py/cprnc/test_inputs/extra_variables.nc
+R100	tools/cprnc/test_inputs/int_missing.nc	CIME/non_py/cprnc/test_inputs/int_missing.nc
+R100	tools/cprnc/test_inputs/lon_differs.nc	CIME/non_py/cprnc/test_inputs/lon_differs.nc
+R100	tools/cprnc/test_inputs/missing_variables.nc	CIME/non_py/cprnc/test_inputs/missing_variables.nc
+R100	tools/cprnc/test_inputs/multipleTimes_someTimeless_diffs_in_vals_and_fill.nc	CIME/non_py/cprnc/test_inputs/multipleTimes_someTimeless_diffs_in_vals_and_fill.nc
+R100	tools/cprnc/test_inputs/multipleTimes_someTimeless_extra_and_missing.nc	CIME/non_py/cprnc/test_inputs/multipleTimes_someTimeless_extra_and_missing.nc
+R100	tools/cprnc/test_inputs/noTime_diffs_in_vals_and_fill.nc	CIME/non_py/cprnc/test_inputs/noTime_diffs_in_vals_and_fill.nc
+R100	tools/cprnc/test_inputs/noTime_extra_and_missing.nc	CIME/non_py/cprnc/test_inputs/noTime_extra_and_missing.nc
+R100	tools/cprnc/test_inputs/vals_differ_by_1.1.nc	CIME/non_py/cprnc/test_inputs/vals_differ_by_1.1.nc
+R100	tools/cprnc/test_inputs/vals_differ_by_1.1_somewhere.nc	CIME/non_py/cprnc/test_inputs/vals_differ_by_1.1_somewhere.nc
+R100	tools/cprnc/test_inputs/vals_differ_by_varying_amounts.nc	CIME/non_py/cprnc/test_inputs/vals_differ_by_varying_amounts.nc
+R100	tools/cprnc/test_inputs/vals_differ_by_varying_amounts2.nc	CIME/non_py/cprnc/test_inputs/vals_differ_by_varying_amounts2.nc
+R100	tools/cprnc/utils.F90	CIME/non_py/cprnc/utils.F90
+A	CIME/non_py/externals/genf90
+R100	src/CMake/.gitignore	CIME/non_py/src/CMake/.gitignore
+R100	src/CMake/CESM_utils.cmake	CIME/non_py/src/CMake/CESM_utils.cmake
+R100	src/CMake/CIME_initial_setup.cmake	CIME/non_py/src/CMake/CIME_initial_setup.cmake
+R100	src/CMake/CIME_utils.cmake	CIME/non_py/src/CMake/CIME_utils.cmake
+R100	src/CMake/ChangeLog	CIME/non_py/src/CMake/ChangeLog
+R100	src/CMake/Compilers.cmake	CIME/non_py/src/CMake/Compilers.cmake
+R100	src/CMake/CorrectWindowsPaths.cmake	CIME/non_py/src/CMake/CorrectWindowsPaths.cmake
+R100	src/CMake/FindPETSc.cmake	CIME/non_py/src/CMake/FindPETSc.cmake
+R100	src/CMake/FindPackageMultipass.cmake	CIME/non_py/src/CMake/FindPackageMultipass.cmake
+R100	src/CMake/FindpFUnit.cmake	CIME/non_py/src/CMake/FindpFUnit.cmake
+R100	src/CMake/LICENSE	CIME/non_py/src/CMake/LICENSE
+R100	src/CMake/README.md	CIME/non_py/src/CMake/README.md
+R100	src/CMake/ResolveCompilerPaths.cmake	CIME/non_py/src/CMake/ResolveCompilerPaths.cmake
+R100	src/CMake/Sourcelist_utils.cmake	CIME/non_py/src/CMake/Sourcelist_utils.cmake
+R100	src/CMake/TryCSizeOf.f90	CIME/non_py/src/CMake/TryCSizeOf.f90
+R100	src/CMake/TryMPIIO.f90	CIME/non_py/src/CMake/TryMPIIO.f90
+R100	src/CMake/TryMPIMod.f90	CIME/non_py/src/CMake/TryMPIMod.f90
+R100	src/CMake/TryMPISERIAL.f90	CIME/non_py/src/CMake/TryMPISERIAL.f90
+R100	src/CMake/TryPnetcdf_inc.f90	CIME/non_py/src/CMake/TryPnetcdf_inc.f90
+R100	src/CMake/TryPnetcdf_mod.f90	CIME/non_py/src/CMake/TryPnetcdf_mod.f90
+R100	src/CMake/genf90_utils.cmake	CIME/non_py/src/CMake/genf90_utils.cmake
+R100	src/CMake/mpiexec.cmake	CIME/non_py/src/CMake/mpiexec.cmake
+R100	src/CMake/pFUnit_utils.cmake	CIME/non_py/src/CMake/pFUnit_utils.cmake
+R100	src/share/README	CIME/non_py/src/README
+A	CIME/non_py/src/components/stub_comps_nuopc/satm/cime_config/buildlib
+A	CIME/non_py/src/components/stub_comps_nuopc/satm/cime_config/buildlib_cmake
+R100	src/components/stub_comps_nuopc/satm/cime_config/buildnml	CIME/non_py/src/components/stub_comps_nuopc/satm/cime_config/buildnml
+R100	src/components/stub_comps_nuopc/satm/cime_config/config_component.xml	CIME/non_py/src/components/stub_comps_nuopc/satm/cime_config/config_component.xml
+A	CIME/non_py/src/components/stub_comps_nuopc/sesp/cime_config/buildlib
+A	CIME/non_py/src/components/stub_comps_nuopc/sesp/cime_config/buildlib_cmake
+R100	src/components/stub_comps_nuopc/sesp/cime_config/buildnml	CIME/non_py/src/components/stub_comps_nuopc/sesp/cime_config/buildnml
+R100	src/components/stub_comps_nuopc/sesp/cime_config/config_component.xml	CIME/non_py/src/components/stub_comps_nuopc/sesp/cime_config/config_component.xml
+A	CIME/non_py/src/components/stub_comps_nuopc/sglc/cime_config/buildlib
+A	CIME/non_py/src/components/stub_comps_nuopc/sglc/cime_config/buildlib_cmake
+R100	src/components/stub_comps_nuopc/sglc/cime_config/buildnml	CIME/non_py/src/components/stub_comps_nuopc/sglc/cime_config/buildnml
+R100	src/components/stub_comps_nuopc/sglc/cime_config/config_component.xml	CIME/non_py/src/components/stub_comps_nuopc/sglc/cime_config/config_component.xml
+A	CIME/non_py/src/components/stub_comps_nuopc/siac/cime_config/buildlib
+A	CIME/non_py/src/components/stub_comps_nuopc/siac/cime_config/buildlib_cmake
+R100	src/components/stub_comps_nuopc/siac/cime_config/buildnml	CIME/non_py/src/components/stub_comps_nuopc/siac/cime_config/buildnml
+R100	src/components/stub_comps_nuopc/siac/cime_config/config_component.xml	CIME/non_py/src/components/stub_comps_nuopc/siac/cime_config/config_component.xml
+A	CIME/non_py/src/components/stub_comps_nuopc/sice/cime_config/buildlib
+A	CIME/non_py/src/components/stub_comps_nuopc/sice/cime_config/buildlib_cmake
+R100	src/components/stub_comps_nuopc/sice/cime_config/buildnml	CIME/non_py/src/components/stub_comps_nuopc/sice/cime_config/buildnml
+R100	src/components/stub_comps_nuopc/sice/cime_config/config_component.xml	CIME/non_py/src/components/stub_comps_nuopc/sice/cime_config/config_component.xml
+A	CIME/non_py/src/components/stub_comps_nuopc/slnd/cime_config/buildlib
+A	CIME/non_py/src/components/stub_comps_nuopc/slnd/cime_config/buildlib_cmake
+R100	src/components/stub_comps_nuopc/slnd/cime_config/buildnml	CIME/non_py/src/components/stub_comps_nuopc/slnd/cime_config/buildnml
+R100	src/components/stub_comps_nuopc/slnd/cime_config/config_component.xml	CIME/non_py/src/components/stub_comps_nuopc/slnd/cime_config/config_component.xml
+A	CIME/non_py/src/components/stub_comps_nuopc/socn/cime_config/buildlib
+A	CIME/non_py/src/components/stub_comps_nuopc/socn/cime_config/buildlib_cmake
+R100	src/components/stub_comps_nuopc/socn/cime_config/buildnml	CIME/non_py/src/components/stub_comps_nuopc/socn/cime_config/buildnml
+R100	src/components/stub_comps_nuopc/socn/cime_config/config_component.xml	CIME/non_py/src/components/stub_comps_nuopc/socn/cime_config/config_component.xml
+A	CIME/non_py/src/components/stub_comps_nuopc/srof/cime_config/buildlib
+A	CIME/non_py/src/components/stub_comps_nuopc/srof/cime_config/buildlib_cmake
+R100	src/components/stub_comps_nuopc/srof/cime_config/buildnml	CIME/non_py/src/components/stub_comps_nuopc/srof/cime_config/buildnml
+R100	src/components/stub_comps_nuopc/srof/cime_config/config_component.xml	CIME/non_py/src/components/stub_comps_nuopc/srof/cime_config/config_component.xml
+A	CIME/non_py/src/components/stub_comps_nuopc/swav/cime_config/buildlib
+A	CIME/non_py/src/components/stub_comps_nuopc/swav/cime_config/buildlib_cmake
+R100	src/components/stub_comps_nuopc/swav/cime_config/buildnml	CIME/non_py/src/components/stub_comps_nuopc/swav/cime_config/buildnml
+R100	src/components/stub_comps_nuopc/swav/cime_config/config_component.xml	CIME/non_py/src/components/stub_comps_nuopc/swav/cime_config/config_component.xml
+A	CIME/non_py/src/components/xcpl_comps_nuopc/xatm/cime_config/buildlib
+A	CIME/non_py/src/components/xcpl_comps_nuopc/xatm/cime_config/buildlib_cmake
+R091	src/components/xcpl_comps_nuopc/xatm/cime_config/buildnml	CIME/non_py/src/components/xcpl_comps_nuopc/xatm/cime_config/buildnml
+R100	src/components/xcpl_comps_nuopc/xatm/cime_config/config_component.xml	CIME/non_py/src/components/xcpl_comps_nuopc/xatm/cime_config/config_component.xml
+R100	src/components/xcpl_comps_nuopc/xatm/src/atm_comp_nuopc.F90	CIME/non_py/src/components/xcpl_comps_nuopc/xatm/src/atm_comp_nuopc.F90
+A	CIME/non_py/src/components/xcpl_comps_nuopc/xglc/cime_config/buildlib
+A	CIME/non_py/src/components/xcpl_comps_nuopc/xglc/cime_config/buildlib_cmake
+R091	src/components/xcpl_comps_nuopc/xglc/cime_config/buildnml	CIME/non_py/src/components/xcpl_comps_nuopc/xglc/cime_config/buildnml
+R100	src/components/xcpl_comps_nuopc/xglc/cime_config/config_component.xml	CIME/non_py/src/components/xcpl_comps_nuopc/xglc/cime_config/config_component.xml
+R100	src/components/xcpl_comps_nuopc/xglc/src/glc_comp_nuopc.F90	CIME/non_py/src/components/xcpl_comps_nuopc/xglc/src/glc_comp_nuopc.F90
+A	CIME/non_py/src/components/xcpl_comps_nuopc/xice/cime_config/buildlib
+A	CIME/non_py/src/components/xcpl_comps_nuopc/xice/cime_config/buildlib_cmake
+R091	src/components/xcpl_comps_nuopc/xice/cime_config/buildnml	CIME/non_py/src/components/xcpl_comps_nuopc/xice/cime_config/buildnml
+R100	src/components/xcpl_comps_nuopc/xice/cime_config/config_component.xml	CIME/non_py/src/components/xcpl_comps_nuopc/xice/cime_config/config_component.xml
+R100	src/components/xcpl_comps_nuopc/xice/src/ice_comp_nuopc.F90	CIME/non_py/src/components/xcpl_comps_nuopc/xice/src/ice_comp_nuopc.F90
+A	CIME/non_py/src/components/xcpl_comps_nuopc/xlnd/cime_config/buildlib
+A	CIME/non_py/src/components/xcpl_comps_nuopc/xlnd/cime_config/buildlib_cmake
+R091	src/components/xcpl_comps_nuopc/xlnd/cime_config/buildnml	CIME/non_py/src/components/xcpl_comps_nuopc/xlnd/cime_config/buildnml
+R100	src/components/xcpl_comps_nuopc/xlnd/cime_config/config_component.xml	CIME/non_py/src/components/xcpl_comps_nuopc/xlnd/cime_config/config_component.xml
+R100	src/components/xcpl_comps_nuopc/xlnd/src/lnd_comp_nuopc.F90	CIME/non_py/src/components/xcpl_comps_nuopc/xlnd/src/lnd_comp_nuopc.F90
+A	CIME/non_py/src/components/xcpl_comps_nuopc/xocn/cime_config/buildlib
+A	CIME/non_py/src/components/xcpl_comps_nuopc/xocn/cime_config/buildlib_cmake
+R091	src/components/xcpl_comps_nuopc/xocn/cime_config/buildnml	CIME/non_py/src/components/xcpl_comps_nuopc/xocn/cime_config/buildnml
+R100	src/components/xcpl_comps_nuopc/xocn/cime_config/config_component.xml	CIME/non_py/src/components/xcpl_comps_nuopc/xocn/cime_config/config_component.xml
+R100	src/components/xcpl_comps_nuopc/xocn/src/ocn_comp_nuopc.F90	CIME/non_py/src/components/xcpl_comps_nuopc/xocn/src/ocn_comp_nuopc.F90
+A	CIME/non_py/src/components/xcpl_comps_nuopc/xrof/cime_config/buildlib
+A	CIME/non_py/src/components/xcpl_comps_nuopc/xrof/cime_config/buildlib_cmake
+R091	src/components/xcpl_comps_nuopc/xrof/cime_config/buildnml	CIME/non_py/src/components/xcpl_comps_nuopc/xrof/cime_config/buildnml
+R100	src/components/xcpl_comps_nuopc/xrof/cime_config/config_component.xml	CIME/non_py/src/components/xcpl_comps_nuopc/xrof/cime_config/config_component.xml
+R100	src/components/xcpl_comps_nuopc/xrof/src/rof_comp_nuopc.F90	CIME/non_py/src/components/xcpl_comps_nuopc/xrof/src/rof_comp_nuopc.F90
+R100	src/components/xcpl_comps_nuopc/xshare/dead_methods_mod.F90	CIME/non_py/src/components/xcpl_comps_nuopc/xshare/dead_methods_mod.F90
+R100	src/components/xcpl_comps_nuopc/xshare/dead_nuopc_mod.F90	CIME/non_py/src/components/xcpl_comps_nuopc/xshare/dead_nuopc_mod.F90
+A	CIME/non_py/src/components/xcpl_comps_nuopc/xwav/cime_config/buildlib
+A	CIME/non_py/src/components/xcpl_comps_nuopc/xwav/cime_config/buildlib_cmake
+R091	src/components/xcpl_comps_nuopc/xwav/cime_config/buildnml	CIME/non_py/src/components/xcpl_comps_nuopc/xwav/cime_config/buildnml
+R100	src/components/xcpl_comps_nuopc/xwav/cime_config/config_component.xml	CIME/non_py/src/components/xcpl_comps_nuopc/xwav/cime_config/config_component.xml
+R100	src/components/xcpl_comps_nuopc/xwav/src/wav_comp_nuopc.F90	CIME/non_py/src/components/xcpl_comps_nuopc/xwav/src/wav_comp_nuopc.F90
+R100	src/share/timing/CMakeLists.txt	CIME/non_py/src/timing/CMakeLists.txt
+R100	src/share/timing/COPYING	CIME/non_py/src/timing/COPYING
+R100	src/share/timing/ChangeLog	CIME/non_py/src/timing/ChangeLog
+R100	src/share/timing/GPTLget_memusage.c	CIME/non_py/src/timing/GPTLget_memusage.c
+R100	src/share/timing/GPTLprint_memusage.c	CIME/non_py/src/timing/GPTLprint_memusage.c
+R100	src/share/timing/GPTLutil.c	CIME/non_py/src/timing/GPTLutil.c
+R100	src/share/timing/Makefile	CIME/non_py/src/timing/Makefile
+R100	src/share/timing/README	CIME/non_py/src/timing/README
+R100	src/share/timing/f_wrappers.c	CIME/non_py/src/timing/f_wrappers.c
+R100	src/share/timing/gptl.c	CIME/non_py/src/timing/gptl.c
+R100	src/share/timing/gptl.h	CIME/non_py/src/timing/gptl.h
+R100	src/share/timing/gptl.inc	CIME/non_py/src/timing/gptl.inc
+R100	src/share/timing/gptl_papi.c	CIME/non_py/src/timing/gptl_papi.c
+R100	src/share/timing/perf_mod.F90	CIME/non_py/src/timing/perf_mod.F90
+R100	src/share/timing/perf_utils.F90	CIME/non_py/src/timing/perf_utils.F90
+R100	src/share/timing/private.h	CIME/non_py/src/timing/private.h
+R098	scripts/lib/CIME/provenance.py	CIME/provenance.py
+A	CIME/scripts/__init__.py
+R096	tools/configure	CIME/scripts/configure
+A	CIME/scripts/create_clone.py
+A	CIME/scripts/create_newcase.py
+A	CIME/scripts/create_test.py
+A	CIME/scripts/query_config.py
+A	CIME/scripts/query_testlists.py
+R100	scripts/lib/CIME/simple_compare.py	CIME/simple_compare.py
+R098	scripts/lib/CIME/test_scheduler.py	CIME/test_scheduler.py
+R100	scripts/lib/CIME/test_status.py	CIME/test_status.py
+R100	scripts/lib/CIME/test_utils.py	CIME/test_utils.py
+R100	scripts/lib/CIME/tests/README	CIME/tests/README
+A	CIME/tests/__init__.py
+R099	scripts/lib/CIME/tests/base.py	CIME/tests/base.py
+R100	scripts/lib/CIME/tests/case_fake.py	CIME/tests/case_fake.py
+R096	scripts/lib/CIME/tests/custom_assertions_test_status.py	CIME/tests/custom_assertions_test_status.py
+R098	scripts/lib/CIME/tests/scripts_regression_tests.py	CIME/tests/scripts_regression_tests.py
+R100	scripts/lib/CIME/tests/test_sys_bless_tests_results.py	CIME/tests/test_sys_bless_tests_results.py
+R100	scripts/lib/CIME/tests/test_sys_build_system.py	CIME/tests/test_sys_build_system.py
+R099	scripts/lib/CIME/tests/test_sys_cime_case.py	CIME/tests/test_sys_cime_case.py
+R100	scripts/lib/CIME/tests/test_sys_cime_performance.py	CIME/tests/test_sys_cime_performance.py
+R100	scripts/lib/CIME/tests/test_sys_cmake_macros.py	CIME/tests/test_sys_cmake_macros.py
+R099	scripts/lib/CIME/tests/test_sys_create_newcase.py	CIME/tests/test_sys_create_newcase.py
+R099	scripts/lib/CIME/tests/test_sys_full_system.py	CIME/tests/test_sys_full_system.py
+R100	scripts/lib/CIME/tests/test_sys_grid_generation.py	CIME/tests/test_sys_grid_generation.py
+R099	scripts/lib/CIME/tests/test_sys_jenkins_generic_job.py	CIME/tests/test_sys_jenkins_generic_job.py
+R100	scripts/lib/CIME/tests/test_sys_macro_basic.py	CIME/tests/test_sys_macro_basic.py
+R100	scripts/lib/CIME/tests/test_sys_make_macros.py	CIME/tests/test_sys_make_macros.py
+R100	scripts/lib/CIME/tests/test_sys_manage_and_query.py	CIME/tests/test_sys_manage_and_query.py
+R100	scripts/lib/CIME/tests/test_sys_query_config.py	CIME/tests/test_sys_query_config.py
+R100	scripts/lib/CIME/tests/test_sys_run_restart.py	CIME/tests/test_sys_run_restart.py
+R100	scripts/lib/CIME/tests/test_sys_save_timings.py	CIME/tests/test_sys_save_timings.py
+R100	scripts/lib/CIME/tests/test_sys_single_submit.py	CIME/tests/test_sys_single_submit.py
+R099	scripts/lib/CIME/tests/test_sys_test_scheduler.py	CIME/tests/test_sys_test_scheduler.py
+R100	scripts/lib/CIME/tests/test_sys_unittest.py	CIME/tests/test_sys_unittest.py
+R100	scripts/lib/CIME/tests/test_sys_user_concurrent_mods.py	CIME/tests/test_sys_user_concurrent_mods.py
+R100	scripts/lib/CIME/tests/test_sys_wait_for_tests.py	CIME/tests/test_sys_wait_for_tests.py
+R099	scripts/lib/CIME/tests/test_unit_case.py	CIME/tests/test_unit_case.py
+R100	scripts/lib/CIME/tests/test_unit_case_fake.py	CIME/tests/test_unit_case_fake.py
+R100	scripts/lib/CIME/tests/test_unit_case_setup.py	CIME/tests/test_unit_case_setup.py
+R100	scripts/lib/CIME/tests/test_unit_compare_test_results.py	CIME/tests/test_unit_compare_test_results.py
+R100	scripts/lib/CIME/tests/test_unit_compare_two.py	CIME/tests/test_unit_compare_two.py
+R097	scripts/lib/CIME/tests/test_unit_cs_status.py	CIME/tests/test_unit_cs_status.py
+R100	scripts/lib/CIME/tests/test_unit_custom_assertions_test_status.py	CIME/tests/test_unit_custom_assertions_test_status.py
+R092	scripts/lib/CIME/tests/test_unit_doctest.py	CIME/tests/test_unit_doctest.py
+R097	scripts/lib/CIME/tests/test_unit_expected_fails_file.py	CIME/tests/test_unit_expected_fails_file.py
+R100	scripts/lib/CIME/tests/test_unit_grids.py	CIME/tests/test_unit_grids.py
+R100	scripts/lib/CIME/tests/test_unit_nmlgen.py	CIME/tests/test_unit_nmlgen.py
+R098	scripts/lib/CIME/tests/test_unit_provenance.py	CIME/tests/test_unit_provenance.py
+R100	scripts/lib/CIME/tests/test_unit_test_status.py	CIME/tests/test_unit_test_status.py
+R100	scripts/lib/CIME/tests/test_unit_two_link_to_case2_output.py	CIME/tests/test_unit_two_link_to_case2_output.py
+R098	scripts/lib/CIME/tests/test_unit_user_mod_support.py	CIME/tests/test_unit_user_mod_support.py
+R097	scripts/lib/CIME/tests/test_unit_user_nl_utils.py	CIME/tests/test_unit_user_nl_utils.py
+R095	scripts/lib/CIME/tests/test_unit_utils.py	CIME/tests/test_unit_utils.py
+R100	scripts/lib/CIME/tests/test_unit_xml_env_batch.py	CIME/tests/test_unit_xml_env_batch.py
+A	CIME/tests/test_unit_xml_env_mach_specific.py
+R100	scripts/lib/CIME/tests/test_unit_xml_namelist_definition.py	CIME/tests/test_unit_xml_namelist_definition.py
+R100	scripts/tests/user_mods_test1/include_user_mods	CIME/tests/user_mods_test1/include_user_mods
+R100	scripts/tests/user_mods_test1/user_nl_comp	CIME/tests/user_mods_test1/user_nl_comp
+R100	scripts/tests/user_mods_test1/user_nl_cpl	CIME/tests/user_mods_test1/user_nl_cpl
+R100	scripts/tests/user_mods_test2/SourceMods/src.drv/somefile.F90	CIME/tests/user_mods_test2/SourceMods/src.drv/somefile.F90
+R100	scripts/tests/user_mods_test2/user_nl_cpl	CIME/tests/user_mods_test2/user_nl_cpl
+R100	scripts/tests/user_mods_test3/shell_commands	CIME/tests/user_mods_test3/shell_commands
+R099	scripts/lib/CIME/tests/utils.py	CIME/tests/utils.py
+R100	scripts/lib/CIME/user_mod_support.py	CIME/user_mod_support.py
+R092	scripts/lib/CIME/utils.py	CIME/utils.py
+R094	scripts/lib/CIME/wait_for_tests.py	CIME/wait_for_tests.py
+M	CONTRIBUTING.md
+M	Externals.cfg
+A	MANIFEST.in
+M	conftest.py
+M	doc/source/users_guide/unit_testing.rst
+M	doc/tools_autodoc.py
+A	pyproject.toml
+M	scripts/create_clone
+M	scripts/create_newcase
+M	scripts/create_test
+M	scripts/fortran_unit_testing/run_tests.py
+D	scripts/lib/six.py
+D	scripts/lib/six_additions.py
+M	scripts/query_config
+M	scripts/query_testlists
+M	scripts/tests/CMakeLists.txt
+M	scripts/tests/list_tests
+M	setup.cfg
+A	setup.py
+D	src/components/stub_comps_nuopc/satm/cime_config/buildlib
+D	src/components/stub_comps_nuopc/satm/cime_config/buildlib_cmake
+D	src/components/stub_comps_nuopc/sesp/cime_config/buildlib
+D	src/components/stub_comps_nuopc/sesp/cime_config/buildlib_cmake
+D	src/components/stub_comps_nuopc/sglc/cime_config/buildlib
+D	src/components/stub_comps_nuopc/sglc/cime_config/buildlib_cmake
+D	src/components/stub_comps_nuopc/siac/cime_config/buildlib
+D	src/components/stub_comps_nuopc/siac/cime_config/buildlib_cmake
+D	src/components/stub_comps_nuopc/sice/cime_config/buildlib
+D	src/components/stub_comps_nuopc/sice/cime_config/buildlib_cmake
+D	src/components/stub_comps_nuopc/slnd/cime_config/buildlib
+D	src/components/stub_comps_nuopc/slnd/cime_config/buildlib_cmake
+D	src/components/stub_comps_nuopc/socn/cime_config/buildlib
+D	src/components/stub_comps_nuopc/socn/cime_config/buildlib_cmake
+D	src/components/stub_comps_nuopc/srof/cime_config/buildlib
+D	src/components/stub_comps_nuopc/srof/cime_config/buildlib_cmake
+D	src/components/stub_comps_nuopc/swav/cime_config/buildlib
+D	src/components/stub_comps_nuopc/swav/cime_config/buildlib_cmake
+D	src/components/xcpl_comps_nuopc/xatm/cime_config/buildlib
+D	src/components/xcpl_comps_nuopc/xatm/cime_config/buildlib_cmake
+D	src/components/xcpl_comps_nuopc/xglc/cime_config/buildlib
+D	src/components/xcpl_comps_nuopc/xglc/cime_config/buildlib_cmake
+D	src/components/xcpl_comps_nuopc/xice/cime_config/buildlib
+D	src/components/xcpl_comps_nuopc/xice/cime_config/buildlib_cmake
+D	src/components/xcpl_comps_nuopc/xlnd/cime_config/buildlib
+D	src/components/xcpl_comps_nuopc/xlnd/cime_config/buildlib_cmake
+D	src/components/xcpl_comps_nuopc/xocn/cime_config/buildlib
+D	src/components/xcpl_comps_nuopc/xocn/cime_config/buildlib_cmake
+D	src/components/xcpl_comps_nuopc/xrof/cime_config/buildlib
+D	src/components/xcpl_comps_nuopc/xrof/cime_config/buildlib_cmake
+D	src/components/xcpl_comps_nuopc/xwav/cime_config/buildlib
+D	src/components/xcpl_comps_nuopc/xwav/cime_config/buildlib_cmake
+D	src/externals/genf90/ChangeLog
+D	src/externals/genf90/genf90.pl
+A	tools/README.md
+M	tools/mapping/gen_domain_files/test_gen_domain.sh
+======================================================================
+======================================================================
+
 Originatorr: Chris Fischer
 Date: 3-25-2022
 Tag: cime6.0.16
