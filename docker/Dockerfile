@@ -57,6 +57,8 @@ RUN mamba install --yes -c conda-forge \
             make install && \
             rm -rf "${PWD}/pnetcdf"
 
+RUN cpan install LibXML::XML Switch
+
 RUN mkdir /root/.cime
 
 COPY config_machines.xml /root/.cime/
