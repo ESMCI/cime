@@ -146,10 +146,7 @@
       <xs:sequence>
         <xs:element maxOccurs="unbounded" ref="directive"/>
       </xs:sequence>
-      <xs:attribute ref="queue"/>
-      <xs:attribute name="compiler"/>
-      <xs:attribute name="mpilib"/>
-      <xs:attribute name="threaded" type="xs:boolean"/>
+      <xs:anyAttribute processContents="skip"/>
     </xs:complexType>
   </xs:element>
 
