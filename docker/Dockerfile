@@ -17,30 +17,42 @@ ARG GCC_VERSION=9.4.*
 ENV GCC_VERSION=${GCC_VERSION}
 
 ENV USER=root
+ENV LOGNAME=root
 
 SHELL ["/bin/bash", "-c"]
+
+# Install common packages
 RUN mamba install --yes -c conda-forge \
-            libnetcdf=${LIBNETCDF_VERSION}=*openmpi* \
-            netcdf-fortran=${NETCDF_FORTRAN_VERSION}=*openmpi* \
-            esmf=${ESMF_VERSION}=*openmpi* \
             cmake \
             make \
             wget \
             curl \
             subversion \
             m4 \
-            gcc_linux-64=${GCC_VERSION} \
-            gxx_linux-64=${GCC_VERSION} \
-            gfortran_linux-64=${GCC_VERSION} \
-            openmpi-mpifort \
             pytest \
             pytest-cov\
             vim \
             openssh && \
+            rm -rf /opt/conda/pkgs/*
+
+# Install cpan packages
+RUN cpan install LibXML::XML Switch
+
+# Install version locked packages
+RUN mamba install --yes -c conda-forge \
+            libnetcdf=${LIBNETCDF_VERSION}=*openmpi* \
+            netcdf-fortran=${NETCDF_FORTRAN_VERSION}=*openmpi* \
+            esmf=${ESMF_VERSION}=*openmpi* \
+            gcc_linux-64=${GCC_VERSION} \
+            gxx_linux-64=${GCC_VERSION} \
+            openmpi-mpifort \
+            gfortran_linux-64=${GCC_VERSION} && \
             rm -rf /opt/conda/pkgs/* && \
             ln -sf /opt/conda/bin/x86_64-conda-linux-gnu-ar /opt/conda/bin/ar && \
-            ln -sf /opt/conda/bin/x86_64-conda-linux-gnu-ranlib /opt/conda/bin/ranlib && \
-            curl -L -k -o "${PWD}/pnetcdf.tar.gz" \
+            ln -sf /opt/conda/bin/x86_64-conda-linux-gnu-ranlib /opt/conda/bin/ranlib
+
+# Build pnetcdf
+RUN curl -L -k -o "${PWD}/pnetcdf.tar.gz" \
             https://parallel-netcdf.github.io/Release/pnetcdf-${PNETCDF_VERSION}.tar.gz && \
             mkdir "${PWD}/pnetcdf" && \
             tar -xvf "${PWD}/pnetcdf.tar.gz" -C "${PWD}/pnetcdf" --strip-components=1 && \
@@ -56,8 +68,6 @@ RUN mamba install --yes -c conda-forge \
             make -j4 && \
             make install && \
             rm -rf "${PWD}/pnetcdf"
-
-RUN cpan install LibXML::XML Switch
 
 RUN mkdir /root/.cime
 

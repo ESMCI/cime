@@ -78,7 +78,6 @@ function update_cime() {
 #######################################
 function init_e3sm() {
     export CIME_MODEL="e3sm"
-    export LOGNAME="test.log"
 
     local extras=""
     local install_path="${INSTALL_install_path:-/src/E3SM}"
