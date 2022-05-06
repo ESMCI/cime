@@ -54,7 +54,7 @@ class DAE(SystemTestsCompareTwo):
         if len(self._case.get_value("DATA_ASSIMILATION_SCRIPT")) == 0:
             # We need to find the scripts/data_assimilation directory
             # LIB_DIR should be our parent dir
-            da_dir = os.path.join(os.path.dirname(sms.LIB_DIR), "data_assimilation")
+            da_dir = os.path.join(self._case.get_value("CIMEROOT"), "scripts/data_assimilation")
             expect(
                 os.path.isdir(da_dir),
                 "ERROR: da_dir, '{}', does not exist".format(da_dir),
