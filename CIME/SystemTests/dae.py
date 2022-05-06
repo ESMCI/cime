@@ -11,7 +11,6 @@ import logging
 import glob
 import gzip
 
-import CIME.XML.standard_module_setup as sms
 from CIME.SystemTests.system_tests_compare_two import SystemTestsCompareTwo
 from CIME.utils import expect
 
