@@ -1373,7 +1373,7 @@ class Case(object):
                 dmax = machobj.get_value(name)
             if dmax:
                 self.set_value(name, dmax)
-            elif name is "MAX_GPUS_PER_NODE":
+            elif name == "MAX_GPUS_PER_NODE":
                 logger.debug(
                     "Variable {} not defined for machine {}".format(name, machine_name)
                 )

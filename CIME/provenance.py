@@ -55,7 +55,7 @@ def _extract_times(zipfiles, target_file):
                     target, the_time = items[1], items[-2]
                     contents += "{} {}\n".format(target, the_time)
 
-        stat, output, _ = run_cmd("zgrep -E '^user [0-9.]+$' {}".format(zipfile))
+        stat, output, _ = run_cmd("zgrep -E '^real [0-9.]+$' {}".format(zipfile))
         if stat == 0:
             for line in output.splitlines():
                 line = line.strip()
@@ -64,7 +64,7 @@ def _extract_times(zipfiles, target_file):
 
     with open(target_file, "w") as fd:
         fd.write(contents)
-        fd.write("Total_Build {}".format(str(total_build_time)))
+        fd.write("Total_Elapsed_Time {}".format(str(total_build_time)))
 
 
 def _run_git_cmd_recursively(cmd, srcroot, output):
