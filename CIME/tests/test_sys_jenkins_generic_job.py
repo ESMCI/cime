@@ -50,6 +50,7 @@ class TestJenkinsGenericJob(base.BaseTestCase):
             % (self.TOOLS_DIR, self._testdir, extra_args, self._baseline_area),
             from_dir=self._testdir,
             expected_stat=(0 if expect_works else utils.TESTS_FAILED_ERR_CODE),
+            shell=False,
         )
 
     def threaded_test(self, expect_works, extra_args, build_name=None):
