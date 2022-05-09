@@ -493,6 +493,46 @@ using a fortran linker.
   <ESMF_LIBDIR>$ENV{ESMF_LIBDIR}</ESMF_LIBDIR>
 </compiler>
 
+<compiler MACH="archer2">
+  <PIO_FILESYSTEM_HINTS>lustre</PIO_FILESYSTEM_HINTS>
+  <NETCDF_PATH>$ENV{NETCDF_DIR}</NETCDF_PATH>
+  <PNETCDF_PATH  MPILIB="mpich">$ENV{PNETCDF_DIR}</PNETCDF_PATH>
+
+  <LDFLAGS>
+     <append MPILIB="mpich"> -dynamic -L${NETCDF_PATH}/lib -lnetcdff -lnetcdf  -Wl,-rpath,${NETCDF_PATH}/lib </append>
+     <append MPILIB="mpich"> -L${PNETCDF_PATH}/lib -lpnetcdf -Wl,-rpath,${PNETCDF_PATH}/lib </append>
+  </LDFLAGS>
+
+  <SLIBS>
+     <append MPILIB="mpi-serial"> -L${NETCDF_PATH}/lib -lnetcdff -lnetcdf -Wl,-rpath,${NETCDF_PATH}/lib </append>
+  </SLIBS>
+
+  <SLIBS>
+     <append> -Wl,-rpath,${NETCDF_PATH}/lib </append>
+  </SLIBS>
+
+</compiler>
+<compiler MACH="archer2" COMPILER="gnu">
+  <FFLAGS>
+    <base>  -mcmodel=medium -std=legacy -fcray-pointer -frecursive </base>
+    <append compile_threaded="true"> -fopenmp </append>
+    <append DEBUG="TRUE"> -g -Wall -Og -fbacktrace -ffpe-trap=zero,overflow -fcheck=bounds </append>
+    <append DEBUG="FALSE"> -O2 </append>
+    <append> -fallow-argument-mismatch -fallow-invalid-boz </append>
+    <append> -fconvert=big-endian -ffree-line-length-none -ffixed-line-length-none</append>
+  </FFLAGS>
+  <CFLAGS>
+    <base> -std=gnu99 -mcmodel=medium</base>
+    <append compile_threaded="true"> -fopenmp </append>
+    <append DEBUG="TRUE"> -g -Wall -Og -fbacktrace -ffpe-trap=invalid,zero,overflow -fcheck=bounds </append>
+    <append DEBUG="FALSE"> -O2 </append>
+  </CFLAGS>
+  <ESMF_LIBDIR>/work/n02/shared/ESMF/esmf_8.2.0/lib/libO/Linux.gfortran.64.mpich.archer2</ESMF_LIBDIR>
+  <SLIBS>
+    <append>-L/work/n02/shared/ESMF/esmf_8.2.0/lib/libO/Linux.gfortran.64.mpich.archer2/ -ldl </append>
+  </SLIBS>
+</compiler>
+
 <compiler MACH="athena">
   <CPPDEFS>
     <!-- these flags enable nano timers -->
