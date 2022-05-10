@@ -20,6 +20,7 @@ from CIME.utils import (
 )
 
 import tarfile, getpass, signal, glob, shutil, sys
+from contextlib import contextmanager
 
 logger = logging.getLogger(__name__)
 
@@ -85,17 +86,88 @@ def _run_git_cmd_recursively(cmd, srcroot, output):
         fd.write((output2 if rc2 == 0 else err2) + "\n")
 
 
-def _parse_dot_git_path(srcroot):
+def _parse_dot_git_path(gitdir):
+    """Parse `.git` path.
+
+    Take a path e.g. `/storage/cime/.git/worktrees/cime` and parse `.git`
+    directory e.g. `/storage/cime/.git`.
+
+    Args:
+        gitdir (str): Path containing `.git` directory.
+
+    Returns:
+        str: Path ending with `.git`
+    """
     dot_git_pattern = r"^(.*/\.git).*"
 
-    m = re.match(dot_git_pattern, srcroot)
+    m = re.match(dot_git_pattern, gitdir)
 
-    expect(m is not None, f"Could not parse git path from {srcroot!r}")
+    expect(m is not None, f"Could not parse .git from path {gitdir!r}")
 
     return m.group(1)
 
 
+def _read_gitdir(gitroot):
+    """Read `gitdir` from `.git` file.
+
+    Reads `.git` file in a worktree or submodule and parse `gitdir`.
+
+    Args:
+        gitroot (str): Path ending with `.git` file.
+
+    Returns:
+        str: Path contained in `.git` file.
+    """
+    expect(os.path.isfile(gitroot), f"Expected {gitroot!r} to be a file")
+
+    with open(gitroot) as fd:
+        line = fd.readline()
+
+    gitdir_pattern = r"^gitdir:\s*(.*)$"
+
+    m = re.match(gitdir_pattern, line)
+
+    expect(m is not None, f"Could parse gitdir path from file {gitroot!r}")
+
+    return m.group(1)
+
+
+@contextmanager
+def _swap_cwd(new_cwd):
+    old_cwd = os.getcwd()
+
+    os.chdir(new_cwd)
+
+    try:
+        yield
+    finally:
+        os.chdir(old_cwd)
+
+
 def _find_git_root(srcroot):
+    """Finds the `.git` directory.
+
+    NOTICE: It's assumed `srcroot` is an absolute path.
+
+    There are three scenarios to locate the correct `.git` directory:
+
+    NOTICE: In the 3rd case git `.git` directory is not actually `.git`.
+
+    1. In a standard git repository it will be located at `{srcroot}/.git`.
+    2. In a git worktree the `{srcroot}/.git` is a file containing a path,
+       `{gitdir}`, which the `{gitroot}` can be parsed from.
+    3. In a git submodule the `{srcroot}/.git` is a file containing a path,
+       `{gitdir}`, where the `{gitroot}` is `{gitdir}`.
+
+    To aid in finding the correct `{gitroot}` the file `{gitroot}/config`
+    is checked, this file will always be located in the correct directory.
+
+    Args:
+        srcroot (str): Path to the source root.
+
+    Returns:
+        str: Absolute path to `.git` directory.
+    """
     gitroot = f"{srcroot}/.git"
 
     expect(
@@ -103,22 +175,24 @@ def _find_git_root(srcroot):
         f"{srcroot!r} is not a git repository, failed to collect provenance",
     )
 
-    # Handle normal git repositories
+    # Handle 1st scenario
     if os.path.isdir(gitroot):
         return gitroot
 
-    # Handle git worktrees
-    with open(gitroot) as fd:
-        line = fd.readline()
+    # ensure we're in correct directory so abspath works correctly
+    with _swap_cwd(srcroot):
+        gitdir = os.path.abspath(_read_gitdir(gitroot))
 
-    gitdir_pattern = r"^gitdir:\s?(.*)$"
+    # Handle 3rd scenario, gitdir is the `.git` directory
+    config_path = os.path.join(gitdir, "config")
 
-    m = re.match(gitdir_pattern, line)
+    if os.path.exists(config_path):
+        return gitdir
 
-    expect(m is not None, f"Could not determine git root in {srcroot!r}")
+    # Handle 2nd scenario, gitdir should already be absolute path
+    parsed_gitroot = _parse_dot_git_path(gitdir)
 
-    # First group is the actual gitroot
-    return m.group(1)
+    return parsed_gitroot
 
 
 def _record_git_provenance(srcroot, exeroot, lid):
@@ -144,7 +218,6 @@ def _record_git_provenance(srcroot, exeroot, lid):
     _run_git_cmd_recursively("remote -v", srcroot, remote_prov)
 
     gitroot = _find_git_root(srcroot)
-    gitroot = _parse_dot_git_path(gitroot)
 
     # Git config
     config_src = os.path.join(gitroot, "config")

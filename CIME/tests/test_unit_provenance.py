@@ -20,6 +20,43 @@ class TestProvenance(unittest.TestCase):
 
         assert value == "/src/CIME/.git"
 
+    def test_read_gitdir(self):
+        with tempfile.TemporaryDirectory() as tempdir:
+            dot_git_path = os.path.join(tempdir, ".git")
+
+            with open(dot_git_path, "w") as fd:
+                fd.write("gitdir:     /src/CIME/.git/worktrees/test")
+
+            value = provenance._read_gitdir(dot_git_path)
+
+            assert value == "/src/CIME/.git/worktrees/test"
+
+            with open(dot_git_path, "w") as fd:
+                fd.write("gitdir:/src/CIME/.git/worktrees/test")
+
+            value = provenance._read_gitdir(dot_git_path)
+
+            assert value == "/src/CIME/.git/worktrees/test"
+
+    def test_read_gitdir_not_file(self):
+        with tempfile.TemporaryDirectory() as tempdir:
+            dot_git_path = os.path.join(tempdir, ".git")
+
+            os.makedirs(dot_git_path)
+
+            with self.assertRaises(utils.CIMEError):
+                provenance._read_gitdir(dot_git_path)
+
+    def test_read_gitdir_bad_contents(self):
+        with tempfile.TemporaryDirectory() as tempdir:
+            dot_git_path = os.path.join(tempdir, ".git")
+
+            with open(dot_git_path, "w") as fd:
+                fd.write("some value: /src/CIME/.git/worktrees/test")
+
+            with self.assertRaises(utils.CIMEError):
+                provenance._read_gitdir(dot_git_path)
+
     def test_find_git_root(self):
         with tempfile.TemporaryDirectory() as tempdir:
             os.makedirs(os.path.join(tempdir, ".git"))
@@ -28,25 +65,59 @@ class TestProvenance(unittest.TestCase):
 
             assert value == f"{tempdir}/.git"
 
+    def test_find_git_root_does_not_exist(self):
+        with tempfile.TemporaryDirectory() as tempdir:
+            with self.assertRaises(utils.CIMEError):
+                provenance._find_git_root(tempdir)
+
+    def test_find_git_root_submodule(self):
+        with tempfile.TemporaryDirectory() as tempdir:
+            cime_path = os.path.join(tempdir, "cime")
+
+            os.makedirs(cime_path)
+
+            cime_git_dot_file = os.path.join(cime_path, ".git")
+
+            with open(cime_git_dot_file, "w") as fd:
+                fd.write(f"gitdir: {tempdir}/.git/modules/cime")
+
+            temp_dot_git_path = os.path.join(tempdir, ".git", "modules", "cime")
+
+            os.makedirs(temp_dot_git_path)
+
+            temp_config = os.path.join(temp_dot_git_path, "config")
+
+            with open(temp_config, "w") as fd:
+                fd.write("")
+
+            value = provenance._find_git_root(cime_path)
+
+            assert value == f"{tempdir}/.git/modules/cime"
+
+            # relative path
+            with open(cime_git_dot_file, "w") as fd:
+                fd.write(f"gitdir: ../.git/modules/cime")
+
+            value = provenance._find_git_root(cime_path)
+
+            assert value == f"{tempdir}/.git/modules/cime"
+
     def test_find_git_root_worktree(self):
         with tempfile.TemporaryDirectory() as tempdir:
-            with open(os.path.join(tempdir, ".git"), "w") as fd:
+            git_dot_file = os.path.join(tempdir, ".git")
+
+            with open(git_dot_file, "w") as fd:
                 fd.write("gitdir: /src/CIME/.git/worktrees/test")
 
             value = provenance._find_git_root(tempdir)
 
-            assert value == "/src/CIME/.git/worktrees/test"
+            assert value == "/src/CIME/.git"
 
-    def test_find_git_root_worktree_malformed(self):
+    def test_find_git_root_worktree_bad_contents(self):
         with tempfile.TemporaryDirectory() as tempdir:
             with open(os.path.join(tempdir, ".git"), "w") as fd:
                 fd.write("some value: /src/CIME/.git/worktrees/test")
 
-            with self.assertRaises(utils.CIMEError):
-                provenance._find_git_root(tempdir)
-
-    def test_find_git_root_error(self):
-        with tempfile.TemporaryDirectory() as tempdir:
             with self.assertRaises(utils.CIMEError):
                 provenance._find_git_root(tempdir)
 
