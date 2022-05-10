@@ -16,6 +16,7 @@ from CIME.utils import (
     run_cmd,
     run_cmd_no_fail,
     safe_copy,
+    copy_globs,
 )
 
 import tarfile, getpass, signal, glob, shutil, sys
@@ -411,25 +412,33 @@ def _save_prerun_timing_e3sm(case, lid):
         "Depends.{}.{}".format(mach, compiler),
         "software_environment.txt",
     ]
-    for glob_to_copy in globs_to_copy:
-        for item in glob.glob(os.path.join(caseroot, glob_to_copy)):
-            safe_copy(
-                item,
-                os.path.join(
-                    case_docs, "{}.{}".format(os.path.basename(item).lstrip("."), lid)
-                ),
-                preserve_meta=False,
-            )
+
+    copy_globs([os.path.join(caseroot, x) for x in globs_to_copy], case_docs, lid)
 
     # Copy some items from build provenance
-    blddir_globs_to_copy = ["GIT_LOGS_HEAD", "build_environment.txt", "build_times.txt"]
-    for blddir_glob_to_copy in blddir_globs_to_copy:
-        for item in glob.glob(os.path.join(blddir, blddir_glob_to_copy)):
-            safe_copy(
-                item,
-                os.path.join(full_timing_dir, os.path.basename(item) + "." + lid),
-                preserve_meta=False,
-            )
+    blddir_globs_to_copy = [
+        "GIT_LOGS_HEAD",
+        "GIT_STATUS",
+        "GIT_DIFF",
+        "GIT_LOG",
+        "GIT_REMOTE",
+        "GIT_CONFIG",
+        "GIT_SUBMODULE_STATUS",
+        "build_environment.txt",
+        "build_times.txt",
+    ]
+
+    copy_globs(
+        [os.path.join(blddir, x) for x in blddir_globs_to_copy], full_timing_dir, lid
+    )
+
+    rundir_globs_to_copy = [
+        "preview_run.log",
+    ]
+
+    copy_globs(
+        [os.path.join(rundir, x) for x in rundir_globs_to_copy], full_timing_dir, lid
+    )
 
     # Save state of repo
     from_repo = (
@@ -665,18 +674,6 @@ def _save_postrun_timing_e3sm(case, lid):
     globs_to_copy.append("CaseStatus")
     globs_to_copy.append(os.path.join(rundir, "spio_stats.{}.tar.gz".format(lid)))
     globs_to_copy.append(os.path.join(caseroot, "replay.sh"))
-    # Can't use a single glob, similar files e.g. {filename}.{lid} get picked up.
-    bld_filenames = [
-        "GIT_STATUS",
-        "GIT_DIFF",
-        "GIT_LOG",
-        "GIT_REMOTE",
-        "GIT_CONFIG",
-        "GIT_SUBMODULE_STATUS",
-    ]
-    bld_globs = map(lambda x: f"bld/{x}", bld_filenames)
-    globs_to_copy.extend(bld_globs)
-    globs_to_copy.append("run/preview_run.log")
 
     for glob_to_copy in globs_to_copy:
         for item in glob.glob(os.path.join(caseroot, glob_to_copy)):
