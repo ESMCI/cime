@@ -97,7 +97,7 @@ def buildlib(bldroot, installpath, case):
     casetools = case.get_value("CASETOOLS")
     if scorpio_src_root_dir:
         # Use old genf90 until "short" type is supported
-        cmake_opts = '"-D GENF90_PATH=' + scorpio_src_root_dir + '/src/genf90 "'
+        cmake_opts = '"-D GENF90_PATH=' + os.path.join(scorpio_src_root_dir, scorpio_dir, "src/genf90") + '" '
     elif pio_version == 1:
         cmake_opts = '"-D GENF90_PATH=$CIMEROOT/CIME/non_py/externals/genf90 "'
     else:
