@@ -253,9 +253,7 @@ class TestScheduler(object):
         self._output_root = output_root
         # Figure out what project to use
         if project is None:
-            self._project = get_project()
-            if self._project is None:
-                self._project = self._machobj.get_value("PROJECT")
+            self._project = get_project(machobj=self._machobj)
         else:
             self._project = project
 
