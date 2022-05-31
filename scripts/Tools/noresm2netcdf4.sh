@@ -1,5 +1,6 @@
 #!/bin/bash -fvx
 # zip restart files?
+set -e
 ZIPRES=1 
 
 # remove log files? 
@@ -18,7 +19,7 @@ fi
 cd $ABASE
 
 # Set arguments
-nthreads=4
+nthreads=8
 
 # Set various variables
 ncdump=`which ncdump`
@@ -31,7 +32,8 @@ lid="`date +%y%m%d-%H%M%S`"
 convert_cmd () {
   echo convert $ncfile
   rm -f ${ncfile}_tmp
-  $nccopy -k 4 -s -d $complevel $ncfile ${ncfile}_tmp
+  set -e
+  ncks -a -h -O -4 -L $complevel $ncfile ${ncfile}_tmp
   mv ${ncfile}_tmp ${ncfile}
   chmod go+r ${ncfile}
 }
@@ -45,7 +47,7 @@ compress_cmd () {
 }
 
 convert_loop () {
-
+  set -e
   # loop over cases 
   for ncfile in `find . -wholename '*/hist/*.nc' -print`; do
     if [[ "`$ncdump -k $ncfile`" != 'netCDF-4' && "`$ncdump -k $ncfile`" != 'netCDF-4 classic model' ]] ; then

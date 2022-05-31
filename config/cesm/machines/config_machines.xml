@@ -2357,6 +2357,7 @@ This allows using a different mpirun command to launch unit tests
         <command name="load">intel/2020a</command>
         <command name="load">netCDF-Fortran/4.5.2-iompi-2020a</command>
         <command name="load">iompi/2020a</command>
+        <command name="load">NCO/4.9.7-iomkl-2020a</command>
         <command name="load">CMake/3.12.1</command>
       </modules>
     </module_system>
