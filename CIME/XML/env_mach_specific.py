@@ -184,7 +184,7 @@ class EnvMachSpecific(EnvBase):
         # setup script if it exists.
         init_path = self.get_module_system_init_path("sh")
         if init_path:
-            source_cmd = "source {} && ".format(init_path)
+            source_cmd = ". {} && ".format(init_path)
         else:
             source_cmd = ""
 
@@ -244,12 +244,12 @@ class EnvMachSpecific(EnvBase):
         )
         lines.append("# Run ./case.setup --reset to regenerate this file")
         if sh_init_cmd:
-            lines.append("source {}".format(sh_init_cmd))
+            lines.append(". {}".format(sh_init_cmd))
 
         if "SOFTENV_ALIASES" in os.environ:
-            lines.append("source $SOFTENV_ALIASES")
+            lines.append(". $SOFTENV_ALIASES")
         if "SOFTENV_LOAD" in os.environ:
-            lines.append("source $SOFTENV_LOAD")
+            lines.append(". $SOFTENV_LOAD")
 
         if self._unit_testing or self._standalone_configure:
             job = None
@@ -301,7 +301,7 @@ class EnvMachSpecific(EnvBase):
             elif env_value is not None:
                 if env_name == "source":
                     shell, cmd = env_value.split(" ", 1)
-                    self._source_shell_file("source " + cmd, shell, verbose=verbose)
+                    self._source_shell_file(". " + cmd, shell, verbose=verbose)
                 else:
                     if verbose:
                         print("Setting Environment {}={}".format(env_name, env_value))
