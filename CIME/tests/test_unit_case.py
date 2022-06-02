@@ -81,7 +81,7 @@ class TestCaseSubmit(unittest.TestCase):
 
 class TestCase(unittest.TestCase):
     def setUp(self):
-        self.srcroot = os.path.abspath(cime_utils.get_cime_root())
+        self.srcroot = os.path.abspath(cime_utils.get_src_root())
         self.tempdir = tempfile.TemporaryDirectory()
 
     @mock.patch("CIME.case.case.Case.read_xml")
@@ -148,11 +148,8 @@ class TestCase(unittest.TestCase):
         with self.tempdir as tempdir:
             caseroot = os.path.join(tempdir, "test1")
             with Case(caseroot, read_only=False) as case:
-                srcroot = os.path.abspath(
-                    os.path.join(os.path.dirname(__file__), "../../../../../")
-                )
                 case.create(
-                    "test1", srcroot, "A", "f19_g16_rx1", machine_name="cori-haswell"
+                    "test1", self.srcroot, "A", "f19_g16_rx1", machine_name="cori-haswell"
                 )
 
                 # Check that they're all called
@@ -222,11 +219,8 @@ class TestCase(unittest.TestCase):
         with self.tempdir as tempdir:
             caseroot = os.path.join(tempdir, "test1")
             with Case(caseroot, read_only=False) as case:
-                srcroot = os.path.abspath(
-                    os.path.join(os.path.dirname(__file__), "../../../../../")
-                )
                 case.create(
-                    "test1", srcroot, "A", "f19_g16_rx1", machine_name="cori-haswell"
+                    "test1", self.srcroot, "A", "f19_g16_rx1", machine_name="cori-haswell"
                 )
 
                 # Check that they're all called
@@ -268,7 +262,6 @@ class TestCase(unittest.TestCase):
 
 class TestCase_RecordCmd(unittest.TestCase):
     def setUp(self):
-        self.srcroot = os.path.abspath(cime_utils.get_cime_root())
         self.tempdir = tempfile.TemporaryDirectory()
 
     def assert_calls_match(self, calls, expected):
