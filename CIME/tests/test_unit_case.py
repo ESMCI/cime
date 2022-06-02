@@ -149,7 +149,11 @@ class TestCase(unittest.TestCase):
             caseroot = os.path.join(tempdir, "test1")
             with Case(caseroot, read_only=False) as case:
                 case.create(
-                    "test1", self.srcroot, "A", "f19_g16_rx1", machine_name="cori-haswell"
+                    "test1",
+                    self.srcroot,
+                    "A",
+                    "f19_g16_rx1",
+                    machine_name="cori-haswell",
                 )
 
                 # Check that they're all called
@@ -220,7 +224,11 @@ class TestCase(unittest.TestCase):
             caseroot = os.path.join(tempdir, "test1")
             with Case(caseroot, read_only=False) as case:
                 case.create(
-                    "test1", self.srcroot, "A", "f19_g16_rx1", machine_name="cori-haswell"
+                    "test1",
+                    self.srcroot,
+                    "A",
+                    "f19_g16_rx1",
+                    machine_name="cori-haswell",
                 )
 
                 # Check that they're all called
