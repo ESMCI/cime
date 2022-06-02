@@ -50,6 +50,10 @@ class Files(EntryID):
         if os.path.isfile(config_files_override):
             self.read(config_files_override)
             self.overwrite_existing_entries()
+        elif self.get_version() >= 3.0:
+            model_config_files = self.get_value("MODEL_CONFIG_FILES")
+            self.read(model_config_files)
+            self.overwrite_existing_entries()
 
     def get_value(self, vid, attribute=None, resolved=True, subgroup=None):
         if vid == "COMP_ROOT_DIR_CPL":
