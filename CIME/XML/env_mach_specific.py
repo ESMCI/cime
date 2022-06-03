@@ -184,7 +184,7 @@ class EnvMachSpecific(EnvBase):
         # setup script if it exists.
         init_path = self.get_module_system_init_path("sh")
         if init_path:
-            source_cmd = "source {} && ".format(init_path)
+            source_cmd = ". {} && ".format(init_path)
         else:
             source_cmd = ""
 
@@ -231,6 +231,7 @@ class EnvMachSpecific(EnvBase):
         case: case object
         output_dir: string - path to output directory (if empty string, uses current directory)
         """
+        source_cmd = "." if shell == "sh" else "source"
         module_system = self.get_module_system_type()
         sh_init_cmd = self.get_module_system_init_path(shell)
         sh_mod_cmd = self.get_module_system_cmd_path(shell)
@@ -244,12 +245,12 @@ class EnvMachSpecific(EnvBase):
         )
         lines.append("# Run ./case.setup --reset to regenerate this file")
         if sh_init_cmd:
-            lines.append("source {}".format(sh_init_cmd))
+            lines.append("{} {}".format(source_cmd, sh_init_cmd))
 
         if "SOFTENV_ALIASES" in os.environ:
-            lines.append("source $SOFTENV_ALIASES")
+            lines.append("{} $SOFTENV_ALIASES".format(source_cmd))
         if "SOFTENV_LOAD" in os.environ:
-            lines.append("source $SOFTENV_LOAD")
+            lines.append("{} $SOFTENV_LOAD".format(source_cmd))
 
         if self._unit_testing or self._standalone_configure:
             job = None
@@ -469,12 +470,12 @@ class EnvMachSpecific(EnvBase):
         # do by running shell command and looking at the changes
         # in the environment.
 
-        cmd = "source {}".format(sh_init_cmd)
+        cmd = ". {}".format(sh_init_cmd)
 
         if "SOFTENV_ALIASES" in os.environ:
-            cmd += " && source $SOFTENV_ALIASES"
+            cmd += " && . $SOFTENV_ALIASES"
         if "SOFTENV_LOAD" in os.environ:
-            cmd += " && source $SOFTENV_LOAD"
+            cmd += " && . $SOFTENV_LOAD"
 
         for action, argument in modules_to_load:
             cmd += " && {} {} {}".format(
@@ -538,7 +539,8 @@ class EnvMachSpecific(EnvBase):
 """.format(
             shell
         )
-        header += "source {}".format(self.get_module_system_init_path(shell))
+        source_cmd = "." if shell == "sh" else "source"
+        header += "{} {}".format(source_cmd, self.get_module_system_init_path(shell))
         return header
 
     def get_module_system_type(self):
