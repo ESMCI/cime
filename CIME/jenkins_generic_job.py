@@ -264,6 +264,7 @@ def jenkins_generic_job(
     update_success,
     check_throughput,
     check_memory,
+    pes_file,
 ):
     ###############################################################################
     """
@@ -343,6 +344,9 @@ def jenkins_generic_job(
 
     if baseline_root is not None:
         create_test_args.append(" --baseline-root " + baseline_root)
+
+    if pes_file is not None:
+        create_test_args.append(" --pesfile " + pes_file)
 
     create_test_cmd = "./create_test " + " ".join(create_test_args)
 
