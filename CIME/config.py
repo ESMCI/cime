@@ -42,9 +42,9 @@ class Config:
 
                 sys.exit(1)
             else:
-                self._set_attribute(raw_config, x, value)
+                self._set_attribute(x, value)
 
-    def _set_attribute(self, source, name, value):
+    def _set_attribute(self, name, value):
         if hasattr(self, name):
             logger.debug("Overwriting %r attribute", name)
 
