@@ -11,7 +11,8 @@ class TestConfig(unittest.TestCase):
             test_file = os.path.join(tempdir, "test.py")
 
             with open(test_file, "w") as fd:
-                fd.write("""
+                fd.write(
+                    """
 use_feature1 = True
 use_feature2 = False
 
@@ -19,7 +20,8 @@ def prerun_provenance(case, **kwargs):
     print("prerun_provenance")
 
     return True
-                """)
+                """
+                )
 
             config = Config.load(tempdir)
 
@@ -36,7 +38,8 @@ def prerun_provenance(case, **kwargs):
             test_file = os.path.join(tempdir, "test.py")
 
             with open(test_file, "w") as fd:
-                fd.write("""
+                fd.write(
+                    """
 use_feature1 = True
 use_feature2 = False
 
@@ -44,7 +47,8 @@ def prerun_provenance(case, **kwargs):
     print("prerun_provenance")
 
     return True
-                """)
+                """
+                )
 
             Config.use_feature1 = False
 
