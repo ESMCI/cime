@@ -17,10 +17,7 @@ class Config:
 
         logger.debug("Searching %r for files to load", customize_path)
 
-        customize_files = glob.glob(
-            f"{customize_path}/**/*.py",
-            recursive=True
-        )
+        customize_files = glob.glob(f"{customize_path}/**/*.py", recursive=True)
 
         for x in customize_files:
             obj._load_file(x)
