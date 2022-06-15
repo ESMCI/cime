@@ -127,7 +127,8 @@ contains
 !===============================================================================
 
   subroutine set_component_logging(gcomp, mastertask, logunit, shrlogunit, rc)
-
+    use ESMF, only : ESMF_GridCompGet, ESMF_LogWrite
+    use NUOPC, only: NUOPC_CompAttributeAdd, NUOPC_CompAttributeSet
     ! input/output variables
     type(ESMF_GridComp)  :: gcomp
     logical, intent(in)  :: mastertask
@@ -136,8 +137,9 @@ contains
     integer, intent(out) :: rc
 
     ! local variables
-    character(len=CL) :: diro
+    character(len=CL) :: diro, name
     character(len=CL) :: logfile
+    character(len=*), parameter :: subname ='('//__FILE__//': set_component_logging)'
     !-----------------------------------------------------------------------
 
     rc = ESMF_SUCCESS
@@ -156,6 +158,17 @@ contains
     endif
 
     call shr_file_setLogUnit (logunit)
+
+    call ESMF_GridCompGet(gcomp, name=name, rc=rc)
+    if (chkerr(rc,__LINE__,u_FILE_u)) return
+
+    call ESMF_LogWrite(trim(subname)//": setting logunit for component: "//trim(name), ESMF_LOGMSG_INFO)
+
+    call NUOPC_CompAttributeAdd(gcomp, attrList=(/'logunit'/), rc=rc)
+    if (chkerr(rc,__LINE__,u_FILE_u)) return
+    call NUOPC_CompAttributeSet(gcomp, name='logunit',value=logunit, rc=rc)
+    if (chkerr(rc,__LINE__,u_FILE_u)) return
+
 
   end subroutine set_component_logging
 
