@@ -1,8 +1,6 @@
 import sys
-import os
 import glob
 import logging
-import inspect
 
 from CIME import utils
 
