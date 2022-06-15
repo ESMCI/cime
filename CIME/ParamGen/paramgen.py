@@ -9,15 +9,21 @@ try:
     from paramgen_utils import is_logical_expr, is_formula, has_unexpanded_var
     from paramgen_utils import eval_formula
 except ModuleNotFoundError:
-    from CIME.ParamGen.paramgen_utils import is_logical_expr, is_formula, has_unexpanded_var
+    from CIME.ParamGen.paramgen_utils import (
+        is_logical_expr,
+        is_formula,
+        has_unexpanded_var,
+    )
     from CIME.ParamGen.paramgen_utils import eval_formula
 
-assert sys.version_info.major==3 and sys.version_info.minor>=6,\
-    "ParamGen requires Python 3.6 or later."
+assert (
+    sys.version_info.major == 3 and sys.version_info.minor >= 6
+), "ParamGen requires Python 3.6 or later."
 
 logger = logging.getLogger(__name__)
 
-class ParamGen():
+
+class ParamGen:
     """
     ParamGen is a versatile, generic, lightweight base class to be used when developing namelist
     and parameter generator tools for scientific modeling applications.
@@ -37,10 +43,11 @@ class ParamGen():
         Reads in a given yaml input file and initializes a ParamGen object.
     """
 
-    def __init__(self, data_dict, match='last'):
-        assert isinstance(data_dict, dict), \
-            "ParamGen class requires a dict as the initial data."
-        #self._validate_schema(data_dict)
+    def __init__(self, data_dict, match="last"):
+        assert isinstance(
+            data_dict, dict
+        ), "ParamGen class requires a dict as the initial data."
+        # self._validate_schema(data_dict)
         self._original_data = deepcopy(data_dict)
         self._data = deepcopy(data_dict)
         self._reduced = False
@@ -59,10 +66,10 @@ class ParamGen():
     @property
     def is_empty(self):
         """Returns True if the data property is empty."""
-        return len(self._data)==0
+        return len(self._data) == 0
 
     @classmethod
-    def from_json(cls, input_path, match='last'):
+    def from_json(cls, input_path, match="last"):
         """
         Reads in a given json input file and initializes a ParamGen object.
 
@@ -79,12 +86,13 @@ class ParamGen():
         """
 
         import json
+
         with open(input_path) as json_file:
             _data = json.load(json_file)
         return cls(_data, match)
 
     @classmethod
-    def from_yaml(cls, input_path, match='last'):
+    def from_yaml(cls, input_path, match="last"):
         """
         Reads in a given yaml input file and initializes a ParamGen object.
 
@@ -101,12 +109,13 @@ class ParamGen():
         """
 
         import yaml
+
         with open(input_path) as yaml_file:
             _data = yaml.safe_load(yaml_file)
         return cls(_data, match)
 
     @classmethod
-    def from_xml_nml(cls, input_path, match='last', no_duplicates=False):
+    def from_xml_nml(cls, input_path, match="last", no_duplicates=False):
         """
         Reads in a given xml input file and initializes a ParamGen object. The XML file must conform to the
         entry_id_pg.xsd schema that's defined within ParamGen.
@@ -128,17 +137,30 @@ class ParamGen():
 
         # First check whether the given xml file conforms to the entry_id_pg.xsd schema
         from distutils.spawn import find_executable
+
         xmllint = find_executable("xmllint")
         if xmllint is None:
             logger.warning("Couldn't find xmllint. Skipping schema check")
         else:
-            schema_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),'xml_schema','entry_id_pg.xsd')
-            xmllint_cmd = "{} --xinclude --noout --schema {} {}".format(xmllint, schema_path, input_path)
-            stat = subprocess.run(xmllint_cmd, shell=True, capture_output=True, text=True)
-            assert stat.returncode == 0, "While checking file {} against nml schema, received following errmsg: {}"\
-                    .format(input_path, stat.stderr)
+            schema_path = os.path.join(
+                os.path.dirname(os.path.realpath(__file__)),
+                "xml_schema",
+                "entry_id_pg.xsd",
+            )
+            xmllint_cmd = "{} --xinclude --noout --schema {} {}".format(
+                xmllint, schema_path, input_path
+            )
+            stat = subprocess.run(
+                xmllint_cmd, shell=True, capture_output=True, text=True, check=True
+            )
+            assert (
+                stat.returncode == 0
+            ), "While checking file {} against nml schema, received following errmsg: {}".format(
+                input_path, stat.stderr
+            )
 
         import xml.etree.ElementTree as ET
+
         xml_tree = ET.parse(input_path)
         root = xml_tree.getroot()
         data = {}
@@ -146,9 +168,9 @@ class ParamGen():
         # Loop over all entries (namelist variables)
         for entry in list(root):
             # where each entry corresponds to a namelist variable, i.e., parameter
-            param_name = entry.attrib['id']
+            param_name = entry.attrib["id"]
             if no_duplicates and param_name in data:
-                #No duplicate namelist entries allowed, so raise error:
+                # No duplicate namelist entries allowed, so raise error:
                 emsg = "Entry id '{}' listed twice in file:\n'{}'"
                 raise ValueError(emsg.format(param_name, input_path))
             else:
@@ -156,39 +178,51 @@ class ParamGen():
 
             # loop over child entries and attributes of the parameter
             for child in list(entry):
-                if child.tag == 'values':
-                    data[param_name]['values'] = {}
+                if child.tag == "values":
+                    data[param_name]["values"] = {}
                     values = list(child)
 
                     # check if the values have logical guards as propositions
                     guards = {}
                     for value in values:
-                        if 'guard' in value.attrib:
-                            assert len(value.attrib) == 1, "If an explicit guard attribute is provided for a value,"+\
-                                "no other attribute may be provided. Check parameter {}".format(param_name)
-                            guards[value] = value.attrib['guard']
-                        elif len(value.attrib)>0:
-                            guards[value] = ' and '.join(['"${{{}}}" == "{}"'.format(str(guard_var), str(guard_val)) \
-                                for guard_var, guard_val in value.attrib.items()])
+                        if "guard" in value.attrib:
+                            assert len(value.attrib) == 1, (
+                                "If an explicit guard attribute is provided for a value,"
+                                + "no other attribute may be provided. Check parameter {}".format(
+                                    param_name
+                                )
+                            )
+                            guards[value] = value.attrib["guard"]
+                        elif len(value.attrib) > 0:
+                            guards[value] = " and ".join(
+                                [
+                                    '"${{{}}}" == "{}"'.format(
+                                        str(guard_var), str(guard_val)
+                                    )
+                                    for guard_var, guard_val in value.attrib.items()
+                                ]
+                            )
                         else:
-                            assert "else" not in guards.values(), "Multiple values with no guards (proposition)"+\
-                                "detected in variable {}".format(param_name)
+                            assert "else" not in guards.values(), (
+                                "Multiple values with no guards (proposition)"
+                                + "detected in variable {}".format(param_name)
+                            )
                             guards[value] = "else"
 
-                    if len(values) == 1 and guards[values[0]] == 'else':
-                        data[param_name]['values'] = list(values)[0].text.strip()
+                    if len(values) == 1 and guards[values[0]] == "else":
+                        data[param_name]["values"] = list(values)[0].text.strip()
                     else:
                         for value, guard in guards.items():
-                            data[param_name]['values'][guard] = value.text.strip()
+                            data[param_name]["values"][guard] = value.text.strip()
 
                 else:
                     # a child element other than the <values> element (.e.g, type, desc, group, etc.)
                     data[param_name][child.tag] = child.text.strip()
 
             # now group the parameters according to their group_id's:
-            _data = {} # grouped data
+            _data = {}  # grouped data
             for param_name in data:
-                param_group = data[param_name]['group']
+                param_group = data[param_name]["group"]
                 if param_group not in _data:
                     _data[param_group] = {}
                 _data[param_group][param_name] = data[param_name]
@@ -197,7 +231,7 @@ class ParamGen():
 
     @staticmethod
     def _expand_vars(expr, expand_func):
-        """ Replaces the expandable variables with their values in a given expression (expr) of type str.
+        """Replaces the expandable variables with their values in a given expression (expr) of type str.
 
         Parameters
         ----------
@@ -216,31 +250,38 @@ class ParamGen():
         """
 
         if expand_func is None:
-            return expr # No expansion function is provided, so return.
+            return expr  # No expansion function is provided, so return.
 
-        assert isinstance(expr, str), "Expression passed to _expand_vars must be string."
-        expandable_vars = re.findall(r'(\$\w+|\${\w+\})',expr)
+        assert isinstance(
+            expr, str
+        ), "Expression passed to _expand_vars must be string."
+        expandable_vars = re.findall(r"(\$\w+|\${\w+\})", expr)
         for word in expandable_vars:
-            word_stripped = word.strip().\
-                replace("$","").\
-                replace("{","").\
-                replace("}","")
+            word_stripped = (
+                word.strip().replace("$", "").replace("{", "").replace("}", "")
+            )
             word_expanded = expand_func(word_stripped)
-            assert word_expanded is not None, "Cannot determine the value of the variable: {}.".format(word)
+            assert (
+                word_expanded is not None
+            ), "Cannot determine the value of the variable: {}.".format(word)
 
             # enclose with quotes if expanded var is a string and is expression sans curly braces
-            if isinstance(word_expanded, str) and word[1]!='{':
-                word_expanded = '"'+word_expanded+'"'
+            if isinstance(word_expanded, str) and word[1] != "{":
+                word_expanded = '"' + word_expanded + '"'
             else:
                 word_expanded = str(word_expanded)
 
-            expr = re.sub(r'(\$\b'+word_stripped+r'\b|\$\{'+word_stripped+r'\})',  word_expanded, expr)
+            expr = re.sub(
+                r"(\$\b" + word_stripped + r"\b|\$\{" + word_stripped + r"\})",
+                word_expanded,
+                expr,
+            )
 
         return expr
 
     @staticmethod
     def _is_guarded_dict(data_dict):
-        """ Returns true if all the keys of a dictionary are logical expressions, i.e., guards.
+        """Returns true if all the keys of a dictionary are logical expressions, i.e., guards.
 
         Parameters
         ----------
@@ -263,13 +304,16 @@ class ParamGen():
         if all(keys_logical):
             return True
         if any(keys_logical):
-            raise RuntimeError("Only subset of the following are guarded entries, i.e., logical "+
-                                "expressions as keys:\n\t"+str(data_dict))
+            raise RuntimeError(
+                "Only subset of the following are guarded entries, i.e., logical "
+                + "expressions as keys:\n\t"
+                + str(data_dict)
+            )
         return False
 
     def _impose_guards(self, data_dict):
 
-        """ Given a data_dict with guarded entries, evaluates the guards and returns the entry whose guard (key)
+        """Given a data_dict with guarded entries, evaluates the guards and returns the entry whose guard (key)
         evaluates to True. If multiple guards evaluate to true, the first or the last entry with the True guard is
         returned, depending on the "match" arg passed to ParamGen initializer. This method is intended to be called
         from _reduce_recursive only.
@@ -288,48 +332,54 @@ class ParamGen():
         """
 
         def _eval_guard(guard):
-            """ returns true if a guard evaluates to true."""
-            assert isinstance(guard, str), "Expression passed to _eval_guard must be string."
+            """returns true if a guard evaluates to true."""
+            assert isinstance(
+                guard, str
+            ), "Expression passed to _eval_guard must be string."
 
             if has_unexpanded_var(guard):
-                raise RuntimeError("The guard "+guard+" has an expandable variable ($var) "+\
-                    "that's not expanded yet. All variables must already be expanded before "+\
-                    "guards can be evaluated.")
+                raise RuntimeError(
+                    "The guard "
+                    + guard
+                    + " has an expandable variable ($var) "
+                    + "that's not expanded yet. All variables must already be expanded before "
+                    + "guards can be evaluated."
+                )
 
             guard_evaluated = eval_formula(guard)
-            assert isinstance(guard_evaluated, bool), "Guard is not boolean: {}".format(guard)
+            assert isinstance(guard_evaluated, bool), "Guard is not boolean: {}".format(
+                guard
+            )
             return guard_evaluated
-
 
         if not ParamGen._is_guarded_dict(data_dict):
             return data_dict
 
-        guards_eval_true = [] # list of guards that evaluate to true.
+        guards_eval_true = []  # list of guards that evaluate to true.
         for guard in data_dict:
-            if guard=="else" or _eval_guard(str(guard)) is True:
+            if guard == "else" or _eval_guard(str(guard)) is True:
                 guards_eval_true.append(guard)
 
-        if len(guards_eval_true)>1 and "else" in guards_eval_true:
+        if len(guards_eval_true) > 1 and "else" in guards_eval_true:
             guards_eval_true.remove("else")
-        elif len(guards_eval_true)==0:
+        elif len(guards_eval_true) == 0:
             return None
 
-        if self._match == 'first':
+        if self._match == "first":
             return data_dict[guards_eval_true[0]]
-        if self._match == 'last':
+        if self._match == "last":
             return data_dict[guards_eval_true[-1]]
         raise RuntimeError("Unknown match option.")
 
-
     def _reduce_recursive(self, data_dict, expand_func=None):
 
-        """ A recursive method to reduce a given data_dict. This method is intended to be called by the reduce method
-        only. Check the docstring of the reduce method for more information. """
+        """A recursive method to reduce a given data_dict. This method is intended to be called by the reduce method
+        only. Check the docstring of the reduce method for more information."""
 
         # (1) Expand variables in keys, .e.g, "$OCN_GRID" to "gx1v7":
         def _expand_vars_in_keys(data_dict):
             if expand_func is not None:
-                new_data_dict  = {}
+                new_data_dict = {}
                 for key in data_dict:
                     new_key = key
                     if has_unexpanded_var(key):
@@ -344,7 +394,7 @@ class ParamGen():
         # Pick the value of the first or last key evaluating to True and drop everything else.
         while ParamGen._is_guarded_dict(data_dict):
             data_dict = self._impose_guards(data_dict)
-            if isinstance(data_dict,dict):
+            if isinstance(data_dict, dict):
                 data_dict = _expand_vars_in_keys(data_dict)
 
         # If the data_dict is reduced to a string, expand vars and eval formulas as a last step.
@@ -371,7 +421,7 @@ class ParamGen():
                     data_dict[key] = eval_formula(val.strip()[1:])
 
             # (5) Recursively call _reduce_recursive for the remaining nested dicts before returning
-            keys_of_nested_dicts = [] # i.e., keys of values that are of type dict
+            keys_of_nested_dicts = []  # i.e., keys of values that are of type dict
             for key, val in data_dict.items():
                 if isinstance(val, dict):
                     keys_of_nested_dicts.append(key)
@@ -379,7 +429,6 @@ class ParamGen():
                 data_dict[key] = self._reduce_recursive(data_dict[key], expand_func)
 
         return data_dict
-
 
     def reduce(self, expand_func=None):
         """
@@ -400,7 +449,9 @@ class ParamGen():
         'b'
         """
 
-        assert callable(expand_func) or expand_func is None, "expand_func argument must be a function"
+        assert (
+            callable(expand_func) or expand_func is None
+        ), "expand_func argument must be a function"
         assert not self.reduced, "ParamGen data already reduced."
         assert not self.is_empty, "Empty ParamGen data."
 
@@ -408,7 +459,7 @@ class ParamGen():
         self._reduced = True
 
     def append(self, pg_obj):
-        """ Adds the data of a given ParamGen instance to the self data. If a data entry already exists in self,
+        """Adds the data of a given ParamGen instance to the self data. If a data entry already exists in self,
             the value is overriden. Otherwise, the new data entry is simply added to self.
 
         Parameters
@@ -425,8 +476,10 @@ class ParamGen():
         {'a': 1, 'b': 3, 'c': 4}
         """
 
-        assert isinstance(pg_obj,ParamGen), "can only append ParamGen to Paramgen"
-        assert self.reduced == pg_obj.reduced, "Cannot append reduced ParamGen instance to unreduced, and vice versa."
+        assert isinstance(pg_obj, ParamGen), "can only append ParamGen to Paramgen"
+        assert (
+            self.reduced == pg_obj.reduced
+        ), "Cannot append reduced ParamGen instance to unreduced, and vice versa."
 
         def _append_recursive(old_dict, new_dict):
             for key, val in new_dict.items():
@@ -442,7 +495,7 @@ class ParamGen():
         _append_recursive(self._data, pg_obj._data)
 
     def reset(self):
-        """ Resets the ParamGen object to its initial state, i.e., undoes the reduce method.
+        """Resets the ParamGen object to its initial state, i.e., undoes the reduce method.
 
         Example
         -------
@@ -458,7 +511,7 @@ class ParamGen():
         self._reduced = False
 
     def write_nml(self, output_path):
-        """ Writes the reduced data in Fortran namelist format if the data conforms to the format.
+        """Writes the reduced data in Fortran namelist format if the data conforms to the format.
 
         Parameters
         ----------
@@ -466,13 +519,15 @@ class ParamGen():
             Path to the namelist file to be created.
         """
 
-        assert self._reduced, "The data may be written only after the reduce method is called."
+        assert (
+            self._reduced
+        ), "The data may be written only after the reduce method is called."
 
         # check *schema* after reduction
         for grp, var in self.data.items():
             # grp is the namelist module name, while var is a dictionary corresponding to the vars in namelist
-            assert isinstance(grp,str), "Invalid data format"
-            assert isinstance(var,dict), "Invalid data format"
+            assert isinstance(grp, str), "Invalid data format"
+            assert isinstance(var, dict), "Invalid data format"
             for vls in var.values():
                 # vnm is the var name, and vls is its values element
                 assert isinstance(vls, dict), "Invalid data format"
@@ -481,11 +536,11 @@ class ParamGen():
                     assert isinstance(val, str), "Invalid data format"
 
         # write the namelist file
-        with open(output_path, 'w') as nml:
+        with open(output_path, "w") as nml:
             for module in self._data:
                 nml.write("&{}\n".format(module))
                 for var in self._data[module]:
-                    val = str(self._data[module][var]['values']).strip()
+                    val = str(self._data[module][var]["values"]).strip()
                     if val is not None:
-                        nml.write("    {} = {}\n".format(var,val))
+                        nml.write("    {} = {}\n".format(var, val))
                 nml.write("/\n\n")

@@ -1,7 +1,7 @@
 """Auxiliary functions to be used in ParamGen and derived classes"""
 
-import os
 import re
+
 
 def is_number(var):
     """
@@ -35,6 +35,7 @@ def is_number(var):
         return False
     return True
 
+
 def is_logical_expr(expr):
     """
     Returns True if a string is a logical expression.
@@ -59,16 +60,19 @@ def is_logical_expr(expr):
     False
     """
 
-    assert isinstance(expr,str), "Expression passed to is_logical_expr function must be a string."
+    assert isinstance(
+        expr, str
+    ), "Expression passed to is_logical_expr function must be a string."
 
     # special case:
     if expr.strip() == "else":
         return True
 
     try:
-        return isinstance(eval(expr),bool)
+        return isinstance(eval(expr), bool)
     except (NameError, SyntaxError):
         return False
+
 
 def is_formula(expr):
     """
@@ -92,7 +96,8 @@ def is_formula(expr):
     True
     """
 
-    return isinstance(expr, str) and len(expr)>0 and expr.strip()[0]=='='
+    return isinstance(expr, str) and len(expr) > 0 and expr.strip()[0] == "="
+
 
 def has_unexpanded_var(expr):
     """
@@ -113,7 +118,8 @@ def has_unexpanded_var(expr):
     True
     """
 
-    return isinstance(expr,str) and bool(re.search(r'(\$\w+|\${\w+\})',expr))
+    return isinstance(expr, str) and bool(re.search(r"(\$\w+|\${\w+\})", expr))
+
 
 def get_expandable_vars(expr):
     """
@@ -134,15 +140,13 @@ def get_expandable_vars(expr):
     >>> get_expandable_vars("var3 ${var4}")
     {'var4'}
     """
-    expandable_vars = re.findall(r'(\$\w+|\${\w+\})',expr)
+    expandable_vars = re.findall(r"(\$\w+|\${\w+\})", expr)
     expandable_vars_stripped = set()
     for var in expandable_vars:
-        var_stripped = var.strip().\
-            replace("$","").\
-            replace("{","").\
-            replace("}","")
+        var_stripped = var.strip().replace("$", "").replace("{", "").replace("}", "")
         expandable_vars_stripped.add(var_stripped)
     return expandable_vars_stripped
+
 
 def _check_comparison_types(formula):
     """
@@ -170,13 +174,17 @@ def _check_comparison_types(formula):
     ...
     TypeError: The following formula may be comparing different types of variables: '3.1' == 3.1
     """
-    guard_test = formula.replace('==', '>').replace('!=', '>').replace('<>', '>')
+    guard_test = formula.replace("==", ">").replace("!=", ">").replace("<>", ">")
     try:
         eval(guard_test)
-    except TypeError:
-        raise TypeError("The following formula may be comparing different types of variables: {}"\
-            .format(formula))
+    except TypeError as type_error:
+        raise TypeError(
+            "The following formula may be comparing different types of variables: {}".format(
+                formula
+            )
+        ) from type_error
     return True
+
 
 def eval_formula(formula):
     """
@@ -213,11 +221,13 @@ def eval_formula(formula):
     # now try to evaluate the formula:
     try:
         result = eval(formula)
-    except:
-        raise RuntimeError("Cannot evaluate formula: "+formula)
+    except (TypeError, NameError, SyntaxError) as error:
+        raise RuntimeError("Cannot evaluate formula: " + formula) from error
 
     return result
 
+
 if __name__ == "__main__":
     import doctest
+
     doctest.testmod()
