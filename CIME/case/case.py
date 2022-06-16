@@ -12,6 +12,7 @@ from CIME.XML.standard_module_setup import *
 
 # pylint: disable=import-error,redefined-builtin
 from CIME import utils
+from CIME.config import Config
 from CIME.utils import expect, get_cime_root, append_status
 from CIME.utils import convert_to_type, get_model, set_model
 from CIME.utils import get_project, get_charge_account, check_name
@@ -121,6 +122,7 @@ class Case(object):
         self._files = []
         self._comp_interface = None
         self._non_local = non_local
+        self.config = None
         self.read_xml()
 
         srcroot = self.get_value("SRCROOT")
@@ -128,6 +130,12 @@ class Case(object):
         # Propagate `srcroot` to `GenericXML` to resolve $SRCROOT
         if srcroot is not None:
             utils.GLOBAL["SRCROOT"] = srcroot
+
+            # srcroot may not be known yet, in the instance of creating
+            # a new case
+            customize_path = os.path.join(srcroot, "cime_config", "customize")
+
+            self.config = Config.load(customize_path)
 
         if record:
             self.record_cmd()
@@ -2305,6 +2313,10 @@ directory, NOT in this subdirectory."""
 
             # Propagate to `GenericXML` to resolve $SRCROOT
             utils.GLOBAL["SRCROOT"] = srcroot
+
+            customize_path = os.path.join(srcroot, "cime_config", "customize")
+
+            self.config = Config.load(customize_path)
 
             # If any of the top level user_mods_dirs contain a config_grids.xml file and
             # gridfile was not set on the command line, use it. However, if there are

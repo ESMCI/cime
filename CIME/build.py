@@ -19,7 +19,6 @@ from CIME.utils import (
     get_logging_options,
     import_from_file,
 )
-from CIME.provenance import save_build_provenance as save_build_provenance_sub
 from CIME.locked_files import lock_file, unlock_file
 from CIME.XML.files import Files
 
@@ -1242,7 +1241,10 @@ def post_build(case, logs, build_complete=False, save_build_provenance=True):
             os.environ["LID"] if "LID" in os.environ else get_timestamp("%y%m%d-%H%M%S")
         )
         if save_build_provenance:
-            save_build_provenance_sub(case, lid=lid)
+            try:
+                case.config.save_build_provenance(case, lid=lid)
+            except AttributeError:
+                logger.debug("No handler for save_build_provenance was found")
         # Set XML to indicate build complete
         case.set_value("BUILD_COMPLETE", True)
         case.set_value("BUILD_STATUS", 0)
