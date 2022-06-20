@@ -1,6 +1,7 @@
 import sys
 import glob
 import logging
+import importlib
 
 from CIME import utils
 
@@ -25,12 +26,18 @@ class Config:
 
         customize_files = glob.glob(f"{customize_path}/**/*.py", recursive=True)
 
-        for x in customize_files:
-            obj._load_file(x)
+        customize_module_spec = importlib.machinery.ModuleSpec("cime_customize", None)
+
+        customize_module = importlib.util.module_from_spec(customize_module_spec)
+
+        sys.modules["CIME.customize"] = customize_module
+
+        for x in sorted(customize_files):
+            obj._load_file(x, customize_module)
 
         return obj
 
-    def _load_file(self, file_path):
+    def _load_file(self, file_path, customize_module):
         logger.debug("Loading file %r", file_path)
 
         raw_config = utils.import_from_file("raw_config", file_path)
@@ -48,6 +55,8 @@ class Config:
 
                 sys.exit(1)
             else:
+                setattr(customize_module, x, value)
+
                 self._set_attribute(x, value)
 
     def _set_attribute(self, name, value):
