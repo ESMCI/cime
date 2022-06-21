@@ -16,7 +16,25 @@ class Config:
         return cls._instance
 
     def __init__(self):
-        pass
+        # Upon a successful SystemTest, the time taken is recorded
+        # to the BASELINE_ROOT. If the RUN phase failed then a possible
+        # explanation is appened to the testlog.
+        self._set_attribute("verbose_run_phase", False)
+        # Upon the completion of a SystemTest and GENERATE_BASELINE is True,
+        # the TestStatus will be copied from the case directory to the baseline
+        # directory.
+        self._set_attribute("baseline_store_teststatus", True)
+        # During BUILD phase of a SystemTestsCompareN SHAREDLIBROOT is set
+        # the same for all cases.
+        self._set_attribute("common_sharedlibroot", True)
+
+    @classmethod
+    def instance(cls):
+        """Access singleton.
+
+        Explicit way to access singleton, same as calling constructor.
+        """
+        return cls()
 
     @classmethod
     def load(cls, customize_path):
