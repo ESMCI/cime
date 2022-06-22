@@ -7,9 +7,9 @@ from CIME.case import Case
 from CIME.utils import (
     parse_args_and_handle_standard_logging_options,
     setup_standard_logging_options,
-    get_model,
     safe_copy,
 )
+from CIME.config import Config
 from CIME.build import get_standard_makefile_args
 from CIME.XML.files import Files
 
@@ -78,8 +78,10 @@ def build_cime_component_lib(case, compname, libroot, bldroot):
     with open(os.path.join(confdir, "CIME_cppdefs"), "w") as out:
         out.write("")
 
+    config = Config.instance()
+
     # Build the component
-    if get_model() != "e3sm":
+    if config.build_cime_component_lib:
         safe_copy(os.path.join(confdir, "Filepath"), bldroot)
         if os.path.exists(os.path.join(confdir, "CIME_cppdefs")):
             safe_copy(os.path.join(confdir, "CIME_cppdefs"), bldroot)

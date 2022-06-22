@@ -14,6 +14,7 @@ from CIME.utils import (
     get_cime_default_driver,
     get_src_root,
 )
+from CIME.config import Config
 from CIME.case import Case
 from argparse import RawTextHelpFormatter
 
@@ -27,6 +28,8 @@ def parse_command_line(args, cimeroot, description):
     )
 
     CIME.utils.setup_standard_logging_options(parser)
+
+    config = Config.instance()
 
     try:
         cime_config = get_cime_config()
@@ -190,7 +193,7 @@ def parse_command_line(args, cimeroot, description):
         "--script-root", dest="script_root", default=None, help=argparse.SUPPRESS
     )
 
-    if model == "cesm":
+    if config.allow_unsupported:
         parser.add_argument(
             "--run-unsupported",
             action="store_true",
@@ -300,7 +303,7 @@ def parse_command_line(args, cimeroot, description):
         )
 
     run_unsupported = False
-    if model == "cesm":
+    if config.allow_unsupported:
         run_unsupported = args.run_unsupported
 
     expect(

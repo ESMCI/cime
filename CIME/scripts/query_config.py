@@ -8,11 +8,12 @@ information will be listed for each.
 
 from CIME.Tools.standard_script_setup import *
 import re
-from CIME.utils import expect, get_model
+from CIME.utils import expect
 from CIME.XML.files import Files
 from CIME.XML.component import Component
 from CIME.XML.compsets import Compsets
 from CIME.XML.grids import Grids
+from CIME.config import Config
 
 # from CIME.XML.machines  import Machines
 import CIME.XML.machines
@@ -122,7 +123,9 @@ def print_compset(name, files, all_components=False, xml=False):
     elif config_file is None or not os.path.isfile(config_file):
         return
 
-    if get_model() == "ufs" and name == "drv":
+    config = Config.instance()
+
+    if config.skip_print_compset and name == "drv":
         return
 
     print("\nActive component: {}".format(name))
@@ -256,6 +259,7 @@ def parse_command_line(args, description):
             supported_comp_interfaces.remove(comp_interface)
 
         for comp in components:
+            # TODO handle differently than using a flag
             if cime_model == "cesm":
                 string = "COMP_ROOT_DIR_{}".format(comp)
             else:

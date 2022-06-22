@@ -16,17 +16,111 @@ class Config:
         return cls._instance
 
     def __init__(self):
-        # Upon a successful SystemTest, the time taken is recorded
-        # to the BASELINE_ROOT. If the RUN phase failed then a possible
-        # explanation is appened to the testlog.
-        self._set_attribute("verbose_run_phase", False)
-        # Upon the completion of a SystemTest and GENERATE_BASELINE is True,
-        # the TestStatus will be copied from the case directory to the baseline
-        # directory.
-        self._set_attribute("baseline_store_teststatus", True)
-        # During BUILD phase of a SystemTestsCompareN SHAREDLIBROOT is set
-        # the same for all cases.
-        self._set_attribute("common_sharedlibroot", True)
+        self._attribute_config = {}
+
+        self._set_attribute(
+            "verbose_run_phase",
+            False,
+            desc="Upon a successful SystemTest, the time taken is recorded to the BASELINE_ROOT. If the RUN phase failed then a possible explanation is appened to the testlog.",
+        )
+        self._set_attribute(
+            "baseline_store_teststatus",
+            True,
+            desc="Upon the completion of a SystemTest and GENERATE_BASELINE is True, the TestStatus will be copied from the case directory to the baseline directory.",
+        )
+        self._set_attribute(
+            "common_sharedlibroot",
+            True,
+            desc="During BUILD phase of a SystemTestsCompareN SHAREDLIBROOT is set the same for all cases.",
+        )
+        self._set_attribute(
+            "archive_drv_component", True, desc="Archives drv component."
+        )
+        self._set_attribute(
+            "archive_dart_component", True, desc="Archives dart component."
+        )
+        self._set_attribute(
+            "cesm_create_test_flags",
+            True,
+            desc=" Enables CESM specific `create_test` flags.",
+        )
+        self._set_attribute(
+            "use_kokkos",
+            False,
+            desc="Enables use of kokkos, CAM_TARGET must be set to either `preqx_kokkos`, `theta-l` or `theta-l_kokkos`.",
+        )
+        self._set_attribute(
+            "shared_clm_component", True, desc="Enables shared clm component."
+        )
+        self._set_attribute(
+            "ufs_alternative_config",
+            False,
+            desc="Enables ufs config_dir for `nems` driver.",
+        )
+        # disable for ufs
+        self._set_attribute("enable_smp", True, desc="Enables SMP when building model.")
+        self._set_attribute(
+            "build_model_use_cmake", False, desc="When building model use CMake."
+        )
+        self._set_attribute(
+            "build_cime_component_lib", True, desc="Build CIME component lib."
+        )
+        self._set_attribute(
+            "default_short_term_archiving",
+            True,
+            desc="Forces short term archiving when not a test.",
+        )
+        self._set_attribute(
+            "copy_e3sm_tools", False, desc="Copies E3SM specific tools to case tools."
+        )
+        self._set_attribute(
+            "copy_cesm_tools", True, desc="Copies archive_metadata to case root."
+        )
+        self._set_attribute(
+            "copy_cism_source_mods", True, desc="Copies cism SourceMods."
+        )
+        self._set_attribute(
+            "make_case_run_batch_script",
+            False,
+            desc="Makes case.run batch script during case setup.",
+        )
+        self._set_attribute(
+            "case_setup_generate_namelist",
+            False,
+            desc="Creates namelist during case.setup for some tests.",
+        )
+        self._set_attribute(
+            "create_bless_log",
+            False,
+            desc="Creates a bless log when comparing baseline.",
+        )
+        self._set_attribute(
+            "allow_unsupported",
+            True,
+            desc="Allows creation of case that is not test or supported.",
+        )
+        # set for ufs
+        self._set_attribute(
+            "check_machine_name_from_test_name",
+            True,
+            desc="Try to get machine name from testname.",
+        )
+        self._set_attribute(
+            "sort_tests",
+            False,
+            desc="When creating a test if walltime is defined tests are sorted by execution time",
+        )
+        self._set_attribute("skip_print_compset", False, desc="Skip printing compset.")
+        self._set_attribute(
+            "calculate_mode_build_cost",
+            False,
+            desc="Calculates model build cost rather than using static value in test_scheduler",
+        )
+        self._set_attribute("share_exes", False, desc="Test scheduler will shared exes.")
+
+        self._set_attribute("serialize_sharedlib_builds", True, desc="Test scheduler will serialize sharedlib builds.")
+
+        self._set_attribute("use_testreporter_template", True, desc="Test scheduler will use testreporter.template.")
 
     @classmethod
     def instance(cls):
@@ -77,10 +171,14 @@ class Config:
 
                 self._set_attribute(x, value)
 
-    def _set_attribute(self, name, value):
+    def _set_attribute(self, name, value, desc=None):
         if hasattr(self, name):
             logger.debug("Overwriting %r attribute", name)
 
         logger.debug("Setting attribute %r with value %r", name, value)
 
         setattr(self, name, value)
+
+        self._attribute_config[name] = {
+            "desc": desc,
+        }

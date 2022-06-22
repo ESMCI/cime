@@ -320,7 +320,9 @@ class SystemTestsCommon(object):
                                     )
                                 )
 
-            if config.baseline_store_teststatus and self._case.get_value("GENERATE_BASELINE"):
+            if config.baseline_store_teststatus and self._case.get_value(
+                "GENERATE_BASELINE"
+            ):
                 baseline_dir = os.path.join(
                     self._case.get_value("BASELINE_ROOT"),
                     self._case.get_value("BASEGEN_CASE"),

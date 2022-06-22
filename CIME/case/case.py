@@ -44,6 +44,8 @@ from CIME.aprun import get_aprun_cmd_for_case
 
 logger = logging.getLogger(__name__)
 
+config = Config.instance()
+
 
 class Case(object):
     """
@@ -1497,7 +1499,7 @@ class Case(object):
         # Turn on short term archiving as cesm default setting
         model = get_model()
         self.set_model_version(model)
-        if model == "cesm" and not test:
+        if self.config.default_short_term_archiving and not test:
             self.set_value("DOUT_S", True)
             self.set_value("TIMER_LEVEL", 4)
 
@@ -1688,7 +1690,7 @@ class Case(object):
                     )
                 )
 
-        if get_model() == "e3sm":
+        if self.config.copy_e3sm_tools:
             if os.path.exists(os.path.join(machines_dir, "syslog.{}".format(machine))):
                 safe_copy(
                     os.path.join(machines_dir, "syslog.{}".format(machine)),
@@ -1703,7 +1705,7 @@ class Case(object):
             safe_copy(os.path.join(toolsdir, "e3sm_compile_wrap.py"), casetools)
 
         # add archive_metadata to the CASEROOT but only for CESM
-        if get_model() == "cesm":
+        if self.config.copy_cesm_tools:
             try:
                 exefile = os.path.join(toolsdir, "archive_metadata")
                 destfile = os.path.join(self._caseroot, os.path.basename(exefile))
@@ -1753,7 +1755,7 @@ leveraging version control (git or svn).
                 with open(readme_file, "w") as fd:
                     fd.write(readme_message.format(component=component))
 
-        if get_model() == "cesm":
+        if self.config.copy_cism_source_mods:
             # Note: this is CESM specific, given that we are referencing cism explitly
             if "cism" in components:
                 directory = os.path.join(

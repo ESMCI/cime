@@ -3,10 +3,10 @@ from CIME.test_scheduler import NAMELIST_PHASE
 from CIME.utils import (
     run_cmd,
     get_scripts_root,
-    get_model,
     EnvironmentContext,
     parse_test_name,
 )
+from CIME.config import Config
 from CIME.test_status import *
 from CIME.hist_utils import generate_baseline, compare_baseline
 from CIME.case import Case
@@ -35,10 +35,11 @@ def bless_namelists(
     if not report_only and (
         force or input("Update namelists (y/n)? ").upper() in ["Y", "YES"]
     ):
+        config = Config.instance()
 
         create_test_gen_args = " -g {} ".format(
             baseline_name
-            if get_model() == "cesm"
+            if config.cesm_create_test_flags
             else " -g -b {} ".format(baseline_name)
         )
         if new_test_root is not None:

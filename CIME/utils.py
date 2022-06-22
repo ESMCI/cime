@@ -454,6 +454,7 @@ def get_cime_default_driver():
                     "Setting CIME_driver={} from ~/.cime/config".format(driver)
                 )
     if not driver:
+        # TODO handle without flag
         model = get_model()
         if model == "ufs" or model == "cesm":
             driver = "nuopc"
@@ -2475,6 +2476,7 @@ def run_and_log_case_status(
 
 
 def _check_for_invalid_args(args):
+    # TODO Is this really model specific
     if get_model() != "e3sm":
         for arg in args:
             # if arg contains a space then it was originally quoted and we can ignore it here.
