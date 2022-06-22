@@ -116,11 +116,21 @@ class Config:
             False,
             desc="Calculates model build cost rather than using static value in test_scheduler",
         )
-        self._set_attribute("share_exes", False, desc="Test scheduler will shared exes.")
+        self._set_attribute(
+            "share_exes", False, desc="Test scheduler will shared exes."
+        )
 
-        self._set_attribute("serialize_sharedlib_builds", True, desc="Test scheduler will serialize sharedlib builds.")
+        self._set_attribute(
+            "serialize_sharedlib_builds",
+            True,
+            desc="Test scheduler will serialize sharedlib builds.",
+        )
 
-        self._set_attribute("use_testreporter_template", True, desc="Test scheduler will use testreporter.template.")
+        self._set_attribute(
+            "use_testreporter_template",
+            True,
+            desc="Test scheduler will use testreporter.template.",
+        )
 
     @classmethod
     def instance(cls):
