@@ -31,6 +31,7 @@ RUN mamba install --yes -c conda-forge \
             m4 \
             pytest \
             pytest-cov\
+            pyyaml \
             vim \
             openssh && \
             rm -rf /opt/conda/pkgs/*
