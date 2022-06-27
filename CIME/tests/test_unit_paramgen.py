@@ -18,7 +18,7 @@ import tempfile
 from CIME.ParamGen.paramgen import ParamGen
 
 ###############
-#Example inputs
+# Example inputs
 ###############
 
 _MOM_INPUT_YAML = """
@@ -120,8 +120,9 @@ _DUPLICATE_IDS_XML = """<?xml version="1.0"?>
 """
 
 ############################
-#Dummy functions and classes
+# Dummy functions and classes
 ############################
+
 
 class DummyCase:
     """A dummy Case class that mimics CIME class objects' get_value method."""
@@ -130,13 +131,15 @@ class DummyCase:
         d = {
             "DIN_LOC_ROOT": "/foo/inputdata",
             "OCN_GRID": "tx0.66v1",
-            "COMP_ATM": "datm"
+            "COMP_ATM": "datm",
         }
         return d[varname] if varname in d else None
+
 
 case = DummyCase()
 
 #####
+
 
 def _expand_func_demo(varname):
     return {
@@ -148,9 +151,11 @@ def _expand_func_demo(varname):
         "some_float": "3.1415",
     }[varname]
 
+
 ################
-#Unitest classes
+# Unitest classes
 ################
+
 
 class TestParamGen(unittest.TestCase):
     """
@@ -258,7 +263,9 @@ class TestParamGen(unittest.TestCase):
         self.assertEqual(obj.data["x"], 9)
         self.assertEqual(obj.data["y"], [0, 1, 2])
 
+
 #####
+
 
 class TestParamGenYamlConstructor(unittest.TestCase):
     """A unit test class for testing ParamGen's yaml constructor."""
@@ -266,15 +273,15 @@ class TestParamGenYamlConstructor(unittest.TestCase):
     def test_mom_input(self):
         """Test MOM_input file generation via a subset of original MOM_input.yaml"""
 
-        #Create temporary YAML file:
+        # Create temporary YAML file:
         with tempfile.NamedTemporaryFile() as temp:
             temp.write(_MOM_INPUT_YAML.encode())
             temp.flush()
 
-            #Open YAML file using ParamGen:
+            # Open YAML file using ParamGen:
             mom_input = ParamGen.from_yaml(temp.name)
 
-        #Define a local ParamGen reducing function:
+        # Define a local ParamGen reducing function:
         def input_data_list_expand_func(varname):
             val = case.get_value(varname)
             if val == None:
@@ -283,10 +290,10 @@ class TestParamGenYamlConstructor(unittest.TestCase):
                 raise RuntimeError("Cannot determine the value of variable: " + varname)
             return val
 
-        #Reduce ParamGen entries:
+        # Reduce ParamGen entries:
         mom_input.reduce(input_data_list_expand_func)
 
-        #Check output:
+        # Check output:
         self.assertEqual(
             mom_input.data,
             {
@@ -304,15 +311,15 @@ class TestParamGenYamlConstructor(unittest.TestCase):
     def test_input_data_list(self):
         """Test mom.input_data_list file generation via a subset of original input_data_list.yaml"""
 
-        #Create temporary YAML file:
+        # Create temporary YAML file:
         with tempfile.NamedTemporaryFile() as temp:
             temp.write(_MOM_INPUT_YAML.encode())
             temp.flush()
 
-            #Open YAML file using ParamGen:
+            # Open YAML file using ParamGen:
             mom_input = ParamGen.from_yaml(temp.name)
 
-        #Define a local ParamGen reducing function:
+        # Define a local ParamGen reducing function:
         def input_data_list_expand_func(varname):
             val = case.get_value(varname)
             if val == None:
@@ -321,21 +328,21 @@ class TestParamGenYamlConstructor(unittest.TestCase):
                 raise RuntimeError("Cannot determine the value of variable: " + varname)
             return val
 
-        #Reduce ParamGen entries:
+        # Reduce ParamGen entries:
         mom_input.reduce(input_data_list_expand_func)
 
-        #Create a second temporary YAML file:
+        # Create a second temporary YAML file:
         with tempfile.NamedTemporaryFile() as temp2:
             temp2.write(_MOM_INPUT_DATA_LIST_YAML.encode())
             temp2.flush()
 
-            #Open second YAML file using ParamGen:
+            # Open second YAML file using ParamGen:
             input_data_list = ParamGen.from_yaml(temp2.name)
 
-        #Reduce ParamGen entries:
+        # Reduce ParamGen entries:
         input_data_list.reduce(input_data_list_expand_func)
 
-        #Check output:
+        # Check output:
         self.assertEqual(
             input_data_list.data,
             {
@@ -346,7 +353,9 @@ class TestParamGenYamlConstructor(unittest.TestCase):
             },
         )
 
+
 #####
+
 
 class TestParamGenXmlConstructor(unittest.TestCase):
     """A unit test class for testing ParamGen's xml constructor."""
@@ -354,87 +363,87 @@ class TestParamGenXmlConstructor(unittest.TestCase):
     def test_single_key_val_guard(self):
         """Test xml entry values with single key=value guards"""
 
-        #Create temporary YAML file:
+        # Create temporary YAML file:
         with tempfile.NamedTemporaryFile() as temp:
             temp.write(_MY_TEMPLATE_XML.encode())
             temp.flush()
 
-            #Open XML file using ParamGen:
+            # Open XML file using ParamGen:
             pg = ParamGen.from_xml_nml(temp.name)
 
-        #Reduce ParamGen entries:
+        # Reduce ParamGen entries:
         pg.reduce(_expand_func_demo)
 
-        #Check output:
+        # Check output:
         self.assertEqual(pg.data["test_nml"]["foo"]["values"], "beta")
 
     def test_mixed_guard(self):
         """Tests multiple key=value guards mixed with explicit (flexible) guards."""
 
-        #Create temporary YAML file:
+        # Create temporary YAML file:
         with tempfile.NamedTemporaryFile() as temp:
             temp.write(_MY_TEMPLATE_XML.encode())
             temp.flush()
 
-            #Open XML file using ParamGen:
+            # Open XML file using ParamGen:
             pg = ParamGen.from_xml_nml(temp.name)
 
-        #Reduce ParamGen entries:
+        # Reduce ParamGen entries:
         pg.reduce(_expand_func_demo)
 
-        #Check output:
+        # Check output:
         self.assertEqual(pg.data["test_nml"]["bar"]["values"], "epsilon")
 
     def test_mixed_guard_first(self):
         """Tests multiple key=value guards mixed with explicit (flexible) guards
         with match=first option."""
 
-        #Create temporary YAML file:
+        # Create temporary YAML file:
         with tempfile.NamedTemporaryFile() as temp:
             temp.write(_MY_TEMPLATE_XML.encode())
             temp.flush()
 
-            #Open XML file using ParamGen:
+            # Open XML file using ParamGen:
             pg = ParamGen.from_xml_nml(temp.name, match="first")
 
-        #Reduce ParamGen entries:
+        # Reduce ParamGen entries:
         pg.reduce(_expand_func_demo)
 
-        #Check output:
+        # Check output:
         self.assertEqual(pg.data["test_nml"]["bar"]["values"], "delta")
 
     def test_no_match(self):
         """Tests an xml entry with no match, i.e., no guards evaluating to True."""
 
-        #Create temporary YAML file:
+        # Create temporary YAML file:
         with tempfile.NamedTemporaryFile() as temp:
             temp.write(_MY_TEMPLATE_XML.encode())
             temp.flush()
 
-            #Open XML file using ParamGen:
+            # Open XML file using ParamGen:
             pg = ParamGen.from_xml_nml(temp.name)
 
-        #Reduce ParamGen entries:
+        # Reduce ParamGen entries:
         pg.reduce(_expand_func_demo)
 
-        #Check output:
+        # Check output:
         self.assertEqual(pg.data["test_nml"]["baz"]["values"], None)
 
     def test_default_var(self):
         """Test to check if default val is assigned when all guards eval to False"""
 
-        #Create temporary YAML file:
+        # Create temporary YAML file:
         with tempfile.NamedTemporaryFile() as temp:
             temp.write(_MY_TEMPLATE_XML.encode())
             temp.flush()
 
-            #Open XML file using ParamGen:
+            # Open XML file using ParamGen:
             pg = ParamGen.from_xml_nml(temp.name)
 
-        #Reduce ParamGen entries:
+        # Reduce ParamGen entries:
         pg.reduce(lambda varname: "_")
 
-        #Check output:
+        # Check output:
         self.assertEqual(pg.data["test_nml"]["foo"]["values"], "alpha")
 
     def test_duplicate_entry_error(self):
@@ -444,16 +453,14 @@ class TestParamGenXmlConstructor(unittest.TestCase):
         """
         with self.assertRaises(ValueError) as verr:
 
-            #Create temporary YAML file:
+            # Create temporary YAML file:
             with tempfile.NamedTemporaryFile() as temp:
                 temp.write(_DUPLICATE_IDS_XML.encode())
                 temp.flush()
 
                 _ = ParamGen.from_xml_nml(temp.name, no_duplicates=True)
 
-            emsg = (
-            "Entry id 'foo' listed twice in file:\n'./xml_test_files/duplicate_ids.xml'"
-            )
+            emsg = "Entry id 'foo' listed twice in file:\n'./xml_test_files/duplicate_ids.xml'"
             self.assertEqual(emsg, str(verr.exception))
 
 
