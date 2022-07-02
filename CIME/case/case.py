@@ -644,18 +644,18 @@ class Case(object):
         )
 
         self.set_lookup_value("COMP_INTERFACE", self._comp_interface)
-        if self._cime_model == "ufs":
-            ufs_driver = os.environ.get("UFS_DRIVER")
-            attribute = None
-            if ufs_driver:
-                attribute = {"component": "nems"}
-            comp_root_dir_cpl = files.get_value(
-                "COMP_ROOT_DIR_CPL", attribute=attribute
-            )
-        elif self._cime_model == "cesm":
-            comp_root_dir_cpl = files.get_value("COMP_ROOT_DIR_CPL")
+        if config.set_comp_root_dir_cpl: 
+            if config.use_nems_comp_root_dir:
+                ufs_driver = os.environ.get("UFS_DRIVER")
+                attribute = None
+                if ufs_driver:
+                    attribute = {"component": "nems"}
+                comp_root_dir_cpl = files.get_value(
+                    "COMP_ROOT_DIR_CPL", attribute=attribute
+                )
+            else:
+                comp_root_dir_cpl = files.get_value("COMP_ROOT_DIR_CPL")
 
-        if self._cime_model in ("cesm", "ufs"):
             self.set_lookup_value("COMP_ROOT_DIR_CPL", comp_root_dir_cpl)
 
         # Loop through all of the files listed in COMPSETS_SPEC_FILE and find the file
@@ -2034,7 +2034,7 @@ directory, NOT in this subdirectory."""
             mpi_arg_string += " : "
 
         ngpus_per_node = self.get_value("NGPUS_PER_NODE")
-        if ngpus_per_node and ngpus_per_node > 0 and self._cime_model != "e3sm":
+        if ngpus_per_node and ngpus_per_node > 0 and config.gpus_use_set_device_rank:
             # 1. this setting is tested on Casper only and may not work on other machines
             # 2. need to be revisited in the future for a more adaptable implementation
             rundir = self.get_value("RUNDIR")

@@ -5,6 +5,7 @@ import shutil
 import sys
 
 from CIME import utils
+from CIME.config import Config
 from CIME.tests import base
 
 
@@ -16,7 +17,7 @@ class TestGridGeneration(base.BaseTestCase):
         cls._testdirs = []
 
     def test_gen_domain(self):
-        if utils.get_model() != "e3sm":
+        if Config.instance().skip_gen_domain_tests:
             self.skipTest("Skipping gen_domain test. Depends on E3SM tools")
         cime_root = utils.get_cime_root()
         inputdata = self.MACHINE.get_value("DIN_LOC_ROOT")

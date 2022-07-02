@@ -1106,6 +1106,7 @@ def _case_build_impl(
     os.environ["BUILD_THREADED"] = stringify_bool(build_threaded)
     cime_model = get_model()
 
+    # TODO need some other method than a flag.
     if cime_model == "e3sm" and mach == "titan" and compiler == "pgiacc":
         case.set_value("CAM_TARGET", "preqx_acc")
 

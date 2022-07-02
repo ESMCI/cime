@@ -10,13 +10,14 @@ from CIME import get_tests
 from CIME import utils
 from CIME import test_status
 from CIME import test_scheduler
+from CIME.config import Config
 from CIME.tests import base
 
 
 class TestTestScheduler(base.BaseTestCase):
     @mock.patch("time.strftime", return_value="00:00:00")
     def test_chksum(self, strftime):  # pylint: disable=unused-argument
-        if utils.get_model() != "cesm":
+        if Config.instance().skip_checksum_tests:
             self.skipTest("Skipping chksum test. Depends on CESM settings")
 
         ts = test_scheduler.TestScheduler(

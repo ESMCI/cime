@@ -2476,8 +2476,11 @@ def run_and_log_case_status(
 
 
 def _check_for_invalid_args(args):
+    # Prevent circular import
+    from CIME.config import Config
+
     # TODO Is this really model specific
-    if get_model() != "e3sm":
+    if Config.instance().check_invalid_args:
         for arg in args:
             # if arg contains a space then it was originally quoted and we can ignore it here.
             if " " in arg or arg.startswith("--"):

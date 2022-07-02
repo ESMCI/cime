@@ -7,9 +7,12 @@ import shutil
 import sys
 
 from CIME import utils
+from CIME.config import Config
 from CIME.tests import base
 from CIME.case.case import Case
 from CIME.build import CmakeTmpBuildDir
+
+config = Config.instance()
 
 
 class TestCreateNewcase(base.BaseTestCase):
@@ -34,7 +37,7 @@ class TestCreateNewcase(base.BaseTestCase):
             testdir,
             cls._testroot,
         )
-        if utils.get_model() == "cesm":
+        if config.allow_unsupported:
             args += " --run-unsupported"
         if self.TEST_COMPILER is not None:
             args = args + " --compiler %s" % self.TEST_COMPILER
@@ -148,7 +151,7 @@ class TestCreateNewcase(base.BaseTestCase):
             " --case %s --compset X --user-mods-dir %s --output-root %s --handle-preexisting-dirs=r"
             % (testdir, user_mods_dir, cls._testroot)
         )
-        if utils.get_model() == "cesm":
+        if config.allow_unsupported:
             args += " --run-unsupported"
         if self.TEST_COMPILER is not None:
             args = args + " --compiler %s" % self.TEST_COMPILER
@@ -349,7 +352,7 @@ class TestCreateNewcase(base.BaseTestCase):
             "--case %s --compset 2000_SATM_XLND_SICE_SOCN_XROF_XGLC_SWAV  --pesfile %s --res f19_g16 --output-root %s --handle-preexisting-dirs=r"
             % (testdir, pesfile, cls._testroot)
         )
-        if utils.get_model() == "cesm":
+        if config.allow_unsupported:
             args += " --run-unsupported"
         if self.TEST_COMPILER is not None:
             args += " --compiler %s" % self.TEST_COMPILER
@@ -382,7 +385,7 @@ class TestCreateNewcase(base.BaseTestCase):
             "--case %s --compset 2000_SATM_XLND_SICE_SOCN_XROF_XGLC_SWAV --pesfile %s --res f19_g16 --output-root %s --handle-preexisting-dirs=r"
             % (testdir, pesfile, cls._testroot)
         )
-        if utils.get_model() == "cesm":
+        if config.allow_unsupported:
             args += " --run-unsupported"
         if self.TEST_COMPILER is not None:
             args += " --compiler %s" % self.TEST_COMPILER
@@ -419,7 +422,7 @@ class TestCreateNewcase(base.BaseTestCase):
             " --case CreateNewcaseTest --script-root %s --compset X --output-root %s --handle-preexisting-dirs u"
             % (testdir, cls._testroot)
         )
-        if utils.get_model() == "cesm":
+        if config.allow_unsupported:
             args += " --run-unsupported"
         if self.TEST_COMPILER is not None:
             args += " --compiler %s" % self.TEST_COMPILER
@@ -541,7 +544,7 @@ class TestCreateNewcase(base.BaseTestCase):
             args += " --res f19_g17 "
         else:
             args += " --res f19_g16 "
-        if utils.get_model() == "cesm":
+        if config.allow_unsupported:
             args += " --run-unsupported"
         if self.TEST_COMPILER is not None:
             args += " --compiler %s" % self.TEST_COMPILER
@@ -582,7 +585,7 @@ class TestCreateNewcase(base.BaseTestCase):
             args += " --res f19_g17 "
         else:
             args += " --res f19_g16 "
-        if utils.get_model() == "cesm":
+        if config.allow_unsupported:
             args += " --run-unsupported"
         if self.TEST_COMPILER is not None:
             args += " --compiler %s" % self.TEST_COMPILER
@@ -698,7 +701,7 @@ set(NETCDF_PATH /my/netcdf/path)
                 extra_machines_dir=extra_machines_dir,
             )
         )
-        if utils.get_model() == "cesm":
+        if config.allow_unsupported:
             args += " --run-unsupported"
 
         if utils.get_cime_default_driver() == "nuopc":
@@ -731,6 +734,7 @@ set(NETCDF_PATH /my/netcdf/path)
     def test_m_createnewcase_alternate_drivers(self):
         # Test that case.setup runs for nuopc and moab drivers
         cls = self.__class__
+        # TODO refactor
         model = utils.get_model()
         for driver in ("nuopc", "moab"):
             if not os.path.exists(
@@ -750,7 +754,7 @@ set(NETCDF_PATH /my/netcdf/path)
             args = " --driver {} --case {} --compset X --res f19_g16 --output-root {} --handle-preexisting-dirs=r".format(
                 driver, testdir, cls._testroot
             )
-            if model == "cesm":
+            if config.allow_unsupported:
                 args += " --run-unsupported"
             if self.TEST_COMPILER is not None:
                 args = args + " --compiler %s" % self.TEST_COMPILER
@@ -786,7 +790,7 @@ set(NETCDF_PATH /my/netcdf/path)
             " --case %s --compset InvalidCompsetName --output-root %s --handle-preexisting-dirs=r "
             % (testdir, cls._testroot)
         )
-        if model == "cesm":
+        if config.allow_unsupported:
             args += " --run-unsupported"
         if self.TEST_COMPILER is not None:
             args = args + " --compiler %s" % self.TEST_COMPILER

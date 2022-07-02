@@ -21,6 +21,7 @@ from argparse import RawTextHelpFormatter
 
 logger = logging.getLogger(__name__)
 supported_comp_interfaces = ["mct", "nuopc", "moab"]
+config = Config.instance()
 
 
 def query_grids(files, long_output, xml=False):
@@ -122,8 +123,6 @@ def print_compset(name, files, all_components=False, xml=False):
         )
     elif config_file is None or not os.path.isfile(config_file):
         return
-
-    config = Config.instance()
 
     if config.skip_print_compset and name == "drv":
         return
@@ -259,11 +258,7 @@ def parse_command_line(args, description):
             supported_comp_interfaces.remove(comp_interface)
 
         for comp in components:
-            # TODO handle differently than using a flag
-            if cime_model == "cesm":
-                string = "COMP_ROOT_DIR_{}".format(comp)
-            else:
-                string = "CONFIG_{}_FILE".format(comp)
+            string = config.xml_component_key.format(comp)
 
             # determine all components in string
             components = files[comp_interface].get_components(string)
