@@ -644,7 +644,7 @@ class Case(object):
         )
 
         self.set_lookup_value("COMP_INTERFACE", self._comp_interface)
-        if config.set_comp_root_dir_cpl: 
+        if config.set_comp_root_dir_cpl:
             if config.use_nems_comp_root_dir:
                 ufs_driver = os.environ.get("UFS_DRIVER")
                 attribute = None

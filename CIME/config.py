@@ -132,21 +132,67 @@ class Config:
             desc="Test scheduler will use testreporter.template.",
         )
 
-        self._set_attribute("check_invalid_args", True, desc="Validates arguments when parsing for CIME commands.")
-        self._set_attribute("skip_walltime_tests", True, desc="Skips E3SM specific walltime tests.")
-        self._set_attribute("skip_xml_test_management_tests", False, desc="Skips non E3SM XML test management tests.")
-        self._set_attribute("skip_performance_archive_tests", True, desc="Skips E3SM performance archiving tests.")
-        self._set_attribute("skip_success_recording_tests", True, desc="Skips E3SM success recording tests.")
+        self._set_attribute(
+            "check_invalid_args",
+            True,
+            desc="Validates arguments when parsing for CIME commands.",
+        )
+        self._set_attribute(
+            "skip_walltime_tests", True, desc="Skips E3SM specific walltime tests."
+        )
+        self._set_attribute(
+            "skip_xml_test_management_tests",
+            False,
+            desc="Skips non E3SM XML test management tests.",
+        )
+        self._set_attribute(
+            "skip_performance_archive_tests",
+            True,
+            desc="Skips E3SM performance archiving tests.",
+        )
+        self._set_attribute(
+            "skip_success_recording_tests",
+            True,
+            desc="Skips E3SM success recording tests.",
+        )
         self._set_attribute("skip_cdash_tests", True, desc="Skips E3SM CDASH tests.")
-        self._set_attribute("skip_checksum_tests", False, desc="Skips CESM checksum tests.")
-        self._set_attribute("skip_gen_domain_tests", True, desc="Skips E3SM gen_domain tests.")
-        self._set_attribute("skip_jenkins_tests", True, desc="Skips E3SM jenkins tests.")
-        self._set_attribute("skip_single_submit_test", True, desc="Skip single submit tests.")
-        self._set_attribute("xml_component_key", "COMP_ROOT_DIR_{}", desc="Component key used whenm querying config.")
-        self._set_attribute("set_comp_root_dir_cpl", True, desc="Sets COMP_ROOT_DIR_CPL when setting compset.")
-        self._set_attribute("use_nems_comp_root_dir", False, desc="Use nems specific value for COMP_ROOT_DIR_CPL.")
-        self._set_attribute("gpus_use_set_device_rank", True, desc="Uses set_device_rank.sh from RUNDIR when composing MPI run command.")
-        self._set_attribute("test_custom_project_machine", "melvin", desc="Set a machine which doesn't use PROJECT for testing.")
+        self._set_attribute(
+            "skip_checksum_tests", False, desc="Skips CESM checksum tests."
+        )
+        self._set_attribute(
+            "skip_gen_domain_tests", True, desc="Skips E3SM gen_domain tests."
+        )
+        self._set_attribute(
+            "skip_jenkins_tests", True, desc="Skips E3SM jenkins tests."
+        )
+        self._set_attribute(
+            "skip_single_submit_test", True, desc="Skip single submit tests."
+        )
+        self._set_attribute(
+            "xml_component_key",
+            "COMP_ROOT_DIR_{}",
+            desc="Component key used whenm querying config.",
+        )
+        self._set_attribute(
+            "set_comp_root_dir_cpl",
+            True,
+            desc="Sets COMP_ROOT_DIR_CPL when setting compset.",
+        )
+        self._set_attribute(
+            "use_nems_comp_root_dir",
+            False,
+            desc="Use nems specific value for COMP_ROOT_DIR_CPL.",
+        )
+        self._set_attribute(
+            "gpus_use_set_device_rank",
+            True,
+            desc="Uses set_device_rank.sh from RUNDIR when composing MPI run command.",
+        )
+        self._set_attribute(
+            "test_custom_project_machine",
+            "melvin",
+            desc="Set a machine which doesn't use PROJECT for testing.",
+        )
 
     @classmethod
     def instance(cls):
