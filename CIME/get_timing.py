@@ -486,6 +486,10 @@ class _TimingParser:
         self.write("  Timeroot    : {}/Tools\n".format(self.caseroot))
         self.write("  User        : {}\n".format(user))
         self.write("  Curr Date   : {}\n".format(now))
+        if self._driver == "nuopc":
+            self.write("  Driver      : CMEPS\n")
+        elif self._driver == "mct":
+            self.write("  Driver      : CPL7\n")
 
         self.write("  grid        : {}\n".format(grid))
         self.write("  compset     : {}\n".format(compset))
