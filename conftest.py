@@ -31,6 +31,10 @@ def pytest_configure(config):
     scripts_regression_tests.configure_tests(**kwargs)
 
 
-@pytest.fixture(scope="session", autouse=True)
+@pytest.fixture(scope="module", autouse=True)
 def setup(pytestconfig):
+    # ensure we start from CIMEROOT for each module
     os.chdir(CIMEROOT)
+
+    # ensure GLOABL is reset
+    utils.GLOBAL = {}
