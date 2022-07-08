@@ -16,6 +16,9 @@ class Config:
         return cls._instance
 
     def __init__(self):
+        if getattr(self, "_loaded", False):
+            return
+
         self._attribute_config = {}
 
         self._set_attribute(
@@ -221,6 +224,8 @@ class Config:
 
         for x in sorted(customize_files):
             obj._load_file(x, customize_module)
+
+        setattr(obj, "_loaded", True)
 
         return obj
 
