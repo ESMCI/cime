@@ -210,6 +210,9 @@ class Config:
 
         customize_files = glob.glob(f"{customize_path}/**/*.py", recursive=True)
 
+        # filter out any tests
+        customize_files = [x for x in customize_files if "tests" not in x and "conftest" not in x]
+
         customize_module_spec = importlib.machinery.ModuleSpec("cime_customize", None)
 
         customize_module = importlib.util.module_from_spec(customize_module_spec)
