@@ -586,8 +586,6 @@ def _generate_baseline_impl(case, baseline_dir=None, allow_baseline_overwrite=Fa
     num_gen = 0
     for model in _iter_model_file_substrs(case):
 
-        if model == "ww3dev":
-            model = "ww3"
         comments += "  generating for model '{}'\n".format(model)
 
         hists = archive.get_latest_hist_files(
@@ -595,6 +593,10 @@ def _generate_baseline_impl(case, baseline_dir=None, allow_baseline_overwrite=Fa
         )
         logger.debug("latest_files: {}".format(hists))
         num_gen += len(hists)
+
+        if model == "ww3dev":
+            model = "ww3"
+
         for hist in hists:
             offset = hist.rfind(model)
             expect(

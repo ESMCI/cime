@@ -373,6 +373,12 @@ class SystemTestsCommon(object):
         for compout in glob.iglob(os.path.join(rundir, "*.cprnc.out")):
             os.remove(compout)
 
+        # remove all files in init_generated_files directory if it exists
+        init_generated_files_dir = os.path.join(rundir, "init_generated_files")
+        if os.path.isdir(init_generated_files_dir):
+            for init_file in glob.iglob(os.path.join(init_generated_files_dir, "*")):
+                os.remove(init_file)
+
         infostr = "doing an {:d} {} {} test".format(stop_n, stop_option, run_type)
 
         rest_option = self._case.get_value("REST_OPTION")
