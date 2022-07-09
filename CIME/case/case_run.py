@@ -2,6 +2,7 @@
 case_run is a member of Class Case
 '"""
 from CIME.XML.standard_module_setup import *
+from CIME.config import Config
 from CIME.utils import gzip_existing_file, new_lid, run_and_log_case_status
 from CIME.utils import run_sub_or_cmd, append_status, safe_copy, model_log, CIMEError
 from CIME.utils import get_model, batch_jobid
@@ -144,7 +145,7 @@ def _run_model_impl(case, lid, skip_pnl=False, da_cycle=0):
             ),
         )
         try:
-            case.config.save_prerun_provenance(case)
+            Config.instance().save_prerun_provenance(case)
         except AttributeError:
             logger.debug("No hook for saving prerun provenance was executed")
         model_log(

@@ -6,7 +6,7 @@ case_setup is a member of class Case from file case.py
 import os
 
 from CIME.XML.standard_module_setup import *
-
+from CIME.config import Config
 from CIME.XML.machines import Machines
 from CIME.BuildTools.configure import (
     configure,
@@ -408,7 +408,7 @@ def _case_setup_impl(
             # create batch files
             env_batch.make_all_batch_files(case)
 
-            if case.config.make_case_run_batch_script and not case.get_value("TEST"):
+            if Config.instance().make_case_run_batch_script and not case.get_value("TEST"):
                 input_batch_script = os.path.join(
                     case.get_value("MACHDIR"), "template.case.run.sh"
                 )
@@ -451,7 +451,7 @@ def _case_setup_impl(
         )
 
         # Some tests need namelists created here (ERP) - so do this if we are in test mode
-        if (test_mode or case.config.case_setup_generate_namelist) and not non_local:
+        if (test_mode or Config.instance().case_setup_generate_namelist) and not non_local:
             logger.info("Generating component namelists as part of setup")
             case.create_namelists()
 

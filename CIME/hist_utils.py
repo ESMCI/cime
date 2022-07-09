@@ -2,6 +2,7 @@
 Functions for actions pertaining to history files.
 """
 from CIME.XML.standard_module_setup import *
+from CIME.config import Config
 from CIME.test_status import TEST_NO_BASELINES_COMMENT, TEST_STATUS_FILENAME
 from CIME.utils import (
     get_current_commit,
@@ -519,7 +520,7 @@ def compare_baseline(case, baseline_dir=None, outfile_suffix=""):
     success, comments = _compare_hists(
         case, rundir, basecmp_dir, outfile_suffix=outfile_suffix
     )
-    if case.config.create_bless_log:
+    if Config.instance().create_bless_log:
         bless_log = os.path.join(basecmp_dir, BLESS_LOG_NAME)
         if os.path.exists(bless_log):
             lines = open(bless_log, "r", encoding="utf-8").readlines()
@@ -644,7 +645,7 @@ def _generate_baseline_impl(case, baseline_dir=None, allow_baseline_overwrite=Fa
         ),
     )
 
-    if case.config.create_bless_log:
+    if Config.instance().create_bless_log:
         bless_log = os.path.join(basegen_dir, BLESS_LOG_NAME)
         with open(bless_log, "a", encoding="utf-8") as fd:
             fd.write(

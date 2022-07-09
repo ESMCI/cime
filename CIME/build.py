@@ -1246,7 +1246,7 @@ def post_build(case, logs, build_complete=False, save_build_provenance=True):
         )
         if save_build_provenance:
             try:
-                case.config.save_build_provenance(case, lid=lid)
+                Config.instance().save_build_provenance(case, lid=lid)
             except AttributeError:
                 logger.debug("No handler for save_build_provenance was found")
         # Set XML to indicate build complete
