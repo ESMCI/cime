@@ -993,6 +993,11 @@ def create_test(
 ###############################################################################
 def _main_func(description=None):
     ###############################################################################
+    customize_path = os.path.join(utils.get_src_root(), "cime_config", "customize")
+
+    if os.path.exists(customize_path):
+        Config.instance().load(customize_path)
+
     (
         test_names,
         test_data,
