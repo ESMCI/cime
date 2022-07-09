@@ -540,8 +540,7 @@ def case_run(self, skip_pnl=False, set_continue_run=False, submit_resubmits=Fals
             ),
         )
         try:
-            # self == case
-            self.config.save_postrun_provenance(self, lid)
+            Config.instance().save_postrun_provenance(self, lid)
         except AttributeError:
             logger.debug("No hook for saving postrun provenance was executed")
         model_log(
