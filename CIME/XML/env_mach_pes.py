@@ -107,15 +107,27 @@ class EnvMachPes(EnvBase):
     def get_total_tasks(self, comp_classes):
         total_tasks = 0
         maxinst = self.get_value("NINST")
+        asyncio_ntasks = 0
+        asyncio_rootpe = 0
+        asyncio_stride = 0
+        asyncio_tasks = []
         if maxinst:
             comp_interface = "nuopc"
+            asyncio_ntasks = self.get_value("PIO_ASYNCIO_NTASKS")
+            asyncio_rootpe = self.get_value("PIO_ASYNCIO_ROOTPE")
+            asyncio_stride = self.get_value("PIO_ASYNCIO_STRIDE")
+            for i in range(asyncio_rootpe, asyncio_ntasks*asyncio_stride, asyncio_stride):
+                asyncio_tasks.append(i)
         else:
             comp_interface = "unknown"
             maxinst = 1
+        tt = 0
+        maxrootpe = 0
         for comp in comp_classes:
             ntasks = self.get_value("NTASKS", attribute={"compclass": comp})
             rootpe = self.get_value("ROOTPE", attribute={"compclass": comp})
             pstrid = self.get_value("PSTRID", attribute={"compclass": comp})
+
             esmf_aware_threading = self.get_value("ESMF_AWARE_THREADING")
             # mct is unaware of threads and they should not be counted here
             # if esmf is thread aware they are included
@@ -128,10 +140,20 @@ class EnvMachPes(EnvBase):
                 ninst = self.get_value("NINST", attribute={"compclass": comp})
                 maxinst = max(maxinst, ninst)
             tt = rootpe + nthrds * ((ntasks - 1) * pstrid + 1)
-            total_tasks = max(tt, total_tasks)
+            maxrootpe = max(maxrootpe, rootpe)
+            total_tasks = max(tt, total_tasks) 
         if self.get_value("MULTI_DRIVER"):
             total_tasks *= maxinst
-        return total_tasks
+        io_tasks = self.io_tasks(maxrootpe, asyncio_tasks)
+        return total_tasks + io_tasks
+
+    def io_tasks(self, rootpe, asyncio_tasks):
+        io_tasks = 0
+        for n in asyncio_tasks:
+            if n > rootpe:
+                io_tasks = io_tasks + 1
+        return io_tasks
+
 
     def get_tasks_per_node(self, total_tasks, max_thread_count):
         expect(

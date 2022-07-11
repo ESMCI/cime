@@ -218,7 +218,7 @@ class Case(object):
         for comp in comp_classes:
             self.async_io[comp] = self.get_value("PIO_ASYNC_INTERFACE", subgroup=comp)
 
-        self.iotasks = self.get_value("PIO_ASYNC_IOTASKS")
+        self.iotasks = self.get_value("PIO_ASYNCIO_NTASKS")
 
         self.thread_count = env_mach_pes.get_max_thread_count(comp_classes)
 
@@ -241,7 +241,7 @@ class Case(object):
             self.spare_nodes = env_mach_pes.get_spare_nodes(self.num_nodes)
             self.num_nodes += self.spare_nodes
         else:
-            self.total_tasks = env_mach_pes.get_total_tasks(comp_classes) + self.iotasks
+            self.total_tasks = env_mach_pes.get_total_tasks(comp_classes)
             self.tasks_per_node = env_mach_pes.get_tasks_per_node(
                 self.total_tasks, self.thread_count
             )
