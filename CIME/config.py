@@ -45,7 +45,7 @@ class Config:
         self._set_attribute(
             "cesm_create_test_flags",
             True,
-            desc=" Enables CESM specific `create_test` flags.",
+            desc="Enables CESM specific `create_test` flags.",
         )
         self._set_attribute(
             "use_kokkos",
@@ -263,4 +263,30 @@ class Config:
 
         self._attribute_config[name] = {
             "desc": desc,
+            "default": value,
         }
+
+    def print_rst_table(self):
+        max_variable = max([len(x) for x in self._attribute_config.keys()])
+        max_default = max([len(str(x["default"])) for x in self._attribute_config.values()])
+        max_type = max([len(type(x["default"]).__name__) for x in self._attribute_config.values()])
+        max_desc = max([len(x["desc"]) for x in self._attribute_config.values()])
+
+        divider_row = f"{'='*max_variable}  {'='*max_default}  {'='*max_type}  {'='*max_desc}"
+
+        rows = [
+            divider_row,
+            f"Variable{' '*(max_variable-8)}  Default{' '*(max_default-7)}  Type{' '*(max_type-4)}  Description{' '*(max_desc-11)}",
+            divider_row,
+        ]
+
+        for variable, value in sorted( self._attribute_config.items(), key=lambda x: x[0]):
+            variable_fill = max_variable - len(variable)
+            default_fill = max_default - len(str(value["default"]))
+            type_fill = max_type - len(type(value["default"]).__name__)
+
+            rows.append(f"{variable}{' '*variable_fill}  {value['default']}{' '*default_fill}  {type(value['default']).__name__}{' '*type_fill}  {value['desc']}")
+
+        rows.append(divider_row)
+
+        print("\n".join(rows))
