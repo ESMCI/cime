@@ -1375,7 +1375,7 @@ class TestScheduler(object):
             if self._cime_model == "cesm":
                 template_file = os.path.join(template_path, "testreporter.template")
                 template = open(template_file, "r").read()
-                template = template.replace("<PATH>", self._cime_root)
+                template = template.replace("<PATH>", get_tools_path())
                 testreporter_file = os.path.join(self._test_root, "testreporter")
                 with open(testreporter_file, "w") as fd:
                     fd.write(template)
