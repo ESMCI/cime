@@ -268,11 +268,17 @@ class Config:
 
     def print_rst_table(self):
         max_variable = max([len(x) for x in self._attribute_config.keys()])
-        max_default = max([len(str(x["default"])) for x in self._attribute_config.values()])
-        max_type = max([len(type(x["default"]).__name__) for x in self._attribute_config.values()])
+        max_default = max(
+            [len(str(x["default"])) for x in self._attribute_config.values()]
+        )
+        max_type = max(
+            [len(type(x["default"]).__name__) for x in self._attribute_config.values()]
+        )
         max_desc = max([len(x["desc"]) for x in self._attribute_config.values()])
 
-        divider_row = f"{'='*max_variable}  {'='*max_default}  {'='*max_type}  {'='*max_desc}"
+        divider_row = (
+            f"{'='*max_variable}  {'='*max_default}  {'='*max_type}  {'='*max_desc}"
+        )
 
         rows = [
             divider_row,
@@ -280,12 +286,16 @@ class Config:
             divider_row,
         ]
 
-        for variable, value in sorted( self._attribute_config.items(), key=lambda x: x[0]):
+        for variable, value in sorted(
+            self._attribute_config.items(), key=lambda x: x[0]
+        ):
             variable_fill = max_variable - len(variable)
             default_fill = max_default - len(str(value["default"]))
             type_fill = max_type - len(type(value["default"]).__name__)
 
-            rows.append(f"{variable}{' '*variable_fill}  {value['default']}{' '*default_fill}  {type(value['default']).__name__}{' '*type_fill}  {value['desc']}")
+            rows.append(
+                f"{variable}{' '*variable_fill}  {value['default']}{' '*default_fill}  {type(value['default']).__name__}{' '*type_fill}  {value['desc']}"
+            )
 
         rows.append(divider_row)
 
