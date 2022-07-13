@@ -116,8 +116,9 @@ class EnvMachPes(EnvBase):
             asyncio_ntasks = self.get_value("PIO_ASYNCIO_NTASKS")
             asyncio_rootpe = self.get_value("PIO_ASYNCIO_ROOTPE")
             asyncio_stride = self.get_value("PIO_ASYNCIO_STRIDE")
-            for i in range(asyncio_rootpe, asyncio_ntasks*asyncio_stride, asyncio_stride):
-                asyncio_tasks.append(i)
+            if asyncio_ntasks and asyncio_stride:
+                for i in range(asyncio_rootpe, asyncio_ntasks*asyncio_stride, asyncio_stride):
+                    asyncio_tasks.append(i)
         else:
             comp_interface = "unknown"
             maxinst = 1
