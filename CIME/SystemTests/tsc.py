@@ -106,10 +106,12 @@ class TSC(SystemTestsCommon):
         nstep_output = OUT_FREQ // dtime
         for iinst in range(1, NINST + 1):
             fatm_in = os.path.join(
-                csmdata_atm, INIT_COND_FILE_TEMPLATE.format(self.atmmodIC, "i", iinst),
+                csmdata_atm,
+                INIT_COND_FILE_TEMPLATE.format(self.atmmodIC, "i", iinst),
             )
             flnd_in = os.path.join(
-                csmdata_lnd, INIT_COND_FILE_TEMPLATE.format(self.lndmodIC, "r", iinst),
+                csmdata_lnd,
+                INIT_COND_FILE_TEMPLATE.format(self.lndmodIC, "r", iinst),
             )
 
             with open(f"user_nl_{self.atmmod}_{iinst:04d}", "w+") as atmnlfile:
