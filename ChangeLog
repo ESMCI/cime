@@ -1,5 +1,52 @@
 ======================================================================
 
+Originator: Chris Fischer 
+Date: 7-27-2022
+Tag: cime5.6.41
+Answer Changes: None
+Tests: 
+Dependencies:
+
+Brief Summary:
+    - Update stampede2 modules.
+    - Added configs for ARCHER2 machine.
+
+User interface changes: 
+
+PR summary: git log --oneline --first-parent [previous_tag]..master 
+0dd71e319 (HEAD -> maint-5.6, origin/maint-5.6) Merge pull request #4281 from ESMCI/fischer/stampede2
+fa8102fde Merge pull request #4244 from cemac-ccs/maint_5.6_archer2_port
+
+
+Modified files: git diff --name-status [previous_tag]
+
+======================================================================
+
+======================================================================
+
+Originator: Chris Fischer 
+Date: 4-27-2022
+Tag: cime5.6.40
+Answer Changes: None
+Tests: 
+Dependencies:
+
+Brief Summary:
+    - Update cori modules.
+    - Adding arc4 machine and SGE batch scheduler.
+
+User interface changes: 
+
+PR summary: git log --oneline --first-parent [previous_tag]..master 
+26b7409be Merge pull request #4198 from jedwards4b/cori_update0322
+fa2ebc4bd Merge pull request #4001 from MarkUoLeeds/uol_arc4_add_sge
+
+Modified files: git diff --name-status [previous_tag]
+
+======================================================================
+
+======================================================================
+
 Originator: Chris Fischer
 Date: 2-8-2022
 Tag: cime5.6.39
