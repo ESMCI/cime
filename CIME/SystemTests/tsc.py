@@ -105,24 +105,18 @@ class TSC(SystemTestsCommon):
 
         nstep_output = OUT_FREQ // dtime
         for iinst in range(1, NINST + 1):
-            with open(
-                f"user_nl_{self.atmmod}_" + str(iinst).zfill(4), "w"
-            ) as atmnlfile, open(
-                f"user_nl_{self.lndmod}_" + str(iinst).zfill(4), "w"
-            ) as lndnlfile:
+            fatm_in = os.path.join(
+                csmdata_atm,
+                INIT_COND_FILE_TEMPLATE.format(self.atmmodIC, "i", iinst),
+            )
+            flnd_in = os.path.join(
+                csmdata_lnd,
+                INIT_COND_FILE_TEMPLATE.format(self.lndmodIC, "r", iinst),
+            )
 
-                fatm_in = os.path.join(
-                    csmdata_atm,
-                    INIT_COND_FILE_TEMPLATE.format(self.atmmodIC, "i", iinst),
-                )
-                flnd_in = os.path.join(
-                    csmdata_lnd,
-                    INIT_COND_FILE_TEMPLATE.format(self.lndmodIC, "r", iinst),
-                )
+            with open(f"user_nl_{self.atmmod}_{iinst:04d}", "w+") as atmnlfile:
+
                 atmnlfile.write("ncdata  = '{}' \n".format(fatm_in))
-                lndnlfile.write("finidat = '{}' \n".format(flnd_in))
-
-                lndnlfile.write("dtime = {} \n".format(dtime))
 
                 atmnlfile.write("dtime = {} \n".format(dtime))
                 atmnlfile.write("se_tstep = {} \n".format(se_tstep))
@@ -139,6 +133,10 @@ class TSC(SystemTestsCommon):
                         "".join(["'{}',".format(s) for s in VAR_LIST])[:-1]
                     )
                 )
+
+            with open(f"user_nl_{self.lndmod}_{iinst:04d}", "w+") as lndnlfile:
+                lndnlfile.write("finidat = '{}' \n".format(flnd_in))
+                lndnlfile.write("dtime = {} \n".format(dtime))
 
         # Force rebuild namelists
         self._skip_pnl = False
