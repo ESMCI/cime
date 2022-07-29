@@ -146,7 +146,7 @@ class Machines(GenericXML):
                 logger.debug("machine regex string is " + regex_str)
                 regex = re.compile(regex_str)
                 if regex.match(nametomatch):
-                    logger.debug("Found machine: {} matches {}".format(machtocheck, nametomatch))
+                    logger.debug("Found machine: {} matches {} regex {}".format(machtocheck, nametomatch, regex_str))
                     machine = machtocheck
                     break
 
