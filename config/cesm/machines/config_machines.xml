@@ -118,7 +118,7 @@ This allows using a different mpirun command to launch unit tests
 
   <machine MACH="arc4">
     <DESC>A port of CEM to the Leeds ARC4 machine, batch system is sge. CEMAC.</DESC>
-    <NODENAME_REGEX>.*.arc*</NODENAME_REGEX>
+    <NODENAME_REGEX>.*.arc.*</NODENAME_REGEX>
     <OS>LINUX</OS>
     <COMPILERS>intel</COMPILERS>
     <MPILIBS>intelmpi,openmpi,mpich</MPILIBS>
