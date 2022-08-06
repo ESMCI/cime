@@ -43,7 +43,7 @@ class TestBlessTestResults(base.BaseTestCase):
 
         # Generate some baselines
         for test_name in test_names:
-            if not config.cesm_create_test_flags:
+            if config.create_test_flag_mode == "e3sm":
                 genargs = ["-g", "-o", "-b", self._baseline_name, test_name]
                 compargs = ["-c", "-b", self._baseline_name, test_name]
             else:
@@ -107,7 +107,7 @@ class TestBlessTestResults(base.BaseTestCase):
         if self.NO_FORTRAN_RUN:
             self.skipTest("Skipping fortran test")
         test_to_change = "TESTRUNPASS_P1.f19_g16_rx1.A"
-        if not config.cesm_create_test_flags:
+        if config.create_test_flag_mode == "e3sm":
             genargs = ["-g", "-o", "-b", self._baseline_name, "cime_test_only_pass"]
             compargs = ["-c", "-b", self._baseline_name, "cime_test_only_pass"]
         else:

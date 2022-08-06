@@ -40,7 +40,7 @@ def bless_namelists(
 
         create_test_gen_args = " -g {} ".format(
             baseline_name
-            if config.cesm_create_test_flags
+            if config.create_test_flag_mode == "cesm"
             else " -g -b {} ".format(baseline_name)
         )
         if new_test_root is not None:

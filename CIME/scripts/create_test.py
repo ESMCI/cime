@@ -180,7 +180,7 @@ def parse_command_line(args, description):
         "\ninvoke ./query_config. The default is the first listing .",
     )
 
-    if model_config.cesm_create_test_flags:
+    if model_config.create_test_flag_mode == "cesm":
         parser.add_argument(
             "-c",
             "--compare",
@@ -480,7 +480,7 @@ def parse_command_line(args, description):
     CIME.utils.resolve_mail_type_args(args)
 
     # generate and compare flags may not point to the same directory
-    if model_config.cesm_create_test_flags:
+    if model_config.create_test_flag_mode == "cesm":
         if args.generate is not None:
             expect(
                 not (args.generate == args.compare),
@@ -662,7 +662,7 @@ def parse_command_line(args, description):
     baseline_cmp_name = None
     baseline_gen_name = None
     if args.compare or args.generate:
-        if model_config.cesm_create_test_flags:
+        if model_config.create_test_flag_mode == "cesm":
             if args.compare is not None:
                 baseline_cmp_name = args.compare
             if args.generate is not None:

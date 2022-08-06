@@ -116,7 +116,7 @@ class TestWaitForTests(base.BaseTestCase):
 
     def simple_test(self, testdir, expected_results, extra_args="", build_name=None):
         # Need these flags to test dashboard if e3sm
-        if not config.cesm_create_test_flags and build_name is not None:
+        if config.create_test_flag_mode == "e3sm" and build_name is not None:
             extra_args += " -b %s" % build_name
 
         expected_stat = 0

@@ -37,9 +37,9 @@ class Config:
             desc="During BUILD phase of a SystemTestsCompareN SHAREDLIBROOT is set the same for all cases.",
         )
         self._set_attribute(
-            "cesm_create_test_flags",
-            True,
-            desc="Enables CESM specific `create_test` flags.",
+            "create_test_flag_mode",
+            "cesm",
+            desc="Sets model specific flags for 'create_test' script.",
         )
         self._set_attribute(
             "use_kokkos",
