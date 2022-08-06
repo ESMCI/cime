@@ -37,12 +37,6 @@ class Config:
             desc="During BUILD phase of a SystemTestsCompareN SHAREDLIBROOT is set the same for all cases.",
         )
         self._set_attribute(
-            "archive_drv_component", True, desc="Archives drv component."
-        )
-        self._set_attribute(
-            "archive_dart_component", True, desc="Archives dart component."
-        )
-        self._set_attribute(
             "cesm_create_test_flags",
             True,
             desc="Enables CESM specific `create_test` flags.",
