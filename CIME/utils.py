@@ -453,15 +453,16 @@ def get_cime_default_driver():
                 logger.debug(
                     "Setting CIME_driver={} from ~/.cime/config".format(driver)
                 )
+
+    from CIME.config import Config
+
+    config = Config.instance()
+
     if not driver:
-        # TODO handle without flag
-        model = get_model()
-        if model == "ufs" or model == "cesm":
-            driver = "nuopc"
-        else:
-            driver = "mct"
+        driver = config.driver_default
+
     expect(
-        driver in ("mct", "nuopc", "moab"),
+        driver in config.driver_choices,
         "Attempt to set invalid driver {}".format(driver),
     )
     return driver

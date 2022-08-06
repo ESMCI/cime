@@ -20,8 +20,12 @@ import CIME.XML.machines
 from argparse import RawTextHelpFormatter
 
 logger = logging.getLogger(__name__)
-supported_comp_interfaces = ["mct", "nuopc", "moab"]
-config = Config.instance()
+
+customize_path = os.path.join(CIME.utils.get_src_root(), "cime_config", "customize")
+
+config = Config.load(customize_path)
+
+supported_comp_interfaces = list(config.driver_choices)
 
 
 def query_grids(files, long_output, xml=False):

@@ -190,6 +190,14 @@ class Config:
             "melvin",
             desc="Set a machine which doesn't use PROJECT for testing.",
         )
+        self._set_attribute(
+            "driver_default", "nuopc", desc="Sets the default driver for the model."
+        )
+        self._set_attribute(
+            "driver_choices",
+            ("mct", "nuopc"),
+            desc="Sets the available driver choices for the model.",
+        )
 
     @classmethod
     def instance(cls):
