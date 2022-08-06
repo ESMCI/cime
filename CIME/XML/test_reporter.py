@@ -7,7 +7,6 @@ import urllib.parse
 import urllib.request
 from CIME.XML.standard_module_setup import *
 from CIME.XML.generic_xml import GenericXML
-from CIME.utils import expect, get_model
 import ssl
 
 # pylint: disable=protected-access
@@ -19,11 +18,6 @@ class TestReporter(GenericXML):
         """
         initialize an object
         """
-
-        expect(
-            get_model() == "cesm",
-            "testreport is only meant to populate the CESM test database.",
-        )
         self.root = None
 
         GenericXML.__init__(
