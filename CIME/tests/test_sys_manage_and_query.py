@@ -10,7 +10,7 @@ class TestManageAndQuery(base.BaseTestCase):
     """Tests various scripts to manage and query xml files"""
 
     def setUp(self):
-        if Config.instance().skip_xml_test_management_tests:
+        if Config.instance().test_mode == "e3sm":
             self.skipTest("Skipping XML test management tests. E3SM does not use this.")
 
         super().setUp()

@@ -17,7 +17,7 @@ config = Config.instance()
 
 class TestJenkinsGenericJob(base.BaseTestCase):
     def setUp(self):
-        if config.skip_jenkins_tests:
+        if config.test_mode == "cesm":
             self.skipTest("Skipping Jenkins tests. E3SM feature")
         super().setUp()
 
@@ -42,7 +42,7 @@ class TestJenkinsGenericJob(base.BaseTestCase):
             extra_args += " --no-batch"
 
         # Need these flags to test dashboard if e3sm
-        if not config.skip_cdash_tests and build_name is not None:
+        if config.test_mode == "e3sm" and build_name is not None:
             extra_args += (
                 " -p ACME_test --submit-to-cdash --cdash-build-group=Nightly -c %s"
                 % build_name

@@ -128,7 +128,7 @@ def print_compset(name, files, all_components=False, xml=False):
     elif config_file is None or not os.path.isfile(config_file):
         return
 
-    if config.skip_print_compset and name == "drv":
+    if config.test_mode not in ("e3sm", "cesm") and name == "drv":
         return
 
     print("\nActive component: {}".format(name))

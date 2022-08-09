@@ -300,7 +300,7 @@ class TestWaitForTests(base.BaseTestCase):
 
         self.assert_dashboard_has_build(build_name)
 
-        if not config.skip_cdash_tests:
+        if config.test_mode == "e3sm":
             cdash_result_dir = os.path.join(self._testdir_unfinished, "Testing")
             tag_file = os.path.join(cdash_result_dir, "TAG")
             self.assertTrue(os.path.isdir(cdash_result_dir))

@@ -313,7 +313,7 @@ class TestCimeCase(base.BaseTestCase):
         self.assertEqual(result, "-opt1 -opt2")
 
     def test_cime_case_test_walltime_mgmt_1(self):
-        if config.skip_walltime_tests:
+        if config.test_mode == "cesm":
             self.skipTest("Skipping walltime test. Depends on E3SM batch settings")
 
         test_name = "ERS.f19_g16_rx1.A"
@@ -335,7 +335,7 @@ class TestCimeCase(base.BaseTestCase):
         self.assertEqual(result, "biggpu")
 
     def test_cime_case_test_walltime_mgmt_2(self):
-        if config.skip_walltime_tests:
+        if config.test_mode == "cesm":
             self.skipTest("Skipping walltime test. Depends on E3SM batch settings")
 
         test_name = "ERS_P64.f19_g16_rx1.A"
@@ -357,7 +357,7 @@ class TestCimeCase(base.BaseTestCase):
         self.assertEqual(result, "biggpu")
 
     def test_cime_case_test_walltime_mgmt_3(self):
-        if config.skip_walltime_tests:
+        if config.test_mode == "cesm":
             self.skipTest("Skipping walltime test. Depends on E3SM batch settings")
 
         test_name = "ERS_P64.f19_g16_rx1.A"
@@ -385,7 +385,7 @@ class TestCimeCase(base.BaseTestCase):
         self.assertEqual(result, "biggpu")  # Not smart enough to select faster queue
 
     def test_cime_case_test_walltime_mgmt_4(self):
-        if config.skip_walltime_tests:
+        if config.test_mode == "cesm":
             self.skipTest("Skipping walltime test. Depends on E3SM batch settings")
 
         test_name = "ERS_P1.f19_g16_rx1.A"
@@ -413,7 +413,7 @@ class TestCimeCase(base.BaseTestCase):
         self.assertEqual(result, "biggpu")
 
     def test_cime_case_test_walltime_mgmt_5(self):
-        if config.skip_walltime_tests:
+        if config.test_mode == "cesm":
             self.skipTest("Skipping walltime test. Depends on E3SM batch settings")
 
         test_name = "ERS_P1.f19_g16_rx1.A"
@@ -504,7 +504,7 @@ class TestCimeCase(base.BaseTestCase):
                 self.assertEqual(result, "421:32:11")
 
     def test_cime_case_test_walltime_mgmt_8(self):
-        if config.skip_walltime_tests:
+        if config.test_mode == "cesm":
             self.skipTest("Skipping walltime test. Depends on E3SM batch settings")
 
         test_name = "SMS_P25600.f19_g16_rx1.A"

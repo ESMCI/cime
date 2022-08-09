@@ -17,7 +17,7 @@ class TestGridGeneration(base.BaseTestCase):
         cls._testdirs = []
 
     def test_gen_domain(self):
-        if Config.instance().skip_gen_domain_tests:
+        if Config.instance().test_mode == "cesm":
             self.skipTest("Skipping gen_domain test. Depends on E3SM tools")
         cime_root = utils.get_cime_root()
         inputdata = self.MACHINE.get_value("DIN_LOC_ROOT")

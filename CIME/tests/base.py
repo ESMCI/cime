@@ -150,7 +150,7 @@ class BaseTestCase(unittest.TestCase):
 
     def assert_dashboard_has_build(self, build_name, expected_count=1):
         # Do not test E3SM dashboard if model is CESM
-        if not Config.instance().skip_cdash_tests:
+        if Config.instance().test_mode == "e3sm":
             time.sleep(10)  # Give chance for cdash to update
 
             wget_file = tempfile.mktemp()

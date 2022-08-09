@@ -107,7 +107,6 @@ class Config:
             False,
             desc="When creating a test if walltime is defined tests are sorted by execution time",
         )
-        self._set_attribute("skip_print_compset", False, desc="Skip printing compset.")
         self._set_attribute(
             "calculate_mode_build_cost",
             False,
@@ -135,35 +134,9 @@ class Config:
             desc="Validates arguments when parsing for CIME commands.",
         )
         self._set_attribute(
-            "skip_walltime_tests", True, desc="Skips E3SM specific walltime tests."
-        )
-        self._set_attribute(
-            "skip_xml_test_management_tests",
-            False,
-            desc="Skips non E3SM XML test management tests.",
-        )
-        self._set_attribute(
-            "skip_performance_archive_tests",
-            True,
-            desc="Skips E3SM performance archiving tests.",
-        )
-        self._set_attribute(
-            "skip_success_recording_tests",
-            True,
-            desc="Skips E3SM success recording tests.",
-        )
-        self._set_attribute("skip_cdash_tests", True, desc="Skips E3SM CDASH tests.")
-        self._set_attribute(
-            "skip_checksum_tests", False, desc="Skips CESM checksum tests."
-        )
-        self._set_attribute(
-            "skip_gen_domain_tests", True, desc="Skips E3SM gen_domain tests."
-        )
-        self._set_attribute(
-            "skip_jenkins_tests", True, desc="Skips E3SM jenkins tests."
-        )
-        self._set_attribute(
-            "skip_single_submit_test", True, desc="Skip single submit tests."
+            "test_mode",
+            "cesm",
+            desc="Sets the testing mode.",
         )
         self._set_attribute(
             "xml_component_key",

@@ -49,7 +49,7 @@ class TestSaveTimings(base.BaseTestCase):
             self.run_cmd_assert_result(
                 "cd %s && %s/save_provenance postrun" % (casedir, self.TOOLS_DIR)
             )
-        if not config.skip_performance_archive_tests:
+        if config.test_mode == "e3sm":
             provenance_glob = os.path.join(
                 timing_dir,
                 "performance_archive",
@@ -107,7 +107,7 @@ class TestSaveTimings(base.BaseTestCase):
             self.assertEqual(exp_last_pass, commit, msg="Should never")
 
     def test_success_recording(self):
-        if not config.skip_success_recording_tests:
+        if config.test_mode == "e3sm":
             self.skipTest("Skipping success recording tests. E3SM feature")
 
         fake_test1 = "faketest1"
