@@ -325,7 +325,7 @@ class TestCreateNewcase(base.BaseTestCase):
 
         cls._testdirs.append(testdir)
 
-        if utils.get_model() == "cesm":
+        if config.test_mode == "cesm":
             if utils.get_cime_default_driver() == "nuopc":
                 pesfile = os.path.join(
                     utils.get_src_root(),
@@ -734,19 +734,20 @@ set(NETCDF_PATH /my/netcdf/path)
     def test_m_createnewcase_alternate_drivers(self):
         # Test that case.setup runs for nuopc and moab drivers
         cls = self.__class__
+
         # TODO refactor
-        model = utils.get_model()
-        for driver in ("nuopc", "moab"):
+        if config.test_mode == "cesm":
+            alternative_driver = ("nuopc",)
+        else:
+            alternative_driver = ("moab",)
+
+        for driver in alternative_driver:
             if not os.path.exists(
                 os.path.join(utils.get_cime_root(), "src", "drivers", driver)
             ):
                 self.skipTest(
                     "Skipping driver test for {}, driver not found".format(driver)
                 )
-            if (model == "cesm" and driver == "moab") or (
-                model == "e3sm" and driver == "nuopc"
-            ):
-                continue
 
             testdir = os.path.join(cls._testroot, "testcreatenewcase.{}".format(driver))
             if os.path.exists(testdir):
@@ -781,7 +782,6 @@ set(NETCDF_PATH /my/netcdf/path)
 
     def test_n_createnewcase_bad_compset(self):
         cls = self.__class__
-        model = utils.get_model()
 
         testdir = os.path.join(cls._testroot, "testcreatenewcase_bad_compset")
         if os.path.exists(testdir):
