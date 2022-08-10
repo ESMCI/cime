@@ -50,7 +50,13 @@ def _submit(
         hasMediator = False
 
     # Check if CONTINUE_RUN value makes sense
-    if job != "case.test" and case.get_value("CONTINUE_RUN") and hasMediator:
+    # if submitted with a prereq don't do this check
+    if (
+        job != "case.test"
+        and case.get_value("CONTINUE_RUN")
+        and hasMediator
+        and not prereq
+    ):
         rundir = case.get_value("RUNDIR")
         expect(
             os.path.isdir(rundir),

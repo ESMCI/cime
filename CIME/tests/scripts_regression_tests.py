@@ -272,7 +272,7 @@ OR
         test_suite = unittest.defaultTestLoader.discover(test_root)
     else:
         # Fixes handling shell expansion e.g. test_unit_*, by removing python extension
-        tests = [x.replace(".py", "") for x in ns.tests]
+        tests = [x.replace(".py", "").replace("/", ".") for x in ns.tests]
 
         # Try to load tests by just names
         test_suite = unittest.defaultTestLoader.loadTestsFromNames(tests)
