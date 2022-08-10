@@ -262,7 +262,7 @@ def parse_command_line(args, cimeroot, description):
     parser.add_argument(
         "--extra-machines-dir",
         help="Optional path to a directory containing one or more of:"
-        "\nconfig_machines.xml, config_compilers.xml, config_batch.xml."
+        "\nconfig_machines.xml, config_batch.xml."
         "\nIf provided, the contents of these files will be appended to"
         "\nthe standard machine files (and any files in ~/.cime).",
     )

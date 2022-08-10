@@ -192,7 +192,7 @@ else
   ifneq ($(MAKECMDGOALS), db_files)
   ifneq ($(MAKECMDGOALS), db_flags)
   ifeq (,$(findstring clean,$(MAKECMDGOALS)))
-      $(error NETCDF not found: Define NETCDF_PATH or NETCDF_C_PATH and NETCDF_FORTRAN_PATH in config_machines.xml or config_compilers.xml)
+      $(error NETCDF not found: Define NETCDF_PATH or NETCDF_C_PATH and NETCDF_FORTRAN_PATH in config_machines.xml or cmake_macros)
   endif
   endif
   endif
@@ -423,7 +423,7 @@ ifeq ($(COMP_NAME),driver)
   INCLDIR += -I$(EXEROOT)/atm/obj -I$(EXEROOT)/ice/obj -I$(EXEROOT)/ocn/obj -I$(EXEROOT)/glc/obj -I$(EXEROOT)/rof/obj -I$(EXEROOT)/wav/obj -I$(EXEROOT)/esp/obj -I$(EXEROOT)/iac/obj
 # nagfor and gcc have incompatible LDFLAGS.
 # nagfor requires the weird "-Wl,-Wl,," syntax.
-# If done in config_compilers.xml, we break MCT.
+# If done in cmake_macros, we break MCT.
   ifeq ($(strip $(COMPILER)),nag)
      ifeq ($(NETCDF_SEPARATE), false)
        SLIBS += -Wl,-Wl,,-rpath=$(LIB_NETCDF)

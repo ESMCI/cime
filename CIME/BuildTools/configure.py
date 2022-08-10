@@ -60,7 +60,7 @@ def configure(
     unit_testing - Boolean specifying whether we're running unit tests (as
                    opposed to a system run)
     extra_machines_dir - String giving path to an additional directory that will be
-                         searched for a config_compilers.xml file.
+                         searched for cmake_macros.
     """
     new_cmake_macros_dir = Files(comp_interface=comp_interface).get_value(
         "CMAKE_MACROS_DIR"
