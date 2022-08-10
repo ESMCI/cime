@@ -109,49 +109,6 @@ class MockMachines(object):
         return "intel"
 
 
-def get_macros(macro_maker, build_xml, build_system):
-    """Generate build system ("Macros" file) output from config_compilers XML.
-
-    Arguments:
-    macro_maker - The underlying Build object.
-    build_xml - A string containing the XML to operate on.
-    build_system - Either "Makefile" or "CMake", depending on desired output.
-
-    The return value is a string containing the build system output.
-    """
-    # Build.write_macros expects file-like objects as input, so
-    # we need to wrap the strings in StringIO objects.
-    xml = io.StringIO(str(build_xml))
-    output = io.StringIO()
-    output_format = None
-    if build_system == "Makefile":
-        output_format = "make"
-    elif build_system == "CMake":
-        output_format = "cmake"
-    else:
-        output_format = build_system
-
-    macro_maker.write_macros_file(
-        macros_file=output, output_format=output_format, xml=xml
-    )
-    return str(output.getvalue())
-
-
-def _wrap_config_compilers_xml(inner_string):
-    """Utility function to create a config_compilers XML string.
-
-    Pass this function a string containing <compiler> elements, and it will add
-    the necessary header/footer to the file.
-    """
-    _xml_template = """<?xml version="1.0" encoding="UTF-8"?>
-<config_compilers>
-{}
-</config_compilers>
-"""
-
-    return _xml_template.format(inner_string)
-
-
 class MakefileTester(object):
 
     """Helper class for checking Makefile output.
