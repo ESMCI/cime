@@ -6,7 +6,6 @@ import sys
 
 from CIME import utils
 from CIME.tests import base
-from CIME.XML.compilers import Compilers
 from CIME.XML.files import Files
 
 

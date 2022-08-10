@@ -24,7 +24,6 @@ from CIME.utils import (
     stringify_bool,
     copy_local_macros_to_dir,
 )
-from CIME.XML.compilers import Compilers
 from CIME.XML.env_mach_specific import EnvMachSpecific
 from CIME.XML.files import Files
 from CIME.build import CmakeTmpBuildDir
@@ -63,65 +62,38 @@ def configure(
     extra_machines_dir - String giving path to an additional directory that will be
                          searched for a config_compilers.xml file.
     """
-    # Macros generation.
-    suffixes = {"Makefile": "make", "CMake": "cmake"}
-
     new_cmake_macros_dir = Files(comp_interface=comp_interface).get_value(
         "CMAKE_MACROS_DIR"
     )
-    macro_maker = None
     for form in macros_format:
 
-        if (
-            new_cmake_macros_dir is not None
-            and os.path.exists(new_cmake_macros_dir)
-            and not "CIME_NO_CMAKE_MACRO" in os.environ
-        ):
+        if not os.path.isfile(os.path.join(output_dir, "Macros.cmake")):
+            safe_copy(os.path.join(new_cmake_macros_dir, "Macros.cmake"), output_dir)
+        output_cmake_macros_dir = os.path.join(output_dir, "cmake_macros")
+        if not os.path.exists(output_cmake_macros_dir):
+            shutil.copytree(new_cmake_macros_dir, output_cmake_macros_dir)
 
-            if not os.path.isfile(os.path.join(output_dir, "Macros.cmake")):
-                safe_copy(
-                    os.path.join(new_cmake_macros_dir, "Macros.cmake"), output_dir
-                )
-            output_cmake_macros_dir = os.path.join(output_dir, "cmake_macros")
-            if not os.path.exists(output_cmake_macros_dir):
-                shutil.copytree(new_cmake_macros_dir, output_cmake_macros_dir)
+        copy_local_macros_to_dir(
+            output_cmake_macros_dir, extra_machdir=extra_machines_dir
+        )
 
-            copy_local_macros_to_dir(
-                output_cmake_macros_dir, extra_machdir=extra_machines_dir
+        if form == "Makefile":
+            # Use the cmake macros to generate the make macros
+            cmake_args = " -DOS={} -DMACH={} -DCOMPILER={} -DDEBUG={} -DMPILIB={} -Dcompile_threaded={} -DCASEROOT={}".format(
+                sysos,
+                machobj.get_machine_name(),
+                compiler,
+                stringify_bool(debug),
+                mpilib,
+                stringify_bool(threaded),
+                output_dir,
             )
 
-            if form == "Makefile":
-                # Use the cmake macros to generate the make macros
-                cmake_args = " -DOS={} -DMACH={} -DCOMPILER={} -DDEBUG={} -DMPILIB={} -Dcompile_threaded={} -DCASEROOT={}".format(
-                    sysos,
-                    machobj.get_machine_name(),
-                    compiler,
-                    stringify_bool(debug),
-                    mpilib,
-                    stringify_bool(threaded),
-                    output_dir,
-                )
+            with CmakeTmpBuildDir(macroloc=output_dir) as cmaketmp:
+                output = cmaketmp.get_makefile_vars(cmake_args=cmake_args)
 
-                with CmakeTmpBuildDir(macroloc=output_dir) as cmaketmp:
-                    output = cmaketmp.get_makefile_vars(cmake_args=cmake_args)
-
-                with open(os.path.join(output_dir, "Macros.make"), "w") as fd:
-                    fd.write(output)
-
-        else:
-            logger.warning("Using deprecated CIME makefile generators")
-            if macro_maker is None:
-                macro_maker = Compilers(
-                    machobj,
-                    compiler=compiler,
-                    mpilib=mpilib,
-                    extra_machines_dir=extra_machines_dir,
-                )
-
-            out_file_name = os.path.join(output_dir, "Macros." + suffixes[form])
-            macro_maker.write_macros_file(
-                macros_file=out_file_name, output_format=suffixes[form]
-            )
+            with open(os.path.join(output_dir, "Macros.make"), "w") as fd:
+                fd.write(output)
 
     copy_depends_files(
         machobj.get_machine_name(), machobj.machines_dir, output_dir, compiler
