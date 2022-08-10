@@ -306,7 +306,7 @@ def parse_command_line(args, cimeroot, description):
     elif cime_config and cime_config.has_option("main", "input_dir"):
         args.input_dir = os.path.abspath(cime_config.get("main", "input_dir"))
 
-    if model == "cesm" and args.driver == "mct":
+    if config.create_test_flag_mode == "cesm" and args.driver == "mct":
         logger.warning(
             """========================================================================
 WARNING: The MCT-based driver and data models will be removed from CESM
