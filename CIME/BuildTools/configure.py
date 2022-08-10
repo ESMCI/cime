@@ -32,6 +32,7 @@ import shutil
 
 logger = logging.getLogger(__name__)
 
+
 def configure(
     machobj,
     output_dir,
@@ -61,19 +62,13 @@ def configure(
     extra_machines_dir - String giving path to an additional directory that will be
                          searched for a config_compilers.xml file.
     """
-    # Macros generation.
-    suffixes = {"Makefile": "make", "CMake": "cmake"}
-
     new_cmake_macros_dir = Files(comp_interface=comp_interface).get_value(
         "CMAKE_MACROS_DIR"
     )
-    macro_maker = None
     for form in macros_format:
 
         if not os.path.isfile(os.path.join(output_dir, "Macros.cmake")):
-            safe_copy(
-                os.path.join(new_cmake_macros_dir, "Macros.cmake"), output_dir
-            )
+            safe_copy(os.path.join(new_cmake_macros_dir, "Macros.cmake"), output_dir)
         output_cmake_macros_dir = os.path.join(output_dir, "cmake_macros")
         if not os.path.exists(output_cmake_macros_dir):
             shutil.copytree(new_cmake_macros_dir, output_cmake_macros_dir)

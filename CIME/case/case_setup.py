@@ -9,7 +9,6 @@ from CIME.XML.standard_module_setup import *
 
 from CIME.XML.machines import Machines
 from CIME.BuildTools.configure import (
-    configure,
     generate_env_mach_specific,
     copy_depends_files,
 )
