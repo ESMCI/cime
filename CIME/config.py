@@ -171,6 +171,11 @@ class Config:
             ("mct", "nuopc"),
             desc="Sets the available driver choices for the model.",
         )
+        self._set_attribute(
+            "mct_path",
+            "{srcroot}/libraries/mct",
+            desc="Path to the mct library.",
+        )
 
     @classmethod
     def instance(cls):
