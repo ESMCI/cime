@@ -22,6 +22,11 @@ class Config:
         self._attribute_config = {}
 
         self._set_attribute(
+            "additional_archive_components",
+            ("drv", "dart"),
+            desc="Additional components to archive."
+        )
+        self._set_attribute(
             "verbose_run_phase",
             False,
             desc="Upon a successful SystemTest, the time taken is recorded to the BASELINE_ROOT. If the RUN phase failed then a possible explanation is appened to the testlog.",
