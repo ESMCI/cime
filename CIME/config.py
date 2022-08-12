@@ -24,7 +24,7 @@ class Config:
         self._set_attribute(
             "additional_archive_components",
             ("drv", "dart"),
-            desc="Additional components to archive."
+            desc="Additional components to archive.",
         )
         self._set_attribute(
             "verbose_run_phase",
