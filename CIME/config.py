@@ -29,144 +29,145 @@ class Config:
         self._set_attribute(
             "verbose_run_phase",
             False,
-            desc="Upon a successful SystemTest, the time taken is recorded to the BASELINE_ROOT. If the RUN phase failed then a possible explanation is appened to the testlog.",
+            desc="If set to `True` then after a SystemTests successful run phase the elapsed time is recorded to BASELINE_ROOT, on a failure the test is checked against the previous run and potential breaking merges are listed in the testlog.",
         )
         self._set_attribute(
             "baseline_store_teststatus",
             True,
-            desc="Upon the completion of a SystemTest and GENERATE_BASELINE is True, the TestStatus will be copied from the case directory to the baseline directory.",
+            desc="If set to `True` and GENERATE_BASELINE is set then a teststatus.log is created in the case's baseline.",
         )
         self._set_attribute(
             "common_sharedlibroot",
             True,
-            desc="During BUILD phase of a SystemTestsCompareN SHAREDLIBROOT is set the same for all cases.",
+            desc="If set to `True` then SHAREDLIBROOT is set for the case and SystemTests will only build the shared libs once.",
         )
         self._set_attribute(
             "create_test_flag_mode",
             "cesm",
-            desc="Sets model specific flags for 'create_test' script.",
+            desc="Sets the flag mode for the `create_test` script. When set to `cesm`, the `-c` flag will compare baselines against a give directory.",
         )
         self._set_attribute(
             "use_kokkos",
             False,
-            desc="Enables use of kokkos, CAM_TARGET must be set to either `preqx_kokkos`, `theta-l` or `theta-l_kokkos`.",
+            desc="If set to `True` and CAM_TARGET is `preqx_kokkos`, `theta-l` or `theta-l_kokkos` then kokkos is built with the shared libs.",
         )
         self._set_attribute(
-            "shared_clm_component", True, desc="Enables shared clm component."
+            "shared_clm_component", True,
+            desc="If set to `True` and then the `clm` land component is built as a shared lib.",
         )
         self._set_attribute(
             "ufs_alternative_config",
             False,
-            desc="Enables ufs config_dir for `nems` driver.",
+            desc="If set to `True` and UFS_DRIVER is set to `nems` then model config dir is set to `$CIMEROOT/../src/model/NEMS/cime/cime_config`.",
         )
-        # disable for ufs
-        self._set_attribute("enable_smp", True, desc="Enables SMP when building model.")
+        self._set_attribute("enable_smp", True, desc="If set to `True` then `SMP=` is added to model compile command.")
         self._set_attribute(
-            "build_model_use_cmake", False, desc="When building model use CMake."
+            "build_model_use_cmake", False, desc="If set to `True` the model is built using using CMake otherwise Make is used."
         )
         self._set_attribute(
-            "build_cime_component_lib", True, desc="Build CIME component lib."
+            "build_cime_component_lib", True, desc="If set to `True` then `Filepath`, `CIME_cppdefs` and `CCSM_cppdefs` directories are copied from CASEBUILD directory to BUILDROOT in order to build CIME's internal components."
         )
         self._set_attribute(
             "default_short_term_archiving",
             True,
-            desc="Forces short term archiving when not a test.",
+            desc="If set to `True` and the case is not a test then DOUT_S is set to True and TIMER_LEVEL is set to 4.",
+        )
+        # TODO combine copy_e3sm_tools and copy_cesm_tools into a single variable
+        self._set_attribute(
+            "copy_e3sm_tools", False, desc="If set to `True` then E3SM specific tools are copied into the case directory."
         )
         self._set_attribute(
-            "copy_e3sm_tools", False, desc="Copies E3SM specific tools to case tools."
+            "copy_cesm_tools", True, desc="If set to `True` then CESM specific tools are copied into the case directory.",
         )
         self._set_attribute(
-            "copy_cesm_tools", True, desc="Copies archive_metadata to case root."
-        )
-        self._set_attribute(
-            "copy_cism_source_mods", True, desc="Copies cism SourceMods."
+            "copy_cism_source_mods", True, desc="If set to `True` then `$CASEROOT/SourceMods/src.cism/source_cism` is created and a README is written to directory."
         )
         self._set_attribute(
             "make_case_run_batch_script",
             False,
-            desc="Makes case.run batch script during case setup.",
+            desc="If set to `True` and case is not a test then `case.run.sh` is created in case directory from `$MACHDIR/template.case.run.sh`.",
         )
         self._set_attribute(
             "case_setup_generate_namelist",
             False,
-            desc="Creates namelist during case.setup for some tests.",
+            desc="If set to `True` and case is a test then namelists are created during `case.setup`.",
         )
         self._set_attribute(
             "create_bless_log",
             False,
-            desc="Creates a bless log when comparing baseline.",
+            desc="If set to `True` and comparing test to baselines the most recent bless is added to comments.",
         )
         self._set_attribute(
             "allow_unsupported",
             True,
-            desc="Allows creation of case that is not test or supported.",
+            desc="If set to `True` then unsupported compsets and resolutions are allowed.",
         )
         # set for ufs
         self._set_attribute(
             "check_machine_name_from_test_name",
             True,
-            desc="Try to get machine name from testname.",
+            desc="If set to `True` then the TestScheduler will use testlists to parse for a list of tests.",
         )
         self._set_attribute(
             "sort_tests",
             False,
-            desc="When creating a test if walltime is defined tests are sorted by execution time",
+            desc="If set to `True` then the TestScheduler will sort tests by runtime.",
         )
         self._set_attribute(
             "calculate_mode_build_cost",
             False,
-            desc="Calculates model build cost rather than using static value in test_scheduler",
+            desc="If set to `True` then the TestScheduler will set the number of processors for building the model to min(16, (($GMAKE_J * 2) / 3) + 1) otherwise it's set to 4.",
         )
         self._set_attribute(
-            "share_exes", False, desc="Test scheduler will shared exes."
+            "share_exes", False, desc="If set to `True` then the TestScheduler will share exes between tests.",
         )
 
         self._set_attribute(
             "serialize_sharedlib_builds",
             True,
-            desc="Test scheduler will serialize sharedlib builds.",
+            desc="If set to `True` then the TestScheduler will use `proc_pool + 1` processors to build shared libraries otherwise a single processor is used.",
         )
 
         self._set_attribute(
             "use_testreporter_template",
             True,
-            desc="Test scheduler will use testreporter.template.",
+            desc="If set to `True` then the TestScheduler will create `testreporter` in $CIME_OUTPUT_ROOT.",
         )
 
         self._set_attribute(
             "check_invalid_args",
             True,
-            desc="Validates arguments when parsing for CIME commands.",
+            desc="If set to `True` then script arguments are checked for being valid.",
         )
         self._set_attribute(
             "test_mode",
             "cesm",
-            desc="Sets the testing mode.",
+            desc="Sets the testing mode, this changes various configuration for CIME's unit and system tests.",
         )
         self._set_attribute(
             "xml_component_key",
             "COMP_ROOT_DIR_{}",
-            desc="Component key used whenm querying config.",
+            desc="The string template used as the key to query the XML system to find a components root directory e.g. the template `COMP_ROOT_DIR_{}` and component `LND` becomes `COMP_ROOT_DIR_LND`.",
         )
         self._set_attribute(
             "set_comp_root_dir_cpl",
             True,
-            desc="Sets COMP_ROOT_DIR_CPL when setting compset.",
+            desc="If set to `True` then COMP_ROOT_DIR_CPL is set for the case.",
         )
         self._set_attribute(
             "use_nems_comp_root_dir",
             False,
-            desc="Use nems specific value for COMP_ROOT_DIR_CPL.",
+            desc="If set to `True` then COMP_ROOT_DIR_CPL is set using UFS_DRIVER if defined.",
         )
         self._set_attribute(
             "gpus_use_set_device_rank",
             True,
-            desc="Uses set_device_rank.sh from RUNDIR when composing MPI run command.",
+            desc="If set to `True` and NGPUS_PER_NODE > 0 then `$RUNDIR/set_device_rank.sh` is appended when the MPI run command is generated.",
         )
         self._set_attribute(
             "test_custom_project_machine",
             "melvin",
-            desc="Set a machine which doesn't use PROJECT for testing.",
+            desc="Sets the machine name to use when testing a machine with no PROJECT.",
         )
         self._set_attribute(
             "driver_default", "nuopc", desc="Sets the default driver for the model."
@@ -179,7 +180,7 @@ class Config:
         self._set_attribute(
             "mct_path",
             "{srcroot}/libraries/mct",
-            desc="Path to the mct library.",
+            desc="Sets the path to the mct library.",
         )
 
     @classmethod
