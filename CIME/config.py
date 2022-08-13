@@ -52,7 +52,8 @@ class Config:
             desc="If set to `True` and CAM_TARGET is `preqx_kokkos`, `theta-l` or `theta-l_kokkos` then kokkos is built with the shared libs.",
         )
         self._set_attribute(
-            "shared_clm_component", True,
+            "shared_clm_component",
+            True,
             desc="If set to `True` and then the `clm` land component is built as a shared lib.",
         )
         self._set_attribute(
@@ -60,12 +61,20 @@ class Config:
             False,
             desc="If set to `True` and UFS_DRIVER is set to `nems` then model config dir is set to `$CIMEROOT/../src/model/NEMS/cime/cime_config`.",
         )
-        self._set_attribute("enable_smp", True, desc="If set to `True` then `SMP=` is added to model compile command.")
         self._set_attribute(
-            "build_model_use_cmake", False, desc="If set to `True` the model is built using using CMake otherwise Make is used."
+            "enable_smp",
+            True,
+            desc="If set to `True` then `SMP=` is added to model compile command.",
         )
         self._set_attribute(
-            "build_cime_component_lib", True, desc="If set to `True` then `Filepath`, `CIME_cppdefs` and `CCSM_cppdefs` directories are copied from CASEBUILD directory to BUILDROOT in order to build CIME's internal components."
+            "build_model_use_cmake",
+            False,
+            desc="If set to `True` the model is built using using CMake otherwise Make is used.",
+        )
+        self._set_attribute(
+            "build_cime_component_lib",
+            True,
+            desc="If set to `True` then `Filepath`, `CIME_cppdefs` and `CCSM_cppdefs` directories are copied from CASEBUILD directory to BUILDROOT in order to build CIME's internal components.",
         )
         self._set_attribute(
             "default_short_term_archiving",
@@ -74,13 +83,19 @@ class Config:
         )
         # TODO combine copy_e3sm_tools and copy_cesm_tools into a single variable
         self._set_attribute(
-            "copy_e3sm_tools", False, desc="If set to `True` then E3SM specific tools are copied into the case directory."
+            "copy_e3sm_tools",
+            False,
+            desc="If set to `True` then E3SM specific tools are copied into the case directory.",
         )
         self._set_attribute(
-            "copy_cesm_tools", True, desc="If set to `True` then CESM specific tools are copied into the case directory.",
+            "copy_cesm_tools",
+            True,
+            desc="If set to `True` then CESM specific tools are copied into the case directory.",
         )
         self._set_attribute(
-            "copy_cism_source_mods", True, desc="If set to `True` then `$CASEROOT/SourceMods/src.cism/source_cism` is created and a README is written to directory."
+            "copy_cism_source_mods",
+            True,
+            desc="If set to `True` then `$CASEROOT/SourceMods/src.cism/source_cism` is created and a README is written to directory.",
         )
         self._set_attribute(
             "make_case_run_batch_script",
@@ -119,7 +134,9 @@ class Config:
             desc="If set to `True` then the TestScheduler will set the number of processors for building the model to min(16, (($GMAKE_J * 2) / 3) + 1) otherwise it's set to 4.",
         )
         self._set_attribute(
-            "share_exes", False, desc="If set to `True` then the TestScheduler will share exes between tests.",
+            "share_exes",
+            False,
+            desc="If set to `True` then the TestScheduler will share exes between tests.",
         )
 
         self._set_attribute(
