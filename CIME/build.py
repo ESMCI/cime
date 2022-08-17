@@ -19,11 +19,13 @@ from CIME.utils import (
     get_logging_options,
     import_from_file,
 )
-from CIME.provenance import save_build_provenance as save_build_provenance_sub
+from CIME.config import Config
 from CIME.locked_files import lock_file, unlock_file
 from CIME.XML.files import Files
 
 logger = logging.getLogger(__name__)
+
+config = Config.instance()
 
 _CMD_ARGS_FOR_BUILD = (
     "CASEROOT",
@@ -283,7 +285,7 @@ def uses_kokkos(case):
     cam_target = case.get_value("CAM_TARGET")
     # atm_comp   = case.get_value("COMP_ATM") # scream does not use the shared kokkoslib for now
 
-    return get_model() == "e3sm" and cam_target in (
+    return config.use_kokkos and cam_target in (
         "preqx_kokkos",
         "theta-l",
         "theta-l_kokkos",
@@ -323,7 +325,7 @@ def _build_model(
         # special case for clm
         # clm 4_5 and newer is a shared (as in sharedlibs, shared by all tests) library
         # (but not in E3SM) and should be built in build_libraries
-        if get_model() != "e3sm" and comp == "clm":
+        if config.shared_clm_component and comp == "clm":
             continue
         else:
             logger.info("         - Building {} Library ".format(model))
@@ -379,7 +381,7 @@ def _build_model(
         file_build = os.path.join(exeroot, "{}.bldlog.{}".format(cime_model, lid))
 
         ufs_driver = os.environ.get("UFS_DRIVER")
-        if cime_model == "ufs" and ufs_driver == "nems":
+        if config.ufs_alternative_config and ufs_driver == "nems":
             config_dir = os.path.join(
                 cimeroot, os.pardir, "src", "model", "NEMS", "cime", "cime_config"
             )
@@ -813,7 +815,7 @@ def _build_libraries(
                     logger.warning(line)
 
     # clm not a shared lib for E3SM
-    if get_model() != "e3sm" and (buildlist is None or "lnd" in buildlist):
+    if config.shared_clm_component and (buildlist is None or "lnd" in buildlist):
         comp_lnd = case.get_value("COMP_LND")
         if comp_lnd == "clm":
             logging.info("         - Building clm library ")
@@ -888,7 +890,7 @@ def _build_model_thread(
         libroot=libroot,
         bldroot=bldroot,
     )
-    if get_model() != "ufs":
+    if config.enable_smp:
         compile_cmd = "SMP={} {}".format(stringify_bool(smp), compile_cmd)
 
     if is_python_executable(cmd):
@@ -1104,6 +1106,7 @@ def _case_build_impl(
     os.environ["BUILD_THREADED"] = stringify_bool(build_threaded)
     cime_model = get_model()
 
+    # TODO need some other method than a flag.
     if cime_model == "e3sm" and mach == "titan" and compiler == "pgiacc":
         case.set_value("CAM_TARGET", "preqx_acc")
 
@@ -1175,7 +1178,7 @@ def _case_build_impl(
         )
 
     if not sharedlib_only:
-        if get_model() == "e3sm":
+        if config.build_model_use_cmake:
             logs.extend(
                 _build_model_cmake(
                     exeroot,
@@ -1242,7 +1245,10 @@ def post_build(case, logs, build_complete=False, save_build_provenance=True):
             os.environ["LID"] if "LID" in os.environ else get_timestamp("%y%m%d-%H%M%S")
         )
         if save_build_provenance:
-            save_build_provenance_sub(case, lid=lid)
+            try:
+                Config.instance().save_build_provenance(case, lid=lid)
+            except AttributeError:
+                logger.debug("No handler for save_build_provenance was found")
         # Set XML to indicate build complete
         case.set_value("BUILD_COMPLETE", True)
         case.set_value("BUILD_STATUS", 0)

@@ -38,6 +38,7 @@ from CIME.utils import (
     run_cmd_no_fail,
     get_cime_config,
 )
+from CIME.config import Config
 from CIME.XML.machines import Machines
 from CIME.case import Case
 from CIME.test_utils import get_tests_from_xml
@@ -55,7 +56,7 @@ def parse_command_line(args, description):
         description=description, formatter_class=RawTextHelpFormatter
     )
 
-    model = CIME.utils.get_model()
+    model_config = Config.instance()
 
     CIME.utils.setup_standard_logging_options(parser)
 
@@ -179,7 +180,7 @@ def parse_command_line(args, description):
         "\ninvoke ./query_config. The default is the first listing .",
     )
 
-    if model in ["cesm", "ufs"]:
+    if model_config.create_test_flag_mode == "cesm":
         parser.add_argument(
             "-c",
             "--compare",
@@ -479,7 +480,7 @@ def parse_command_line(args, description):
     CIME.utils.resolve_mail_type_args(args)
 
     # generate and compare flags may not point to the same directory
-    if model in ["cesm", "ufs"]:
+    if model_config.create_test_flag_mode == "cesm":
         if args.generate is not None:
             expect(
                 not (args.generate == args.compare),
@@ -577,7 +578,7 @@ def parse_command_line(args, description):
 
     # Compute list of fully-resolved test_names
     test_extra_data = {}
-    if model in ["cesm", "ufs"]:
+    if model_config.check_machine_name_from_test_name:
         machine_name = args.xml_machine if args.machine is None else args.machine
 
         # If it's still unclear what machine to use, look at test names
@@ -661,7 +662,7 @@ def parse_command_line(args, description):
     baseline_cmp_name = None
     baseline_gen_name = None
     if args.compare or args.generate:
-        if model in ["cesm", "ufs"]:
+        if model_config.create_test_flag_mode == "cesm":
             if args.compare is not None:
                 baseline_cmp_name = args.compare
             if args.generate is not None:
@@ -690,7 +691,7 @@ def parse_command_line(args, description):
         expect(dot_count > 1 and dot_count <= 4, "Invalid test Name, '{}'".format(name))
 
     # for e3sm, sort by walltime
-    if model == "e3sm":
+    if model_config.sort_tests:
         if args.walltime is None:
             # Longest tests should run first
             test_names.sort(key=get_tests.key_test_time, reverse=True)
@@ -992,6 +993,11 @@ def create_test(
 ###############################################################################
 def _main_func(description=None):
     ###############################################################################
+    customize_path = os.path.join(utils.get_src_root(), "cime_config", "customize")
+
+    if os.path.exists(customize_path):
+        Config.instance().load(customize_path)
+
     (
         test_names,
         test_data,

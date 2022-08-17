@@ -23,6 +23,7 @@ from CIME.hist_utils import (
     get_ts_synopsis,
     generate_baseline,
 )
+from CIME.config import Config
 from CIME.provenance import save_test_time, get_test_success
 from CIME.locked_files import LOCKED_DIR, lock_file, is_locked
 import CIME.build as build
@@ -253,7 +254,9 @@ class SystemTestsCommon(object):
                     RUN_PHASE, status, comments=("time={:d}".format(int(time_taken)))
                 )
 
-            if get_model() == "e3sm":
+            config = Config.instance()
+
+            if config.verbose_run_phase:
                 # If run phase worked, remember the time it took in order to improve later walltime ests
                 baseline_root = self._case.get_value("BASELINE_ROOT")
                 if success:
@@ -320,7 +323,9 @@ class SystemTestsCommon(object):
                                     )
                                 )
 
-            if get_model() == "cesm" and self._case.get_value("GENERATE_BASELINE"):
+            if config.baseline_store_teststatus and self._case.get_value(
+                "GENERATE_BASELINE"
+            ):
                 baseline_dir = os.path.join(
                     self._case.get_value("BASELINE_ROOT"),
                     self._case.get_value("BASEGEN_CASE"),

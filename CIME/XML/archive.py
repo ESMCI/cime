@@ -3,9 +3,9 @@ Interface to the archive.xml file.  This class inherits from GenericXML.py
 """
 
 from CIME.XML.standard_module_setup import *
+from CIME.config import Config
 from CIME.XML.archive_base import ArchiveBase
 from CIME.XML.files import Files
-from CIME.utils import expect, get_model
 from copy import deepcopy
 
 logger = logging.getLogger(__name__)
@@ -28,12 +28,14 @@ class Archive(ArchiveBase):
         components_node = env_archive.make_child(
             "components", attributes={"version": "2.0"}
         )
+
         arch_components = deepcopy(components)
-        model = get_model()
-        if "drv" not in arch_components and model != "ufs":
-            arch_components.append("drv")
-        if "dart" not in arch_components and model == "cesm":
-            arch_components.append("dart")
+
+        config = Config.instance()
+
+        for comp in config.additional_archive_components:
+            if comp not in arch_components:
+                arch_components.append(comp)
 
         for comp in arch_components:
             infile = files.get_value("ARCHIVE_SPEC_FILE", {"component": comp})

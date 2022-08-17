@@ -438,14 +438,16 @@ def get_cime_default_driver():
                 logger.debug(
                     "Setting CIME_driver={} from ~/.cime/config".format(driver)
                 )
+
+    from CIME.config import Config
+
+    config = Config.instance()
+
     if not driver:
-        model = get_model()
-        if model == "ufs" or model == "cesm":
-            driver = "nuopc"
-        else:
-            driver = "mct"
+        driver = config.driver_default
+
     expect(
-        driver in ("mct", "nuopc", "moab"),
+        driver in config.driver_choices,
         "Attempt to set invalid driver {}".format(driver),
     )
     return driver
@@ -2460,7 +2462,11 @@ def run_and_log_case_status(
 
 
 def _check_for_invalid_args(args):
-    if get_model() != "e3sm":
+    # Prevent circular import
+    from CIME.config import Config
+
+    # TODO Is this really model specific
+    if Config.instance().check_invalid_args:
         for arg in args:
             # if arg contains a space then it was originally quoted and we can ignore it here.
             if " " in arg or arg.startswith("--"):

@@ -7,6 +7,7 @@ sys.path.insert(0, CIMEROOT)
 import pytest
 
 from CIME import utils
+from CIME.config import Config
 from CIME.tests import scripts_regression_tests
 
 os.environ["CIME_GLOBAL_WALLTIME"] = "0:05:00"
@@ -31,6 +32,17 @@ def pytest_configure(config):
     scripts_regression_tests.configure_tests(**kwargs)
 
 
-@pytest.fixture(scope="session", autouse=True)
+@pytest.fixture(scope="module", autouse=True)
 def setup(pytestconfig):
+    # ensure we start from CIMEROOT for each module
     os.chdir(CIMEROOT)
+
+    srcroot = utils.get_src_root()
+
+    customize_path = os.path.join(srcroot, "cime_config", "customize")
+
+    if os.path.exists(customize_path):
+        Config.instance().load(customize_path)
+
+    # ensure GLOABL is reset
+    utils.GLOBAL = {}

@@ -47,7 +47,7 @@ In addition, they MAY require the following methods:
 from CIME.XML.standard_module_setup import *
 from CIME.SystemTests.system_tests_common import SystemTestsCommon
 from CIME.case import Case
-from CIME.utils import get_model
+from CIME.config import Config
 from CIME.test_status import *
 
 import shutil, os, glob
@@ -217,7 +217,7 @@ class SystemTestsCompareTwo(SystemTestsCommon):
                 # Although we're doing separate builds, it still makes sense
                 # to share the sharedlibroot area with case1 so we can reuse
                 # pieces of the build from there.
-                if get_model() != "e3sm":
+                if Config.instance().common_sharedlibroot:
                     # We need to turn off this change for E3SM because it breaks
                     # the MPAS build system
                     self._case2.set_value(

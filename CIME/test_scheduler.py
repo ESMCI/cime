@@ -31,6 +31,7 @@ from CIME.utils import (
     get_cime_default_driver,
     clear_folder,
 )
+from CIME.config import Config
 from CIME.test_status import *
 from CIME.XML.machines import Machines
 from CIME.XML.generic_xml import GenericXML
@@ -233,7 +234,9 @@ class TestScheduler(object):
 
         self._machobj = Machines(machine=machine_name)
 
-        if get_model() == "e3sm":
+        self._config = Config.instance()
+
+        if self._config.calculate_mode_build_cost:
             # Current build system is unlikely to be able to productively use more than 16 cores
             self._model_build_cost = min(
                 16, int((self._machobj.get_value("GMAKE_J") * 2) / 3) + 1
@@ -352,7 +355,7 @@ class TestScheduler(object):
                     "Use -o to avoid this error".format(existing_baselines),
                 )
 
-        if self._cime_model == "e3sm":
+        if self._config.sort_tests:
             _order_tests_by_runtime(test_names, self._baseline_root)
 
         # This is the only data that multiple threads will simultaneously access
@@ -435,7 +438,7 @@ class TestScheduler(object):
         # Setup build groups
         if single_exe:
             self._build_groups = [self._tests]
-        elif self._cime_model == "e3sm":
+        elif self._config.share_exes:
             # Any test that's in a shared-enabled suite with other tests should share exes
             self._build_groups = get_build_groups(self._tests)
         else:
@@ -727,7 +730,7 @@ class TestScheduler(object):
             create_newcase_cmd += " --walltime {}".format(self._walltime)
         else:
             # model specific ways of setting time
-            if self._cime_model == "e3sm":
+            if self._config.sort_tests:
                 recommended_time = _get_time_est(test, self._baseline_root)
 
                 if recommended_time is not None:
@@ -937,7 +940,7 @@ class TestScheduler(object):
             if self._output_root is None:
                 self._output_root = case.get_value("CIME_OUTPUT_ROOT")
             # if we are running a single test we don't need sharedlibroot
-            if len(self._tests) > 1 and self._cime_model != "e3sm":
+            if len(self._tests) > 1 and self._config.common_sharedlibroot:
                 case.set_value(
                     "SHAREDLIBROOT",
                     os.path.join(
@@ -1122,7 +1125,7 @@ class TestScheduler(object):
             return total_pes
 
         elif phase == SHAREDLIB_BUILD_PHASE:
-            if self._cime_model != "e3sm":
+            if self._config.serialize_sharedlib_builds:
                 # Will force serialization of sharedlib builds
                 # TODO - instead of serializing, compute all library configs needed and build
                 # them all in parallel
@@ -1372,7 +1375,7 @@ class TestScheduler(object):
                     os.stat(cs_submit_file).st_mode | stat.S_IXUSR | stat.S_IXGRP,
                 )
 
-            if self._cime_model == "cesm":
+            if self._config.use_testreporter_template:
                 template_file = os.path.join(template_path, "testreporter.template")
                 template = open(template_file, "r").read()
                 template = template.replace("<PATH>", get_tools_path())
@@ -1418,8 +1421,10 @@ class TestScheduler(object):
 
         expect(threading.active_count() == 1, "Leftover threads?")
 
+        config = Config.instance()
+
         # Copy TestStatus files to baselines for tests that have already failed.
-        if get_model() == "cesm":
+        if config.baseline_store_teststatus:
             for test in self._tests:
                 status = self._get_test_data(test)[1]
                 if (

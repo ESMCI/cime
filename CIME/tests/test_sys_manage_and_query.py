@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from CIME import utils
+from CIME.config import Config
 from CIME.tests import base
 from CIME.XML.files import Files
 
@@ -9,7 +10,7 @@ class TestManageAndQuery(base.BaseTestCase):
     """Tests various scripts to manage and query xml files"""
 
     def setUp(self):
-        if utils.get_model() == "e3sm":
+        if Config.instance().test_mode == "e3sm":
             self.skipTest("Skipping XML test management tests. E3SM does not use this.")
 
         super().setUp()

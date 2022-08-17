@@ -8,18 +8,24 @@ information will be listed for each.
 
 from CIME.Tools.standard_script_setup import *
 import re
-from CIME.utils import expect, get_model
+from CIME.utils import expect
 from CIME.XML.files import Files
 from CIME.XML.component import Component
 from CIME.XML.compsets import Compsets
 from CIME.XML.grids import Grids
+from CIME.config import Config
 
 # from CIME.XML.machines  import Machines
 import CIME.XML.machines
 from argparse import RawTextHelpFormatter
 
 logger = logging.getLogger(__name__)
-supported_comp_interfaces = ["mct", "nuopc", "moab"]
+
+customize_path = os.path.join(CIME.utils.get_src_root(), "cime_config", "customize")
+
+config = Config.load(customize_path)
+
+supported_comp_interfaces = list(config.driver_choices)
 
 
 def query_grids(files, long_output, xml=False):
@@ -122,7 +128,7 @@ def print_compset(name, files, all_components=False, xml=False):
     elif config_file is None or not os.path.isfile(config_file):
         return
 
-    if get_model() == "ufs" and name == "drv":
+    if config.test_mode not in ("e3sm", "cesm") and name == "drv":
         return
 
     print("\nActive component: {}".format(name))
@@ -256,10 +262,7 @@ def parse_command_line(args, description):
             supported_comp_interfaces.remove(comp_interface)
 
         for comp in components:
-            if cime_model == "cesm":
-                string = "COMP_ROOT_DIR_{}".format(comp)
-            else:
-                string = "CONFIG_{}_FILE".format(comp)
+            string = config.xml_component_key.format(comp)
 
             # determine all components in string
             components = files[comp_interface].get_components(string)
