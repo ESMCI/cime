@@ -32,8 +32,8 @@
       </arguments>
     </mpirun>
     <module_system type="none" />
-    <RUNDIR>$CIME_OUTPUT_ROOT/$CASE/run</RUNDIR>
-    <EXEROOT>$CIME_OUTPUT_ROOT/$CASE/bld</EXEROOT>
+    <RUNDIR>$CASEROOT/run</RUNDIR>
+    <EXEROOT>$CASEROOT/bld</EXEROOT>
     <environment_variables>
       <env name="OMPI_ALLOW_RUN_AS_ROOT">1</env>
       <env name="OMPI_ALLOW_RUN_AS_ROOT_CONFIRM">1</env>
