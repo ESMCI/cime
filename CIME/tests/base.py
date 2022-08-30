@@ -62,6 +62,9 @@ class BaseTestCase(unittest.TestCase):
         self._do_teardown = not self.NO_TEARDOWN
         self._root_dir = os.getcwd()
 
+        customize_path = os.path.join(utils.get_src_root(), "cime_config", "customize")
+        config = Config.load(customize_path)
+
     def tearDown(self):
         self.kill_subprocesses()
 
