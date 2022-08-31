@@ -454,11 +454,11 @@ class TestTestScheduler(base.BaseTestCase):
         if Config.instance().test_mode != "e3sm" and self._machine != "docker":
             self.skipTest("Skipping create_test test. Depends on E3SM settings")
 
-        args = ["SMS.f19_g16_rx1.A.docker_gnuX", "--no-build"]
+        args = ["SMS.f19_g16_rx1.A.docker_gnuX", "--no-setup"]
 
         case = self._create_test(args)
         result = self.run_cmd_assert_result(
-            "./xmlquery --value BASELINE_ROOT", from_dir=case
+            "./xmlquery --value BASELINE_ROOT", from_dir=case, default_baseline_area=True
         )
         self.assertEqual(os.path.split(result)[1], "gnuX")
 
