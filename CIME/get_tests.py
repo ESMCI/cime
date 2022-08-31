@@ -330,7 +330,9 @@ def infer_arch_from_tests(testargs):
             testarg = testarg[1:]
 
         if testarg not in e3sm_test_suites:
-            machine_for_this_test, compiler_for_this_test = parse_test_name(testarg)[4:6]
+            machine_for_this_test, compiler_for_this_test = parse_test_name(testarg)[
+                4:6
+            ]
             if machine_for_this_test is not None:
                 if machine is None:
                     machine = machine_for_this_test
@@ -341,7 +343,10 @@ def infer_arch_from_tests(testargs):
                         % (machine, machine_for_this_test),
                     )
 
-            if compiler_for_this_test is not None and compiler_for_this_test not in compilers:
+            if (
+                compiler_for_this_test is not None
+                and compiler_for_this_test not in compilers
+            ):
                 compilers.append(compiler_for_this_test)
 
     return machine, compilers

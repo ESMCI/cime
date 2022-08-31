@@ -644,8 +644,12 @@ def parse_command_line(args, description):
             else:
                 # User has multiple compiler specifications in their testargs
                 args.compiler = inf_compilers[0]
-                expect(not args.compare and not args.generate,
-                       "It is not safe to do baseline operations with heterogenous compiler set: {}".format(inf_compilers))
+                expect(
+                    not args.compare and not args.generate,
+                    "It is not safe to do baseline operations with heterogenous compiler set: {}".format(
+                        inf_compilers
+                    ),
+                )
 
         test_names = get_tests.get_full_test_names(
             args.testargs, mach_obj.get_machine_name(), args.compiler
