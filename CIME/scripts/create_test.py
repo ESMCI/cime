@@ -631,13 +631,25 @@ def parse_command_line(args, description):
 
         logger.info("Testnames: %s" % test_names)
     else:
+        inf_machine, inf_compilers = get_tests.infer_arch_from_tests(args.testargs)
         if args.machine is None:
-            args.machine = get_tests.infer_machine_name_from_tests(args.testargs)
+            args.machine = inf_machine
 
         mach_obj = Machines(machine=args.machine)
-        args.compiler = (
-            mach_obj.get_default_compiler() if args.compiler is None else args.compiler
-        )
+        if args.compiler is None:
+            if len(inf_compilers) == 0:
+                args.compiler = mach_obj.get_default_compiler()
+            elif len(inf_compilers) == 1:
+                args.compiler = inf_compilers[0]
+            else:
+                # User has multiple compiler specifications in their testargs
+                args.compiler = inf_compilers[0]
+                expect(
+                    not args.compare and not args.generate,
+                    "It is not safe to do baseline operations with heterogenous compiler set: {}".format(
+                        inf_compilers
+                    ),
+                )
 
         test_names = get_tests.get_full_test_names(
             args.testargs, mach_obj.get_machine_name(), args.compiler

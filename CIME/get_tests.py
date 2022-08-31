@@ -300,27 +300,39 @@ def get_build_groups(tests):
 
 
 ###############################################################################
-def infer_machine_name_from_tests(testargs):
+def infer_arch_from_tests(testargs):
     ###############################################################################
     """
-    >>> infer_machine_name_from_tests(["NCK.f19_g16_rx1.A.melvin_gnu"])
-    'melvin'
-    >>> infer_machine_name_from_tests(["NCK.f19_g16_rx1.A"])
-    >>> infer_machine_name_from_tests(["NCK.f19_g16_rx1.A", "NCK.f19_g16_rx1.A.melvin_gnu"])
-    'melvin'
-    >>> infer_machine_name_from_tests(["NCK.f19_g16_rx1.A.melvin_gnu", "NCK.f19_g16_rx1.A.melvin_gnu"])
-    'melvin'
+    Return a tuple (machine, [compilers]) that can be inferred from the test args
+
+    >>> infer_arch_from_tests(["NCK.f19_g16_rx1.A.melvin_gnu"])
+    ('melvin', ['gnu'])
+    >>> infer_arch_from_tests(["NCK.f19_g16_rx1.A"])
+    (None, [])
+    >>> infer_arch_from_tests(["NCK.f19_g16_rx1.A", "NCK.f19_g16_rx1.A.melvin_gnu"])
+    ('melvin', ['gnu'])
+    >>> infer_arch_from_tests(["NCK.f19_g16_rx1.A.melvin_gnu", "NCK.f19_g16_rx1.A.melvin_gnu"])
+    ('melvin', ['gnu'])
+    >>> infer_arch_from_tests(["NCK.f19_g16_rx1.A.melvin_gnu9", "NCK.f19_g16_rx1.A.melvin_gnu"])
+    ('melvin', ['gnu9', 'gnu'])
+    >>> infer_arch_from_tests(["NCK.f19_g16_rx1.A.melvin_gnu", "NCK.f19_g16_rx1.A.mappy_gnu"])
+    Traceback (most recent call last):
+        ...
+    CIME.utils.CIMEError: ERROR: Must have consistent machine 'melvin' != 'mappy'
     """
     e3sm_test_suites = get_test_suites()
 
     machine = None
+    compilers = []
     for testarg in testargs:
         testarg = testarg.strip()
         if testarg.startswith("^"):
             testarg = testarg[1:]
 
         if testarg not in e3sm_test_suites:
-            machine_for_this_test = parse_test_name(testarg)[4]
+            machine_for_this_test, compiler_for_this_test = parse_test_name(testarg)[
+                4:6
+            ]
             if machine_for_this_test is not None:
                 if machine is None:
                     machine = machine_for_this_test
@@ -331,7 +343,13 @@ def infer_machine_name_from_tests(testargs):
                         % (machine, machine_for_this_test),
                     )
 
-    return machine
+            if (
+                compiler_for_this_test is not None
+                and compiler_for_this_test not in compilers
+            ):
+                compilers.append(compiler_for_this_test)
+
+    return machine, compilers
 
 
 ###############################################################################
