@@ -456,11 +456,10 @@ class TestTestScheduler(base.BaseTestCase):
 
         args = ["SMS.f19_g16_rx1.A.docker_gnuX", "--no-setup"]
 
-        case = self._create_test(args)
+        case = self._create_test(args, default_baseline_area=True)
         result = self.run_cmd_assert_result(
             "./xmlquery --value BASELINE_ROOT",
-            from_dir=case,
-            default_baseline_area=True,
+            from_dir=case
         )
         self.assertEqual(os.path.split(result)[1], "gnuX")
 
