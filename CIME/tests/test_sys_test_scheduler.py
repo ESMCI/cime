@@ -458,8 +458,7 @@ class TestTestScheduler(base.BaseTestCase):
 
         case = self._create_test(args, default_baseline_area=True)
         result = self.run_cmd_assert_result(
-            "./xmlquery --value BASELINE_ROOT",
-            from_dir=case
+            "./xmlquery --value BASELINE_ROOT", from_dir=case
         )
         self.assertEqual(os.path.split(result)[1], "gnuX")
 
