@@ -195,7 +195,14 @@ class BaseTestCase(unittest.TestCase):
     def kill_python_subprocesses(self, sig=signal.SIGKILL, expected_num_killed=None):
         self.kill_subprocesses("[Pp]ython", sig, expected_num_killed)
 
-    def _create_test(self, extra_args, test_id=None, run_errors=False, env_changes="", default_baseline_area=False):
+    def _create_test(
+        self,
+        extra_args,
+        test_id=None,
+        run_errors=False,
+        env_changes="",
+        default_baseline_area=False,
+    ):
         """
         Convenience wrapper around create_test. Returns list of full paths to created cases. If multiple cases,
         the order of the returned list is not guaranteed to match the order of the arguments.
