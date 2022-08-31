@@ -460,7 +460,7 @@ class TestTestScheduler(base.BaseTestCase):
         result = self.run_cmd_assert_result(
             "./xmlquery --value BASELINE_ROOT", from_dir=case
         )
-        self.assertEqual(result, "/storage/baselines/gnuX")
+        self.assertEqual(os.path.split(result)[1], "gnuX")
 
 
 if __name__ == "__main__":
