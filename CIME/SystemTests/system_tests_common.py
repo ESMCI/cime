@@ -516,7 +516,7 @@ class SystemTestsCommon(object):
         """
         memlist = []
         meminfo = re.compile(
-            r".*model date =\s+(\w+).*memory =.*highwater\)\s+(\d+\.?\d+).*usage"
+            r".*model date =\s+(\w+).*memory =\s+(\d+\.?\d+).*highwater"
         )
         if cpllog is not None and os.path.isfile(cpllog):
             if ".gz" == cpllog[-3:]:
