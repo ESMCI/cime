@@ -20,13 +20,14 @@ module compare_vars_mod
 contains
 
   subroutine compare_vars(n,file, vtotal, ndiffs, nfilldiffs, vsizes_differ, &
-       vnot_analyzed )
+       vnot_analyzed, vtypes_differ )
     integer, intent(in) :: n       ! number of files to analyze (1 or 2)
     integer, intent(out) :: vtotal
     integer, intent(out) :: ndiffs     ! number of fields with differences (not counting fields that differ only in the fill pattern)
     integer, intent(out) :: nfilldiffs ! number of fields with differences in fill pattern
     integer, intent(out) :: vsizes_differ
     integer, intent(out) :: vnot_analyzed
+    integer, intent(out) :: vtypes_differ
 
 
     type(file_t) :: file(n)
@@ -45,7 +46,9 @@ contains
 
     vtotal = 0
     vsizes_differ = 0
+    vtypes_differ = 0
     vnot_analyzed = 0
+
     if(n==2 .and. .not.ignoretime) then
        ! NOTE(wjs, 2019-03-21) Most of the cprnc code allows the unlimited dimension to be
        ! named anything - not necessarily 'time'. But this block of code assumes that the
@@ -99,6 +102,7 @@ contains
           call compare_one_var(v1=v1, numcases=n, file=file, varnum=i, &
                vsizes_differ=vsizes_differ, &
                vnot_analyzed=vnot_analyzed, &
+               vtypes_differ=vtypes_differ, &
                ndiffs=ndiffs, nfilldiffs=nfilldiffs)
 
        end if
@@ -156,6 +160,7 @@ contains
                 call compare_one_var(v1=v1, numcases=n, file=file, varnum=i, &
                      vsizes_differ=vsizes_differ, &
                      vnot_analyzed=vnot_analyzed, &
+                     vtypes_differ=vtypes_differ, &
                      ndiffs=ndiffs, nfilldiffs=nfilldiffs, &
                      tindex=(/t1, t2/))
 
@@ -173,7 +178,8 @@ contains
   ! Compare a single variable, and update counts
   ! For variables with multiple time slices, this just does comparisons for a single time slice
   subroutine compare_one_var(v1, numcases, file, varnum, &
-                             vsizes_differ, vnot_analyzed, ndiffs, nfilldiffs, &
+                             vsizes_differ, vnot_analyzed, vtypes_differ, &
+                             ndiffs, nfilldiffs, &
                              tindex)
     type(var_t) , intent(in) :: v1             ! variable info for the variable in file 1
     integer     , intent(in) :: numcases
@@ -181,30 +187,32 @@ contains
     integer     , intent(in) :: varnum
     integer  , intent(inout) :: vsizes_differ
     integer  , intent(inout) :: vnot_analyzed
+    integer  , intent(inout) :: vtypes_differ
     integer  , intent(inout) :: ndiffs
     integer  , intent(inout) :: nfilldiffs
     integer     , intent(in), optional :: tindex(numcases)
 
-    integer :: idiff, ifilldiff, isizes_differ, inot_analyzed
+    integer :: idiff, ifilldiff, isizes_differ, inot_analyzed, itypes_differ
 
     ! initialize output arguments of compare_var in case compare_var doesn't get called
     idiff = 0
     ifilldiff = 0
     isizes_differ = 0
+    itypes_differ = 0
     inot_analyzed = 0
 
     select case(v1%xtype)
     case(nf90_int)
        call compare_var_int(numcases,file,(/varnum,v1%matchid/), &
-                            idiff, ifilldiff, isizes_differ, &
+                            idiff, ifilldiff, isizes_differ, itypes_differ, &
                             tindex)
     case(nf90_float)
        call compare_var_real(numcases,file,(/varnum,v1%matchid/), &
-                             idiff, ifilldiff, isizes_differ, &
+                             idiff, ifilldiff, isizes_differ, itypes_differ, &
                              tindex)
     case(nf90_double)
        call compare_var_double(numcases,file,(/varnum,v1%matchid/), &
-                               idiff, ifilldiff, isizes_differ, &
+                               idiff, ifilldiff, isizes_differ, itypes_differ, &
                                tindex)
     case(nf90_char)
        inot_analyzed = 1
@@ -214,6 +222,7 @@ contains
     end select
 
     vsizes_differ = vsizes_differ+isizes_differ
+    vtypes_differ = vtypes_differ+itypes_differ
     vnot_analyzed = vnot_analyzed+inot_analyzed
     ndiffs = ndiffs+idiff
     nfilldiffs = nfilldiffs + ifilldiff
@@ -221,7 +230,7 @@ contains
 
 
   ! TYPE real,int,double
-  subroutine compare_var_{TYPE}(n,file, vid, idiff, ifilldiff, ifail, tindex)
+  subroutine compare_var_{TYPE}(n,file, vid, idiff, ifilldiff, ifail, itypes, tindex)
     use, intrinsic :: ieee_arithmetic, only: ieee_is_nan
     integer, intent(in) :: n
     type(file_t) :: file(2)
@@ -230,6 +239,7 @@ contains
     integer, intent(out) :: ifilldiff  ! 1 if diffs in fill pattern, 0 otherwise
                                        ! (idiff & ifilldiff are both 1 if there are diffs in both the fill pattern and the valid values)
     integer, intent(out) :: ifail      ! 1 if variable sizes differ, 0 otherwise
+    integer, intent(out) :: itypes      ! 1 if variable types differ, 0 otherwise
     integer, optional :: tindex(2)
 
     integer :: s1, s2, l1(1), i, ierr
@@ -279,6 +289,12 @@ contains
           ifail = 1
           return
        end if
+       if(file(2)%var(vid(2))%xtype /= file(1)%var(vid(1))%xtype) then
+          write(6,*) 'WARNING: Variable ',trim(file(1)%var(vid(1))%name),' types differ'
+          write(6,'(a,a32,2i)') ' TYPEDIFF ', file(1)%var(vid(1))%name,file(1)%var(vid(1))%xtype,file(2)%var(vid(2))%xtype
+          itypes = 1
+       endif
+
     end if
     n1 = size(file(1)%var(vid(1))%dimids)
 

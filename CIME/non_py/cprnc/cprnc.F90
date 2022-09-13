@@ -31,8 +31,8 @@ program piocprnc
   integer :: num_not_found_on_file1_timeconst, num_not_found_on_file2_timeconst
 
   integer :: num_sizes_differ
+  integer :: num_types_differ
   integer :: num_not_analyzed
-
 !
 ! Parse arg list
 !
@@ -110,7 +110,7 @@ program piocprnc
            num_not_found_on_file2_timeconst = num_not_found_on_file2_timeconst)
    end if
    call compare_vars(numcases, file, nvars, ndiffs, nfilldiffs, &
-        num_sizes_differ, num_not_analyzed)
+        num_sizes_differ, num_not_analyzed, num_types_differ)
 
 
 !
@@ -128,6 +128,7 @@ program piocprnc
          write(6,700) '          of which ',ndiffs,' had non-zero differences'
          write(6,700) '               and ',nfilldiffs,' had differences in fill patterns'
          write(6,700) '               and ',num_sizes_differ,' had different dimension sizes'
+         write(6,700) '               and ',num_types_differ,' had different data types'
          write(6,700) ' A total number of ',num_sizes_differ + num_not_analyzed, &
               ' fields could not be analyzed'
 
@@ -144,7 +145,8 @@ program piocprnc
               num_not_found_timeconst = num_not_found_on_file1_timeconst)
 
          if (nvars == 0 .or. ndiffs > 0 .or. nfilldiffs > 0 .or. &
-              num_sizes_differ > 0 .or. num_not_analyzed >= nvars) then
+              num_sizes_differ > 0 .or. num_not_analyzed >= nvars .or. &
+              num_types_differ > 0) then
             write(6,700) '  diff_test: the two files seem to be DIFFERENT '
          else if (num_not_found_on_file1 > 0 .or. num_not_found_on_file2 > 0) then
             ! Note that we deliberately allow num_not_found_on_file1_timeconst or
