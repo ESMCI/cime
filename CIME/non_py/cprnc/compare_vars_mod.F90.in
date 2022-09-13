@@ -291,7 +291,7 @@ contains
        end if
        if(file(2)%var(vid(2))%xtype /= file(1)%var(vid(1))%xtype) then
           write(6,*) 'WARNING: Variable ',trim(file(1)%var(vid(1))%name),' types differ'
-          write(6,'(a,a32,2i)') ' TYPEDIFF ', file(1)%var(vid(1))%name,file(1)%var(vid(1))%xtype,file(2)%var(vid(2))%xtype
+          write(6,'(a,a32,2i2)') ' TYPEDIFF ', file(1)%var(vid(1))%name,file(1)%var(vid(1))%xtype,file(2)%var(vid(2))%xtype
           itypes = 1
        endif
 
