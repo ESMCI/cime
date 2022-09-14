@@ -578,7 +578,7 @@ class EnvBatch(EnvBase):
                         check_paths.append(user_config_path)
 
                     logger.warning(
-                        'Deprecated "arg" node detected in {1}, check files {2}'.format(
+                        'Deprecated "arg" node detected in {}, check files {}'.format(
                             self.filename, ", ".join(check_paths)
                         )
                     )
