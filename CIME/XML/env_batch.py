@@ -18,6 +18,7 @@ from CIME.utils import (
 from CIME.locked_files import lock_file, unlock_file
 from collections import OrderedDict
 import stat, re, math
+import pathlib
 
 logger = logging.getLogger(__name__)
 
@@ -564,11 +565,37 @@ class EnvBatch(EnvBase):
         for node in bs_nodes:
             sanode = self.get_optional_child("submit_args", root=node)
             if sanode is not None:
-                submit_arg_nodes += self.get_children("arg", root=sanode)
+                arg_nodes = self.get_children("arg", root=sanode)
+
+                if len(arg_nodes) > 0:
+                    check_paths = [case.get_value("BATCH_SPEC_FILE")]
+
+                    user_config_path = os.path.join(
+                        pathlib.Path().home(), ".cime", "config_batch.xml"
+                    )
+
+                    if os.path.exists(user_config_path):
+                        check_paths.append(user_config_path)
+
+                    logger.warning(
+                        'Deprecated "arg" node detected in {1}, check files {2}'.format(
+                            self.filename, ", ".join(check_paths)
+                        )
+                    )
+
+                submit_arg_nodes += arg_nodes
+
+                submit_arg_nodes += self.get_children("argument", root=sanode)
 
         for arg in submit_arg_nodes:
             flag = self.get(arg, "flag")
+
             name = self.get(arg, "name")
+
+            # if flag is None then we dealing with new `argument`
+            if flag is None:
+                flag = self.text(arg)
+
             if self._batchtype == "cobalt" and job == "case.st_archive":
                 if flag == "-n":
                     name = "task_count"
