@@ -272,7 +272,11 @@ def xml_to_make_variable(case, varname, cmake=False):
         return ""
     if isinstance(varvalue, bool):
         varvalue = stringify_bool(varvalue)
-
+    elif isinstance(varvalue, str):
+        # assure that paths passed to make do not end in / or contain //
+        varvalue = varvalue.replace("//", "/")
+        if varvalue.endswith("/"):
+            varvalue = varvalue[:-1]
     if cmake or isinstance(varvalue, str):
         return '{}{}="{}" '.format("-D" if cmake else "", varname, varvalue)
     else:
