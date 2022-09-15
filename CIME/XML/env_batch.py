@@ -2,6 +2,7 @@
 Interface to the env_batch.xml file.  This class inherits from EnvBase
 """
 
+import os
 from CIME.XML.standard_module_setup import *
 from CIME.XML.env_base import EnvBase
 from CIME import utils
@@ -558,8 +559,15 @@ class EnvBatch(EnvBase):
         """
         return a list of touples (flag, name)
         """
-        submitargs = " "
         bs_nodes = self.get_children("batch_system")
+
+        submit_arg_nodes = self._get_arg_nodes(case, bs_nodes)
+
+        submitargs = self._process_args(case, submit_arg_nodes, job)
+
+        return submitargs
+
+    def _get_arg_nodes(self, case, bs_nodes):
         submit_arg_nodes = []
 
         for node in bs_nodes:
@@ -587,77 +595,101 @@ class EnvBatch(EnvBase):
 
                 submit_arg_nodes += self.get_children("argument", root=sanode)
 
+        return submit_arg_nodes
+
+    def _process_args(self, case, submit_arg_nodes, job):
+        submitargs = " "
+
         for arg in submit_arg_nodes:
-            flag = self.get(arg, "flag")
-
-            name = self.get(arg, "name")
-
-            # if flag is None then we dealing with new `argument`
-            if flag is None:
-                flag = self.text(arg)
-
-                job_queue_restriction = self.get(arg, "job_queue")
-
-                if (
-                    job_queue_restriction is not None
-                    and job_queue_restriction != case.get_value("JOB_QUEUE")
-                ):
-                    continue
+            try:
+                flag, name = self._get_argument(case, arg)
+            except ValueError:
+                continue
 
             if self._batchtype == "cobalt" and job == "case.st_archive":
                 if flag == "-n":
                     name = "task_count"
+
                 if flag == "--mode":
                     continue
 
             if name is None:
                 submitargs += " {}".format(flag)
             else:
-                if name.startswith("$"):
-                    name = name[1:]
+                try:
+                    submitargs += self._resolve_argument(case, flag, name, job)
+                except ValueError:
+                    continue
 
-                if "$" in name:
-                    # We have a complex expression and must rely on get_resolved_value.
-                    # Hopefully, none of the values require subgroup
-                    val = case.get_resolved_value(name)
-                else:
-                    val = case.get_value(name, subgroup=job)
+        return submitargs
 
-                if val is not None and len(str(val)) > 0 and val != "None":
-                    # Try to evaluate val if it contains any whitespace
-                    if " " in val:
-                        try:
-                            rval = eval(val)
-                        except Exception:
-                            rval = val
-                    else:
-                        rval = val
+    def _get_argument(self, case, arg):
+        flag = self.get(arg, "flag")
 
-                    # We don't want floating-point data
-                    try:
-                        rval = int(round(float(rval)))
-                    except ValueError:
-                        pass
+        name = self.get(arg, "name")
 
-                    # need a correction for tasks per node
-                    if flag == "-n" and rval <= 0:
-                        rval = 1
+        # if flag is None then we dealing with new `argument`
+        if flag is None:
+            flag = self.text(arg)
 
-                    if (
-                        flag == "-q"
-                        and rval == "batch"
-                        and case.get_value("MACH") == "blues"
-                    ):
-                        # Special case. Do not provide '-q batch' for blues
-                        continue
+            job_queue_restriction = self.get(arg, "job_queue")
 
-                    if (
-                        flag.rfind("=", len(flag) - 1, len(flag)) >= 0
-                        or flag.rfind(":", len(flag) - 1, len(flag)) >= 0
-                    ):
-                        submitargs += " {}{}".format(flag, str(rval).strip())
-                    else:
-                        submitargs += " {} {}".format(flag, str(rval).strip())
+            if (
+                job_queue_restriction is not None
+                and job_queue_restriction != case.get_value("JOB_QUEUE")
+            ):
+                raise ValueError()
+
+        return flag, name
+
+    def _resolve_argument(self, case, flag, name, job):
+        submitargs = ""
+
+        if name.startswith("$"):
+            name = name[1:]
+
+        if "$" in name:
+            # We have a complex expression and must rely on get_resolved_value.
+            # Hopefully, none of the values require subgroup
+            val = case.get_resolved_value(name)
+        else:
+            val = case.get_value(name, subgroup=job)
+
+        if val is not None and len(str(val)) > 0 and val != "None":
+            # Try to evaluate val if it contains any whitespace
+            if " " in val:
+                try:
+                    rval = eval(val)
+                except Exception:
+                    rval = val
+            else:
+                rval = val
+
+            # We don't want floating-point data
+            try:
+                rval = int(round(float(rval)))
+            except ValueError:
+                pass
+
+            # need a correction for tasks per node
+            if flag == "-n" and rval <= 0:
+                rval = 1
+
+            if (
+                flag == "-q"
+                and rval == "batch"
+                and case.get_value("MACH") == "blues"
+            ):
+                # Special case. Do not provide '-q batch' for blues
+                raise ValueError()
+
+            if (
+                flag.rfind("=", len(flag) - 1, len(flag)) >= 0
+                or flag.rfind(":", len(flag) - 1, len(flag)) >= 0
+            ):
+                submitargs = " {}{}".format(flag, str(rval).strip())
+            else:
+                submitargs = " {} {}".format(flag, str(rval).strip())
 
         return submitargs
 
