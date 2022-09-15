@@ -65,6 +65,7 @@ class TestXMLEnvBatch(unittest.TestCase):
 
             assert submit_args == expected_args
 
+    @mock.patch.dict(os.environ, {"TEST": "GOOD"})
     def test_get_submit_args(self):
         with tempfile.NamedTemporaryFile() as tfile:
             tfile.write(
@@ -105,6 +106,8 @@ class TestXMLEnvBatch(unittest.TestCase):
       <arg flag="--time" name="$JOB_WALLCLOCK_TIME"/>
       <arg flag="-p" name="$JOB_QUEUE"/>
       <arg flag="--account" name="$PROJECT"/>
+      <arg flag="--no-arg" />
+      <arg flag="--path" name="$$ENV{TEST}" />
     </submit_args>
     <directives>
       <directive> --job-name={{ job_id }}</directive>
@@ -139,11 +142,14 @@ class TestXMLEnvBatch(unittest.TestCase):
                 "CIME",
             ]
 
+            # value for --path
+            case.get_resolved_value.return_value = "/test"
+
             case.filename = mock.PropertyMock(return_value=tfile.name)
 
             submit_args = batch.get_submit_args(case, ".case.run")
 
-            expected_args = "  --time 00:30:00 -p long --account CIME -w docker"
+            expected_args = "  --time 00:30:00 -p long --account CIME --no-arg --path /test -w docker"
 
             assert submit_args == expected_args
 
