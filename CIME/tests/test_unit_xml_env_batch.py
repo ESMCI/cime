@@ -11,6 +11,60 @@ from CIME.XML.env_batch import EnvBatch
 
 
 class TestXMLEnvBatch(unittest.TestCase):
+    def test_get_submit_args_job_queue(self):
+        with tempfile.NamedTemporaryFile() as tfile:
+            tfile.write(
+                b"""<?xml version="1.0"?>
+<file id="env_batch.xml" version="2.0">
+  <header>
+      These variables may be changed anytime during a run, they
+      control arguments to the batch submit command.
+    </header>
+  <group id="config_batch">
+    <entry id="BATCH_SYSTEM" value="slurm">
+      <type>char</type>
+      <valid_values>miller_slurm,nersc_slurm,lc_slurm,moab,pbs,lsf,slurm,cobalt,cobalt_theta,none</valid_values>
+      <desc>The batch system type to use for this machine.</desc>
+    </entry>
+  </group>
+  <group id="job_submission">
+    <entry id="PROJECT_REQUIRED" value="FALSE">
+      <type>logical</type>
+      <valid_values>TRUE,FALSE</valid_values>
+      <desc>whether the PROJECT value is required on this machine</desc>
+    </entry>
+  </group>
+  <batch_system MACH="docker" type="slurm">
+    <submit_args>
+      <argument>-w default</argument>
+      <argument job_queue="short">-w short</argument>
+      <argument job_queue="long">-w long</argument>
+    </submit_args>
+    <queues>
+      <queue walltimemax="01:00:00" nodemax="1">long</queue>
+      <queue walltimemax="00:30:00" nodemax="1" default="true">short</queue>
+    </queues>
+  </batch_system>
+</file>
+"""
+            )
+
+            tfile.seek(0)
+
+            batch = EnvBatch(infile=tfile.name)
+
+            case = mock.MagicMock()
+
+            case.get_value.return_value = "long"
+
+            case.filename = mock.PropertyMock(return_value=tfile.name)
+
+            submit_args = batch.get_submit_args(case, ".case.run")
+
+            expected_args = "  -w default -w long"
+
+            assert submit_args == expected_args
+
     def test_get_submit_args(self):
         with tempfile.NamedTemporaryFile() as tfile:
             tfile.write(
@@ -71,6 +125,7 @@ class TestXMLEnvBatch(unittest.TestCase):
 </file>
 """
             )
+
             tfile.seek(0)
 
             batch = EnvBatch(infile=tfile.name)

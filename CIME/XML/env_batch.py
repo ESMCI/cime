@@ -596,6 +596,14 @@ class EnvBatch(EnvBase):
             if flag is None:
                 flag = self.text(arg)
 
+                job_queue_restriction = self.get(arg, "job_queue")
+
+                if (
+                    job_queue_restriction is not None
+                    and job_queue_restriction != case.get_value("JOB_QUEUE")
+                ):
+                    continue
+
             if self._batchtype == "cobalt" and job == "case.st_archive":
                 if flag == "-n":
                     name = "task_count"
