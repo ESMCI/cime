@@ -127,17 +127,19 @@
 
   <xs:element name="submit_args">
     <xs:complexType>
-      <xs:sequence>
-        <xs:element maxOccurs="unbounded" ref="arg"/>
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
-
-
-  <xs:element name="arg">
-    <xs:complexType>
-      <xs:attribute name="flag" use="required"/>
-      <xs:attribute name="name"/>
+      <xs:choice>
+        <xs:element name="arg" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:attribute name="flag" use="required"/>
+            <xs:attribute name="name"/>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="argument" maxOccurs="unbounded">
+          <xs:complexType mixed="true">
+            <xs:attribute name="job_queue"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
     </xs:complexType>
   </xs:element>
 
