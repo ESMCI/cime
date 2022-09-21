@@ -84,8 +84,9 @@ class EnvMachPes(EnvBase):
                         comp, ninst, ninst_max
                     ),
                 )
-        if "NTASKS" in vid or "NTHRDS" in vid:
-            expect(value != 0, "Cannot set NTASKS or NTHRDS to 0")
+
+        if ("NTASKS" in vid or "NTHRDS" in vid) and vid != "PIO_ASYNCIO_NTASKS":
+            expect(value != 0, f"Cannot set NTASKS or NTHRDS to 0 {vid}")
 
         return EnvBase.set_value(
             self, vid, value, subgroup=subgroup, ignore_type=ignore_type
@@ -145,16 +146,10 @@ class EnvMachPes(EnvBase):
             total_tasks = max(tt, total_tasks) 
         if self.get_value("MULTI_DRIVER"):
             total_tasks *= maxinst
-        io_tasks = self.io_tasks(maxrootpe, asyncio_tasks)
-        return total_tasks + io_tasks
 
-    def io_tasks(self, rootpe, asyncio_tasks):
-        io_tasks = 0
-        for n in asyncio_tasks:
-            if n > rootpe:
-                io_tasks = io_tasks + 1
-        return io_tasks
-
+        if asyncio_tasks:
+            return total_tasks + len(asyncio_tasks)
+        return total_tasks
 
     def get_tasks_per_node(self, total_tasks, max_thread_count):
         expect(
