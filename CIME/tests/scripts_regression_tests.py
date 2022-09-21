@@ -35,7 +35,6 @@ from CIME.utils import (
 import CIME.test_scheduler, CIME.wait_for_tests
 from CIME import get_tests
 from CIME.test_scheduler import TestScheduler
-from CIME.XML.compilers import Compilers
 from CIME.XML.env_run import EnvRun
 from CIME.XML.machines import Machines
 from CIME.XML.files import Files
@@ -272,7 +271,7 @@ OR
         test_suite = unittest.defaultTestLoader.discover(test_root)
     else:
         # Fixes handling shell expansion e.g. test_unit_*, by removing python extension
-        tests = [x.replace(".py", "") for x in ns.tests]
+        tests = [x.replace(".py", "").replace("/", ".") for x in ns.tests]
 
         # Try to load tests by just names
         test_suite = unittest.defaultTestLoader.loadTestsFromNames(tests)

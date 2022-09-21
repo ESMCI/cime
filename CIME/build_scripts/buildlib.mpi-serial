@@ -3,7 +3,8 @@ import os, sys, logging, argparse
 
 from standard_script_setup import *
 from CIME import utils
-from CIME.utils import copyifnewer, run_bld_cmd_ensure_logging, get_model
+from CIME.config import Config
+from CIME.utils import copyifnewer, run_bld_cmd_ensure_logging
 from CIME.case import Case
 from CIME.build import get_standard_makefile_args
 import glob
@@ -50,12 +51,13 @@ def buildlib(bldroot, installpath, case):
     caseroot = case.get_value("CASEROOT")
     srcroot = case.get_value("SRCROOT")
 
-    if get_model() == "cesm":
-        mct_dir = os.path.join(srcroot, "libraries", "mct")
-    else:
-        mct_dir = os.path.join(srcroot, "externals", "mct")
+    customize_path = os.path.join(srcroot, "cime_config", "customize")
 
-    for _file in glob.iglob(os.path.join(mct_dir, "mpi-serial", "*.h")):
+    config = Config.load(customize_path)
+
+    mct_path = config.mct_path.format(srcroot=srcroot)
+
+    for _file in glob.iglob(os.path.join(mct_path, "mpi-serial", "*.h")):
         copyifnewer(_file, os.path.join(bldroot, os.path.basename(_file)))
 
     gmake_opts = "-f {} ".format(os.path.join(caseroot, "Tools", "Makefile"))
@@ -72,10 +74,10 @@ def buildlib(bldroot, installpath, case):
     run_bld_cmd_ensure_logging(cmd, logger)
 
     # Now we run the mpi-serial make command
-    gmake_opts = "-f {} ".format(os.path.join(mct_dir, "mpi-serial", "Makefile"))
+    gmake_opts = "-f {} ".format(os.path.join(mct_path, "mpi-serial", "Makefile"))
     gmake_opts += " -C {} ".format(bldroot)
     gmake_opts += " -j {} ".format(case.get_value("GMAKE_J"))
-    gmake_opts += " SRCDIR={} ".format(os.path.join(mct_dir))
+    gmake_opts += " SRCDIR={} ".format(os.path.join(mct_path))
 
     cmd = "{} {}".format(gmake_cmd, gmake_opts)
     run_bld_cmd_ensure_logging(cmd, logger)

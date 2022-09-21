@@ -9,8 +9,11 @@ import threading
 
 from CIME import utils
 from CIME import test_status
+from CIME.config import Config
 from CIME.tests import base
 from CIME.tests import utils as test_utils
+
+config = Config.instance()
 
 
 class TestWaitForTests(base.BaseTestCase):
@@ -113,7 +116,7 @@ class TestWaitForTests(base.BaseTestCase):
 
     def simple_test(self, testdir, expected_results, extra_args="", build_name=None):
         # Need these flags to test dashboard if e3sm
-        if utils.get_model() == "e3sm" and build_name is not None:
+        if config.create_test_flag_mode == "e3sm" and build_name is not None:
             extra_args += " -b %s" % build_name
 
         expected_stat = 0
@@ -297,7 +300,7 @@ class TestWaitForTests(base.BaseTestCase):
 
         self.assert_dashboard_has_build(build_name)
 
-        if utils.get_model() == "e3sm":
+        if config.test_mode == "e3sm":
             cdash_result_dir = os.path.join(self._testdir_unfinished, "Testing")
             tag_file = os.path.join(cdash_result_dir, "TAG")
             self.assertTrue(os.path.isdir(cdash_result_dir))

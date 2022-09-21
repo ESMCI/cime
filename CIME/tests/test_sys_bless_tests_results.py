@@ -6,7 +6,10 @@ import os
 import stat
 
 from CIME import utils
+from CIME.config import Config
 from CIME.tests import base
+
+config = Config.instance()
 
 
 class TestBlessTestResults(base.BaseTestCase):
@@ -40,7 +43,7 @@ class TestBlessTestResults(base.BaseTestCase):
 
         # Generate some baselines
         for test_name in test_names:
-            if utils.get_model() == "e3sm":
+            if config.create_test_flag_mode == "e3sm":
                 genargs = ["-g", "-o", "-b", self._baseline_name, test_name]
                 compargs = ["-c", "-b", self._baseline_name, test_name]
             else:
@@ -104,7 +107,7 @@ class TestBlessTestResults(base.BaseTestCase):
         if self.NO_FORTRAN_RUN:
             self.skipTest("Skipping fortran test")
         test_to_change = "TESTRUNPASS_P1.f19_g16_rx1.A"
-        if utils.get_model() == "e3sm":
+        if config.create_test_flag_mode == "e3sm":
             genargs = ["-g", "-o", "-b", self._baseline_name, "cime_test_only_pass"]
             compargs = ["-c", "-b", self._baseline_name, "cime_test_only_pass"]
         else:

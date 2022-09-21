@@ -122,6 +122,12 @@ OR
     )
 
     parser.add_argument(
+        "--pes-file",
+        help="Full pathname of an optional pes specification file. The file"
+        "\ncan follow either the config_pes.xml or the env_mach_pes.xml format.",
+    )
+
+    parser.add_argument(
         "bless_tests",
         nargs="*",
         help="When blessing, limit the bless to tests matching these regex",
@@ -148,6 +154,7 @@ OR
         args.hist_only,
         args.report_only,
         args.force,
+        args.pes_file,
         args.bless_tests,
         args.no_skip_pass,
         args.new_test_root,
@@ -168,6 +175,7 @@ def _main_func(description):
         hist_only,
         report_only,
         force,
+        pes_file,
         bless_tests,
         no_skip_pass,
         new_test_root,
@@ -184,6 +192,7 @@ def _main_func(description):
         hist_only=hist_only,
         report_only=report_only,
         force=force,
+        pesfile=pes_file,
         bless_tests=bless_tests,
         no_skip_pass=no_skip_pass,
         new_test_root=new_test_root,

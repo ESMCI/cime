@@ -23,6 +23,7 @@ from CIME.hist_utils import (
     get_ts_synopsis,
     generate_baseline,
 )
+from CIME.config import Config
 from CIME.provenance import save_test_time, get_test_success
 from CIME.locked_files import LOCKED_DIR, lock_file, is_locked
 import CIME.build as build
@@ -30,6 +31,9 @@ import CIME.build as build
 import glob, gzip, time, traceback, os
 
 logger = logging.getLogger(__name__)
+
+# Name of directory under the run directory in which init-generated files are placed
+INIT_GENERATED_FILES_DIRNAME = "init_generated_files"
 
 
 class SystemTestsCommon(object):
@@ -250,7 +254,9 @@ class SystemTestsCommon(object):
                     RUN_PHASE, status, comments=("time={:d}".format(int(time_taken)))
                 )
 
-            if get_model() == "e3sm":
+            config = Config.instance()
+
+            if config.verbose_run_phase:
                 # If run phase worked, remember the time it took in order to improve later walltime ests
                 baseline_root = self._case.get_value("BASELINE_ROOT")
                 if success:
@@ -317,7 +323,9 @@ class SystemTestsCommon(object):
                                     )
                                 )
 
-            if get_model() == "cesm" and self._case.get_value("GENERATE_BASELINE"):
+            if config.baseline_store_teststatus and self._case.get_value(
+                "GENERATE_BASELINE"
+            ):
                 baseline_dir = os.path.join(
                     self._case.get_value("BASELINE_ROOT"),
                     self._case.get_value("BASEGEN_CASE"),
@@ -351,9 +359,20 @@ class SystemTestsCommon(object):
         self._case.load_env(reset=True)
         self._caseroot = case.get_value("CASEROOT")
 
-    def run_indv(self, suffix="base", st_archive=False, submit_resubmits=None):
+    def run_indv(
+        self,
+        suffix="base",
+        st_archive=False,
+        submit_resubmits=None,
+        keep_init_generated_files=False,
+    ):
         """
         Perform an individual run. Raises an EXCEPTION on fail.
+
+        keep_init_generated_files: If False (the default), we remove the
+        init_generated_files subdirectory of the run directory before running the case.
+        This is usually what we want for tests, but some specific tests may want to leave
+        this directory in place, so can set this variable to True to do so.
         """
         stop_n = self._case.get_value("STOP_N")
         stop_option = self._case.get_value("STOP_OPTION")
@@ -367,6 +386,17 @@ class SystemTestsCommon(object):
         # remove any cprnc output leftover from previous runs
         for compout in glob.iglob(os.path.join(rundir, "*.cprnc.out")):
             os.remove(compout)
+
+        if not keep_init_generated_files:
+            # remove all files in init_generated_files directory if it exists
+            init_generated_files_dir = os.path.join(
+                rundir, INIT_GENERATED_FILES_DIRNAME
+            )
+            if os.path.isdir(init_generated_files_dir):
+                for init_file in glob.iglob(
+                    os.path.join(init_generated_files_dir, "*")
+                ):
+                    os.remove(init_file)
 
         infostr = "doing an {:d} {} {} test".format(stop_n, stop_option, run_type)
 
@@ -833,7 +863,13 @@ class FakeTest(SystemTestsCommon):
                     )
                 )
 
-    def run_indv(self, suffix="base", st_archive=False, submit_resubmits=None):
+    def run_indv(
+        self,
+        suffix="base",
+        st_archive=False,
+        submit_resubmits=None,
+        keep_init_generated_files=False,
+    ):
         mpilib = self._case.get_value("MPILIB")
         # This flag is needed by mpt to run a script under mpiexec
         if mpilib == "mpt":
@@ -946,7 +982,13 @@ class TESTRUNFAILRESET(TESTRUNFAIL):
     rerun after an initial failure.
     """
 
-    def run_indv(self, suffix="base", st_archive=False, submit_resubmits=None):
+    def run_indv(
+        self,
+        suffix="base",
+        st_archive=False,
+        submit_resubmits=None,
+        keep_init_generated_files=False,
+    ):
         # Make sure STOP_N matches the original value for the case. This tests that STOP_N
         # has been reset properly if we are rerunning the test after a failure.
         env_test = EnvTest(self._get_caseroot())

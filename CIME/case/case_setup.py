@@ -6,16 +6,14 @@ case_setup is a member of class Case from file case.py
 import os
 
 from CIME.XML.standard_module_setup import *
-
+from CIME.config import Config
 from CIME.XML.machines import Machines
 from CIME.BuildTools.configure import (
-    configure,
     generate_env_mach_specific,
     copy_depends_files,
 )
 from CIME.utils import (
     run_and_log_case_status,
-    get_model,
     get_batch_script_for_job,
     safe_copy,
     file_contains_python_function,
@@ -180,50 +178,14 @@ def _create_macros(
         )
         case.read_xml()
 
-    # export CIME_NO_CMAKE_MACRO=1 to disable new macros
-    if (
-        new_cmake_macros_dir is not None
-        and os.path.exists(new_cmake_macros_dir)
-        and not "CIME_NO_CMAKE_MACRO" in os.environ
-    ):
-        case_cmake_path = os.path.join(caseroot, "cmake_macros")
+    case_cmake_path = os.path.join(caseroot, "cmake_macros")
 
-        _create_macros_cmake(
-            caseroot, new_cmake_macros_dir, mach_obj, compiler, case_cmake_path
-        )
-        copy_local_macros_to_dir(
-            case_cmake_path, extra_machdir=case.get_value("EXTRA_MACHDIR")
-        )
-
-    else:
-        if not os.path.isfile("Macros.make"):
-            configure(
-                mach_obj,
-                caseroot,
-                ["Makefile"],
-                compiler,
-                mpilib,
-                debug,
-                comp_interface,
-                sysos,
-                noenv=True,
-                extra_machines_dir=mach_obj.get_extra_machines_dir(),
-            )
-
-        # Also write out Cmake macro file
-        if not os.path.isfile("Macros.cmake"):
-            configure(
-                mach_obj,
-                caseroot,
-                ["CMake"],
-                compiler,
-                mpilib,
-                debug,
-                comp_interface,
-                sysos,
-                noenv=True,
-                extra_machines_dir=mach_obj.get_extra_machines_dir(),
-            )
+    _create_macros_cmake(
+        caseroot, new_cmake_macros_dir, mach_obj, compiler, case_cmake_path
+    )
+    copy_local_macros_to_dir(
+        case_cmake_path, extra_machdir=case.get_value("EXTRA_MACHDIR")
+    )
 
 
 ###############################################################################
@@ -408,7 +370,10 @@ def _case_setup_impl(
 
             # create batch files
             env_batch.make_all_batch_files(case)
-            if get_model() == "e3sm" and not case.get_value("TEST"):
+
+            if Config.instance().make_case_run_batch_script and not case.get_value(
+                "TEST"
+            ):
                 input_batch_script = os.path.join(
                     case.get_value("MACHDIR"), "template.case.run.sh"
                 )
@@ -451,7 +416,9 @@ def _case_setup_impl(
         )
 
         # Some tests need namelists created here (ERP) - so do this if we are in test mode
-        if (test_mode or get_model() == "e3sm") and not non_local:
+        if (
+            test_mode or Config.instance().case_setup_generate_namelist
+        ) and not non_local:
             logger.info("Generating component namelists as part of setup")
             case.create_namelists()
 

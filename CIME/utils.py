@@ -328,28 +328,13 @@ def copy_local_macros_to_dir(destination, extra_machdir=None):
             local_macros.extend(
                 glob.glob(os.path.join(extra_machdir, "cmake_macros/*.cmake"))
             )
-        elif os.path.isfile(os.path.join(extra_machdir, "config_compilers.xml")):
-            logger.warning(
-                "WARNING: Found directory {} but no cmake macros within, set env variable CIME_NO_CMAKE_MACRO to use deprecated config_compilers method".format(
-                    extra_machdir
-                )
-            )
+
     dotcime = None
     home = os.environ.get("HOME")
     if home:
         dotcime = os.path.join(home, ".cime")
     if dotcime and os.path.isdir(dotcime):
         local_macros.extend(glob.glob(dotcime + "/*.cmake"))
-    if (
-        dotcime
-        and os.path.isfile(os.path.join(dotcime, "config_compilers.xml"))
-        and not local_macros
-    ):
-        logger.warning(
-            "WARNING: Found directory {} but no cmake macros within, set env variable CIME_NO_CMAKE_MACRO to use deprecated config_compilers method".format(
-                dotcime
-            )
-        )
 
     for macro in local_macros:
         safe_copy(macro, destination)
@@ -453,14 +438,16 @@ def get_cime_default_driver():
                 logger.debug(
                     "Setting CIME_driver={} from ~/.cime/config".format(driver)
                 )
+
+    from CIME.config import Config
+
+    config = Config.instance()
+
     if not driver:
-        model = get_model()
-        if model == "ufs" or model == "cesm":
-            driver = "nuopc"
-        else:
-            driver = "mct"
+        driver = config.driver_default
+
     expect(
-        driver in ("mct", "nuopc", "moab"),
+        driver in config.driver_choices,
         "Attempt to set invalid driver {}".format(driver),
     )
     return driver
@@ -2475,7 +2462,11 @@ def run_and_log_case_status(
 
 
 def _check_for_invalid_args(args):
-    if get_model() != "e3sm":
+    # Prevent circular import
+    from CIME.config import Config
+
+    # TODO Is this really model specific
+    if Config.instance().check_invalid_args:
         for arg in args:
             # if arg contains a space then it was originally quoted and we can ignore it here.
             if " " in arg or arg.startswith("--"):

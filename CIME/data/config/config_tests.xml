@@ -41,6 +41,8 @@ SBN    smoke build-namelist test (just run preview_namelist and check_input_data
 
 REP    reproducibility: do two identical runs give the same results?
 
+REUSEINITFILES do we get identical results when reusing init-generated files?
+
 ======================================================================
     Restart Tests
 ======================================================================
@@ -662,6 +664,16 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
 
   <test NAME="REP">
     <DESC>reproducibility test: do two runs give the same answers?</DESC>
+    <INFO_DBUG>1</INFO_DBUG>
+    <DOUT_S>FALSE</DOUT_S>
+    <CONTINUE_RUN>FALSE</CONTINUE_RUN>
+    <REST_OPTION>never</REST_OPTION>
+    <HIST_OPTION>$STOP_OPTION</HIST_OPTION>
+    <HIST_N>$STOP_N</HIST_N>
+  </test>
+
+  <test NAME="REUSEINITFILES">
+    <DESC>do we get identical results when reusing init-generated files?</DESC>
     <INFO_DBUG>1</INFO_DBUG>
     <DOUT_S>FALSE</DOUT_S>
     <CONTINUE_RUN>FALSE</CONTINUE_RUN>

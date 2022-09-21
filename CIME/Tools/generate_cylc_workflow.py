@@ -3,8 +3,12 @@
 """
 Generates a cylc workflow file for the case.  See https://cylc.github.io for details about cylc
 """
+import os
+import sys
 
-from standard_script_setup import *
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
+
+from CIME.Tools.standard_script_setup import *
 
 from CIME.case import Case
 from CIME.utils import expect, transform_vars

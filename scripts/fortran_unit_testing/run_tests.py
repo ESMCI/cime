@@ -11,7 +11,6 @@ from standard_script_setup import *
 from CIME.BuildTools.configure import configure, FakeCase
 from CIME.utils import run_cmd_no_fail, stringify_bool, expect, get_src_root, safe_copy
 from CIME.XML.machines import Machines
-from CIME.XML.compilers import Compilers
 from CIME.XML.env_mach_specific import EnvMachSpecific
 from CIME.build import CmakeTmpBuildDir
 from xml_test_list import TestSuiteSpec, suites_from_xml

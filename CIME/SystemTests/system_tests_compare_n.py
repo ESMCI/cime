@@ -42,7 +42,7 @@ In addition, they MAY require the following methods:
 from CIME.XML.standard_module_setup import *
 from CIME.SystemTests.system_tests_common import SystemTestsCommon
 from CIME.case import Case
-from CIME.utils import get_model
+from CIME.config import Config
 from CIME.test_status import *
 
 import shutil, os, glob
@@ -182,6 +182,8 @@ class SystemTestsCompareN(SystemTestsCommon):
         # with a with statement in all the API entrances in CIME. subsequent cases were
         # created via clone, not a with statement, so it's not in a writeable state,
         # so we need to use a with statement here to put it in a writeable state.
+        config = Config.instance()
+
         for i in range(1, self.N):
             with self._cases[i]:
                 if self._separate_builds:
@@ -193,7 +195,7 @@ class SystemTestsCompareN(SystemTestsCommon):
                     # Although we're doing separate builds, it still makes sense
                     # to share the sharedlibroot area with case1 so we can reuse
                     # pieces of the build from there.
-                    if get_model() != "e3sm":
+                    if config.common_sharedlibroot:
                         # We need to turn off this change for E3SM because it breaks
                         # the MPAS build system
                         ## TODO: ^this logic mimics what's done in SystemTestsCompareTwo

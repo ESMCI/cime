@@ -47,7 +47,7 @@ In addition, they MAY require the following methods:
 from CIME.XML.standard_module_setup import *
 from CIME.SystemTests.system_tests_common import SystemTestsCommon
 from CIME.case import Case
-from CIME.utils import get_model
+from CIME.config import Config
 from CIME.test_status import *
 
 import shutil, os, glob
@@ -65,6 +65,7 @@ class SystemTestsCompareTwo(SystemTestsCommon):
         run_two_description="",
         multisubmit=False,
         ignore_fieldlist_diffs=False,
+        case_two_keep_init_generated_files=False,
     ):
         """
         Initialize a SystemTestsCompareTwo object. Individual test cases that
@@ -89,11 +90,19 @@ class SystemTestsCompareTwo(SystemTestsCommon):
                 has some diagnostic fields that are missing from the other case), treat
                 the two cases as identical. (This is needed for tests where one case
                 exercises an option that produces extra diagnostic fields.)
+            case_two_keep_init_generated_files (bool): If True, then do NOT remove the
+                init_generated_files subdirectory of the case2 run directory before
+                running case2. This should typically be kept at its default (False) so
+                that rerunning a test gives the same behavior as in the initial run rather
+                than reusing init_generated_files in the second run. However, this option
+                is provided for the sake of specific tests, e.g., a test of the behavior
+                of running with init_generated_files in place.
         """
         SystemTestsCommon.__init__(self, case)
 
         self._separate_builds = separate_builds
         self._ignore_fieldlist_diffs = ignore_fieldlist_diffs
+        self._case_two_keep_init_generated_files = case_two_keep_init_generated_files
 
         # run_one_suffix is just used as the suffix for the netcdf files
         # produced by the first case; we may eventually remove this, but for now
@@ -208,7 +217,7 @@ class SystemTestsCompareTwo(SystemTestsCommon):
                 # Although we're doing separate builds, it still makes sense
                 # to share the sharedlibroot area with case1 so we can reuse
                 # pieces of the build from there.
-                if get_model() != "e3sm":
+                if Config.instance().common_sharedlibroot:
                     # We need to turn off this change for E3SM because it breaks
                     # the MPAS build system
                     self._case2.set_value(
@@ -295,7 +304,10 @@ class SystemTestsCompareTwo(SystemTestsCommon):
                     self._case2.check_case()
 
                 self._case_two_custom_prerun_action()
-                self.run_indv(suffix=self._run_two_suffix)
+                self.run_indv(
+                    suffix=self._run_two_suffix,
+                    keep_init_generated_files=self._case_two_keep_init_generated_files,
+                )
                 self._case_two_custom_postrun_action()
             # Compare results
             # Case1 is the "main" case, and we need to do the comparisons from there

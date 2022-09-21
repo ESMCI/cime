@@ -60,8 +60,9 @@ def _main_func(description):
     ###############################################################################
     casename = parse_command_line(sys.argv, description)
 
-    compiler = parse_test_name(casename)[5]
-    machine = CIME.get_tests.infer_machine_name_from_tests([casename])
+    machine, compiler = CIME.get_tests.infer_arch_from_tests([casename])
+    expect(len(compiler) <= 1, "How did we get multiple compilers from one test case?")
+    compiler = compiler[0] if len(compiler) == 1 else None
     mach_obj = Machines(machine=machine)
     compiler = mach_obj.get_default_compiler() if compiler is None else compiler
     full_test_name = CIME.get_tests.get_full_test_names(

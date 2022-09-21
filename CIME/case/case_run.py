@@ -2,11 +2,11 @@
 case_run is a member of Class Case
 '"""
 from CIME.XML.standard_module_setup import *
+from CIME.config import Config
 from CIME.utils import gzip_existing_file, new_lid, run_and_log_case_status
 from CIME.utils import run_sub_or_cmd, append_status, safe_copy, model_log, CIMEError
 from CIME.utils import get_model, batch_jobid
 from CIME.get_timing import get_timing
-from CIME.provenance import save_prerun_provenance, save_postrun_provenance
 
 import shutil, time, sys, os, glob
 
@@ -144,7 +144,10 @@ def _run_model_impl(case, lid, skip_pnl=False, da_cycle=0):
                 time.strftime("%Y-%m-%d %H:%M:%S")
             ),
         )
-        save_prerun_provenance(case)
+        try:
+            Config.instance().save_prerun_provenance(case)
+        except AttributeError:
+            logger.debug("No hook for saving prerun provenance was executed")
         model_log(
             "e3sm",
             logger,
@@ -536,7 +539,10 @@ def case_run(self, skip_pnl=False, set_continue_run=False, submit_resubmits=Fals
                 time.strftime("%Y-%m-%d %H:%M:%S")
             ),
         )
-        save_postrun_provenance(self)
+        try:
+            Config.instance().save_postrun_provenance(self, lid)
+        except AttributeError:
+            logger.debug("No hook for saving postrun provenance was executed")
         model_log(
             "e3sm",
             logger,

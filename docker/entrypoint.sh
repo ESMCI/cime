@@ -80,7 +80,7 @@ function init_e3sm() {
     export CIME_MODEL="e3sm"
 
     local extras=""
-    local install_path="${INSTALL_install_path:-/src/E3SM}"
+    local install_path="${INSTALL_PATH:-/src/E3SM}"
     local cache_path="${cache_path:-/storage/inputdata}"
 
     if [[ ! -e "${install_path}" ]]

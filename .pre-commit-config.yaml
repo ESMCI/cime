@@ -7,7 +7,9 @@ repos:
       - id: check-xml
         files: config/
       - id: end-of-file-fixer
+        exclude: doc/
       - id: trailing-whitespace
+        exclude: doc/
   - repo: https://github.com/psf/black
     rev: 22.3.0
     hooks:
@@ -18,6 +20,6 @@ repos:
     hooks:
       - id: pylint
         args:
-          - --disable=I,C,R,logging-not-lazy,wildcard-import,unused-wildcard-import,fixme,broad-except,bare-except,eval-used,exec-used,global-statement,logging-format-interpolation,no-name-in-module,arguments-renamed,unspecified-encoding,protected-access,import-error
+          - --disable=I,C,R,logging-not-lazy,wildcard-import,unused-wildcard-import,fixme,broad-except,bare-except,eval-used,exec-used,global-statement,logging-format-interpolation,no-name-in-module,arguments-renamed,unspecified-encoding,protected-access,import-error,no-member
         files: CIME
         exclude: CIME/(tests|Tools|code_checker.py)
