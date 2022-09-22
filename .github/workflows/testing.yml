@@ -50,7 +50,7 @@ jobs:
         id: get-changed-files
         uses: tj-actions/changed-files@v29
         with:
-          files: docker/*
+          files: docker
 
   # Only build container if there has been a change.
   build-containers:
