@@ -56,7 +56,8 @@ jobs:
   build-containers:
     runs-on: ubuntu-latest
     needs: check-dockerfile-changed
-    if: ${{ needs.check-dockerfile-changed.outputs.any_changed }}
+    # TODO remove top level if, use finer grain control at step level
+    if: ${{ needs.check-dockerfile-changed.outputs.all_changed_and_modified_files != "" }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
