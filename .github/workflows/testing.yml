@@ -116,6 +116,8 @@ jobs:
 
           source /entrypoint.sh
 
+          git config --global --add safe.directory /__w/cime/cime
+
           init_cime
 
           pytest -vvv --machine docker --no-fortran-run CIME/tests/test_unit*
@@ -158,6 +160,8 @@ jobs:
           export CIME_BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF##*/}}
 
           source /entrypoint.sh
+
+          git config --global --add safe.directory /__w/cime/cime
 
           if [[ "${CIME_MODEL}" == "e3sm" ]]
           then
