@@ -55,7 +55,7 @@ jobs:
   # Only build container if there has been a change.
   build-containers:
     runs-on: ubuntu-latest
-    needs: check-dockerfile-changed
+    needs: get-docker-changes
     if: ${{ needs.get-docker-changes.outputs.changes.any_changed == 'true' }}
     steps:
       - name: Checkout code
