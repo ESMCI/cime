@@ -92,6 +92,7 @@ jobs:
   unit-testing:
     runs-on: ubuntu-latest
     needs: build-containers
+    if: ${{ always() && ! cancelled() }}
     container: jasonb87/cime:latest
     strategy:
       matrix:
@@ -127,8 +128,7 @@ jobs:
   system-testing:
     runs-on: ubuntu-latest
     needs: build-containers
-    # temporarily prevent running
-    if: ${{ ! always() }}
+    if: ${{ always() && ! cancelled() }}
     container: jasonb87/cime:latest
     strategy:
       matrix:
