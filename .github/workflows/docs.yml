@@ -7,8 +7,12 @@ on:
     branches:
       - master
 
+permissions: {}
 jobs:
   update_docs:
+    permissions:
+      contents: write # for git push
+
     name: Updates documentation
     runs-on: ubuntu-latest
     steps:
