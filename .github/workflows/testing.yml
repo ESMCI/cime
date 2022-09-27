@@ -37,58 +37,62 @@ jobs:
           pre-commit run -a
 
   # Check if there has been a change to any file under docker/
-  check-dockerfile-changed:
+  get-docker-changes:
     runs-on: ubuntu-latest
     outputs:
-      all_changed_and_modified_files: ${{ steps.get-changed-files.outputs.all_changed_and_modified_files }}
+      any_changed: ${{ steps.get-changed-files.outputs.any_changed }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 2
       - name: Get changed files
         id: get-changed-files
-        uses: tj-actions/changed-files@v17.2
+        uses: tj-actions/changed-files@v29
         with:
-          files: docker/*
+          files: docker
 
   # Only build container if there has been a change.
-  # Only upload container when merging into master and there has been a change.
   build-containers:
     runs-on: ubuntu-latest
-    needs: check-dockerfile-changed
-    if: ${{ needs.check-dockerfile-changed.outputs.all_changed_and_modified_files != '' }}
+    needs: get-docker-changes
+    if: ${{ needs.get-docker-changes.outputs.any_changed == 'true' }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Docker meta
         id: meta
-        uses: docker/metadata-action@v3
+        uses: docker/metadata-action@v4
         with:
           images: jasonb87/cime
           tags: |
             type=raw,value=latest
             type=sha,prefix={{ date 'YYYYMMDD' }}_,format=short
-      - name: Login to DockerHub
-        if: github.event_name != 'pull_request'
-        uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.DOCKER_HUB_USER }}
-          password: ${{ secrets.DOCKER_HUB_TOKEN }}
       - name: Build and push
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v3
         with:
           target: base
           context: docker/
-          push: ${{ github.event_name != 'pull_request' }}
+          push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=registry,ref=jasonb87/cime:buildcache
+          cache-to: type=registry,ref=jasonb87/cime:buildcache,mode=max
 
   # Runs unit testing under different python versions.
   unit-testing:
     runs-on: ubuntu-latest
     needs: build-containers
-    if: ${{ always() }}
+    if: ${{ always() && ! cancelled() }}
     container: jasonb87/cime:latest
     strategy:
       matrix:
@@ -114,6 +118,8 @@ jobs:
 
           source /entrypoint.sh
 
+          git config --global --add safe.directory /__w/cime/cime
+
           init_cime
 
           pytest -vvv --machine docker --no-fortran-run CIME/tests/test_unit*
@@ -122,7 +128,7 @@ jobs:
   system-testing:
     runs-on: ubuntu-latest
     needs: build-containers
-    if: ${{ always() }}
+    if: ${{ always() && ! cancelled() }}
     container: jasonb87/cime:latest
     strategy:
       matrix:
@@ -136,7 +142,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Cache inputdata
-        if: ${{ ! env.ACT }}
         uses: actions/cache@v2
         with:
           path: /storage/inputdata
@@ -156,6 +161,8 @@ jobs:
           export CIME_BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF##*/}}
 
           source /entrypoint.sh
+
+          git config --global --add safe.directory /__w/cime/cime
 
           if [[ "${CIME_MODEL}" == "e3sm" ]]
           then
