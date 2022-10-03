@@ -68,7 +68,7 @@ def _submit(
         else:
             rpointer = "rpointer.drv"
         if case.get_value("MULTI_DRIVER"):
-            rpointer = rpointer+"_0001"
+            rpointer = rpointer + "_0001"
         expect(
             os.path.exists(os.path.join(rundir, rpointer)),
             "CONTINUE_RUN is true but this case does not appear to have restart files staged in {} {}".format(
