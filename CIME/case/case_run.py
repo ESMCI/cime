@@ -26,8 +26,9 @@ def _pre_run_check(case, lid, skip_pnl=False, da_cycle=0):
     rundir = case.get_value("RUNDIR")
 
     if case.get_value("TESTCASE") == "PFS":
-        env_mach_pes = os.path.join(caseroot, "env_mach_pes.xml")
-        safe_copy(env_mach_pes, "{}.{}".format(env_mach_pes, lid))
+        for filename in ("env_mach_pes.xml", "software_environment.txt"):
+            fullpath = os.path.join(caseroot, filename)
+            safe_copy(fullpath, "{}.{}".format(filename, lid))
 
     # check for locked files, may impact BUILD_COMPLETE
     skip = None
