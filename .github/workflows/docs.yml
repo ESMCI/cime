@@ -40,6 +40,8 @@ jobs:
       - name: Push PR branch
         if: ${{ github.event_name == 'pull_request' }}
         run: |
+          set -x 
+
           git fetch
           git worktree add _gh-pages/ gh-pages
 
