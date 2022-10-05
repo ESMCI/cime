@@ -1,96 +1,40 @@
-
-
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
-  <meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>2. Creating a Case &mdash; CIME master documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
-
-  
-  
-  
-  
-
-  
-
-  
-  
-    
-
-  
-
-  
-  
-    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  
-
-  
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  
-    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  
-
-  
-        <link rel="index" title="Index"
-              href="../genindex.html"/>
-        <link rel="search" title="Search" href="../search.html"/>
-    <link rel="top" title="CIME master documentation" href="../index.html"/>
-        <link rel="up" title="Case Control System Part 1: Basic Usage" href="index.html"/>
-        <link rel="next" title="3. Setting up a Case" href="setting-up-a-case.html"/>
-        <link rel="prev" title="1. Introduction" href="introduction-and-overview.html"/> 
-
-  
-  <script src="../_static/js/modernizr.min.js"></script>
-
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+        <script src="../_static/pop_ver.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="3. Setting up a Case" href="setting-up-a-case.html" />
+    <link rel="prev" title="1. Introduction" href="introduction-and-overview.html" /> 
 </head>
 
-<body class="wy-body-for-nav" role="document">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
-          
-
-          
+        <div class="wy-side-nav-search" >
             <a href="../index.html" class="icon icon-home"> CIME
-          
-
-          
           </a>
-
-          
-            
-            
               <div class="version">
-                
-                  <div class="version-dropdown">
-                    <select class="version-list" id="version-list">
-                      <option value=''>master</option>
-                      
-                        
-                      
-                        
-                          <option value="">[placeholder]</option>
-                        
-                      
-                    </select>
-                  </div>
-                
+                master
               </div>
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -98,17 +42,7 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../what_cime/index.html">What is CIME?</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Case Control System Part 1: Basic Usage</a><ul class="current">
@@ -142,71 +76,33 @@
 <li class="toctree-l1"><a class="reference internal" href="../Tools_api/modules.html">Tools</a></li>
 </ul>
 
-            
-          
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">CIME</a>
-        
       </nav>
 
-
-      
       <div class="wy-nav-content">
         <div class="rst-content">
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="../index.html">Docs</a> &raquo;</li>
-        
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="index.html">Case Control System Part 1: Basic Usage</a> &raquo;</li>
-        
       <li><span class="section-number">2. </span>Creating a Case</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-            
             <a href="../_sources/users_guide/create-a-case.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
+             
   <section id="creating-a-case">
-<span id="id1"></span><h1><span class="section-number">2. </span>Creating a Case<a class="headerlink" href="#creating-a-case" title="Permalink to this heading">¶</a></h1>
+<span id="id1"></span><h1><span class="section-number">2. </span>Creating a Case<a class="headerlink" href="#creating-a-case" title="Permalink to this heading"></a></h1>
 <p>This and following sections provide more detail about the basic commands of the CIME Case Control System: <strong>create_newcase</strong>,
 <strong>case.setup</strong>, <strong>case.build</strong> and <strong>case.submit</strong>. On a supported system, you can configure, build and run many complex
 climate model configurations with only these 4 commands.</p>
@@ -216,7 +112,7 @@ climate model configurations with only these 4 commands.</p>
 </div>
 <p>If you are not on an out-of-the box CIME-supported platform, you will need to <a class="reference internal" href="porting-cime.html#porting"><span class="std std-ref">port</span></a> CIME to your system before proceeding.</p>
 <section id="calling-create-newcase">
-<h2><span class="section-number">2.1. </span>Calling <strong>create_newcase</strong><a class="headerlink" href="#calling-create-newcase" title="Permalink to this heading">¶</a></h2>
+<h2><span class="section-number">2.1. </span>Calling <strong>create_newcase</strong><a class="headerlink" href="#calling-create-newcase" title="Permalink to this heading"></a></h2>
 <p>The first step in creating a CIME-based experiment is to use <a class="reference external" href="../Tools_user/create_newcase.html">create_newcase</a>.</p>
 <p>See the options for <a class="reference external" href="../Tools_user/create_newcase.html">create_newcase</a> in the  <strong>help</strong> text.:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">create_newcase</span> <span class="o">--</span><span class="n">help</span>
@@ -244,7 +140,7 @@ path, <code class="docutils literal notranslate"><span class="pre">CASEROOT</spa
 of the path.</p>
 </section>
 <section id="results-of-calling-create-newcase">
-<h2><span class="section-number">2.2. </span>Results of calling <strong>create_newcase</strong><a class="headerlink" href="#results-of-calling-create-newcase" title="Permalink to this heading">¶</a></h2>
+<h2><span class="section-number">2.2. </span>Results of calling <strong>create_newcase</strong><a class="headerlink" href="#results-of-calling-create-newcase" title="Permalink to this heading"></a></h2>
 <p>Suppose <strong>create_newcase</strong> was called as follows.
 Here, $CIMEROOT is the full pathname of the root directory of the CIME distribution:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; cd $CIMEROOT/scripts
@@ -407,7 +303,7 @@ This is a good place to keep track of runtime problems and changes.”</p>
 </ul>
 </section>
 <section id="locked-files-in-your-case-directory">
-<h2><span class="section-number">2.3. </span>Locked files in your case directory<a class="headerlink" href="#locked-files-in-your-case-directory" title="Permalink to this heading">¶</a></h2>
+<h2><span class="section-number">2.3. </span>Locked files in your case directory<a class="headerlink" href="#locked-files-in-your-case-directory" title="Permalink to this heading"></a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">$CASEROOT</span></code> xml files are organized so that variables can be
 locked at certain points after they have been resolved (used) in other
 parts of the scripts system.</p>
@@ -437,7 +333,7 @@ you call <a class="reference external" href="../Tools_user/case.setup.html">case
 </ul>
 </section>
 <section id="adding-a-user-mods-dir-argument-to-create-newcase">
-<h2><span class="section-number">2.4. </span>Adding a –user-mods-dir argument to <strong>create_newcase</strong><a class="headerlink" href="#adding-a-user-mods-dir-argument-to-create-newcase" title="Permalink to this heading">¶</a></h2>
+<h2><span class="section-number">2.4. </span>Adding a –user-mods-dir argument to <strong>create_newcase</strong><a class="headerlink" href="#adding-a-user-mods-dir-argument-to-create-newcase" title="Permalink to this heading"></a></h2>
 <p>A user may want to customize a target case with a combination of
 <code class="docutils literal notranslate"><span class="pre">user_nl_xxx</span></code> file modifications and/or <code class="docutils literal notranslate"><span class="pre">SourceMods</span></code> for some
 components and/or <strong>xmlchange</strong> commands. As an example, the user
@@ -460,75 +356,36 @@ created with these changes applied.</p>
 
 
            </div>
-           <div class="articleComments">
-            
-           </div>
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="setting-up-a-case.html" class="btn btn-neutral float-right" title="3. Setting up a Case" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="introduction-and-overview.html" class="btn btn-neutral" title="1. Introduction" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="introduction-and-overview.html" class="btn btn-neutral float-left" title="1. Introduction" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="setting-up-a-case.html" class="btn btn-neutral float-right" title="3. Setting up a Case" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-
-    </p>
+    <p>&#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.</p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
      
 <script>var version_json_loc = "../../../versions.json";</script>
 
 
 </footer>
-
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-
-  
-
-    
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/sphinx_highlight.js"></script>
-        <script src="../_static/pop_ver.js"></script>
-    
-
-  
-
-  
-  
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-  
-
-  
-  
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-   
+  </script> 
 
 </body>
 </html>

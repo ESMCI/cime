@@ -1,96 +1,40 @@
-
-
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
-  <meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>5. Controlling processors and threads &mdash; CIME master documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
-
-  
-  
-  
-  
-
-  
-
-  
-  
-    
-
-  
-
-  
-  
-    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  
-
-  
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  
-    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  
-
-  
-        <link rel="index" title="Index"
-              href="../genindex.html"/>
-        <link rel="search" title="Search" href="../search.html"/>
-    <link rel="top" title="CIME master documentation" href="../index.html"/>
-        <link rel="up" title="Case Control System Part 1: Basic Usage" href="index.html"/>
-        <link rel="next" title="6. Porting and validating CIME on a new platform" href="porting-cime.html"/>
-        <link rel="prev" title="4. Defining the machine" href="machine.html"/> 
-
-  
-  <script src="../_static/js/modernizr.min.js"></script>
-
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+        <script src="../_static/pop_ver.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="6. Porting and validating CIME on a new platform" href="porting-cime.html" />
+    <link rel="prev" title="4. Defining the machine" href="machine.html" /> 
 </head>
 
-<body class="wy-body-for-nav" role="document">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
-          
-
-          
+        <div class="wy-side-nav-search" >
             <a href="../index.html" class="icon icon-home"> CIME
-          
-
-          
           </a>
-
-          
-            
-            
               <div class="version">
-                
-                  <div class="version-dropdown">
-                    <select class="version-list" id="version-list">
-                      <option value=''>master</option>
-                      
-                        
-                      
-                        
-                          <option value="">[placeholder]</option>
-                        
-                      
-                    </select>
-                  </div>
-                
+                master
               </div>
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -98,17 +42,7 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../what_cime/index.html">What is CIME?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="index.html">Case Control System Part 1: Basic Usage</a></li>
@@ -145,71 +79,33 @@
 <li class="toctree-l1"><a class="reference internal" href="../Tools_api/modules.html">Tools</a></li>
 </ul>
 
-            
-          
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">CIME</a>
-        
       </nav>
 
-
-      
       <div class="wy-nav-content">
         <div class="rst-content">
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="../index.html">Docs</a> &raquo;</li>
-        
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="index.html">Case Control System Part 1: Basic Usage</a> &raquo;</li>
-        
       <li><span class="section-number">5. </span>Controlling processors and threads</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-            
             <a href="../_sources/users_guide/pes-threads.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
+             
   <section id="controlling-processors-and-threads">
-<span id="pesthreads"></span><h1><span class="section-number">5. </span>Controlling processors and threads<a class="headerlink" href="#controlling-processors-and-threads" title="Permalink to this heading">¶</a></h1>
+<span id="pesthreads"></span><h1><span class="section-number">5. </span>Controlling processors and threads<a class="headerlink" href="#controlling-processors-and-threads" title="Permalink to this heading"></a></h1>
 <p>Once a compset and resolution for a case has been defined, CIME
 provides ways to define the processor layout the case will use.</p>
 <p>CIME cases have significant flexibility with respect to the layout of
@@ -219,7 +115,7 @@ managed independently by the CIME driver, each with a unique MPI
 communicator.  In addition, the driver runs on the union of all
 processors and controls the sequencing and hardware partitioning.</p>
 <section id="pe-settings-for-a-case">
-<span id="defining-pes"></span><h2><span class="section-number">5.1. </span>pe-settings for a case<a class="headerlink" href="#pe-settings-for-a-case" title="Permalink to this heading">¶</a></h2>
+<span id="defining-pes"></span><h2><span class="section-number">5.1. </span>pe-settings for a case<a class="headerlink" href="#pe-settings-for-a-case" title="Permalink to this heading"></a></h2>
 <p>CIME looks at the xml element <code class="docutils literal notranslate"><span class="pre">PES_SPEC_FILE</span></code> in the <strong>$CIMEROOT/config/$model/config_files.xml</strong> file to determine where
 to find the supported out-of-the-box model pe-settings for the primary component (See <a class="reference internal" href="compsets.html#compsets"><span class="std std-ref">Compsets</span></a> for definition of primary component.)</p>
 <p>When your run <a class="reference external" href="../Tools_user/create_newcase.html">create_newcase</a>, CIME identifies the primary component and the setting of the <code class="docutils literal notranslate"><span class="pre">PES_SPEC_FILE</span></code> in the standard output.</p>
@@ -268,7 +164,7 @@ processor setting.</p>
 <p>When <a class="reference external" href="../Tools_user/create_newcase.html">create_newcase</a>  is called, it outputs the matches that are found in determining the best out-of-the-box pe-layout.</p>
 </section>
 <section id="setting-the-pe-layout">
-<h2><span class="section-number">5.2. </span>Setting the PE layout<a class="headerlink" href="#setting-the-pe-layout" title="Permalink to this heading">¶</a></h2>
+<h2><span class="section-number">5.2. </span>Setting the PE layout<a class="headerlink" href="#setting-the-pe-layout" title="Permalink to this heading"></a></h2>
 <p>Optimizing the throughput and efficiency of a CIME experiment often
 involves customizing the processor (PE) layout. (See <a class="reference internal" href="#optimizing-processor-layout"><span class="std std-ref">load
 balancing</span></a>.)  CIME provides significant
@@ -284,11 +180,11 @@ of MPI tasks and OpenMP threads for each component, the number of
 instances of each component and the layout of the components across
 the hardware processors. The entries in <strong>env_mach_pes.xml</strong> have the
 following meanings:</p>
-<table class="docutils align-default" id="id3">
-<caption><span class="caption-text">Entries in <strong>env_mach_pes.xml</strong></span><a class="headerlink" href="#id3" title="Permalink to this table">¶</a></caption>
+<table class="colwidths-given docutils align-default" id="id3">
+<caption><span class="caption-text">Entries in <strong>env_mach_pes.xml</strong></span><a class="headerlink" href="#id3" title="Permalink to this table"></a></caption>
 <colgroup>
-<col style="width: 20.0%" />
-<col style="width: 80.0%" />
+<col style="width: 20%" />
+<col style="width: 80%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>XML variable</p></th>
@@ -350,7 +246,7 @@ model can also run concurrently with the atmosphere model.</p>
 </div>
 </section>
 <section id="case-resource-allocation">
-<h2><span class="section-number">5.3. </span>Case Resource Allocation<a class="headerlink" href="#case-resource-allocation" title="Permalink to this heading">¶</a></h2>
+<h2><span class="section-number">5.3. </span>Case Resource Allocation<a class="headerlink" href="#case-resource-allocation" title="Permalink to this heading"></a></h2>
 <p>Resources for your case will be allocated according to the following logic.</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">NTASKS</span></code> * <code class="docutils literal notranslate"><span class="pre">NTHRDS</span></code> is the total number of hardware processors allocated to a component.</p></li>
@@ -382,7 +278,7 @@ be allocated but completely idle.</p>
 and job submit commands for your case.</p>
 </section>
 <section id="optimizing-processor-layout">
-<span id="id2"></span><h2><span class="section-number">5.4. </span>Optimizing processor layout<a class="headerlink" href="#optimizing-processor-layout" title="Permalink to this heading">¶</a></h2>
+<span id="id2"></span><h2><span class="section-number">5.4. </span>Optimizing processor layout<a class="headerlink" href="#optimizing-processor-layout" title="Permalink to this heading"></a></h2>
 <p>Load balancing is the practice of specifying a processor layout for a given model configuration
 (compset, grid, and so on) to maximize simulation speed while minimizing processor idle time.
 For a fixed total number of processors, the goal of this optimization is to achieve maximum throughput.
@@ -477,75 +373,36 @@ when running with mixed active and data models.</p>
 
 
            </div>
-           <div class="articleComments">
-            
-           </div>
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="porting-cime.html" class="btn btn-neutral float-right" title="6. Porting and validating CIME on a new platform" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="machine.html" class="btn btn-neutral" title="4. Defining the machine" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="machine.html" class="btn btn-neutral float-left" title="4. Defining the machine" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="porting-cime.html" class="btn btn-neutral float-right" title="6. Porting and validating CIME on a new platform" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-
-    </p>
+    <p>&#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.</p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
      
 <script>var version_json_loc = "../../../versions.json";</script>
 
 
 </footer>
-
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-
-  
-
-    
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/sphinx_highlight.js"></script>
-        <script src="../_static/pop_ver.js"></script>
-    
-
-  
-
-  
-  
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-  
-
-  
-  
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-   
+  </script> 
 
 </body>
 </html>

@@ -1,96 +1,40 @@
-
-
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
-  <meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>9. Fortran Unit Testing &mdash; CIME master documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
-
-  
-  
-  
-  
-
-  
-
-  
-  
-    
-
-  
-
-  
-  
-    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  
-
-  
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  
-    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  
-
-  
-        <link rel="index" title="Index"
-              href="../genindex.html"/>
-        <link rel="search" title="Search" href="../search.html"/>
-    <link rel="top" title="CIME master documentation" href="../index.html"/>
-        <link rel="up" title="Case Control System Part 1: Basic Usage" href="index.html"/>
-        <link rel="next" title="10. Multi-instance component functionality" href="multi-instance.html"/>
-        <link rel="prev" title="8. Testing" href="testing.html"/> 
-
-  
-  <script src="../_static/js/modernizr.min.js"></script>
-
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+        <script src="../_static/pop_ver.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="10. Multi-instance component functionality" href="multi-instance.html" />
+    <link rel="prev" title="8. Testing" href="testing.html" /> 
 </head>
 
-<body class="wy-body-for-nav" role="document">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
-          
-
-          
+        <div class="wy-side-nav-search" >
             <a href="../index.html" class="icon icon-home"> CIME
-          
-
-          
           </a>
-
-          
-            
-            
               <div class="version">
-                
-                  <div class="version-dropdown">
-                    <select class="version-list" id="version-list">
-                      <option value=''>master</option>
-                      
-                        
-                      
-                        
-                          <option value="">[placeholder]</option>
-                        
-                      
-                    </select>
-                  </div>
-                
+                master
               </div>
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -98,17 +42,7 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../what_cime/index.html">What is CIME?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="index.html">Case Control System Part 1: Basic Usage</a></li>
@@ -166,75 +100,37 @@
 <li class="toctree-l1"><a class="reference internal" href="../Tools_api/modules.html">Tools</a></li>
 </ul>
 
-            
-          
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">CIME</a>
-        
       </nav>
 
-
-      
       <div class="wy-nav-content">
         <div class="rst-content">
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="../index.html">Docs</a> &raquo;</li>
-        
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="index.html">Case Control System Part 1: Basic Usage</a> &raquo;</li>
-        
       <li><span class="section-number">9. </span>Fortran Unit Testing</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-            
             <a href="../_sources/users_guide/unit_testing.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
+             
   <section id="fortran-unit-testing">
-<span id="unit-testing"></span><h1><span class="section-number">9. </span>Fortran Unit Testing<a class="headerlink" href="#fortran-unit-testing" title="Permalink to this heading">¶</a></h1>
+<span id="unit-testing"></span><h1><span class="section-number">9. </span>Fortran Unit Testing<a class="headerlink" href="#fortran-unit-testing" title="Permalink to this heading"></a></h1>
 <section id="introduction">
-<h2><span class="section-number">9.1. </span>Introduction<a class="headerlink" href="#introduction" title="Permalink to this heading">¶</a></h2>
+<h2><span class="section-number">9.1. </span>Introduction<a class="headerlink" href="#introduction" title="Permalink to this heading"></a></h2>
 <section id="what-is-a-unit-test">
-<h3><span class="section-number">9.1.1. </span>What is a unit test?<a class="headerlink" href="#what-is-a-unit-test" title="Permalink to this heading">¶</a></h3>
+<h3><span class="section-number">9.1.1. </span>What is a unit test?<a class="headerlink" href="#what-is-a-unit-test" title="Permalink to this heading"></a></h3>
 <p>A unit test is a fast, self-verifying test of a small piece of code.
 A single unit test typically covers 10s to 100s of lines of code; a single function or small module, for example.
 It typically runs in milliseconds and produces a simple pass/fail result.</p>
@@ -248,7 +144,7 @@ It typically runs in milliseconds and produces a simple pass/fail result.</p>
 </ul>
 </section>
 <section id="overview-of-unit-test-support-in-cime">
-<h3><span class="section-number">9.1.2. </span>Overview of unit test support in CIME<a class="headerlink" href="#overview-of-unit-test-support-in-cime" title="Permalink to this heading">¶</a></h3>
+<h3><span class="section-number">9.1.2. </span>Overview of unit test support in CIME<a class="headerlink" href="#overview-of-unit-test-support-in-cime" title="Permalink to this heading"></a></h3>
 <p>CIME comes with a set of tools to support building and running unit tests.
 These consist of:</p>
 <ol class="arabic simple">
@@ -259,7 +155,7 @@ These consist of:</p>
 </section>
 </section>
 <section id="running-cime-s-fortran-unit-tests">
-<span id="running-unit-tests"></span><h2><span class="section-number">9.2. </span>Running CIME’s Fortran unit tests<a class="headerlink" href="#running-cime-s-fortran-unit-tests" title="Permalink to this heading">¶</a></h2>
+<span id="running-unit-tests"></span><h2><span class="section-number">9.2. </span>Running CIME’s Fortran unit tests<a class="headerlink" href="#running-cime-s-fortran-unit-tests" title="Permalink to this heading"></a></h2>
 <p>These instructions assume that you are using a machine that already has pFUnit installed, along with the necessary support in CIME.
 If that is not the case, see <a class="reference internal" href="#adding-machine-support"><span class="std std-ref">How to add unit testing support on your machine</span></a>.</p>
 <p>From the top-level CIME directory, you can run all of CIME’s Fortran unit tests by running:</p>
@@ -299,7 +195,7 @@ Running CTest tests for __command_line_test__/__command_line_test__.
 <p>These unit tests are run automatically as part of <strong>scripts_regression_tests</strong> on machines that have a serial build of pFUnit available for the default compiler.</p>
 </section>
 <section id="how-to-add-unit-testing-support-on-your-machine">
-<span id="adding-machine-support"></span><h2><span class="section-number">9.3. </span>How to add unit testing support on your machine<a class="headerlink" href="#how-to-add-unit-testing-support-on-your-machine" title="Permalink to this heading">¶</a></h2>
+<span id="adding-machine-support"></span><h2><span class="section-number">9.3. </span>How to add unit testing support on your machine<a class="headerlink" href="#how-to-add-unit-testing-support-on-your-machine" title="Permalink to this heading"></a></h2>
 <p>The following instructions assume that you have ported CIME to your
 machine by following the instructions in
 <a class="reference internal" href="porting-cime.html"><span class="doc">Porting and validating CIME on a new platform</span></a>.  If you have done that, you can add
@@ -312,7 +208,7 @@ That is the default that <strong>run_tests.py</strong> and that is required for 
 You can also provide additional pFUnit builds with other combinations of MPI and OpenMP on or off.
 At this time, however, no unit tests require parallel support so no benefit is gained by providing MPI-enabled builds.</p>
 <section id="building-pfunit">
-<h3><span class="section-number">9.3.1. </span>Building pFUnit<a class="headerlink" href="#building-pfunit" title="Permalink to this heading">¶</a></h3>
+<h3><span class="section-number">9.3.1. </span>Building pFUnit<a class="headerlink" href="#building-pfunit" title="Permalink to this heading"></a></h3>
 <p>For a serial build of pFUnit, follow these instructions:</p>
 <ol class="arabic">
 <li><p>Obtain pFUnit from <a class="reference external" href="https://github.com/Goddard-Fortran-Ecosystem/pFUnit">https://github.com/Goddard-Fortran-Ecosystem/pFUnit</a> (see
@@ -362,7 +258,7 @@ variables, e.g., with:</p>
 Make sure to choose a different installation directory for each build by setting the <code class="docutils literal notranslate"><span class="pre">PFUNIT</span></code> variable differently.</p>
 </section>
 <section id="adding-to-the-xml-file">
-<h3><span class="section-number">9.3.2. </span>Adding to the xml file<a class="headerlink" href="#adding-to-the-xml-file" title="Permalink to this heading">¶</a></h3>
+<h3><span class="section-number">9.3.2. </span>Adding to the xml file<a class="headerlink" href="#adding-to-the-xml-file" title="Permalink to this heading"></a></h3>
 <p>After you build pFUnit, tell CIME about your build or builds.
 To do this, specify the appropriate path(s) using the <code class="docutils literal notranslate"><span class="pre">PFUNIT_PATH</span></code> element in ** <em>MACH*_*COMPILER</em>.cmake** file.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">MPILIB</span></code> attribute should be either:</p>
@@ -375,7 +271,7 @@ To do this, specify the appropriate path(s) using the <code class="docutils lite
 </section>
 </section>
 <section id="how-to-write-a-new-unit-test">
-<h2><span class="section-number">9.4. </span>How to write a new unit test<a class="headerlink" href="#how-to-write-a-new-unit-test" title="Permalink to this heading">¶</a></h2>
+<h2><span class="section-number">9.4. </span>How to write a new unit test<a class="headerlink" href="#how-to-write-a-new-unit-test" title="Permalink to this heading"></a></h2>
 <div class="admonition-todo admonition" id="id1">
 <p class="admonition-title">Todo</p>
 <p>Need to write this section. This will draw on some of the information in sections 3 and 4 of <a class="reference external" href="https://github.com/NCAR/cesm_unit_test_tutorial">https://github.com/NCAR/cesm_unit_test_tutorial</a> (though without the clm and cam stuff).</p>
@@ -383,7 +279,7 @@ To do this, specify the appropriate path(s) using the <code class="docutils lite
 <p>It should also introduce the role of .pf files, which are referenced several paragraphs later as if already explained.</p>
 </section>
 <section id="general-guidelines-for-writing-unit-tests">
-<h2><span class="section-number">9.5. </span>General guidelines for writing unit tests<a class="headerlink" href="#general-guidelines-for-writing-unit-tests" title="Permalink to this heading">¶</a></h2>
+<h2><span class="section-number">9.5. </span>General guidelines for writing unit tests<a class="headerlink" href="#general-guidelines-for-writing-unit-tests" title="Permalink to this heading"></a></h2>
 <p>Unit tests typically test a small piece of code, on the order of 10-100 lines, as in a single function or small class.</p>
 <p>Good unit tests are <strong>“FIRST”</strong>:
 (<a class="reference external" href="https://pragprog.com/magazines/2012-01/unit-tests-are-first">https://pragprog.com/magazines/2012-01/unit-tests-are-first</a>):</p>
@@ -416,12 +312,16 @@ and maintainability of your tests. pFUnit knows which subroutines are tests and 
 for your tests, not for your helper routines.</p>
 </section>
 <section id="more-details-on-writing-pfunit-based-unit-tests">
-<h2><span class="section-number">9.6. </span>More details on writing pFUnit-based unit tests<a class="headerlink" href="#more-details-on-writing-pfunit-based-unit-tests" title="Permalink to this heading">¶</a></h2>
+<h2><span class="section-number">9.6. </span>More details on writing pFUnit-based unit tests<a class="headerlink" href="#more-details-on-writing-pfunit-based-unit-tests" title="Permalink to this heading"></a></h2>
 <section id="assertion-methods">
-<h3><span class="section-number">9.6.1. </span>Assertion methods<a class="headerlink" href="#assertion-methods" title="Permalink to this heading">¶</a></h3>
+<h3><span class="section-number">9.6.1. </span>Assertion methods<a class="headerlink" href="#assertion-methods" title="Permalink to this heading"></a></h3>
 <p>pFUnit provides many assertion methods that you can use in the Verify step.
 Here are some of the most useful:</p>
 <table class="docutils align-default">
+<colgroup>
+<col style="width: 42%" />
+<col style="width: 58%" />
+</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">&#64;assertEqual(expected,</span> <span class="pre">actual)</span></code></p></td>
 <td><p>Ensures that expected == actual.
@@ -463,7 +363,7 @@ a string if the assertion fails. If no message is provided, you will be pointed 
 file and line number of the failed assertion.</p>
 </section>
 <section id="defining-a-test-class-in-order-to-define-setup-and-teardown-methods">
-<h3><span class="section-number">9.6.2. </span>Defining a test class in order to define setUp and tearDown methods<a class="headerlink" href="#defining-a-test-class-in-order-to-define-setup-and-teardown-methods" title="Permalink to this heading">¶</a></h3>
+<h3><span class="section-number">9.6.2. </span>Defining a test class in order to define setUp and tearDown methods<a class="headerlink" href="#defining-a-test-class-in-order-to-define-setup-and-teardown-methods" title="Permalink to this heading"></a></h3>
 <p>As noted in the comments in <strong>test_circle.pf</strong>, defining a test class is optional.
 However, defining a minimal test class as shown here with <code class="docutils literal notranslate"><span class="pre">TestCircle</span></code> allows you
 use some pFUnit features such as the setUp and tearDown methods.</p>
@@ -522,7 +422,7 @@ create it like this:</p>
 </div>
 </section>
 <section id="more-on-test-teardown">
-<h3><span class="section-number">9.6.3. </span>More on test teardown<a class="headerlink" href="#more-on-test-teardown" title="Permalink to this heading">¶</a></h3>
+<h3><span class="section-number">9.6.3. </span>More on test teardown<a class="headerlink" href="#more-on-test-teardown" title="Permalink to this heading"></a></h3>
 <p>As stated in <a class="reference internal" href="#defining-a-test-class-in-order-to-define-setup-and-teardown-methods">Defining a test class in order to define setUp and tearDown methods</a>,
 code in the tearDown method is executed after each test, often to do cleanup operations.</p>
 <p>Using the tearDown method is recommended because tests abort if an assertion fails.
@@ -555,9 +455,9 @@ teardown portion of the test.</p>
 </section>
 </section>
 <section id="finding-more-documentation-and-examples">
-<h2><span class="section-number">9.7. </span>Finding more documentation and examples<a class="headerlink" href="#finding-more-documentation-and-examples" title="Permalink to this heading">¶</a></h2>
+<h2><span class="section-number">9.7. </span>Finding more documentation and examples<a class="headerlink" href="#finding-more-documentation-and-examples" title="Permalink to this heading"></a></h2>
 <section id="more-detailed-examples-in-cime">
-<h3><span class="section-number">9.7.1. </span>More detailed examples in CIME<a class="headerlink" href="#more-detailed-examples-in-cime" title="Permalink to this heading">¶</a></h3>
+<h3><span class="section-number">9.7.1. </span>More detailed examples in CIME<a class="headerlink" href="#more-detailed-examples-in-cime" title="Permalink to this heading"></a></h3>
 <p>There are many examples of unit tests in CIME, some simple and some quite complex.
 You can find them by looking for files with the “.pf” extension:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt; find . --name <span class="s1">&#39;*.pf&#39;</span>
@@ -567,7 +467,7 @@ You can find them by looking for files with the “.pf” extension:</p>
 <strong>CMakeLists.txt</strong> files throughout the source tree.</p>
 </section>
 <section id="other-pfunit-documentation-sources">
-<h3><span class="section-number">9.7.2. </span>Other pFUnit documentation sources<a class="headerlink" href="#other-pfunit-documentation-sources" title="Permalink to this heading">¶</a></h3>
+<h3><span class="section-number">9.7.2. </span>Other pFUnit documentation sources<a class="headerlink" href="#other-pfunit-documentation-sources" title="Permalink to this heading"></a></h3>
 <p>Extensive documentation and examples are included in the following when you obtain
 pFUnit from <a class="reference external" href="https://github.com/Goddard-Fortran-Ecosystem/pFUnit">https://github.com/Goddard-Fortran-Ecosystem/pFUnit</a>:</p>
 <ul class="simple">
@@ -580,7 +480,7 @@ many uses of pFUnit features. Other documentation includes additional assertion
 methods that are available.</p>
 </section>
 <section id="documentation-of-the-unit-test-build-system">
-<h3><span class="section-number">9.7.3. </span>Documentation of the unit test build system<a class="headerlink" href="#documentation-of-the-unit-test-build-system" title="Permalink to this heading">¶</a></h3>
+<h3><span class="section-number">9.7.3. </span>Documentation of the unit test build system<a class="headerlink" href="#documentation-of-the-unit-test-build-system" title="Permalink to this heading"></a></h3>
 <p>The CMake build infrastructure is in <strong>$CIMEROOT/src/externals/CMake</strong>.</p>
 <p>The infrastructure for building and running tests with <strong>run_tests.py</strong> is in
 <strong>$CIMEROOT/scripts/fortran_unit_testing</strong>. That directory also contains general
@@ -592,75 +492,36 @@ documentation about how to use the CIME unit test infrastructure (in the
 
 
            </div>
-           <div class="articleComments">
-            
-           </div>
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="multi-instance.html" class="btn btn-neutral float-right" title="10. Multi-instance component functionality" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="testing.html" class="btn btn-neutral" title="8. Testing" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="testing.html" class="btn btn-neutral float-left" title="8. Testing" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="multi-instance.html" class="btn btn-neutral float-right" title="10. Multi-instance component functionality" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-
-    </p>
+    <p>&#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.</p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
      
 <script>var version_json_loc = "../../../versions.json";</script>
 
 
 </footer>
-
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-
-  
-
-    
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/sphinx_highlight.js"></script>
-        <script src="../_static/pop_ver.js"></script>
-    
-
-  
-
-  
-  
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-  
-
-  
-  
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-   
+  </script> 
 
 </body>
 </html>
