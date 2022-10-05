@@ -37,7 +37,7 @@ jobs:
       - name: Build Sphinx docs
         run: |
           make BUILDDIR=${PWD}/_build -C doc/ html
-      - name: Push PR branch
+      - name: Push PR preview
         if: ${{ github.event_name == 'pull_request' }}
         uses: peaceiris/actions-gh-pages@v3
         with:
@@ -46,3 +46,14 @@ jobs:
           destination_dir: './branch/${{ github.event.pull_request.head.ref }}'
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
+      - name: Comment about previewing documentation
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: actions/github-script@v5
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: 'You can preview documentation at https://esmci.github.io/cime/branch/${{ github.event.pull_request.head.ref }}/index.html'
+            })
