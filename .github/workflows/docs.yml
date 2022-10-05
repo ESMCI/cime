@@ -43,6 +43,6 @@ jobs:
         with:
           github_token: ${{secrets.GITHUB_TOKEN}}
           publish_dir: './_build/html'
-          desintation_dir: 'branch/${{ github.event.pull_request.head.ref }}'
+          destination_dir: './branch/${{ github.event.pull_request.head.ref }}'
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
