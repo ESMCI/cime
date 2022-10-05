@@ -1,0 +1,14 @@
+
+.. _cime_bisect:
+
+####################################################
+cime_bisect
+####################################################
+
+**cime_bisect** is a script in CIMEROOT/scripts/Tools.
+
+.. toctree::
+   :maxdepth: 1
+
+.. command-output:: ./cime_bisect --help
+   :cwd: ../../../scripts/Tools

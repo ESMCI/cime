@@ -1,0 +1,458 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>CIME.Servers package &mdash; CIME master documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="CIME master documentation" href="../index.html"/>
+        <link rel="up" title="CIME package" href="CIME.html"/>
+        <link rel="next" title="CIME.SystemTests package" href="CIME.SystemTests.html"/>
+        <link rel="prev" title="CIME.BuildTools package" href="CIME.BuildTools.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> CIME
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                
+                  <div class="version-dropdown">
+                    <select class="version-list" id="version-list">
+                      <option value=''>master</option>
+                      
+                        
+                      
+                        
+                          <option value="">[placeholder]</option>
+                        
+                      
+                    </select>
+                  </div>
+                
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../what_cime/index.html">What is CIME?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users_guide/index.html">Case Control System Part 1: Basic Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users_guide/index.html#case-control-system-part-2-configuration-porting-testing-and-use-cases">Case Control System Part 2: Configuration, Porting, Testing and Use Cases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_models/index.html">Data Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../driver_cpl/index.html">Driver/Coupler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../build_cpl/index.html">Building a Coupled Model with CIME</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../misc_tools/index.html">Miscellaneous Tools</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../glossary/index.html">Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Tools_user/index.html">User Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../xml_files/index.html">XML Files</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">CIME</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="CIME.html">CIME package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="CIME.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="CIME.BuildTools.html">CIME.BuildTools package</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">CIME.Servers package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.html">CIME.SystemTests package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.html">CIME.XML package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.case.html">CIME.case package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.tests.html">CIME.tests package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.aprun">CIME.aprun module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.bless_test_results">CIME.bless_test_results module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.build">CIME.build module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.buildlib">CIME.buildlib module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.buildnml">CIME.buildnml module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.code_checker">CIME.code_checker module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.compare_namelists">CIME.compare_namelists module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.compare_test_results">CIME.compare_test_results module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.cs_status">CIME.cs_status module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.cs_status_creator">CIME.cs_status_creator module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.date">CIME.date module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.expected_fails">CIME.expected_fails module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.get_timing">CIME.get_timing module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.hist_utils">CIME.hist_utils module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.locked_files">CIME.locked_files module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.namelist">CIME.namelist module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.nmlgen">CIME.nmlgen module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.provenance">CIME.provenance module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.simple_compare">CIME.simple_compare module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.test_scheduler">CIME.test_scheduler module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.test_status">CIME.test_status module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.test_utils">CIME.test_utils module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.user_mod_support">CIME.user_mod_support module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.utils">CIME.utils module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.wait_for_tests">CIME.wait_for_tests module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../Tools_api/modules.html">Tools</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">CIME</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="modules.html">CIME</a> &raquo;</li>
+        
+          <li><a href="CIME.html">CIME package</a> &raquo;</li>
+        
+      <li>CIME.Servers package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/CIME_api/CIME.Servers.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="cime-servers-package">
+<h1>CIME.Servers package<a class="headerlink" href="#cime-servers-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-CIME.Servers.ftp">
+<span id="cime-servers-ftp-module"></span><h2>CIME.Servers.ftp module<a class="headerlink" href="#module-CIME.Servers.ftp" title="Permalink to this headline">¶</a></h2>
+<p>FTP Server class.  Interact with a server using FTP protocol</p>
+<dl class="py class">
+<dt id="CIME.Servers.ftp.FTP">
+<em class="property">class </em><code class="sig-prename descclassname">CIME.Servers.ftp.</code><code class="sig-name descname">FTP</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">address</span></em>, <em class="sig-param"><span class="n">user</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">passwd</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">server</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/Servers/ftp.html#FTP"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.Servers.ftp.FTP" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#CIME.Servers.generic_server.GenericServer" title="CIME.Servers.generic_server.GenericServer"><code class="xref py py-class docutils literal notranslate"><span class="pre">CIME.Servers.generic_server.GenericServer</span></code></a></p>
+<dl class="py method">
+<dt id="CIME.Servers.ftp.FTP.fileexists">
+<code class="sig-name descname">fileexists</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">rel_path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/Servers/ftp.html#FTP.fileexists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.Servers.ftp.FTP.fileexists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True if rel_path exists on server</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="CIME.Servers.ftp.FTP.ftp_login">
+<em class="property">classmethod </em><code class="sig-name descname">ftp_login</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">address</span></em>, <em class="sig-param"><span class="n">user</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">passwd</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/Servers/ftp.html#FTP.ftp_login"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.Servers.ftp.FTP.ftp_login" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="CIME.Servers.ftp.FTP.getdirectory">
+<code class="sig-name descname">getdirectory</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">rel_path</span></em>, <em class="sig-param"><span class="n">full_path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/Servers/ftp.html#FTP.getdirectory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.Servers.ftp.FTP.getdirectory" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="CIME.Servers.ftp.FTP.getfile">
+<code class="sig-name descname">getfile</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">rel_path</span></em>, <em class="sig-param"><span class="n">full_path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/Servers/ftp.html#FTP.getfile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.Servers.ftp.FTP.getfile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get file from rel_path on server and place in location full_path on client
+fail if full_path already exists on client, return True if successful</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-CIME.Servers.generic_server">
+<span id="cime-servers-generic-server-module"></span><h2>CIME.Servers.generic_server module<a class="headerlink" href="#module-CIME.Servers.generic_server" title="Permalink to this headline">¶</a></h2>
+<p>Generic Server class.  There should be little or no functionality in this class, it serves only
+to make sure that specific server classes maintain a consistant argument list and functionality
+so that they are interchangable objects</p>
+<dl class="py class">
+<dt id="CIME.Servers.generic_server.GenericServer">
+<em class="property">class </em><code class="sig-prename descclassname">CIME.Servers.generic_server.</code><code class="sig-name descname">GenericServer</code><span class="sig-paren">(</span><em class="sig-param">host=' '</em>, <em class="sig-param">user=' '</em>, <em class="sig-param">passwd=' '</em>, <em class="sig-param">acct=' '</em>, <em class="sig-param">timeout=&lt;object object&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/Servers/generic_server.html#GenericServer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.Servers.generic_server.GenericServer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt id="CIME.Servers.generic_server.GenericServer.fileexists">
+<code class="sig-name descname">fileexists</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">rel_path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/Servers/generic_server.html#GenericServer.fileexists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.Servers.generic_server.GenericServer.fileexists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True if rel_path exists on server</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="CIME.Servers.generic_server.GenericServer.getfile">
+<code class="sig-name descname">getfile</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">rel_path</span></em>, <em class="sig-param"><span class="n">full_path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/Servers/generic_server.html#GenericServer.getfile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.Servers.generic_server.GenericServer.getfile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get file from rel_path on server and place in location full_path on client
+fail if full_path already exists on client, return True if successful</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-CIME.Servers.gftp">
+<span id="cime-servers-gftp-module"></span><h2>CIME.Servers.gftp module<a class="headerlink" href="#module-CIME.Servers.gftp" title="Permalink to this headline">¶</a></h2>
+<p>GridFTP Server class.  Interact with a server using GridFTP protocol</p>
+<dl class="py class">
+<dt id="CIME.Servers.gftp.GridFTP">
+<em class="property">class </em><code class="sig-prename descclassname">CIME.Servers.gftp.</code><code class="sig-name descname">GridFTP</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">address</span></em>, <em class="sig-param"><span class="n">user</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">passwd</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/Servers/gftp.html#GridFTP"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.Servers.gftp.GridFTP" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#CIME.Servers.generic_server.GenericServer" title="CIME.Servers.generic_server.GenericServer"><code class="xref py py-class docutils literal notranslate"><span class="pre">CIME.Servers.generic_server.GenericServer</span></code></a></p>
+<dl class="py method">
+<dt id="CIME.Servers.gftp.GridFTP.fileexists">
+<code class="sig-name descname">fileexists</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">rel_path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/Servers/gftp.html#GridFTP.fileexists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.Servers.gftp.GridFTP.fileexists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True if rel_path exists on server</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="CIME.Servers.gftp.GridFTP.getdirectory">
+<code class="sig-name descname">getdirectory</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">rel_path</span></em>, <em class="sig-param"><span class="n">full_path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/Servers/gftp.html#GridFTP.getdirectory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.Servers.gftp.GridFTP.getdirectory" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="CIME.Servers.gftp.GridFTP.getfile">
+<code class="sig-name descname">getfile</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">rel_path</span></em>, <em class="sig-param"><span class="n">full_path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/Servers/gftp.html#GridFTP.getfile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.Servers.gftp.GridFTP.getfile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get file from rel_path on server and place in location full_path on client
+fail if full_path already exists on client, return True if successful</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-CIME.Servers.svn">
+<span id="cime-servers-svn-module"></span><h2>CIME.Servers.svn module<a class="headerlink" href="#module-CIME.Servers.svn" title="Permalink to this headline">¶</a></h2>
+<p>SVN Server class.  Interact with a server using SVN protocol</p>
+<dl class="py class">
+<dt id="CIME.Servers.svn.SVN">
+<em class="property">class </em><code class="sig-prename descclassname">CIME.Servers.svn.</code><code class="sig-name descname">SVN</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">address</span></em>, <em class="sig-param"><span class="n">user</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">passwd</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/Servers/svn.html#SVN"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.Servers.svn.SVN" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#CIME.Servers.generic_server.GenericServer" title="CIME.Servers.generic_server.GenericServer"><code class="xref py py-class docutils literal notranslate"><span class="pre">CIME.Servers.generic_server.GenericServer</span></code></a></p>
+<dl class="py method">
+<dt id="CIME.Servers.svn.SVN.fileexists">
+<code class="sig-name descname">fileexists</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">rel_path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/Servers/svn.html#SVN.fileexists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.Servers.svn.SVN.fileexists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True if rel_path exists on server</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="CIME.Servers.svn.SVN.getdirectory">
+<code class="sig-name descname">getdirectory</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">rel_path</span></em>, <em class="sig-param"><span class="n">full_path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/Servers/svn.html#SVN.getdirectory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.Servers.svn.SVN.getdirectory" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="CIME.Servers.svn.SVN.getfile">
+<code class="sig-name descname">getfile</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">rel_path</span></em>, <em class="sig-param"><span class="n">full_path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/Servers/svn.html#SVN.getfile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.Servers.svn.SVN.getfile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get file from rel_path on server and place in location full_path on client
+fail if full_path already exists on client, return True if successful</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-CIME.Servers.wget">
+<span id="cime-servers-wget-module"></span><h2>CIME.Servers.wget module<a class="headerlink" href="#module-CIME.Servers.wget" title="Permalink to this headline">¶</a></h2>
+<p>WGET Server class.  Interact with a server using WGET protocol</p>
+<dl class="py class">
+<dt id="CIME.Servers.wget.WGET">
+<em class="property">class </em><code class="sig-prename descclassname">CIME.Servers.wget.</code><code class="sig-name descname">WGET</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">address</span></em>, <em class="sig-param"><span class="n">user</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">passwd</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/Servers/wget.html#WGET"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.Servers.wget.WGET" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#CIME.Servers.generic_server.GenericServer" title="CIME.Servers.generic_server.GenericServer"><code class="xref py py-class docutils literal notranslate"><span class="pre">CIME.Servers.generic_server.GenericServer</span></code></a></p>
+<dl class="py method">
+<dt id="CIME.Servers.wget.WGET.fileexists">
+<code class="sig-name descname">fileexists</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">rel_path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/Servers/wget.html#WGET.fileexists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.Servers.wget.WGET.fileexists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True if rel_path exists on server</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="CIME.Servers.wget.WGET.getdirectory">
+<code class="sig-name descname">getdirectory</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">rel_path</span></em>, <em class="sig-param"><span class="n">full_path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/Servers/wget.html#WGET.getdirectory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.Servers.wget.WGET.getdirectory" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="CIME.Servers.wget.WGET.getfile">
+<code class="sig-name descname">getfile</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">rel_path</span></em>, <em class="sig-param"><span class="n">full_path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/Servers/wget.html#WGET.getfile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.Servers.wget.WGET.getfile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get file from rel_path on server and place in location full_path on client
+fail if full_path already exists on client, return True if successful</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="CIME.Servers.wget.WGET.wget_login">
+<em class="property">classmethod </em><code class="sig-name descname">wget_login</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">address</span></em>, <em class="sig-param"><span class="n">user</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">passwd</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/Servers/wget.html#WGET.wget_login"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.Servers.wget.WGET.wget_login" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-CIME.Servers">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-CIME.Servers" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="CIME.SystemTests.html" class="btn btn-neutral float-right" title="CIME.SystemTests package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="CIME.BuildTools.html" class="btn btn-neutral" title="CIME.BuildTools package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+     
+<script>var version_json_loc = "../../../versions.json";</script>
+
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script src="../_static/pop_ver.js"></script>
+    
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

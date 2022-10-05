@@ -1,0 +1,14 @@
+
+.. _case.submit:
+
+####################################################
+case.submit
+####################################################
+
+**case.submit** is a script in CIMEROOT/scripts/Tools.
+
+.. toctree::
+   :maxdepth: 1
+
+.. command-output:: ./case.submit --help
+   :cwd: ../../../scripts/Tools

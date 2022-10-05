@@ -1,0 +1,14 @@
+
+.. _getTiming:
+
+####################################################
+getTiming
+####################################################
+
+**getTiming** is a script in CIMEROOT/scripts/Tools.
+
+.. toctree::
+   :maxdepth: 1
+
+.. command-output:: ./getTiming --help
+   :cwd: ../../../scripts/Tools

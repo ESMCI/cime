@@ -1,0 +1,679 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>CIME.hist_utils &mdash; CIME cime5.6 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="CIME cime5.6 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> CIME
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                
+                  <div class="version-dropdown">
+                    <select class="version-list" id="version-list">
+                      <option value=''>cime5.6</option>
+                      
+                        
+                      
+                        
+                          <option value="">[placeholder]</option>
+                        
+                      
+                    </select>
+                  </div>
+                
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../what_cime/index.html">What is CIME?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../users_guide/index.html">Case Control System Part 1: Basic Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../users_guide/index.html#case-control-system-part-2-configuration-porting-testing-and-use-cases">Case Control System Part 2: Configuration, Porting, Testing and Use Cases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../data_models/index.html">Data Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../driver_cpl/index.html">Driver/Coupler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../build_cpl/index.html">Building a Coupled Model with CIME</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../misc_tools/index.html">Miscellaneous Tools</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../glossary/index.html">Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../Tools_user/index.html">User Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../xml_files/index.html">XML Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../CIME_api/modules.html">CIME</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../Tools_api/modules.html">Tools</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">CIME</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>CIME.hist_utils</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for CIME.hist_utils</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Functions for actions pertaining to history files.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">CIME.test_status</span> <span class="k">import</span> <span class="n">TEST_NO_BASELINES_COMMENT</span>
+
+<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="k">import</span> <span class="n">get_current_commit</span><span class="p">,</span> <span class="n">get_timestamp</span><span class="p">,</span> <span class="n">get_model</span><span class="p">,</span> <span class="n">safe_copy</span>
+
+<span class="kn">import</span> <span class="nn">logging</span><span class="o">,</span> <span class="nn">glob</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">re</span><span class="o">,</span> <span class="nn">stat</span><span class="o">,</span> <span class="nn">filecmp</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">BLESS_LOG_NAME</span> <span class="o">=</span> <span class="s2">&quot;bless_log&quot;</span>
+
+<span class="k">def</span> <span class="nf">_iter_model_file_substrs</span><span class="p">(</span><span class="n">case</span><span class="p">):</span>
+    <span class="n">models</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_compset_components</span><span class="p">()</span>
+    <span class="n">models</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;cpl&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">models</span><span class="p">:</span>
+        <span class="k">yield</span> <span class="n">model</span>
+
+<span class="k">def</span> <span class="nf">_get_all_hist_files</span><span class="p">(</span><span class="n">testcase</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">from_dir</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+    <span class="n">suffix</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">suffix</span><span class="p">)</span> <span class="k">if</span> <span class="n">suffix</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Match hist files produced by run</span>
+    <span class="n">test_hists</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">.</span><span class="si">{}</span><span class="s2">*.h?.nc</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">from_dir</span><span class="p">,</span> <span class="n">testcase</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">suffix</span><span class="p">))</span>
+    <span class="n">test_hists</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">.</span><span class="si">{}</span><span class="s2">*.h.nc</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">from_dir</span><span class="p">,</span> <span class="n">testcase</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">suffix</span><span class="p">)))</span>
+
+    <span class="c1"># Match multi-instance files produced by run</span>
+    <span class="n">test_hists</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">.</span><span class="si">{}</span><span class="s2">*.h?.*.nc</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">from_dir</span><span class="p">,</span> <span class="n">testcase</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">suffix</span><span class="p">)))</span>
+    <span class="n">test_hists</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">.</span><span class="si">{}</span><span class="s2">*.h.*.nc</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">from_dir</span><span class="p">,</span> <span class="n">testcase</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">suffix</span><span class="p">)))</span>
+
+    <span class="c1"># suffix == &quot;&quot; implies baseline comparison, baseline hist files have simpler names</span>
+
+    <span class="k">if</span> <span class="n">suffix</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+        <span class="n">test_hists</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">*.h.nc&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">from_dir</span><span class="p">,</span> <span class="n">model</span><span class="p">)))</span>
+        <span class="n">test_hists</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">*.h?.nc&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">from_dir</span><span class="p">,</span> <span class="n">model</span><span class="p">)))</span>
+        <span class="n">test_hists</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">*.h.*.nc&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">from_dir</span><span class="p">,</span> <span class="n">model</span><span class="p">)))</span>
+        <span class="n">test_hists</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">*.h?.*.nc&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">from_dir</span><span class="p">,</span> <span class="n">model</span><span class="p">)))</span>
+
+    <span class="n">test_hists</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">test_hists</span>
+
+<span class="k">def</span> <span class="nf">_get_latest_hist_files</span><span class="p">(</span><span class="n">testcase</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">from_dir</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+    <span class="n">test_hists</span> <span class="o">=</span> <span class="n">_get_all_hist_files</span><span class="p">(</span><span class="n">testcase</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">from_dir</span><span class="p">,</span> <span class="n">suffix</span><span class="p">)</span>
+    <span class="n">latest_files</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">histlist</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">hist</span> <span class="ow">in</span> <span class="n">test_hists</span><span class="p">:</span>
+        <span class="n">ext</span> <span class="o">=</span> <span class="n">get_extension</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">hist</span><span class="p">)</span>
+        <span class="n">latest_files</span><span class="p">[</span><span class="n">ext</span><span class="p">]</span> <span class="o">=</span> <span class="n">hist</span>
+
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">latest_files</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">histlist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">latest_files</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">histlist</span>
+
+<div class="viewcode-block" id="copy"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.hist_utils.copy">[docs]</a><span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">suffix</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Copy the most recent batch of hist files in a case, adding the given suffix.</span>
+
+<span class="sd">    This can allow you to temporarily &quot;save&quot; these files so they won&#39;t be blown</span>
+<span class="sd">    away if you re-run the case.</span>
+
+<span class="sd">    case - The case containing the files you want to save</span>
+<span class="sd">    suffix - The string suffix you want to add to saved files, this can be used to find them later.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">rundir</span>   <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">)</span>
+    <span class="n">testcase</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASE&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Loop over models</span>
+    <span class="n">comments</span> <span class="o">=</span> <span class="s2">&quot;Copying hist files to suffix &#39;</span><span class="si">{}</span><span class="s2">&#39;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">suffix</span><span class="p">)</span>
+    <span class="n">num_copied</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">_iter_model_file_substrs</span><span class="p">(</span><span class="n">case</span><span class="p">):</span>
+        <span class="n">comments</span> <span class="o">+=</span> <span class="s2">&quot;  Copying hist files for model &#39;</span><span class="si">{}</span><span class="s2">&#39;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+        <span class="n">test_hists</span> <span class="o">=</span> <span class="n">_get_latest_hist_files</span><span class="p">(</span><span class="n">testcase</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">rundir</span><span class="p">)</span>
+        <span class="n">num_copied</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">test_hists</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">test_hist</span> <span class="ow">in</span> <span class="n">test_hists</span><span class="p">:</span>
+            <span class="n">new_file</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">test_hist</span><span class="p">,</span> <span class="n">suffix</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">new_file</span><span class="p">):</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">new_file</span><span class="p">)</span>
+
+            <span class="n">comments</span> <span class="o">+=</span> <span class="s2">&quot;    Copying &#39;</span><span class="si">{}</span><span class="s2">&#39; to &#39;</span><span class="si">{}</span><span class="s2">&#39;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">test_hist</span><span class="p">,</span> <span class="n">new_file</span><span class="p">)</span>
+
+            <span class="c1"># Need to copy rather than move in case there are some history files</span>
+            <span class="c1"># that will need to continue to be filled on the next phase; this</span>
+            <span class="c1"># can be the case for a restart run.</span>
+            <span class="c1">#</span>
+            <span class="c1"># (If it weren&#39;t for that possibility, a move/rename would be more</span>
+            <span class="c1"># robust here: The problem with a copy is that there can be</span>
+            <span class="c1"># confusion after the second run as to which files were created by</span>
+            <span class="c1"># the first run and which by the second. For example, if the second</span>
+            <span class="c1"># run fails to output any history files, the test will still pass,</span>
+            <span class="c1"># because the test system will think that run1&#39;s files were output</span>
+            <span class="c1"># by run2. But we live with that downside for the sake of the reason</span>
+            <span class="c1"># noted above.)</span>
+            <span class="n">safe_copy</span><span class="p">(</span><span class="n">test_hist</span><span class="p">,</span> <span class="n">new_file</span><span class="p">)</span>
+
+    <span class="n">expect</span><span class="p">(</span><span class="n">num_copied</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;copy failed: no hist files found in rundir &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rundir</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">comments</span></div>
+
+<span class="k">def</span> <span class="nf">_hists_match</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">hists1</span><span class="p">,</span> <span class="n">hists2</span><span class="p">,</span> <span class="n">suffix1</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">suffix2</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    return (num in set 1 but not 2 , num in set 2 but not 1, matchups)</span>
+
+<span class="sd">    &gt;&gt;&gt; hists1 = [&#39;FOO.G.cpl.h1.nc&#39;, &#39;FOO.G.cpl.h2.nc&#39;, &#39;FOO.G.cpl.h3.nc&#39;]</span>
+<span class="sd">    &gt;&gt;&gt; hists2 = [&#39;cpl.h2.nc&#39;, &#39;cpl.h3.nc&#39;, &#39;cpl.h4.nc&#39;]</span>
+<span class="sd">    &gt;&gt;&gt; _hists_match(&#39;cpl&#39;, hists1, hists2)</span>
+<span class="sd">    ([&#39;FOO.G.cpl.h1.nc&#39;], [&#39;cpl.h4.nc&#39;], [(&#39;FOO.G.cpl.h2.nc&#39;, &#39;cpl.h2.nc&#39;), (&#39;FOO.G.cpl.h3.nc&#39;, &#39;cpl.h3.nc&#39;)])</span>
+<span class="sd">    &gt;&gt;&gt; hists1 = [&#39;FOO.G.cpl.h1.nc.SUF1&#39;, &#39;FOO.G.cpl.h2.nc.SUF1&#39;, &#39;FOO.G.cpl.h3.nc.SUF1&#39;]</span>
+<span class="sd">    &gt;&gt;&gt; hists2 = [&#39;cpl.h2.nc.SUF2&#39;, &#39;cpl.h3.nc.SUF2&#39;, &#39;cpl.h4.nc.SUF2&#39;]</span>
+<span class="sd">    &gt;&gt;&gt; _hists_match(&#39;cpl&#39;, hists1, hists2, &#39;SUF1&#39;, &#39;SUF2&#39;)</span>
+<span class="sd">    ([&#39;FOO.G.cpl.h1.nc.SUF1&#39;], [&#39;cpl.h4.nc.SUF2&#39;], [(&#39;FOO.G.cpl.h2.nc.SUF1&#39;, &#39;cpl.h2.nc.SUF2&#39;), (&#39;FOO.G.cpl.h3.nc.SUF1&#39;, &#39;cpl.h3.nc.SUF2&#39;)])</span>
+<span class="sd">    &gt;&gt;&gt; hists1 = [&#39;cam.h0.1850-01-08-00000.nc&#39;]</span>
+<span class="sd">    &gt;&gt;&gt; hists2 = [&#39;cam_0001.h0.1850-01-08-00000.nc&#39;,&#39;cam_0002.h0.1850-01-08-00000.nc&#39;]</span>
+<span class="sd">    &gt;&gt;&gt; _hists_match(&#39;cam&#39;, hists1, hists2, &#39;&#39;, &#39;&#39;)</span>
+<span class="sd">    ([], [], [(&#39;cam.h0.1850-01-08-00000.nc&#39;, &#39;cam_0001.h0.1850-01-08-00000.nc&#39;), (&#39;cam.h0.1850-01-08-00000.nc&#39;, &#39;cam_0002.h0.1850-01-08-00000.nc&#39;)])</span>
+<span class="sd">    &gt;&gt;&gt; hists1 = [&#39;cam_0001.h0.1850-01-08-00000.nc.base&#39;,&#39;cam_0002.h0.1850-01-08-00000.nc.base&#39;]</span>
+<span class="sd">    &gt;&gt;&gt; hists2 = [&#39;cam_0001.h0.1850-01-08-00000.nc.rest&#39;,&#39;cam_0002.h0.1850-01-08-00000.nc.rest&#39;]</span>
+<span class="sd">    &gt;&gt;&gt; _hists_match(&#39;cam&#39;, hists1, hists2, &#39;base&#39;, &#39;rest&#39;)</span>
+<span class="sd">    ([], [], [(&#39;cam_0001.h0.1850-01-08-00000.nc.base&#39;, &#39;cam_0001.h0.1850-01-08-00000.nc.rest&#39;), (&#39;cam_0002.h0.1850-01-08-00000.nc.base&#39;, &#39;cam_0002.h0.1850-01-08-00000.nc.rest&#39;)])</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">normalized1</span><span class="p">,</span> <span class="n">normalized2</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+    <span class="n">multi_normalized1</span><span class="p">,</span> <span class="n">multi_normalized2</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+    <span class="n">multiinst</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">for</span> <span class="n">hists</span><span class="p">,</span> <span class="n">suffix</span><span class="p">,</span> <span class="n">normalized</span><span class="p">,</span> <span class="n">multi_normalized</span> <span class="ow">in</span> <span class="p">[(</span><span class="n">hists1</span><span class="p">,</span> <span class="n">suffix1</span><span class="p">,</span> <span class="n">normalized1</span><span class="p">,</span> <span class="n">multi_normalized1</span><span class="p">),</span> <span class="p">(</span><span class="n">hists2</span><span class="p">,</span> <span class="n">suffix2</span><span class="p">,</span> <span class="n">normalized2</span><span class="p">,</span> <span class="n">multi_normalized2</span><span class="p">)]:</span>
+        <span class="k">for</span> <span class="n">hist</span> <span class="ow">in</span> <span class="n">hists</span><span class="p">:</span>
+            <span class="n">normalized_name</span> <span class="o">=</span> <span class="n">hist</span><span class="p">[</span><span class="n">hist</span><span class="o">.</span><span class="n">rfind</span><span class="p">(</span><span class="n">model</span><span class="p">):]</span>
+            <span class="k">if</span> <span class="n">suffix</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+                <span class="n">expect</span><span class="p">(</span><span class="n">normalized_name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">suffix</span><span class="p">),</span> <span class="s2">&quot;How did &#39;</span><span class="si">{}</span><span class="s2">&#39; not have suffix &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">hist</span><span class="p">,</span> <span class="n">suffix</span><span class="p">))</span>
+                <span class="n">normalized_name</span> <span class="o">=</span> <span class="n">normalized_name</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">normalized_name</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">suffix</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+
+            <span class="n">m</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;(.+)_[0-9]</span><span class="si">{4}</span><span class="s2">(.+.nc)&quot;</span><span class="p">,</span><span class="n">normalized_name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">m</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">multiinst</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">multi_normalized</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">+</span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+
+            <span class="n">normalized</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">normalized_name</span><span class="p">)</span>
+
+    <span class="n">set_of_1_not_2</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">normalized1</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">normalized2</span><span class="p">)</span>
+    <span class="n">set_of_2_not_1</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">normalized2</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">normalized1</span><span class="p">)</span>
+
+    <span class="n">one_not_two</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span><span class="n">hists1</span><span class="p">[</span><span class="n">normalized1</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">item</span><span class="p">)]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">set_of_1_not_2</span><span class="p">])</span>
+    <span class="n">two_not_one</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span><span class="n">hists2</span><span class="p">[</span><span class="n">normalized2</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">item</span><span class="p">)]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">set_of_2_not_1</span><span class="p">])</span>
+
+    <span class="n">both</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">normalized1</span><span class="p">)</span> <span class="o">&amp;</span> <span class="nb">set</span><span class="p">(</span><span class="n">normalized2</span><span class="p">)</span>
+
+    <span class="n">match_ups</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span> <span class="p">(</span><span class="n">hists1</span><span class="p">[</span><span class="n">normalized1</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">item</span><span class="p">)],</span> <span class="n">hists2</span><span class="p">[</span><span class="n">normalized2</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">item</span><span class="p">)])</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">both</span><span class="p">])</span>
+
+    <span class="c1"># Special case - comparing multiinstance to single instance files</span>
+
+    <span class="k">if</span> <span class="n">multi_normalized1</span> <span class="o">!=</span> <span class="n">multi_normalized2</span><span class="p">:</span>
+        <span class="c1"># in this case hists1 contains multiinstance hists2 does not</span>
+        <span class="k">if</span> <span class="nb">set</span><span class="p">(</span><span class="n">multi_normalized1</span><span class="p">)</span> <span class="o">==</span> <span class="nb">set</span><span class="p">(</span><span class="n">normalized2</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">norm_hist1</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">multi_normalized1</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">idx1</span><span class="p">,</span> <span class="n">hist2</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">hists2</span><span class="p">):</span>
+                    <span class="n">norm_hist2</span> <span class="o">=</span> <span class="n">normalized2</span><span class="p">[</span><span class="n">idx1</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">norm_hist1</span> <span class="o">==</span> <span class="n">norm_hist2</span><span class="p">:</span>
+                        <span class="n">match_ups</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">hists1</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">hist2</span><span class="p">))</span>
+                        <span class="k">if</span> <span class="n">hist2</span> <span class="ow">in</span> <span class="n">two_not_one</span><span class="p">:</span>
+                            <span class="n">two_not_one</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">hist2</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">hists1</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="ow">in</span> <span class="n">one_not_two</span><span class="p">:</span>
+                            <span class="n">one_not_two</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">hists1</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span>
+        <span class="c1"># in this case hists2 contains multiinstance hists1 does not</span>
+        <span class="k">if</span> <span class="nb">set</span><span class="p">(</span><span class="n">multi_normalized2</span><span class="p">)</span> <span class="o">==</span> <span class="nb">set</span><span class="p">(</span><span class="n">normalized1</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">norm_hist2</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">multi_normalized2</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">idx1</span><span class="p">,</span> <span class="n">hist1</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">hists1</span><span class="p">):</span>
+                    <span class="n">norm_hist1</span> <span class="o">=</span> <span class="n">normalized1</span><span class="p">[</span><span class="n">idx1</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">norm_hist2</span> <span class="o">==</span> <span class="n">norm_hist1</span><span class="p">:</span>
+                        <span class="n">match_ups</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">hist1</span><span class="p">,</span> <span class="n">hists2</span><span class="p">[</span><span class="n">idx</span><span class="p">]))</span>
+                        <span class="k">if</span> <span class="n">hist1</span> <span class="ow">in</span> <span class="n">one_not_two</span><span class="p">:</span>
+                            <span class="n">one_not_two</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">hist1</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">hists2</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="ow">in</span> <span class="n">two_not_one</span><span class="p">:</span>
+                            <span class="n">two_not_one</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">hists2</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">multiinst</span><span class="p">:</span>
+        <span class="n">expect</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">match_ups</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">set_of_1_not_2</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">hists1</span><span class="p">),</span> <span class="s2">&quot;Programming error1&quot;</span><span class="p">)</span>
+        <span class="n">expect</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">match_ups</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">set_of_2_not_1</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">hists2</span><span class="p">),</span> <span class="s2">&quot;Programming error2&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">one_not_two</span><span class="p">,</span> <span class="n">two_not_one</span><span class="p">,</span> <span class="n">match_ups</span>
+
+<span class="k">def</span> <span class="nf">_compare_hists</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">from_dir1</span><span class="p">,</span> <span class="n">from_dir2</span><span class="p">,</span> <span class="n">suffix1</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">suffix2</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">outfile_suffix</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">from_dir1</span> <span class="o">==</span> <span class="n">from_dir2</span><span class="p">:</span>
+        <span class="n">expect</span><span class="p">(</span><span class="n">suffix1</span> <span class="o">!=</span> <span class="n">suffix2</span><span class="p">,</span> <span class="s2">&quot;Comparing files to themselves?&quot;</span><span class="p">)</span>
+
+    <span class="n">testcase</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASE&quot;</span><span class="p">)</span>
+    <span class="n">casedir</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">)</span>
+    <span class="n">all_success</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">num_compared</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">comments</span> <span class="o">=</span> <span class="s2">&quot;Comparing hists for case &#39;</span><span class="si">{}</span><span class="s2">&#39; dir1=&#39;</span><span class="si">{}</span><span class="s2">&#39;, suffix1=&#39;</span><span class="si">{}</span><span class="s2">&#39;,  dir2=&#39;</span><span class="si">{}</span><span class="s2">&#39; suffix2=&#39;</span><span class="si">{}</span><span class="s2">&#39;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">testcase</span><span class="p">,</span> <span class="n">from_dir1</span><span class="p">,</span> <span class="n">suffix1</span><span class="p">,</span> <span class="n">from_dir2</span><span class="p">,</span> <span class="n">suffix2</span><span class="p">)</span>
+    <span class="n">multiinst_driver_compare</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">_iter_model_file_substrs</span><span class="p">(</span><span class="n">case</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">model</span> <span class="o">==</span> <span class="s1">&#39;cpl&#39;</span> <span class="ow">and</span> <span class="n">suffix2</span> <span class="o">==</span> <span class="s1">&#39;multiinst&#39;</span><span class="p">:</span>
+            <span class="n">multiinst_driver_compare</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">comments</span> <span class="o">+=</span> <span class="s2">&quot;  comparing model &#39;</span><span class="si">{}</span><span class="s2">&#39;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+        <span class="n">hists1</span> <span class="o">=</span> <span class="n">_get_latest_hist_files</span><span class="p">(</span><span class="n">testcase</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">from_dir1</span><span class="p">,</span> <span class="n">suffix1</span><span class="p">)</span>
+        <span class="n">hists2</span> <span class="o">=</span> <span class="n">_get_latest_hist_files</span><span class="p">(</span><span class="n">testcase</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">from_dir2</span><span class="p">,</span> <span class="n">suffix2</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">hists1</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">hists2</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">comments</span> <span class="o">+=</span> <span class="s2">&quot;    no hist files found for model </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+            <span class="k">continue</span>
+
+        <span class="n">one_not_two</span><span class="p">,</span> <span class="n">two_not_one</span><span class="p">,</span> <span class="n">match_ups</span> <span class="o">=</span> <span class="n">_hists_match</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">hists1</span><span class="p">,</span> <span class="n">hists2</span><span class="p">,</span> <span class="n">suffix1</span><span class="p">,</span> <span class="n">suffix2</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">one_not_two</span><span class="p">:</span>
+            <span class="n">comments</span> <span class="o">+=</span> <span class="s2">&quot;    File &#39;</span><span class="si">{}</span><span class="s2">&#39; had no counterpart in &#39;</span><span class="si">{}</span><span class="s2">&#39; with suffix &#39;</span><span class="si">{}</span><span class="s2">&#39;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">from_dir2</span><span class="p">,</span> <span class="n">suffix2</span><span class="p">)</span>
+            <span class="n">all_success</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">two_not_one</span><span class="p">:</span>
+            <span class="n">comments</span> <span class="o">+=</span> <span class="s2">&quot;    File &#39;</span><span class="si">{}</span><span class="s2">&#39; had no counterpart in &#39;</span><span class="si">{}</span><span class="s2">&#39; with suffix &#39;</span><span class="si">{}</span><span class="s2">&#39;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">from_dir1</span><span class="p">,</span> <span class="n">suffix1</span><span class="p">)</span>
+            <span class="n">all_success</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="n">num_compared</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">match_ups</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">hist1</span><span class="p">,</span> <span class="n">hist2</span> <span class="ow">in</span> <span class="n">match_ups</span><span class="p">:</span>
+            <span class="n">success</span><span class="p">,</span> <span class="n">cprnc_log_file</span> <span class="o">=</span> <span class="n">cprnc</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">hist1</span><span class="p">,</span> <span class="n">hist2</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">from_dir1</span><span class="p">,</span>
+                                            <span class="n">multiinst_driver_compare</span><span class="o">=</span><span class="n">multiinst_driver_compare</span><span class="p">,</span>
+                                            <span class="n">outfile_suffix</span><span class="o">=</span><span class="n">outfile_suffix</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">success</span><span class="p">:</span>
+                <span class="n">comments</span> <span class="o">+=</span> <span class="s2">&quot;    </span><span class="si">{}</span><span class="s2"> matched </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">hist1</span><span class="p">,</span> <span class="n">hist2</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">comments</span> <span class="o">+=</span> <span class="s2">&quot;    </span><span class="si">{}</span><span class="s2"> did NOT match </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">hist1</span><span class="p">,</span> <span class="n">hist2</span><span class="p">)</span>
+                <span class="n">comments</span> <span class="o">+=</span> <span class="s2">&quot;    cat &quot;</span> <span class="o">+</span> <span class="n">cprnc_log_file</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="n">expected_log_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">casedir</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">cprnc_log_file</span><span class="p">))</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">expected_log_file</span><span class="p">)</span> <span class="ow">and</span> <span class="n">filecmp</span><span class="o">.</span><span class="n">cmp</span><span class="p">(</span><span class="n">cprnc_log_file</span><span class="p">,</span> <span class="n">expected_log_file</span><span class="p">)):</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">safe_copy</span><span class="p">(</span><span class="n">cprnc_log_file</span><span class="p">,</span> <span class="n">casedir</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="p">(</span><span class="ne">OSError</span><span class="p">,</span> <span class="ne">IOError</span><span class="p">)</span> <span class="k">as</span> <span class="n">_</span><span class="p">:</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Could not copy </span><span class="si">{}</span><span class="s2"> to </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cprnc_log_file</span><span class="p">,</span> <span class="n">casedir</span><span class="p">))</span>
+
+                <span class="n">all_success</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">if</span> <span class="n">num_compared</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">all_success</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">comments</span> <span class="o">+=</span> <span class="s2">&quot;Did not compare any hist files! Missing baselines?</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+    <span class="n">comments</span> <span class="o">+=</span> <span class="s2">&quot;PASS&quot;</span> <span class="k">if</span> <span class="n">all_success</span> <span class="k">else</span> <span class="s2">&quot;FAIL&quot;</span>
+
+    <span class="k">return</span> <span class="n">all_success</span><span class="p">,</span> <span class="n">comments</span>
+
+<div class="viewcode-block" id="compare_test"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.hist_utils.compare_test">[docs]</a><span class="k">def</span> <span class="nf">compare_test</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">suffix1</span><span class="p">,</span> <span class="n">suffix2</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compares two sets of component history files in the testcase directory</span>
+
+<span class="sd">    case - The case containing the hist files to compare</span>
+<span class="sd">    suffix1 - The suffix that identifies the first batch of hist files</span>
+<span class="sd">    suffix1 - The suffix that identifies the second batch of hist files</span>
+
+<span class="sd">    returns (SUCCESS, comments)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">rundir</span>   <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">_compare_hists</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">rundir</span><span class="p">,</span> <span class="n">rundir</span><span class="p">,</span> <span class="n">suffix1</span><span class="p">,</span> <span class="n">suffix2</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="cprnc"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.hist_utils.cprnc">[docs]</a><span class="k">def</span> <span class="nf">cprnc</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">file1</span><span class="p">,</span> <span class="n">file2</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">rundir</span><span class="p">,</span> <span class="n">multiinst_driver_compare</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">outfile_suffix</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Run cprnc to compare two individual nc files</span>
+
+<span class="sd">    file1 - the full or relative path of the first file</span>
+<span class="sd">    file2 - the full or relative path of the second file</span>
+<span class="sd">    case - the case containing the files</span>
+<span class="sd">    rundir - the rundir for the case</span>
+<span class="sd">    outfile_suffix - if non-blank, then the output file name ends with this</span>
+<span class="sd">        suffix (with a &#39;.&#39; added before the given suffix).</span>
+<span class="sd">        Use None to avoid permissions issues in the case dir.</span>
+
+<span class="sd">    returns (True if the files matched, log_name)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cprnc_exe</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CCSM_CPRNC&quot;</span><span class="p">)</span>
+    <span class="n">basename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">file1</span><span class="p">)</span>
+    <span class="n">multiinst_regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;.*</span><span class="si">%s</span><span class="s1">[^_]*(_[0-9]</span><span class="si">{4}</span><span class="s1">)[.]h.?[.][^.]+?[.]nc&#39;</span> <span class="o">%</span> <span class="n">model</span><span class="p">)</span>
+    <span class="n">mstr</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+    <span class="n">mstr1</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+    <span class="n">mstr2</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+    <span class="c1">#  If one is a multiinstance file but the other is not add an instance string</span>
+    <span class="n">m1</span> <span class="o">=</span> <span class="n">multiinst_regex</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">file1</span><span class="p">)</span>
+    <span class="n">m2</span> <span class="o">=</span> <span class="n">multiinst_regex</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">file2</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">m1</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">mstr1</span> <span class="o">=</span> <span class="n">m1</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">m2</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">mstr2</span> <span class="o">=</span> <span class="n">m2</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">mstr1</span> <span class="o">!=</span> <span class="n">mstr2</span><span class="p">:</span>
+        <span class="n">mstr</span> <span class="o">=</span> <span class="n">mstr1</span><span class="o">+</span><span class="n">mstr2</span>
+
+    <span class="n">output_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{}{}</span><span class="s2">.cprnc.out&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">basename</span><span class="p">,</span> <span class="n">mstr</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">outfile_suffix</span><span class="p">:</span>
+        <span class="n">output_filename</span> <span class="o">+=</span> <span class="s2">&quot;.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">outfile_suffix</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">outfile_suffix</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">cpr_stat</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">run_cmd</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> -m </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cprnc_exe</span><span class="p">,</span> <span class="n">file1</span><span class="p">,</span> <span class="n">file2</span><span class="p">),</span> <span class="n">combine_output</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">cpr_stat</span> <span class="o">=</span> <span class="n">run_cmd</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> -m </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cprnc_exe</span><span class="p">,</span> <span class="n">file1</span><span class="p">,</span> <span class="n">file2</span><span class="p">),</span> <span class="n">combine_output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">arg_stdout</span><span class="o">=</span><span class="n">output_filename</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_filename</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">multiinst_driver_compare</span><span class="p">:</span>
+        <span class="c1">#  In a multiinstance test the cpl hist file will have a different number of</span>
+        <span class="c1"># dimensions and so cprnc will indicate that the files seem to be DIFFERENT</span>
+        <span class="c1"># in this case we only want to check that the fields we are able to compare</span>
+        <span class="c1"># have no differences.</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">cpr_stat</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="s2">&quot; 0 had non-zero differences&quot;</span> <span class="ow">in</span> <span class="n">out</span><span class="p">,</span> <span class="n">output_filename</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">cpr_stat</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="s2">&quot;files seem to be IDENTICAL&quot;</span> <span class="ow">in</span> <span class="n">out</span><span class="p">,</span> <span class="n">output_filename</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="compare_baseline"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.hist_utils.compare_baseline">[docs]</a><span class="k">def</span> <span class="nf">compare_baseline</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">baseline_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">outfile_suffix</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    compare the current test output to a baseline result</span>
+
+<span class="sd">    case - The case containing the hist files to be compared against baselines</span>
+<span class="sd">    baseline_dir - Optionally, specify a specific baseline dir, otherwise it will be computed from case config</span>
+<span class="sd">    outfile_suffix - if non-blank, then the cprnc output file name ends with</span>
+<span class="sd">        this suffix (with a &#39;.&#39; added before the given suffix). if None, no output file saved.</span>
+
+<span class="sd">    returns (SUCCESS, comments)</span>
+<span class="sd">    SUCCESS means all hist files matched their corresponding baseline</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">rundir</span>   <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">baseline_dir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">baselineroot</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;BASELINE_ROOT&quot;</span><span class="p">)</span>
+        <span class="n">basecmp_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">baselineroot</span><span class="p">,</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;BASECMP_CASE&quot;</span><span class="p">))</span>
+        <span class="n">dirs_to_check</span> <span class="o">=</span> <span class="p">(</span><span class="n">baselineroot</span><span class="p">,</span> <span class="n">basecmp_dir</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">basecmp_dir</span> <span class="o">=</span> <span class="n">baseline_dir</span>
+        <span class="n">dirs_to_check</span> <span class="o">=</span> <span class="p">(</span><span class="n">basecmp_dir</span><span class="p">,)</span>
+
+    <span class="k">for</span> <span class="n">bdir</span> <span class="ow">in</span> <span class="n">dirs_to_check</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">bdir</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;ERROR </span><span class="si">{}</span><span class="s2"> baseline directory &#39;</span><span class="si">{}</span><span class="s2">&#39; does not exist&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">TEST_NO_BASELINES_COMMENT</span><span class="p">,</span><span class="n">bdir</span><span class="p">)</span>
+
+    <span class="n">success</span><span class="p">,</span> <span class="n">comments</span> <span class="o">=</span> <span class="n">_compare_hists</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">rundir</span><span class="p">,</span> <span class="n">basecmp_dir</span><span class="p">,</span> <span class="n">outfile_suffix</span><span class="o">=</span><span class="n">outfile_suffix</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">get_model</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;e3sm&quot;</span><span class="p">:</span>
+        <span class="n">bless_log</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">basecmp_dir</span><span class="p">,</span> <span class="n">BLESS_LOG_NAME</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">bless_log</span><span class="p">):</span>
+            <span class="n">last_line</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">bless_log</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">readlines</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">comments</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  Most recent bless: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">last_line</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">success</span><span class="p">,</span> <span class="n">comments</span></div>
+
+<div class="viewcode-block" id="get_extension"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.hist_utils.get_extension">[docs]</a><span class="k">def</span> <span class="nf">get_extension</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">filepath</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    For a hist file for the given model, return what we call the &quot;extension&quot;</span>
+
+<span class="sd">    model - The component model</span>
+<span class="sd">    filepath - The path of the hist file</span>
+
+<span class="sd">    &gt;&gt;&gt; get_extension(&quot;cpl&quot;, &quot;cpl.hi.nc&quot;)</span>
+<span class="sd">    &#39;hi&#39;</span>
+<span class="sd">    &gt;&gt;&gt; get_extension(&quot;cpl&quot;, &quot;cpl.h.nc&quot;)</span>
+<span class="sd">    &#39;h&#39;</span>
+<span class="sd">    &gt;&gt;&gt; get_extension(&quot;cpl&quot;, &quot;cpl.h1.nc&quot;)</span>
+<span class="sd">    &#39;h1&#39;</span>
+<span class="sd">    &gt;&gt;&gt; get_extension(&quot;cpl&quot;, &quot;TESTRUNDIFF_Mmpi-serial.f19_g16_rx1.A.melvin_gnu.C.fake_testing_only_20160816_164150-20160816_164240.cpl.hi.0.nc.base&quot;)</span>
+<span class="sd">    &#39;hi&#39;</span>
+<span class="sd">    &gt;&gt;&gt; get_extension(&quot;cpl&quot;, &quot;TESTRUNDIFF_Mmpi-serial.f19_g16_rx1.A.melvin_gnu.C.fake_testing_only_20160816_164150-20160816_164240.cpl.h.nc&quot;)</span>
+<span class="sd">    &#39;h&#39;</span>
+<span class="sd">    &gt;&gt;&gt; get_extension(&quot;clm&quot;,&quot;clm2_0002.h0.1850-01-06-00000.nc&quot;)</span>
+<span class="sd">    &#39;0002.h0&#39;</span>
+<span class="sd">    &gt;&gt;&gt; get_extension(&quot;pop&quot;,&quot;PFS.f09_g16.B1850.cheyenne_intel.allactive-default.GC.c2_0_b1f2_int.pop.h.ecosys.nday1.0001-01-02.nc&quot;)</span>
+<span class="sd">    &#39;h&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">basename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+    <span class="n">ext_regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;.*</span><span class="si">%s</span><span class="s1">[^_]*_?([0-9]</span><span class="si">{4}</span><span class="s1">)?[.](h.?)([.].*[^.])?[.]nc&#39;</span> <span class="o">%</span> <span class="n">model</span><span class="p">)</span>
+
+    <span class="n">m</span> <span class="o">=</span> <span class="n">ext_regex</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">basename</span><span class="p">)</span>
+    <span class="n">expect</span><span class="p">(</span><span class="n">m</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Failed to get extension for file &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filepath</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;.&#39;</span><span class="o">+</span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">result</span></div>
+
+<div class="viewcode-block" id="generate_baseline"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.hist_utils.generate_baseline">[docs]</a><span class="k">def</span> <span class="nf">generate_baseline</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">baseline_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">allow_baseline_overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    copy the current test output to baseline result</span>
+
+<span class="sd">    case - The case containing the hist files to be copied into baselines</span>
+<span class="sd">    baseline_dir - Optionally, specify a specific baseline dir, otherwise it will be computed from case config</span>
+<span class="sd">    allow_baseline_overwrite must be true to generate baselines to an existing directory.</span>
+
+<span class="sd">    returns (SUCCESS, comments)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">rundir</span>   <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">baseline_dir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">baselineroot</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;BASELINE_ROOT&quot;</span><span class="p">)</span>
+        <span class="n">basegen_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">baselineroot</span><span class="p">,</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;BASEGEN_CASE&quot;</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">basegen_dir</span> <span class="o">=</span> <span class="n">baseline_dir</span>
+    <span class="n">testcase</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASE&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">basegen_dir</span><span class="p">):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">basegen_dir</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">basegen_dir</span><span class="p">,</span><span class="n">testcase</span><span class="p">))</span> <span class="ow">and</span>
+        <span class="ow">not</span> <span class="n">allow_baseline_overwrite</span><span class="p">):</span>
+        <span class="n">expect</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="s2">&quot; Cowardly refusing to overwrite existing baseline directory&quot;</span><span class="p">)</span>
+
+    <span class="n">comments</span> <span class="o">=</span> <span class="s2">&quot;Generating baselines into &#39;</span><span class="si">{}</span><span class="s2">&#39;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">basegen_dir</span><span class="p">)</span>
+    <span class="n">num_gen</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">_iter_model_file_substrs</span><span class="p">(</span><span class="n">case</span><span class="p">):</span>
+        <span class="n">comments</span> <span class="o">+=</span> <span class="s2">&quot;  generating for model &#39;</span><span class="si">{}</span><span class="s2">&#39;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+        <span class="n">hists</span> <span class="o">=</span>  <span class="n">_get_latest_hist_files</span><span class="p">(</span><span class="n">testcase</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">rundir</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;latest_files: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">hists</span><span class="p">))</span>
+        <span class="n">num_gen</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">hists</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">hist</span> <span class="ow">in</span> <span class="n">hists</span><span class="p">:</span>
+            <span class="n">basename</span> <span class="o">=</span> <span class="n">hist</span><span class="p">[</span><span class="n">hist</span><span class="o">.</span><span class="n">rfind</span><span class="p">(</span><span class="n">model</span><span class="p">):]</span>
+            <span class="n">baseline</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">basegen_dir</span><span class="p">,</span> <span class="n">basename</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">baseline</span><span class="p">):</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">baseline</span><span class="p">)</span>
+
+            <span class="n">safe_copy</span><span class="p">(</span><span class="n">hist</span><span class="p">,</span> <span class="n">baseline</span><span class="p">)</span>
+            <span class="n">comments</span> <span class="o">+=</span> <span class="s2">&quot;    generating baseline &#39;</span><span class="si">{}</span><span class="s2">&#39; from file </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">baseline</span><span class="p">,</span> <span class="n">hist</span><span class="p">)</span>
+
+    <span class="c1"># copy latest cpl log to baseline</span>
+    <span class="c1"># drop the date so that the name is generic</span>
+    <span class="n">newestcpllogfile</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_latest_cpl_log</span><span class="p">(</span><span class="n">coupler_log_path</span><span class="o">=</span><span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">newestcpllogfile</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;No cpl.log file found in directory </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">)))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">safe_copy</span><span class="p">(</span><span class="n">newestcpllogfile</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">basegen_dir</span><span class="p">,</span> <span class="s2">&quot;cpl.log.gz&quot;</span><span class="p">))</span>
+
+    <span class="n">expect</span><span class="p">(</span><span class="n">num_gen</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;Could not generate any hist files for case &#39;</span><span class="si">{}</span><span class="s2">&#39;, something is seriously wrong&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="n">testcase</span><span class="p">)))</span>
+    <span class="c1">#make sure permissions are open in baseline directory</span>
+    <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">files</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">basegen_dir</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">chmod</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span><span class="n">name</span><span class="p">),</span> <span class="n">stat</span><span class="o">.</span><span class="n">S_IRUSR</span> <span class="o">|</span> <span class="n">stat</span><span class="o">.</span><span class="n">S_IWUSR</span> <span class="o">|</span> <span class="n">stat</span><span class="o">.</span><span class="n">S_IRGRP</span> <span class="o">|</span> <span class="n">stat</span><span class="o">.</span><span class="n">S_IWGRP</span> <span class="o">|</span> <span class="n">stat</span><span class="o">.</span><span class="n">S_IROTH</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+                <span class="c1"># We tried. Not worth hard failure here.</span>
+                <span class="k">pass</span>
+
+    <span class="k">if</span> <span class="n">get_model</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;e3sm&quot;</span><span class="p">:</span>
+        <span class="n">bless_log</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">basegen_dir</span><span class="p">,</span> <span class="n">BLESS_LOG_NAME</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">bless_log</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
+            <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;sha:</span><span class="si">{}</span><span class="s2"> date:</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">get_current_commit</span><span class="p">(</span><span class="n">repo</span><span class="o">=</span><span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CIMEROOT&quot;</span><span class="p">)),</span>
+                                               <span class="n">get_timestamp</span><span class="p">(</span><span class="n">timestamp_format</span><span class="o">=</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">_%H:%M:%S&quot;</span><span class="p">)))</span>
+
+    <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">comments</span></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+     
+<script>var version_json_loc = "../../../../versions.json";</script>
+
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+        <script src="../../_static/pop_ver.js"></script>
+    
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

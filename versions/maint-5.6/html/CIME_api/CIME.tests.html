@@ -1,0 +1,559 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>CIME.tests package &mdash; CIME cime5.6 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="CIME cime5.6 documentation" href="../index.html"/>
+        <link rel="up" title="CIME package" href="CIME.html"/>
+        <link rel="next" title="CIME.tests.SystemTests package" href="CIME.tests.SystemTests.html"/>
+        <link rel="prev" title="CIME.case package" href="CIME.case.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> CIME
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                
+                  <div class="version-dropdown">
+                    <select class="version-list" id="version-list">
+                      <option value=''>cime5.6</option>
+                      
+                        
+                      
+                        
+                          <option value="">[placeholder]</option>
+                        
+                      
+                    </select>
+                  </div>
+                
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../what_cime/index.html">What is CIME?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users_guide/index.html">Case Control System Part 1: Basic Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users_guide/index.html#case-control-system-part-2-configuration-porting-testing-and-use-cases">Case Control System Part 2: Configuration, Porting, Testing and Use Cases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_models/index.html">Data Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../driver_cpl/index.html">Driver/Coupler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../build_cpl/index.html">Building a Coupled Model with CIME</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../misc_tools/index.html">Miscellaneous Tools</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../glossary/index.html">Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Tools_user/index.html">User Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../xml_files/index.html">XML Files</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">CIME</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="CIME.html">CIME package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="CIME.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="CIME.BuildTools.html">CIME.BuildTools package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.Servers.html">CIME.Servers package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.html">CIME.SystemTests package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.html">CIME.XML package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.case.html">CIME.case package</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">CIME.tests package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.aprun">CIME.aprun module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.bless_test_results">CIME.bless_test_results module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.build">CIME.build module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.buildlib">CIME.buildlib module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.buildnml">CIME.buildnml module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.code_checker">CIME.code_checker module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.compare_namelists">CIME.compare_namelists module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.compare_test_results">CIME.compare_test_results module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.date">CIME.date module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.get_timing">CIME.get_timing module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.hist_utils">CIME.hist_utils module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.locked_files">CIME.locked_files module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.namelist">CIME.namelist module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.nmlgen">CIME.nmlgen module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.provenance">CIME.provenance module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.simple_compare">CIME.simple_compare module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.test_scheduler">CIME.test_scheduler module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.test_status">CIME.test_status module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.test_utils">CIME.test_utils module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.user_mod_support">CIME.user_mod_support module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.utils">CIME.utils module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.wait_for_tests">CIME.wait_for_tests module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../Tools_api/modules.html">Tools</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">CIME</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="modules.html">CIME</a> &raquo;</li>
+        
+          <li><a href="CIME.html">CIME package</a> &raquo;</li>
+        
+      <li>CIME.tests package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/CIME_api/CIME.tests.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="cime-tests-package">
+<h1>CIME.tests package<a class="headerlink" href="#cime-tests-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="CIME.tests.SystemTests.html">CIME.tests.SystemTests package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="CIME.tests.SystemTests.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="CIME.tests.SystemTests.test_utils.html">CIME.tests.SystemTests.test_utils package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="CIME.tests.SystemTests.test_utils.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.tests.SystemTests.test_utils.html#module-CIME.tests.SystemTests.test_utils.test_user_nl_utils">CIME.tests.SystemTests.test_utils.test_user_nl_utils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.tests.SystemTests.test_utils.html#module-CIME.tests.SystemTests.test_utils">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="CIME.tests.SystemTests.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CIME.tests.SystemTests.html#module-CIME.tests.SystemTests.test_system_tests_compare_two">CIME.tests.SystemTests.test_system_tests_compare_two module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CIME.tests.SystemTests.html#module-CIME.tests.SystemTests.test_system_tests_compare_two_link_to_case2_output">CIME.tests.SystemTests.test_system_tests_compare_two_link_to_case2_output module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CIME.tests.SystemTests.html#module-CIME.tests.SystemTests">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-CIME.tests.case_fake">
+<span id="cime-tests-case-fake-module"></span><h2>CIME.tests.case_fake module<a class="headerlink" href="#module-CIME.tests.case_fake" title="Permalink to this headline">¶</a></h2>
+<p>This module contains a fake implementation of the Case class that can be used
+for testing the tests.</p>
+<dl class="py class">
+<dt id="CIME.tests.case_fake.CaseFake">
+<em class="property">class </em><code class="sig-prename descclassname">CIME.tests.case_fake.</code><code class="sig-name descname">CaseFake</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">case_root</span></em>, <em class="sig-param"><span class="n">create_case_root</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/case_fake.html#CaseFake"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.case_fake.CaseFake" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt id="CIME.tests.case_fake.CaseFake.case_setup">
+<code class="sig-name descname">case_setup</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">clean</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">test_mode</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">reset</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/case_fake.html#CaseFake.case_setup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.case_fake.CaseFake.case_setup" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="CIME.tests.case_fake.CaseFake.copy">
+<code class="sig-name descname">copy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">newcasename</span></em>, <em class="sig-param"><span class="n">newcaseroot</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/case_fake.html#CaseFake.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.case_fake.CaseFake.copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create and return a copy of self, but with CASE and CASEBASEID set to newcasename,
+CASEROOT set to newcaseroot, and RUNDIR set appropriately.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>newcasename (str): new value for CASE
+newcaseroot (str): new value for CASEROOT</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="CIME.tests.case_fake.CaseFake.create_clone">
+<code class="sig-name descname">create_clone</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">newcase</span></em>, <em class="sig-param"><span class="n">keepexe</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">mach_dir</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">project</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">cime_output_root</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">exeroot</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">rundir</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/case_fake.html#CaseFake.create_clone"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.case_fake.CaseFake.create_clone" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a clone of the current case. Also creates the CASEROOT directory
+for the clone case (given by newcase).</p>
+<dl>
+<dt>Args:</dt><dd><dl class="simple">
+<dt>newcase (str): full path to the new case. This directory should not</dt><dd><p>already exist; it will be created</p>
+</dd>
+</dl>
+<p>keepexe (bool, optional): Ignored
+mach_dir (str, optional): Ignored
+project (str, optional): Ignored
+cime_output_root (str, optional): New CIME_OUTPUT_ROOT for the clone
+exeroot (str, optional): New EXEROOT for the clone
+rundir (str, optional): New RUNDIR for the clone</p>
+</dd>
+</dl>
+<p>Returns the clone case object</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="CIME.tests.case_fake.CaseFake.flush">
+<code class="sig-name descname">flush</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/case_fake.html#CaseFake.flush"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.case_fake.CaseFake.flush" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="CIME.tests.case_fake.CaseFake.get_value">
+<code class="sig-name descname">get_value</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">item</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/case_fake.html#CaseFake.get_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.case_fake.CaseFake.get_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the value of the given item</p>
+<p>Returns None if item isn’t set for this case</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>item (str): variable of interest</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="CIME.tests.case_fake.CaseFake.load_env">
+<code class="sig-name descname">load_env</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">reset</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/case_fake.html#CaseFake.load_env"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.case_fake.CaseFake.load_env" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="CIME.tests.case_fake.CaseFake.make_rundir">
+<code class="sig-name descname">make_rundir</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/case_fake.html#CaseFake.make_rundir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.case_fake.CaseFake.make_rundir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make directory given by RUNDIR</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="CIME.tests.case_fake.CaseFake.set_exeroot">
+<code class="sig-name descname">set_exeroot</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/case_fake.html#CaseFake.set_exeroot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.case_fake.CaseFake.set_exeroot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Assumes CASEROOT is already set; sets an appropriate EXEROOT
+(nested inside CASEROOT)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="CIME.tests.case_fake.CaseFake.set_rundir">
+<code class="sig-name descname">set_rundir</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/case_fake.html#CaseFake.set_rundir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.case_fake.CaseFake.set_rundir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Assumes CASEROOT is already set; sets an appropriate RUNDIR (nested
+inside CASEROOT)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="CIME.tests.case_fake.CaseFake.set_value">
+<code class="sig-name descname">set_value</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">item</span></em>, <em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/case_fake.html#CaseFake.set_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.case_fake.CaseFake.set_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the value of the given item to the given value</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>item (str): variable of interest
+value (any type): new value for item</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-CIME.tests.test_case_fake">
+<span id="cime-tests-test-case-fake-module"></span><h2>CIME.tests.test_case_fake module<a class="headerlink" href="#module-CIME.tests.test_case_fake" title="Permalink to this headline">¶</a></h2>
+<p>This module contains unit tests of CaseFake</p>
+<dl class="py class">
+<dt id="CIME.tests.test_case_fake.TestCaseFake">
+<em class="property">class </em><code class="sig-prename descclassname">CIME.tests.test_case_fake.</code><code class="sig-name descname">TestCaseFake</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_case_fake.html#TestCaseFake"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_case_fake.TestCaseFake" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">unittest.case.TestCase</span></code></p>
+<dl class="py method">
+<dt id="CIME.tests.test_case_fake.TestCaseFake.setUp">
+<code class="sig-name descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_case_fake.html#TestCaseFake.setUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_case_fake.TestCaseFake.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method for setting up the test fixture before exercising it.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="CIME.tests.test_case_fake.TestCaseFake.tearDown">
+<code class="sig-name descname">tearDown</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_case_fake.html#TestCaseFake.tearDown"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_case_fake.TestCaseFake.tearDown" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method for deconstructing the test fixture after testing it.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="CIME.tests.test_case_fake.TestCaseFake.test_create_clone">
+<code class="sig-name descname">test_create_clone</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_case_fake.html#TestCaseFake.test_create_clone"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_case_fake.TestCaseFake.test_create_clone" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-CIME.tests.test_user_mod_support">
+<span id="cime-tests-test-user-mod-support-module"></span><h2>CIME.tests.test_user_mod_support module<a class="headerlink" href="#module-CIME.tests.test_user_mod_support" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="CIME.tests.test_user_mod_support.TestUserModSupport">
+<em class="property">class </em><code class="sig-prename descclassname">CIME.tests.test_user_mod_support.</code><code class="sig-name descname">TestUserModSupport</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_user_mod_support.html#TestUserModSupport"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_user_mod_support.TestUserModSupport" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">unittest.case.TestCase</span></code></p>
+<dl class="py method">
+<dt id="CIME.tests.test_user_mod_support.TestUserModSupport.assertResults">
+<code class="sig-name descname">assertResults</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">expected_user_nl_cpl</span></em>, <em class="sig-param"><span class="n">expected_shell_commands_result</span></em>, <em class="sig-param"><span class="n">expected_sourcemod</span></em>, <em class="sig-param"><span class="n">msg</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_user_mod_support.html#TestUserModSupport.assertResults"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_user_mod_support.TestUserModSupport.assertResults" title="Permalink to this definition">¶</a></dt>
+<dd><p>Asserts that the contents of the files in self._caseroot match expectations</p>
+<p>If msg is provided, it is printed for some failing assertions</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="CIME.tests.test_user_mod_support.TestUserModSupport.createUserMod">
+<code class="sig-name descname">createUserMod</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">include_dirs</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_user_mod_support.html#TestUserModSupport.createUserMod"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_user_mod_support.TestUserModSupport.createUserMod" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a user_mods directory with the given name.</p>
+<p>This directory is created within self._user_mods_parent_dir</p>
+<p>For name=’foo’, it will contain:</p>
+<ul class="simple">
+<li><p>A user_nl_cpl file with contents:
+foo</p></li>
+<li><p>A shell_commands file with contents:
+echo foo &gt;&gt; /PATH/TO/CASEROOT/shell_commands_result</p></li>
+<li><p>A file in _SOURCEMODS named myfile.F90 with contents:
+foo</p></li>
+</ul>
+<p>If include_dirs is given, it should be a list of strings, giving names
+of other user_mods directories to include. e.g., if include_dirs is
+[‘foo1’, ‘foo2’], then this will create a file ‘include_user_mods’ that
+contains paths to the ‘foo1’ and ‘foo2’ user_mods directories, one per
+line.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="CIME.tests.test_user_mod_support.TestUserModSupport.setUp">
+<code class="sig-name descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_user_mod_support.html#TestUserModSupport.setUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_user_mod_support.TestUserModSupport.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method for setting up the test fixture before exercising it.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="CIME.tests.test_user_mod_support.TestUserModSupport.tearDown">
+<code class="sig-name descname">tearDown</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_user_mod_support.html#TestUserModSupport.tearDown"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_user_mod_support.TestUserModSupport.tearDown" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method for deconstructing the test fixture after testing it.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="CIME.tests.test_user_mod_support.TestUserModSupport.test_basic">
+<code class="sig-name descname">test_basic</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_user_mod_support.html#TestUserModSupport.test_basic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_user_mod_support.TestUserModSupport.test_basic" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="CIME.tests.test_user_mod_support.TestUserModSupport.test_duplicate_includes">
+<code class="sig-name descname">test_duplicate_includes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_user_mod_support.html#TestUserModSupport.test_duplicate_includes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_user_mod_support.TestUserModSupport.test_duplicate_includes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test multiple includes, where both include the same base mod.</p>
+<p>The base mod should only be included once.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="CIME.tests.test_user_mod_support.TestUserModSupport.test_include">
+<code class="sig-name descname">test_include</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_user_mod_support.html#TestUserModSupport.test_include"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_user_mod_support.TestUserModSupport.test_include" title="Permalink to this definition">¶</a></dt>
+<dd><p>If there is an included mod, the main one should appear after the included one so that it takes precedence.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="CIME.tests.test_user_mod_support.TestUserModSupport.test_keepexe">
+<code class="sig-name descname">test_keepexe</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_user_mod_support.html#TestUserModSupport.test_keepexe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_user_mod_support.TestUserModSupport.test_keepexe" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="CIME.tests.test_user_mod_support.TestUserModSupport.test_two_applications">
+<code class="sig-name descname">test_two_applications</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_user_mod_support.html#TestUserModSupport.test_two_applications"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_user_mod_support.TestUserModSupport.test_two_applications" title="Permalink to this definition">¶</a></dt>
+<dd><p>If apply_user_mods is called twice, the second should appear after the first so that it takes precedence.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-CIME.tests.test_utils">
+<span id="cime-tests-test-utils-module"></span><h2>CIME.tests.test_utils module<a class="headerlink" href="#module-CIME.tests.test_utils" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="CIME.tests.test_utils.TestIndentStr">
+<em class="property">class </em><code class="sig-prename descclassname">CIME.tests.test_utils.</code><code class="sig-name descname">TestIndentStr</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_utils.html#TestIndentStr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_utils.TestIndentStr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">unittest.case.TestCase</span></code></p>
+<p>Test the indent_string function.</p>
+<dl class="py method">
+<dt id="CIME.tests.test_utils.TestIndentStr.test_indent_string_multiline">
+<code class="sig-name descname">test_indent_string_multiline</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_utils.html#TestIndentStr.test_indent_string_multiline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_utils.TestIndentStr.test_indent_string_multiline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test the indent_string function with a multi-line string</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="CIME.tests.test_utils.TestIndentStr.test_indent_string_singleline">
+<code class="sig-name descname">test_indent_string_singleline</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_utils.html#TestIndentStr.test_indent_string_singleline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_utils.TestIndentStr.test_indent_string_singleline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test the indent_string function with a single-line string</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-CIME.tests">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-CIME.tests" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="CIME.tests.SystemTests.html" class="btn btn-neutral float-right" title="CIME.tests.SystemTests package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="CIME.case.html" class="btn btn-neutral" title="CIME.case package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+     
+<script>var version_json_loc = "../../../versions.json";</script>
+
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script src="../_static/pop_ver.js"></script>
+    
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

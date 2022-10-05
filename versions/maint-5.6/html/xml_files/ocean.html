@@ -1,0 +1,1335 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>CIME Ocean Data and Stub XML Files &mdash; CIME cime5.6 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="CIME cime5.6 documentation" href="../index.html"/>
+        <link rel="up" title="Data, Stub and Driver Component XML Files" href="components.html"/>
+        <link rel="next" title="CIME River Runoff Data and Stub XML Files" href="river.html"/>
+        <link rel="prev" title="CIME Land Ice Data and Stub XML Files" href="landice.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> CIME
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                
+                  <div class="version-dropdown">
+                    <select class="version-list" id="version-list">
+                      <option value=''>cime5.6</option>
+                      
+                        
+                      
+                        
+                          <option value="">[placeholder]</option>
+                        
+                      
+                    </select>
+                  </div>
+                
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../what_cime/index.html">What is CIME?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users_guide/index.html">Case Control System Part 1: Basic Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users_guide/index.html#case-control-system-part-2-configuration-porting-testing-and-use-cases">Case Control System Part 2: Configuration, Porting, Testing and Use Cases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_models/index.html">Data Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../driver_cpl/index.html">Driver/Coupler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../build_cpl/index.html">Building a Coupled Model with CIME</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../misc_tools/index.html">Miscellaneous Tools</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../glossary/index.html">Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Tools_user/index.html">User Tools</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">XML Files</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="e3sm.html">E3SM Coupled Model XML Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cesm.html">CESM Coupled Model XML Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="common.html">Common XML Files</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="components.html">Data, Stub and Driver Component XML Files</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="atmosphere.html">CIME Atmosphere Data and Stub XML Files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="esp.html">CIME ESP Data and Stub XML Files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="land.html">CIME Land Data and Stub XML Files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="landice.html">CIME Land Ice Data and Stub XML Files</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">CIME Ocean Data and Stub XML Files</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#cimeroot-src-components-data-comps-docn-cime-config">CIMEROOT/src/components/data_comps/docn/cime_config</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cimeroot-src-components-stub-comps-socn-cime-config">CIMEROOT/src/components/stub_comps/socn/cime_config</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cimeroot-src-components-xcpl-comps-xocn-cime-config">CIMEROOT/src/components/xcpl_comps/xocn/cime_config</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="river.html">CIME River Runoff Data and Stub XML Files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="seaice.html">CIME Sea Ice Data and Stub XML Files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="wave.html">CIME Wave Data and Stub XML Files</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="drivers.html">Driver XML Files</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../CIME_api/modules.html">CIME</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Tools_api/modules.html">Tools</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">CIME</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">XML Files</a> &raquo;</li>
+        
+          <li><a href="components.html">Data, Stub and Driver Component XML Files</a> &raquo;</li>
+        
+      <li>CIME Ocean Data and Stub XML Files</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/xml_files/ocean.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="cime-ocean-data-and-stub-xml-files">
+<span id="ocean"></span><h1>CIME Ocean Data and Stub XML Files<a class="headerlink" href="#cime-ocean-data-and-stub-xml-files" title="Permalink to this headline">¶</a></h1>
+<p>Ocean component XML files for data, stub, and dead components.</p>
+<div class="toctree-wrapper compound">
+</div>
+<div class="section" id="cimeroot-src-components-data-comps-docn-cime-config">
+<h2>CIMEROOT/src/components/data_comps/docn/cime_config<a class="headerlink" href="#cimeroot-src-components-data-comps-docn-cime-config" title="Permalink to this headline">¶</a></h2>
+<p>Ocean data model, <strong>docn</strong>, XML files and settings.</p>
+<p>XML specification for archiving docn output files.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;components version=&quot;2.0&quot;&gt;
+  &lt;comp_archive_spec compname=&quot;docn&quot; compclass=&quot;ocn&quot;&gt;
+    &lt;rest_file_extension&gt;rs*\d*&lt;/rest_file_extension&gt;
+    &lt;rest_history_varname&gt;unset&lt;/rest_history_varname&gt;
+    &lt;rpointer&gt;
+      &lt;rpointer_file&gt;rpointer.ocn$NINST_STRING&lt;/rpointer_file&gt;
+      &lt;rpointer_content&gt;$CASE.docn$NINST_STRING.r.$DATENAME.nc,$CASE.docn$NINST_STRING.rs1.$DATENAME.bin&lt;/rpointer_content&gt;
+    &lt;/rpointer&gt;
+  &lt;/comp_archive_spec&gt;
+
+&lt;/components&gt;
+</pre></div>
+</div>
+<p>XML variables and component descriptions specific to docn.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;?xml version=&quot;1.0&quot;?&gt;
+
+&lt;?xml-stylesheet type=&quot;text/xsl&quot; href=&quot;setup_comp.xsl&quot; ?&gt;
+
+&lt;entry_id version=&quot;3.0&quot;&gt;
+
+  &lt;!-- modifier_mode allowed values are
+       &#39;*&#39; 0 or more modifiers (default)
+       &#39;1&#39; exactly 1 modifier
+       &#39;?&#39; 0 or 1 modifiers
+       &#39;+&#39; 1 or more modifiers
+
+       This file may have ocn desc entries.
+  --&gt;
+  &lt;description modifier_mode=&quot;1&quot;&gt;
+    &lt;desc ocn=&quot;DOCN[%NULL][%DOM][%SOM][%SOMAQP][%IAF][%SST_AQUAP][%AQP1][%AQP2][%AQP3][%AQP4][%AQP5][%AQP6][%AQP7][%AQP8][%AQP9][%AQP10][%AQPFILE][%AQPCONST]&quot;&gt;DOCN &lt;/desc&gt;
+    &lt;desc option=&quot;NULL&quot;&gt;  null mode&lt;/desc&gt;
+    &lt;desc option=&quot;DOM&quot;&gt;  prescribed ocean mode&lt;/desc&gt;
+    &lt;desc option=&quot;SOM&quot;&gt;  slab ocean mode&lt;/desc&gt;
+    &lt;desc option=&quot;SOMAQP&quot;&gt;  aquaplanet slab ocean mode&lt;/desc&gt;
+    &lt;desc option=&quot;IAF&quot;&gt;  interannual mode&lt;/desc&gt;
+    &lt;desc option=&quot;SST_AQUAP&quot;&gt;  aquaplanet mode:&lt;/desc&gt;
+    &lt;desc option=&quot;AQP1&quot;&gt;  analytic aquaplanet sst - option 1&lt;/desc&gt;
+    &lt;desc option=&quot;AQP2&quot;&gt;  analytic aquaplanet sst - option 2&lt;/desc&gt;
+    &lt;desc option=&quot;AQP3&quot;&gt;  analytic aquaplanet sst - option 3&lt;/desc&gt;
+    &lt;desc option=&quot;AQP4&quot;&gt;  analytic aquaplanet sst - option 4&lt;/desc&gt;
+    &lt;desc option=&quot;AQP5&quot;&gt;  analytic aquaplanet sst - option 5&lt;/desc&gt;
+    &lt;desc option=&quot;AQP6&quot;&gt;  analytic aquaplanet sst - option 6&lt;/desc&gt;
+    &lt;desc option=&quot;AQP7&quot;&gt;  analytic aquaplanet sst - option 7&lt;/desc&gt;
+    &lt;desc option=&quot;AQP8&quot;&gt;  analytic aquaplanet sst - option 8&lt;/desc&gt;
+    &lt;desc option=&quot;AQP9&quot;&gt;  analytic aquaplanet sst - option 9&lt;/desc&gt;
+    &lt;desc option=&quot;AQP10&quot;&gt;  analytic aquaplanet sst - option 10&lt;/desc&gt;
+    &lt;desc option=&quot;AQPFILE&quot;&gt;  file input aquaplanet sst &lt;/desc&gt;
+    &lt;desc option=&quot;AQPCONST&quot;&gt;  globally constant SST for idealized experiments, such as RCE &lt;/desc&gt;
+  &lt;/description&gt;
+
+  &lt;entry id=&quot;COMP_OCN&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;valid_values&gt;docn&lt;/valid_values&gt;
+    &lt;default_value&gt;docn&lt;/default_value&gt;
+    &lt;group&gt;case_comp&lt;/group&gt;
+    &lt;file&gt;env_case.xml&lt;/file&gt;
+    &lt;desc&gt;Name of ocn component&lt;/desc&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;DOCN_MODE&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;valid_values&gt;prescribed,sst_aquap1,sst_aquap2,sst_aquap3,sst_aquap4,sst_aquap5,sst_aquap6,sst_aquap7,sst_aquap8,sst_aquap9,sst_aquap10,sst_aquapfile,som,som_aquap,sst_aquap_constant,interannual,null&lt;/valid_values&gt;
+    &lt;default_value&gt;prescribed&lt;/default_value&gt;
+    &lt;values match=&quot;last&quot;&gt;
+      &lt;value compset=&quot;_DOCN%NULL_&quot;&gt;null&lt;/value&gt;
+      &lt;value compset=&quot;_DOCN%DOM_&quot; &gt;prescribed&lt;/value&gt;
+      &lt;value compset=&quot;_DOCN%SOM_&quot; &gt;som&lt;/value&gt;
+      &lt;value compset=&quot;_DOCN%SOMAQP_&quot;&gt;som_aquap&lt;/value&gt;
+      &lt;value compset=&quot;_DOCN%IAF_&quot;&gt;interannual&lt;/value&gt;
+      &lt;value compset=&quot;_DOCN%AQP1_&quot;&gt;sst_aquap1&lt;/value&gt;
+      &lt;value compset=&quot;_DOCN%AQP2_&quot;&gt;sst_aquap2&lt;/value&gt;
+      &lt;value compset=&quot;_DOCN%AQP3_&quot;&gt;sst_aquap3&lt;/value&gt;
+      &lt;value compset=&quot;_DOCN%AQP4_&quot;&gt;sst_aquap4&lt;/value&gt;
+      &lt;value compset=&quot;_DOCN%AQP5_&quot;&gt;sst_aquap5&lt;/value&gt;
+      &lt;value compset=&quot;_DOCN%AQP6_&quot;&gt;sst_aquap6&lt;/value&gt;
+      &lt;value compset=&quot;_DOCN%AQP7_&quot;&gt;sst_aquap7&lt;/value&gt;
+      &lt;value compset=&quot;_DOCN%AQP8_&quot;&gt;sst_aquap8&lt;/value&gt;
+      &lt;value compset=&quot;_DOCN%AQP9_&quot;&gt;sst_aquap9&lt;/value&gt;
+      &lt;value compset=&quot;_DOCN%AQP10_&quot;&gt;sst_aquap10&lt;/value&gt;
+      &lt;value compset=&quot;_DOCN%AQPFILE_&quot;&gt;sst_aquapfile&lt;/value&gt;
+      &lt;value compset=&quot;_DOCN%AQPCONST_&quot;&gt;sst_aquap_constant&lt;/value&gt;
+    &lt;/values&gt;
+    &lt;group&gt;run_component_docn&lt;/group&gt;
+    &lt;file&gt;env_run.xml&lt;/file&gt;
+    &lt;desc&gt; DOCN mode. The data ocean component (DOCN) always returns SSTs to the
+    driver. The atmosphere/ocean fluxes are computed in the
+    coupler. Therefore, the data ocean model does not compute fluxes like
+    the data ice model. DOCN has two distinct modes of operation. It can
+    run as a pure data model, reading in ocean SSTs (normally
+    climatological) from input datasets, performing time/spatial
+    interpolations, and passing these to the coupler. Alternatively,
+    DOCN can compute updated SSTs by running as a slab ocean model where
+    bottom ocean heat flux convergence and boundary layer depths are read
+    in and used with the atmosphere/ocean and ice/ocean fluxes obtained
+    from the driver.
+    --- A setting of prescribed assumes the only field in the input stream is SST.
+    It also assumes the SST is in Celsius and must be converted to Kelvin.
+    All other fields are set to zero except for ocean salinity, which is set to a
+    constant reference salinity value. Normally the ice fraction data is found in
+    the same data files that provide SST data to the data ocean model. They are
+    normally found in the same file because the SST and ice fraction data are derived
+    from the same observational data sets and are consistent with each other.
+    --- Settings of som (slab ocean model) or  som_aquap (aquaplanet slab ocean) are
+    prognostic modes which compute a prognostic sea surface temperature and a
+    freeze/melt potential (surface Q-flux) used by the sea ice model.  This
+    calculation requires an external SOM forcing data file that includes
+    ocean mixed layer depths and bottom-of-the-slab Q-fluxes.
+    Scientifically appropriate bottom-of-the-slab Q-fluxes are normally
+    ocean resolution dependent and are derived from the ocean model output
+    of a fully coupled CCSM run.  Note that while this mode runs out of
+    the box, the default SOM forcing file is not scientifically
+    appropriate and is provided for testing and development purposes only.
+    Users must create scientifically appropriate data for their particular
+    application.  A tool is available to derive valid SOM forcing.
+    --- A setting of sst_aquapN (where &quot;N&quot; is an integer index value) is a
+    type of prescribed SST mode used specifically for an aquaplanet setup in
+    which global SSTs correspond to an analytic form set by the index value.
+    Currently, indices for 10 SST profiles are supported [e.g., index 3 corresponds
+    to the &quot;QOBS&quot; profile of Neale and Hoskins (2001, Atmos. Sci. Lett.)].
+    With source code modifications, it is possible for users to create their own
+    analytic SST distributions and match them to indices 11 or greater.
+    &lt;/desc&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;DOCN_SOM_FILENAME&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;valid_values&gt;&lt;/valid_values&gt;
+    &lt;default_value&gt;UNSET&lt;/default_value&gt;
+    &lt;values match=&quot;last&quot;&gt;
+      &lt;value compset=&quot;_DOCN%SOM.*_TEST&quot;&gt;pop_frc.1x1d.090130.nc&lt;/value&gt;
+      &lt;value compset=&quot;_DOCN%SOMAQP&quot; grid=&quot;oi%1.9x2.5&quot;&gt;default.som.forcing.aquaplanet.Qflux0_h30_sstQOBS.2degFV_c20170421.nc&lt;/value&gt;
+      &lt;value compset=&quot;_DOCN%SOMAQP&quot; grid=&quot;oi%0.9x1.25&quot;&gt;default.som.forcing.aquaplanet.Qflux0_h30_sstQOBS.1degFV_c20170421.nc&lt;/value&gt;
+    &lt;/values&gt;
+    &lt;group&gt;run_component_docn&lt;/group&gt;
+    &lt;file&gt;env_run.xml&lt;/file&gt;
+    &lt;desc&gt;Sets SOM forcing filename.
+    This is only used when DOCN_MODE=som.&lt;/desc&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;DOCN_AQP_FILENAME&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;valid_values&gt;&lt;/valid_values&gt;
+    &lt;default_value&gt;UNSET&lt;/default_value&gt;
+    &lt;values match=&quot;last&quot;&gt;
+      &lt;value compset=&quot;_DOCN%AQPFILE&quot;&gt;sst_c4aquasom_0.9x1.25_clim.c170512.nc&lt;/value&gt;
+    &lt;/values&gt;
+    &lt;group&gt;run_component_docn&lt;/group&gt;
+    &lt;file&gt;env_run.xml&lt;/file&gt;
+    &lt;desc&gt;Sets aquaplanet forcing filename instead of using an analytic form.
+    This is only used when DOCN_MODE=sst_aquapfile.&lt;/desc&gt;
+  &lt;/entry&gt;
+
+   &lt;entry id=&quot;DOCN_AQPCONST_VALUE&quot;&gt;
+    &lt;type&gt;real&lt;/type&gt;
+    &lt;valid_values&gt;&lt;/valid_values&gt;
+    &lt;default_value&gt;-1&lt;/default_value&gt;
+    &lt;values match=&quot;last&quot;&gt;
+      &lt;value compset=&quot;_DOCN%AQPCONST&quot;&gt;300&lt;/value&gt;
+    &lt;/values&gt;
+    &lt;group&gt;run_component_docn&lt;/group&gt;
+    &lt;file&gt;env_run.xml&lt;/file&gt;
+    &lt;desc&gt;Sets globally constant SST value&lt;/desc&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;SSTICE_STREAM&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;valid_values&gt;&lt;/valid_values&gt;
+    &lt;default_value&gt;CAMDATA&lt;/default_value&gt;
+    &lt;group&gt;run_component_docn&lt;/group&gt;
+    &lt;file&gt;env_run.xml&lt;/file&gt;
+    &lt;desc&gt;Prescribed SST and ice coverage stream name.
+    Sets SST and ice coverage stream name.
+    This is only used when DOCN_MODE=prescribed.&lt;/desc&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;SSTICE_DATA_FILENAME&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;valid_values&gt;&lt;/valid_values&gt;
+    &lt;default_value&gt;$DIN_LOC_ROOT/atm/cam/sst/sst_HadOIBl_bc_1x1_clim_c101029.nc&lt;/default_value&gt;
+    &lt;values match=&quot;last&quot;&gt;
+      &lt;value compset=&quot;DOCN%DOM&quot; grid=&quot;a%T31.*_oi%T31&quot;						&gt;$DIN_LOC_ROOT/atm/cam/sst/sst_HadOIBl_bc_48x96_clim_c050526.nc&lt;/value&gt;
+      &lt;value compset=&quot;DOCN%DOM&quot; grid=&quot;a%1.9x2.5.*_oi%1.9x2.5&quot;					&gt;$DIN_LOC_ROOT/atm/cam/sst/sst_HadOIBl_bc_1.9x2.5_clim_c061031.nc&lt;/value&gt;
+      &lt;value compset=&quot;DOCN%DOM&quot; grid=&quot;a%0.9x1.25.*_oi%0.9x1.25&quot;					&gt;$DIN_LOC_ROOT/atm/cam/sst/sst_HadOIBl_bc_0.9x1.25_clim_c040926.nc&lt;/value&gt;
+      &lt;value compset=&quot;DOCN%DOM&quot; grid=&quot;a%0.47x0.63.*_oi%0.47x0.63&quot;				&gt;$DIN_LOC_ROOT/atm/cam/sst/sst_HadOIBl_bc_0.47x0.63_clim_c061106.nc&lt;/value&gt;
+      &lt;value compset=&quot;DOCN%DOM&quot; grid=&quot;a%0.23x0.31.*_oi%0.23x0.31&quot;				&gt;$DIN_LOC_ROOT/atm/cam/sst/sst_HadOIBl_bc_0.23x0.31_clim_c110526.nc&lt;/value&gt;
+      &lt;value compset=&quot;(AMIP_|HIST_|20TR_|5505_|PIPD_|%TSCH)&quot; grid=&quot;.+&quot;				&gt;$DIN_LOC_ROOT/atm/cam/sst/sst_HadOIBl_bc_1x1_1850_2012_c130411.nc&lt;/value&gt;
+      &lt;value compset=&quot;(AMIP_|HIST_|20TR_|5505_|PIPD_|%TSCH)&quot; grid=&quot;a%T31.*_oi%T31&quot;		&gt;$DIN_LOC_ROOT/atm/cam/sst/sst_HadOIBl_bc_48x96_1850_2012_c130411.nc&lt;/value&gt;
+      &lt;value compset=&quot;(AMIP_|HIST_|20TR_|5505_|PIPD_|%TSCH)&quot; grid=&quot;a%1.9x2.5.*_oi%1.9x2.5&quot;	&gt;$DIN_LOC_ROOT/atm/cam/sst/sst_HadOIBl_bc_1.9x2.5_1850_2012_c130411.nc&lt;/value&gt;
+      &lt;value compset=&quot;(AMIP_|HIST_|20TR_|5505_|PIPD_|%TSCH)&quot; grid=&quot;a%0.9x1.25.*_oi%0.9x1.25&quot;	&gt;$DIN_LOC_ROOT/atm/cam/sst/sst_HadOIBl_bc_0.9x1.25_1850_2012_c130411.nc&lt;/value&gt;
+      &lt;value compset=&quot;(AMIP_|HIST_|20TR_|5505_|PIPD_|%TSCH)&quot; grid=&quot;a%0.47x0.63.*_oi%0.47x0.63&quot;	&gt;$DIN_LOC_ROOT/atm/cam/sst/sst_HadOIBl_bc_0.47x0.63_1850_2012_c130411.nc&lt;/value&gt;
+      &lt;value compset=&quot;(AMIP_|HIST_|20TR_|5505_|PIPD_|%TSCH)&quot; grid=&quot;a%0.23x0.31.*_oi%0.23x0.31&quot;	&gt;$DIN_LOC_ROOT/atm/cam/sst/sst_HadOIBl_bc_0.23x0.31_1850_2012_c130411.nc&lt;/value&gt;
+      &lt;value compset=&quot;1850_&quot; grid=&quot;.+&quot;								&gt;$DIN_LOC_ROOT/atm/cam/sst/sst_HadOIBl_bc_1x1_clim_pi_c101029.nc&lt;/value&gt;
+      &lt;value compset=&quot;1850_&quot; grid=&quot;a%T31.*_oi%T31&quot;						&gt;$DIN_LOC_ROOT/atm/cam/sst/sst_HadOIBl_bc_48x96_clim_pi_c101028.nc&lt;/value&gt;
+      &lt;value compset=&quot;1850_&quot; grid=&quot;a%1.9x2.5.*_oi%1.9x2.5&quot;					&gt;$DIN_LOC_ROOT/atm/cam/sst/sst_HadOIBl_bc_1.9x2.5_clim_pi_c101028.nc&lt;/value&gt;
+      &lt;value compset=&quot;1850_&quot; grid=&quot;a%0.9x1.25.*_oi%0.9x1.25&quot;					&gt;$DIN_LOC_ROOT/atm/cam/sst/sst_HadOIBl_bc_0.9x1.25_clim_pi_c101028.nc&lt;/value&gt;
+      &lt;value compset=&quot;1850_&quot; grid=&quot;a%0.47x0.63.*_oi%0.47x0.63&quot;					&gt;$DIN_LOC_ROOT/atm/cam/sst/sst_HadOIBl_bc_0.47x0.63_clim_pi_c101028.nc&lt;/value&gt;
+      &lt;value compset=&quot;1850_&quot; grid=&quot;a%0.23x0.31.*_oi%0.23x0.31&quot;					&gt;$DIN_LOC_ROOT/atm/cam/sst/sst_HadOIBl_bc_0.23x0.31_clim_pi_c101028.nc&lt;/value&gt;
+      &lt;value compset=&quot;DATM.*_DLND.*_DICE.*_DOCN.*_DROF&quot; 				        &gt;$DIN_LOC_ROOT/atm/cam/sst/sst_HadOIBl_bc_0.9x1.25_clim_c040926.nc&lt;/value&gt;
+      &lt;value compset=&quot;DATM.*_SLND.*_DICE.*_DOCN.*_DROF&quot; 				        &gt;$DIN_LOC_ROOT/atm/cam/sst/sst_HadOIBl_bc_0.9x1.25_clim_c040926.nc&lt;/value&gt;
+      &lt;value compset=&quot;DATM.*_DLND.*_DICE.*_DOCN.*_DROF&quot;      grid=&quot;a%4x5.*_m%gx3v7&quot;	        &gt;$DIN_LOC_ROOT/atm/cam/sst/sst_HadOIBl_bc_4x5_clim_c110526.nc&lt;/value&gt;
+      &lt;value compset=&quot;DATM.*_SLND.*_DICE.*_DOCN.*_DROF&quot;      grid=&quot;a%4x5.*_m%gx3v7&quot;	        &gt;$DIN_LOC_ROOT/atm/cam/sst/sst_HadOIBl_bc_4x5_clim_c110526.nc&lt;/value&gt;
+    &lt;/values&gt;
+    &lt;group&gt;run_component_docn&lt;/group&gt;
+    &lt;file&gt;env_run.xml&lt;/file&gt;
+    &lt;desc&gt;Prescribed SST and ice coverage data file name.
+    Sets SST and ice coverage data file name.
+    This is only used when DOCN_MODE=prescribed.&lt;/desc&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;SSTICE_GRID_FILENAME&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;valid_values&gt;&lt;/valid_values&gt;
+    &lt;default_value&gt;$DIN_LOC_ROOT/ocn/docn7/domain.ocn.1x1.111007.nc&lt;/default_value&gt;
+    &lt;values match=&quot;last&quot;&gt;
+      &lt;value compset=&quot;DOCN%DOM&quot; grid=&quot;a%T31.*_oi%T31&quot;						&gt;$DIN_LOC_ROOT/atm/cam/ocnfrac/domain.camocn.48x96_gx3v7_100114.nc&lt;/value&gt;
+      &lt;value compset=&quot;DOCN%DOM&quot; grid=&quot;a%1.9x2.5.*_oi%1.9x2.5&quot;					&gt;$DIN_LOC_ROOT/atm/cam/ocnfrac/domain.camocn.1.9x2.5_gx1v6_090403.nc &lt;/value&gt;
+      &lt;value compset=&quot;DOCN%DOM&quot; grid=&quot;a%0.9x1.25.*_oi%0.9x1.25.*_m%gx1v6&quot;			&gt;$DIN_LOC_ROOT/atm/cam/ocnfrac/domain.camocn.0.9x1.25_gx1v6_090403.nc&lt;/value&gt;
+      &lt;value compset=&quot;DOCN%DOM&quot; grid=&quot;a%0.9x1.25.*_oi%0.9x1.25.*_m%gx1v7&quot;			&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.fv0.9x1.25_gx1v7.151020.nc&lt;/value&gt;
+      &lt;value compset=&quot;DOCN%DOM&quot; grid=&quot;a%0.47x0.63.*_oi%0.47x0.63&quot;				&gt;$DIN_LOC_ROOT/atm/cam/ocnfrac/domain.camocn.0.47x0.63_gx1v6_090408.nc&lt;/value&gt;
+      &lt;value compset=&quot;DOCN%DOM&quot; grid=&quot;a%0.23x0.31.*_oi%0.23x0.31&quot;				&gt;$DIN_LOC_ROOT/atm/cam/ocnfrac/domain.camocn.0.23x0.31_gx1v6_101108.nc&lt;/value&gt;
+      &lt;value compset=&quot;(AMIP_|HIST_|20TR_|5505_|PIPD_|%TSCH)&quot; grid=&quot;.+&quot;				&gt;$DIN_LOC_ROOT/ocn/docn7/domain.ocn.1x1.111007.nc&lt;/value&gt;
+      &lt;value compset=&quot;(AMIP_|HIST_|20TR_|5505_|PIPD_|%TSCH)&quot; grid=&quot;a%T31.*_oi%T31&quot;			&gt;$DIN_LOC_ROOT/atm/cam/ocnfrac/domain.camocn.48x96_gx3v7_100114.nc&lt;/value&gt;
+      &lt;value compset=&quot;(AMIP_|HIST_|20TR_|5505_|PIPD_|%TSCH)&quot; grid=&quot;a%1.9x2.5.*_oi%1.9x2.5&quot;		&gt;$DIN_LOC_ROOT/atm/cam/ocnfrac/domain.camocn.1.9x2.5_gx1v6_090403.nc&lt;/value&gt;
+      &lt;value compset=&quot;(AMIP_|HIST_|20TR_|5505_|PIPD_|%TSCH)&quot; grid=&quot;a%0.9x1.25.*_oi%0.9x1.25.*_m%gx1v6&quot;  &gt;$DIN_LOC_ROOT/atm/cam/ocnfrac/domain.camocn.0.9x1.25_gx1v6_090403.nc&lt;/value&gt;
+      &lt;value compset=&quot;(AMIP_|HIST_|20TR_|5505_|PIPD_|%TSCH)&quot; grid=&quot;a%0.9x1.25.*_oi%0.9x1.25.*_m%gx1v7&quot;	&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.fv0.9x1.25_gx1v7.151020.nc&lt;/value&gt;
+      &lt;value compset=&quot;(AMIP_|HIST_|20TR_|5505_|PIPD_|%TSCH)&quot; grid=&quot;a%0.47x0.63.*_oi%0.47x0.63&quot;	&gt;$DIN_LOC_ROOT/atm/cam/ocnfrac/domain.camocn.0.47x0.63_gx1v6_090408.nc&lt;/value&gt;
+      &lt;value compset=&quot;(AMIP_|HIST_|20TR_|5505_|PIPD_|%TSCH)&quot; grid=&quot;a%0.23x0.31.*_oi%0.23x0.31&quot;	&gt;$DIN_LOC_ROOT/atm/cam/ocnfrac/domain.camocn.0.23x0.31_gx1v6_101108.nc&lt;/value&gt;
+      &lt;value compset=&quot;1850&quot; grid=&quot;.+&quot;								&gt;$DIN_LOC_ROOT/ocn/docn7/domain.ocn.1x1.111007.nc&lt;/value&gt;
+      &lt;value compset=&quot;1850&quot; grid=&quot;a%T31.*_oi%T31&quot;						&gt;$DIN_LOC_ROOT/atm/cam/ocnfrac/domain.camocn.48x96_gx3v7_100114.nc&lt;/value&gt;
+      &lt;value compset=&quot;1850&quot; grid=&quot;a%1.9x2.5.*_oi%1.9x2.5&quot;					&gt;$DIN_LOC_ROOT/atm/cam/ocnfrac/domain.camocn.1.9x2.5_gx1v6_090403.nc&lt;/value&gt;
+      &lt;value compset=&quot;1850&quot; grid=&quot;a%0.9x1.25.*_oi%0.9x1.25.*_m%gx1v6&quot;			        &gt;$DIN_LOC_ROOT/atm/cam/ocnfrac/domain.camocn.0.9x1.25_gx1v6_090403.nc&lt;/value&gt;
+      &lt;value compset=&quot;1850&quot; grid=&quot;a%0.9x1.25.*_oi%0.9x1.25.*_m%gx1v7&quot;				&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.fv0.9x1.25_gx1v7.151020.nc&lt;/value&gt;
+      &lt;value compset=&quot;1850&quot; grid=&quot;a%0.47x0.63.*_oi%0.47x0.63&quot;					&gt;$DIN_LOC_ROOT/atm/cam/ocnfrac/domain.camocn.0.47x0.63_gx1v6_090408.nc&lt;/value&gt;
+      &lt;value compset=&quot;1850&quot; grid=&quot;a%0.23x0.31.*_oi%0.23x0.31&quot;					&gt;$DIN_LOC_ROOT/atm/cam/ocnfrac/domain.camocn.0.23x0.31_gx1v6_101108.nc&lt;/value&gt;
+      &lt;value compset=&quot;DATM.*_DLND.*_DICE.*_DOCN.*_DROF&quot;                                         &gt;$DIN_LOC_ROOT/atm/cam/ocnfrac/domain.camocn.0.9x1.25_gx1v6_090403.nc&lt;/value&gt;
+      &lt;value compset=&quot;DATM.*_SLND.*_DICE.*_DOCN.*_DROF&quot;                                         &gt;$DIN_LOC_ROOT/atm/cam/ocnfrac/domain.camocn.0.9x1.25_gx1v6_090403.nc&lt;/value&gt;
+      &lt;value compset=&quot;DATM.*_DLND.*_DICE.*_DOCN.*_DROF&quot; grid=&quot;a%4x5.*_m%gx3v7&quot;                  &gt;$DIN_LOC_ROOT/atm/cam/ocnfrac/domain.camocn.4x5_gx3v7_100120.nc&lt;/value&gt;
+      &lt;value compset=&quot;DATM.*_SLND.*_DICE.*_DOCN.*_DROF&quot; grid=&quot;a%4x5.*_m%gx3v7&quot;                  &gt;$DIN_LOC_ROOT/atm/cam/ocnfrac/domain.camocn.4x5_gx3v7_100120.nc&lt;/value&gt;
+    &lt;/values&gt;
+    &lt;group&gt;run_component_cam_sstice&lt;/group&gt;
+    &lt;file&gt;env_run.xml&lt;/file&gt;
+    &lt;desc&gt;Prescribed SST and ice coverage grid file name.
+    Sets SST and ice coverage grid file name for prescribed runs.
+    This is only used when DOCN_MODE=prescribed.&lt;/desc&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;SSTICE_YEAR_ALIGN&quot;&gt;
+    &lt;type&gt;integer&lt;/type&gt;
+    &lt;valid_values&gt;&lt;/valid_values&gt;
+    &lt;default_value&gt;1&lt;/default_value&gt;
+    &lt;values match=&quot;last&quot;&gt;
+      &lt;value compset=&quot;(AMIP_|20TR_|HIST_|5505_|PIPD_|%TSCH)&quot;&gt;1850&lt;/value&gt;
+    &lt;/values&gt;
+    &lt;group&gt;run_component_cam_sstice&lt;/group&gt;
+    &lt;file&gt;env_run.xml&lt;/file&gt;
+    &lt;desc&gt;The model year that corresponds to SSTICE_YEAR_START on the data file.
+    Prescribed SST and ice coverage data will be aligned so that the first year of
+    data corresponds to SSTICE_YEAR_ALIGN in the model. For instance, if the first
+    year of prescribed data is the same as the first year of the model run, this
+    should be set to the year given in RUN_STARTDATE.
+    If SSTICE_YEAR_ALIGN is later than the model&#39;s starting year, or if the model is
+    run after the prescribed data ends (as determined by SSTICE_YEAR_END), the
+    default behavior is to assume that the data from SSTICE_YEAR_START to
+    SSTICE_YEAR_END cyclically repeats. This behavior is controlled by the
+    &amp;quot;taxmode&amp;quot; stream option; see the data model documentation for more details.
+    This is only used when DOCN_MODE=prescribed.&lt;/desc&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;SSTICE_YEAR_START&quot;&gt;
+    &lt;type&gt;integer&lt;/type&gt;
+    &lt;valid_values&gt;&lt;/valid_values&gt;
+    &lt;default_value&gt;0&lt;/default_value&gt;
+    &lt;values match=&quot;last&quot;&gt;
+      &lt;value compset=&quot;(AMIP_|HIST_|20TR_|5505_|PIPD_|%TSCH)&quot;&gt;1850&lt;/value&gt;
+    &lt;/values&gt;
+    &lt;group&gt;run_component_cam_sstice&lt;/group&gt;
+    &lt;file&gt;env_run.xml&lt;/file&gt;
+    &lt;desc&gt;The first year of data to use from SSTICE_DATA_FILENAME.
+    This is the first year of prescribed SST and ice coverage data to use. For
+    example, if a data file has data for years 0-99, and SSTICE_YEAR_START is 10,
+    years 0-9 in the file will not be used.
+    This is only used when DOCN_MODE=prescribed.&lt;/desc&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;SSTICE_YEAR_END&quot;&gt;
+    &lt;type&gt;integer&lt;/type&gt;
+    &lt;valid_values&gt;&lt;/valid_values&gt;
+    &lt;default_value&gt;0&lt;/default_value&gt;
+    &lt;values match=&quot;last&quot;&gt;
+      &lt;value compset=&quot;(AMIP_|HIST_|20TR_|5505_|PIPD_|%TSCH)&quot;&gt;2012&lt;/value&gt;
+    &lt;/values&gt;
+    &lt;group&gt;run_component_cam_sstice&lt;/group&gt;
+    &lt;file&gt;env_run.xml&lt;/file&gt;
+    &lt;desc&gt;The last year of data to use from SSTICE_DATA_FILENAME.
+    This is the last year of prescribed SST and ice coverage data to use. For
+    example, if a data file has data for years 0-99, and value is 49,
+    years 50-99 in the file will not be used.
+    This is only used when DOCN_MODE=prescribed.&lt;/desc&gt;
+  &lt;/entry&gt;
+
+  &lt;help&gt;
+    =========================================
+    DOCN naming conventions
+    =========================================
+  &lt;/help&gt;
+
+&lt;/entry_id&gt;
+</pre></div>
+</div>
+<p>XML namelist definitions for docn.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;?xml version=&quot;1.0&quot;?&gt;
+
+&lt;?xml-stylesheet type=&quot;text/xsl&quot; href=&quot;namelist_definition.xsl&quot;?&gt;
+
+&lt;entry_id version=&quot;2.0&quot;&gt;
+
+  &lt;!--
+      Values to use by default for creation of DOCN model docn namelists.
+      The element names are the same as the corresponding namelist
+      variables.  Values that depend on the model configuration use
+      attributes to express the dependency.  The recognized attributes
+      are: grid, docn_presaero and all configuration
+      attributes from the config_cache.xml file (with keys converted to upper-case).
+
+      strm_year_first is the first year of the stream data that will be used
+      strm_year_last  is the last  year of the stream data that will be used
+      strm_year_align is the model year that will be aligned with stream data for year_first
+
+      Replace any instance of the following substring indicators with the appropriate values:
+      %y    = year from the range yearfirst to yearlast
+      %ym   = year-month from the range yearfirst to yearlast with all 12 months
+      %ymd  = year-month-day from the range yearfirst to yearlast with all 12 months
+
+      In docn_in,  streams namelist input has the form
+      streams = &#39;stream1.txt year_align year_first year_last &#39;,
+      &#39;stream2.txt year_align year_first year_last &#39;,
+      ...
+      &#39;streamN.txt year_align year_first year_last &#39;
+      Each mode below, except for presaero, has a set of streams associated with it
+      The presaero stream, is associated with all modes
+
+      Currently the following datamods are supported
+      prescribed    SSTDATA     (Run with prescribed SST, ICE_COV)
+      som           SOM         (Slab ocean model)
+      null          NULL        (NULL mode)
+  --&gt;
+
+  &lt;!-- ========================================================================================  --&gt;
+  &lt;!-- Stream file variables                                                                     --&gt;
+  &lt;!-- ========================================================================================  --&gt;
+
+  &lt;entry id=&quot;streamslist&quot;&gt;
+    &lt;type&gt;char(100)&lt;/type&gt;
+    &lt;category&gt;streams&lt;/category&gt;
+    &lt;group&gt;streams_file&lt;/group&gt;
+    &lt;desc&gt;List of streams used for the given docn_mode.&lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value docn_mode=&quot;prescribed&quot;&gt;prescribed&lt;/value&gt;
+      &lt;value docn_mode=&quot;sst_aquap1&quot;&gt;&#39;&#39;&lt;/value&gt;
+      &lt;value docn_mode=&quot;sst_aquap2&quot;&gt;&#39;&#39;&lt;/value&gt;
+      &lt;value docn_mode=&quot;sst_aquap3&quot;&gt;&#39;&#39;&lt;/value&gt;
+      &lt;value docn_mode=&quot;sst_aquap4&quot;&gt;&#39;&#39;&lt;/value&gt;
+      &lt;value docn_mode=&quot;sst_aquap5&quot;&gt;&#39;&#39;&lt;/value&gt;
+      &lt;value docn_mode=&quot;sst_aquap6&quot;&gt;&#39;&#39;&lt;/value&gt;
+      &lt;value docn_mode=&quot;sst_aquap7&quot;&gt;&#39;&#39;&lt;/value&gt;
+      &lt;value docn_mode=&quot;sst_aquap8&quot;&gt;&#39;&#39;&lt;/value&gt;
+      &lt;value docn_mode=&quot;sst_aquap9&quot;&gt;&#39;&#39;&lt;/value&gt;
+      &lt;value docn_mode=&quot;sst_aquap10&quot;&gt;&#39;&#39;&lt;/value&gt;
+      &lt;value docn_mode=&quot;sst_aquapfile&quot;&gt;aquapfile&lt;/value&gt;
+      &lt;value docn_mode=&quot;sst_aquap_constant&quot;&gt;&#39;&#39;&lt;/value&gt;
+      &lt;value docn_mode=&quot;som&quot;&gt;som&lt;/value&gt;
+      &lt;value docn_mode=&quot;som_aquap&quot;&gt;som&lt;/value&gt;
+      &lt;value docn_mode=&quot;interannual&quot;&gt;interannual&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;strm_grid_file&quot; skip_default_entry=&quot;true&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;category&gt;streams&lt;/category&gt;
+    &lt;group&gt;derived&lt;/group&gt;
+    &lt;desc&gt;does not appear in namelist - only used to set domain and data information&lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value stream=&quot;prescribed&quot;&gt;$SSTICE_GRID_FILENAME&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;strm_data_file&quot; skip_default_entry=&quot;true&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;category&gt;streams&lt;/category&gt;
+    &lt;group&gt;derived&lt;/group&gt;
+    &lt;desc&gt;does not appear in namelist - only used to set domain and data information&lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value stream=&quot;prescribed&quot;&gt;$SSTICE_DATA_FILENAME&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;strm_domdir&quot; skip_default_entry=&quot;true&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;category&gt;streams&lt;/category&gt;
+    &lt;group&gt;streams_file&lt;/group&gt;
+    &lt;desc&gt;Stream domain file directory.&lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;null&lt;/value&gt;
+      &lt;value stream=&quot;aquapfile&quot;&gt;$DIN_LOC_ROOT/ocn/docn7/AQUAPLANET/&lt;/value&gt;
+      &lt;value stream=&quot;som&quot;&gt;$DIN_LOC_ROOT/ocn/docn7/SOM&lt;/value&gt;
+      &lt;value stream=&quot;interannual&quot;&gt;$DIN_LOC_ROOT/atm/cam/sst&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;strm_domfil&quot; skip_default_entry=&quot;true&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;category&gt;streams&lt;/category&gt;
+    &lt;group&gt;streams_file&lt;/group&gt;
+    &lt;desc&gt;Stream domain file path(s).&lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;null&lt;/value&gt;
+      &lt;value stream=&quot;aquapfile&quot;&gt;$DOCN_AQP_FILENAME&lt;/value&gt;
+      &lt;value stream=&quot;som&quot;&gt;$DOCN_SOM_FILENAME&lt;/value&gt;
+      &lt;value stream=&quot;interannual&quot;&gt;sst_HadOIBl_bc_1x1_1850_2014_c150416.nc&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;strm_domvar&quot; skip_default_entry=&quot;true&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;category&gt;streams&lt;/category&gt;
+    &lt;group&gt;streams_file&lt;/group&gt;
+    &lt;desc&gt;Stream domain variable name(s).&lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;
+        time    time
+        xc      lon
+        yc      lat
+        area    area
+        mask    mask
+      &lt;/value&gt;
+      &lt;value stream=&quot;interannual&quot;&gt;
+        time    time
+        lon     lon
+        lat     lat
+      &lt;/value&gt;
+      &lt;value stream=&quot;aquapfile&quot;&gt;
+        time    time
+        lon     lon
+        lat     lat
+      &lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;strm_datdir&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;category&gt;streams&lt;/category&gt;
+    &lt;group&gt;streams_file&lt;/group&gt;
+    &lt;desc&gt;Stream data file directory.&lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;null&lt;/value&gt;
+      &lt;value stream=&quot;aquapfile&quot;&gt;$DIN_LOC_ROOT/ocn/docn7/AQUAPLANET&lt;/value&gt;
+      &lt;value stream=&quot;som&quot;&gt;$DIN_LOC_ROOT/ocn/docn7/SOM&lt;/value&gt;
+      &lt;value stream=&quot;interannual&quot;&gt;$DIN_LOC_ROOT/atm/cam/sst&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;strm_datfil&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;category&gt;streams&lt;/category&gt;
+    &lt;group&gt;streams_file&lt;/group&gt;
+    &lt;desc&gt;Stream data file path(s).&lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;null&lt;/value&gt;
+      &lt;value stream=&quot;aquapfile&quot;&gt;$DOCN_AQP_FILENAME&lt;/value&gt;
+      &lt;value stream=&quot;som&quot;&gt;$DOCN_SOM_FILENAME&lt;/value&gt;
+      &lt;value stream=&quot;interannual&quot;&gt;sst_HadOIBl_bc_1x1_1850_2014_c150416.nc&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;strm_datvar&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;category&gt;streams&lt;/category&gt;
+    &lt;group&gt;streams_file&lt;/group&gt;
+    &lt;desc&gt;Stream data variable name(s).&lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;
+        sst    t
+      &lt;/value&gt;
+      &lt;value stream=&quot;som&quot;&gt;
+        T     t
+        S     s
+        U     u
+        V     v
+        dhdx  dhdx
+        dhdy  dhdy
+        hblt  h
+        qdp   qbot
+      &lt;/value&gt;
+      &lt;value stream=&quot;interannual&quot;&gt;
+        SST_cpl t
+      &lt;/value&gt;
+      &lt;value stream=&quot;prescribed&quot; sstice_stream=&quot;CAMDATA&quot;&gt;
+        SST_cpl t
+      &lt;/value&gt;
+      &lt;value stream=&quot;aquapfile&quot;&gt;
+        SST_cpl t
+      &lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;strm_offset&quot;&gt;
+    &lt;type&gt;integer&lt;/type&gt;
+    &lt;category&gt;streams&lt;/category&gt;
+    &lt;group&gt;streams_file&lt;/group&gt;
+    &lt;desc&gt;Stream offset.&lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;0&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;strm_year_align&quot;&gt;
+    &lt;type&gt;integer&lt;/type&gt;
+    &lt;category&gt;streams&lt;/category&gt;
+    &lt;group&gt;streams_file&lt;/group&gt;
+    &lt;desc&gt;Simulation year to align stream to.&lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;-999&lt;/value&gt;
+      &lt;value stream=&quot;prescribed&quot;&gt;$SSTICE_YEAR_ALIGN&lt;/value&gt;
+      &lt;value stream=&quot;aquapfile&quot;&gt;0&lt;/value&gt;
+      &lt;value stream=&quot;som&quot;&gt;1&lt;/value&gt;
+      &lt;value stream=&quot;interannual&quot;&gt;1&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;strm_year_start&quot;&gt;
+    &lt;type&gt;integer&lt;/type&gt;
+    &lt;category&gt;streams&lt;/category&gt;
+    &lt;group&gt;streams_file&lt;/group&gt;
+    &lt;desc&gt;First year of stream.&lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;-999&lt;/value&gt;
+      &lt;value stream=&quot;prescribed&quot;&gt;$SSTICE_YEAR_START&lt;/value&gt;
+      &lt;value stream=&quot;aquapfile&quot;&gt;0&lt;/value&gt;
+      &lt;value stream=&quot;som&quot;&gt;1&lt;/value&gt;
+      &lt;value stream=&quot;interannual&quot;&gt;1850&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;strm_year_end&quot;&gt;
+    &lt;type&gt;integer&lt;/type&gt;
+    &lt;category&gt;streams&lt;/category&gt;
+    &lt;group&gt;streams_file&lt;/group&gt;
+    &lt;desc&gt;Last year of stream.&lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;-999&lt;/value&gt;
+      &lt;value stream=&quot;prescribed&quot;&gt;$SSTICE_YEAR_END&lt;/value&gt;
+      &lt;value stream=&quot;aquapfile&quot;&gt;0&lt;/value&gt;
+      &lt;value stream=&quot;som&quot;&gt;1&lt;/value&gt;
+      &lt;value stream=&quot;interannual&quot;&gt;2014&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;!-- ========================================================================================  --&gt;
+  &lt;!-- DOCN Namelists                                                                            --&gt;
+  &lt;!-- ========================================================================================  --&gt;
+
+  &lt;!-- =========================================  --&gt;
+  &lt;!--- shr_strmdata_nml       --&gt;
+  &lt;!-- =========================================  --&gt;
+
+  &lt;entry id=&quot;datamode&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;category&gt;streams&lt;/category&gt;
+    &lt;group&gt;shr_strdata_nml&lt;/group&gt;
+    &lt;valid_values&gt;SSTDATA,SST_AQUAP1,SST_AQUAP2,SST_AQUAP3,SST_AQUAP4,SST_AQUAP5,SST_AQUAP6,SST_AQUAP7,SST_AQUAP8,SST_AQUAP9,SST_AQUAP10,SST_AQUAPFILE,SST_AQUAP_CONSTANT,SOM,SOM_AQUAP,IAF,NULL,COPYALL&lt;/valid_values&gt;
+    &lt;desc&gt;
+      General method that operates on the data. This is generally
+      implemented in the data models but is set in the strdata method for
+      convenience.
+
+      datamode = &quot;NULL&quot;
+      NULL is always a valid option and means no data will be generated.
+      Turns off the data model as a provider of data to the coupler.  The
+      ice_present flag will be set to false and the coupler will assume no
+      exchange of data to or from the data model.
+      dataMode = &quot;COPYALL&quot;
+      Copies all fields directly from the input data streams Any required
+      fields not found on an input stream will be set to zero.
+      dataMode = &quot;SSTDATA&quot;
+      SSTDATA mode assumes the only field in the input stream is SST.
+      It also assumes the SST is in Celsius and must be converted to Kelvin.
+      All other fields are set to zero except for ocean salinity, which
+      is set to a constant reference salinity value.
+      Normally the ice fraction data is found in the same data files that
+      provide SST data to the data ocean model. They are normally found in
+      the same file because the SST and ice fraction data are derived from
+      the same observational data sets and are consistent with each other.
+      to the data ocean model. They are normally found in the same file
+      because the SST and ice fraction data are derived from the same
+      observational data sets and are consistent with each other.
+      dataMode = &quot;IAF&quot;
+      IAF is the interannually varying version of SSTDATA
+      dataMode = &quot;SOM&quot;
+      SOM (&quot;slab ocean model&quot;) mode is a prognostic mode.  This mode
+      computes a prognostic sea surface temperature and a freeze/melt
+      potential (surface Q-flux) used by the sea ice model.  This
+      calculation requires an external SOM forcing data file that includes
+      ocean mixed layer depths and bottom-of-the-slab Q-fluxes.
+      Scientifically appropriate bottom-of-the-slab Q-fluxes are normally
+      ocean resolution dependent and are derived from the ocean model output
+      of a fully coupled CCSM run.  Note that while this mode runs out of
+      the box, the default SOM forcing file is not scientifically
+      appropriate and is provided for testing and development purposes only.
+      Users must create scientifically appropriate data for their particular
+      application.  A tool is available to derive valid SOM forcing.
+
+      Set by the xml variable DOCN_MODE in env_run.xml
+      Currently, DOCN_MODE can be [prescribed,som,interannual,null]
+      If DOCN_MODE is prescribed, datamode will be set to SSTDATA
+      If DOCN_MODE is interannual, datamode will be set to IAF
+      If DOCN_MODE is som , datamode will be set to SOM
+      If DOCN_MODE is sst_aqup[n], datamode will be set to SST_AQUAP
+      If DOCN_MODE is som_aqup[n], datamode will be set to SOM_AQUAP
+      If DOCN_MODE is null, datamode will be set to NULL
+
+      default: SSTDATA (prescribed setting for DOCN_MODE)&#39;
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value docn_mode=&quot;null&quot;&gt;NULL&lt;/value&gt;
+      &lt;value docn_mode=&quot;prescribed&quot;&gt;SSTDATA&lt;/value&gt;
+      &lt;value docn_mode=&quot;sst_aquap1$&quot;&gt;SST_AQUAP1&lt;/value&gt;
+      &lt;value docn_mode=&quot;sst_aquap2$&quot;&gt;SST_AQUAP2&lt;/value&gt;
+      &lt;value docn_mode=&quot;sst_aquap3$&quot;&gt;SST_AQUAP3&lt;/value&gt;
+      &lt;value docn_mode=&quot;sst_aquap4$&quot;&gt;SST_AQUAP4&lt;/value&gt;
+      &lt;value docn_mode=&quot;sst_aquap5$&quot;&gt;SST_AQUAP5&lt;/value&gt;
+      &lt;value docn_mode=&quot;sst_aquap6$&quot;&gt;SST_AQUAP6&lt;/value&gt;
+      &lt;value docn_mode=&quot;sst_aquap7$&quot;&gt;SST_AQUAP7&lt;/value&gt;
+      &lt;value docn_mode=&quot;sst_aquap8$&quot;&gt;SST_AQUAP8&lt;/value&gt;
+      &lt;value docn_mode=&quot;sst_aquap9$&quot;&gt;SST_AQUAP9&lt;/value&gt;
+      &lt;value docn_mode=&quot;sst_aquap10$&quot;&gt;SST_AQUAP10&lt;/value&gt;
+      &lt;value docn_mode=&quot;sst_aquapfile$&quot;&gt;SST_AQUAPFILE&lt;/value&gt;
+      &lt;value docn_mode=&quot;sst_aquap_constant$&quot;&gt;SST_AQUAP_CONSTANT&lt;/value&gt;
+      &lt;value docn_mode=&quot;som$&quot;&gt;SOM&lt;/value&gt;
+      &lt;value docn_mode=&quot;som_aquap&quot;&gt;SOM_AQUAP&lt;/value&gt;
+      &lt;value docn_mode=&quot;interannual&quot;&gt;IAF&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;domainfile&quot; skip_default_entry=&quot;true&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;category&gt;streams&lt;/category&gt;
+    &lt;input_pathname&gt;abs&lt;/input_pathname&gt;
+    &lt;group&gt;shr_strdata_nml&lt;/group&gt;
+    &lt;desc&gt;
+      spatial gridfile associated with the strdata.  grid information will
+      be read from this file and that grid will serve as the target grid
+      for all input data for this strdata input.
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;null&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;fillalgo&quot; per_stream_entry=&quot;true&quot;&gt;
+    &lt;type&gt;char(30)&lt;/type&gt;
+    &lt;category&gt;streams&lt;/category&gt;
+    &lt;group&gt;shr_strdata_nml&lt;/group&gt;
+    &lt;valid_values&gt;copy,none,bilinear,nn,nnoni,nnonj,spval&lt;/valid_values&gt;
+    &lt;desc&gt;
+      array (up to 30 elements) of fill algorithms associated with the array
+      of streams.  valid options are just copy (ie. no fill), special value,
+      nearest neighbor, nearest neighbor in &quot;i&quot; direction, or nearest
+      neighbor in &quot;j&quot; direction.
+      valid values:  &#39;copy&#39;,&#39;none&#39;,&#39;spval&#39;,&#39;nn&#39;,&#39;nnoni&#39;,&#39;nnonj&#39;
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;nn&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;fillmask&quot; per_stream_entry=&quot;true&quot;&gt;
+    &lt;type&gt;char(30)&lt;/type&gt;
+    &lt;category&gt;streams&lt;/category&gt;
+    &lt;group&gt;shr_strdata_nml&lt;/group&gt;
+    &lt;valid_values&gt;nomask,srcmask,dstmask,bothmask&lt;/valid_values&gt;
+    &lt;desc&gt;
+      plays no role is fill algorithm at the present time.
+      valid values: &quot;nomask,srcmask,dstmask,bothmask&quot;
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;nomask&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;fillread&quot; per_stream_entry=&quot;true&quot;&gt;
+    &lt;type&gt;char(30)&lt;/type&gt;
+    &lt;category&gt;streams&lt;/category&gt;
+    &lt;group&gt;shr_strdata_nml&lt;/group&gt;
+    &lt;desc&gt;
+      array (up to 30 elements) of filenames associated with the array of
+      streams.  specifies the weights file to read in instead of computing the
+      weights on the fly for the fill operation.  if this is set, fillalgo
+      and fillmask are ignored.
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;NOT_SET&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;fillwrite&quot; per_stream_entry=&quot;true&quot;&gt;
+    &lt;type&gt;char(30)&lt;/type&gt;
+    &lt;category&gt;streams&lt;/category&gt;
+    &lt;group&gt;shr_strdata_nml&lt;/group&gt;
+    &lt;desc&gt;
+      array (up to 30 elements)  of filenames associated with the array of
+      streams.  specifies the weights file to generate after weights are
+      computed on the fly for the fill operation.  this allows a user to
+      save and reuse a set of weights later.
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;NOT_SET&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;mapmask&quot; per_stream_entry=&quot;true&quot;&gt;
+    &lt;type&gt;char(30)&lt;/type&gt;
+    &lt;category&gt;streams&lt;/category&gt;
+    &lt;group&gt;shr_strdata_nml&lt;/group&gt;
+    &lt;valid_values&gt;nomask,srcmask,dstmask,bothmask&lt;/valid_values&gt;
+    &lt;desc&gt;
+      array (up to 30 elements) of masking algorithms for mapping input data
+      associated with the array of streams.  valid options are map only from
+      valid src points, map only to valid destination points, ignore all
+      masks, map only from valid src points to valid destination points.
+      valid values: srcmask, dstmask, nomask,bothmask
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;dstmask&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;mapalgo&quot; per_stream_entry=&quot;true&quot;&gt;
+    &lt;type&gt;char(30)&lt;/type&gt;
+    &lt;category&gt;streams&lt;/category&gt;
+    &lt;group&gt;shr_strdata_nml&lt;/group&gt;
+    &lt;valid_values&gt;copy,bilinear,nn,nnoni,nnonj,spval&lt;/valid_values&gt;
+    &lt;desc&gt;
+      array (up to 30 elements) of fill algorithms associated with the array
+      of streams.  valid options are copy by index, set to special value,
+      nearest neighbor, nearest neighbor in &quot;i&quot; direction, nearest neighbor
+      in &quot;j&quot; direction, or bilinear.
+      valid values: copy,spval,nn,nnoni,nnonj,bilinear
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;bilinear&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;mapread&quot; per_stream_entry=&quot;true&quot;&gt;
+    &lt;type&gt;char(30)&lt;/type&gt;
+    &lt;category&gt;streams&lt;/category&gt;
+    &lt;group&gt;shr_strdata_nml&lt;/group&gt;
+    &lt;desc&gt;
+      array (up to 30 elements) of filenames associated with the array of
+      streams.  specifies the weights file to read instead of computing
+      weights on the fly for the mapping (interpolation) operation.  if this
+      is set, mapalgo and mapmask are ignored.
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;NOT_SET&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;mapwrite&quot; per_stream_entry=&quot;true&quot;&gt;
+    &lt;type&gt;char(30)&lt;/type&gt;
+    &lt;category&gt;streams&lt;/category&gt;
+    &lt;group&gt;shr_strdata_nml&lt;/group&gt;
+    &lt;desc&gt;
+      array (up to 30 elements) of filenames associated with the array of
+      streams.  specifies the weights file to generate after weights are
+      computed on the fly for the mapping (interpolation) operation.  this
+      allows a user to save and reuse a set of weights later.
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;NOT_SET&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;tintalgo&quot; per_stream_entry=&quot;true&quot;&gt;
+    &lt;type&gt;char(30)&lt;/type&gt;
+    &lt;category&gt;streams&lt;/category&gt;
+    &lt;group&gt;shr_strdata_nml&lt;/group&gt;
+    &lt;valid_values&gt;coszen,nearest,linear,lower,upper&lt;/valid_values&gt;
+    &lt;desc&gt;
+      array (up to 30 elements) of time interpolation options associated with the array of
+      streams.
+      valid values: lower,upper,nearest,linear,coszen
+      lower   = Use lower time-value
+      upper   = Use upper time-value
+      nearest = Use the nearest time-value
+      linear  = Linearly interpolate between the two time-values
+      coszen  = Scale according to the cosine of the solar zenith angle (for solar)
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;linear&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;taxmode&quot; per_stream_entry=&quot;true&quot;&gt;
+    &lt;type&gt;char(30)&lt;/type&gt;
+    &lt;category&gt;streams&lt;/category&gt;
+    &lt;group&gt;shr_strdata_nml&lt;/group&gt;
+    &lt;valid_values&gt;extend,cycle,limit&lt;/valid_values&gt;
+    &lt;desc&gt;
+      array of time axis modes associated with the array of streams for
+      handling data outside the specified stream time axis.
+      valid options are to cycle the data based on the first, last, and
+      align settings associated with the stream dataset, to extend the first
+      and last valid value indefinitely, or to limit the interpolated data
+      to fall only between the least and greatest valid value of the time array.
+      valid values: cycle,extend,limit
+      extend = extrapolate before and after the period by using the first or last value.
+      cycle  = cycle between the range of data
+      limit  = restrict to the period for which the data is valid
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;cycle&lt;/value&gt;
+      &lt;value stream=&quot;prescribed&quot; sstice_stream=&quot;WRFDATA&quot;&gt;limit&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;readmode&quot; per_stream_entry=&quot;true&quot;&gt;
+    &lt;type&gt;char(30)&lt;/type&gt;
+    &lt;category&gt;streams&lt;/category&gt;
+    &lt;group&gt;shr_strdata_nml&lt;/group&gt;
+    &lt;valid_values&gt;single,full_file&lt;/valid_values&gt;
+    &lt;desc&gt;
+      array (up to 30 elements) of reading mode associated with the array of
+      streams.  specifies the mode of reading temporal stream dataset.
+      valid options are &quot;single&quot; (read temporal dataset one at a time) or
+      &quot;full_file&quot; (read all entires of temporal dataset in a given netcdf file)
+      valid values: single,full_file
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;single&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;dtlimit&quot; per_stream_entry=&quot;true&quot;&gt;
+    &lt;type&gt;real(30)&lt;/type&gt;
+    &lt;category&gt;streams&lt;/category&gt;
+    &lt;group&gt;shr_strdata_nml&lt;/group&gt;
+    &lt;desc&gt;
+      array (up to 30 elements) of delta time ratio limits placed on the
+      time interpolation associated with the array of streams.  this real
+      value causes the model to stop if the ratio of the running maximum
+      delta time divided by the minimum delta time is greater than the
+      dtlimit for that stream.  for instance, with daily data, the delta
+      time should be exactly one day throughout the dataset and the computed
+      maximum divided by minimum delta time should always be 1.0.  for
+      monthly data, the delta time should be between 28 and 31 days and the
+      maximum ratio should be about 1.1.  the running value of the delta
+      time is computed as data is read and any wraparound or cycling is also
+      included.  this input helps trap missing data or errors in cycling.
+      to turn off trapping, set the value to 1.0e30 or something similar.
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;1.5e0&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;vectors&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;category&gt;streams&lt;/category&gt;
+    &lt;group&gt;shr_strdata_nml&lt;/group&gt;
+    &lt;desc&gt;
+      list of paired colon delimited field names that should be treated as
+      vectors when carrying out spatial interpolation.  unlike other
+      character arrays in this namelist, this array is completely decoupled
+      from the list of streams.  this is a list of vector pairs that span
+      all input streams where different fields of the vector pair could
+      appear in different streams.
+      for example, vectors = &#39;u:v&#39;,&#39;taux:tauy&#39;.
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;null&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;streams&quot; skip_default_entry=&quot;true&quot;&gt;
+    &lt;type&gt;char(30)&lt;/type&gt;
+    &lt;category&gt;streams&lt;/category&gt;
+    &lt;group&gt;shr_strdata_nml&lt;/group&gt;
+    &lt;desc&gt;
+      character array (up to 30 elements) of stream input files.  this
+      string is actually parsed by a stream method and so the format is
+      specified by the stream module.  this string consists of a
+      &quot;stream_input_filename year_align year_first year_last&quot;.  the
+      stream_input_filename is a stream text input file and the format and
+      options are described elsewhere.  year_align, year_first, and
+      year_last provide information about the time axis of the file and how
+      to relate the input time axis to the model time axis.
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;!-- =========================================  --&gt;
+  &lt;!--- docn_nml                --&gt;
+  &lt;!-- =========================================  --&gt;
+
+  &lt;entry id=&quot;decomp&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;category&gt;docn&lt;/category&gt;
+    &lt;group&gt;docn_nml&lt;/group&gt;
+    &lt;valid_values&gt;1d,root&lt;/valid_values&gt;
+    &lt;desc&gt;
+      DOCN Decomposition strategy
+      1d   = Vector decomposition
+      root = run only on the master task
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;1d&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;restfilm&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;category&gt;docn&lt;/category&gt;
+    &lt;group&gt;docn_nml&lt;/group&gt;
+    &lt;desc&gt;
+      Master restart file name for docn model
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;undefined&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;restfils&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;category&gt;docn&lt;/category&gt;
+    &lt;group&gt;docn_nml&lt;/group&gt;
+    &lt;desc&gt;
+      Stream restart file name for docn model, needed for branch simulations
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;undefined&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;force_prognostic_true&quot;&gt;
+    &lt;type&gt;logical&lt;/type&gt;
+    &lt;category&gt;docn&lt;/category&gt;
+    &lt;group&gt;docn_nml&lt;/group&gt;
+    &lt;desc&gt;If TRUE, prognostic is forced to true. (default=false)&lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;.false.&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;sst_constant_value&quot; per_stream_entry=&quot;true&quot;&gt;
+    &lt;type&gt;real(30)&lt;/type&gt;
+    &lt;category&gt;docn&lt;/category&gt;
+    &lt;group&gt;docn_nml&lt;/group&gt;
+    &lt;desc&gt;
+      Value of globally uniform SST (K) for idealized experiments 
+      when data ocean mode is sst_aquap_constant
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;-1.0&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+&lt;/entry_id&gt;
+</pre></div>
+</div>
+</div>
+<div class="section" id="cimeroot-src-components-stub-comps-socn-cime-config">
+<h2>CIMEROOT/src/components/stub_comps/socn/cime_config<a class="headerlink" href="#cimeroot-src-components-stub-comps-socn-cime-config" title="Permalink to this headline">¶</a></h2>
+<p>The ocean stub model, <strong>socn</strong>, does not output any files in the RUNDIR nor
+does it have any namelist settings.</p>
+<p>XML variables and component descriptions specific to socn.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;?xml version=&quot;1.0&quot;?&gt;
+
+&lt;?xml-stylesheet type=&quot;text/xsl&quot; href=&quot;entry_id.xsl&quot; ?&gt;
+
+&lt;entry_id&gt;
+
+  &lt;entry id=&quot;COMP_OCN&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;valid_values&gt;socn&lt;/valid_values&gt;
+    &lt;default_value&gt;socn&lt;/default_value&gt;
+    &lt;group&gt;case_comp&lt;/group&gt;
+    &lt;file&gt;env_case.xml&lt;/file&gt;
+    &lt;desc&gt;Name of ocean component&lt;/desc&gt;
+  &lt;/entry&gt;
+
+  &lt;description&gt;
+    &lt;desc compset=&quot;_SOCN&quot;&gt;Stub ocn component&lt;/desc&gt;
+  &lt;/description&gt;
+
+  &lt;help&gt;
+    =========================================
+    SOCN naming conventions in compset name
+    =========================================
+  &lt;/help&gt;
+
+&lt;/entry_id&gt;
+</pre></div>
+</div>
+</div>
+<div class="section" id="cimeroot-src-components-xcpl-comps-xocn-cime-config">
+<h2>CIMEROOT/src/components/xcpl_comps/xocn/cime_config<a class="headerlink" href="#cimeroot-src-components-xcpl-comps-xocn-cime-config" title="Permalink to this headline">¶</a></h2>
+<p>The ocean dead model, <strong>xocn</strong>, does not output any files in the RUNDIR nor
+does it have any namelist settings.</p>
+<p>XML variables and component descriptions specific to xocn.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;?xml version=&quot;1.0&quot;?&gt;
+
+&lt;?xml-stylesheet type=&quot;text/xsl&quot; href=&quot;entry_id.xsl&quot; ?&gt;
+
+&lt;entry_id version=&quot;3.0&quot;&gt;
+  &lt;description&gt;
+    &lt;desc ocn=&quot;XOCN&quot;&gt;Dead ocean component&lt;/desc&gt;
+  &lt;/description&gt;
+
+  &lt;entry id=&quot;COMP_OCN&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;valid_values&gt;xocn&lt;/valid_values&gt;
+    &lt;default_value&gt;xocn&lt;/default_value&gt;
+    &lt;group&gt;case_comp&lt;/group&gt;
+    &lt;file&gt;env_case.xml&lt;/file&gt;
+    &lt;desc&gt;Name of ocean component&lt;/desc&gt;
+  &lt;/entry&gt;
+
+
+
+  &lt;help&gt;
+    =========================================
+    XOCN naming conventions in compset name
+    =========================================
+  &lt;/help&gt;
+
+&lt;/entry_id&gt;
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="river.html" class="btn btn-neutral float-right" title="CIME River Runoff Data and Stub XML Files" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="landice.html" class="btn btn-neutral" title="CIME Land Ice Data and Stub XML Files" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+     
+<script>var version_json_loc = "../../../versions.json";</script>
+
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script src="../_static/pop_ver.js"></script>
+    
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

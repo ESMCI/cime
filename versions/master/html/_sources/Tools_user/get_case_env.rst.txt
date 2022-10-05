@@ -1,0 +1,14 @@
+
+.. _get_case_env:
+
+####################################################
+get_case_env
+####################################################
+
+**get_case_env** is a script in CIMEROOT/scripts/Tools.
+
+.. toctree::
+   :maxdepth: 1
+
+.. command-output:: ./get_case_env --help
+   :cwd: ../../../scripts/Tools

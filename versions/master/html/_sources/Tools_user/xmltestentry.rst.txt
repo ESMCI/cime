@@ -1,0 +1,14 @@
+
+.. _xmltestentry:
+
+####################################################
+xmltestentry
+####################################################
+
+**xmltestentry** is a script in CIMEROOT/scripts/Tools.
+
+.. toctree::
+   :maxdepth: 1
+
+.. command-output:: ./xmltestentry --help
+   :cwd: ../../../scripts/Tools
