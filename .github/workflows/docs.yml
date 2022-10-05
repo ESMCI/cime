@@ -43,7 +43,7 @@ jobs:
           git fetch
           git clone . --branch=gh-pages _gh-pages/
 
-          branch_name="${{github.ref}}"
+          branch_name="${{github.ref_name}}"
           branch_name=${branch_name//\//--}
 
           mkdir -p _gh-pages/branch/${branch_name}
