@@ -46,11 +46,12 @@ jobs:
           git worktree add _gh-pages/ gh-pages
 
           branch_name="${{github.event.pull_request.head.ref}}"
-          branch_name=${branch_name//\//--}
 
           mkdir -p _gh-pages/branch/${branch_name}
 
           rsync -a _build/html/ _gh-pages/branch/${branch_name}
+
+          cp .git/config _gh-pages/.git/config
 
           cd _gh-pages/
 
