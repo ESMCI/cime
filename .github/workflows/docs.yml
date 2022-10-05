@@ -41,9 +41,9 @@ jobs:
         if: ${{ github.event_name == 'pull_request' }}
         run: |
           git fetch
-          git clone . --branch=gh-pages _gh-pages/
+          git worktree add _gh-pages/ gh-pages
 
-          branch_name="${{github.ref_name}}"
+          branch_name="${{github.event.pull_request.head.ref}}"
           branch_name=${branch_name//\//--}
 
           mkdir -p _gh-pages/branch/${branch_name}
@@ -57,4 +57,4 @@ jobs:
 
           git add .
           git commit -m "Adds documentation"
-          git push gi-pages
+          git push gh-pages
