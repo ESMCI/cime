@@ -1,7 +1,0 @@
-For the most part, the names of directories here are the same as branch
-names in the CIME repository. Exceptions are noted below:
-
-- cesm2.2: this was created (2020-09-29) from cime5.8.32, because that
-  was the cime version used in the cesm2.2.0 release; as of that
-  release, there was no maintenance branch corresponding to the cesm2.2
-  release.

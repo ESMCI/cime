@@ -1,7 +1,0 @@
-{
-    "master": "master",
-    "maint-5.6": "CESM2.1 (cime5.6)",
-    "cesm2.2": "CESM2.2",
-    "ufs_release_v1.0": "ufs_release_v1.0",
-    "ufs_release_v1.1": "ufs_release_v1.1"
-}
