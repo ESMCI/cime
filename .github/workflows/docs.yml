@@ -39,25 +39,10 @@ jobs:
           make BUILDDIR=${PWD}/_build -C doc/ html
       - name: Push PR branch
         if: ${{ github.event_name == 'pull_request' }}
-        run: |
-          set -x 
-
-          git fetch
-          git worktree add _gh-pages/ gh-pages
-
-          branch_name="${{github.event.pull_request.head.ref}}"
-
-          mkdir -p _gh-pages/branch/${branch_name}
-
-          rsync -a _build/html/ _gh-pages/branch/${branch_name}
-
-          cp .git/config _gh-pages/.git/config
-
-          cd _gh-pages/
-
-          git config user.name github-actions
-          git config user.email github-actions@github.com
-
-          git add .
-          git commit -m "Adds documentation"
-          git push gh-pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{secrets.GITHUB_TOKEN}}
+          publish_dir: './_build/html'
+          desintation_dir: 'branch/${{ github.event.pull_request.head.ref }}'
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
