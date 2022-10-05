@@ -1,42 +1,60 @@
-name: documentation
+name: docs
 
 on:
   push:
-    paths:
-      - 'docs/**'
+    branches:
+      - master
+
+  pull_request:
     branches:
       - master
 
 jobs:
-  update_docs:
-    name: Updates documentation
+  build-and-deploy:
+    name: Build and deploy documentation
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
         with:
-          path: 'master/'
-      - uses: actions/checkout@v2
-        with:
-          repository: ESMCI/cime
-          path: 'gh-pages/'
-          ref: gh-pages
-      - uses: actions/setup-python@v2
+          fetch-depth: 0
+          lfs: true
+      - name: Install python 3.x 
+        uses: actions/setup-python@v2
         with:
           python-version: '3.x'
-      - name: install dependencies
+      # https://github.com/actions/cache/blob/main/examples.md#python---pip
+      - name: Cache pip
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('doc/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+      - name: Install dependencies
         run: |
-          pip install -r ${GITHUB_WORKSPACE}/master/doc/requirements.txt
-      - name: build documentation
+          pip install -r doc/requirements.txt
+      # Build documentation under ${PWD}/_build
+      - name: Build Sphinx docs
         run: |
-          cd ${GITHUB_WORKSPACE}/master/doc
-          make BUILDDIR=${GITHUB_WORKSPACE}/gh-pages/versions/master clean
-          make BUILDDIR=${GITHUB_WORKSPACE}/gh-pages/versions/master html
-      - name: commit changes
-        if: ${{ !env.ACT }} # skip if using act
+          make BUILDDIR=${PWD}/_build -C doc/ html
+      - name: Push PR branch
+        if: ${{ github.event_name == 'pull_request' }}
         run: |
-          cd ${GITHUB_WORKSPACE}/gh-pages/
+          git fetch
+          git clone . --branch=gh-pages _gh-pages/
+
+          branch_name="${{github.ref}}"
+          branch_name=${branch_name//\//--}
+
+          mkdir -p _gh-pages/branch/${branch_name}
+
+          rsync -a _build/html/ _gh-pages/branch/${branch_name}
+
+          cd _gh-pages/
+
           git config user.name github-actions
           git config user.email github-actions@github.com
+
           git add .
-          git commit -m 'Updates documentation'
-          git push gh-pages
+          git commit -m "Adds documentation"
+          git push gi-pages
