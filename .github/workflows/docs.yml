@@ -51,7 +51,7 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            var comments = await github.paginate(github.rest.issues.listComments, {
+            const comments = await github.paginate(github.rest.issues.listComments, {
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number
@@ -59,9 +59,9 @@ jobs:
 
             console.log(comments);
 
-            # var havePosted = comments.map(x => x.user.login).some(x => x === "github-actions[bot]");
+            const havePosted = comments.map(x => x.user.login).some(x => x === "github-actions[bot]");
 
-            github.rest.issues.createComment({
+            await github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
