@@ -48,7 +48,7 @@ jobs:
           user_email: 'github-actions[bot]@users.noreply.github.com'
       - name: Comment about previewing documentation
         if: ${{ github.event_name == 'pull_request' }}
-        uses: actions/github-script@v5
+        uses: actions/github-script@v6
         with:
           script: |
             var comments = await github.paginate(github.rest.issues.listComments, {
@@ -57,14 +57,13 @@ jobs:
               issue_number: context.issue.number
             });
 
-            var havePosted = comments.map(x => x.user.login).some(x => x === "github-actions[bot]");
+            console.log(comments);
 
-            # prevent duplicate comment
-            if (!havePosted) {
-              github.rest.issues.createComment({
-                issue_number: context.issue.number,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                body: 'You can preview documentation at https://esmci.github.io/cime/branch/${{ github.event.pull_request.head.ref }}/index.html'
-              })
-            }
+            # var havePosted = comments.map(x => x.user.login).some(x => x === "github-actions[bot]");
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: 'You can preview documentation at https://esmci.github.io/cime/branch/${{ github.event.pull_request.head.ref }}/index.html'
+            })
