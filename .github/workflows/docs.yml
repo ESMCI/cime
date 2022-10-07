@@ -51,9 +51,20 @@ jobs:
         uses: actions/github-script@v5
         with:
           script: |
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
+            var comments = await github.paginate(github.rest.issues.listComments, {
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: 'You can preview documentation at https://esmci.github.io/cime/branch/${{ github.event.pull_request.head.ref }}/index.html'
-            })
+              issue_number: context.issue.number
+            });
+
+            var havePosted = comments.map(x => x.user.login).some(x => x === "github-actions[bot]");
+
+            # prevent duplicate comment
+            if (!havePosted) {
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: 'You can preview documentation at https://esmci.github.io/cime/branch/${{ github.event.pull_request.head.ref }}/index.html'
+              })
+            }
