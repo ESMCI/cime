@@ -306,13 +306,13 @@ def jenkins_generic_job(
     #
 
     if jenkins_id is not None:
-      test_id_root = jenkins_id
-      test_id = "%s%s" % (test_id_root, CIME.utils.get_timestamp("%y%m%d_%H%M%S"))
+        test_id_root = jenkins_id
+        test_id = "%s%s" % (test_id_root, CIME.utils.get_timestamp("%y%m%d_%H%M%S"))
     else:
-      test_id_root = "J{}{}".format(
-        baseline_name.capitalize(), test_suite.replace("e3sm_", "").capitalize()
-      )
-      test_id = "%s%s" % (test_id_root, CIME.utils.get_timestamp())
+        test_id_root = "J{}{}".format(
+            baseline_name.capitalize(), test_suite.replace("e3sm_", "").capitalize()
+        )
+        test_id = "%s%s" % (test_id_root, CIME.utils.get_timestamp())
     archiver_thread = threading.Thread(
         target=handle_old_test_data,
         args=(machine, compiler, test_id_root, scratch_root, test_root, test_id),
