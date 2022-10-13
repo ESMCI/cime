@@ -59,7 +59,7 @@ jobs:
         with:
           github_token: ${{secrets.GITHUB_TOKEN}}
           publish_dir: './_build/html'
-          destination_dir: './branch/${{ github.event.pull_request.head.ref }}'
+          destination_dir: './branch/${{ github.event.pull_request.head.ref }}/html'
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
       - name: Comment about previewing documentation
@@ -80,7 +80,7 @@ jobs:
                 issue_number: context.issue.number,
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                body: 'You can preview documentation at https://esmci.github.io/cime/branch/${{ github.event.pull_request.head.ref }}/index.html'
+                body: 'You can preview documentation at https://esmci.github.io/cime/branch/${{ github.event.pull_request.head.ref }}/html/index.html'
               })
             }
       - name: Push new docs
@@ -89,7 +89,7 @@ jobs:
         with:
           github_token: ${{secrets.GITHUB_TOKEN}}
           publish_dir: './_build/html'
-          destination_dir: './versions/master'
+          destination_dir: './versions/master/html'
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
   cleanup:

@@ -1,5 +1,5 @@
 $(document).ready(function() {
-    var version_json_loc = "../../versions.json";
+    var version_json_loc = "../versions.json";
 
     $(".version").html("<div id='version-dropdown'><select id='version-list'></select></div>");
 
