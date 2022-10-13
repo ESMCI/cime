@@ -1,0 +1,10 @@
+CIME.data.config package
+========================
+
+Module contents
+---------------
+
+.. automodule:: CIME.data.config
+   :members:
+   :undoc-members:
+   :show-inheritance:
