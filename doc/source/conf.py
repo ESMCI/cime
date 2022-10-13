@@ -45,6 +45,7 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx.ext.todo",
     "sphinxcontrib.programoutput",
+    "sphinx_rtd_theme",
 ]
 todo_include_todos = True
 
@@ -124,11 +125,12 @@ html_theme_options["versions"]["[placeholder]"] = ""
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ["_static"]
 
+html_css_files = ["custom.css"]
+
 # -- Options for HTMLHelp output ------------------------------------------
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = "ondoc"
-
 
 # -- Options for LaTeX output ---------------------------------------------
 
