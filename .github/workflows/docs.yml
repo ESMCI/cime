@@ -34,7 +34,7 @@ jobs:
         with:
           fetch-depth: 0
           lfs: true
-      - name: Install python 3.x 
+      - name: Install python 3.x
         uses: actions/setup-python@v2
         with:
           python-version: '3.x'
@@ -106,7 +106,7 @@ jobs:
       - name: Remove branch previews
         run: |
           for name in `ls branch/`
-          do 
+          do
             if [[ -z "$(git show-ref --quiet ${name})" ]]
             then
               git rm -rf branch/${name}
