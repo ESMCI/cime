@@ -51,6 +51,8 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
+            console.log(github);
+
             const comments = await github.paginate(github.rest.issues.listComments, {
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -67,3 +69,12 @@ jobs:
                 body: 'You can preview documentation at https://esmci.github.io/cime/branch/${{ github.event.pull_request.head.ref }}/index.html'
               })
             }
+      - name: Push new docs
+        if: ${{ github.event_name == 'push' }}
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{secrets.GITHUB_TOKEN}}
+          publish_dir: './_build/html'
+          destination_dir: './versions/master'
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
