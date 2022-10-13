@@ -348,6 +348,7 @@
     <span class="n">check_throughput</span><span class="p">,</span>
     <span class="n">check_memory</span><span class="p">,</span>
     <span class="n">pes_file</span><span class="p">,</span>
+    <span class="n">jenkins_id</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="c1">###############################################################################</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -387,10 +388,14 @@
     <span class="c1"># the Jenkins jobs with timeouts to avoid this.</span>
     <span class="c1">#</span>
 
-    <span class="n">test_id_root</span> <span class="o">=</span> <span class="s2">&quot;J</span><span class="si">{}{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-        <span class="n">baseline_name</span><span class="o">.</span><span class="n">capitalize</span><span class="p">(),</span> <span class="n">test_suite</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;e3sm_&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span>
-    <span class="p">)</span>
-    <span class="n">test_id</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">test_id_root</span><span class="p">,</span> <span class="n">CIME</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_timestamp</span><span class="p">())</span>
+    <span class="k">if</span> <span class="n">jenkins_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">test_id_root</span> <span class="o">=</span> <span class="n">jenkins_id</span>
+        <span class="n">test_id</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">test_id_root</span><span class="p">,</span> <span class="n">CIME</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_timestamp</span><span class="p">(</span><span class="s2">&quot;%y%m</span><span class="si">%d</span><span class="s2">_%H%M%S&quot;</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">test_id_root</span> <span class="o">=</span> <span class="s2">&quot;J</span><span class="si">{}{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">baseline_name</span><span class="o">.</span><span class="n">capitalize</span><span class="p">(),</span> <span class="n">test_suite</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;e3sm_&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="n">test_id</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">test_id_root</span><span class="p">,</span> <span class="n">CIME</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_timestamp</span><span class="p">())</span>
     <span class="n">archiver_thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span>
         <span class="n">target</span><span class="o">=</span><span class="n">handle_old_test_data</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">machine</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">test_id_root</span><span class="p">,</span> <span class="n">scratch_root</span><span class="p">,</span> <span class="n">test_root</span><span class="p">,</span> <span class="n">test_id</span><span class="p">),</span>
