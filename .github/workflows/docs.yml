@@ -23,7 +23,7 @@ jobs:
       - uses: tj-actions/changed-files@v32
         id: changed-check
         with:
-          files: docs
+          files: doc
   build-and-deploy:
     needs: check-changes
     if: needs.check-changes.outputs.any_changed == 'true'
