@@ -165,8 +165,9 @@ class FakeCase(object):
         return self._vals[attrib]
 
     def set_value(self, attrib, value):
-       """ Sets a given variable value for the case"""
-       self._vals[attrib] = value
+        """Sets a given variable value for the case"""
+        self._vals[attrib] = value
+
 
 def generate_env_mach_specific(
     output_dir,
