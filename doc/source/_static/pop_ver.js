@@ -1,6 +1,4 @@
 $(document).ready(function() {
-    var version_json_loc = "../versions.json";
-
     $(".version").html("<div id='version-dropdown'><select id='version-list'></select></div>");
 
     var versionList = $("#version-list");
@@ -11,6 +9,8 @@ $(document).ready(function() {
     if (baseUri == undefined && baseUri.length != 2) {
         return;
     }
+
+    var version_json_loc = baseUri[1] + "/versions.json";
 
     versionList.change(function() {
         window.location = this.value;
