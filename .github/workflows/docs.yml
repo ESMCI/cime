@@ -14,7 +14,7 @@ jobs:
     name: Build and deploy documentation
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
           lfs: true
@@ -51,8 +51,6 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            console.log(github);
-
             const comments = await github.paginate(github.rest.issues.listComments, {
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -78,3 +76,29 @@ jobs:
           destination_dir: './versions/master'
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
+  cleanup:
+    needs: build-and-deploy
+    name: Cleanup branch previews
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'push' }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: 'gh-pages'
+          fetch-depth: 0
+          lfs: true
+      - name: Remove branch previews
+        run: |
+          for name in `ls branch/`
+          do 
+            if [[ -z "$(git show-ref --quiet ${name})" ]]
+            then
+              git rm -rf branch/${name}
+            fi
+          done
+      - name: Commit and push local changes to gh-pages
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email github-actions[bot]@users.noreply.github.com
+          git commit -m "Clean up branch previews"
+          git push
