@@ -10,7 +10,20 @@ on:
       - master
 
 jobs:
+  check-changes:
+    name: Check for changes to documentation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          lfs: true
+      - uses: tj-actions/changed-files@v32
+        with:
+          files: docs
   build-and-deploy:
+    needs: check-changes
+    if: steps.check-changes.outputs.any_changed == 'true'
     name: Build and deploy documentation
     runs-on: ubuntu-latest
     steps:
