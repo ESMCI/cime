@@ -1,0 +1,14 @@
+
+.. _xmlchange:
+
+####################################################
+xmlchange
+####################################################
+
+**xmlchange** is a script in CIMEROOT/CIME/Tools.
+
+.. toctree::
+   :maxdepth: 1
+
+.. command-output:: ./xmlchange --help
+   :cwd: ../../../CIME/Tools
