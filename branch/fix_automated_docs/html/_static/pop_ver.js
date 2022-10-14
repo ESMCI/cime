@@ -1,6 +1,7 @@
 $(document).ready(function() {
     $(".version").html("<div id='version-dropdown'><select id='version-list'></select></div>");
 
+    var version_json_loc = "../../versions.json";
     var versionList = $("#version-list");
     var baseUriRegex = /(.*\/cime\/versions).*/g;
     //var baseUri = baseUriRegex.exec("https://esmci.github.io/cime/versions/master/html/index.html");
@@ -9,8 +10,6 @@ $(document).ready(function() {
     if (baseUri == null && baseUri.length != 2) {
         return;
     }
-
-    var version_json_loc = baseUri[1] + "/versions.json";
 
     versionList.change(function() {
         window.location = this.value;
