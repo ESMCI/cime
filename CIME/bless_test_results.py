@@ -168,7 +168,9 @@ def bless_test_results(
                 continue
 
         if bless_tests in [[], None] or CIME.utils.match_any(test_name, bless_tests):
-            overall_result = ts.get_overall_test_status()[0]
+            overall_result, phase = ts.get_overall_test_status(
+                ignore_namelists=True, ignore_memleak=True
+            )
 
             # See if we need to bless namelist
             if not hist_only:
@@ -189,13 +191,22 @@ def bless_test_results(
                     )
                     hist_bless = False
                 elif run_result != TEST_PASS_STATUS:
-                    broken_blesses.append((test_name, "test did not pass"))
+                    broken_blesses.append((test_name, "run phase did not pass"))
                     logger.warning(
-                        "Test '{}' did not pass, not safe to bless, test status = {}".format(
+                        "Test '{}' run phase did not pass, not safe to bless, test status = {}".format(
                             test_name, ts.phase_statuses_dump()
                         )
                     )
                     hist_bless = False
+                elif overall_result == TEST_FAIL_STATUS:
+                    broken_blesses.append((test_name, "test did not pass"))
+                    logger.warning(
+                        "Test '{}' did not pass due to phase {}, not safe to bless, test status = {}".format(
+                            test_name, phase, ts.phase_statuses_dump()
+                        )
+                    )
+                    hist_bless = False
+
                 elif no_skip_pass:
                     hist_bless = True
                 else:

@@ -1,4 +1,4 @@
-ARG MAMBAFORGE_VERSION=4.11.0-0
+ARG MAMBAFORGE_VERSION=4.14.0-0
 FROM condaforge/mambaforge:${MAMBAFORGE_VERSION} AS base
 
 ARG PNETCDF_VERSION=1.12.1
@@ -36,9 +36,6 @@ RUN mamba install --yes -c conda-forge \
             openssh && \
             rm -rf /opt/conda/pkgs/*
 
-# Install cpan packages
-RUN cpan install LibXML::XML Switch
-
 # Install version locked packages
 RUN mamba install --yes -c conda-forge \
             libnetcdf=${LIBNETCDF_VERSION}=*openmpi* \
@@ -51,6 +48,9 @@ RUN mamba install --yes -c conda-forge \
             rm -rf /opt/conda/pkgs/* && \
             ln -sf /opt/conda/bin/x86_64-conda-linux-gnu-ar /opt/conda/bin/ar && \
             ln -sf /opt/conda/bin/x86_64-conda-linux-gnu-ranlib /opt/conda/bin/ranlib
+
+# Install cpan packages
+RUN cpan install XML::LibXML Switch
 
 # Build pnetcdf
 RUN curl -L -k -o "${PWD}/pnetcdf.tar.gz" \

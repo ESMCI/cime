@@ -1,46 +1,127 @@
-name: documentation
+name: docs
 
 on:
   push:
-    paths:
-      - 'docs/**'
     branches:
       - master
 
-permissions: {}
-jobs:
-  update_docs:
-    permissions:
-      contents: write # for git push
+  pull_request:
+    branches:
+      - master
 
-    name: Updates documentation
+permissions:
+  contents: read
+jobs:
+  check-changes:
+    name: Check for changes to documentation
+    runs-on: ubuntu-latest
+    outputs:
+      any_changed: ${{ steps.changed-check.outputs.any_changed }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          lfs: true
+      - uses: tj-actions/changed-files@v32
+        id: changed-check
+        with:
+          files: doc
+  build-and-deploy:
+    permissions:
+      contents: write  #  for peaceiris/actions-gh-pages to push
+      pull-requests: write  #  to comment on pull requests
+    needs: check-changes
+    if: needs.check-changes.outputs.any_changed == 'true'
+    name: Build and deploy documentation
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
-          path: 'master/'
-      - uses: actions/checkout@v2
-        with:
-          repository: ESMCI/cime
-          path: 'gh-pages/'
-          ref: gh-pages
-      - uses: actions/setup-python@v2
+          fetch-depth: 0
+          lfs: true
+      - name: Install python 3.x
+        uses: actions/setup-python@v2
         with:
           python-version: '3.x'
-      - name: install dependencies
+      # https://github.com/actions/cache/blob/main/examples.md#python---pip
+      - name: Cache pip
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('doc/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+      - name: Install dependencies
         run: |
-          pip install -r ${GITHUB_WORKSPACE}/master/doc/requirements.txt
-      - name: build documentation
+          pip install -r doc/requirements.txt
+      # Build documentation under ${PWD}/_build
+      - name: Build Sphinx docs
         run: |
-          cd ${GITHUB_WORKSPACE}/master/doc
-          make BUILDDIR=${GITHUB_WORKSPACE}/gh-pages/versions/master clean
-          make BUILDDIR=${GITHUB_WORKSPACE}/gh-pages/versions/master html
-      - name: commit changes
-        if: ${{ !env.ACT }} # skip if using act
+          make BUILDDIR=${PWD}/_build -C doc/ html
+      - name: Push PR preview
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{secrets.GITHUB_TOKEN}}
+          publish_dir: './_build/html'
+          destination_dir: './branch/${{ github.event.pull_request.head.ref }}/html'
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
+      - name: Comment about previewing documentation
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number
+            });
+
+            const havePosted = comments.map(x => x.user.login).some(x => x === "github-actions[bot]");
+
+            if (!havePosted) {
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: 'You can preview documentation at https://esmci.github.io/cime/branch/${{ github.event.pull_request.head.ref }}/html/index.html'
+              })
+            }
+      - name: Push new docs
+        if: ${{ github.event_name == 'push' }}
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{secrets.GITHUB_TOKEN}}
+          publish_dir: './_build/html'
+          destination_dir: './versions/master/html'
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
+  cleanup:
+    permissions:
+      contents: write  #  for git push
+    needs: build-and-deploy
+    name: Cleanup branch previews
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'push' }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: 'gh-pages'
+          fetch-depth: 0
+          lfs: true
+      - name: Remove branch previews
         run: |
-          cd ${GITHUB_WORKSPACE}/gh-pages/
-          git config user.name github-actions
-          git config user.email github-actions@github.com
-          git add .
-          git commit -m 'Updates documentation'
-          git push gh-pages
+          for name in `ls branch/`
+          do
+            if [[ -z "$(git show-ref --quiet ${name})" ]]
+            then
+              git rm -rf branch/${name}
+            fi
+          done
+      - name: Commit and push local changes to gh-pages
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email github-actions[bot]@users.noreply.github.com
+          git commit -m "Clean up branch previews"
+          git push

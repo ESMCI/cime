@@ -31,6 +31,8 @@ class PEM(SystemTestsCompareTwo):
     def _case_two_setup(self):
         for comp in self._case.get_values("COMP_CLASSES"):
             ntasks = self._case.get_value("NTASKS_{}".format(comp))
+            rootpe = self._case1.get_value("ROOTPE_{}".format(comp))
             if ntasks > 1:
                 self._case.set_value("NTASKS_{}".format(comp), int(ntasks / 2))
+                self._case.set_value("ROOTPE_{}".format(comp), int(rootpe / 2))
         self._case.case_setup(test_mode=True, reset=True)
