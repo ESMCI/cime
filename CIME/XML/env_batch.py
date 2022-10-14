@@ -614,7 +614,13 @@ class EnvBatch(EnvBase):
                     continue
 
             if name is None:
-                submitargs += " {}".format(flag)
+                flag, name = flag.split()
+                if name:
+                    rflag = self._resolve_argument(case, flag, name, job)
+                    if len(rflag) > len(flag):
+                        submitargs += " {}".format(rflag)
+                else:
+                    submitargs += " {}".format(flag)
             else:
                 try:
                     submitargs += self._resolve_argument(case, flag, name, job)
@@ -631,7 +637,6 @@ class EnvBatch(EnvBase):
         # if flag is None then we dealing with new `argument`
         if flag is None:
             flag = self.text(arg)
-
             job_queue_restriction = self.get(arg, "job_queue")
 
             if (
