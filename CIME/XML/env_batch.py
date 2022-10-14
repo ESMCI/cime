@@ -614,7 +614,11 @@ class EnvBatch(EnvBase):
                     continue
 
             if name is None:
-                flag, name = flag.split()
+                try:
+                    flag, name = flag.split()
+                except ValueError:
+                    name = None
+                    continue
                 if name:
                     rflag = self._resolve_argument(case, flag, name, job)
                     if len(rflag) > len(flag):
