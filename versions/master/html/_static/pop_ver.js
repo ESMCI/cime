@@ -1,14 +1,13 @@
 $(document).ready(function() {
-    var version_json_loc = "../versions.json";
-
     $(".version").html("<div id='version-dropdown'><select id='version-list'></select></div>");
 
+    var version_json_loc = "../../versions.json";
     var versionList = $("#version-list");
     var baseUriRegex = /(.*\/cime\/versions).*/g;
     //var baseUri = baseUriRegex.exec("https://esmci.github.io/cime/versions/master/html/index.html");
     var baseUri = baseUriRegex.exec(document.baseURI);
 
-    if (baseUri == undefined && baseUri.length != 2) {
+    if (baseUri == null && baseUri.length != 2) {
         return;
     }
 
