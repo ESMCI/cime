@@ -153,12 +153,20 @@ class FakeCase(object):
     def get_build_threaded(self):
         return self.get_value("SMP_PRESENT")
 
+    def get_case_root(self):
+        """Returns the root directory for this case."""
+        return self.get_value("CASEROOT")
+
     def get_value(self, attrib):
         expect(
             attrib in self._vals,
             "FakeCase does not support getting value of '%s'" % attrib,
         )
         return self._vals[attrib]
+
+    def set_value(self, attrib, value):
+        """Sets a given variable value for the case"""
+        self._vals[attrib] = value
 
 
 def generate_env_mach_specific(
