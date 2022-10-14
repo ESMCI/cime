@@ -6,7 +6,7 @@ $(document).ready(function() {
     //var baseUri = baseUriRegex.exec("https://esmci.github.io/cime/versions/master/html/index.html");
     var baseUri = baseUriRegex.exec(document.baseURI);
 
-    if (baseUri == undefined && baseUri.length != 2) {
+    if (baseUri == null && baseUri.length != 2) {
         return;
     }
 
