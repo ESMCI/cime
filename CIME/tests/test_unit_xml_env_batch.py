@@ -56,7 +56,7 @@ class TestXMLEnvBatch(unittest.TestCase):
 
             case = mock.MagicMock()
 
-            case.get_value.return_value = "long"
+            case.get_value.side_effect = ("long", "long", None)
 
             case.filename = mock.PropertyMock(return_value=tfile.name)
 
