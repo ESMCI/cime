@@ -451,6 +451,7 @@ class Case(object):
 
     def get_value(self, item, attribute=None, resolved=True, subgroup=None):
         result = None
+        print(f"item is {item}")
         for env_file in self._files:
             # Wait and resolve in self rather than in env_file
             result = env_file.get_value(

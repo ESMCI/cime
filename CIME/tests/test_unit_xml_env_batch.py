@@ -39,6 +39,7 @@ class TestXMLEnvBatch(unittest.TestCase):
       <argument>-w default</argument>
       <argument job_queue="short">-w short</argument>
       <argument job_queue="long">-w long</argument>
+      <argument>-A $VARIABLE_THAT_DOES_NOT_EXIST</argument>
     </submit_args>
     <queues>
       <queue walltimemax="01:00:00" nodemax="1">long</queue>

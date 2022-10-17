@@ -76,12 +76,11 @@ class EnvBatch(EnvBase):
         """
         Must default subgroup to something in order to provide single return value
         """
-
         value = None
         node = self.get_optional_child(item, attribute)
         if item in ("BATCH_SYSTEM", "PROJECT_REQUIRED"):
             return super(EnvBatch, self).get_value(item, attribute, resolved)
-
+        
         if not node:
             # this will take the last instance of item listed in all batch_system elements
             bs_nodes = self.get_children("batch_system")
@@ -601,6 +600,8 @@ class EnvBatch(EnvBase):
         submitargs = " "
 
         for arg in submit_arg_nodes:
+            name = None
+            flag = None
             try:
                 flag, name = self._get_argument(case, arg)
             except ValueError:
@@ -614,15 +615,15 @@ class EnvBatch(EnvBase):
                     continue
 
             if name is None:
-                try:
+                if " " in flag:
                     flag, name = flag.split()
-                except ValueError:
-                    name = None
-                    continue
                 if name:
-                    rflag = self._resolve_argument(case, flag, name, job)
-                    if len(rflag) > len(flag):
-                        submitargs += " {}".format(rflag)
+                    if '$' in name:
+                        rflag = self._resolve_argument(case, flag, name, job)
+                        if len(rflag) > len(flag):
+                            submitargs += " {}".format(rflag)
+                    else:
+                        submitargs += " {} {}".format(flag, name)
                 else:
                     submitargs += " {}".format(flag)
             else:
@@ -687,7 +688,6 @@ class EnvBatch(EnvBase):
             if flag == "-q" and rval == "batch" and case.get_value("MACH") == "blues":
                 # Special case. Do not provide '-q batch' for blues
                 raise ValueError()
-
             if (
                 flag.rfind("=", len(flag) - 1, len(flag)) >= 0
                 or flag.rfind(":", len(flag) - 1, len(flag)) >= 0
