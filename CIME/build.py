@@ -311,8 +311,9 @@ def _build_model(
 ):
     ###############################################################################
     logs = []
-
     thread_bad_results = []
+    libroot = os.path.join(exeroot, "lib")
+    bldroot = None
     for model, comp, nthrds, _, config_dir in complist:
         if buildlist is not None and model.lower() not in buildlist:
             continue
@@ -336,9 +337,8 @@ def _build_model(
 
         smp = nthrds > 1 or build_threaded
 
-        bldroot = os.path.join(exeroot, model, "obj")
-        libroot = os.path.join(exeroot, "lib")
         file_build = os.path.join(exeroot, "{}.bldlog.{}".format(model, lid))
+        bldroot = os.path.join(exeroot, model, "obj")
         logger.debug("bldroot is {}".format(bldroot))
         logger.debug("libroot is {}".format(libroot))
 
@@ -413,7 +413,6 @@ def _build_model(
                 cime_model, config_dir, file_build
             )
         )
-
         with open(file_build, "w") as fd:
             stat = run_cmd(
                 "{}/buildexe {} {} {} ".format(config_dir, caseroot, libroot, bldroot),
