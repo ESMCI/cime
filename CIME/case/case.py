@@ -1701,7 +1701,9 @@ class Case(object):
                     os.path.join(casetools, "mach_syslog"),
                 )
 
-            safe_copy(os.path.join(toolsdir, "e3sm_compile_wrap.py"), casetools)
+            srcroot = self.get_value("SRCROOT")
+            customize_path = os.path.join(srcroot, "cime_config", "customize")
+            safe_copy(os.path.join(customize_path, "e3sm_compile_wrap.py"), casetools)
 
         # add archive_metadata to the CASEROOT but only for CESM
         if config.copy_cesm_tools:
