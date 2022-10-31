@@ -1227,9 +1227,11 @@ class Case(object):
             key = "NTASKS_{}".format(compclass)
             if key not in pes_ntasks:
                 mach_pes_obj.set_value(key, 1)
+
             key = "NTHRDS_{}".format(compclass)
-            if compclass not in pes_nthrds:
-                mach_pes_obj.set_value(compclass, 1)
+            if key not in pes_nthrds:
+                mach_pes_obj.set_value(key, 1)
+
         if multi_driver:
             mach_pes_obj.set_value("MULTI_DRIVER", True)
 
