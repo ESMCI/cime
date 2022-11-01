@@ -2011,7 +2011,7 @@ directory, NOT in this subdirectory."""
         if (
             executable is not None
             and "aprun" in executable
-            and not "theta" in self.get_value("MACH")
+            and not "theta" in self.get_value("MACH") and not "onyx" in self.get_value("MACH") and not "warhawk" in self.get_value("MACH") and not "narwhal" in self.get_value("MACH")
         ):
             aprun_args, num_nodes = get_aprun_cmd_for_case(
                 self, run_exe, overrides=overrides
