@@ -1261,6 +1261,8 @@ class Case(object):
         extra_machines_dir=None,
         case_group=None,
         ngpus_per_node=0,
+        gpu_type=None,
+        gpu_offload=None,
     ):
 
         expect(
@@ -1509,46 +1511,34 @@ class Case(object):
 
         # ----------------------------------------------------------------------------------------------------------
         # Sanity check:
-        #     1. We assume that there is always a string "gpu" in the compiler name if we want to enable GPU
-        #     2. For compilers without the string "gpu" in the name:
-        #        2.1. the ngpus-per-node argument would not update the NGPUS_PER_NODE XML variable, as long as
-        #             the MAX_GPUS_PER_NODE XML variable is not defined (i.e., this argument is not in effect).
-        #        2.2. if the MAX_GPUS_PER_NODE XML variable is defined, then the ngpus-per-node argument
-        #             must be set to 0. Otherwise, an error will be triggered.
-        #     3. For compilers with the string "gpu" in the name:
-        #        3.1. if ngpus-per-node argument is smaller than 0, an error will be triggered.
-        #        3.2. if ngpus_per_node argument is larger than the value of MAX_GPUS_PER_NODE, the NGPUS_PER_NODE
+        #        1. GPU_TYPE and GPU_OFFLOAD must both be defined to use GPUS
+        #        2. if ngpus_per_node argument is larger than the value of MAX_GPUS_PER_NODE, the NGPUS_PER_NODE
         #             XML variable in the env_mach_pes.xml file would be set to MAX_GPUS_PER_NODE automatically.
-        #        3.3. if ngpus-per-node argument is equal to 0, it will be updated to 1 automatically.
+        #        3. if ngpus-per-node argument is equal to 0, it will be updated to 1 automatically.
         # ----------------------------------------------------------------------------------------------------------
         max_gpus_per_node = self.get_value("MAX_GPUS_PER_NODE")
-        if max_gpus_per_node:
-            if "gpu" in compiler:
-                if not ngpus_per_node:
-                    ngpus_per_node = 1
-                    logger.warning(
-                        "Setting ngpus_per_node to 1 for compiler {}".format(compiler)
-                    )
-                expect(
-                    ngpus_per_node > 0,
-                    " ngpus_per_node is expected > 0 for compiler {}; current value is {}".format(
-                        compiler, ngpus_per_node
-                    ),
-                )
-            else:
-                expect(
-                    ngpus_per_node == 0,
-                    " ngpus_per_node is expected = 0 for compiler {}; current value is {}".format(
-                        compiler, ngpus_per_node
-                    ),
-                )
+        if gpu_type:
+            expect(max_gpus_per_node, "GPUS are not defined for this machine")
+            expect(
+                gpu_offload,
+                "Both gpu-type and gpu-offload must be defined if either is defined",
+            )
+            self.set_value("GPU_TYPE", gpu_type)
+            self.set_value("GPU_OFFLOAD", gpu_offload)
+
             if ngpus_per_node >= 0:
                 self.set_value(
                     "NGPUS_PER_NODE",
-                    ngpus_per_node
+                    max(1, ngpus_per_node)
                     if ngpus_per_node <= max_gpus_per_node
                     else max_gpus_per_node,
                 )
+
+        elif gpu_offload:
+            expect(
+                False,
+                "Both gpu-type and gpu-offload must be defined if either is defined",
+            )
 
         self.initialize_derived_attributes()
 
@@ -2308,6 +2298,8 @@ directory, NOT in this subdirectory."""
         extra_machines_dir=None,
         case_group=None,
         ngpus_per_node=0,
+        gpu_type=None,
+        gpu_offload=None,
     ):
         try:
             # Set values for env_case.xml
@@ -2381,6 +2373,8 @@ directory, NOT in this subdirectory."""
                 extra_machines_dir=extra_machines_dir,
                 case_group=case_group,
                 ngpus_per_node=ngpus_per_node,
+                gpu_type=gpu_type,
+                gpu_offload=gpu_offload,
             )
 
             self.create_caseroot()
