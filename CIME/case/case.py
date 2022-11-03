@@ -123,6 +123,7 @@ class Case(object):
         self._env_generic_files = []
         self._files = []
         self._comp_interface = None
+        self.gpu_enabled = None
         self._non_local = non_local
         self.read_xml()
 
@@ -450,6 +451,11 @@ class Case(object):
         return []
 
     def get_value(self, item, attribute=None, resolved=True, subgroup=None):
+        if item == "GPU_ENABLED":
+            if self.gpu_enabled == None:
+                if self.get_value("GPU_TYPE") != "none":
+                    self.gpu_enabled = True
+            return "true" if self.gpu_enabled else "false"
         result = None
         for env_file in self._files:
             # Wait and resolve in self rather than in env_file
@@ -1385,14 +1391,19 @@ class Case(object):
             if not dmax:
                 dmax = machobj.get_value(name)
             if dmax:
+                print(f"here name is {name} and dmax is {dmax}")
                 self.set_value(name, dmax)
             elif name == "MAX_GPUS_PER_NODE":
                 logger.debug(
-                    "Variable {} not defined for machine {}".format(name, machine_name)
+                    "Variable {} not defined for machine {} and compiler {}".format(
+                        name, machine_name, compiler
+                    )
                 )
             else:
                 logger.warning(
-                    "Variable {} not defined for machine {}".format(name, machine_name)
+                    "Variable {} not defined for machine {} and compiler {}".format(
+                        name, machine_name, compiler
+                    )
                 )
 
         machdir = machobj.get_machines_dir()
@@ -1518,14 +1529,17 @@ class Case(object):
         # ----------------------------------------------------------------------------------------------------------
         max_gpus_per_node = self.get_value("MAX_GPUS_PER_NODE")
         if gpu_type:
-            expect(max_gpus_per_node, "GPUS are not defined for this machine")
+            expect(
+                max_gpus_per_node,
+                f"GPUS are not defined for machine={machine_name} and compiler={compiler}",
+            )
             expect(
                 gpu_offload,
                 "Both gpu-type and gpu-offload must be defined if either is defined",
             )
             self.set_value("GPU_TYPE", gpu_type)
             self.set_value("GPU_OFFLOAD", gpu_offload)
-
+            self.gpu_enabled = True
             if ngpus_per_node >= 0:
                 self.set_value(
                     "NGPUS_PER_NODE",
