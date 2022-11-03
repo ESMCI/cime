@@ -620,6 +620,9 @@ class EnvBatch(EnvBase):
                 if name:
                     if "$" in name:
                         rflag = self._resolve_argument(case, flag, name, job)
+                        # This is to prevent -gpu_type=none in qsub args
+                        if rflag.endswith("=none"):
+                            continue
                         if len(rflag) > len(flag):
                             submitargs += " {}".format(rflag)
                     else:
