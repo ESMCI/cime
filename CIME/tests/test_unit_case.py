@@ -182,6 +182,8 @@ class TestCase(unittest.TestCase):
                     extra_machines_dir=None,
                     case_group=None,
                     ngpus_per_node=0,
+                    gpu_type=None,
+                    gpu_offload=None,
                 )
                 create_caseroot.assert_called()
                 apply_user_mods.assert_called()
