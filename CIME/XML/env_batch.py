@@ -1109,9 +1109,13 @@ class EnvBatch(EnvBase):
 
     def get_job_id(self, output):
         jobid_pattern = self.get_value("jobid_pattern", subgroup=None)
-        expect(
-            jobid_pattern is not None, "Could not find jobid_pattern in env_batch.xml"
-        )
+        if self._batchtype:
+            expect(
+                jobid_pattern is not None,
+                "Could not find jobid_pattern in env_batch.xml",
+            )
+        else:
+            return output
         search_match = re.search(jobid_pattern, output)
         expect(
             search_match is not None,
