@@ -1945,6 +1945,10 @@ directory, NOT in this subdirectory."""
 
             return result
 
+    def get_job_id(self, output):
+        env_batch = self.get_env("batch")
+        return env_batch.get_job_id(output)
+
     def report_job_status(self):
         jobmap = self.get_job_info()
         if not jobmap:
