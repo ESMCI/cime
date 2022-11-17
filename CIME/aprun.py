@@ -156,6 +156,7 @@ def get_aprun_cmd_for_case(case, run_exe, overrides=None):
             the_list.append(case.get_value("_".join([item_name, model])))
     max_tasks_per_node = case.get_value("MAX_TASKS_PER_NODE")
     if overrides:
+        overrides = {x: y if isinstance(y, int) or y is None else int(y) for x, y in overrides.items()}
         if "max_tasks_per_node" in overrides:
             max_tasks_per_node = overrides["max_tasks_per_node"]
         if "total_tasks" in overrides:
