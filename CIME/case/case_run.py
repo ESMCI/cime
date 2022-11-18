@@ -238,7 +238,7 @@ def _run_model_impl(case, lid, skip_pnl=False, da_cycle=0):
                         case.case_st_archive(resubmit=False)
                         case.restore_from_archive()
 
-                    lid = new_lid()
+                    lid = new_lid(case=case)
                     case.create_namelists()
 
         if not cmd_success and not loop:
@@ -436,7 +436,7 @@ def case_run(self, skip_pnl=False, set_continue_run=False, submit_resubmits=Fals
     # Set up the run, run the model, do the postrun steps
 
     # set up the LID
-    lid = new_lid()
+    lid = new_lid(case=self)
 
     prerun_script = self.get_value("PRERUN_SCRIPT")
     if prerun_script:
