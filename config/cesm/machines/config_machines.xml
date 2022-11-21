@@ -2304,6 +2304,7 @@ This allows using a different mpirun command to launch unit tests
         <command name="load">intel/2018a</command>
         <command name="load">netCDF-Fortran/4.4.4-intel-2018a-HDF5-1.8.19</command>
         <command name="load">PnetCDF/1.8.1-intel-2018a</command>
+        <command name="load">NCO/4.7.2-intel-2018a</command>
         <command name="load">CMake/3.9.1</command>
       </modules>
     </module_system>
