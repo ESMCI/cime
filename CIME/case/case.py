@@ -2021,7 +2021,9 @@ directory, NOT in this subdirectory."""
             # and not "theta" in self.get_value("MACH")
         ):
             aprun_args, num_nodes, _, _, _ = get_aprun_cmd_for_case(
-                self, run_exe, overrides=overrides,
+                self,
+                run_exe,
+                overrides=overrides,
             )
             if job in ("case.run", "case.test"):
                 expect(
