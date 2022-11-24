@@ -581,16 +581,12 @@ class EnvMachSpecific(EnvBase):
             else None
         )
 
-    def get_mpirun(self, case, attribs, job, exe_only=False, overrides=None):
-        """
-        Find best match, return (executable, {arg_name : text})
-        """
+    def _find_best_mpirun_match(self, attribs):
         mpirun_nodes = self.get_children("mpirun")
         best_match = None
         best_num_matched = -1
         default_match = None
         best_num_matched_default = -1
-        args = []
         for mpirun_node in mpirun_nodes:
             xml_attribs = self.attrib(mpirun_node)
             all_match = True
@@ -638,14 +634,51 @@ class EnvMachSpecific(EnvBase):
             and attribs["mpilib"] == "mpi-serial"
             and best_match is None
         ):
-            return "", [], None, None
+            raise ValueError()
 
         expect(
             best_match is not None or default_match is not None,
             "Could not find a matching MPI for attributes: {}".format(attribs),
         )
 
-        the_match = best_match if best_match is not None else default_match
+        return best_match if best_match is not None else default_match
+
+    def get_aprun_mode(self, attribs):
+        default_mode = "ignore"
+        valid_modes = ("ignore", "default")
+
+        try:
+            the_match = self._find_best_mpirun_match(attribs)
+        except ValueError:
+            return default_mode
+
+        mode_node = self.get_children("aprun_mode", root=the_match)
+
+        if len(mode_node) == 0:
+            return default_mode
+
+        expect(len(mode_node) == 1, 'Found multiple "aprun_mode" elements.')
+
+        # should have only one element to select from
+        mode = self.text(mode_node[0])
+
+        expect(
+            mode in valid_modes,
+            f"Value {mode!r} for \"aprun_mode\" is not valid, options are {', '.join(valid_modes)!r}",
+        )
+
+        return mode
+
+    def get_mpirun(self, case, attribs, job, exe_only=False, overrides=None):
+        """
+        Find best match, return (executable, {arg_name : text})
+        """
+        args = []
+
+        try:
+            the_match = self._find_best_mpirun_match(attribs)
+        except ValueError:
+            return "", [], None, None
 
         # Now that we know the best match, compute the arguments
         if not exe_only:
