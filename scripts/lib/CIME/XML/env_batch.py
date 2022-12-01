@@ -597,11 +597,12 @@ class EnvBatch(EnvBase):
                     else:
                         rval = val
 
-                    # We don't want floating-point data
-                    try:
-                        rval = int(round(float(rval)))
-                    except ValueError:
-                        pass
+                    if flag != "-P":
+                        # We don't want floating-point data
+                        try:
+                            rval = int(round(float(rval)))
+                        except ValueError:
+                            pass
 
                     # need a correction for tasks per node
                     if flag == "-n" and rval <= 0:

@@ -165,12 +165,13 @@ class Case(object):
             if not self._non_local:
                 mach = self.get_value("MACH")
                 machobj = Machines()
-                probed_machine = machobj.probe_machine_name()
-                if probed_machine:
-                    expect(
-                        mach == probed_machine,
-                        f"Current machine {probed_machine} does not match case machine {mach}.",
-                    )
+                if mach != "zeus":
+                    probed_machine = machobj.probe_machine_name()
+                    if probed_machine:
+                        expect(
+                            mach == probed_machine,
+                            f"Current machine {probed_machine} does not match case machine {mach}.",
+                        )
             self.initialize_derived_attributes()
 
     def check_if_comp_var(self, vid):
