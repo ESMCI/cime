@@ -37,7 +37,6 @@ module shr_fire_emis_mod
      character(len=name_len)     :: name            ! emissions component name (in fire emissions input table)
      integer               :: index
      real(r8), pointer     :: emis_factors(:) ! function of plant-function-type (PFT)
-     real(r8)              :: coeff           ! emissions component coeffecient
      real(r8)              :: molec_weight    ! molecular weight of the fire emissions compound (g/mole)
      type(shr_fire_emis_comp_t), pointer :: next_emiscomp ! points to next member in the linked list
   endtype shr_fire_emis_comp_t
@@ -50,6 +49,7 @@ module shr_fire_emis_mod
   type shr_fire_emis_mechcomp_t
      character(len=name_len)             :: name                  ! compound name
      type(shr_fire_emis_comp_ptr), pointer :: emis_comps(:) ! an array of pointers to fire emis components
+     real(r8), pointer             :: coeffs(:)                ! emissions components coeffecients
      integer                       :: n_emis_comps          ! number of fire emis compounds that make up the emissions for this mechanis compound
   end type shr_fire_emis_mechcomp_t
 
@@ -194,9 +194,12 @@ contains
        endif
        shr_fire_emis_mechcomps(i)%n_emis_comps = item%n_terms
        allocate(shr_fire_emis_mechcomps(i)%emis_comps(item%n_terms))
+       allocate(shr_fire_emis_mechcomps(i)%coeffs(item%n_terms))
+
+       shr_fire_emis_mechcomps(i)%coeffs(:) = item%coeffs(:)
 
        do j = 1,item%n_terms
-          shr_fire_emis_mechcomps(i)%emis_comps(j)%ptr => add_emis_comp( item%vars(j), item%coeffs(j) )
+          shr_fire_emis_mechcomps(i)%emis_comps(j)%ptr => add_emis_comp( item%vars(j) )
        enddo
        shr_fire_emis_mechcomps_n = shr_fire_emis_mechcomps_n+1
 
@@ -226,10 +229,9 @@ contains
 
   !-------------------------------------------------------------------------
   !-------------------------------------------------------------------------
-  function add_emis_comp( name, coeff ) result(emis_comp)
+  function add_emis_comp( name ) result(emis_comp)
 
     character(len=*), intent(in) :: name
-    real(r8),         intent(in) :: coeff
     type(shr_fire_emis_comp_t), pointer :: emis_comp
 
     emis_comp => get_emis_comp_by_name(shr_fire_emis_linkedlist, name)
@@ -247,7 +249,6 @@ contains
     emis_comp%index = shr_fire_emis_comps_n+1
 
     emis_comp%name = trim(name)
-    emis_comp%coeff = coeff
     nullify(emis_comp%next_emiscomp)
 
     call add_emis_comp_to_list(emis_comp)
