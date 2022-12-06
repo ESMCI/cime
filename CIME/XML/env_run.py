@@ -63,6 +63,8 @@ class EnvRun(EnvBase):
                 if type(value) == type(True):
                     self._pio_async_interface[comp] = value
                 else:
-                    self._pio_async_interface[comp] = convert_to_type(value, "logical", vid)
+                    self._pio_async_interface[comp] = convert_to_type(
+                        value, "logical", vid
+                    )
 
         return EnvBase.set_value(self, vid, value, subgroup, ignore_type)
