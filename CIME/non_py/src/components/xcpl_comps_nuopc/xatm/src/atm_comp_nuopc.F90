@@ -304,7 +304,6 @@ contains
 
     mesh = ESMF_MeshCreate(filename=trim(cvalue), fileformat=ESMF_FILEFORMAT_ESMFMESH, rc=rc)
     if (ChkErr(rc,__LINE__,u_FILE_u)) return
-
     ! realize the actively coupled fields, now that a mesh is established
     ! NUOPC_Realize "realizes" a previously advertised field in the importState and exportState
     ! by replacing the advertised fields with the newly created fields of the same name.
@@ -314,7 +313,7 @@ contains
          numflds=fldsFrAtm_num, &
          flds_scalar_name=flds_scalar_name, &
          flds_scalar_num=flds_scalar_num, &
-         tag=subname//':datmExport',&
+         tag=subname//':xatmExport',&
          mesh=mesh, rc=rc)
     if (chkerr(rc,__LINE__,u_FILE_u)) return
 
@@ -324,7 +323,7 @@ contains
          numflds=fldsToAtm_num, &
          flds_scalar_name=flds_scalar_name, &
          flds_scalar_num=flds_scalar_num, &
-         tag=subname//':datmImport',&
+         tag=subname//':xatmImport',&
          mesh=mesh, rc=rc)
     if (chkerr(rc,__LINE__,u_FILE_u)) return
 

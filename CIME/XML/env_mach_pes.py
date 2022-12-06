@@ -117,8 +117,17 @@ class EnvMachPes(EnvBase):
             asyncio_ntasks = self.get_value("PIO_ASYNCIO_NTASKS")
             asyncio_rootpe = self.get_value("PIO_ASYNCIO_ROOTPE")
             asyncio_stride = self.get_value("PIO_ASYNCIO_STRIDE")
+            logger.debug(
+                "asyncio ntasks {} rootpe {} stride {}".format(
+                    asyncio_ntasks, asyncio_rootpe, asyncio_stride
+                )
+            )
             if asyncio_ntasks and asyncio_stride:
-                for i in range(asyncio_rootpe, asyncio_ntasks*asyncio_stride, asyncio_stride):
+                for i in range(
+                    asyncio_rootpe,
+                    asyncio_rootpe + (asyncio_ntasks * asyncio_stride),
+                    asyncio_stride,
+                ):
                     asyncio_tasks.append(i)
         else:
             comp_interface = "unknown"
@@ -143,10 +152,10 @@ class EnvMachPes(EnvBase):
                 maxinst = max(maxinst, ninst)
             tt = rootpe + nthrds * ((ntasks - 1) * pstrid + 1)
             maxrootpe = max(maxrootpe, rootpe)
-            total_tasks = max(tt, total_tasks) 
+            total_tasks = max(tt, total_tasks)
         if self.get_value("MULTI_DRIVER"):
             total_tasks *= maxinst
-
+        logger.debug("asyncio_tasks {}".format(asyncio_tasks))
         if asyncio_tasks:
             return total_tasks + len(asyncio_tasks)
         return total_tasks
