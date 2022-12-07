@@ -645,7 +645,7 @@ class EnvMachSpecific(EnvBase):
 
     def get_aprun_mode(self, attribs):
         default_mode = "ignore"
-        valid_modes = ("ignore", "default")
+        valid_modes = ("ignore", "default", "override")
 
         try:
             the_match = self._find_best_mpirun_match(attribs)
@@ -668,6 +668,37 @@ class EnvMachSpecific(EnvBase):
         )
 
         return mode
+
+    def get_aprun_args(self, case, attribs, job, overrides=None):
+        args = {}
+
+        try:
+            the_match = self._find_best_mpirun_match(attribs)
+        except ValueError:
+            return None
+
+        arg_node = self.get_optional_child("arguments", root=the_match)
+
+        if arg_node:
+            arg_nodes = self.get_children("arg", root=arg_node)
+
+            for arg_node in arg_nodes:
+                position = self.get(arg_node, "position")
+
+                if position is None:
+                    continue
+
+                arg_value = transform_vars(
+                    self.text(arg_node),
+                    case=case,
+                    subgroup=job,
+                    overrides=overrides,
+                    default=self.get(arg_node, "default"),
+                )
+
+                args[arg_value] = dict(position=position)
+
+        return args
 
     def get_mpirun(self, case, attribs, job, exe_only=False, overrides=None):
         """

@@ -2020,10 +2020,15 @@ directory, NOT in this subdirectory."""
             and aprun_mode != "ignore"
             # and not "theta" in self.get_value("MACH")
         ):
+            extra_args = env_mach_specific.get_aprun_args(
+                self, mpi_attribs, job, overrides=overrides
+            )
+
             aprun_args, num_nodes, _, _, _ = get_aprun_cmd_for_case(
                 self,
                 run_exe,
                 overrides=overrides,
+                extra_args=extra_args,
             )
             if job in ("case.run", "case.test"):
                 expect(

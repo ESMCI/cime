@@ -11,6 +11,62 @@ from CIME.XML.env_mach_specific import EnvMachSpecific
 
 
 class TestXMLEnvMachSpecific(unittest.TestCase):
+    def test_aprun_get_args(self):
+        with tempfile.NamedTemporaryFile() as temp:
+            temp.write(
+                b"""<?xml version="1.0"?>
+<file id="env_mach_specific.xml" version="2.0">
+  <header>
+    These variables control the machine dependent environment including
+    the paths to compilers and libraries external to cime such as netcdf,
+    environment variables for use in the running job should also be set here.
+    </header>
+  <group id="compliant_values">
+    <entry id="run_exe" value="${EXEROOT}/e3sm.exe ">
+      <type>char</type>
+      <desc>executable name</desc>
+    </entry>
+    <entry id="run_misc_suffix" value=" &gt;&gt; e3sm.log.$LID 2&gt;&amp;1 ">
+      <type>char</type>
+      <desc>redirect for job output</desc>
+    </entry>
+  </group>
+  <module_system type="none"/>
+  <environment_variables>
+    <env name="OMPI_ALLOW_RUN_AS_ROOT">1</env>
+    <env name="OMPI_ALLOW_RUN_AS_ROOT_CONFIRM">1</env>
+  </environment_variables>
+  <mpirun mpilib="openmpi">
+    <aprun_mode>override</aprun_mode>
+    <executable>aprun</executable>
+    <arguments>
+      <arg name="skipped">should be skipped</arg>
+      <arg name="ntasks" position="global">-n {{ total_tasks }}</arg>
+      <arg name="oversubscribe" position="per">--oversubscribe</arg>
+    </arguments>
+  </mpirun>
+</file>
+"""
+            )
+            temp.seek(0)
+
+            mach_specific = EnvMachSpecific(infile=temp.name)
+
+            attribs = {"compiler": "gnu", "mpilib": "openmpi", "threaded": False}
+
+            case = mock.MagicMock()
+
+            type(case).total_tasks = mock.PropertyMock(return_value=4)
+
+            extra_args = mach_specific.get_aprun_args(case, attribs, "case.run")
+
+            expected_args = {
+                "--oversubscribe": {"position": "per"},
+                "-n 4": {"position": "global"},
+            }
+
+            assert extra_args == expected_args
+
     def test_get_aprun_mode_not_valid(self):
         with tempfile.NamedTemporaryFile() as temp:
             temp.write(
@@ -58,7 +114,7 @@ class TestXMLEnvMachSpecific(unittest.TestCase):
 
             assert (
                 str(e.exception)
-                == "ERROR: Value 'custom' for \"aprun_mode\" is not valid, options are 'ignore, default'"
+                == "ERROR: Value 'custom' for \"aprun_mode\" is not valid, options are 'ignore, default, override'"
             )
 
     def test_get_aprun_mode_user_defined(self):
