@@ -227,7 +227,11 @@ class Case(object):
         for comp in comp_classes:
             self.async_io[comp] = self.get_value("PIO_ASYNC_INTERFACE", subgroup=comp)
 
-        self.iotasks = self.get_value("PIO_ASYNCIO_NTASKS")
+        self.iotasks = (
+            self.get_value("PIO_ASYNCIO_NTASKS")
+            if self.get_value("PIO_ASYNCIO_NTASKS")
+            else 0
+        )
 
         self.thread_count = env_mach_pes.get_max_thread_count(comp_classes)
 
