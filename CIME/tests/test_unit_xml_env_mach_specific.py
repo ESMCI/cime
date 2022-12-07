@@ -40,7 +40,7 @@ class TestXMLEnvMachSpecific(unittest.TestCase):
     <aprun_mode>override</aprun_mode>
     <executable>aprun</executable>
     <arguments>
-      <arg name="skipped">should be skipped</arg>
+      <arg name="default_per">-j 10</arg>
       <arg name="ntasks" position="global">-n {{ total_tasks }}</arg>
       <arg name="oversubscribe" position="per">--oversubscribe</arg>
     </arguments>
@@ -61,6 +61,7 @@ class TestXMLEnvMachSpecific(unittest.TestCase):
             extra_args = mach_specific.get_aprun_args(case, attribs, "case.run")
 
             expected_args = {
+                "-j 10": {"position": "per"},
                 "--oversubscribe": {"position": "per"},
                 "-n 4": {"position": "global"},
             }
