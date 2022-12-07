@@ -686,7 +686,7 @@ class EnvMachSpecific(EnvBase):
                 position = self.get(arg_node, "position")
 
                 if position is None:
-                    continue
+                    position = "per"
 
                 arg_value = transform_vars(
                     self.text(arg_node),
