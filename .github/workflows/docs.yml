@@ -33,7 +33,6 @@ jobs:
     needs: check-changes
     if: |
       needs.check-changes.outputs.any_changed == 'true' &&
-      # skip if the PR is from a fork
       github.event.pull_request.head.repo.full_name == github.repository
     name: Build and deploy documentation
     runs-on: ubuntu-latest
