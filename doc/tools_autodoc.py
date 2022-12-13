@@ -41,7 +41,7 @@ _tool_template = Template(
 $tool_name
 ####################################################
 
-**$tool_name** is a script in CIMEROOT/scripts/Tools.
+**$tool_name** is a script in CIMEROOT/CIME/Tools.
 
 .. toctree::
    :maxdepth: 1
@@ -286,8 +286,8 @@ def get_templates(config, doc_dir):
             "os.chdir( '{{ caseroot }}')", "# os.chdir( '{{ caseroot }}')", 1
         )
         content = content.replace(
-            'os.path.join("{{ cimeroot }}", "scripts", "Tools")',
-            'os.path.join("../../../..","scripts", "Tools")',
+            'os.path.join("{{ cimeroot }}", "CIME", "Tools")',
+            'os.path.join("../../../..","CIME", "Tools")',
             1,
         )
         # create a temporary file

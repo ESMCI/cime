@@ -21,6 +21,7 @@ Case Control System Part 1: Basic Usage
    cloning-a-case.rst
    cime-change-namelist.rst
    cime-config.rst
+   cime-customize.rst
    troubleshooting.rst
 
 .. _users-guide2:

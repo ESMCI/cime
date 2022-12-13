@@ -104,8 +104,8 @@ Quick guide to the CIME unit testing framework
 ** Compilers - CIME compiler options
 
    This module is also part of the run_tests.py interface; the primary
-   purpose is to read in flags generated from the config_compilers.xml
-   file. However, it's also a catch-all for compiler-specific
+   purpose is to read in flags generated from the cmake_macros
+   directory. However, it's also a catch-all for compiler-specific
    information.
 
    The details of this module shouldn't be important to most users, most of
@@ -149,7 +149,7 @@ Quick guide to the CIME unit testing framework
     - PFUNIT_DRIVER :: Path to the pFUnit driver source.
     - PFUNIT_PARSER :: Path to pFUnitParser.py (the pFUnit preprocessor).
 
-   If run_tests.py can find the pFUnit directory in config_compilers.xml,
+   If run_tests.py can find the pFUnit directory in the cmake_macros,
    the variable $PFUNIT will be set to assist the FindpFUnit module.
    Otherwise, you must do one of the following:
 

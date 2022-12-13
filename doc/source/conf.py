@@ -23,9 +23,9 @@ import sys
 # pip install git+https://github.com/esmci/sphinx_rtd_theme.git@version-dropdown-with-fixes
 import sphinx_rtd_theme
 
-sys.path.insert(0, os.path.abspath("../../scripts/lib"))
+sys.path.insert(0, os.path.abspath("../../"))
 sys.path.insert(1, os.path.abspath("../../scripts"))
-sys.path.insert(2, os.path.abspath("../../scripts/Tools"))
+sys.path.insert(2, os.path.abspath("../../CIME"))
 
 # -- General configuration ------------------------------------------------
 
@@ -45,6 +45,7 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx.ext.todo",
     "sphinxcontrib.programoutput",
+    "sphinx_rtd_theme",
 ]
 todo_include_todos = True
 
@@ -124,11 +125,12 @@ html_theme_options["versions"]["[placeholder]"] = ""
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ["_static"]
 
+html_css_files = ["custom.css"]
+
 # -- Options for HTMLHelp output ------------------------------------------
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = "ondoc"
-
 
 # -- Options for LaTeX output ---------------------------------------------
 
