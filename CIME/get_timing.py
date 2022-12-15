@@ -79,7 +79,7 @@ class _TimingParser:
                 )
 
     def gettime2(self, heading_padded):
-        if self._driver == "mct":
+        if self._driver == "mct" or self._driver == "moab":
             return self._gettime2_mct(heading_padded)
         elif self._driver == "nuopc":
             if self.version < 0:
@@ -125,7 +125,7 @@ class _TimingParser:
         return (0, 0)
 
     def gettime(self, heading_padded):
-        if self._driver == "mct":
+        if self._driver == "mct" or self._driver == "moab":
             return self._gettime_mct(heading_padded)
         elif self._driver == "nuopc":
             if self.version < 0:
@@ -449,7 +449,7 @@ class _TimingParser:
             logger.warning("Unknown NCPL_BASE_PERIOD={}".format(ncpl_base_period))
 
         # at this point the routine becomes driver specific
-        if self._driver == "mct":
+        if self._driver == "mct" or self._driver == "moab":
             nprocs, ncount = self.gettime2("CPL:CLOCK_ADVANCE ")
             nsteps = ncount / nprocs
         elif self._driver == "nuopc":
@@ -546,7 +546,7 @@ class _TimingParser:
             fmax = self.gettime("[ensemble] FinalizePhase1")[1]
             xmax = self.getCOMMtime(inst_label[1:])
 
-        if self._driver == "mct":
+        if self._driver == "mct" or self._driver == "moab":
             for k in components:
                 if k != "CPL":
                     m = self.models[k]
