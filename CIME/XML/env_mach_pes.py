@@ -154,11 +154,11 @@ class EnvMachPes(EnvBase):
             tt = rootpe + nthrds * ((ntasks - 1) * pstrid + 1)
             maxrootpe = max(maxrootpe, rootpe)
             total_tasks = max(tt, total_tasks)
+        if asyncio_tasks:
+            total_tasks = total_tasks + len(asyncio_tasks)
         if self.get_value("MULTI_DRIVER"):
             total_tasks *= maxinst
         logger.debug("asyncio_tasks {}".format(asyncio_tasks))
-        if asyncio_tasks:
-            return total_tasks + len(asyncio_tasks)
         return total_tasks
 
     def get_tasks_per_node(self, total_tasks, max_thread_count):
