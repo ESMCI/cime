@@ -59,6 +59,7 @@ class SystemTestsCommon(object):
         self._ninja = False
         self._dry_run = False
         self._user_separate_builds = False
+        self._expected_num_cmp = None
 
     def _init_environment(self, caseroot):
         """
@@ -439,7 +440,9 @@ class SystemTestsCommon(object):
         return allgood == 0
 
     def _component_compare_copy(self, suffix):
-        comments = copy_histfiles(self._case, suffix)
+        comments, num_copied = copy_histfiles(self._case, suffix)
+        self._expected_num_cmp = num_copied
+
         append_testlog(comments, self._orig_caseroot)
 
     def _log_cprnc_output_tail(self, filename_pattern, prepend=None):
@@ -472,11 +475,23 @@ class SystemTestsCommon(object):
             diagnostic fields that are missing from the other case), treat the two cases
             as identical.
         """
-        success, comments = self._do_compare_test(
+        success, comments, num_compared = self._do_compare_test(
             suffix1, suffix2, ignore_fieldlist_diffs=ignore_fieldlist_diffs
         )
         if success_change:
             success = not success
+
+        if (
+            self._expected_num_cmp is not None and num_compared is not None
+            and self._expected_num_cmp != num_compared
+        ):
+            comments = comments.replace("PASS", "")
+            comments += """FAIL
+Expected to compare {} hist files, but only compared {}. It's possible
+that the hist_file_extension entry in config_archive.xml is not correct
+for some of your components.
+""".format(self._expected_num_cmp, num_compared)
+            success = False
 
         append_testlog(comments, self._orig_caseroot)
 

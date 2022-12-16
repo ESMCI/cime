@@ -194,7 +194,7 @@ class SystemTestsCompareTwoFake(SystemTestsCompareTwo):
         This fake implementation allows controlling whether compare_test
         passes or fails
         """
-        return (self.compare_should_pass, "no comment")
+        return (self.compare_should_pass, "no comment", None)
 
     def _check_for_memleak(self):
         pass
