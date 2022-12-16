@@ -2459,6 +2459,7 @@ directory, NOT in this subdirectory."""
             job = self.get_first_job()
 
         job_id_to_cmd = self.submit_jobs(dry_run=True, job=job)
+
         env_batch = self.get_env("batch")
         for job_id, cmd in job_id_to_cmd:
             write("  FOR JOB: {}".format(job_id))
