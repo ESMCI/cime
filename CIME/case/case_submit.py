@@ -322,11 +322,11 @@ def check_case(self, skip_pnl=False, chksum=False):
             coupling_secs = 86400 / maxncpl
             timestep = 86400 / minncpl
         elif ncpl_base_period == "year":
-            coupling_secs = 3.154e7 / maxncpl
-            timestep = 3.154e7 / minncpl
+            coupling_secs = 31536000 / maxncpl
+            timestep = 31536000 / minncpl
         elif ncpl_base_period == "decade":
-            coupling_secs = 3.154e8 / maxncpl
-            timestep = 3.154e8 / minncpl
+            coupling_secs = 315360000 / maxncpl
+            timestep = 315360000 / minncpl
         stop_option = self.get_value("STOP_OPTION")
         stop_n = self.get_value("STOP_N")
         if stop_option == "nsteps":
