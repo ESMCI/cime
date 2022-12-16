@@ -742,8 +742,14 @@ set(NETCDF_PATH /my/netcdf/path)
             alternative_driver = ("moab",)
 
         for driver in alternative_driver:
-            if not os.path.exists(
+            if driver == "moab" and not os.path.exists(
                 os.path.join(utils.get_cime_root(), "src", "drivers", driver)
+            ):
+                self.skipTest(
+                    "Skipping driver test for {}, driver not found".format(driver)
+                )
+            if driver == "nuopc" and not os.path.exists(
+                os.path.join(utils.get_src_root(), "components", "cmeps")
             ):
                 self.skipTest(
                     "Skipping driver test for {}, driver not found".format(driver)
