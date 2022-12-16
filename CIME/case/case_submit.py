@@ -51,13 +51,7 @@ def _submit(
 
     # Check if CONTINUE_RUN value makes sense
     # if submitted with a prereq don't do this check
-    testcase = case.get_value("TESTCASE")
-    if (
-        (not testcase or testcase not in ("PET", "NCK"))
-        and case.get_value("CONTINUE_RUN")
-        and hasMediator
-        and not prereq
-    ):
+    if case.get_value("CONTINUE_RUN") and hasMediator and not prereq:
         rundir = case.get_value("RUNDIR")
         expect(
             os.path.isdir(rundir),
@@ -303,6 +297,7 @@ def check_case(self, skip_pnl=False, chksum=False):
         # Check that run length exceeds longest component coupling interval
         # longest interval is smallest NCPL value
         maxncpl = 10000
+        minncpl = 0
         maxcomp = None
         for comp in self.get_values("COMP_CLASSES"):
             if comp == "CPL":
@@ -311,22 +306,33 @@ def check_case(self, skip_pnl=False, chksum=False):
             if ncpl and maxncpl > ncpl:
                 maxncpl = ncpl
                 maxcomp = comp
+            if ncpl and minncpl < ncpl:
+                minncpl = ncpl
+
         ncpl_base_period = self.get_value("NCPL_BASE_PERIOD")
         if ncpl_base_period == "hour":
             coupling_secs = 3600 / maxncpl
+            timestep = 3600 / minncpl
         elif ncpl_base_period == "day":
             coupling_secs = 86400 / maxncpl
+            timestep = 86400 / minncpl
         elif ncpl_base_period == "year":
             coupling_secs = 3.154e7 / maxncpl
+            timestep = 3.154e7 / minncpl
         elif ncpl_base_period == "decade":
             coupling_secs = 3.154e8 / maxncpl
-        runtime = get_time_in_seconds(
-            self.get_value("STOP_N"), self.get_value("STOP_OPTION")
-        )
+            timestep = 3.154e8 / minncpl
+        stop_option = self.get_value("STOP_OPTION")
+        stop_n = self.get_value("STOP_N")
+        if stop_option == "nsteps":
+            stop_option = "seconds"
+            stop_n = stop_n * timestep
+
+        runtime = get_time_in_seconds(stop_n, stop_option)
         expect(
-            runtime > coupling_secs,
-            " Runtime ({} s) is shorter than the longest component coupling interval ({} s), increase runtime or increase {}_NCPL and try again.  ".format(
-                runtime, coupling_secs, maxcomp
+            runtime >= coupling_secs and runtime % coupling_secs == 0,
+            " Runtime ({0} s) must be a multiple of the longest coupling interval {1}_NCPL ({2}s).  Adjust runtime or {1}_NCPL".format(
+                runtime, maxcomp, coupling_secs
             ),
         )
 
