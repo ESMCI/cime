@@ -293,47 +293,53 @@ def check_case(self, skip_pnl=False, chksum=False):
         # the ww3 buildnml has dependencies on inputdata so we must run it again
         self.create_namelists(component="WAV")
 
-    # Check that run length is a multiple of the longest component
-    # coupling interval. The longest interval is smallest NCPL value.
-    maxncpl = 10000
-    minncpl = 0
-    maxcomp = None
-    for comp in self.get_values("COMP_CLASSES"):
-        if comp == "CPL":
-            continue
-        ncpl = self.get_value("{}_NCPL".format(comp))
-        if ncpl and maxncpl > ncpl:
-            maxncpl = ncpl
-            maxcomp = comp
-        if ncpl and minncpl < ncpl:
-            minncpl = ncpl
+    if self.get_value("COMP_INTERFACE") == "nuopc":
+        #
+        # Check that run length is a multiple of the longest component
+        # coupling interval. The longest interval is smallest NCPL value.
+        # models using the nuopc interface will fail at initialization unless
+        # ncpl follows these rules, other models will only fail later and so
+        # this test is skipped so that short tests can be run without adjusting NCPL
+        #
+        maxncpl = 10000
+        minncpl = 0
+        maxcomp = None
+        for comp in self.get_values("COMP_CLASSES"):
+            if comp == "CPL":
+                continue
+            ncpl = self.get_value("{}_NCPL".format(comp))
+            if ncpl and maxncpl > ncpl:
+                maxncpl = ncpl
+                maxcomp = comp
+            if ncpl and minncpl < ncpl:
+                minncpl = ncpl
 
-    ncpl_base_period = self.get_value("NCPL_BASE_PERIOD")
-    if ncpl_base_period == "hour":
-        coupling_secs = 3600 / maxncpl
-        timestep = 3600 / minncpl
-    elif ncpl_base_period == "day":
-        coupling_secs = 86400 / maxncpl
-        timestep = 86400 / minncpl
-    elif ncpl_base_period == "year":
-        coupling_secs = 3.154e7 / maxncpl
-        timestep = 3.154e7 / minncpl
-    elif ncpl_base_period == "decade":
-        coupling_secs = 3.154e8 / maxncpl
-        timestep = 3.154e8 / minncpl
-    stop_option = self.get_value("STOP_OPTION")
-    stop_n = self.get_value("STOP_N")
-    if stop_option == "nsteps":
-        stop_option = "seconds"
-        stop_n = stop_n * timestep
+        ncpl_base_period = self.get_value("NCPL_BASE_PERIOD")
+        if ncpl_base_period == "hour":
+            coupling_secs = 3600 / maxncpl
+            timestep = 3600 / minncpl
+        elif ncpl_base_period == "day":
+            coupling_secs = 86400 / maxncpl
+            timestep = 86400 / minncpl
+        elif ncpl_base_period == "year":
+            coupling_secs = 3.154e7 / maxncpl
+            timestep = 3.154e7 / minncpl
+        elif ncpl_base_period == "decade":
+            coupling_secs = 3.154e8 / maxncpl
+            timestep = 3.154e8 / minncpl
+        stop_option = self.get_value("STOP_OPTION")
+        stop_n = self.get_value("STOP_N")
+        if stop_option == "nsteps":
+            stop_option = "seconds"
+            stop_n = stop_n * timestep
 
-    runtime = get_time_in_seconds(stop_n, stop_option)
-    expect(
-        runtime >= coupling_secs and runtime % coupling_secs == 0,
-        " Runtime ({0} s) must be a multiple of the longest coupling interval {1}_NCPL ({2}s).  Adjust runtime or {1}_NCPL".format(
-            runtime, maxcomp, coupling_secs
-        ),
-    )
+        runtime = get_time_in_seconds(stop_n, stop_option)
+        expect(
+            runtime >= coupling_secs and runtime % coupling_secs == 0,
+            " Runtime ({0} s) must be a multiple of the longest coupling interval {1}_NCPL ({2}s).  Adjust runtime or {1}_NCPL".format(
+                runtime, maxcomp, coupling_secs
+            ),
+        )
 
     expect(
         self.get_value("BUILD_COMPLETE"),
