@@ -51,8 +51,9 @@ def _submit(
 
     # Check if CONTINUE_RUN value makes sense
     # if submitted with a prereq don't do this check
+    testcase = case.get_value("TESTCASE")
     if (
-        job != "case.test"
+        (not testcase or testcase not in ("PET", "NCK"))
         and case.get_value("CONTINUE_RUN")
         and hasMediator
         and not prereq
@@ -67,7 +68,8 @@ def _submit(
             rpointer = "rpointer.cpl"
         else:
             rpointer = "rpointer.drv"
-        if case.get_value("MULTI_DRIVER"):
+        # Variable MULTI_DRIVER is always true for nuopc so we need to also check NINST > 1
+        if case.get_value("MULTI_DRIVER") and case.get_value("NINST") > 1:
             rpointer = rpointer + "_0001"
         expect(
             os.path.exists(os.path.join(rundir, rpointer)),
