@@ -8,7 +8,7 @@ submit, check_case and check_da_settings are members of class Case in file case.
 """
 import configparser
 from CIME.XML.standard_module_setup import *
-from CIME.utils import expect, run_and_log_case_status, CIMEError
+from CIME.utils import expect, run_and_log_case_status, CIMEError, get_time_in_seconds
 from CIME.locked_files import unlock_file, lock_file
 from CIME.test_status import *
 
@@ -296,6 +296,37 @@ def check_case(self, skip_pnl=False, chksum=False):
     if self.get_value("COMP_WAV") == "ww":
         # the ww3 buildnml has dependencies on inputdata so we must run it again
         self.create_namelists(component="WAV")
+
+    if self._comp_interface == "nuopc":
+        # Check that run length exceeds longest component coupling interval
+        # longest interval is smallest NCPL value
+        maxncpl = 10000
+        maxcomp = None
+        for comp in self.get_values("COMP_CLASSES"):
+            if comp == "CPL":
+                continue
+            ncpl = self.get_value("{}_NCPL".format(comp))
+            if ncpl and maxncpl > ncpl:
+                maxncpl = ncpl
+                maxcomp = comp
+        ncpl_base_period = self.get_value("NCPL_BASE_PERIOD")
+        if ncpl_base_period == "hour":
+            coupling_secs = 3600 / maxncpl
+        elif ncpl_base_period == "day":
+            coupling_secs = 86400 / maxncpl
+        elif ncpl_base_period == "year":
+            coupling_secs = 3.154e7 / maxncpl
+        elif ncpl_base_period == "decade":
+            coupling_secs = 3.154e8 / maxncpl
+        runtime = get_time_in_seconds(
+            self.get_value("STOP_N"), self.get_value("STOP_OPTION")
+        )
+        expect(
+            runtime > coupling_secs,
+            " Runtime ({} s) is shorter than the longest component coupling interval ({} s), increase runtime or increase {}_NCPL and try again.  ".format(
+                runtime, coupling_secs, maxcomp
+            ),
+        )
 
     expect(
         self.get_value("BUILD_COMPLETE"),
