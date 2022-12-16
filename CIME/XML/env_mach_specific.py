@@ -644,7 +644,7 @@ class EnvMachSpecific(EnvBase):
         return best_match if best_match is not None else default_match
 
     def get_aprun_mode(self, attribs):
-        default_mode = "ignore"
+        default_mode = "default"
         valid_modes = ("ignore", "default", "override")
 
         try:
