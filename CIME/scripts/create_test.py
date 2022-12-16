@@ -623,7 +623,7 @@ def parse_command_line(args, description):
                 xml_testlist=args.xml_testlist,
                 machine=machine_name,
                 compiler=args.compiler,
-                driver="nuopc",
+                driver=args.xml_driver,
             )
             test_names = [item["name"] for item in test_data]
             for test_datum in test_data:
