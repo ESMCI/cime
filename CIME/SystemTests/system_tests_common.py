@@ -482,7 +482,8 @@ class SystemTestsCommon(object):
             success = not success
 
         if (
-            self._expected_num_cmp is not None and num_compared is not None
+            self._expected_num_cmp is not None
+            and num_compared is not None
             and self._expected_num_cmp != num_compared
         ):
             comments = comments.replace("PASS", "")
@@ -490,7 +491,9 @@ class SystemTestsCommon(object):
 Expected to compare {} hist files, but only compared {}. It's possible
 that the hist_file_extension entry in config_archive.xml is not correct
 for some of your components.
-""".format(self._expected_num_cmp, num_compared)
+""".format(
+                self._expected_num_cmp, num_compared
+            )
             success = False
 
         append_testlog(comments, self._orig_caseroot)
