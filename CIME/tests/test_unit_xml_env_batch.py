@@ -65,7 +65,6 @@ class TestXMLEnvBatch(unittest.TestCase):
             submit_args = batch.get_submit_args(case, ".case.run")
 
             expected_args = "  -w default -w long"
-
             assert submit_args == expected_args
 
     @mock.patch.dict(os.environ, {"TEST": "GOOD"})

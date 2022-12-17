@@ -661,19 +661,17 @@ class EnvBatch(EnvBase):
         if "$" in name:
             parts = name.split("$")
             logger.debug("parts are {}".format(parts))
-            name = ""
+            val = ""
             for part in parts:
                 if part != "":
                     logger.debug("part is {}".format(part))
                     resolved = case.get_value(part, subgroup=job)
                     if resolved:
-                        name += resolved
+                        val += resolved
                     else:
-                        name += part
-            logger.debug("name is {}".format(name))
-            # We have a complex expression and must rely on get_resolved_value.
-            # Hopefully, none of the values require subgroup
-            val = case.get_resolved_value(name)
+                        val += part
+            logger.debug("val is {}".format(name))
+            val = case.get_resolved_value(val)
         else:
             val = case.get_value(name, subgroup=job)
 
