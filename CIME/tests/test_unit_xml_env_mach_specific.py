@@ -207,7 +207,7 @@ class TestXMLEnvMachSpecific(unittest.TestCase):
 
             aprun_mode = mach_specific.get_aprun_mode(attribs)
 
-            assert aprun_mode == "ignore"
+            assert aprun_mode == "default"
 
     def test_find_best_mpirun_match(self):
         with tempfile.NamedTemporaryFile() as temp:
