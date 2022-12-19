@@ -310,13 +310,11 @@
         <span class="k">for</span> <span class="n">comp</span> <span class="ow">in</span> <span class="n">comp_classes</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">async_io</span><span class="p">[</span><span class="n">comp</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;PIO_ASYNC_INTERFACE&quot;</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="n">comp</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">async_io</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">iotasks</span> <span class="o">=</span> <span class="mi">1</span>
-            <span class="k">for</span> <span class="n">comp</span> <span class="ow">in</span> <span class="n">comp_classes</span><span class="p">:</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">async_io</span><span class="p">[</span><span class="n">comp</span><span class="p">]:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">iotasks</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">iotasks</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;PIO_NUMTASKS&quot;</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="n">comp</span><span class="p">)</span>
-                    <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">iotasks</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;PIO_ASYNCIO_NTASKS&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;PIO_ASYNCIO_NTASKS&quot;</span><span class="p">)</span>
+            <span class="k">else</span> <span class="mi">0</span>
+        <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">thread_count</span> <span class="o">=</span> <span class="n">env_mach_pes</span><span class="o">.</span><span class="n">get_max_thread_count</span><span class="p">(</span><span class="n">comp_classes</span><span class="p">)</span>
 
@@ -339,7 +337,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">spare_nodes</span> <span class="o">=</span> <span class="n">env_mach_pes</span><span class="o">.</span><span class="n">get_spare_nodes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">num_nodes</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">spare_nodes</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">total_tasks</span> <span class="o">=</span> <span class="n">env_mach_pes</span><span class="o">.</span><span class="n">get_total_tasks</span><span class="p">(</span><span class="n">comp_classes</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">iotasks</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">total_tasks</span> <span class="o">=</span> <span class="n">env_mach_pes</span><span class="o">.</span><span class="n">get_total_tasks</span><span class="p">(</span><span class="n">comp_classes</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">tasks_per_node</span> <span class="o">=</span> <span class="n">env_mach_pes</span><span class="o">.</span><span class="n">get_tasks_per_node</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">total_tasks</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">thread_count</span>
             <span class="p">)</span>

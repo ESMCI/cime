@@ -758,11 +758,9 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">rval</span> <span class="o">=</span> <span class="n">val</span>
 
-            <span class="c1"># We don&#39;t want floating-point data</span>
-            <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># We don&#39;t want floating-point data (ignore anything else)</span>
+            <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">rval</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">isdigit</span><span class="p">():</span>
                 <span class="n">rval</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">rval</span><span class="p">)))</span>
-            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-                <span class="k">pass</span>
 
             <span class="c1"># need a correction for tasks per node</span>
             <span class="k">if</span> <span class="n">flag</span> <span class="o">==</span> <span class="s2">&quot;-n&quot;</span> <span class="ow">and</span> <span class="n">rval</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>

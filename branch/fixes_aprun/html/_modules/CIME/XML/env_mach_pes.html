@@ -167,8 +167,9 @@
                         <span class="n">comp</span><span class="p">,</span> <span class="n">ninst</span><span class="p">,</span> <span class="n">ninst_max</span>
                     <span class="p">),</span>
                 <span class="p">)</span>
-        <span class="k">if</span> <span class="s2">&quot;NTASKS&quot;</span> <span class="ow">in</span> <span class="n">vid</span> <span class="ow">or</span> <span class="s2">&quot;NTHRDS&quot;</span> <span class="ow">in</span> <span class="n">vid</span><span class="p">:</span>
-            <span class="n">expect</span><span class="p">(</span><span class="n">value</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;Cannot set NTASKS or NTHRDS to 0&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;NTASKS&quot;</span> <span class="ow">in</span> <span class="n">vid</span> <span class="ow">or</span> <span class="s2">&quot;NTHRDS&quot;</span> <span class="ow">in</span> <span class="n">vid</span><span class="p">)</span> <span class="ow">and</span> <span class="n">vid</span> <span class="o">!=</span> <span class="s2">&quot;PIO_ASYNCIO_NTASKS&quot;</span><span class="p">:</span>
+            <span class="n">expect</span><span class="p">(</span><span class="n">value</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Cannot set NTASKS or NTHRDS to 0 </span><span class="si">{</span><span class="n">vid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">EnvBase</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="n">subgroup</span><span class="p">,</span> <span class="n">ignore_type</span><span class="o">=</span><span class="n">ignore_type</span>
@@ -190,15 +191,37 @@
 <div class="viewcode-block" id="EnvMachPes.get_total_tasks"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_pes.EnvMachPes.get_total_tasks">[docs]</a>    <span class="k">def</span> <span class="nf">get_total_tasks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">comp_classes</span><span class="p">):</span>
         <span class="n">total_tasks</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">maxinst</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;NINST&quot;</span><span class="p">)</span>
+        <span class="n">asyncio_ntasks</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">asyncio_rootpe</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">asyncio_stride</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">asyncio_tasks</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="n">maxinst</span><span class="p">:</span>
             <span class="n">comp_interface</span> <span class="o">=</span> <span class="s2">&quot;nuopc&quot;</span>
+            <span class="n">asyncio_ntasks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;PIO_ASYNCIO_NTASKS&quot;</span><span class="p">)</span>
+            <span class="n">asyncio_rootpe</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;PIO_ASYNCIO_ROOTPE&quot;</span><span class="p">)</span>
+            <span class="n">asyncio_stride</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;PIO_ASYNCIO_STRIDE&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="s2">&quot;asyncio ntasks </span><span class="si">{}</span><span class="s2"> rootpe </span><span class="si">{}</span><span class="s2"> stride </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">asyncio_ntasks</span><span class="p">,</span> <span class="n">asyncio_rootpe</span><span class="p">,</span> <span class="n">asyncio_stride</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">asyncio_ntasks</span> <span class="ow">and</span> <span class="n">asyncio_stride</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span>
+                    <span class="n">asyncio_rootpe</span><span class="p">,</span>
+                    <span class="n">asyncio_rootpe</span> <span class="o">+</span> <span class="p">(</span><span class="n">asyncio_ntasks</span> <span class="o">*</span> <span class="n">asyncio_stride</span><span class="p">),</span>
+                    <span class="n">asyncio_stride</span><span class="p">,</span>
+                <span class="p">):</span>
+                    <span class="n">asyncio_tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">comp_interface</span> <span class="o">=</span> <span class="s2">&quot;unknown&quot;</span>
             <span class="n">maxinst</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">tt</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">maxrootpe</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">comp</span> <span class="ow">in</span> <span class="n">comp_classes</span><span class="p">:</span>
             <span class="n">ntasks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;NTASKS&quot;</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;compclass&quot;</span><span class="p">:</span> <span class="n">comp</span><span class="p">})</span>
             <span class="n">rootpe</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;ROOTPE&quot;</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;compclass&quot;</span><span class="p">:</span> <span class="n">comp</span><span class="p">})</span>
             <span class="n">pstrid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;PSTRID&quot;</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;compclass&quot;</span><span class="p">:</span> <span class="n">comp</span><span class="p">})</span>
+
             <span class="n">esmf_aware_threading</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;ESMF_AWARE_THREADING&quot;</span><span class="p">)</span>
             <span class="c1"># mct is unaware of threads and they should not be counted here</span>
             <span class="c1"># if esmf is thread aware they are included</span>
@@ -211,9 +234,13 @@
                 <span class="n">ninst</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;NINST&quot;</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;compclass&quot;</span><span class="p">:</span> <span class="n">comp</span><span class="p">})</span>
                 <span class="n">maxinst</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">maxinst</span><span class="p">,</span> <span class="n">ninst</span><span class="p">)</span>
             <span class="n">tt</span> <span class="o">=</span> <span class="n">rootpe</span> <span class="o">+</span> <span class="n">nthrds</span> <span class="o">*</span> <span class="p">((</span><span class="n">ntasks</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">pstrid</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">maxrootpe</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">maxrootpe</span><span class="p">,</span> <span class="n">rootpe</span><span class="p">)</span>
             <span class="n">total_tasks</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">tt</span><span class="p">,</span> <span class="n">total_tasks</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MULTI_DRIVER&quot;</span><span class="p">):</span>
             <span class="n">total_tasks</span> <span class="o">*=</span> <span class="n">maxinst</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;asyncio_tasks </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">asyncio_tasks</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">asyncio_tasks</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">total_tasks</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">asyncio_tasks</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">total_tasks</span></div>
 
 <div class="viewcode-block" id="EnvMachPes.get_tasks_per_node"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_pes.EnvMachPes.get_tasks_per_node">[docs]</a>    <span class="k">def</span> <span class="nf">get_tasks_per_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">total_tasks</span><span class="p">,</span> <span class="n">max_thread_count</span><span class="p">):</span>

@@ -133,6 +133,7 @@
 <span class="sd">        Returns the value or None if not found</span>
 <span class="sd">        subgroup is ignored in the general routine and applied in specific methods</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">comp</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pio_async_interface</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
             <span class="n">vid</span><span class="p">,</span> <span class="n">comp</span><span class="p">,</span> <span class="n">iscompvar</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_if_comp_var</span><span class="p">(</span><span class="n">vid</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">vid</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;PIO&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">iscompvar</span><span class="p">:</span>
@@ -141,10 +142,13 @@
                 <span class="n">subgroup</span> <span class="o">=</span> <span class="s2">&quot;CPL&quot;</span>
 
         <span class="k">if</span> <span class="n">vid</span> <span class="o">==</span> <span class="s2">&quot;PIO_ASYNC_INTERFACE&quot;</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">==</span> <span class="nb">type</span><span class="p">(</span><span class="kc">True</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_pio_async_interface</span> <span class="o">=</span> <span class="n">value</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_pio_async_interface</span> <span class="o">=</span> <span class="n">convert_to_type</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s2">&quot;logical&quot;</span><span class="p">,</span> <span class="n">vid</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">comp</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">==</span> <span class="nb">type</span><span class="p">(</span><span class="kc">True</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_pio_async_interface</span><span class="p">[</span><span class="n">comp</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_pio_async_interface</span><span class="p">[</span><span class="n">comp</span><span class="p">]</span> <span class="o">=</span> <span class="n">convert_to_type</span><span class="p">(</span>
+                        <span class="n">value</span><span class="p">,</span> <span class="s2">&quot;logical&quot;</span><span class="p">,</span> <span class="n">vid</span>
+                    <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">EnvBase</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">subgroup</span><span class="p">,</span> <span class="n">ignore_type</span><span class="p">)</span></div></div>
 </pre></div>
