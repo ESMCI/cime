@@ -2013,15 +2013,25 @@ directory, NOT in this subdirectory."""
             )
             run_misc_suffix = custom_run_misc_suffix
 
+        aprun_mode = env_mach_specific.get_aprun_mode(mpi_attribs)
+
         # special case for aprun
         if (
             executable is not None
             and "aprun" in executable
-            and not "theta" in self.get_value("MACH")
+            and aprun_mode != "ignore"
+            # and not "theta" in self.get_value("MACH")
         ):
-            aprun_args, num_nodes = get_aprun_cmd_for_case(
-                self, run_exe, overrides=overrides
-            )[0:2]
+            extra_args = env_mach_specific.get_aprun_args(
+                self, mpi_attribs, job, overrides=overrides
+            )
+
+            aprun_args, num_nodes, _, _, _ = get_aprun_cmd_for_case(
+                self,
+                run_exe,
+                overrides=overrides,
+                extra_args=extra_args,
+            )
             if job in ("case.run", "case.test"):
                 expect(
                     (num_nodes + self.spare_nodes) == self.num_nodes,
