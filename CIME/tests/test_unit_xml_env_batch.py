@@ -58,12 +58,13 @@ class TestXMLEnvBatch(unittest.TestCase):
 
             case.get_value.side_effect = ("long", "long", None)
 
+            case.get_resolved_value.return_value = None
+
             case.filename = mock.PropertyMock(return_value=tfile.name)
 
             submit_args = batch.get_submit_args(case, ".case.run")
 
             expected_args = "  -w default -w long"
-
             assert submit_args == expected_args
 
     @mock.patch.dict(os.environ, {"TEST": "GOOD"})
@@ -141,10 +142,14 @@ class TestXMLEnvBatch(unittest.TestCase):
                 "00:30:00",
                 "long",
                 "CIME",
+                "/test",
             ]
 
+            def my_get_resolved_value(val):
+                return val
+
             # value for --path
-            case.get_resolved_value.return_value = "/test"
+            case.get_resolved_value.side_effect = my_get_resolved_value
 
             case.filename = mock.PropertyMock(return_value=tfile.name)
 

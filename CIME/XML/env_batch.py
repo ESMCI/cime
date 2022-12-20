@@ -654,14 +654,24 @@ class EnvBatch(EnvBase):
 
     def _resolve_argument(self, case, flag, name, job):
         submitargs = ""
-
-        if name.startswith("$"):
-            name = name[1:]
+        logger.debug("name is {}".format(name))
+        # if name.startswith("$"):
+        #    name = name[1:]
 
         if "$" in name:
-            # We have a complex expression and must rely on get_resolved_value.
-            # Hopefully, none of the values require subgroup
-            val = case.get_resolved_value(name)
+            parts = name.split("$")
+            logger.debug("parts are {}".format(parts))
+            val = ""
+            for part in parts:
+                if part != "":
+                    logger.debug("part is {}".format(part))
+                    resolved = case.get_value(part, subgroup=job)
+                    if resolved:
+                        val += resolved
+                    else:
+                        val += part
+            logger.debug("val is {}".format(name))
+            val = case.get_resolved_value(val)
         else:
             val = case.get_value(name, subgroup=job)
 

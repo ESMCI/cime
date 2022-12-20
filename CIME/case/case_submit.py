@@ -8,7 +8,7 @@ submit, check_case and check_da_settings are members of class Case in file case.
 """
 import configparser
 from CIME.XML.standard_module_setup import *
-from CIME.utils import expect, run_and_log_case_status, CIMEError
+from CIME.utils import expect, run_and_log_case_status, CIMEError, get_time_in_seconds
 from CIME.locked_files import unlock_file, lock_file
 from CIME.test_status import *
 
@@ -51,12 +51,7 @@ def _submit(
 
     # Check if CONTINUE_RUN value makes sense
     # if submitted with a prereq don't do this check
-    if (
-        job != "case.test"
-        and case.get_value("CONTINUE_RUN")
-        and hasMediator
-        and not prereq
-    ):
+    if case.get_value("CONTINUE_RUN") and hasMediator and not prereq:
         rundir = case.get_value("RUNDIR")
         expect(
             os.path.isdir(rundir),
@@ -67,7 +62,8 @@ def _submit(
             rpointer = "rpointer.cpl"
         else:
             rpointer = "rpointer.drv"
-        if case.get_value("MULTI_DRIVER"):
+        # Variable MULTI_DRIVER is always true for nuopc so we need to also check NINST > 1
+        if case.get_value("MULTI_DRIVER") and case.get_value("NINST") > 1:
             rpointer = rpointer + "_0001"
         expect(
             os.path.exists(os.path.join(rundir, rpointer)),
@@ -296,6 +292,54 @@ def check_case(self, skip_pnl=False, chksum=False):
     if self.get_value("COMP_WAV") == "ww":
         # the ww3 buildnml has dependencies on inputdata so we must run it again
         self.create_namelists(component="WAV")
+
+    if self.get_value("COMP_INTERFACE") == "nuopc":
+        #
+        # Check that run length is a multiple of the longest component
+        # coupling interval. The longest interval is smallest NCPL value.
+        # models using the nuopc interface will fail at initialization unless
+        # ncpl follows these rules, other models will only fail later and so
+        # this test is skipped so that short tests can be run without adjusting NCPL
+        #
+        maxncpl = 10000
+        minncpl = 0
+        maxcomp = None
+        for comp in self.get_values("COMP_CLASSES"):
+            if comp == "CPL":
+                continue
+            ncpl = self.get_value("{}_NCPL".format(comp))
+            if ncpl and maxncpl > ncpl:
+                maxncpl = ncpl
+                maxcomp = comp
+            if ncpl and minncpl < ncpl:
+                minncpl = ncpl
+
+        ncpl_base_period = self.get_value("NCPL_BASE_PERIOD")
+        if ncpl_base_period == "hour":
+            coupling_secs = 3600 / maxncpl
+            timestep = 3600 / minncpl
+        elif ncpl_base_period == "day":
+            coupling_secs = 86400 / maxncpl
+            timestep = 86400 / minncpl
+        elif ncpl_base_period == "year":
+            coupling_secs = 31536000 / maxncpl
+            timestep = 31536000 / minncpl
+        elif ncpl_base_period == "decade":
+            coupling_secs = 315360000 / maxncpl
+            timestep = 315360000 / minncpl
+        stop_option = self.get_value("STOP_OPTION")
+        stop_n = self.get_value("STOP_N")
+        if stop_option == "nsteps":
+            stop_option = "seconds"
+            stop_n = stop_n * timestep
+
+        runtime = get_time_in_seconds(stop_n, stop_option)
+        expect(
+            runtime >= coupling_secs and runtime % coupling_secs == 0,
+            " Runtime ({0} s) must be a multiple of the longest coupling interval {1}_NCPL ({2}s).  Adjust runtime or {1}_NCPL".format(
+                runtime, maxcomp, coupling_secs
+            ),
+        )
 
     expect(
         self.get_value("BUILD_COMPLETE"),
