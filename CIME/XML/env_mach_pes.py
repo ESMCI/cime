@@ -105,7 +105,7 @@ class EnvMachPes(EnvBase):
                 max_threads = threads
         return max_threads
 
-    def get_total_tasks(self, comp_classes):
+    def get_total_tasks(self, comp_classes, async_interface=False):
         total_tasks = 0
         maxinst = self.get_value("NINST")
         asyncio_ntasks = 0
@@ -114,9 +114,10 @@ class EnvMachPes(EnvBase):
         asyncio_tasks = []
         if maxinst:
             comp_interface = "nuopc"
-            asyncio_ntasks = self.get_value("PIO_ASYNCIO_NTASKS")
-            asyncio_rootpe = self.get_value("PIO_ASYNCIO_ROOTPE")
-            asyncio_stride = self.get_value("PIO_ASYNCIO_STRIDE")
+            if async_interface:
+                asyncio_ntasks = self.get_value("PIO_ASYNCIO_NTASKS")
+                asyncio_rootpe = self.get_value("PIO_ASYNCIO_ROOTPE")
+                asyncio_stride = self.get_value("PIO_ASYNCIO_STRIDE")
             logger.debug(
                 "asyncio ntasks {} rootpe {} stride {}".format(
                     asyncio_ntasks, asyncio_rootpe, asyncio_stride
@@ -153,11 +154,11 @@ class EnvMachPes(EnvBase):
             tt = rootpe + nthrds * ((ntasks - 1) * pstrid + 1)
             maxrootpe = max(maxrootpe, rootpe)
             total_tasks = max(tt, total_tasks)
+        if asyncio_tasks:
+            total_tasks = total_tasks + len(asyncio_tasks)
         if self.get_value("MULTI_DRIVER"):
             total_tasks *= maxinst
         logger.debug("asyncio_tasks {}".format(asyncio_tasks))
-        if asyncio_tasks:
-            return total_tasks + len(asyncio_tasks)
         return total_tasks
 
     def get_tasks_per_node(self, total_tasks, max_thread_count):
