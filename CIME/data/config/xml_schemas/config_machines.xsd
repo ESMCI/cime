@@ -194,6 +194,7 @@
   <xs:element name="mpirun">
     <xs:complexType>
       <xs:sequence>
+        <xs:element name="aprun_mode" type="xs:string" minOccurs="0" maxOccurs="1"/>
         <xs:element ref="executable"/>
         <xs:element ref="arguments" minOccurs="0"/>
         <!-- run_exe: The run executable to use; overrides default_run_exe -->

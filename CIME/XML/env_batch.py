@@ -654,14 +654,24 @@ class EnvBatch(EnvBase):
 
     def _resolve_argument(self, case, flag, name, job):
         submitargs = ""
-
-        if name.startswith("$"):
-            name = name[1:]
+        logger.debug("name is {}".format(name))
+        # if name.startswith("$"):
+        #    name = name[1:]
 
         if "$" in name:
-            # We have a complex expression and must rely on get_resolved_value.
-            # Hopefully, none of the values require subgroup
-            val = case.get_resolved_value(name)
+            parts = name.split("$")
+            logger.debug("parts are {}".format(parts))
+            val = ""
+            for part in parts:
+                if part != "":
+                    logger.debug("part is {}".format(part))
+                    resolved = case.get_value(part, subgroup=job)
+                    if resolved:
+                        val += resolved
+                    else:
+                        val += part
+            logger.debug("val is {}".format(name))
+            val = case.get_resolved_value(val)
         else:
             val = case.get_value(name, subgroup=job)
 
@@ -675,12 +685,9 @@ class EnvBatch(EnvBase):
             else:
                 rval = val
 
-            if flag != "-P":
-            # We don't want floating-point data
-                try:
-                    rval = int(round(float(rval)))
-                except ValueError:
-                    pass
+            # We don't want floating-point data (ignore anything else)
+            if str(rval).replace(".", "", 1).isdigit():
+                rval = int(round(float(rval)))
 
             # need a correction for tasks per node
             if flag == "-n" and rval <= 0:
@@ -1110,9 +1117,13 @@ class EnvBatch(EnvBase):
 
     def get_job_id(self, output):
         jobid_pattern = self.get_value("jobid_pattern", subgroup=None)
-        expect(
-            jobid_pattern is not None, "Could not find jobid_pattern in env_batch.xml"
-        )
+        if self._batchtype and self._batchtype != "none":
+            expect(
+                jobid_pattern is not None,
+                "Could not find jobid_pattern in env_batch.xml",
+            )
+        else:
+            return output
         search_match = re.search(jobid_pattern, output)
         expect(
             search_match is not None,
