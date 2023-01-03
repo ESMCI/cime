@@ -44,6 +44,11 @@ def get_tests_from_xml(
             test_spec_file = files.get_value("TESTS_SPEC_FILE", {"component": comp})
             if os.path.isfile(test_spec_file):
                 testlistfiles.append(test_spec_file)
+        # We need to make nuopc the default for cesm testing, then we can remove this block
+        files = Files(comp_interface="nuopc")
+        test_spec_file = files.get_value("TESTS_SPEC_FILE", {"component": "drv"})
+        if os.path.isfile(test_spec_file):
+            testlistfiles.append(test_spec_file)
 
     for testlistfile in testlistfiles:
         thistestlistfile = Testlist(testlistfile)

@@ -224,16 +224,17 @@ class Case(object):
         comp_classes = self.get_values("COMP_CLASSES")
         max_mpitasks_per_node = self.get_value("MAX_MPITASKS_PER_NODE")
         self.async_io = {}
+        asyncio = False
         for comp in comp_classes:
             self.async_io[comp] = self.get_value("PIO_ASYNC_INTERFACE", subgroup=comp)
+            if self.async_io[comp]:
+                asyncio = True
 
-        if any(self.async_io.values()):
-            self.iotasks = 1
-            for comp in comp_classes:
-                if self.async_io[comp]:
-                    self.iotasks = max(
-                        self.iotasks, self.get_value("PIO_NUMTASKS", subgroup=comp)
-                    )
+        self.iotasks = (
+            self.get_value("PIO_ASYNCIO_NTASKS")
+            if self.get_value("PIO_ASYNCIO_NTASKS")
+            else 0
+        )
 
         self.thread_count = env_mach_pes.get_max_thread_count(comp_classes)
 
@@ -256,7 +257,7 @@ class Case(object):
             self.spare_nodes = env_mach_pes.get_spare_nodes(self.num_nodes)
             self.num_nodes += self.spare_nodes
         else:
-            self.total_tasks = env_mach_pes.get_total_tasks(comp_classes) + self.iotasks
+            self.total_tasks = env_mach_pes.get_total_tasks(comp_classes, asyncio)
             self.tasks_per_node = env_mach_pes.get_tasks_per_node(
                 self.total_tasks, self.thread_count
             )
@@ -1945,6 +1946,10 @@ directory, NOT in this subdirectory."""
 
             return result
 
+    def get_job_id(self, output):
+        env_batch = self.get_env("batch")
+        return env_batch.get_job_id(output)
+
     def report_job_status(self):
         jobmap = self.get_job_info()
         if not jobmap:
@@ -2011,15 +2016,25 @@ directory, NOT in this subdirectory."""
             )
             run_misc_suffix = custom_run_misc_suffix
 
+        aprun_mode = env_mach_specific.get_aprun_mode(mpi_attribs)
+
         # special case for aprun
         if (
             executable is not None
             and "aprun" in executable
-            and not "theta" in self.get_value("MACH")
+            and aprun_mode != "ignore"
+            # and not "theta" in self.get_value("MACH")
         ):
-            aprun_args, num_nodes = get_aprun_cmd_for_case(
-                self, run_exe, overrides=overrides
-            )[0:2]
+            extra_args = env_mach_specific.get_aprun_args(
+                self, mpi_attribs, job, overrides=overrides
+            )
+
+            aprun_args, num_nodes, _, _, _ = get_aprun_cmd_for_case(
+                self,
+                run_exe,
+                overrides=overrides,
+                extra_args=extra_args,
+            )
             if job in ("case.run", "case.test"):
                 expect(
                     (num_nodes + self.spare_nodes) == self.num_nodes,
@@ -2457,6 +2472,7 @@ directory, NOT in this subdirectory."""
             job = self.get_first_job()
 
         job_id_to_cmd = self.submit_jobs(dry_run=True, job=job)
+
         env_batch = self.get_env("batch")
         for job_id, cmd in job_id_to_cmd:
             write("  FOR JOB: {}".format(job_id))

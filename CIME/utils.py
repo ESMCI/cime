@@ -2301,16 +2301,16 @@ def get_lids(case):
     return _get_most_recent_lid_impl(glob.glob("{}/{}.log*".format(rundir, model)))
 
 
-def new_lid():
+def new_lid(case=None):
     lid = time.strftime("%y%m%d-%H%M%S")
-    jobid = batch_jobid()
+    jobid = batch_jobid(case=case)
     if jobid is not None:
         lid = jobid + "." + lid
     os.environ["LID"] = lid
     return lid
 
 
-def batch_jobid():
+def batch_jobid(case=None):
     jobid = os.environ.get("PBS_JOBID")
     if jobid is None:
         jobid = os.environ.get("SLURM_JOB_ID")
@@ -2318,6 +2318,8 @@ def batch_jobid():
         jobid = os.environ.get("LSB_JOBID")
     if jobid is None:
         jobid = os.environ.get("COBALT_JOBID")
+    if case:
+        jobid = case.get_job_id(jobid)
     return jobid
 
 

@@ -22,7 +22,7 @@ Examples:
 
    Several xml variables that have settings for each component have somewhat special treatment.
    The variables that this currently applies to are:
-    NTASKS, NTHRDS, ROOTPE, PIO_TYPENAME, PIO_STRIDE, PIO_NUMTASKS
+    NTASKS, NTHRDS, ROOTPE, PIO_TYPENAME, PIO_STRIDE, PIO_NUMTASKS, PIO_ASYNC_INTERFACE
    For example, to set the number of tasks for all components to 16, use:
       ./xmlchange NTASKS=16
    To set just the number of tasks for the atm component, use:
@@ -303,7 +303,6 @@ def xmlchange(
                     % (pair),
                 )
                 (xmlid, xmlval) = pair
-
                 xmlchange_single_value(
                     case, xmlid, xmlval, subgroup, append, force, dryrun, env_test
                 )
