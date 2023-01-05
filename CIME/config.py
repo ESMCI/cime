@@ -1,7 +1,8 @@
 import sys
 import glob
 import logging
-import importlib
+import importlib.machinery
+import importlib.util
 
 from CIME import utils
 
