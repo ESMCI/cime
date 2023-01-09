@@ -619,7 +619,7 @@ class _TimingParser:
         self.write("    Final Time  :  {:10.3f} seconds \n".format(fmax))
 
         self.write("\n")
-        if self._driver == "mct" or selv._driver == "moab":
+        if self._driver == "mct" or self._driver == "moab":
             self.write(
                 "    Actual Ocn Init Wait Time     :  {:10.3f} seconds \n".format(
                     ocnwaittime
