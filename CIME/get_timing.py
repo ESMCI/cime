@@ -394,7 +394,7 @@ class _TimingParser:
             inst_label = "_{:04d}".format(inst)
         else:
             inst_label = ""
-        if self._driver == "mct":
+        if self._driver == "mct" or self._driver == "moab":
             binfilename = os.path.join(
                 rundir, "timing", "model_timing{}_stats".format(inst_label)
             )
@@ -488,7 +488,7 @@ class _TimingParser:
         self.write("  Curr Date   : {}\n".format(now))
         if self._driver == "nuopc":
             self.write("  Driver      : CMEPS\n")
-        elif self._driver == "mct":
+        elif self._driver == "mct" or self._driver == "moab":
             self.write("  Driver      : CPL7\n")
 
         self.write("  grid        : {}\n".format(grid))
@@ -619,7 +619,7 @@ class _TimingParser:
         self.write("    Final Time  :  {:10.3f} seconds \n".format(fmax))
 
         self.write("\n")
-        if self._driver == "mct":
+        if self._driver == "mct" or selv._driver == "moab":
             self.write(
                 "    Actual Ocn Init Wait Time     :  {:10.3f} seconds \n".format(
                     ocnwaittime
