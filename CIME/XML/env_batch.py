@@ -685,9 +685,10 @@ class EnvBatch(EnvBase):
             else:
                 rval = val
 
-            # We don't want floating-point data (ignore anything else)
-            if str(rval).replace(".", "", 1).isdigit():
-                rval = int(round(float(rval)))
+            if flag != "-P":
+                # We don't want floating-point data (ignore anything else)
+                if str(rval).replace(".", "", 1).isdigit():
+                    rval = int(round(float(rval)))
 
             # need a correction for tasks per node
             if flag == "-n" and rval <= 0:
