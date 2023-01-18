@@ -641,7 +641,13 @@ def import_and_run_sub_or_cmd(
             os.path.isfile(cmd),
             f"Could not find {subname} file for component {compname}",
         )
-        run_sub_or_cmd(cmd, cmdargs, subname, subargs, logfile, case, from_dir, timeout)
+
+        try:
+            run_sub_or_cmd(
+                cmd, cmdargs, subname, subargs, logfile, case, from_dir, timeout
+            )
+        except Exception as e:
+            raise e from None
     except Exception:
         if logfile:
             with open(logfile, "a") as log_fd:

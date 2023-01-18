@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+import stat
 import shutil
 import sys
 import tempfile
@@ -14,6 +15,7 @@ from CIME.utils import (
     _line_defines_python_function,
     file_contains_python_function,
     copy_globs,
+    import_and_run_sub_or_cmd,
 )
 
 
@@ -192,6 +194,97 @@ class TestUtils(unittest.TestCase):
             raise Exception("Something went wrong")
 
         self.error_func = _error_func
+
+        for item in ("/tmp/buildnml", "/tmp/test_cime_py"):
+            if not os.path.exists(item):
+                continue
+
+            if os.path.isdir(item):
+                shutil.rmtree(item)
+            elif os.path.isfile(item):
+                os.remove(item)
+
+    def test_import_and_run_sub_or_cmd(self):
+        with self.assertRaisesRegex(
+            Exception, "ERROR: Could not find buildnml file for component test"
+        ):
+            import_and_run_sub_or_cmd(
+                "/tmp/buildnml",
+                "arg1 arg2 -vvv",
+                "buildnml",
+                (self, "arg1"),
+                "/tmp",
+                "test",
+            )
+
+    def test_import_and_run_sub_or_cmd_cime_py(self):
+        os.makedirs("/tmp/test_cime_py")
+
+        with open("/tmp/test_cime_py/__init__.py", "wb") as fd:
+            fd.write(
+                b"""
+def buildnml(*args, **kwargs):
+    raise Exception("Module has a problem")
+"""
+            )
+
+        with self.assertRaisesRegex(Exception, "Module has a problem") as e:
+            import_and_run_sub_or_cmd(
+                "/tmp/buildnml",
+                "arg1, arg2 -vvv",
+                "buildnml",
+                (self, "arg1"),
+                "/tmp",
+                "test",
+            )
+
+        # check that we avoid exception chaining
+        self.assertTrue(e.__context__ is None)
+
+    def test_import_and_run_sub_or_cmd_import(self):
+        with open("/tmp/buildnml", "wb") as fd:
+            fd.write(
+                b"""#!/bin/bash
+def buildnml(*args, **kwargs):
+    raise Exception("I am being imported")
+"""
+            )
+
+        with self.assertRaisesRegex(Exception, "I am being imported") as e:
+            import_and_run_sub_or_cmd(
+                "/tmp/buildnml",
+                "arg1 arg2 -vvv",
+                "buildnml",
+                (self, "arg1"),
+                "/tmp",
+                "test",
+            )
+
+        # check that we avoid exception chaining
+        self.assertTrue(e.__context__ is None)
+
+    def test_import_and_run_sub_or_cmd_run(self):
+        with open("/tmp/buildnml", "wb") as fd:
+            fd.write(
+                b"""#!/bin/bash
+if __name__ == "__main__":
+    raise Exception("I am being ran")
+"""
+            )
+
+        os.chmod("/tmp/buildnml", stat.S_IRWXU)
+
+        with self.assertRaisesRegex(
+            Exception, "ERROR: /tmp/buildnml arg1 arg2 -vvv FAILED, see above"
+        ):
+            import_and_run_sub_or_cmd(
+                "/tmp/buildnml",
+                "arg1 arg2 -vvv",
+                "buildnml",
+                (self, "arg1"),
+                "/tmp",
+                "test",
+            )
 
     @mock.patch("glob.glob")
     @mock.patch("CIME.utils.safe_copy")
