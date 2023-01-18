@@ -633,7 +633,7 @@ def import_and_run_sub_or_cmd(
     try:
         mod = importlib.import_module(f"{compname}_cime_py")
         getattr(mod, subname)(*subargs)
-    except (ModuleNotFoundError, AttributeError) as _:
+    except (ModuleNotFoundError, AttributeError) as e:
         # * ModuleNotFoundError if importlib can not find module,
         # * AttributeError if importlib finds the module but
         #   {subname} is not defined in the module
@@ -641,6 +641,10 @@ def import_and_run_sub_or_cmd(
             os.path.isfile(cmd),
             f"Could not find {subname} file for component {compname}",
         )
+
+        # TODO shouldn't need to use logger.isEnabledFor for debug logging
+        if isinstance(e, ModuleNotFoundError) and logger.isEnabledFor(logging.DEBUG):
+            logger.info(f"WARNING: Could not import module '{compname}_cime_py'")
 
         try:
             run_sub_or_cmd(
