@@ -247,7 +247,9 @@ class TestUtils(unittest.TestCase):
     def test_import_and_run_sub_or_cmd_run(self, func, isfile):
         isfile.return_value = True
 
-        func.side_effect = Exception("ERROR: /tmp/buildnml arg1 arg2 -vvv FAILED, see above") 
+        func.side_effect = Exception(
+            "ERROR: /tmp/buildnml arg1 arg2 -vvv FAILED, see above"
+        )
 
         with self.assertRaisesRegex(
             Exception, "ERROR: /tmp/buildnml arg1 arg2 -vvv FAILED, see above"

@@ -644,7 +644,9 @@ def import_and_run_sub_or_cmd(
 
         # TODO shouldn't need to use logger.isEnabledFor for debug logging
         if isinstance(e, ModuleNotFoundError) and logger.isEnabledFor(logging.DEBUG):
-            logger.info(f"WARNING: Could not import module '{compname}_cime_py'")
+            logger.info(
+                "WARNING: Could not import module '{}_cime_py'".format(compname)
+            )
 
         try:
             run_sub_or_cmd(
