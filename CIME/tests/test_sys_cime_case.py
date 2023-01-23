@@ -8,12 +8,9 @@ import sys
 import time
 
 from CIME import utils
-from CIME.config import Config
 from CIME.tests import base
 from CIME.case.case import Case
 from CIME.XML.env_run import EnvRun
-
-config = Config.instance()
 
 
 class TestCimeCase(base.BaseTestCase):
@@ -64,7 +61,7 @@ class TestCimeCase(base.BaseTestCase):
         args = "--case {name} --script-root {testdir} --compset X --res f19_g16 --handle-preexisting-dirs=r --output-root {testdir}".format(
             name=testcase_name, testdir=testdir
         )
-        if config.allow_unsupported:
+        if self._config.allow_unsupported:
             args += " --run-unsupported"
 
         self.run_cmd_assert_result(
@@ -313,7 +310,7 @@ class TestCimeCase(base.BaseTestCase):
         self.assertEqual(result, "-opt1 -opt2")
 
     def test_cime_case_test_walltime_mgmt_1(self):
-        if config.test_mode == "cesm":
+        if self._config.test_mode == "cesm":
             self.skipTest("Skipping walltime test. Depends on E3SM batch settings")
 
         test_name = "ERS.f19_g16_rx1.A"
@@ -335,7 +332,7 @@ class TestCimeCase(base.BaseTestCase):
         self.assertEqual(result, "biggpu")
 
     def test_cime_case_test_walltime_mgmt_2(self):
-        if config.test_mode == "cesm":
+        if self._config.test_mode == "cesm":
             self.skipTest("Skipping walltime test. Depends on E3SM batch settings")
 
         test_name = "ERS_P64.f19_g16_rx1.A"
@@ -357,7 +354,7 @@ class TestCimeCase(base.BaseTestCase):
         self.assertEqual(result, "biggpu")
 
     def test_cime_case_test_walltime_mgmt_3(self):
-        if config.test_mode == "cesm":
+        if self._config.test_mode == "cesm":
             self.skipTest("Skipping walltime test. Depends on E3SM batch settings")
 
         test_name = "ERS_P64.f19_g16_rx1.A"
@@ -385,7 +382,7 @@ class TestCimeCase(base.BaseTestCase):
         self.assertEqual(result, "biggpu")  # Not smart enough to select faster queue
 
     def test_cime_case_test_walltime_mgmt_4(self):
-        if config.test_mode == "cesm":
+        if self._config.test_mode == "cesm":
             self.skipTest("Skipping walltime test. Depends on E3SM batch settings")
 
         test_name = "ERS_P1.f19_g16_rx1.A"
@@ -413,7 +410,7 @@ class TestCimeCase(base.BaseTestCase):
         self.assertEqual(result, "biggpu")
 
     def test_cime_case_test_walltime_mgmt_5(self):
-        if config.test_mode == "cesm":
+        if self._config.test_mode == "cesm":
             self.skipTest("Skipping walltime test. Depends on E3SM batch settings")
 
         test_name = "ERS_P1.f19_g16_rx1.A"
@@ -504,7 +501,7 @@ class TestCimeCase(base.BaseTestCase):
                 self.assertEqual(result, "421:32:11")
 
     def test_cime_case_test_walltime_mgmt_8(self):
-        if config.test_mode == "cesm":
+        if self._config.test_mode == "cesm":
             self.skipTest("Skipping walltime test. Depends on E3SM batch settings")
 
         test_name = "SMS_P25600.f19_g16_rx1.A"
@@ -536,7 +533,7 @@ class TestCimeCase(base.BaseTestCase):
     def test_cime_case_test_custom_project(self):
         test_name = "ERS_P1.f19_g16_rx1.A"
         # have to use a machine both models know and one that doesn't put PROJECT in any key paths
-        machine = config.test_custom_project_machine
+        machine = self._config.test_custom_project_machine
         compiler = "gnu"
         casedir = self._create_test(
             [
