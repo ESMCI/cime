@@ -44,11 +44,18 @@ def delete_old_test_data(
             "{}/*{}*{}*".format(clutter_area, mach_comp, test_id_root)
         ):
             if avoid_test_id not in old_file:
-                logging.info("TEST ARCHIVER: Removing {}".format(old_file))
+                logging.info("TEST ARCHIVER: removing {}".format(old_file))
                 if os.path.isdir(old_file):
                     shutil.rmtree(old_file)
                 else:
                     os.remove(old_file)
+
+            else:
+                logging.info(
+                    "TEST ARCHIVER: leaving case {} due to avoiding test id {}".format(
+                        old_file, avoid_test_id
+                    )
+                )
 
 
 ###############################################################################
@@ -156,6 +163,13 @@ def archive_old_test_data(
                             the_dir, int(end_time - start_time)
                         )
                     )
+
+        else:
+            logging.info(
+                "TEST ARCHIVER: leaving case {} due to avoiding test id {}".format(
+                    old_case, avoid_test_id
+                )
+            )
 
     # Check size of archive
     bytes_of_old_test_data = int(
