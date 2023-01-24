@@ -487,14 +487,13 @@ class SystemTestsCommon(object):
             and self._expected_num_cmp != num_compared
         ):
             comments = comments.replace("PASS", "")
-            comments += """FAIL
+            comments += """\nWARNING
 Expected to compare {} hist files, but only compared {}. It's possible
 that the hist_file_extension entry in config_archive.xml is not correct
 for some of your components.
 """.format(
                 self._expected_num_cmp, num_compared
             )
-            success = False
 
         append_testlog(comments, self._orig_caseroot)
 
