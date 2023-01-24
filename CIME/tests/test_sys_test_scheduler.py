@@ -10,14 +10,13 @@ from CIME import get_tests
 from CIME import utils
 from CIME import test_status
 from CIME import test_scheduler
-from CIME.config import Config
 from CIME.tests import base
 
 
 class TestTestScheduler(base.BaseTestCase):
     @mock.patch("time.strftime", return_value="00:00:00")
     def test_chksum(self, strftime):  # pylint: disable=unused-argument
-        if Config.instance().test_mode == "e3sm":
+        if self._config.test_mode == "e3sm":
             self.skipTest("Skipping chksum test. Depends on CESM settings")
 
         ts = test_scheduler.TestScheduler(
@@ -451,7 +450,7 @@ class TestTestScheduler(base.BaseTestCase):
         self._create_test(args)
 
     def test_e_test_inferred_compiler(self):
-        if Config.instance().test_mode != "e3sm" or self._machine != "docker":
+        if self._config.test_mode != "e3sm" or self._machine != "docker":
             self.skipTest("Skipping create_test test. Depends on E3SM settings")
 
         args = ["SMS.f19_g16_rx1.A.docker_gnuX", "--no-setup"]

@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 from CIME import utils
-from CIME.config import Config
 from CIME.tests import base
 from CIME.XML.files import Files
 
@@ -10,10 +9,10 @@ class TestManageAndQuery(base.BaseTestCase):
     """Tests various scripts to manage and query xml files"""
 
     def setUp(self):
-        if Config.instance().test_mode == "e3sm":
-            self.skipTest("Skipping XML test management tests. E3SM does not use this.")
-
         super().setUp()
+
+        if self._config.test_mode == "e3sm":
+            self.skipTest("Skipping XML test management tests. E3SM does not use this.")
 
     def _run_and_assert_query_testlist(self, extra_args=""):
         """Ensure that query_testlist runs successfully with the given extra arguments"""
