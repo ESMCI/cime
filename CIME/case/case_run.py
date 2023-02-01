@@ -309,11 +309,11 @@ def _post_run_check(case, lid):
         file_prefix = "cpl"
 
     cpl_ninst = 1
-    if file_prefix != "drv" and case.get_value("MULTI_DRIVER"):
+    if case.get_value("MULTI_DRIVER"):
         cpl_ninst = case.get_value("NINST_MAX")
     cpl_logs = []
 
-    if file_prefix != "drv" and cpl_ninst > 1:
+    if cpl_ninst > 1:
         for inst in range(cpl_ninst):
             cpl_logs.append(
                 os.path.join(rundir, file_prefix + "_%04d.log." % (inst + 1) + lid)
@@ -325,7 +325,6 @@ def _post_run_check(case, lid):
 
     # find the last model.log and cpl.log
     model_logfile = os.path.join(rundir, model + ".log." + lid)
-
     if not os.path.isfile(model_logfile):
         expect(False, "Model did not complete, no {} log file ".format(model_logfile))
     elif os.stat(model_logfile).st_size == 0:
@@ -333,6 +332,7 @@ def _post_run_check(case, lid):
     else:
         count_ok = 0
         for cpl_logfile in cpl_logs:
+            print(f"cpl_logfile {cpl_logfile}")
             if not os.path.isfile(cpl_logfile):
                 break
             with open(cpl_logfile, "r") as fd:
