@@ -50,7 +50,7 @@ module shr_tInterp_mod
   real(SHR_KIND_R8),parameter :: eps = 1.0E-12_SHR_KIND_R8
 
   logical ,save               :: doabort = .true.
-  integer ,save               :: debug = 2
+  integer ,save               :: debug = 0
 
   !===============================================================================
 contains
