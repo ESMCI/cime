@@ -249,9 +249,12 @@ def get_standard_cmake_args(case, sharedpath):
         os.path.join(case.get_value("EXEROOT"), sharedpath)
     )
 
-    cmake_args += " -DUSE_KOKKOS={} ".format(stringify_bool(uses_kokkos(case)))
-    comps = _get_compset_comps(case)
-    cmake_args += " -DCOMP_NAMES='{}' ".format(";".join(comps))
+    # if sharedlibs are common to entire suite, they cannot be customized
+    # per case/compset
+    if not config.common_sharedlibroot:
+        cmake_args += " -DUSE_KOKKOS={} ".format(stringify_bool(uses_kokkos(case)))
+        comps = _get_compset_comps(case)
+        cmake_args += " -DCOMP_NAMES='{}' ".format(";".join(comps))
 
     for var in _CMD_ARGS_FOR_BUILD:
         cmake_args += xml_to_make_variable(case, var, cmake=True)
