@@ -366,6 +366,8 @@ class TestCreateNewcase(base.BaseTestCase):
 
         cls._do_teardown.append(testdir)
 
+        raise Exception("TEST FAILURE")
+
     def test_g_createnewcase_with_user_compset_and_env_mach_pes(self):
         cls = self.__class__
 
