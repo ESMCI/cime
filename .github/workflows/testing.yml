@@ -178,4 +178,11 @@ jobs:
 
           conda activate base
 
-          pytest -vvv --machine docker --no-fortran-run CIME/tests/test_sys*
+          pytest -vvv --machine docker --no-fortran-run --no-teardown CIME/tests/test_sys*
+      - name: Upload testing logs
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: testing-logs
+          path: /storage/cases/**/*
+          retention-days: 4
