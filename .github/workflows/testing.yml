@@ -179,10 +179,14 @@ jobs:
           conda activate base
 
           pytest -vvv --machine docker --no-fortran-run --no-teardown CIME/tests/test_sys*
+      - name: Create testing log archive
+        if: ${{ failure() }}
+        shell: bash
+        run: tar -czvf /testing-logs-${GITHUB_RUN_NUMBER}.tar.gz /storage/cases/
       - name: Upload testing logs
         if: ${{ failure() }}
         uses: actions/upload-artifact@v3
         with:
-          name: testing-logs
-          path: /storage/cases/**/*
+          name: testing-logs-${{ github.run_number }}
+          path: /testing-logs-${{ github.run_number}}.tar.gz
           retention-days: 4
