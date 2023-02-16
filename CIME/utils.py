@@ -1288,13 +1288,15 @@ def start_buffering_output():
     sys.stdout = os.fdopen(sys.stdout.fileno(), "w")
 
 
-def match_any(item, re_list):
+def match_any(item, re_counts):
     """
-    Return true if item matches any regex in re_list
+    Return true if item matches any regex in re_counts' keys. Increments
+    count if a match was found.
     """
-    for regex_str in re_list:
+    for regex_str in re_counts:
         regex = re.compile(regex_str)
         if regex.match(item):
+            re_counts[regex_str] += 1
             return True
 
     return False

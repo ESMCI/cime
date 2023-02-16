@@ -137,6 +137,10 @@ def bless_test_results(
     most_recent = sorted(timestamps)[-1]
     logger.info("Matched test batch is {}".format(most_recent))
 
+    bless_tests_counts = None
+    if bless_tests:
+        bless_tests_counts = dict([(bless_test, 0) for bless_test in bless_tests])
+
     broken_blesses = []
     for test_status_file in test_status_files:
         if not most_recent in test_status_file:
@@ -152,9 +156,7 @@ def bless_test_results(
         if test_name is None:
             case_dir = os.path.basename(test_dir)
             test_name = CIME.utils.normalize_case_id(case_dir)
-            if bless_tests in [[], None] or CIME.utils.match_any(
-                test_name, bless_tests
-            ):
+            if not bless_tests or CIME.utils.match_any(test_name, bless_tests_counts):
                 broken_blesses.append(
                     (
                         "unknown",
@@ -300,6 +302,19 @@ def bless_test_results(
 
                         if not success:
                             broken_blesses.append((test_name, reason))
+
+    # Emit a warning if items in bless_tests did not match anything
+    if bless_tests:
+        for bless_test, bless_count in bless_tests_counts.items():
+            if bless_count == 0:
+                logger.warning(
+                    """
+bless test arg '{}' did not match any tests in test_root {} with
+compiler {} and test_id {}. It's possible that one of these arguments
+had a mistake (likely compiler or testid).""".format(
+                        bless_test, test_root, compiler, test_id
+                    )
+                )
 
     # Make sure user knows that some tests were not blessed
     success = True
