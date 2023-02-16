@@ -118,7 +118,7 @@ class CmakeTmpBuildDir(object):
             )
 
         cmake_args = (
-            get_standard_cmake_args(case, "DO_NOT_USE", shared_lib=True)
+            get_standard_cmake_args(case, "DO_NOT_USE")
             if cmake_args is None
             else cmake_args
         )
@@ -233,7 +233,7 @@ def _get_compset_comps(case):
     return comps
 
 
-def get_standard_cmake_args(case, sharedpath, shared_lib=False):
+def get_standard_cmake_args(case, sharedpath):
     cmake_args = "-DCIME_MODEL={} ".format(case.get_value("MODEL"))
     cmake_args += "-DSRC_ROOT={} ".format(case.get_value("SRCROOT"))
     cmake_args += " -Dcompile_threaded={} ".format(
@@ -249,7 +249,9 @@ def get_standard_cmake_args(case, sharedpath, shared_lib=False):
         os.path.join(case.get_value("EXEROOT"), sharedpath)
     )
 
-    if not shared_lib:
+    # if sharedlibs are common to entire suite, they cannot be customized
+    # per case/compset
+    if not config.common_sharedlibroot:
         cmake_args += " -DUSE_KOKKOS={} ".format(stringify_bool(uses_kokkos(case)))
         comps = _get_compset_comps(case)
         cmake_args += " -DCOMP_NAMES='{}' ".format(";".join(comps))
