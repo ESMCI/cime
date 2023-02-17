@@ -524,6 +524,13 @@ ifeq ($(strip $(COMP_ATM)),cam)
   endif
 endif
 
+ifeq ($(COMP_NAME),mpassi)
+  ifeq ($(strip $(COMPILER)),gnu)
+    # mpas seaice files can't compile with optimization using gnu
+    FFLAGS += -O0
+  endif
+endif
+
 ifeq ($(COMP_NAME),cam)
   # These RRTMG files take an extraordinarily long time to compile with optimization.
   # Until mods are made to read the data from files, just remove optimization from
