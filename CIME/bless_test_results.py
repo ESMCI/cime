@@ -169,7 +169,9 @@ def bless_test_results(
             else:
                 continue
 
-        if bless_tests in [[], None] or CIME.utils.match_any(test_name, bless_tests):
+        if bless_tests in [[], None] or CIME.utils.match_any(
+            test_name, bless_tests_counts
+        ):
             overall_result, phase = ts.get_overall_test_status(
                 ignore_namelists=True, ignore_memleak=True
             )
