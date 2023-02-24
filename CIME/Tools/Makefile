@@ -526,8 +526,9 @@ endif
 
 ifeq ($(COMP_NAME),mpassi)
   ifeq ($(strip $(COMPILER)),gnu)
-    # mpas seaice files can't compile with optimization using gnu
-    FFLAGS += -O0
+    # mpas seaice files that can't compile with optimization using gnu
+    ice_shortwave.o : ice_shortwave.F90
+        $(FC) -c $(FPPFLAGS) $(INCLDIR) $(INCS) $(FREEFLAGS) $(FFLAGS) $(FFLAGS_NOOPT) $<
   endif
 endif
 
