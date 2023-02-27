@@ -85,6 +85,75 @@ class TestCase(unittest.TestCase):
         self.tempdir = tempfile.TemporaryDirectory()
 
     @mock.patch("CIME.case.case.Case.read_xml")
+    def test_fix_sys_argv_quotes(self, read_xml):
+        input_data = ["./xmlquery", "--val", "PIO"]
+        expected_data = ["./xmlquery", "--val", "PIO"]
+
+        with tempfile.TemporaryDirectory() as tempdir:
+            make_valid_case(tempdir)
+
+            with Case(tempdir) as case:
+                output_data = case.fix_sys_argv_quotes(input_data)
+
+        assert output_data == expected_data
+
+    @mock.patch("CIME.case.case.Case.read_xml")
+    def test_fix_sys_argv_quotes_incomplete(self, read_xml):
+        input_data = ["./xmlquery", "--val"]
+        expected_data = ["./xmlquery", "--val"]
+
+        with tempfile.TemporaryDirectory() as tempdir:
+            make_valid_case(tempdir)
+
+            with Case(tempdir) as case:
+                output_data = case.fix_sys_argv_quotes(input_data)
+
+        assert output_data == expected_data
+
+    @mock.patch("CIME.case.case.Case.read_xml")
+    def test_fix_sys_argv_quotes_val(self, read_xml):
+        input_data = ["./xmlquery", "--val", "-test"]
+        expected_data = ["./xmlquery", "--val", "-test"]
+
+        with tempfile.TemporaryDirectory() as tempdir:
+            make_valid_case(tempdir)
+
+            with Case(tempdir) as case:
+                output_data = case.fix_sys_argv_quotes(input_data)
+
+        assert output_data == expected_data
+
+    @mock.patch("CIME.case.case.Case.read_xml")
+    def test_fix_sys_argv_quotes_val_quoted(self, read_xml):
+        input_data = ["./xmlquery", "--val", " -nlev 267 "]
+        expected_data = ["./xmlquery", "--val", '" -nlev 267 "']
+
+        with tempfile.TemporaryDirectory() as tempdir:
+            make_valid_case(tempdir)
+
+            with Case(tempdir) as case:
+                output_data = case.fix_sys_argv_quotes(input_data)
+
+        assert output_data == expected_data
+
+    @mock.patch("CIME.case.case.Case.read_xml")
+    def test_fix_sys_argv_quotes_kv(self, read_xml):
+        input_data = ["./xmlquery", "CAM_CONFIG_OPTS= -nlev 267", "OTHER_OPTS=-test"]
+        expected_data = [
+            "./xmlquery",
+            'CAM_CONFIG_OPTS=" -nlev 267"',
+            "OTHER_OPTS=-test",
+        ]
+
+        with tempfile.TemporaryDirectory() as tempdir:
+            make_valid_case(tempdir)
+
+            with Case(tempdir) as case:
+                output_data = case.fix_sys_argv_quotes(input_data)
+
+        assert output_data == expected_data
+
+    @mock.patch("CIME.case.case.Case.read_xml")
     @mock.patch("sys.argv", ["/src/create_newcase", "--machine", "docker"])
     @mock.patch("time.strftime", return_value="00:00:00")
     @mock.patch("socket.getfqdn", return_value="host1")
