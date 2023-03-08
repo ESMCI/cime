@@ -159,6 +159,10 @@ OR
     )
 
     parser.add_argument(
+        "-q", "--queue", help="Force create_test to use a specific queue."
+    )
+
+    parser.add_argument(
         "--check-throughput",
         action="store_true",
         help="Fail if throughput check fails (fail if tests slow down)",
@@ -250,6 +254,7 @@ OR
         args.check_memory,
         args.pes_file,
         args.jenkins_id,
+        args.queue,
     )
 
 
@@ -278,6 +283,7 @@ def _main_func(description):
         check_memory,
         pes_file,
         jenkins_id,
+        queue,
     ) = parse_command_line(sys.argv, description)
 
     sys.exit(
@@ -304,6 +310,7 @@ def _main_func(description):
             check_memory,
             pes_file,
             jenkins_id,
+            queue,
         )
         else CIME.utils.TESTS_FAILED_ERR_CODE
     )
