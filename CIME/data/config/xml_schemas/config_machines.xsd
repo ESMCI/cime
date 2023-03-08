@@ -14,7 +14,7 @@
   <xs:attribute name="unit_testing" type="xs:boolean"/>
   <xs:attribute name="type" type="xs:NCName"/>
   <xs:attribute name="lang" type="xs:NCName"/>
-  <xs:attribute name="name" type="xs:NCName"/>
+  <xs:attribute name="name" type="xs:string"/>
   <xs:attribute name="source" type="xs:NCName"/>
 
   <!-- simple elements -->
@@ -43,6 +43,8 @@
   <xs:element name="DIN_LOC_ROOT" type="xs:string"/>
   <xs:element name="DIN_LOC_ROOT_CLMFORC" type="xs:string"/>
   <xs:element name="DOUT_S_ROOT" type="xs:string"/>
+  <xs:element name="DOUT_L_ROOT" type="xs:string"/>
+  <xs:element name="DOUT_L_HOSTNAME" type="xs:string"/>
   <xs:element name="BASELINE_ROOT" type="xs:string"/>
   <xs:element name="CCSM_CPRNC" type="xs:string"/>
   <xs:element name="PERL5LIB" type="xs:string"/>
@@ -138,7 +140,11 @@
         <xs:element ref="DIN_LOC_ROOT_CLMFORC" minOccurs="0" maxOccurs="1"/>
         <!-- DOUT_S_ROOT: root directory of short term archive files -->
         <xs:element ref="DOUT_S_ROOT" minOccurs="1" maxOccurs="1"/>
-        <!-- BASELINE_ROOT:  Root directory for system test baseline files -->
+        <!-- DOUT_L_ROOT: root directory of long term archive files -->
+        <xs:element ref="DOUT_L_ROOT" minOccurs="0" maxOccurs="1"/>
+        <!-- DOUT_L_HOSTNAME: hostname for long term archive files -->
+        <xs:element ref="DOUT_L_HOSTNAME" minOccurs="0" maxOccurs="1"/>
+	<!-- BASELINE_ROOT:  Root directory for system test baseline files -->
         <xs:element ref="BASELINE_ROOT" minOccurs="0" maxOccurs="1"/>
         <!-- CCSM_CPRNC: location of the cprnc tool, compares model output in testing-->
         <xs:element ref="CCSM_CPRNC" minOccurs="0" maxOccurs="1"/>
@@ -160,12 +166,12 @@
         <xs:element ref="SUPPORTED_BY" minOccurs="1" maxOccurs="1"/>
         <!-- MAX_TASKS_PER_NODE: maximum number of threads*tasks per
              shared memory node on this machine-->
-        <xs:element ref="MAX_TASKS_PER_NODE" minOccurs="1" maxOccurs="unbounded"/>
+        <xs:element ref="MAX_TASKS_PER_NODE" minOccurs="1" maxOccurs="4"/>
         <!-- MAX_GPUS_PER_NODE: maximum number of GPUs per node on this machine-->
         <xs:element ref="MAX_GPUS_PER_NODE" minOccurs="0" maxOccurs="1"/>
         <!-- MAX_MPITASKS_PER_NODE: number of physical PES per shared node on
              this machine, in practice the MPI tasks per node will not exceed this value -->
-        <xs:element ref="MAX_MPITASKS_PER_NODE" minOccurs="1" maxOccurs="unbounded"/>
+        <xs:element ref="MAX_MPITASKS_PER_NODE" minOccurs="1" maxOccurs="4"/>
         <!-- Optional cost factor per node unit -->
         <xs:element ref="COSTPES_PER_NODE" minOccurs="0" maxOccurs="1"/>
         <!-- PROJECT_REQUIRED: Does this machine require a project to be specified to
@@ -194,7 +200,6 @@
   <xs:element name="mpirun">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="aprun_mode" type="xs:string" minOccurs="0" maxOccurs="1"/>
         <xs:element ref="executable"/>
         <xs:element ref="arguments" minOccurs="0"/>
         <!-- run_exe: The run executable to use; overrides default_run_exe -->
