@@ -2255,7 +2255,7 @@ directory, NOT in this subdirectory."""
         cimeroot = self.get_value("CIMEROOT")
 
         if cmd is None:
-            cmd = list(sys.argv)
+            cmd = self.fix_sys_argv_quotes(list(sys.argv))
 
         if init:
             ctime = time.strftime("%Y-%m-%d %H:%M:%S")
@@ -2293,6 +2293,36 @@ directory, NOT in this subdirectory."""
                 fd.writelines(lines)
         except PermissionError:
             logger.warning("Could not write to 'replay.sh' script")
+
+    def fix_sys_argv_quotes(self, cmd):
+        """Fixes removed quotes from argument list.
+        Restores quotes to `--val` and `KEY=VALUE` from sys.argv.
+        """
+        # handle fixing quotes
+        # case 1: "--val", " -nlev 276 "
+        # case 2: "-val" , " -nlev 276 "
+        # case 3: CAM_CONFIG_OPTS=" -nlev 276 "
+        for i, item in enumerate(cmd):
+            if re.match("[-]{1,2}val", item) is not None:
+                if i + 1 >= len(cmd):
+                    continue
+
+                # only quote if value contains spaces
+                if " " in cmd[i + 1]:
+                    cmd[i + 1] = f'"{cmd[i + 1]}"'
+            else:
+                m = re.search("([^=]*)=(.*)", item)
+
+                if m is None:
+                    continue
+
+                g = m.groups()
+
+                # only quote if value contains spaces
+                if " " in g[1]:
+                    cmd[i] = f'{g[0]}="{g[1]}"'
+
+        return cmd
 
     def create(
         self,
