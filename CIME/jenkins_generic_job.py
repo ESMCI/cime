@@ -280,6 +280,7 @@ def jenkins_generic_job(
     check_memory,
     pes_file,
     jenkins_id,
+    queue,
 ):
     ###############################################################################
     """
@@ -366,6 +367,9 @@ def jenkins_generic_job(
 
     if pes_file is not None:
         create_test_args.append(" --pesfile " + pes_file)
+
+    if queue is not None:
+        create_test_args.append(" --queue " + queue)
 
     create_test_cmd = "./create_test " + " ".join(create_test_args)
 
