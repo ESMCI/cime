@@ -613,7 +613,9 @@ endif
 
 # Remove arch flag if it exists
 F90_LDFLAGS := $(filter-out -arch%,$(LDFLAGS))
-
+ifdef GPUFLAGS
+  F90_LDFLAGS += $(GPUFLAGS)
+endif
 # Machine stuff to appear last on the link step
 ifndef MLIBS
      MLIBS  :=

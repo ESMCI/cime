@@ -239,6 +239,20 @@ def get_standard_cmake_args(case, sharedpath):
     cmake_args += " -Dcompile_threaded={} ".format(
         stringify_bool(case.get_build_threaded())
     )
+    gpu_type = case.get_value("GPU_TYPE")
+    gpu_offload = case.get_value("GPU_OFFLOAD")
+
+    if gpu_type != "none":
+        expect(
+            gpu_offload != "none",
+            "Both GPU_TYPE and GPU_OFFLOAD must be defined if either is",
+        )
+        cmake_args += f" -DGPU_TYPE={gpu_type} -DGPU_OFFLOAD={gpu_offload}"
+    else:
+        expect(
+            gpu_offload == "none",
+            "Both GPU_TYPE and GPU_OFFLOAD must be defined if either is",
+        )
 
     ocn_model = case.get_value("COMP_OCN")
     atm_model = case.get_value("COMP_ATM")
