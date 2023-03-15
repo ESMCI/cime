@@ -447,7 +447,6 @@ class TestScheduler(object):
         # Build group to exeroot map
         self._build_group_exeroots = {}
         for build_group in self._build_groups:
-            print(f"build_group is {build_group} tests are {self._tests}")
             self._build_group_exeroots[build_group] = None
 
         logger.debug("Build groups are:")
