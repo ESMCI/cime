@@ -437,7 +437,7 @@ class TestScheduler(object):
 
         # Setup build groups
         if single_exe:
-            self._build_groups = [self._tests]
+           self._build_groups = [tuple(self._tests.keys())]
         elif self._config.share_exes:
             # Any test that's in a shared-enabled suite with other tests should share exes
             self._build_groups = get_build_groups(self._tests)
@@ -447,6 +447,7 @@ class TestScheduler(object):
         # Build group to exeroot map
         self._build_group_exeroots = {}
         for build_group in self._build_groups:
+            print(f"build_group is {build_group} tests are {self._tests}")
             self._build_group_exeroots[build_group] = None
 
         logger.debug("Build groups are:")
