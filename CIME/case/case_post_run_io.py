@@ -4,7 +4,7 @@ case_post_run_io is a member of class Case from file case.py
 """
 import os
 from CIME.XML.standard_module_setup import *
-from CIME.utils                     import run_and_log_case_status
+from CIME.utils                     import new_lid, run_and_log_case_status
 
 logger = logging.getLogger(__name__)
 
@@ -38,17 +38,26 @@ def _convert_adios_to_nc(case):
     adios_conv_tool_cmd_suffix = adios_conv_tool_cmd_suffix.replace(
                                   "e3sm.log", "e3sm_adios_post_io.log")
 
-    # Reset the total number of tasks to 1/4th for the conversion job
-    CONV_JOB_SCALE_FACTOR = 1.0/4.0
-    CONV_JOB_MIN_TOTAL_TASKS = 1
-    CONV_JOB_MAX_TOTAL_TASKS = 1024
-    env_mach_pes = case.get_env("mach_pes")
-    case.thread_count = 1
-    case.total_tasks = max(min(int(case.total_tasks * CONV_JOB_SCALE_FACTOR), CONV_JOB_MAX_TOTAL_TASKS), CONV_JOB_MIN_TOTAL_TASKS)
-    case.cores_per_task = 1
-    case.tasks_per_node = env_mach_pes.get_tasks_per_node(case.total_tasks, case.thread_count)
-    case.num_nodes, case.spare_nodes = env_mach_pes.get_total_nodes(case.total_tasks, case.thread_count)
-    case.num_nodes += case.spare_nodes
+    is_batch = case.get_value("BATCH_SYSTEM")
+
+    # Set up the LID (used as unique id for log names etc via $LID)
+    lid = new_lid(case=case)
+
+    # For batch jobs the number of nodes/processes for post processing need
+    # to be determined before the post run job is launched
+    # (i.e., via config_workflow.xml)
+    if is_batch == "none":
+      # Reset the total number of tasks to 1/4th for the conversion job
+      CONV_JOB_SCALE_FACTOR = 1.0/4.0
+      CONV_JOB_MIN_TOTAL_TASKS = 1
+      CONV_JOB_MAX_TOTAL_TASKS = 1024
+      env_mach_pes = case.get_env("mach_pes")
+      case.thread_count = 1
+      case.total_tasks = max(min(int(case.total_tasks * CONV_JOB_SCALE_FACTOR), CONV_JOB_MAX_TOTAL_TASKS), CONV_JOB_MIN_TOTAL_TASKS)
+      case.cores_per_task = 1
+      case.tasks_per_node = env_mach_pes.get_tasks_per_node(case.total_tasks, case.thread_count)
+      case.num_nodes, case.spare_nodes = env_mach_pes.get_total_nodes(case.total_tasks, case.thread_count)
+      case.num_nodes += case.spare_nodes
 
     # Get the current mpirun command (for e3sm.exe)
     cmd = case.get_mpirun_cmd(allow_unresolved_envvars=False)
@@ -71,7 +80,8 @@ def _convert_adios_to_nc(case):
     # Run the modified case
     success = run_and_log_case_status(run_func,
                 "ADIOS to NetCDF conversion",
-                caseroot=case.get_value("CASEROOT"))
+                caseroot=case.get_value("CASEROOT"),
+                is_batch=is_batch)
 
     return success
 
