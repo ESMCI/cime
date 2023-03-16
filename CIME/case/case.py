@@ -88,7 +88,6 @@ class Case(object):
         test_env_archive,
     )
     from CIME.case.case_run import case_run
-    from CIME.case.case_post_run_io import case_post_run_io
     from CIME.case.case_cmpgen_namelists import case_cmpgen_namelists
     from CIME.case.check_lockedfiles import (
         check_lockedfile,
