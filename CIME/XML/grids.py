@@ -313,7 +313,7 @@ class Grids(GenericXML):
                     domains[comp_name + "_NX"] = 1
                     domains[comp_name + "_NY"] = 1
 
-            if driver == "mct":
+            if driver == "mct" or driver == "moab":
                 # mct
                 file_nodes = self.get_children("file", root=domain_node)
                 domain_file = ""
