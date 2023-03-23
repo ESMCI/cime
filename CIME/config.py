@@ -180,7 +180,7 @@ class Config:
         self._set_attribute(
             "gpus_use_set_device_rank",
             True,
-            desc="If set to `True` and NGPUS_PER_NODE > 0 then `$RUNDIR/set_device_rank.sh` is appended when the MPI run command is generated.",
+            desc="If set to `True` and NGPUS_PER_NODE > 0 then `$RUNDIR/set_device_rank.sh` or `get_local_rank` (a global script on Gust) is appended when the MPI run command is generated.",
         )
         self._set_attribute(
             "test_custom_project_machine",
