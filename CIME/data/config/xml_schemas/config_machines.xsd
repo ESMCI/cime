@@ -58,6 +58,7 @@
   <xs:element name="MAX_TASKS_PER_NODE" type="AttrElement"/>
   <xs:element name="MAX_GPUS_PER_NODE" type="AttrElement"/>
   <xs:element name="MAX_MPITASKS_PER_NODE" type="AttrElement"/>
+  <xs:element name="MAX_CPUTASKS_PER_GPU_NODE" type="AttrElement"/>
   <xs:element name="COSTPES_PER_NODE" type="xs:integer"/>
   <xs:element name="PROJECT_REQUIRED" type="xs:NCName"/>
   <xs:element name="executable" type="xs:string"/>
@@ -168,6 +169,9 @@
         <!-- MAX_MPITASKS_PER_NODE: number of physical PES per shared node on
              this machine, in practice the MPI tasks per node will not exceed this value -->
         <xs:element ref="MAX_MPITASKS_PER_NODE" minOccurs="1" maxOccurs="unbounded"/>
+        <!-- MAX_CPUTASKS_PER_GPU_NODE: number of physical PES per GPU node on
+             this machine, in practice the MPI tasks per node will not exceed this value -->
+        <xs:element ref="MAX_CPUTASKS_PER_GPU_NODE" minOccurs="1" maxOccurs="unbounded"/>
         <!-- Optional cost factor per node unit -->
         <xs:element ref="COSTPES_PER_NODE" minOccurs="0" maxOccurs="1"/>
         <!-- PROJECT_REQUIRED: Does this machine require a project to be specified to
