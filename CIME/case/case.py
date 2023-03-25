@@ -1551,11 +1551,11 @@ class Case(object):
                 "Both gpu-type and gpu-offload must be defined if either is defined",
             )
             expect(
-                gpu_type in ["none", "v100", "a100", "mi250"],
+                gpu_type in self.get_value("GPU_TYPE").split(","),
                 f"Unsupported GPU type is given: {gpu_type} ; valid values are none, v100, a100, mi250",
             )
             expect(
-                gpu_offload in ["none", "openacc", "openmp", "combined"],
+                gpu_offload in self.get_value("GPU_OFFLOAD").split(","),
                 f"Unsupported GPU programming model is given: {gpu_offload} ; valid values are none, openacc, openmp, combined",
             )
             self.set_value("GPU_TYPE", gpu_type)
