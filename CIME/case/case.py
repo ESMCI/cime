@@ -2078,7 +2078,7 @@ directory, NOT in this subdirectory."""
 
         ngpus_per_node = self.get_value("NGPUS_PER_NODE")
         if ngpus_per_node and ngpus_per_node > 0 and config.gpus_use_set_device_rank:
-            if self.get_value("MACH") == "Gust":
+            if self.get_value("MACH") == "gust":
                 mpi_arg_string = mpi_arg_string + " get_local_rank "
             else:
                 # this wrapper script only works with OpenMPI library
