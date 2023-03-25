@@ -42,6 +42,8 @@ class EnvMachPes(EnvBase):
         resolved=True,
         subgroup=None,
         max_mpitasks_per_node=None,
+        max_cputasks_per_gpu_node=None,
+        ngpus_per_node=None,
     ):  # pylint: disable=arguments-differ
         # Special variable NINST_MAX is used to determine the number of
         # drivers in multi-driver mode.
@@ -58,8 +60,15 @@ class EnvMachPes(EnvBase):
         if "NTASKS" in vid or "ROOTPE" in vid:
             if max_mpitasks_per_node is None:
                 max_mpitasks_per_node = self.get_value("MAX_MPITASKS_PER_NODE")
+            if max_cputasks_per_gpu_node is None:
+                max_cputasks_per_gpu_node = self.get_value("MAX_CPUTASKS_PER_GPU_NODE")
+            if ngpus_per_node is None:
+                ngpus_per_node = self.get_value("NGPUS_PER_NODE")
             if value is not None and value < 0:
-                value = -1 * value * max_mpitasks_per_node
+                if ngpus_per_node > 0:
+                    value = -1 * value * max_cputasks_per_gpu_node
+                else:
+                    value = -1 * value * max_mpitasks_per_node
         # in the nuopc driver there is only one NINST value
         # so that NINST_{comp} = NINST
         if "NINST_" in vid and value is None:
