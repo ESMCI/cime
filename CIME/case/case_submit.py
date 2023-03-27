@@ -308,10 +308,13 @@ def check_case(self, skip_pnl=False, chksum=False):
             if comp == "CPL":
                 continue
             compname = self.get_value("COMP_{}".format(comp))
+
             # ignore stub components in this test.
-            if compname.startswith("S"):
-                continue
-            ncpl = self.get_value("{}_NCPL".format(comp))
+            if compname.startswith("s"):
+                ncpl = None
+            else:
+                ncpl = self.get_value("{}_NCPL".format(comp))
+
             if ncpl and maxncpl > ncpl:
                 maxncpl = ncpl
                 maxcomp = comp
