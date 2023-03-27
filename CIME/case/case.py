@@ -2056,11 +2056,11 @@ directory, NOT in this subdirectory."""
             mpi_arg_string += " : "
 
         ngpus_per_node = self.get_value("NGPUS_PER_NODE")
-        if ngpus_per_node and ngpus_per_node > 0 and config.gpus_use_set_device_rank:
+        rundir = self.get_value("RUNDIR")
+        output_name = rundir + "/set_device_rank.sh"
+        if ngpus_per_node and ngpus_per_node > 0 and os.path.exists(output_name):
             # 1. this setting is tested on Casper only and may not work on other machines
             # 2. need to be revisited in the future for a more adaptable implementation
-            rundir = self.get_value("RUNDIR")
-            output_name = rundir + "/set_device_rank.sh"
             mpi_arg_string = mpi_arg_string + " " + output_name + " "
 
         return self.get_resolved_value(
