@@ -310,7 +310,7 @@ def check_case(self, skip_pnl=False, chksum=False):
             compname = self.get_value("COMP_{}".format(comp))
 
             # ignore stub components in this test.
-            if compname.startswith("s"):
+            if compname == "s{}".format(comp.lower()):
                 ncpl = None
             else:
                 ncpl = self.get_value("{}_NCPL".format(comp))
