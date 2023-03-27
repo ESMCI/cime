@@ -278,7 +278,7 @@ def parse_command_line(args, cimeroot, description):
     parser.add_argument(
         "--gpu-offload",
         default=None,
-        help="Specify gpu offload method - currently supported are OpenACC, OpenMP",
+        help="Specify gpu offload method - currently supported are openacc, openmp, combined",
     )
 
     args = CIME.utils.parse_args_and_handle_standard_logging_options(args, parser)

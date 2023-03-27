@@ -239,6 +239,8 @@ def get_standard_cmake_args(case, sharedpath):
     cmake_args += " -Dcompile_threaded={} ".format(
         stringify_bool(case.get_build_threaded())
     )
+
+    # check settings for GPU
     gpu_type = case.get_value("GPU_TYPE")
     gpu_offload = case.get_value("GPU_OFFLOAD")
 

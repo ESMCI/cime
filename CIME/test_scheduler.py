@@ -437,7 +437,7 @@ class TestScheduler(object):
 
         # Setup build groups
         if single_exe:
-            self._build_groups = [self._tests]
+            self._build_groups = [tuple(self._tests.keys())]
         elif self._config.share_exes:
             # Any test that's in a shared-enabled suite with other tests should share exes
             self._build_groups = get_build_groups(self._tests)
@@ -667,7 +667,11 @@ class TestScheduler(object):
                         error = "GPU test argument format is ngpus_per_node-gpu_type-gpu_offload"
                         self._log_output(test, error)
                         return False, error
-                    create_newcase_cmd += f" --ngpus-per-node {ngpus_per_node} --gpu-type {gpu_type} --gpu-offload {gpu_offload}"
+                    create_newcase_cmd += (
+                        " --ngpus-per-node {} --gpu-type {} --gpu-offload {}".format(
+                            ngpus_per_node, gpu_type, gpu_offload
+                        )
+                    )
                 elif case_opt.startswith("V"):
                     self._cime_driver = case_opt[1:]
                     create_newcase_cmd += " --driver {}".format(self._cime_driver)

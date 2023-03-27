@@ -123,7 +123,7 @@ class Case(object):
         self._env_generic_files = []
         self._files = []
         self._comp_interface = None
-        self.gpu_enabled = None
+        self.gpu_enabled = False
         self._non_local = non_local
         self.read_xml()
 
@@ -276,6 +276,9 @@ class Case(object):
 
         if max_gpus_per_node:
             self.ngpus_per_node = self.get_value("NGPUS_PER_NODE")
+        # update the maximum MPI tasks for a GPU node (could differ from a pure-CPU node)
+        if self.ngpus_per_node > 0:
+            max_mpitasks_per_node = self.get_value("MAX_CPUTASKS_PER_GPU_NODE")
 
         self.tasks_per_numa = int(math.ceil(self.tasks_per_node / 2.0))
         smt_factor = max(
@@ -453,10 +456,11 @@ class Case(object):
 
     def get_value(self, item, attribute=None, resolved=True, subgroup=None):
         if item == "GPU_ENABLED":
-            if self.gpu_enabled == None:
+            if not self.gpu_enabled:
                 if self.get_value("GPU_TYPE") != "none":
                     self.gpu_enabled = True
             return "true" if self.gpu_enabled else "false"
+
         result = None
         for env_file in self._files:
             # Wait and resolve in self rather than in env_file
@@ -1352,6 +1356,7 @@ class Case(object):
             and "MPILIB" not in x
             and "MAX_MPITASKS_PER_NODE" not in x
             and "MAX_TASKS_PER_NODE" not in x
+            and "MAX_CPUTASKS_PER_GPU_NODE" not in x
             and "MAX_GPUS_PER_NODE" not in x
         ]
 
@@ -1386,6 +1391,7 @@ class Case(object):
         for name in (
             "MAX_TASKS_PER_NODE",
             "MAX_MPITASKS_PER_NODE",
+            "MAX_CPUTASKS_PER_GPU_NODE",
             "MAX_GPUS_PER_NODE",
         ):
             dmax = machobj.get_value(name, {"compiler": compiler})
@@ -1394,6 +1400,12 @@ class Case(object):
             if dmax:
                 print(f"here name is {name} and dmax is {dmax}")
                 self.set_value(name, dmax)
+            elif name == "MAX_CPUTASKS_PER_GPU_NODE":
+                logger.debug(
+                    "Variable {} not defined for machine {} and compiler {}".format(
+                        name, machine_name, compiler
+                    )
+                )
             elif name == "MAX_GPUS_PER_NODE":
                 logger.debug(
                     "Variable {} not defined for machine {} and compiler {}".format(
@@ -1522,7 +1534,7 @@ class Case(object):
             self.set_value("TEST", True)
 
         # ----------------------------------------------------------------------------------------------------------
-        # Sanity check:
+        # Sanity check for a GPU run:
         #        1. GPU_TYPE and GPU_OFFLOAD must both be defined to use GPUS
         #        2. if ngpus_per_node argument is larger than the value of MAX_GPUS_PER_NODE, the NGPUS_PER_NODE
         #             XML variable in the env_mach_pes.xml file would be set to MAX_GPUS_PER_NODE automatically.
@@ -1538,6 +1550,20 @@ class Case(object):
                 gpu_offload,
                 "Both gpu-type and gpu-offload must be defined if either is defined",
             )
+            expect(
+                compiler in ["nvhpc", "cray"],
+                f"Only nvhpc and cray compilers are expected for a GPU run; the user given compiler is {compiler}, ",
+            )
+            valid_gpu_type = self.get_value("GPU_TYPE").split(",")
+            expect(
+                gpu_type in valid_gpu_type,
+                f"Unsupported GPU type is given: {gpu_type} ; valid values are {valid_gpu_type}",
+            )
+            valid_gpu_offload = self.get_value("GPU_OFFLOAD").split(",")
+            expect(
+                gpu_offload in valid_gpu_offload,
+                f"Unsupported GPU programming model is given: {gpu_offload} ; valid values are {valid_gpu_offload}",
+            )
             self.set_value("GPU_TYPE", gpu_type)
             self.set_value("GPU_OFFLOAD", gpu_offload)
             self.gpu_enabled = True
@@ -1548,6 +1574,11 @@ class Case(object):
                     if ngpus_per_node <= max_gpus_per_node
                     else max_gpus_per_node,
                 )
+        elif gpu_offload:
+            expect(
+                False,
+                "Both gpu-type and gpu-offload must be defined if either is defined",
+            )
 
         elif gpu_offload:
             expect(
@@ -2056,12 +2087,21 @@ directory, NOT in this subdirectory."""
             mpi_arg_string += " : "
 
         ngpus_per_node = self.get_value("NGPUS_PER_NODE")
-        rundir = self.get_value("RUNDIR")
-        output_name = rundir + "/set_device_rank.sh"
-        if ngpus_per_node and ngpus_per_node > 0 and os.path.exists(output_name):
-            # 1. this setting is tested on Casper only and may not work on other machines
-            # 2. need to be revisited in the future for a more adaptable implementation
-            mpi_arg_string = mpi_arg_string + " " + output_name + " "
+        if ngpus_per_node and ngpus_per_node > 0 and config.gpus_use_set_device_rank:
+            if self.get_value("MACH") == "gust":
+                mpi_arg_string = mpi_arg_string + " get_local_rank "
+            else:
+                # this wrapper script only works with OpenMPI library
+                # has been tested on Casper
+                expect(
+                    self.get_value("MPILIB") == "openmpi",
+                    "The wrapper script only works with OpenMPI library; {} is currently used".format(
+                        self.get_value("MPILIB")
+                    ),
+                )
+                rundir = self.get_value("RUNDIR")
+                output_name = rundir + "/set_device_rank.sh"
+                mpi_arg_string = mpi_arg_string + " " + output_name + " "
 
         return self.get_resolved_value(
             "{} {} {} {}".format(
