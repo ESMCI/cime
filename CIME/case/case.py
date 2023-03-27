@@ -1550,6 +1550,10 @@ class Case(object):
                 gpu_offload,
                 "Both gpu-type and gpu-offload must be defined if either is defined",
             )
+            expect(
+                compiler in ["nvhpc", "cray"],
+                f"Only nvhpc and cray compilers are expected for a GPU run; the user given compiler is {compiler}, ",
+            )
             valid_gpu_type = self.get_value("GPU_TYPE").split(",")
             expect(
                 gpu_type in valid_gpu_type,
