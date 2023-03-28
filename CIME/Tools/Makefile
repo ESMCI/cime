@@ -573,12 +573,16 @@ endif
 
 
 # System libraries (netcdf, mpi, pnetcdf, esmf, trilinos, etc.)
-ifeq (,$(findstring lnetcdf,$(SLIBS)))
-  ifeq ($(NETCDF_SEPARATE), FALSE)
-    SLIBS += -L$(LIB_NETCDF) -lnetcdff -lnetcdf
-  else ifeq ($(NETCDF_SEPARATE), TRUE)
-    SLIBS += -L$(LIB_NETCDF_FORTRAN) -L$(LIB_NETCDF_C) -lnetcdff -lnetcdf
+ifeq ($(NETCDF_SEPARATE), FALSE)
+   ifeq (,$(findstring $(LIB_NETCDF),$(SLIBS)))
+      SLIBS += -L$(LIB_NETCDF) -lnetcdff -lnetcdf
   endif
+else ifeq ($(NETCDF_SEPARATE), TRUE)
+    ifeq (,$(findstring $(LIB_NETCDF_C), $(SLIBS)))
+      SLIBS += -L$(LIB_NETCDF_FORTRAN) -L$(LIB_NETCDF_C) -lnetcdff -lnetcdf
+    else ifeq (,$(findstring $(LIB_NETCDF_FOTRAN), $(SLIBS)))
+      SLIBS += -L$(LIB_NETCDF_FORTRAN) -L$(LIB_NETCDF_C) -lnetcdff -lnetcdf
+    endif
 endif
 
 ifdef LAPACK_LIBDIR
