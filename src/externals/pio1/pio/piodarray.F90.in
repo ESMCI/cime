@@ -7,8 +7,8 @@
 !<
 module piodarray
   use pio_types, only : file_desc_t, io_desc_t, var_desc_t, pio_noerr, iosystem_desc_t, &
-	pio_iotype_pbinary, pio_iotype_binary, pio_iotype_direct_pbinary, &
-	pio_iotype_netcdf, pio_iotype_pnetcdf, pio_iotype_netcdf4p, pio_iotype_netcdf4c, &
+        pio_iotype_pbinary, pio_iotype_binary, pio_iotype_direct_pbinary, &
+        pio_iotype_netcdf, pio_iotype_pnetcdf, pio_iotype_netcdf4p, pio_iotype_netcdf4c, &
         PIO_MAX_VAR_DIMS, pio_iotype_vdc2
   use pio_kinds
   use pio_support
@@ -318,16 +318,16 @@ contains
     ! !INPUT PARAMETERS:
 
     type (File_desc_t), intent(inout) :: &
-	 File                   ! file information
+         File                   ! file information
 
     type (var_desc_t), intent(inout) :: &
-	 varDesc                      ! variable descriptor
+         varDesc                      ! variable descriptor
 
     type (io_desc_t), intent(inout) :: &
-	 ioDesc                      ! iodecomp descriptor
+         ioDesc                      ! iodecomp descriptor
 
     {VTYPE}, dimension(:), intent(out) ::  &
-	 array                 ! array to be read
+         array                 ! array to be read
 
     integer(i4), intent(out) :: iostat
 
@@ -388,13 +388,13 @@ contains
     ! !INPUT PARAMETERS:
 
     type (File_desc_t), intent(inout) :: &
-	 File                   ! file information
+         File                   ! file information
 
     type (var_desc_t), intent(inout) :: &
-	 varDesc                      ! variable descriptor
+         varDesc                      ! variable descriptor
 
     type (io_desc_t), intent(inout) :: &
-	 ioDesc                      ! iodecomp descriptor
+         ioDesc                      ! iodecomp descriptor
 
     {VTYPE}, intent(out) ::  array{DIMSTR}                 ! array to be read
 
@@ -504,8 +504,8 @@ contains
     if(Debug) print *,__PIO_FILE__,__LINE__,' NAME : IAM: ', &
     File%iosystem%comp_rank,' UseRearranger: ',UseRearranger,iodesc%glen, iodesc%iomap%start, len
 #ifdef TIMING
-    call t_startf("PIO:pio_rearrange_write")
     call t_startf("PIO:pre_pio_write_nf")
+    call t_startf("PIO:pio_rearrange_write")
 #endif
     if(UseRearranger) then
        if (IOproc) then
@@ -842,7 +842,7 @@ contains
     call t_startf("PIO:pio_write_bin")
 #endif
        !----------------------------------------------
-       !	 write the global 2-d slice from IO processors
+       !         write the global 2-d slice from IO processors
        !----------------------------------------------
        ierr = write_mpiio(File,IOBUF,varDesc,iodesc)
 #ifdef TIMING
@@ -896,9 +896,9 @@ contains
          File                   ! info about data file
 
     type (var_desc_t), intent(inout) :: &
-         varDesc			  ! variable descriptor
+         varDesc                          ! variable descriptor
     type (io_desc_t), intent(inout) :: &
-         ioDesc			  ! io decomp descriptor
+         ioDesc                   ! io decomp descriptor
 
     ! !INPUT/OUTPUT PARAMETERS:
 
@@ -985,13 +985,13 @@ contains
           count(1:ndims-1)=iodesc%count
           start(ndims:ndims)=vardesc%rec
           count(ndims:ndims)=1
-	  ! this is a timedependent single value
+          ! this is a timedependent single value
        else if(vardesc%rec>=0) then
           ndims=1
           start(1) = int(vardesc%rec,kind=PIO_Offset)
           count(1) = 1_PIO_Offset
 
-	  ! this is a non-timedependent array
+          ! this is a non-timedependent array
        else
           ndims = size(iodesc%start)
           start(1:ndims)=iodesc%start
@@ -1014,7 +1014,7 @@ contains
 #endif
 
     if(DebugIO) print *, subName,': {comp,io}_rank: ',File%iosystem%comp_rank,File%iosystem%io_rank,  &
-	 'offset: ',iodesc%iomap%start,'len: ',len !,' IOBUF: ',IOBUF
+         'offset: ',iodesc%iomap%start,'len: ',len !,' IOBUF: ',IOBUF
 
 
 #ifdef TIMING
@@ -1094,10 +1094,10 @@ contains
          File                   ! info about data file
 
     type (var_desc_t), intent(inout) :: &
-         varDesc			  ! variable descriptor
+         varDesc                          ! variable descriptor
 
     type (io_desc_t), intent(inout) :: &
-         ioDesc			  ! io decomp descriptor
+         ioDesc                   ! io decomp descriptor
 
     ! !INPUT/OUTPUT PARAMETERS:
 
@@ -1249,8 +1249,9 @@ contains
     if(.not. associated(File%data_list_top)) then
        allocate(file%data_list_top)
        ptr => file%data_list_top
+       file%data_list_end => file%data_list_top
     else
-       ptr => file%data_list_top
+       ptr => file%data_list_end
        do while(associated(ptr%next))
           ptr => ptr%next
        end do
@@ -1264,6 +1265,7 @@ contains
     this_buffsize = size(iobuf)*c_sizeof(iobuf(1))
     file%buffsize=file%buffsize+this_buffsize
     total_buffsize = total_buffsize+this_buffsize
+    file%data_list_end => ptr
 #ifdef TIMING
     call t_startf("PIO:allred_add_data_to_buf")
 #endif
@@ -1331,6 +1333,7 @@ contains
           deallocate(prevptr)
        end do
        nullify(file%data_list_top)
+       nullify(file%data_list_end)
 
        total_buffsize=total_buffsize-file%buffsize
 
@@ -1525,7 +1528,7 @@ subroutine read_vdc2_real(File, Vardesc, iodesc, array, iostat)
           call alloc_check(IOBUF,len,' TYPE :IOBUF')
           IOBUF= -1.0_r8
           cptr = c_loc(iobuf(1))
-  	  call ReadVDC2Var(cptr, start, count,  File%iosystem%IO_comm, vardesc%rec, -1, -1, File%iosystem%num_iotasks, &
+          call ReadVDC2Var(cptr, start, count,  File%iosystem%IO_comm, vardesc%rec, -1, -1, File%iosystem%num_iotasks, &
           F_C_String_dup(varDesc%name))
        else
           call alloc_check(IOBUF,0)
@@ -1553,4 +1556,3 @@ subroutine read_vdc2_real(File, Vardesc, iodesc, array, iostat)
 
 
 end module piodarray
-

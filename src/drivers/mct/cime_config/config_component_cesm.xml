@@ -18,10 +18,14 @@
     <desc forcing="HIST">Historic transient </desc>
     <desc forcing="20TR">Twentieth century transient</desc>
     <desc forcing="4804"></desc>
-    <desc forcing="RCP2">CMIP5 rcp 2.6 forcing</desc>
-    <desc forcing="RCP4">CMIP5 rcp 4.5 forcing</desc>
-    <desc forcing="RCP6">CMIP5 rcp 6.0 forcing</desc>
-    <desc forcing="RCP8">CMIP5 rcp 8.5 forcing</desc>
+    <desc forcing="SSP119">CMIP6 SSP1-1.9 forcing</desc>
+    <desc forcing="SSP126">CMIP6 SSP1-2.6 forcing</desc>
+    <desc forcing="SSP245">CMIP6 SSP2-4.5 forcing</desc>
+    <desc forcing="SSP370">CMIP6 SSP3-7.0 forcing</desc>
+    <desc forcing="SSP434">CMIP6 SSP4-3.4 forcing</desc>
+    <desc forcing="SSP460">CMIP6 SSP4-6.0 forcing</desc>
+    <desc forcing="SSP534">CMIP6 SSP5-3.4 forcing</desc>
+    <desc forcing="SSP585">CMIP6 SSP5-8.5 forcing</desc>
     <desc cpl="BGC[%BDRD][%BPRP]">Biogeochemistry intercomponent </desc>
     <desc option="BDRD"> with diagnostic CO2</desc>
     <desc option="BPRP"> with prognostic CO2 </desc>
@@ -140,9 +144,11 @@
     <values match="last">
       <value compset="_CAM">CO2A</value>
       <value compset="_DATM">none</value>
-      <value compset="_DATM%CPLHIST.+POP\d">CO2A</value>
+      <value compset="_DATM%CPLHIST.*_POP2%[^_]*ECO">CO2A</value>
+      <value compset="^OMIP_DATM%IAF.*_POP2%[^_]*ECO">CO2A</value>
+      <value compset="^OMIP_DATM%JRA.*_POP2%[^_]*ECO">CO2A</value>
       <value compset="HIST.*_DATM.*_CLM">CO2A</value>
-      <value compset="RCP.*_DATM.*_CLM">CO2A</value>
+      <value compset="SSP.*_DATM.*_CLM">CO2A</value>
       <value compset="_BGC%BPRP">CO2C</value>
       <value compset="_BGC%BDRD">CO2C</value>
     </values>
@@ -280,6 +286,7 @@
       <value compset="_DLND.*_CISM\d">1</value>
       <value compset="_XOCN">$ATM_NCPL</value>
       <value compset="_SOCN">$ATM_NCPL</value>
+      <value compset="_NEMO">24</value>
     </values>
     <group>run_coupling</group>
     <file>env_run.xml</file>
@@ -363,6 +370,7 @@
       <value compset="DATM.+POP\d">TRUE</value>
       <value compset="DATM.+DOCN%IAF">TRUE</value>
       <value compset="DATM%CPLHIST.+POP\d">FALSE</value>
+      <value compset="DOCN%AQP11">TRUE</value>
     </values>
     <group>run_component_cpl</group>
     <file>env_run.xml</file>
@@ -490,7 +498,8 @@
     <default_value>284.7</default_value>
     <values match="last">
       <value compset="^2000">367.0</value>
-      <value compset="DATM.*POP2%ECO">284.7</value>
+      <value compset="DATM.*_POP2%[^_]*ECO">284.317</value>
+      <value compset="DATM.*_POP2%[^_]*ECOCESM20">284.7</value>
     </values>
     <group>run_co2</group>
     <file>env_run.xml</file>
