@@ -241,7 +241,7 @@ def check_all_input_data(
     """
     # Run the entire impl in a SharedArea to help avoid permission problems
     with SharedArea():
-        _check_all_input_data_impl(
+        return _check_all_input_data_impl(
             self, protocol, address, input_data_root, data_list_dir, download, chksum
         )
 
@@ -604,7 +604,7 @@ def check_input_data(
     """
     # Run the entire impl in a SharedArea to help avoid permission problems
     with SharedArea():
-        _check_input_data_impl(
+        return _check_input_data_impl(
             case,
             protocol,
             address,
