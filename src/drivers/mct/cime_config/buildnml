@@ -7,7 +7,7 @@
 # Disable these because this is our standard setup
 # pylint: disable=wildcard-import,unused-wildcard-import,wrong-import-position
 
-import os, sys, glob, itertools, re
+import os, sys, glob, itertools, re, fileinput
 
 _CIMEROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..","..","..","..")
 sys.path.append(os.path.join(_CIMEROOT, "scripts", "Tools"))
@@ -308,43 +308,80 @@ def _create_component_modelio_namelists(case, files):
     if case.get_value("MULTI_DRIVER"):
         maxinst = case.get_value("NINST_MAX")
 
+    # If all modelio namelist files already exist, this script will update the logfile name and leave everything else the same.
+    # If any files do not exist, they will all be generated in the traditional (and expensive) way
     for model in case.get_values("COMP_CLASSES"):
         model = model.lower()
-        with NamelistGenerator(case, definition_file) as nmlgen:
-            config = {}
-            config['component'] = model
-            entries = nmlgen.init_defaults(infiles, config, skip_entry_loop=True)
-            if maxinst == 1 and model != 'cpl':
-                inst_count = case.get_value("NINST_" + model.upper())
-            else:
-                inst_count = maxinst
 
-            inst_string = ""
-            inst_index = 1
-            while inst_index <= inst_count:
-                # determine instance string
-                if inst_count > 1:
-                    inst_string = '_{:04d}'.format(inst_index)
+        if maxinst == 1 and model != 'cpl':
+            inst_count = case.get_value("NINST_" + model.upper())
+        else:
+            inst_count = maxinst
 
-                # set default values
-                for entry in entries:
-                    nmlgen.add_default(entry)
+        allExist = True
 
-                # overwrite defaults
-                moddiri = case.get_value('EXEROOT') + "/" + model
-                nmlgen.set_value('diri', moddiri)
+        inst_string = ""
+        inst_index = 1
+        while inst_index <= inst_count:
+            if inst_count > 1:
+                inst_string = '_{:04d}'.format(inst_index)
 
-                moddiro = case.get_value('RUNDIR')
-                nmlgen.set_value('diro', moddiro)
+            modelio_file = model + "_modelio.nml" + inst_string
 
+            mfile = os.path.join(confdir, modelio_file)
+
+            # if the namelist already exists, update the logfile line only and pass the other lines through
+            if os.path.exists(mfile):
                 logfile = model + inst_string + ".log." + str(lid)
-                nmlgen.set_value('logfile', logfile)
+                # update the logfile in place
+                for line in fileinput.input(mfile,inplace=1):
+                    if 'logfile' in line:
+                        logline = '  logfile = "' + logfile + '"'
+                        # Print adds a newline character
+                        print(logline)
+                    else:
+                        # line already has a newline character
+                        sys.stdout.write(line)
+            else:
+                print('Could not find file ' + str(mfile))
+                allExist = False
+                break
 
-                # Write output file
-                modelio_file = model + "_modelio.nml" + inst_string
-                nmlgen.write_modelio_file(os.path.join(confdir, modelio_file))
+            inst_index = inst_index + 1
 
-                inst_index = inst_index + 1
+        if not allExist:
+            print('Generating modelio namelists for model ' + str(model))
+            with NamelistGenerator(case, definition_file) as nmlgen:
+                config = {}
+                config['component'] = model
+                entries = nmlgen.init_defaults(infiles, config, skip_entry_loop=True)
+
+                inst_string = ""
+                inst_index = 1
+                while inst_index <= inst_count:
+                    # determine instance string
+                    if inst_count > 1:
+                        inst_string = '_{:04d}'.format(inst_index)
+
+                    # set default values
+                    for entry in entries:
+                        nmlgen.add_default(entry)
+
+                    # overwrite defaults
+                    moddiri = case.get_value('EXEROOT') + "/" + model
+                    nmlgen.set_value('diri', moddiri)
+
+                    moddiro = case.get_value('RUNDIR')
+                    nmlgen.set_value('diro', moddiro)
+
+                    logfile = model + inst_string + ".log." + str(lid)
+                    nmlgen.set_value('logfile', logfile)
+
+                    # Write output file
+                    modelio_file = model + "_modelio.nml" + inst_string
+                    nmlgen.write_modelio_file(os.path.join(confdir, modelio_file))
+
+                    inst_index = inst_index + 1
 
 ###############################################################################
 def buildnml(case, caseroot, component):
