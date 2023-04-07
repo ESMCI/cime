@@ -115,9 +115,9 @@ class ArchiveBase(GenericXML):
         for ext in extensions:
             if ext.endswith("$") and has_suffix:
                 ext = ext[:-1]
-            string = model + r"\d?_?(\d{4})?\." + ext
+            string = model + r"\d?_?(\d{4})?\." + ext + r".*?"
             if has_suffix:
-                string += r".*?\." + suffix + "$"
+                string += r"\." + suffix + "$"
 
             logger.debug("Regex is {}".format(string))
             pfile = re.compile(string)
