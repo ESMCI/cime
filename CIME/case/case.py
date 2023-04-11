@@ -1564,8 +1564,6 @@ class Case(object):
                 gpu_offload in valid_gpu_offload,
                 f"Unsupported GPU programming model is given: {gpu_offload} ; valid values are {valid_gpu_offload}",
             )
-            self.set_value("GPU_TYPE", gpu_type)
-            self.set_value("GPU_OFFLOAD", gpu_offload)
             self.gpu_enabled = True
             if ngpus_per_node >= 0:
                 self.set_value(
@@ -1579,6 +1577,10 @@ class Case(object):
                 False,
                 "Both gpu-type and gpu-offload must be defined if either is defined",
             )
+
+        # Set these two GPU XML variables here to overwrite the default values
+        self.set_value("GPU_TYPE", str(gpu_type).lower())
+        self.set_value("GPU_OFFLOAD", str(gpu_offload).lower())
 
         self.initialize_derived_attributes()
 

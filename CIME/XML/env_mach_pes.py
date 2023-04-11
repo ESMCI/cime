@@ -181,12 +181,18 @@ class EnvMachPes(EnvBase):
             else:
                 tasks_per_node = self.get_value("MAX_MPITASKS_PER_NODE")
         else:
-            tasks_per_node = min(
-                self.get_value("MAX_TASKS_PER_NODE") // max_thread_count,
-                self.get_value("MAX_MPITASKS_PER_NODE"),
-                self.get_value("MAX_CPUTASKS_PER_GPU_NODE"),
-                total_tasks,
-            )
+            if self.get_value("NGPUS_PER_NODE") > 0:
+                tasks_per_node = min(
+                    self.get_value("MAX_TASKS_PER_NODE") // max_thread_count,
+                    self.get_value("MAX_CPUTASKS_PER_GPU_NODE"),
+                    total_tasks,
+                )
+            else:
+                tasks_per_node = min(
+                    self.get_value("MAX_TASKS_PER_NODE") // max_thread_count,
+                    self.get_value("MAX_MPITASKS_PER_NODE"),
+                    total_tasks,
+                )
         return tasks_per_node if tasks_per_node > 0 else 1
 
     def get_total_nodes(self, total_tasks, max_thread_count):
