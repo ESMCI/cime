@@ -1555,11 +1555,13 @@ class Case(object):
                 f"Only nvhpc and cray compilers are expected for a GPU run; the user given compiler is {compiler}, ",
             )
             valid_gpu_type = self.get_value("GPU_TYPE").split(",")
+            valid_gpu_type.remove("none")
             expect(
                 gpu_type in valid_gpu_type,
                 f"Unsupported GPU type is given: {gpu_type} ; valid values are {valid_gpu_type}",
             )
             valid_gpu_offload = self.get_value("GPU_OFFLOAD").split(",")
+            valid_gpu_offload.remove("none")
             expect(
                 gpu_offload in valid_gpu_offload,
                 f"Unsupported GPU programming model is given: {gpu_offload} ; valid values are {valid_gpu_offload}",
