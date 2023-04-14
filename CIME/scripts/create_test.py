@@ -42,6 +42,7 @@ from CIME.config import Config
 from CIME.XML.machines import Machines
 from CIME.case import Case
 from CIME.test_utils import get_tests_from_xml
+from CIME.XML.tests import Tests
 from argparse import RawTextHelpFormatter
 
 import argparse, math, glob
@@ -653,6 +654,16 @@ def parse_command_line(args, description):
 
         test_names = get_tests.get_full_test_names(
             args.testargs, mach_obj.get_machine_name(), args.compiler
+        )
+
+    if args.single_exe:
+        tests = Tests()
+
+        _, invalid = tests.support_single_exe(test_names)
+
+        expect(
+            len(invalid) == 0,
+            f"Found tests that do not support `--single-exe`: {', '.join(invalid)}",
         )
 
     expect(

@@ -3,6 +3,7 @@ Interface to the config_tests.xml file.  This class inherits from GenericEntry
 """
 from CIME.XML.standard_module_setup import *
 
+from CIME import utils
 from CIME.XML.generic_xml import GenericXML
 from CIME.XML.files import Files
 
@@ -26,6 +27,30 @@ class Tests(GenericXML):
             infile = files.get_value("CONFIG_TESTS_FILE", attribute={"component": comp})
             if os.path.isfile(infile):
                 self.read(infile)
+
+    def support_single_exe(self, testnames):
+        valid, invalid = [], []
+
+        for testname in testnames:
+            parsed_testname = utils.parse_test_name(testname)
+
+            test_node = self.get_test_node(parsed_testname[0])
+
+            try:
+                single_exe_node = self.get_child("SINGLE_EXE", root=test_node)
+            except utils.CIMEError:
+                single_exe_supported = False
+            else:
+                single_exe_supported = utils.convert_to_type(
+                    self.text(single_exe_node), "logical"
+                )
+
+            if single_exe_supported:
+                valid.append(testname)
+            else:
+                invalid.append(testname)
+
+        return valid, invalid
 
     def get_test_node(self, testname):
         logger.debug("Get settings for {}".format(testname))
