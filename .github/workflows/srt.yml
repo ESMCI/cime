@@ -41,13 +41,12 @@ jobs:
       - id: load-env
         run: |
           sudo apt-get update
-          sudo apt-get install libxml2-utils wget gfortran openmpi-bin netcdf-bin libopenmpi-dev cmake libnetcdf-dev pnetcdf-bin libpnetcdf-dev
+          sudo apt-get install libxml2-utils wget gfortran openmpi-bin netcdf-bin libopenmpi-dev cmake libnetcdf-dev pnetcdf-bin libpnetcdf-dev pylint2 pylint3
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
-        run: pip install pylint
       # - name: cache pnetcdf
       #   id: cache-pnetcdf
       #   uses: actions/cache@v2
