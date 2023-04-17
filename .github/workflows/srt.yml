@@ -25,6 +25,7 @@ jobs:
       CXX: mpicxx
       CPPFLAGS: "-I/usr/include -I/usr/local/include"
       # Versions of all dependencies can be updated here
+      FCFLAGS: "-ffree-form -ffree-line-length-none -fallow-argument-mismatch"
       PNETCDF_VERSION: pnetcdf-1.12.3
       NETCDF_FORTRAN_VERSION: v4.5.2
       NETCDF_C_PATH: /usr
