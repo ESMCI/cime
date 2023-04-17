@@ -41,13 +41,13 @@ jobs:
       - id: load-env
         run: |
           sudo apt-get update
-          sudo apt-get install libxml2-utils pylint wget gfortran openmpi-bin netcdf-bin libopenmpi-dev cmake libnetcdf-dev pnetcdf-bin libpnetcdf-dev
+          sudo apt-get install libxml2-utils wget gfortran openmpi-bin netcdf-bin libopenmpi-dev cmake libnetcdf-dev pnetcdf-bin libpnetcdf-dev
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
-
+        run: pip install pylint
       # - name: cache pnetcdf
       #   id: cache-pnetcdf
       #   uses: actions/cache@v2
@@ -102,11 +102,6 @@ jobs:
           path: $HOME/cesm/inputdata
           key: inputdata
 #
-#      The following can be used to ssh to the testnode for debugging
-#      see https://github.com/mxschmitt/action-tmate for details
-#      - name: Setup tmate session
-#        uses: mxschmitt/action-tmate@v3
-
       - name: scripts regression tests
         run: |
           mkdir -p $HOME/cesm/scratch
@@ -119,6 +114,6 @@ jobs:
 
 #     the following can be used by developers to login to the github server in case of errors
 #     see https://github.com/marketplace/actions/debugging-with-tmate for further details
-#      - name: Setup tmate session
-#        if: ${{ failure() }}
-#        uses: mxschmitt/action-tmate@v3
+      - name: Setup tmate session
+        if: ${{ failure() }}
+        uses: mxschmitt/action-tmate@v3
