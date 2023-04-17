@@ -1367,6 +1367,11 @@ using a fortran linker.
   </SLIBS>
 </compiler>
 
+<compiler COMPILER="gnu" MACH="ubuntu-latest">
+  <FFLAGS>
+    <append> -fallow-argument-mismatch </append>
+  </FFLAGS>
+</compiler>
 <compiler MACH="ubuntu-latest">
   <SLIBS>
     <append>-L$(NETCDF)/lib -lnetcdff -L$(NETCDF)/lib -lnetcdf -Wl,-rpath -Wl,$(NETCDF)/lib</append>
