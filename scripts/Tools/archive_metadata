@@ -753,9 +753,9 @@ def check_svn():
     result = ''
     try:
         result = subprocess.check_output(cmd)
-    except subprocess.CalledProcessError as cperror:
+    except subprocess.CalledProcessError as error:
         msg = _svn_error_template.substitute(function='check_svn', cmd=cmd,
-                                             error=cperror.returncode, strerror=cperror.output)
+                                             error=error.returncode, strerror=error.output)
         svn_exists = False
         logger.info(msg)
         raise_from(SVNException(msg), error)
@@ -824,10 +824,10 @@ def get_trunk_tag(case_dict, username, password):
     result = ''
     try:
         result = subprocess.check_output(cmd)
-    except subprocess.CalledProcessError as cperror:
+    except subprocess.CalledProcessError as error:
         cmd_nopasswd = ['svn', 'list', svn_repo, '--username', username, '--password', '******']
         msg = _call_template.substitute(function='get_trunk_tag', cmd=cmd_nopasswd,
-                                        error=cperror.returncode, strerror=cperror.output)
+                                        error=error.returncode, strerror=error.output)
         logger.warning(msg)
         raise_from(SVNException(msg), error)
 
@@ -852,10 +852,10 @@ def checkout_repo(case_dict, username, password):
     cmd = ['svn', 'co', '--username', username, '--password', password, svn_repo, '.']
     try:
         subprocess.check_call(cmd)
-    except subprocess.CalledProcessError as cperror:
+    except subprocess.CalledProcessError as error:
         cmd_nopasswd = ['svn', 'co', '--username', username, '--password', '******', svn_repo, '.']
         msg = _call_template.substitute(function='checkout_repo', cmd=cmd_nopasswd,
-                                        error=cperror.returncode, strerror=cperror.output)
+                                        error=error.returncode, strerror=error.output)
         logger.warning(msg)
         raise_from(SVNException(msg), error)
 
@@ -891,9 +891,9 @@ def update_repo_add_file(filename, dir1, dir2):
         cmd = ['svn', 'add', '--parents', dest]
         try:
             subprocess.check_call(cmd)
-        except subprocess.CalledProcessError as cperror:
+        except subprocess.CalledProcessError as error:
             msg = _call_template.substitute(function='update_lcoal_repo', cmd=cmd,
-                                            error=cperror.returncode, strerror=cperror.output)
+                                            error=error.returncode, strerror=error.output)
             logger.warning(msg)
             raise_from(SVNException(msg), error)
 
@@ -911,9 +911,9 @@ def update_repo_rm_file(filename, dir1, dir2):
         cmd = ['svn', 'rm', dest]
         try:
             subprocess.check_call(cmd)
-        except subprocess.CalledProcessError as cperror:
+        except subprocess.CalledProcessError as error:
             msg = _call_template.substitute(function='update_lcoal_repo', cmd=cmd,
-                                            error=cperror.returncode, strerror=cperror.output)
+                                            error=error.returncode, strerror=error.output)
             logger.warning(msg)
             raise_from(SVNException(msg), error)
 
@@ -959,9 +959,9 @@ def compare_dir_trees(dir1, dir2, archive_list):
                 cmd = ['svn', 'add', new_dir2]
                 try:
                     subprocess.check_call(cmd)
-                except subprocess.CalledProcessError as cperror:
+                except subprocess.CalledProcessError as error:
                     msg = _call_template.substitute(function='update_lcoal_repo', cmd=cmd,
-                                                    error=cperror.returncode, strerror=cperror.output)
+                                                    error=error.returncode, strerror=error.output)
                     logger.warning(msg)
                     raise_from(SVNException(msg), error)
 
@@ -1031,9 +1031,9 @@ def update_local_repo(case_dict, ignore_logs, ignore_timing):
             cmd = ['svn', 'delete', './logs']
             try:
                 subprocess.check_call(cmd)
-            except subprocess.CalledProcessError as cperror:
+            except subprocess.CalledProcessError as error:
                 msg = _call_template.substitute(function='update_lcoal_repo', cmd=cmd,
-                                                error=cperror.returncode, strerror=cperror.output)
+                                                error=error.returncode, strerror=error.output)
                 logger.warning(msg)
                 raise_from(SVNException(msg), error)
 
@@ -1048,9 +1048,9 @@ def update_local_repo(case_dict, ignore_logs, ignore_timing):
             cmd = ['svn', 'delete', './logs']
             try:
                 subprocess.check_call(cmd)
-            except subprocess.CalledProcessError as cperror:
+            except subprocess.CalledProcessError as error:
                 msg = _call_template.substitute(function='update_lcoal_repo', cmd=cmd,
-                                                error=cperror.returncode, strerror=cperror.output)
+                                                error=error.returncode, strerror=error.output)
                 logger.warning(msg)
                 raise_from(SVNException(msg), error)
     else:
@@ -1084,9 +1084,9 @@ def update_local_repo(case_dict, ignore_logs, ignore_timing):
             cmd = ['svn', 'delete', './timing']
             try:
                 subprocess.check_call(cmd)
-            except subprocess.CalledProcessError as cperror:
+            except subprocess.CalledProcessError as error:
                 msg = _call_template.substitute(function='update_lcoal_repo', cmd=cmd,
-                                                error=cperror.returncode, strerror=cperror.output)
+                                                error=error.returncode, strerror=error.output)
                 logger.warning(msg)
                 raise_from(SVNException(msg), error)
     else:
@@ -1246,12 +1246,12 @@ def checkin_trunk(case_dict, svn_cmd, message, username, password):
                '--username', username, '--password', password, '--message', msg]
         try:
             subprocess.check_call(cmd)
-        except subprocess.CalledProcessError as cperror:
+        except subprocess.CalledProcessError as error:
             cmd_nopasswd = ['svn', 'mkdir', '--parents', svn_repo,
                             '--username', username, '--password', '******',
                             '--message', msg]
             msg = _call_template.substitute(function='checkin_trunk', cmd=cmd_nopasswd,
-                                            error=cperror.returncode, strerror=cperror.output)
+                                            error=error.returncode, strerror=error.output)
             logger.warning(msg)
             raise_from(SVNException(msg), error)
 
@@ -1262,11 +1262,11 @@ def checkin_trunk(case_dict, svn_cmd, message, username, password):
                '--password', password, '--message', msg]
         try:
             subprocess.check_call(cmd)
-        except subprocess.CalledProcessError as cperror:
+        except subprocess.CalledProcessError as error:
             cmd_nopasswd = ['svn', 'mkdir', tags, '--username', username,
                             '--password', '******', '--message', msg]
             msg = _call_template.substitute(function='checkin_trunk', cmd=cmd_nopasswd,
-                                            error=cperror.returncode, strerror=cperror.output)
+                                            error=error.returncode, strerror=error.output)
             logger.warning(msg)
             raise_from(SVNException(msg), error)
 
@@ -1277,11 +1277,11 @@ def checkin_trunk(case_dict, svn_cmd, message, username, password):
     # check-in the trunk to svn
     try:
         subprocess.check_call(cmd)
-    except subprocess.CalledProcessError as cperror:
+    except subprocess.CalledProcessError as error:
         cmd_nopasswd = ['svn', svn_cmd, '--username', username,
                         '--password', '******', '.', '--message', msg]
         msg = _call_template.substitute(function='checkin_trunk', cmd=cmd_nopasswd,
-                                        error=cperror.returncode, strerror=cperror.output)
+                                        error=error.returncode, strerror=error.output)
         logger.warning(msg)
         raise_from(SVNException(msg), error)
 
@@ -1303,11 +1303,11 @@ def create_tag(case_dict, new_tag, username, password):
            svn_repo, svn_repo_tag, '--message', msg]
     try:
         subprocess.check_call(cmd)
-    except subprocess.CalledProcessError as cperror:
+    except subprocess.CalledProcessError as error:
         cmd_nopasswd = ['svn', 'copy', '--username', username, '--password', '******',
                         svn_repo, svn_repo_tag, '--message', msg]
         msg = _call_template.substitute(function='checkin_trunk', cmd=cmd_nopasswd,
-                                        error=cperror.returncode, strerror=cperror.output)
+                                        error=error.returncode, strerror=error.output)
         logger.warning(msg)
         raise_from(SVNException(msg), error)
 

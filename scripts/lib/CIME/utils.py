@@ -122,8 +122,8 @@ def expect(condition, error_msg, exc_type=SystemExit, error_prefix="ERROR:"):
     warnings.filterwarnings("ignore")
     if not condition:
         if logger.isEnabledFor(logging.DEBUG):
-            import pdb
-            pdb.set_trace()
+            import traceback
+            traceback.print_stack()
         try:
             msg = str(error_prefix + " " + error_msg)
         except UnicodeEncodeError:
