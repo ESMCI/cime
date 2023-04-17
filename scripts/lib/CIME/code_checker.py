@@ -19,7 +19,7 @@ def _run_pylint(on_file, interactive):
 
     cmd_options = " --disable=I,C,R,logging-not-lazy,wildcard-import,unused-wildcard-import"
     cmd_options += ",fixme,broad-except,bare-except,eval-used,exec-used,global-statement"
-    cmd_options += ",logging-format-interpolation,no-name-in-module"
+    cmd_options += ",logging-format-interpolation,no-name-in-module,unspecified-encoding"
     cimeroot = get_cime_root()
 
     if "scripts/Tools" in on_file:
