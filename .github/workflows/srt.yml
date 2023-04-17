@@ -25,7 +25,7 @@ jobs:
       CXX: mpicxx
       CPPFLAGS: "-I/usr/include -I/usr/local/include"
       # Versions of all dependencies can be updated here
-      PNETCDF_VERSION: pnetcdf-1.12.1
+      PNETCDF_VERSION: pnetcdf-1.12.3
       NETCDF_FORTRAN_VERSION: v4.5.2
       NETCDF_C_PATH: /usr
       NETCDF_FORTRAN_PATH: ${HOME}/netcdf-fortran
@@ -40,31 +40,31 @@ jobs:
       - id: load-env
         run: |
           sudo apt-get update
-          sudo apt-get install libxml2-utils pylint wget gfortran openmpi-bin netcdf-bin libopenmpi-dev cmake libnetcdf-dev
+          sudo apt-get install libxml2-utils pylint wget gfortran openmpi-bin netcdf-bin libopenmpi-dev cmake libnetcdf-dev pnetcdf-bin libpnetcdf-dev
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: cache pnetcdf
-        id: cache-pnetcdf
-        uses: actions/cache@v2
-        with:
-          path: ~/pnetcdf
-          key: ${{ runner.os }}-${{ env.PNETCDF_VERSION}}-pnetcdf-redo
+      # - name: cache pnetcdf
+      #   id: cache-pnetcdf
+      #   uses: actions/cache@v2
+      #   with:
+      #     path: ~/pnetcdf
+      #     key: ${{ runner.os }}-${{ env.PNETCDF_VERSION}}-pnetcdf
 
-      - name: pnetcdf build
-        if: steps.cache-pnetcdf.outputs.cache-hit != 'true'
-        run: |
-          wget https://parallel-netcdf.github.io/Release/${{ env.PNETCDF_VERSION }}.tar.gz
-          tar -xzvf ${{ env.PNETCDF_VERSION }}.tar.gz
-          ls -l
-          pushd ${{ env.PNETCDF_VERSION }}
-          ./configure --prefix=$HOME/pnetcdf --enable-shared --disable-cxx
-          make
-          make install
-          popd
+      # - name: pnetcdf build
+      #   if: steps.cache-pnetcdf.outputs.cache-hit != 'true'
+      #   run: |
+      #     wget https://parallel-netcdf.github.io/Release/${{ env.PNETCDF_VERSION }}.tar.gz
+      #     tar -xzvf ${{ env.PNETCDF_VERSION }}.tar.gz
+      #     ls -l
+      #     pushd ${{ env.PNETCDF_VERSION }}
+      #     ./configure --prefix=$HOME/pnetcdf --enable-shared --disable-cxx
+      #     make
+      #     make install
+      #     popd
 
       - name: Cache netcdf-fortran
         id: cache-netcdf-fortran
