@@ -79,7 +79,7 @@ class _TimingParser:
                 )
 
     def gettime2(self, heading_padded):
-        if self._driver == "mct":
+        if self._driver == "mct" or self._driver == "moab":
             return self._gettime2_mct(heading_padded)
         elif self._driver == "nuopc":
             if self.version < 0:
@@ -125,7 +125,7 @@ class _TimingParser:
         return (0, 0)
 
     def gettime(self, heading_padded):
-        if self._driver == "mct":
+        if self._driver == "mct" or self._driver == "moab":
             return self._gettime_mct(heading_padded)
         elif self._driver == "nuopc":
             if self.version < 0:
@@ -394,7 +394,7 @@ class _TimingParser:
             inst_label = "_{:04d}".format(inst)
         else:
             inst_label = ""
-        if self._driver == "mct":
+        if self._driver == "mct" or self._driver == "moab":
             binfilename = os.path.join(
                 rundir, "timing", "model_timing{}_stats".format(inst_label)
             )
@@ -449,7 +449,7 @@ class _TimingParser:
             logger.warning("Unknown NCPL_BASE_PERIOD={}".format(ncpl_base_period))
 
         # at this point the routine becomes driver specific
-        if self._driver == "mct":
+        if self._driver == "mct" or self._driver == "moab":
             nprocs, ncount = self.gettime2("CPL:CLOCK_ADVANCE ")
             nsteps = ncount / nprocs
         elif self._driver == "nuopc":
@@ -488,7 +488,7 @@ class _TimingParser:
         self.write("  Curr Date   : {}\n".format(now))
         if self._driver == "nuopc":
             self.write("  Driver      : CMEPS\n")
-        elif self._driver == "mct":
+        elif self._driver == "mct" or self._driver == "moab":
             self.write("  Driver      : CPL7\n")
 
         self.write("  grid        : {}\n".format(grid))
@@ -546,7 +546,7 @@ class _TimingParser:
             fmax = self.gettime("[ensemble] FinalizePhase1")[1]
             xmax = self.getCOMMtime(inst_label[1:])
 
-        if self._driver == "mct":
+        if self._driver == "mct" or self._driver == "moab":
             for k in components:
                 if k != "CPL":
                     m = self.models[k]
@@ -619,7 +619,7 @@ class _TimingParser:
         self.write("    Final Time  :  {:10.3f} seconds \n".format(fmax))
 
         self.write("\n")
-        if self._driver == "mct":
+        if self._driver == "mct" or self._driver == "moab":
             self.write(
                 "    Actual Ocn Init Wait Time     :  {:10.3f} seconds \n".format(
                     ocnwaittime

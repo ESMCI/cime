@@ -66,25 +66,24 @@ def _download_checksum_file(rundir):
             os.rename(full_path, tmpfile)
         # Use umask to make sure files are group read/writable. As long as parent directories
         # have +s, then everything should work.
-        with SharedArea():
-            success = server.getfile(rel_path, new_file)
-            if success:
-                _reformat_chksum_file(full_path, new_file)
-                if tmpfile:
-                    _merge_chksum_files(full_path, tmpfile)
-                chksum_hash.clear()
+        success = server.getfile(rel_path, new_file)
+        if success:
+            _reformat_chksum_file(full_path, new_file)
+            if tmpfile:
+                _merge_chksum_files(full_path, tmpfile)
+            chksum_hash.clear()
+        else:
+            if tmpfile and os.path.isfile(tmpfile):
+                os.rename(tmpfile, full_path)
+                logger.warning(
+                    "Could not automatically download file "
+                    + full_path
+                    + " Restoring existing version."
+                )
             else:
-                if tmpfile and os.path.isfile(tmpfile):
-                    os.rename(tmpfile, full_path)
-                    logger.warning(
-                        "Could not automatically download file "
-                        + full_path
-                        + " Restoring existing version."
-                    )
-                else:
-                    logger.warning(
-                        "Could not automatically download file {}".format(full_path)
-                    )
+                logger.warning(
+                    "Could not automatically download file {}".format(full_path)
+                )
     return chksum_found
 
 
@@ -154,36 +153,30 @@ def _download_if_in_repo(
 
     # Use umask to make sure files are group read/writable. As long as parent directories
     # have +s, then everything should work.
-    with SharedArea():
-        if isdirectory:
-            success = server.getdirectory(rel_path, full_path + ".tmp")
-            # this is intended to prevent a race condition in which
-            # one case attempts to use a refdir before another one has
-            # completed the download
-            if success:
-                os.rename(full_path + ".tmp", full_path)
-            else:
-                shutil.rmtree(full_path + ".tmp")
+    if isdirectory:
+        success = server.getdirectory(rel_path, full_path + ".tmp")
+        # this is intended to prevent a race condition in which
+        # one case attempts to use a refdir before another one has
+        # completed the download
+        if success:
+            os.rename(full_path + ".tmp", full_path)
         else:
-            success = server.getfile(rel_path, full_path)
+            shutil.rmtree(full_path + ".tmp")
+    else:
+        success = server.getfile(rel_path, full_path)
+
     return success
 
 
-def check_all_input_data(
+def _check_all_input_data_impl(
     self,
-    protocol=None,
-    address=None,
-    input_data_root=None,
-    data_list_dir="Buildconf",
-    download=True,
-    chksum=False,
+    protocol,
+    address,
+    input_data_root,
+    data_list_dir,
+    download,
+    chksum,
 ):
-    """
-    Read through all files of the form *.input_data_list in the data_list_dir directory.  These files
-    contain a list of input and boundary files needed by each model component.  For each file in the
-    list confirm that it is available in input_data_root and if not (optionally download it from a
-    server at address using protocol.  Perform a chksum of the downloaded file.
-    """
     success = False
     if protocol is not None and address is not None:
         success = self.check_input_data(
@@ -229,6 +222,28 @@ def check_all_input_data(
     )
     self.stage_refcase(input_data_root=input_data_root, data_list_dir=data_list_dir)
     return success
+
+
+def check_all_input_data(
+    self,
+    protocol=None,
+    address=None,
+    input_data_root=None,
+    data_list_dir="Buildconf",
+    download=True,
+    chksum=False,
+):
+    """
+    Read through all files of the form *.input_data_list in the data_list_dir directory.  These files
+    contain a list of input and boundary files needed by each model component.  For each file in the
+    list confirm that it is available in input_data_root and if not (optionally download it from a
+    server at address using protocol.  Perform a chksum of the downloaded file.
+    """
+    # Run the entire impl in a SharedArea to help avoid permission problems
+    with SharedArea():
+        return _check_all_input_data_impl(
+            self, protocol, address, input_data_root, data_list_dir, download, chksum
+        )
 
 
 def _downloadfromserver(case, input_data_root, data_list_dir, attributes=None):
@@ -352,25 +367,18 @@ def stage_refcase(self, input_data_root=None, data_list_dir=None):
     return True
 
 
-def check_input_data(
+def _check_input_data_impl(
     case,
-    protocol="svn",
-    address=None,
-    input_data_root=None,
-    data_list_dir="Buildconf",
-    download=False,
-    user=None,
-    passwd=None,
-    chksum=False,
-    ic_filepath=None,
+    protocol,
+    address,
+    input_data_root,
+    data_list_dir,
+    download,
+    user,
+    passwd,
+    chksum,
+    ic_filepath,
 ):
-    """
-    For a given case check for the relevant input data as specified in data_list_dir/*.input_data_list
-    in the directory input_data_root, if not found optionally download it using the servers specified
-    in config_inputdata.xml.  If a chksum file is available compute the chksum and compare it to that
-    in the file.
-    Return True if no files missing
-    """
     case.load_env(reset=True)
     rundir = case.get_value("RUNDIR")
     # Fill in defaults as needed
@@ -573,6 +581,41 @@ def check_input_data(
                     )
 
     return no_files_missing
+
+
+def check_input_data(
+    case,
+    protocol="svn",
+    address=None,
+    input_data_root=None,
+    data_list_dir="Buildconf",
+    download=False,
+    user=None,
+    passwd=None,
+    chksum=False,
+    ic_filepath=None,
+):
+    """
+    For a given case check for the relevant input data as specified in data_list_dir/*.input_data_list
+    in the directory input_data_root, if not found optionally download it using the servers specified
+    in config_inputdata.xml.  If a chksum file is available compute the chksum and compare it to that
+    in the file.
+    Return True if no files missing
+    """
+    # Run the entire impl in a SharedArea to help avoid permission problems
+    with SharedArea():
+        return _check_input_data_impl(
+            case,
+            protocol,
+            address,
+            input_data_root,
+            data_list_dir,
+            download,
+            user,
+            passwd,
+            chksum,
+            ic_filepath,
+        )
 
 
 def verify_chksum(input_data_root, rundir, filename, isdirectory):

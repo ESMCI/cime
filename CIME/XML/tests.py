@@ -20,19 +20,10 @@ class Tests(GenericXML):
             infile = files.get_value("CONFIG_TESTS_FILE")
         GenericXML.__init__(self, infile)
         # append any component specific config_tests.xml files
-        infiles_read = set()
         for comp in files.get_components("CONFIG_TESTS_FILE"):
             if comp is None:
                 continue
             infile = files.get_value("CONFIG_TESTS_FILE", attribute={"component": comp})
-
-            # avoid reading the same file twice; this can be an issue when, for example,
-            # multiple land components have CONFIG_TESTS_FILE entries
-            if infile in infiles_read:
-                continue
-            else:
-                infiles_read.add(infile)
-
             if os.path.isfile(infile):
                 self.read(infile)
 

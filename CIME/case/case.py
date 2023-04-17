@@ -1756,7 +1756,10 @@ class Case(object):
         if self._comp_interface == "nuopc":
             components.extend(["cdeps"])
 
-        readme_message = """Put source mods for the {component} library in this directory.
+        readme_message_start = (
+            "Put source mods for the {component} library in this directory."
+        )
+        readme_message_end = """
 
 WARNING: SourceMods are not kept under version control, and can easily
 become out of date if changes are made to the source code on which they
@@ -1790,7 +1793,18 @@ leveraging version control (git or svn).
                 # to fail).
                 readme_file = os.path.join(directory, "README")
                 with open(readme_file, "w") as fd:
-                    fd.write(readme_message.format(component=component))
+                    fd.write(readme_message_start.format(component=component))
+
+                    if component == "cdeps":
+                        readme_message_extra = """
+
+Note that this subdirectory should only contain files from CDEPS's
+dshr and streams source code directories.
+Files related to specific data models should go in SourceMods subdirectories
+for those data models (e.g., src.datm)."""
+                        fd.write(readme_message_extra)
+
+                    fd.write(readme_message_end)
 
         if config.copy_cism_source_mods:
             # Note: this is CESM specific, given that we are referencing cism explitly
