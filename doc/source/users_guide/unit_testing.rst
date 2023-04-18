@@ -35,7 +35,7 @@ These consist of:
 
 #. A Python script that provides a simple front end for the CMake-based tests.
 
-The Fortran unit tests use `pFUnit <https://github.com/Goddard-Fortran-Ecosystem/pFUnit>`_, which is a Fortran testing framework that follows conventions of other xUnit frameworks.
+The Fortran unit tests use `pFUnit <https://github.com/Goddard-Fortran-Ecosystem/pFUnit>`_, which is a Fortran testing framework that follows conventions of other xUnit frameworks. CIME's support for pFUnit requires pFUnit version 4 or greater.
 
 .. _running_unit_tests:
 
@@ -105,12 +105,11 @@ unit testing support by building pFUnit on your machine and then
 pointing to the build in your ** *MACH*_*COMPILER*.cmake** file. Those
 processes are described in the following sections.
 
-At a minimum, do a serial build of pFUnit (without MPI or OpenMP) using the default compiler on your machine.
+Follow the pFUnit build instructions below to build pFUnit using the default compiler on your machine.
 That is the default that **run_tests.py** and that is required for **scripts_regression_tests.py** to run the unit tests on your machine.
-
+For the CMake step, we typically build with ``-DSKIP_OPENMP=YES``, ``-DSKIP_MPI=YES`` and ``-DCMAKE_INSTALL_PREFIX`` set to the directory where you want pFUnit to be installed.
+(At this time, no unit tests require parallel support, so we build without MPI support to keep things simple.)
 Optionally, you can also provide pFUnit builds with other supported compilers on your machine.
-You can also provide additional pFUnit builds with other combinations of MPI and OpenMP on or off.
-At this time, however, no unit tests require parallel support so no benefit is gained by providing MPI-enabled builds.
 
 Building pFUnit
 ~~~~~~~~~~~~~~~
@@ -410,23 +409,12 @@ You can also see examples of the unit test build scripts by viewing the
 Other pFUnit documentation sources
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Extensive documentation and examples are included in the following when you obtain
-pFUnit from https://github.com/Goddard-Fortran-Ecosystem/pFUnit:
-
-* documentation/pFUnit3-ReferenceManual.pdf
-
-* Examples/
-
-* tests/
-
-The tests are tests of the pFUnit code itself, written in pFUnit. They demonstrate
-many uses of pFUnit features. Other documentation includes additional assertion
-methods that are available.
+Unfortunately, the documentation inside the pFUnit repository (in the documentation and Examples directories) is out-of-date (at least as of April, 2023): much of this documentation refers to version 3 of pFUnit, which differs in some ways from version 4. However, some working examples are provided in https://github.com/Goddard-Fortran-Ecosystem/pFUnit_demos.
 
 Documentation of the unit test build system
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The CMake build infrastructure is in **$CIMEROOT/src/externals/CMake**.
+The CMake build infrastructure is in **$CIMEROOT/CIME/non_py/src/CMake**.
 
 The infrastructure for building and running tests with **run_tests.py** is in
 **$CIMEROOT/scripts/fortran_unit_testing**. That directory also contains general

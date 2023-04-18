@@ -1,6 +1,6 @@
 module test_interpolate_point
 
-use pfunit_mod
+use funit
 
 use interpolate_1d
 
