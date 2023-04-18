@@ -257,6 +257,8 @@ class Machines(GenericXML):
             value = self.get_default_compiler()
         elif name == "MPILIB":
             value = self.get_default_MPIlib(attributes)
+        elif name == "GPU_TYPE":
+            value = self.get_default_gputype()
         else:
             node = self.get_optional_child(
                 name, root=self.machine_node, attributes=attributes
@@ -317,6 +319,23 @@ class Machines(GenericXML):
             value = self.get_field_from_list("COMPILERS")
         return value
 
+    def get_default_gputype(self):
+        """
+        Get the gpu_type to use from the list of GPU_TYPES
+        """
+        cime_config = get_cime_config()
+        if cime_config.has_option("main", "GPU_TYPE"):
+            value = cime_config.get("main", "GPU_TYPE")
+            expect(
+                self.is_valid_gpu_type(value),
+                "User-selected gpu_type {} is not supported on machine {}".format(
+                    value, self.machine
+                ),
+            )
+        else:
+            value = self.get_field_from_list("GPU_TYPES")
+        return value
+
     def get_default_MPIlib(self, attributes=None):
         """
         Get the MPILIB to use from the list of MPILIBS
@@ -337,19 +356,23 @@ class Machines(GenericXML):
         """
         return self.get_field_from_list("COMPILERS", reqval=compiler) is not None
 
-    def is_valid_MPIlib(self, mpilib, attributes=None):
+    def is_valid_gputype(self, gputype, attributes=None):
         """
         Check the MPILIB is valid for the current machine
 
-        >>> machobj = Machines(machine="cori-knl")
-        >>> machobj.is_valid_MPIlib("mpi-serial")
+        >>> machobj = Machines(machine="gust")
+        >>> machobj.is_valid_MPIlib("none")
         True
-        >>> machobj.is_valid_MPIlib("fake-mpi")
+        >>> machobj.is_valid_MPIlib("a100")
+        True
+        >>> machobj.is_valid_MPIlib("fake-gpu")
         False
         """
         return (
-            mpilib == "mpi-serial"
-            or self.get_field_from_list("MPILIBS", reqval=mpilib, attributes=attributes)
+            gputype == "none"
+            or self.get_field_from_list(
+                "GPU_TYPES", reqval=gputype, attributes=attributes
+            )
             is not None
         )
 
