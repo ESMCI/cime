@@ -1541,7 +1541,7 @@ class Case(object):
         #        3. if ngpus-per-node argument is equal to 0, it will be updated to 1 automatically.
         # ----------------------------------------------------------------------------------------------------------
         max_gpus_per_node = self.get_value("MAX_GPUS_PER_NODE")
-        if gpu_type:
+        if gpu_type and str(gpu_type).lower() != 'none':
             expect(
                 max_gpus_per_node,
                 f"GPUS are not defined for machine={machine_name} and compiler={compiler}",
@@ -1574,7 +1574,7 @@ class Case(object):
                     if ngpus_per_node <= max_gpus_per_node
                     else max_gpus_per_node,
                 )
-        elif gpu_offload:
+        elif gpu_offload and str(gpu_offload).lower() != 'none':
             expect(
                 False,
                 "Both gpu-type and gpu-offload must be defined if either is defined",
