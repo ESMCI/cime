@@ -31,6 +31,7 @@ class EnvBatch(EnvBase):
         """
         initialize an object interface to file env_batch.xml in the case directory
         """
+        self._batchtype = None
         # This arbitrary setting should always be overwritten
         self._default_walltime = "00:20:00"
         schema = os.path.join(utils.get_schema_path(), "env_batch.xsd")
