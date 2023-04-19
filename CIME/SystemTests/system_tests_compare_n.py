@@ -40,7 +40,7 @@ In addition, they MAY require the following methods:
 """
 
 from CIME.XML.standard_module_setup import *
-from CIME.SystemTests.system_tests_common import SystemTestsCommon
+from CIME.SystemTests.system_tests_common import SystemTestsCommon, fix_single_exe_case
 from CIME.case import Case
 from CIME.config import Config
 from CIME.test_status import *
@@ -504,6 +504,7 @@ class SystemTestsCompareN(SystemTestsCommon):
         self._activate_case(i)
         self._common_setup()
         self._case_setup(i)
+        fix_single_exe_case(self._cases[i])
         if i == 0:
             # Flush the case so that, if errors occur later, then at least base case is
             # in a correct, post-setup state. This is important because the mere
@@ -516,6 +517,7 @@ class SystemTestsCompareN(SystemTestsCommon):
             # This assures that case one namelists are populated
             # and creates the case.test script
             self._case.case_setup(test_mode=False, reset=True)
+            fix_single_exe_case(self._case)
         else:
             # Go back to base case to ensure that's where we are for any following code
             self._activate_case(0)

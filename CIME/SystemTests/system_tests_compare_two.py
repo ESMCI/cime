@@ -45,7 +45,7 @@ In addition, they MAY require the following methods:
 """
 
 from CIME.XML.standard_module_setup import *
-from CIME.SystemTests.system_tests_common import SystemTestsCommon
+from CIME.SystemTests.system_tests_common import SystemTestsCommon, fix_single_exe_case
 from CIME.case import Case
 from CIME.config import Config
 from CIME.test_status import *
@@ -548,12 +548,15 @@ class SystemTestsCompareTwo(SystemTestsCommon):
         # This assures that case one namelists are populated
         # and creates the case.test script
         self._case.case_setup(test_mode=False, reset=True)
+        fix_single_exe_case(self._case)
 
         # Set up case 2
         with self._case2:
             self._activate_case2()
             self._common_setup()
             self._case_two_setup()
+
+        fix_single_exe_case(self._case2)
 
         # Go back to case 1 to ensure that's where we are for any following code
         self._activate_case1()

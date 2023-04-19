@@ -36,6 +36,45 @@ logger = logging.getLogger(__name__)
 INIT_GENERATED_FILES_DIRNAME = "init_generated_files"
 
 
+def fix_single_exe_case(case):
+    """Fixes cases created with --single-exe.
+
+    When tests are created using --single-exe, the test_scheduler will set
+    `BUILD_COMPLETE` to True, but some tests require calls to `case.case_setup`
+    which can resets `BUILD_COMPLETE` to false. This function will check if a
+    case was created with `--single-exe` and ensure `BUILD_COMPLETE` is True.
+
+    Returns:
+        True when case required modification otherwise False.
+    """
+    if is_single_exe_case(case):
+        with case:
+            case.set_value("BUILD_COMPLETE", True)
+
+            return True
+
+    return False
+
+
+def is_single_exe_case(case):
+    """Determines if the case was created with the --single-exe option.
+
+    If `CASEROOT` is not part of `EXEROOT` and the `TEST` variable is True,
+    then its safe to assume the case was created with `./create_test`
+    and the `--single-exe` option.
+
+    Returns:
+        True when the case was created with `--single-exe` otherwise false.
+    """
+    caseroot = case.get_value("CASEROOT")
+
+    exeroot = case.get_value("EXEROOT")
+
+    test = case.get_value("TEST")
+
+    return caseroot not in exeroot and test
+
+
 class SystemTestsCommon(object):
     def __init__(self, case, expected=None):
         """
@@ -97,6 +136,7 @@ class SystemTestsCommon(object):
             )
             self._case.set_initial_test_values()
             self._case.case_setup(reset=True, test_mode=True)
+            fix_single_exe_case(self._case)
 
     def build(
         self,
