@@ -88,5 +88,6 @@ class TestXMLTests(unittest.TestCase):
         assert valid == []
         assert invalid == ["AAA.f19_g16.A"]
 
+
 if __name__ == "__main__":
     unittest.main()
