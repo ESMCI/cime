@@ -381,8 +381,8 @@ def get_full_test_names(testargs, machine, compiler):
     expect(compiler is not None, "Must define a compiler")
     e3sm_test_suites = get_test_suites()
 
-    tests_to_run = set()
-    negations = set()
+    tests_to_run = []
+    negations = []
 
     for testarg in testargs:
         # remove any whitespace in name
@@ -390,10 +390,10 @@ def get_full_test_names(testargs, machine, compiler):
         if testarg.startswith("^"):
             negations.add(testarg[1:])
         elif testarg in e3sm_test_suites:
-            tests_to_run.update(get_test_suite(testarg, machine, compiler))
+            tests_to_run += get_test_suite(testarg, machine, compiler)
         else:
             try:
-                tests_to_run.add(
+                tests_to_run.append(
                     CIME.utils.get_full_test_name(
                         testarg, machine=machine, compiler=compiler
                     )
@@ -406,7 +406,7 @@ def get_full_test_names(testargs, machine, compiler):
 
     for negation in negations:
         if negation in e3sm_test_suites:
-            tests_to_run -= set(get_test_suite(negation, machine, compiler))
+            tests_to_run -= get_test_suite(negation, machine, compiler)
         else:
             fullname = CIME.utils.get_full_test_name(
                 negation, machine=machine, compiler=compiler
@@ -414,7 +414,7 @@ def get_full_test_names(testargs, machine, compiler):
             if fullname in tests_to_run:
                 tests_to_run.remove(fullname)
 
-    return list(sorted(tests_to_run))
+    return tests_to_run
 
 
 ###############################################################################

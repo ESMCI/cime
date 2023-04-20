@@ -355,8 +355,8 @@ class TestScheduler(object):
                     "Use -o to avoid this error".format(existing_baselines),
                 )
 
-        if self._config.sort_tests:
-            _order_tests_by_runtime(test_names, self._baseline_root)
+        #if self._config.sort_tests:
+        #    _order_tests_by_runtime(test_names, self._baseline_root)
 
         # This is the only data that multiple threads will simultaneously access
         # Each test has it's own value and setting/retrieving items from a dict
