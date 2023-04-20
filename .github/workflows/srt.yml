@@ -25,11 +25,10 @@ jobs:
       CXX: mpicxx
       CPPFLAGS: "-I/usr/include -I/usr/local/include"
       # Versions of all dependencies can be updated here
-      PNETCDF_VERSION: pnetcdf-1.12.1
+      FCFLAGS: "-ffree-form -ffree-line-length-none -fallow-argument-mismatch"
       NETCDF_FORTRAN_VERSION: v4.5.2
       NETCDF_C_PATH: /usr
       NETCDF_FORTRAN_PATH: ${HOME}/netcdf-fortran
-      PNETCDF_PATH: ${HOME}/pnetcdf
       CIME_MODEL: cesm
 
     # Steps represent a sequence of tasks that will be executed as part of the job
@@ -40,31 +39,12 @@ jobs:
       - id: load-env
         run: |
           sudo apt-get update
-          sudo apt-get install libxml2-utils pylint wget gfortran openmpi-bin netcdf-bin libopenmpi-dev cmake libnetcdf-dev
+          sudo apt-get install libxml2-utils wget gfortran openmpi-bin netcdf-bin libopenmpi-dev cmake libnetcdf-dev pylint
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
-
-      - name: cache pnetcdf
-        id: cache-pnetcdf
-        uses: actions/cache@v2
-        with:
-          path: ~/pnetcdf
-          key: ${{ runner.os }}-${{ env.PNETCDF_VERSION}}-pnetcdf-redo
-
-      - name: pnetcdf build
-        if: steps.cache-pnetcdf.outputs.cache-hit != 'true'
-        run: |
-          wget https://parallel-netcdf.github.io/Release/${{ env.PNETCDF_VERSION }}.tar.gz
-          tar -xzvf ${{ env.PNETCDF_VERSION }}.tar.gz
-          ls -l
-          pushd ${{ env.PNETCDF_VERSION }}
-          ./configure --prefix=$HOME/pnetcdf --enable-shared --disable-cxx
-          make
-          make install
-          popd
 
       - name: Cache netcdf-fortran
         id: cache-netcdf-fortran
@@ -101,11 +81,6 @@ jobs:
           path: $HOME/cesm/inputdata
           key: inputdata
 #
-#      The following can be used to ssh to the testnode for debugging
-#      see https://github.com/mxschmitt/action-tmate for details
-#      - name: Setup tmate session
-#        uses: mxschmitt/action-tmate@v3
-
       - name: scripts regression tests
         run: |
           mkdir -p $HOME/cesm/scratch
@@ -113,11 +88,11 @@ jobs:
           cd $HOME/work/cime/cime/scripts/tests
           export NETCDF=$HOME/netcdf-fortran
           export PATH=$NETCDF/bin:$PATH
-          export LD_LIBRARY_PATH=$NETCDF/lib:$HOME/pnetcdf/lib:$LD_LIBRARY_PATH
+          export LD_LIBRARY_PATH=$NETCDF/lib:$LD_LIBRARY_PATH
           ./scripts_regression_tests.py --no-fortran-run --compiler gnu --mpilib openmpi --machine ubuntu-latest
 
 #     the following can be used by developers to login to the github server in case of errors
 #     see https://github.com/marketplace/actions/debugging-with-tmate for further details
-#      - name: Setup tmate session
-#        if: ${{ failure() }}
-#        uses: mxschmitt/action-tmate@v3
+      - name: Setup tmate session
+        if: ${{ failure() }}
+        uses: mxschmitt/action-tmate@v3
