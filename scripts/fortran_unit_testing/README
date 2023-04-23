@@ -130,55 +130,6 @@ Quick guide to the CIME unit testing framework
       Preprocesses genf90 files and puts them in the output directory. The
       named list will have generated sources appended to it.
 
-** FindpFUnit - Find module for the pFUnit library
-
-   This is a typical CMake Find module; it defines the following variables
-   with their conventional CMake meanings:
-
-    - PFUNIT_FOUND
-    - PFUNIT_LIBRARY
-    - PFUNIT_LIBRARIES
-    - PFUNIT_INCLUDE_DIR
-    - PFUNIT_INCLUDE_DIRS
-
-   Three additional, pFUnit-specific variables are defined:
-
-    - PFUNIT_MODULE_DIR :: Directory with *.mod files. This is already
-         included in PFUNIT_INCLUDE_DIRS, so you usually shouldn't need
-         this.
-    - PFUNIT_DRIVER :: Path to the pFUnit driver source.
-    - PFUNIT_PARSER :: Path to pFUnitParser.py (the pFUnit preprocessor).
-
-   If run_tests.py can find the pFUnit directory in the cmake_macros,
-   the variable $PFUNIT will be set to assist the FindpFUnit module.
-   Otherwise, you must do one of the following:
-
-    - Define the environment variable $PFUNIT with the location of the
-      installation.
-    - Put the pFUnit "bin" directory in your $PATH.
-
-** pFUnit_utils - pFUnit preprocessing and driver tools
-
-   This module aims to greatly simplify use of the pFUnit parser and
-   driver. (Currently, it assumes that both are being used.)
-
-   This module requires the variables defined by the FindpFUnit module.
-
-    - add_pFUnit_executable(name pf_file_list output_directory
-      fortran_source_list).
-
-      This function automatically processes the .pf files to create tests,
-      then links them with the Fortran files, pFUnit's library, and the
-      pFUnit driver to create a test executable with the given name.
-
-      The output_directory is a location where generated sources should be
-      placed; ${CMAKE_CURRENT_BUILD_DIR} is usually a safe place.
-
-    - define_pFUnit_failure(test_name)
-
-      This tells CTest to detect test success or failure using regular
-      expressions appropriate for pFUnit.
-
 ** Sourcelist_utils - Utilities for VPATH emulation
 
    This module provides functions for working with lists of source code
@@ -282,7 +233,7 @@ end program test_driver
 
 module test_circle
 
-use pfunit_mod
+use funit
 
 use circle, only: circle_area, pi, r8
 

@@ -35,7 +35,7 @@ These consist of:
 
 #. A Python script that provides a simple front end for the CMake-based tests.
 
-The Fortran unit tests use `pFUnit <https://github.com/Goddard-Fortran-Ecosystem/pFUnit>`_, which is a Fortran testing framework that follows conventions of other xUnit frameworks.
+The Fortran unit tests use `pFUnit <https://github.com/Goddard-Fortran-Ecosystem/pFUnit>`_, which is a Fortran testing framework that follows conventions of other xUnit frameworks. CIME's support for pFUnit requires pFUnit version 4 or greater.
 
 .. _running_unit_tests:
 
@@ -105,22 +105,24 @@ unit testing support by building pFUnit on your machine and then
 pointing to the build in your ** *MACH*_*COMPILER*.cmake** file. Those
 processes are described in the following sections.
 
-At a minimum, do a serial build of pFUnit (without MPI or OpenMP) using the default compiler on your machine.
-That is the default that **run_tests.py** and that is required for **scripts_regression_tests.py** to run the unit tests on your machine.
-
-Optionally, you can also provide pFUnit builds with other supported compilers on your machine.
-You can also provide additional pFUnit builds with other combinations of MPI and OpenMP on or off.
-At this time, however, no unit tests require parallel support so no benefit is gained by providing MPI-enabled builds.
-
 Building pFUnit
 ~~~~~~~~~~~~~~~
 
-For a serial build of pFUnit, follow these instructions:
+Follow the instructions below to build pFUnit using the default compiler on your machine.
+That is the default for **run_tests.py** and that is required for **scripts_regression_tests.py** to run the unit tests on your machine.
+For the CMake step, we typically build with ``-DSKIP_MPI=YES``, ``-DSKIP_OPENMP=YES`` and ``-DCMAKE_INSTALL_PREFIX`` set to the directory where you want pFUnit to be installed.
+(At this time, no unit tests require parallel support, so we build without MPI support to keep things simple.)
+Optionally, you can also provide pFUnit builds with other supported compilers on your machine.
 
 #. Obtain pFUnit from https://github.com/Goddard-Fortran-Ecosystem/pFUnit (see
-   https://github.com/Goddard-Fortran-Ecosystem/pFUnit#obtaining-pfunit for details; note
-   that if you have an older version of cmake you may also need to use an older version of
-   pFUnit)
+   https://github.com/Goddard-Fortran-Ecosystem/pFUnit#obtaining-pfunit for details)
+
+#. Create a directory for the build and cd to that directory:
+
+   .. code-block:: shell
+
+      > mkdir build-dir
+      > cd build-dir
 
 #. Set up your environment to be similar to the environment used in CIME system builds.
    For example, load the appropriate compilers into your path.
@@ -130,11 +132,10 @@ For a serial build of pFUnit, follow these instructions:
 
       > $CIMEROOT/CIME/scripts/configure --mpilib mpi-serial
 
-   If you are doing an MPI-enabled build, also change the ``--mpilib`` argument.
    Then source either **./.env_mach_specific.sh** or **./.env_mach_specific.csh**, depending on your shell.
 
-   On some systems, you may still need to explicitly set the ``FC`` and ``CC`` environment
-   variables, e.g., with:
+   On some systems, you may need to explicitly set the ``FC`` and ``CC`` environment
+   variables so that pFUnit's CMake build picks up the correct compilers, e.g., with:
 
    .. code-block:: shell
 
@@ -145,16 +146,14 @@ For a serial build of pFUnit, follow these instructions:
 
    .. code-block:: shell
 
-      > export PFUNIT=/glade/p/cesmdata/cseg/tools/pFUnit/pFUnit3.2.8_cheyenne_Intel17.0.1_noMPI_noOpenMP
+      > export PFUNIT=$CESMDATAROOT/tools/pFUnit/pFUnit4.7.0_cheyenne_Intel19.1.1_noMPI_noOpenMP
 
 #. Configure and build pFUnit:
 
    .. code-block:: shell
 
-      > mkdir build
-      > cd build
-      > cmake -DMPI=NO -DOPENMP=NO -DCMAKE_INSTALL_PREFIX=$PFUNIT ..
-      > make -j 4
+      > cmake -DSKIP_MPI=YES -DSKIP_OPENMP=YES -DCMAKE_INSTALL_PREFIX=$PFUNIT ..
+      > make -j 8
 
 #. Run pFUnit's self-tests:
 
@@ -168,22 +167,21 @@ For a serial build of pFUnit, follow these instructions:
 
       > make install
 
-You can repeat this process with different compiler environments and/or different choices of ``-DMPI`` and ``-DOPENMP`` in the cmake step. (Each of them can have the value ``NO`` or ``YES``.)
+You can repeat this process with different compiler environments.
 Make sure to choose a different installation directory for each build by setting the ``PFUNIT`` variable differently.
 
-Adding to the xml file
-~~~~~~~~~~~~~~~~~~~~~~
+Adding to the appropriate cmake file
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 After you build pFUnit, tell CIME about your build or builds.
-To do this, specify the appropriate path(s) using the ``PFUNIT_PATH`` element in ** *MACH*_*COMPILER*.cmake** file.
+To do this, specify the appropriate path using the ``PFUNIT_PATH`` CMake variable in the ** *MACH*_*COMPILER*.cmake** file.
+For a build with no MPI or openMP support (as recommended above), the block should look like this (with the actual path replaced with the PFUNIT path you specified when doing the build):
 
-The ``MPILIB`` attribute should be either:
+   .. code-block:: cmake
 
-* ``mpi-serial`` for a pFUnit build where ``-DMPI=NO``, or
-
-* the name of the MPI library you used for a pFUnit build where ``-DMPI=YES``. (For example, you might use ``mpich``, which should be one of the machine's MPI libraries specified by ``MPILIBS`` in **config_machines.xml**.)
-
-The ``compile_threaded`` attribute should be either ``TRUE`` or ``FALSE`` depending on the value of ``-DOPENMP``.
+      if (MPILIB STREQUAL mpi-serial AND NOT compile_threaded)
+        set(PFUNIT_PATH "$ENV{CESMDATAROOT}/tools/pFUnit/pFUnit4.7.0_cheyenne_Intel19.1.1_noMPI_noOpenMP")
+      endif()
 
 Once you have specified the path for your build(s), you should be able to run the unit tests by following the instructions in :ref:`running_unit_tests`.
 
@@ -410,23 +408,12 @@ You can also see examples of the unit test build scripts by viewing the
 Other pFUnit documentation sources
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Extensive documentation and examples are included in the following when you obtain
-pFUnit from https://github.com/Goddard-Fortran-Ecosystem/pFUnit:
-
-* documentation/pFUnit3-ReferenceManual.pdf
-
-* Examples/
-
-* tests/
-
-The tests are tests of the pFUnit code itself, written in pFUnit. They demonstrate
-many uses of pFUnit features. Other documentation includes additional assertion
-methods that are available.
+Unfortunately, the documentation inside the pFUnit repository (in the documentation and Examples directories) is out-of-date (at least as of April, 2023): much of this documentation refers to version 3 of pFUnit, which differs in some ways from version 4. However, some working examples are provided in https://github.com/Goddard-Fortran-Ecosystem/pFUnit_demos.
 
 Documentation of the unit test build system
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The CMake build infrastructure is in **$CIMEROOT/src/externals/CMake**.
+The CMake build infrastructure is in **$CIMEROOT/CIME/non_py/src/CMake**.
 
 The infrastructure for building and running tests with **run_tests.py** is in
 **$CIMEROOT/scripts/fortran_unit_testing**. That directory also contains general

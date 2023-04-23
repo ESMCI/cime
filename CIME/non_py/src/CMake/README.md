@@ -14,15 +14,11 @@ Find modules for specific libraries:
 
 FindNETCDF
 
-FindpFUnit
-
 FindPnetcdf
 
 Utility modules:
 
 genf90_utils - Generate Fortran code from genf90.pl templates.
-
-pFUnit_utils - Create executables using the pFUnit parser and driver.
 
 Sourcelist_utils - Use source file lists defined over multiple directories.
 
