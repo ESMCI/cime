@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CIME.tests.utils &mdash; CIME master documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/pop_ver.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            CIME
+          </a>
+              <div class="version">
+                master
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../what_cime/index.html">What is CIME?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../users_guide/index.html">Case Control System Part 1: Basic Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../users_guide/index.html#case-control-system-part-2-configuration-porting-testing-and-use-cases">Case Control System Part 2: Configuration, Porting, Testing and Use Cases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../build_cpl/index.html">Building a Coupled Model with CIME</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../misc_tools/index.html">Miscellaneous Tools</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../glossary/index.html">Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Tools_user/index.html">User Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../xml_files/index.html">XML Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../CIME_api/modules.html">CIME</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Tools_api/modules.html">Tools</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">CIME</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">CIME.tests.utils</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for CIME.tests.utils</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">io</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">tempfile</span>
+<span class="kn">import</span> <span class="nn">signal</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Iterable</span>
+
+<span class="kn">from</span> <span class="nn">CIME</span> <span class="kn">import</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">CIME</span> <span class="kn">import</span> <span class="n">test_status</span>
+<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="n">expect</span>
+
+<span class="n">MACRO_PRESERVE_ENV</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;ADDR2LINE&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;AR&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;AS&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CC&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CC_FOR_BUILD&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CMAKE_ARGS&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CONDA_EXE&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CONDA_PYTHON_EXE&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CPP&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CXX&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CXXFILT&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CXX_FOR_BUILD&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ELFEDIT&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;F77&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;F90&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;F95&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;FC&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;GCC&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;GCC_AR&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;GCC_NM&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;GCC_RANLIB&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;GFORTRAN&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;GPROF&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;GXX&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;LD&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;LD_GOLD&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;NM&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;OBJCOPY&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;OBJDUMP&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;PATH&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;RANLIB&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;READELF&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;SIZE&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;STRINGS&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;STRIP&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="parse_test_status"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.utils.parse_test_status">[docs]</a><span class="k">def</span> <span class="nf">parse_test_status</span><span class="p">(</span><span class="n">line</span><span class="p">):</span>
+    <span class="n">status</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">test</span><span class="p">,</span> <span class="n">status</span></div>
+
+
+<div class="viewcode-block" id="make_fake_teststatus"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.utils.make_fake_teststatus">[docs]</a><span class="k">def</span> <span class="nf">make_fake_teststatus</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">testname</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">phase</span><span class="p">):</span>
+    <span class="n">expect</span><span class="p">(</span><span class="n">phase</span> <span class="ow">in</span> <span class="n">test_status</span><span class="o">.</span><span class="n">CORE_PHASES</span><span class="p">,</span> <span class="s2">&quot;Bad phase &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">phase</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">test_status</span><span class="o">.</span><span class="n">TestStatus</span><span class="p">(</span><span class="n">test_dir</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">test_name</span><span class="o">=</span><span class="n">testname</span><span class="p">)</span> <span class="k">as</span> <span class="n">ts</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">core_phase</span> <span class="ow">in</span> <span class="n">test_status</span><span class="o">.</span><span class="n">CORE_PHASES</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">core_phase</span> <span class="o">==</span> <span class="n">phase</span><span class="p">:</span>
+                <span class="n">ts</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span>
+                    <span class="n">core_phase</span><span class="p">,</span>
+                    <span class="n">status</span><span class="p">,</span>
+                    <span class="n">comments</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;time=42&quot;</span> <span class="k">if</span> <span class="n">phase</span> <span class="o">==</span> <span class="n">test_status</span><span class="o">.</span><span class="n">RUN_PHASE</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
+                <span class="p">)</span>
+                <span class="k">break</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ts</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span>
+                    <span class="n">core_phase</span><span class="p">,</span>
+                    <span class="n">test_status</span><span class="o">.</span><span class="n">TEST_PASS_STATUS</span><span class="p">,</span>
+                    <span class="n">comments</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;time=42&quot;</span> <span class="k">if</span> <span class="n">phase</span> <span class="o">==</span> <span class="n">test_status</span><span class="o">.</span><span class="n">RUN_PHASE</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
+                <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MockMachines"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.utils.MockMachines">[docs]</a><span class="k">class</span> <span class="nc">MockMachines</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A mock version of the Machines object to simplify testing.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">os_</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Store the name.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">os</span> <span class="o">=</span> <span class="n">os_</span>
+
+<div class="viewcode-block" id="MockMachines.get_machine_name"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.utils.MockMachines.get_machine_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_machine_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the name we were given.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span></div>
+
+<div class="viewcode-block" id="MockMachines.get_value"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.utils.MockMachines.get_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var_name</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Allow the operating system to be queried.&quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="n">var_name</span> <span class="o">==</span> <span class="s2">&quot;OS&quot;</span><span class="p">,</span> <span class="p">(</span>
+            <span class="s2">&quot;Build asked for a value not &quot;</span> <span class="s2">&quot;implemented in the testing infrastructure.&quot;</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">os</span></div>
+
+<div class="viewcode-block" id="MockMachines.is_valid_compiler"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.utils.MockMachines.is_valid_compiler">[docs]</a>    <span class="k">def</span> <span class="nf">is_valid_compiler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_</span><span class="p">):</span>  <span class="c1"># pylint:disable=no-self-use</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Assume all compilers are valid.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="MockMachines.is_valid_MPIlib"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.utils.MockMachines.is_valid_MPIlib">[docs]</a>    <span class="k">def</span> <span class="nf">is_valid_MPIlib</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Assume all MPILIB settings are valid.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+    <span class="c1"># pragma pylint: disable=unused-argument</span>
+<div class="viewcode-block" id="MockMachines.get_default_MPIlib"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.utils.MockMachines.get_default_MPIlib">[docs]</a>    <span class="k">def</span> <span class="nf">get_default_MPIlib</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;mpich2&quot;</span></div>
+
+<div class="viewcode-block" id="MockMachines.get_default_compiler"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.utils.MockMachines.get_default_compiler">[docs]</a>    <span class="k">def</span> <span class="nf">get_default_compiler</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;intel&quot;</span></div></div>
+
+
+<div class="viewcode-block" id="MakefileTester"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.utils.MakefileTester">[docs]</a><span class="k">class</span> <span class="nc">MakefileTester</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Helper class for checking Makefile output.</span>
+
+<span class="sd">    Public methods:</span>
+<span class="sd">    __init__</span>
+<span class="sd">    query_var</span>
+<span class="sd">    assert_variable_equals</span>
+<span class="sd">    assert_variable_matches</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Note that the following is a Makefile and the echo line must begin with a tab</span>
+    <span class="n">_makefile_template</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">include Macros</span>
+<span class="s2">query:</span>
+<span class="se">\t</span><span class="s2">echo &#39;$(</span><span class="si">{}</span><span class="s2">)&#39; &gt; query.out</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">make_string</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Constructor for Makefile test helper class.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">        parent - The TestCase object that is using this item.</span>
+<span class="sd">        make_string - Makefile contents to test.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">parent</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">make_string</span> <span class="o">=</span> <span class="n">make_string</span>
+
+<div class="viewcode-block" id="MakefileTester.query_var"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.utils.MakefileTester.query_var">[docs]</a>    <span class="k">def</span> <span class="nf">query_var</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var_name</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">var</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Request the value of a variable in the Makefile, as a string.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">        var_name - Name of the variable to query.</span>
+<span class="sd">        env - A dict containing extra environment variables to set when calling</span>
+<span class="sd">              make.</span>
+<span class="sd">        var - A dict containing extra make variables to set when calling make.</span>
+<span class="sd">              (The distinction between env and var actually matters only for</span>
+<span class="sd">               CMake, though.)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">env</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">env</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">var</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">var</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+        <span class="c1"># Write the Makefile strings to temporary files.</span>
+        <span class="n">temp_dir</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">()</span>
+        <span class="n">macros_file_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">temp_dir</span><span class="p">,</span> <span class="s2">&quot;Macros&quot;</span><span class="p">)</span>
+        <span class="n">makefile_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">temp_dir</span><span class="p">,</span> <span class="s2">&quot;Makefile&quot;</span><span class="p">)</span>
+        <span class="n">output_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">temp_dir</span><span class="p">,</span> <span class="s2">&quot;query.out&quot;</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">macros_file_name</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">macros_file</span><span class="p">:</span>
+            <span class="n">macros_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">make_string</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">makefile_name</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">makefile</span><span class="p">:</span>
+            <span class="n">makefile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_makefile_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">var_name</span><span class="p">))</span>
+
+        <span class="c1"># environment = os.environ.copy()</span>
+        <span class="n">environment</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">PATH</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;PATH&quot;</span><span class="p">])</span>
+        <span class="n">environment</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
+        <span class="n">environment</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">MACRO_PRESERVE_ENV</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
+                <span class="n">environment</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="n">x</span><span class="p">]</span>
+        <span class="n">gmake_exe</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">MACHINE</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;GMAKE&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">gmake_exe</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">gmake_exe</span> <span class="o">=</span> <span class="s2">&quot;gmake&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">run_cmd_assert_result</span><span class="p">(</span>
+            <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> query --directory=</span><span class="si">%s</span><span class="s2"> 2&gt;&amp;1&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">gmake_exe</span><span class="p">,</span> <span class="n">temp_dir</span><span class="p">),</span> <span class="n">env</span><span class="o">=</span><span class="n">environment</span>
+        <span class="p">)</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_name</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">output</span><span class="p">:</span>
+            <span class="n">query_result</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+        <span class="c1"># Clean up the Makefiles.</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">temp_dir</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">query_result</span></div>
+
+<div class="viewcode-block" id="MakefileTester.assert_variable_equals"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.utils.MakefileTester.assert_variable_equals">[docs]</a>    <span class="k">def</span> <span class="nf">assert_variable_equals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var_name</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">env</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Assert that a variable in the Makefile has a given value.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">        var_name - Name of variable to check.</span>
+<span class="sd">        value - The string that the variable value should be equal to.</span>
+<span class="sd">        env - Optional. Dict of environment variables to set when calling make.</span>
+<span class="sd">        var - Optional. Dict of make variables to set when calling make.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">query_var</span><span class="p">(</span><span class="n">var_name</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">var</span><span class="p">),</span> <span class="n">value</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MakefileTester.assert_variable_matches"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.utils.MakefileTester.assert_variable_matches">[docs]</a>    <span class="k">def</span> <span class="nf">assert_variable_matches</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var_name</span><span class="p">,</span> <span class="n">regex</span><span class="p">,</span> <span class="n">env</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Assert that a variable in the Makefile matches a regex.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">        var_name - Name of variable to check.</span>
+<span class="sd">        regex - The regex to match.</span>
+<span class="sd">        env - Optional. Dict of environment variables to set when calling make.</span>
+<span class="sd">        var - Optional. Dict of make variables to set when calling make.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">assertRegexpMatches</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">query_var</span><span class="p">(</span><span class="n">var_name</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">var</span><span class="p">),</span> <span class="n">regex</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CMakeTester"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.utils.CMakeTester">[docs]</a><span class="k">class</span> <span class="nc">CMakeTester</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Helper class for checking CMake output.</span>
+
+<span class="sd">    Public methods:</span>
+<span class="sd">    __init__</span>
+<span class="sd">    query_var</span>
+<span class="sd">    assert_variable_equals</span>
+<span class="sd">    assert_variable_matches</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_cmakelists_template</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">include(./Macros.cmake)</span>
+<span class="s2">file(WRITE query.out &quot;${{</span><span class="si">{}</span><span class="s2">}}&quot;)</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">cmake_string</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Constructor for CMake test helper class.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">        parent - The TestCase object that is using this item.</span>
+<span class="sd">        cmake_string - CMake contents to test.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">parent</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmake_string</span> <span class="o">=</span> <span class="n">cmake_string</span>
+
+<div class="viewcode-block" id="CMakeTester.query_var"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.utils.CMakeTester.query_var">[docs]</a>    <span class="k">def</span> <span class="nf">query_var</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var_name</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">var</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Request the value of a variable in Macros.cmake, as a string.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">        var_name - Name of the variable to query.</span>
+<span class="sd">        env - A dict containing extra environment variables to set when calling</span>
+<span class="sd">              cmake.</span>
+<span class="sd">        var - A dict containing extra CMake variables to set when calling cmake.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">env</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">env</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">var</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">var</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+        <span class="c1"># Write the CMake strings to temporary files.</span>
+        <span class="n">temp_dir</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">()</span>
+        <span class="n">macros_file_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">temp_dir</span><span class="p">,</span> <span class="s2">&quot;Macros.cmake&quot;</span><span class="p">)</span>
+        <span class="n">cmakelists_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">temp_dir</span><span class="p">,</span> <span class="s2">&quot;CMakeLists.txt&quot;</span><span class="p">)</span>
+        <span class="n">output_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">temp_dir</span><span class="p">,</span> <span class="s2">&quot;query.out&quot;</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">macros_file_name</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">macros_file</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">var</span><span class="p">:</span>
+                <span class="n">macros_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;set(</span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">)</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">var</span><span class="p">[</span><span class="n">key</span><span class="p">]))</span>
+            <span class="n">macros_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmake_string</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">cmakelists_name</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">cmakelists</span><span class="p">:</span>
+            <span class="n">cmakelists</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cmakelists_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">var_name</span><span class="p">))</span>
+
+        <span class="c1"># environment = os.environ.copy()</span>
+        <span class="n">environment</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">PATH</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;PATH&quot;</span><span class="p">])</span>
+        <span class="n">environment</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">MACRO_PRESERVE_ENV</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
+                <span class="n">environment</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="n">x</span><span class="p">]</span>
+        <span class="n">os_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">MACHINE</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;OS&quot;</span><span class="p">)</span>
+        <span class="c1"># cmake will not work on cray systems without this flag</span>
+        <span class="k">if</span> <span class="n">os_</span> <span class="o">==</span> <span class="s2">&quot;CNL&quot;</span><span class="p">:</span>
+            <span class="n">cmake_args</span> <span class="o">=</span> <span class="s2">&quot;-DCMAKE_SYSTEM_NAME=Catamount&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">cmake_args</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">run_cmd_assert_result</span><span class="p">(</span>
+            <span class="s2">&quot;cmake </span><span class="si">%s</span><span class="s2"> . 2&gt;&amp;1&quot;</span> <span class="o">%</span> <span class="n">cmake_args</span><span class="p">,</span> <span class="n">from_dir</span><span class="o">=</span><span class="n">temp_dir</span><span class="p">,</span> <span class="n">env</span><span class="o">=</span><span class="n">environment</span>
+        <span class="p">)</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_name</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">output</span><span class="p">:</span>
+            <span class="n">query_result</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+        <span class="c1"># Clean up the CMake files.</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">temp_dir</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">query_result</span></div>
+
+<div class="viewcode-block" id="CMakeTester.assert_variable_equals"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.utils.CMakeTester.assert_variable_equals">[docs]</a>    <span class="k">def</span> <span class="nf">assert_variable_equals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var_name</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">env</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Assert that a variable in the CMakeLists has a given value.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">        var_name - Name of variable to check.</span>
+<span class="sd">        value - The string that the variable value should be equal to.</span>
+<span class="sd">        env - Optional. Dict of environment variables to set when calling cmake.</span>
+<span class="sd">        var - Optional. Dict of CMake variables to set when calling cmake.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">query_var</span><span class="p">(</span><span class="n">var_name</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">var</span><span class="p">),</span> <span class="n">value</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CMakeTester.assert_variable_matches"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.utils.CMakeTester.assert_variable_matches">[docs]</a>    <span class="k">def</span> <span class="nf">assert_variable_matches</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var_name</span><span class="p">,</span> <span class="n">regex</span><span class="p">,</span> <span class="n">env</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Assert that a variable in the CMkeLists matches a regex.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">        var_name - Name of variable to check.</span>
+<span class="sd">        regex - The regex to match.</span>
+<span class="sd">        env - Optional. Dict of environment variables to set when calling cmake.</span>
+<span class="sd">        var - Optional. Dict of CMake variables to set when calling cmake.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">assertRegexpMatches</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">query_var</span><span class="p">(</span><span class="n">var_name</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">var</span><span class="p">),</span> <span class="n">regex</span><span class="p">)</span></div></div>
+
+
+<span class="c1"># TODO after dropping python 2.7 replace with tempfile.TemporaryDirectory</span>
+<div class="viewcode-block" id="TemporaryDirectory"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.utils.TemporaryDirectory">[docs]</a><span class="k">class</span> <span class="nc">TemporaryDirectory</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tempdir</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tempdir</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tempdir</span>
+
+    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tempdir</span><span class="p">):</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tempdir</span><span class="p">)</span></div>
+
+
+<span class="c1"># TODO replace with actual mock once 2.7 is dropped</span>
+<div class="viewcode-block" id="Mocker"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.utils.Mocker">[docs]</a><span class="k">class</span> <span class="nc">Mocker</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ret</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cmd</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">return_value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">side_effect</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_orig</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ret</span> <span class="o">=</span> <span class="n">ret</span> <span class="ow">or</span> <span class="n">return_value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cmd</span> <span class="o">=</span> <span class="n">cmd</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_calls</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">side_effect</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_side_effect</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">side_effect</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_side_effect</span> <span class="o">=</span> <span class="n">side_effect</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_method_calls</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">calls</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calls</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">method_calls</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">.</span><span class="n">calls</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_method_calls</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">ret</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ret</span>
+
+    <span class="nd">@ret</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">ret</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ret</span> <span class="o">=</span> <span class="n">value</span>
+
+<div class="viewcode-block" id="Mocker.assert_called"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.utils.Mocker.assert_called">[docs]</a>    <span class="k">def</span> <span class="nf">assert_called</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">calls</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="Mocker.assert_called_with"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.utils.Mocker.assert_called_with">[docs]</a>    <span class="k">def</span> <span class="nf">assert_called_with</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="n">call</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calls</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">args</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">_call_args</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">call</span><span class="p">[</span><span class="s2">&quot;args&quot;</span><span class="p">])</span>
+            <span class="n">_exp_args</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="n">_exp_args</span> <span class="o">&lt;=</span> <span class="n">_call_args</span><span class="p">,</span> <span class="s2">&quot;Got </span><span class="si">{}</span><span class="s2"> missing </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">_call_args</span><span class="p">,</span> <span class="n">_exp_args</span> <span class="o">-</span> <span class="n">_call_args</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">kwargs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">call_kwargs</span> <span class="o">=</span> <span class="n">call</span><span class="p">[</span><span class="s2">&quot;kwargs&quot;</span><span class="p">]</span>
+
+            <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">assert</span> <span class="n">call_kwargs</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">==</span> <span class="n">y</span><span class="p">,</span> <span class="s2">&quot;Missing </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_method_calls</span><span class="p">:</span>
+            <span class="n">new_method</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_method_calls</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">new_method</span> <span class="o">=</span> <span class="n">Mocker</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_method_calls</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_method</span>
+
+        <span class="k">return</span> <span class="n">new_method</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_calls</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;args&quot;</span><span class="p">:</span> <span class="n">args</span><span class="p">,</span> <span class="s2">&quot;kwargs&quot;</span><span class="p">:</span> <span class="n">kwargs</span><span class="p">})</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_side_effect</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_side_effect</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">):</span>
+            <span class="n">rv</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_side_effect</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">rv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ret</span>
+
+        <span class="k">return</span> <span class="n">rv</span>
+
+    <span class="k">def</span> <span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">revert_mocks</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">revert_mocks</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Mocker.revert_mocks"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.utils.Mocker.revert_mocks">[docs]</a>    <span class="k">def</span> <span class="nf">revert_mocks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">m</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">method</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_orig</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="n">module</span><span class="p">],</span> <span class="n">method</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Mocker.patch"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.utils.Mocker.patch">[docs]</a>    <span class="k">def</span> <span class="nf">patch</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ret</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">is_property</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">update_value_only</span><span class="o">=</span><span class="kc">False</span>
+    <span class="p">):</span>
+        <span class="n">rv</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">module</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
+            <span class="n">main</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">x</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">update_value_only</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_orig</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="nb">getattr</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="n">main</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span> <span class="n">main</span><span class="p">,</span> <span class="n">x</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+            <span class="k">if</span> <span class="n">is_property</span><span class="p">:</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="n">main</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">ret</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">rv</span> <span class="o">=</span> <span class="n">Mocker</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="n">cmd</span><span class="o">=</span><span class="n">x</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="n">main</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">rv</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">method</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">update_value_only</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_orig</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="nb">getattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">method</span><span class="p">),</span> <span class="n">module</span><span class="p">,</span> <span class="n">method</span><span class="p">))</span>
+            <span class="n">rv</span> <span class="o">=</span> <span class="n">Mocker</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">rv</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Could not patch&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">rv</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
+     
+<script>var version_json_loc = "../../../../../versions.json";</script>
+
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

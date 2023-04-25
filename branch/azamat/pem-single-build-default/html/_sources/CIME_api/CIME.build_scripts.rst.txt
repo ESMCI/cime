@@ -1,0 +1,10 @@
+CIME.build\_scripts package
+===========================
+
+Module contents
+---------------
+
+.. automodule:: CIME.build_scripts
+   :members:
+   :undoc-members:
+   :show-inheritance:
