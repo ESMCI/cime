@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CIME.scripts.create_clone &mdash; CIME master documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/pop_ver.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            CIME
+          </a>
+              <div class="version">
+                master
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../what_cime/index.html">What is CIME?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../users_guide/index.html">Case Control System Part 1: Basic Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../users_guide/index.html#case-control-system-part-2-configuration-porting-testing-and-use-cases">Case Control System Part 2: Configuration, Porting, Testing and Use Cases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../build_cpl/index.html">Building a Coupled Model with CIME</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../misc_tools/index.html">Miscellaneous Tools</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../glossary/index.html">Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Tools_user/index.html">User Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../xml_files/index.html">XML Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../CIME_api/modules.html">CIME</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Tools_api/modules.html">Tools</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">CIME</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">CIME.scripts.create_clone</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for CIME.scripts.create_clone</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+
+<span class="kn">from</span> <span class="nn">CIME.Tools.standard_script_setup</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="n">expect</span>
+<span class="kn">from</span> <span class="nn">CIME.case</span> <span class="kn">import</span> <span class="n">Case</span>
+<span class="kn">from</span> <span class="nn">argparse</span> <span class="kn">import</span> <span class="n">RawTextHelpFormatter</span>
+<span class="kn">import</span> <span class="nn">re</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="c1">###############################################################################</span>
+<div class="viewcode-block" id="parse_command_line"><a class="viewcode-back" href="../../../CIME_api/CIME.scripts.html#CIME.scripts.create_clone.parse_command_line">[docs]</a><span class="k">def</span> <span class="nf">parse_command_line</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+    <span class="c1">###############################################################################</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">formatter_class</span><span class="o">=</span><span class="n">RawTextHelpFormatter</span><span class="p">)</span>
+
+    <span class="n">CIME</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">setup_standard_logging_options</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--case&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-case&quot;</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;(required) Specify a new case name. If not a full pathname, &quot;</span>
+        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">the new case will be created under then current working directory.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--clone&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-clone&quot;</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;(required) Specify a case to be cloned. If not a full pathname, &quot;</span>
+        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">the case to be cloned is assumed to be under then current working directory.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--ensemble&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;clone an ensemble of cases, the case name argument must end in an integer.</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="s2">&quot;for example: ./create_clone --clone case.template --case case.001 --ensemble 4 </span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="s2">&quot;will create case.001, case.002, case.003, case.004 from existing case.template&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># This option supports multiple values, hence the plural (&quot;user-mods-dirs&quot;). However,</span>
+    <span class="c1"># we support the singular (&quot;user-mods-dir&quot;) for backwards compatibility (and because</span>
+    <span class="c1"># the singular may be more intuitive for someone who only wants to use a single</span>
+    <span class="c1"># directory).</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--user-mods-dirs&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--user-mods-dir&quot;</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;*&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Full pathname to a directory containing any combination of user_nl_* files &quot;</span>
+        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">and a shell_commands script (typically containing xmlchange commands). &quot;</span>
+        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">The directory can also contain an SourceMods/ directory with the same structure &quot;</span>
+        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">as would be found in a case directory.&quot;</span>
+        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">It can also contain a file named &#39;include_user_mods&#39; which gives the path to&quot;</span>
+        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">one or more other directories that should be included.&quot;</span>
+        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Multiple directories can be given to the --user-mods-dirs argument,&quot;</span>
+        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">in which case changes from all of them are applied.&quot;</span>
+        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">(If there are conflicts, later directories take precedence.)&quot;</span>
+        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">(Care is needed if multiple directories include the same directory via &#39;include_user_mods&#39;:&quot;</span>
+        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">in this case, the included directory will be applied multiple times.)&quot;</span>
+        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">If this argument is used in conjunction &quot;</span>
+        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">with the --keepexe flag, then no changes will be permitted to the env_build.xml &quot;</span>
+        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">in the newly created case directory. &quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--keepexe&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-keepexe&quot;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Sets EXEROOT to point to original build. It is HIGHLY recommended &quot;</span>
+        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">that the original case be built BEFORE cloning it if the --keepexe flag is specfied. &quot;</span>
+        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">This flag will make the SourceMods/ directory in the newly created case directory a &quot;</span>
+        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">symbolic link to the SourceMods/ directory in the original case directory. &quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--mach-dir&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-mach_dir&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Specify the locations of the Machines directory, other than the default. &quot;</span>
+        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">The default is CIMEROOT/machines.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--project&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-project&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Specify a project id for the case (optional).&quot;</span>
+        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Used for accounting and directory permissions when on a batch system.&quot;</span>
+        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">The default is user or machine specified by PROJECT.&quot;</span>
+        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Accounting (only) may be overridden by user or machine specified CHARGE_ACCOUNT.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--cime-output-root&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Specify the root output directory. The default is the setting in the original&quot;</span>
+        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">case directory. NOTE: create_clone will fail if this directory is not writable.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">args</span> <span class="o">=</span> <span class="n">CIME</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">parse_args_and_handle_standard_logging_options</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">parser</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">case</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">expect</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;Must specify -case as an input argument&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">clone</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">expect</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;Must specify -clone as an input argument&quot;</span><span class="p">)</span>
+
+    <span class="n">startval</span> <span class="o">=</span> <span class="s2">&quot;1&quot;</span>
+    <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">ensemble</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(\d+)$&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">case</span><span class="p">)</span>
+        <span class="n">expect</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="s2">&quot; case name must end in an integer to use this feature&quot;</span><span class="p">)</span>
+        <span class="n">startval</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">case</span><span class="p">,</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">clone</span><span class="p">,</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">keepexe</span><span class="p">,</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">mach_dir</span><span class="p">,</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">project</span><span class="p">,</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">cime_output_root</span><span class="p">,</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">user_mods_dirs</span><span class="p">,</span>
+        <span class="nb">int</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">ensemble</span><span class="p">),</span>
+        <span class="n">startval</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+<span class="c1">##############################################################################</span>
+<span class="k">def</span> <span class="nf">_main_func</span><span class="p">():</span>
+    <span class="c1">###############################################################################</span>
+
+    <span class="p">(</span>
+        <span class="n">case</span><span class="p">,</span>
+        <span class="n">clone</span><span class="p">,</span>
+        <span class="n">keepexe</span><span class="p">,</span>
+        <span class="n">mach_dir</span><span class="p">,</span>
+        <span class="n">project</span><span class="p">,</span>
+        <span class="n">cime_output_root</span><span class="p">,</span>
+        <span class="n">user_mods_dirs</span><span class="p">,</span>
+        <span class="n">ensemble</span><span class="p">,</span>
+        <span class="n">startval</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">=</span> <span class="n">parse_command_line</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span>
+
+    <span class="n">cloneroot</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">clone</span><span class="p">)</span>
+    <span class="n">expect</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">cloneroot</span><span class="p">),</span> <span class="s2">&quot;Missing cloneroot directory </span><span class="si">%s</span><span class="s2"> &quot;</span> <span class="o">%</span> <span class="n">cloneroot</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">user_mods_dirs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">user_mods_dirs</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">one_user_mods_dir</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">one_user_mods_dir</span><span class="p">)</span>
+            <span class="k">else</span> <span class="n">one_user_mods_dir</span>
+            <span class="k">for</span> <span class="n">one_user_mods_dir</span> <span class="ow">in</span> <span class="n">user_mods_dirs</span>
+        <span class="p">]</span>
+    <span class="n">nint</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">startval</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">startval</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">startval</span><span class="p">)</span> <span class="o">+</span> <span class="n">ensemble</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">ensemble</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">case</span> <span class="o">=</span> <span class="n">case</span><span class="p">[:</span><span class="o">-</span><span class="n">nint</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;{{0:0</span><span class="si">{0:d}</span><span class="s2">d}}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nint</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">Case</span><span class="p">(</span><span class="n">cloneroot</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">as</span> <span class="n">clone</span><span class="p">:</span>
+            <span class="n">clone</span><span class="o">.</span><span class="n">create_clone</span><span class="p">(</span>
+                <span class="n">case</span><span class="p">,</span>
+                <span class="n">keepexe</span><span class="o">=</span><span class="n">keepexe</span><span class="p">,</span>
+                <span class="n">mach_dir</span><span class="o">=</span><span class="n">mach_dir</span><span class="p">,</span>
+                <span class="n">project</span><span class="o">=</span><span class="n">project</span><span class="p">,</span>
+                <span class="n">cime_output_root</span><span class="o">=</span><span class="n">cime_output_root</span><span class="p">,</span>
+                <span class="n">user_mods_dirs</span><span class="o">=</span><span class="n">user_mods_dirs</span><span class="p">,</span>
+            <span class="p">)</span>
+
+
+<span class="c1">###############################################################################</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">_main_func</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
+     
+<script>var version_json_loc = "../../../../../versions.json";</script>
+
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
