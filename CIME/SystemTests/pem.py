@@ -16,11 +16,11 @@ logger = logging.getLogger(__name__)
 
 class PEM(SystemTestsCompareTwo):
     def __init__(self, case):
-        build_separately=False
+        build_separately = False
         # cice, pop require separate builds
-        comps=case.get_compset_components()
+        comps = case.get_compset_components()
         if "cice" in comps or "pop" in comps:
-            build_separately=True
+            build_separately = True
         SystemTestsCompareTwo.__init__(
             self,
             case,
