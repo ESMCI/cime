@@ -62,6 +62,7 @@ PHASES = [
     RUN_PHASE,
 ]  # Order matters
 
+
 ###############################################################################
 def _translate_test_names_for_new_pecount(test_names, force_procs, force_threads):
     ###############################################################################
@@ -129,6 +130,8 @@ def _translate_test_names_for_new_pecount(test_names, force_procs, force_threads
 
 
 _TIME_CACHE = {}
+
+
 ###############################################################################
 def _get_time_est(test, baseline_root, as_int=False, use_cache=False, raw=False):
     ###############################################################################
@@ -355,8 +358,8 @@ class TestScheduler(object):
                     "Use -o to avoid this error".format(existing_baselines),
                 )
 
-        #if self._config.sort_tests:
-        #    _order_tests_by_runtime(test_names, self._baseline_root)
+        if self._config.sort_tests and not self._config.share_exes:
+            _order_tests_by_runtime(test_names, self._baseline_root)
 
         # This is the only data that multiple threads will simultaneously access
         # Each test has it's own value and setting/retrieving items from a dict
@@ -858,7 +861,6 @@ class TestScheduler(object):
         if case_opts is not None:
             logger.debug("case_opts are {} ".format(case_opts))
             for opt in case_opts:  # pylint: disable=not-an-iterable
-
                 logger.debug("case_opt is {}".format(opt))
                 if opt == "D":
                     envtest.set_test_parameter("DEBUG", "TRUE")
