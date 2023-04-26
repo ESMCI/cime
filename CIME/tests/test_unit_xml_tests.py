@@ -21,7 +21,7 @@ SINGLE_EXE_DEFAULT_INVALID = """<?xml version="1.0"?>
 SINGLE_EXE_VALID = """<?xml version="1.0"?>
 <config_test>
   <test NAME="AAA">
-    <SINGLE_EXE>true</SINGLE_EXE>
+    <ALLOW_SINGLE_EXE>true</ALLOW_SINGLE_EXE>
     <INFO_DBUG>1</INFO_DBUG>
     <STOP_OPTION>ndays</STOP_OPTION>
     <STOP_N>4</STOP_N>
@@ -35,7 +35,7 @@ SINGLE_EXE_VALID = """<?xml version="1.0"?>
 SINGLE_EXE_INVALID = """<?xml version="1.0"?>
 <config_test>
   <test NAME="AAA">
-    <SINGLE_EXE>false</SINGLE_EXE>
+    <ALLOW_SINGLE_EXE>false</ALLOW_SINGLE_EXE>
     <INFO_DBUG>1</INFO_DBUG>
     <STOP_OPTION>ndays</STOP_OPTION>
     <STOP_N>4</STOP_N>

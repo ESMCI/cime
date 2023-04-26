@@ -37,7 +37,7 @@ class Tests(GenericXML):
             test_node = self.get_test_node(parsed_testname[0])
 
             try:
-                single_exe_node = self.get_child("SINGLE_EXE", root=test_node)
+                single_exe_node = self.get_child("ALLOW_SINGLE_EXE", root=test_node)
             except utils.CIMEError:
                 single_exe_supported = False
             else:
