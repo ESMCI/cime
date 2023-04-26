@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CIME.tests.scripts_regression_tests &mdash; CIME master documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/pop_ver.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            CIME
+          </a>
+              <div class="version">
+                master
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../what_cime/index.html">What is CIME?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../users_guide/index.html">Case Control System Part 1: Basic Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../users_guide/index.html#case-control-system-part-2-configuration-porting-testing-and-use-cases">Case Control System Part 2: Configuration, Porting, Testing and Use Cases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../build_cpl/index.html">Building a Coupled Model with CIME</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../misc_tools/index.html">Miscellaneous Tools</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../glossary/index.html">Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Tools_user/index.html">User Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../xml_files/index.html">XML Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../CIME_api/modules.html">CIME</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Tools_api/modules.html">Tools</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">CIME</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">CIME.tests.scripts_regression_tests</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for CIME.tests.scripts_regression_tests</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Script containing CIME python regression test suite. This suite should be run</span>
+<span class="sd">to confirm overall CIME correctness.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">glob</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">re</span><span class="o">,</span> <span class="nn">shutil</span><span class="o">,</span> <span class="nn">signal</span><span class="o">,</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">tempfile</span><span class="o">,</span> <span class="nn">threading</span><span class="o">,</span> <span class="nn">time</span><span class="o">,</span> <span class="nn">logging</span><span class="o">,</span> <span class="nn">unittest</span><span class="o">,</span> <span class="nn">getpass</span><span class="o">,</span> <span class="nn">filecmp</span><span class="o">,</span> <span class="nn">time</span><span class="o">,</span> <span class="nn">atexit</span><span class="o">,</span> <span class="nn">functools</span>
+
+<span class="n">CIMEROOT</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s2">&quot;..&quot;</span><span class="p">,</span> <span class="s2">&quot;..&quot;</span><span class="p">))</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">CIMEROOT</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">xml.etree.ElementTree</span> <span class="kn">import</span> <span class="n">ParseError</span>
+
+<span class="kn">import</span> <span class="nn">subprocess</span><span class="o">,</span> <span class="nn">argparse</span>
+
+<span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;/bin/rm -f $(find . -name &quot;*.pyc&quot;)&#39;</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="n">CIMEROOT</span><span class="p">)</span>
+<span class="kn">import</span> <span class="nn">stat</span> <span class="k">as</span> <span class="nn">osstat</span>
+
+<span class="kn">import</span> <span class="nn">collections</span>
+
+<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">run_cmd</span><span class="p">,</span>
+    <span class="n">run_cmd_no_fail</span><span class="p">,</span>
+    <span class="n">get_lids</span><span class="p">,</span>
+    <span class="n">get_current_commit</span><span class="p">,</span>
+    <span class="n">safe_copy</span><span class="p">,</span>
+    <span class="n">CIMEError</span><span class="p">,</span>
+    <span class="n">get_cime_root</span><span class="p">,</span>
+    <span class="n">get_src_root</span><span class="p">,</span>
+    <span class="n">Timeout</span><span class="p">,</span>
+    <span class="n">import_from_file</span><span class="p">,</span>
+    <span class="n">get_model</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">import</span> <span class="nn">CIME.test_scheduler</span><span class="o">,</span> <span class="nn">CIME.wait_for_tests</span>
+<span class="kn">from</span> <span class="nn">CIME</span> <span class="kn">import</span> <span class="n">get_tests</span>
+<span class="kn">from</span> <span class="nn">CIME.test_scheduler</span> <span class="kn">import</span> <span class="n">TestScheduler</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.env_run</span> <span class="kn">import</span> <span class="n">EnvRun</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.machines</span> <span class="kn">import</span> <span class="n">Machines</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.files</span> <span class="kn">import</span> <span class="n">Files</span>
+<span class="kn">from</span> <span class="nn">CIME.case</span> <span class="kn">import</span> <span class="n">Case</span>
+<span class="kn">from</span> <span class="nn">CIME.code_checker</span> <span class="kn">import</span> <span class="n">check_code</span><span class="p">,</span> <span class="n">get_all_checkable_files</span>
+<span class="kn">from</span> <span class="nn">CIME.test_status</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">CIME.provenance</span> <span class="kn">import</span> <span class="n">get_test_success</span><span class="p">,</span> <span class="n">save_test_success</span>
+<span class="kn">from</span> <span class="nn">CIME</span> <span class="kn">import</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">CIME.tests.base</span> <span class="kn">import</span> <span class="n">BaseTestCase</span>
+
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;CIME_GLOBAL_WALLTIME&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;0:05:00&quot;</span>
+
+<span class="n">TEST_RESULT</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+<div class="viewcode-block" id="write_provenance_info"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.scripts_regression_tests.write_provenance_info">[docs]</a><span class="k">def</span> <span class="nf">write_provenance_info</span><span class="p">(</span><span class="n">machine</span><span class="p">,</span> <span class="n">test_compiler</span><span class="p">,</span> <span class="n">test_mpilib</span><span class="p">,</span> <span class="n">test_root</span><span class="p">):</span>
+    <span class="n">curr_commit</span> <span class="o">=</span> <span class="n">get_current_commit</span><span class="p">(</span><span class="n">repo</span><span class="o">=</span><span class="n">CIMEROOT</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Testing commit </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">curr_commit</span><span class="p">)</span>
+    <span class="n">cime_model</span> <span class="o">=</span> <span class="n">get_model</span><span class="p">()</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Using cime_model = </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">cime_model</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Testing machine = </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">machine</span><span class="o">.</span><span class="n">get_machine_name</span><span class="p">())</span>
+    <span class="k">if</span> <span class="n">test_compiler</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Testing compiler = </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">test_compiler</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">test_mpilib</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Testing mpilib = </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">test_mpilib</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Test root: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">test_root</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Test driver: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">CIME</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_cime_default_driver</span><span class="p">())</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Python version </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">version</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="cleanup"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.scripts_regression_tests.cleanup">[docs]</a><span class="k">def</span> <span class="nf">cleanup</span><span class="p">(</span><span class="n">test_root</span><span class="p">):</span>
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">test_root</span><span class="p">)</span>
+        <span class="ow">and</span> <span class="n">TEST_RESULT</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="ow">and</span> <span class="n">TEST_RESULT</span><span class="o">.</span><span class="n">wasSuccessful</span><span class="p">()</span>
+    <span class="p">):</span>
+        <span class="n">testreporter</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">test_root</span><span class="p">,</span> <span class="s2">&quot;testreporter&quot;</span><span class="p">)</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">test_root</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">files</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">testreporter</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">testreporter</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">test_root</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;All pass, removing directory:&quot;</span><span class="p">,</span> <span class="n">test_root</span><span class="p">)</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">rmdir</span><span class="p">(</span><span class="n">test_root</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="setup_arguments"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.scripts_regression_tests.setup_arguments">[docs]</a><span class="k">def</span> <span class="nf">setup_arguments</span><span class="p">(</span><span class="n">parser</span><span class="p">):</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--fast&quot;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Skip full system tests, which saves a lot of time&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--no-batch&quot;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Do not submit jobs to batch system, run locally.&quot;</span>
+        <span class="s2">&quot; If false, will default to machine setting.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--no-fortran-run&quot;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Do not run any fortran jobs. Implies --fast&quot;</span> <span class="s2">&quot; Used for github actions&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--no-cmake&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Do not run cmake tests&quot;</span>
+    <span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--no-teardown&quot;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Do not delete directories left behind by testing&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--machine&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Select a specific machine setting for cime&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span>
+    <span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--compiler&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Select a specific compiler setting for cime&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span>
+    <span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--mpilib&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Select a specific compiler setting for cime&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span>
+    <span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--test-root&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Select a specific test root for all cases created by the testing&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--timeout&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Select a specific timeout for all tests&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="configure_tests"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.scripts_regression_tests.configure_tests">[docs]</a><span class="k">def</span> <span class="nf">configure_tests</span><span class="p">(</span>
+    <span class="n">timeout</span><span class="p">,</span>
+    <span class="n">no_fortran_run</span><span class="p">,</span>
+    <span class="n">fast</span><span class="p">,</span>
+    <span class="n">no_batch</span><span class="p">,</span>
+    <span class="n">no_cmake</span><span class="p">,</span>
+    <span class="n">no_teardown</span><span class="p">,</span>
+    <span class="n">machine</span><span class="p">,</span>
+    <span class="n">compiler</span><span class="p">,</span>
+    <span class="n">mpilib</span><span class="p">,</span>
+    <span class="n">test_root</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">):</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">CIME</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_cime_config</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">timeout</span><span class="p">:</span>
+        <span class="n">BaseTestCase</span><span class="o">.</span><span class="n">GLOBAL_TIMEOUT</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span>
+
+    <span class="n">BaseTestCase</span><span class="o">.</span><span class="n">NO_FORTRAN_RUN</span> <span class="o">=</span> <span class="n">no_fortran_run</span> <span class="ow">or</span> <span class="kc">False</span>
+    <span class="n">BaseTestCase</span><span class="o">.</span><span class="n">FAST_ONLY</span> <span class="o">=</span> <span class="n">fast</span> <span class="ow">or</span> <span class="n">no_fortran_run</span>
+    <span class="n">BaseTestCase</span><span class="o">.</span><span class="n">NO_BATCH</span> <span class="o">=</span> <span class="n">no_batch</span> <span class="ow">or</span> <span class="kc">False</span>
+    <span class="n">BaseTestCase</span><span class="o">.</span><span class="n">NO_CMAKE</span> <span class="o">=</span> <span class="n">no_cmake</span> <span class="ow">or</span> <span class="kc">False</span>
+    <span class="n">BaseTestCase</span><span class="o">.</span><span class="n">NO_TEARDOWN</span> <span class="o">=</span> <span class="n">no_teardown</span> <span class="ow">or</span> <span class="kc">False</span>
+
+    <span class="c1"># make sure we have default values</span>
+    <span class="n">MACHINE</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">TEST_COMPILER</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">TEST_MPILIB</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">if</span> <span class="n">machine</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">MACHINE</span> <span class="o">=</span> <span class="n">Machines</span><span class="p">(</span><span class="n">machine</span><span class="o">=</span><span class="n">machine</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;CIME_MACHINE&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">machine</span>
+    <span class="k">elif</span> <span class="s2">&quot;CIME_MACHINE&quot;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
+        <span class="n">MACHINE</span> <span class="o">=</span> <span class="n">Machines</span><span class="p">(</span><span class="n">machine</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;CIME_MACHINE&quot;</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="s2">&quot;create_test&quot;</span><span class="p">,</span> <span class="s2">&quot;MACHINE&quot;</span><span class="p">):</span>
+        <span class="n">MACHINE</span> <span class="o">=</span> <span class="n">Machines</span><span class="p">(</span><span class="n">machine</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;create_test&quot;</span><span class="p">,</span> <span class="s2">&quot;MACHINE&quot;</span><span class="p">))</span>
+    <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="s2">&quot;main&quot;</span><span class="p">,</span> <span class="s2">&quot;MACHINE&quot;</span><span class="p">):</span>
+        <span class="n">MACHINE</span> <span class="o">=</span> <span class="n">Machines</span><span class="p">(</span><span class="n">machine</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;main&quot;</span><span class="p">,</span> <span class="s2">&quot;MACHINE&quot;</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">MACHINE</span> <span class="o">=</span> <span class="n">Machines</span><span class="p">()</span>
+
+    <span class="n">BaseTestCase</span><span class="o">.</span><span class="n">MACHINE</span> <span class="o">=</span> <span class="n">MACHINE</span>
+
+    <span class="k">if</span> <span class="n">compiler</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">TEST_COMPILER</span> <span class="o">=</span> <span class="n">compiler</span>
+    <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="s2">&quot;create_test&quot;</span><span class="p">,</span> <span class="s2">&quot;COMPILER&quot;</span><span class="p">):</span>
+        <span class="n">TEST_COMPILER</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;create_test&quot;</span><span class="p">,</span> <span class="s2">&quot;COMPILER&quot;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="s2">&quot;main&quot;</span><span class="p">,</span> <span class="s2">&quot;COMPILER&quot;</span><span class="p">):</span>
+        <span class="n">TEST_COMPILER</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;main&quot;</span><span class="p">,</span> <span class="s2">&quot;COMPILER&quot;</span><span class="p">)</span>
+
+    <span class="n">BaseTestCase</span><span class="o">.</span><span class="n">TEST_COMPILER</span> <span class="o">=</span> <span class="n">TEST_COMPILER</span>
+
+    <span class="k">if</span> <span class="n">mpilib</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">TEST_MPILIB</span> <span class="o">=</span> <span class="n">mpilib</span>
+    <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="s2">&quot;create_test&quot;</span><span class="p">,</span> <span class="s2">&quot;MPILIB&quot;</span><span class="p">):</span>
+        <span class="n">TEST_MPILIB</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;create_test&quot;</span><span class="p">,</span> <span class="s2">&quot;MPILIB&quot;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="s2">&quot;main&quot;</span><span class="p">,</span> <span class="s2">&quot;MPILIB&quot;</span><span class="p">):</span>
+        <span class="n">TEST_MPILIB</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;main&quot;</span><span class="p">,</span> <span class="s2">&quot;MPILIB&quot;</span><span class="p">)</span>
+
+    <span class="n">BaseTestCase</span><span class="o">.</span><span class="n">TEST_MPILIB</span> <span class="o">=</span> <span class="n">TEST_MPILIB</span>
+
+    <span class="k">if</span> <span class="n">test_root</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">TEST_ROOT</span> <span class="o">=</span> <span class="n">test_root</span>
+    <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="s2">&quot;create_test&quot;</span><span class="p">,</span> <span class="s2">&quot;TEST_ROOT&quot;</span><span class="p">):</span>
+        <span class="n">TEST_ROOT</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;create_test&quot;</span><span class="p">,</span> <span class="s2">&quot;TEST_ROOT&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">TEST_ROOT</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="n">MACHINE</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CIME_OUTPUT_ROOT&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;scripts_regression_test.</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">CIME</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_timestamp</span><span class="p">(),</span>
+        <span class="p">)</span>
+
+    <span class="n">BaseTestCase</span><span class="o">.</span><span class="n">TEST_ROOT</span> <span class="o">=</span> <span class="n">TEST_ROOT</span>
+
+    <span class="n">write_provenance_info</span><span class="p">(</span><span class="n">MACHINE</span><span class="p">,</span> <span class="n">TEST_COMPILER</span><span class="p">,</span> <span class="n">TEST_MPILIB</span><span class="p">,</span> <span class="n">TEST_ROOT</span><span class="p">)</span>
+
+    <span class="n">atexit</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="n">cleanup</span><span class="p">,</span> <span class="n">TEST_ROOT</span><span class="p">))</span></div>
+
+
+<span class="k">def</span> <span class="nf">_main_func</span><span class="p">(</span><span class="n">description</span><span class="p">):</span>
+    <span class="n">help_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="si">{0}</span><span class="s2"> [TEST] [TEST]</span>
+<span class="s2">OR</span>
+<span class="si">{0}</span><span class="s2"> --help</span>
+
+<span class="se">\033</span><span class="s2">[1mEXAMPLES:</span><span class="se">\033</span><span class="s2">[0m</span>
+<span class="s2">    </span><span class="se">\033</span><span class="s2">[1;32m# Run the full suite </span><span class="se">\033</span><span class="s2">[0m</span>
+<span class="s2">    &gt; </span><span class="si">{0}</span>
+
+<span class="s2">    </span><span class="se">\033</span><span class="s2">[1;32m# Run single test file (with or without extension) </span><span class="se">\033</span><span class="s2">[0m</span>
+<span class="s2">    &gt; </span><span class="si">{0}</span><span class="s2"> test_unit_doctest</span>
+
+<span class="s2">    </span><span class="se">\033</span><span class="s2">[1;32m# Run single test class from a test file </span><span class="se">\033</span><span class="s2">[0m</span>
+<span class="s2">    &gt; </span><span class="si">{0}</span><span class="s2"> test_unit_doctest.TestDocs</span>
+
+<span class="s2">    </span><span class="se">\033</span><span class="s2">[1;32m# Run single test case from a test class </span><span class="se">\033</span><span class="s2">[0m</span>
+<span class="s2">    &gt; </span><span class="si">{0}</span><span class="s2"> test_unit_doctest.TestDocs.test_lib_docs</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="p">)</span>
+
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
+        <span class="n">usage</span><span class="o">=</span><span class="n">help_str</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">,</span>
+        <span class="n">formatter_class</span><span class="o">=</span><span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentDefaultsHelpFormatter</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">setup_arguments</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--verbose&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Enable verbose logging&quot;</span><span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--debug&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Enable debug logging&quot;</span><span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--silent&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Disable all logging&quot;</span><span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;tests&quot;</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Specific tests to run e.g. test_unit*&quot;</span>
+    <span class="p">)</span>
+
+    <span class="n">ns</span><span class="p">,</span> <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_known_args</span><span class="p">()</span>
+
+    <span class="c1"># Now set the sys.argv to the unittest_args (leaving sys.argv[0] alone)</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="n">args</span>
+
+    <span class="n">utils</span><span class="o">.</span><span class="n">configure_logging</span><span class="p">(</span><span class="n">ns</span><span class="o">.</span><span class="n">verbose</span><span class="p">,</span> <span class="n">ns</span><span class="o">.</span><span class="n">debug</span><span class="p">,</span> <span class="n">ns</span><span class="o">.</span><span class="n">silent</span><span class="p">)</span>
+
+    <span class="n">configure_tests</span><span class="p">(</span><span class="o">**</span><span class="nb">vars</span><span class="p">(</span><span class="n">ns</span><span class="p">))</span>
+
+    <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">CIMEROOT</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ns</span><span class="o">.</span><span class="n">tests</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">test_root</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">CIMEROOT</span><span class="p">,</span> <span class="s2">&quot;CIME&quot;</span><span class="p">,</span> <span class="s2">&quot;tests&quot;</span><span class="p">)</span>
+
+        <span class="n">test_suite</span> <span class="o">=</span> <span class="n">unittest</span><span class="o">.</span><span class="n">defaultTestLoader</span><span class="o">.</span><span class="n">discover</span><span class="p">(</span><span class="n">test_root</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Fixes handling shell expansion e.g. test_unit_*, by removing python extension</span>
+        <span class="n">tests</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.py&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">ns</span><span class="o">.</span><span class="n">tests</span><span class="p">]</span>
+
+        <span class="c1"># Try to load tests by just names</span>
+        <span class="n">test_suite</span> <span class="o">=</span> <span class="n">unittest</span><span class="o">.</span><span class="n">defaultTestLoader</span><span class="o">.</span><span class="n">loadTestsFromNames</span><span class="p">(</span><span class="n">tests</span><span class="p">)</span>
+
+    <span class="n">test_runner</span> <span class="o">=</span> <span class="n">unittest</span><span class="o">.</span><span class="n">TextTestRunner</span><span class="p">(</span><span class="n">verbosity</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="k">global</span> <span class="n">TEST_RESULT</span>
+
+    <span class="n">TEST_RESULT</span> <span class="o">=</span> <span class="n">test_runner</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">test_suite</span><span class="p">)</span>
+
+    <span class="c1"># Implements same behavior as unittesst.main</span>
+    <span class="c1"># https://github.com/python/cpython/blob/b6d68aa08baebb753534a26d537ac3c0d2c21c79/Lib/unittest/main.py#L272-L273</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="ow">not</span> <span class="n">TEST_RESULT</span><span class="o">.</span><span class="n">wasSuccessful</span><span class="p">())</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">_main_func</span><span class="p">(</span><span class="vm">__doc__</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
+     
+<script>var version_json_loc = "../../../../../versions.json";</script>
+
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

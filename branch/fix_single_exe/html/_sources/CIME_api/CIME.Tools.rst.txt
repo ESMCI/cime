@@ -1,0 +1,37 @@
+CIME.Tools package
+==================
+
+Submodules
+----------
+
+CIME.Tools.generate\_cylc\_workflow module
+------------------------------------------
+
+.. automodule:: CIME.Tools.generate_cylc_workflow
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+CIME.Tools.standard\_script\_setup module
+-----------------------------------------
+
+.. automodule:: CIME.Tools.standard_script_setup
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+CIME.Tools.testreporter module
+------------------------------
+
+.. automodule:: CIME.Tools.testreporter
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: CIME.Tools
+   :members:
+   :undoc-members:
+   :show-inheritance:

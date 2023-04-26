@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CIME.tests.test_unit_xml_env_batch &mdash; CIME master documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/pop_ver.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            CIME
+          </a>
+              <div class="version">
+                master
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../what_cime/index.html">What is CIME?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../users_guide/index.html">Case Control System Part 1: Basic Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../users_guide/index.html#case-control-system-part-2-configuration-porting-testing-and-use-cases">Case Control System Part 2: Configuration, Porting, Testing and Use Cases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../build_cpl/index.html">Building a Coupled Model with CIME</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../misc_tools/index.html">Miscellaneous Tools</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../glossary/index.html">Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Tools_user/index.html">User Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../xml_files/index.html">XML Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../CIME_api/modules.html">CIME</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Tools_api/modules.html">Tools</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">CIME</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">CIME.tests.test_unit_xml_env_batch</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for CIME.tests.test_unit_xml_env_batch</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">unittest</span>
+<span class="kn">import</span> <span class="nn">tempfile</span>
+<span class="kn">from</span> <span class="nn">unittest</span> <span class="kn">import</span> <span class="n">mock</span>
+
+<span class="kn">from</span> <span class="nn">CIME.XML.env_batch</span> <span class="kn">import</span> <span class="n">EnvBatch</span>
+
+<span class="c1"># pylint: disable=unused-argument</span>
+
+
+<div class="viewcode-block" id="TestXMLEnvBatch"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_xml_env_batch.TestXMLEnvBatch">[docs]</a><span class="k">class</span> <span class="nc">TestXMLEnvBatch</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestXMLEnvBatch.test_get_submit_args_job_queue"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_xml_env_batch.TestXMLEnvBatch.test_get_submit_args_job_queue">[docs]</a>    <span class="k">def</span> <span class="nf">test_get_submit_args_job_queue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">()</span> <span class="k">as</span> <span class="n">tfile</span><span class="p">:</span>
+            <span class="n">tfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
+<span class="w">                </span><span class="sa">b</span><span class="sd">&quot;&quot;&quot;&lt;?xml version=&quot;1.0&quot;?&gt;</span>
+<span class="sd">&lt;file id=&quot;env_batch.xml&quot; version=&quot;2.0&quot;&gt;</span>
+<span class="sd">  &lt;header&gt;</span>
+<span class="sd">      These variables may be changed anytime during a run, they</span>
+<span class="sd">      control arguments to the batch submit command.</span>
+<span class="sd">    &lt;/header&gt;</span>
+<span class="sd">  &lt;group id=&quot;config_batch&quot;&gt;</span>
+<span class="sd">    &lt;entry id=&quot;BATCH_SYSTEM&quot; value=&quot;slurm&quot;&gt;</span>
+<span class="sd">      &lt;type&gt;char&lt;/type&gt;</span>
+<span class="sd">      &lt;valid_values&gt;miller_slurm,nersc_slurm,lc_slurm,moab,pbs,lsf,slurm,cobalt,cobalt_theta,none&lt;/valid_values&gt;</span>
+<span class="sd">      &lt;desc&gt;The batch system type to use for this machine.&lt;/desc&gt;</span>
+<span class="sd">    &lt;/entry&gt;</span>
+<span class="sd">  &lt;/group&gt;</span>
+<span class="sd">  &lt;group id=&quot;job_submission&quot;&gt;</span>
+<span class="sd">    &lt;entry id=&quot;PROJECT_REQUIRED&quot; value=&quot;FALSE&quot;&gt;</span>
+<span class="sd">      &lt;type&gt;logical&lt;/type&gt;</span>
+<span class="sd">      &lt;valid_values&gt;TRUE,FALSE&lt;/valid_values&gt;</span>
+<span class="sd">      &lt;desc&gt;whether the PROJECT value is required on this machine&lt;/desc&gt;</span>
+<span class="sd">    &lt;/entry&gt;</span>
+<span class="sd">  &lt;/group&gt;</span>
+<span class="sd">  &lt;batch_system MACH=&quot;docker&quot; type=&quot;slurm&quot;&gt;</span>
+<span class="sd">    &lt;submit_args&gt;</span>
+<span class="sd">      &lt;argument&gt;-w default&lt;/argument&gt;</span>
+<span class="sd">      &lt;argument job_queue=&quot;short&quot;&gt;-w short&lt;/argument&gt;</span>
+<span class="sd">      &lt;argument job_queue=&quot;long&quot;&gt;-w long&lt;/argument&gt;</span>
+<span class="sd">      &lt;argument&gt;-A $VARIABLE_THAT_DOES_NOT_EXIST&lt;/argument&gt;</span>
+<span class="sd">    &lt;/submit_args&gt;</span>
+<span class="sd">    &lt;queues&gt;</span>
+<span class="sd">      &lt;queue walltimemax=&quot;01:00:00&quot; nodemax=&quot;1&quot;&gt;long&lt;/queue&gt;</span>
+<span class="sd">      &lt;queue walltimemax=&quot;00:30:00&quot; nodemax=&quot;1&quot; default=&quot;true&quot;&gt;short&lt;/queue&gt;</span>
+<span class="sd">    &lt;/queues&gt;</span>
+<span class="sd">  &lt;/batch_system&gt;</span>
+<span class="sd">&lt;/file&gt;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+            <span class="p">)</span>
+
+            <span class="n">tfile</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+            <span class="n">batch</span> <span class="o">=</span> <span class="n">EnvBatch</span><span class="p">(</span><span class="n">infile</span><span class="o">=</span><span class="n">tfile</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+            <span class="n">case</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
+
+            <span class="k">case</span><span class="o">.</span><span class="n">get_value</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;long&quot;</span><span class="p">,</span> <span class="s2">&quot;long&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+            <span class="k">case</span><span class="o">.</span><span class="n">get_resolved_value</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="kc">None</span>
+
+            <span class="k">case</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">PropertyMock</span><span class="p">(</span><span class="n">return_value</span><span class="o">=</span><span class="n">tfile</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+            <span class="n">submit_args</span> <span class="o">=</span> <span class="n">batch</span><span class="o">.</span><span class="n">get_submit_args</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="s2">&quot;.case.run&quot;</span><span class="p">)</span>
+
+            <span class="n">expected_args</span> <span class="o">=</span> <span class="s2">&quot;  -w default -w long&quot;</span>
+            <span class="k">assert</span> <span class="n">submit_args</span> <span class="o">==</span> <span class="n">expected_args</span></div>
+
+<div class="viewcode-block" id="TestXMLEnvBatch.test_get_submit_args"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_xml_env_batch.TestXMLEnvBatch.test_get_submit_args">[docs]</a>    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="o">.</span><span class="n">dict</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;TEST&quot;</span><span class="p">:</span> <span class="s2">&quot;GOOD&quot;</span><span class="p">})</span>
+    <span class="k">def</span> <span class="nf">test_get_submit_args</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">()</span> <span class="k">as</span> <span class="n">tfile</span><span class="p">:</span>
+            <span class="n">tfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
+<span class="w">                </span><span class="sa">b</span><span class="sd">&quot;&quot;&quot;&lt;?xml version=&quot;1.0&quot;?&gt;</span>
+<span class="sd">&lt;file id=&quot;env_batch.xml&quot; version=&quot;2.0&quot;&gt;</span>
+<span class="sd">  &lt;header&gt;</span>
+<span class="sd">      These variables may be changed anytime during a run, they</span>
+<span class="sd">      control arguments to the batch submit command.</span>
+<span class="sd">    &lt;/header&gt;</span>
+<span class="sd">  &lt;group id=&quot;config_batch&quot;&gt;</span>
+<span class="sd">    &lt;entry id=&quot;BATCH_SYSTEM&quot; value=&quot;slurm&quot;&gt;</span>
+<span class="sd">      &lt;type&gt;char&lt;/type&gt;</span>
+<span class="sd">      &lt;valid_values&gt;miller_slurm,nersc_slurm,lc_slurm,moab,pbs,lsf,slurm,cobalt,cobalt_theta,none&lt;/valid_values&gt;</span>
+<span class="sd">      &lt;desc&gt;The batch system type to use for this machine.&lt;/desc&gt;</span>
+<span class="sd">    &lt;/entry&gt;</span>
+<span class="sd">  &lt;/group&gt;</span>
+<span class="sd">  &lt;group id=&quot;job_submission&quot;&gt;</span>
+<span class="sd">    &lt;entry id=&quot;PROJECT_REQUIRED&quot; value=&quot;FALSE&quot;&gt;</span>
+<span class="sd">      &lt;type&gt;logical&lt;/type&gt;</span>
+<span class="sd">      &lt;valid_values&gt;TRUE,FALSE&lt;/valid_values&gt;</span>
+<span class="sd">      &lt;desc&gt;whether the PROJECT value is required on this machine&lt;/desc&gt;</span>
+<span class="sd">    &lt;/entry&gt;</span>
+<span class="sd">  &lt;/group&gt;</span>
+<span class="sd">  &lt;batch_system type=&quot;slurm&quot;&gt;</span>
+<span class="sd">    &lt;batch_query per_job_arg=&quot;-j&quot;&gt;squeue&lt;/batch_query&gt;</span>
+<span class="sd">    &lt;batch_submit&gt;sbatch&lt;/batch_submit&gt;</span>
+<span class="sd">    &lt;batch_cancel&gt;scancel&lt;/batch_cancel&gt;</span>
+<span class="sd">    &lt;batch_directive&gt;#SBATCH&lt;/batch_directive&gt;</span>
+<span class="sd">    &lt;jobid_pattern&gt;(\d+)$&lt;/jobid_pattern&gt;</span>
+<span class="sd">    &lt;depend_string&gt;--dependency=afterok:jobid&lt;/depend_string&gt;</span>
+<span class="sd">    &lt;depend_allow_string&gt;--dependency=afterany:jobid&lt;/depend_allow_string&gt;</span>
+<span class="sd">    &lt;depend_separator&gt;:&lt;/depend_separator&gt;</span>
+<span class="sd">    &lt;walltime_format&gt;%H:%M:%S&lt;/walltime_format&gt;</span>
+<span class="sd">    &lt;batch_mail_flag&gt;--mail-user&lt;/batch_mail_flag&gt;</span>
+<span class="sd">    &lt;batch_mail_type_flag&gt;--mail-type&lt;/batch_mail_type_flag&gt;</span>
+<span class="sd">    &lt;batch_mail_type&gt;none, all, begin, end, fail&lt;/batch_mail_type&gt;</span>
+<span class="sd">    &lt;submit_args&gt;</span>
+<span class="sd">      &lt;arg flag=&quot;--time&quot; name=&quot;$JOB_WALLCLOCK_TIME&quot;/&gt;</span>
+<span class="sd">      &lt;arg flag=&quot;-p&quot; name=&quot;$JOB_QUEUE&quot;/&gt;</span>
+<span class="sd">      &lt;arg flag=&quot;--account&quot; name=&quot;$PROJECT&quot;/&gt;</span>
+<span class="sd">      &lt;arg flag=&quot;--no-arg&quot; /&gt;</span>
+<span class="sd">      &lt;arg flag=&quot;--path&quot; name=&quot;$$ENV{TEST}&quot; /&gt;</span>
+<span class="sd">    &lt;/submit_args&gt;</span>
+<span class="sd">    &lt;directives&gt;</span>
+<span class="sd">      &lt;directive&gt; --job-name={{ job_id }}&lt;/directive&gt;</span>
+<span class="sd">      &lt;directive&gt; --nodes={{ num_nodes }}&lt;/directive&gt;</span>
+<span class="sd">      &lt;directive&gt; --output={{ job_id }}.%j &lt;/directive&gt;</span>
+<span class="sd">      &lt;directive&gt; --exclusive &lt;/directive&gt;</span>
+<span class="sd">    &lt;/directives&gt;</span>
+<span class="sd">  &lt;/batch_system&gt;</span>
+<span class="sd">  &lt;batch_system MACH=&quot;docker&quot; type=&quot;slurm&quot;&gt;</span>
+<span class="sd">    &lt;submit_args&gt;</span>
+<span class="sd">      &lt;argument&gt;-w docker&lt;/argument&gt;</span>
+<span class="sd">    &lt;/submit_args&gt;</span>
+<span class="sd">    &lt;queues&gt;</span>
+<span class="sd">      &lt;queue walltimemax=&quot;01:00:00&quot; nodemax=&quot;1&quot;&gt;long&lt;/queue&gt;</span>
+<span class="sd">      &lt;queue walltimemax=&quot;00:30:00&quot; nodemax=&quot;1&quot; default=&quot;true&quot;&gt;short&lt;/queue&gt;</span>
+<span class="sd">    &lt;/queues&gt;</span>
+<span class="sd">  &lt;/batch_system&gt;</span>
+<span class="sd">&lt;/file&gt;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+            <span class="p">)</span>
+
+            <span class="n">tfile</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+            <span class="n">batch</span> <span class="o">=</span> <span class="n">EnvBatch</span><span class="p">(</span><span class="n">infile</span><span class="o">=</span><span class="n">tfile</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+            <span class="n">case</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
+
+            <span class="k">case</span><span class="o">.</span><span class="n">get_value</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">tfile</span><span class="o">.</span><span class="n">name</span><span class="p">),</span>
+                <span class="s2">&quot;00:30:00&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;long&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;CIME&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;/test&quot;</span><span class="p">,</span>
+            <span class="p">]</span>
+
+            <span class="k">def</span> <span class="nf">my_get_resolved_value</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">val</span>
+
+            <span class="c1"># value for --path</span>
+            <span class="k">case</span><span class="o">.</span><span class="n">get_resolved_value</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">my_get_resolved_value</span>
+
+            <span class="k">case</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">PropertyMock</span><span class="p">(</span><span class="n">return_value</span><span class="o">=</span><span class="n">tfile</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+            <span class="n">submit_args</span> <span class="o">=</span> <span class="n">batch</span><span class="o">.</span><span class="n">get_submit_args</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="s2">&quot;.case.run&quot;</span><span class="p">)</span>
+
+            <span class="n">expected_args</span> <span class="o">=</span> <span class="s2">&quot;  --time 00:30:00 -p long --account CIME --no-arg --path /test -w docker&quot;</span>
+
+            <span class="k">assert</span> <span class="n">submit_args</span> <span class="o">==</span> <span class="n">expected_args</span></div>
+
+<div class="viewcode-block" id="TestXMLEnvBatch.test_get_queue_specs"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_xml_env_batch.TestXMLEnvBatch.test_get_queue_specs">[docs]</a>    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.XML.env_batch.EnvBatch.get&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_get_queue_specs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">get</span><span class="p">):</span>
+        <span class="n">node</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
+
+        <span class="n">batch</span> <span class="o">=</span> <span class="n">EnvBatch</span><span class="p">()</span>
+
+        <span class="n">get</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;1&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;1&quot;</span><span class="p">,</span>
+            <span class="kc">None</span><span class="p">,</span>
+            <span class="kc">None</span><span class="p">,</span>
+            <span class="s2">&quot;case.run&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;08:00:00&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;05:00:00&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;12:00:00&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;false&quot;</span><span class="p">,</span>
+        <span class="p">]</span>
+
+        <span class="p">(</span>
+            <span class="n">nodemin</span><span class="p">,</span>
+            <span class="n">nodemax</span><span class="p">,</span>
+            <span class="n">jobname</span><span class="p">,</span>
+            <span class="n">walltimedef</span><span class="p">,</span>
+            <span class="n">walltimemin</span><span class="p">,</span>
+            <span class="n">walltimemax</span><span class="p">,</span>
+            <span class="n">jobmin</span><span class="p">,</span>
+            <span class="n">jobmax</span><span class="p">,</span>
+            <span class="n">strict</span><span class="p">,</span>
+        <span class="p">)</span> <span class="o">=</span> <span class="n">batch</span><span class="o">.</span><span class="n">get_queue_specs</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">nodemin</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">nodemax</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">jobname</span> <span class="o">==</span> <span class="s2">&quot;case.run&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">walltimedef</span> <span class="o">==</span> <span class="s2">&quot;08:00:00&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">walltimemin</span> <span class="o">==</span> <span class="s2">&quot;05:00:00&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">walltimemax</span> <span class="o">==</span> <span class="s2">&quot;12:00:00&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">jobmin</span> <span class="o">==</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">jobmax</span> <span class="o">==</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">strict</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestXMLEnvBatch.test_set_job_defaults_honor_walltimemax"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_xml_env_batch.TestXMLEnvBatch.test_set_job_defaults_honor_walltimemax">[docs]</a>    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.XML.env_batch.EnvBatch.text&quot;</span><span class="p">,</span> <span class="n">return_value</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">)</span>
+    <span class="c1"># nodemin, nodemax, jobname, walltimemin, walltimemax, jobmin, jobmax, strict</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span>
+        <span class="s2">&quot;CIME.XML.env_batch.EnvBatch.get_queue_specs&quot;</span><span class="p">,</span>
+        <span class="n">return_value</span><span class="o">=</span><span class="p">[</span>
+            <span class="mi">1</span><span class="p">,</span>
+            <span class="mi">1</span><span class="p">,</span>
+            <span class="s2">&quot;case.run&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;10:00:00&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;08:00:00&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;12:00:00&quot;</span><span class="p">,</span>
+            <span class="mi">1</span><span class="p">,</span>
+            <span class="mi">1</span><span class="p">,</span>
+            <span class="kc">False</span><span class="p">,</span>
+        <span class="p">],</span>
+    <span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.XML.env_batch.EnvBatch.select_best_queue&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.XML.env_batch.EnvBatch.get_default_queue&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_set_job_defaults_honor_walltimemax</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">get_default_queue</span><span class="p">,</span> <span class="n">select_best_queue</span><span class="p">,</span> <span class="n">get_queue_specs</span><span class="p">,</span> <span class="n">text</span>
+    <span class="p">):</span>
+        <span class="n">case</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
+
+        <span class="n">batch_jobs</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span>
+                <span class="s2">&quot;case.run&quot;</span><span class="p">,</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;template&quot;</span><span class="p">:</span> <span class="s2">&quot;template.case.run&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;prereq&quot;</span><span class="p">:</span> <span class="s2">&quot;$BUILD_COMPLETE and not $TEST&quot;</span><span class="p">,</span>
+                <span class="p">},</span>
+            <span class="p">)</span>
+        <span class="p">]</span>
+
+        <span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;USER_REQUESTED_WALLTIME&quot;</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s2">&quot;20:00:00&quot;</span>
+
+            <span class="k">return</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
+
+        <span class="k">case</span><span class="o">.</span><span class="n">get_value</span> <span class="o">=</span> <span class="n">get_value</span>
+
+        <span class="k">case</span><span class="o">.</span><span class="n">get_env</span><span class="o">.</span><span class="n">return_value</span><span class="o">.</span><span class="n">get_jobs</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;case.run&quot;</span><span class="p">]</span>
+
+        <span class="n">batch</span> <span class="o">=</span> <span class="n">EnvBatch</span><span class="p">()</span>
+
+        <span class="n">batch</span><span class="o">.</span><span class="n">set_job_defaults</span><span class="p">(</span><span class="n">batch_jobs</span><span class="p">,</span> <span class="n">case</span><span class="p">)</span>
+
+        <span class="n">env_workflow</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_env</span><span class="o">.</span><span class="n">return_value</span>
+
+        <span class="n">env_workflow</span><span class="o">.</span><span class="n">set_value</span><span class="o">.</span><span class="n">assert_any_call</span><span class="p">(</span>
+            <span class="s2">&quot;JOB_QUEUE&quot;</span><span class="p">,</span> <span class="s2">&quot;default&quot;</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="s2">&quot;case.run&quot;</span><span class="p">,</span> <span class="n">ignore_type</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
+        <span class="n">env_workflow</span><span class="o">.</span><span class="n">set_value</span><span class="o">.</span><span class="n">assert_any_call</span><span class="p">(</span>
+            <span class="s2">&quot;JOB_WALLCLOCK_TIME&quot;</span><span class="p">,</span> <span class="s2">&quot;20:00:00&quot;</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="s2">&quot;case.run&quot;</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestXMLEnvBatch.test_set_job_defaults_honor_walltimemin"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_xml_env_batch.TestXMLEnvBatch.test_set_job_defaults_honor_walltimemin">[docs]</a>    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.XML.env_batch.EnvBatch.text&quot;</span><span class="p">,</span> <span class="n">return_value</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">)</span>
+    <span class="c1"># nodemin, nodemax, jobname, walltimemin, walltimemax, jobmin, jobmax, strict</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span>
+        <span class="s2">&quot;CIME.XML.env_batch.EnvBatch.get_queue_specs&quot;</span><span class="p">,</span>
+        <span class="n">return_value</span><span class="o">=</span><span class="p">[</span>
+            <span class="mi">1</span><span class="p">,</span>
+            <span class="mi">1</span><span class="p">,</span>
+            <span class="s2">&quot;case.run&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;10:00:00&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;08:00:00&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;12:00:00&quot;</span><span class="p">,</span>
+            <span class="mi">1</span><span class="p">,</span>
+            <span class="mi">1</span><span class="p">,</span>
+            <span class="kc">False</span><span class="p">,</span>
+        <span class="p">],</span>
+    <span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.XML.env_batch.EnvBatch.select_best_queue&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.XML.env_batch.EnvBatch.get_default_queue&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_set_job_defaults_honor_walltimemin</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">get_default_queue</span><span class="p">,</span> <span class="n">select_best_queue</span><span class="p">,</span> <span class="n">get_queue_specs</span><span class="p">,</span> <span class="n">text</span>
+    <span class="p">):</span>
+        <span class="n">case</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
+
+        <span class="n">batch_jobs</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span>
+                <span class="s2">&quot;case.run&quot;</span><span class="p">,</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;template&quot;</span><span class="p">:</span> <span class="s2">&quot;template.case.run&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;prereq&quot;</span><span class="p">:</span> <span class="s2">&quot;$BUILD_COMPLETE and not $TEST&quot;</span><span class="p">,</span>
+                <span class="p">},</span>
+            <span class="p">)</span>
+        <span class="p">]</span>
+
+        <span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;USER_REQUESTED_WALLTIME&quot;</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s2">&quot;05:00:00&quot;</span>
+
+            <span class="k">return</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
+
+        <span class="k">case</span><span class="o">.</span><span class="n">get_value</span> <span class="o">=</span> <span class="n">get_value</span>
+
+        <span class="k">case</span><span class="o">.</span><span class="n">get_env</span><span class="o">.</span><span class="n">return_value</span><span class="o">.</span><span class="n">get_jobs</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;case.run&quot;</span><span class="p">]</span>
+
+        <span class="n">batch</span> <span class="o">=</span> <span class="n">EnvBatch</span><span class="p">()</span>
+
+        <span class="n">batch</span><span class="o">.</span><span class="n">set_job_defaults</span><span class="p">(</span><span class="n">batch_jobs</span><span class="p">,</span> <span class="n">case</span><span class="p">)</span>
+
+        <span class="n">env_workflow</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_env</span><span class="o">.</span><span class="n">return_value</span>
+
+        <span class="n">env_workflow</span><span class="o">.</span><span class="n">set_value</span><span class="o">.</span><span class="n">assert_any_call</span><span class="p">(</span>
+            <span class="s2">&quot;JOB_QUEUE&quot;</span><span class="p">,</span> <span class="s2">&quot;default&quot;</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="s2">&quot;case.run&quot;</span><span class="p">,</span> <span class="n">ignore_type</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
+        <span class="n">env_workflow</span><span class="o">.</span><span class="n">set_value</span><span class="o">.</span><span class="n">assert_any_call</span><span class="p">(</span>
+            <span class="s2">&quot;JOB_WALLCLOCK_TIME&quot;</span><span class="p">,</span> <span class="s2">&quot;05:00:00&quot;</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="s2">&quot;case.run&quot;</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestXMLEnvBatch.test_set_job_defaults_user_walltime"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_xml_env_batch.TestXMLEnvBatch.test_set_job_defaults_user_walltime">[docs]</a>    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.XML.env_batch.EnvBatch.text&quot;</span><span class="p">,</span> <span class="n">return_value</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">)</span>
+    <span class="c1"># nodemin, nodemax, jobname, walltimemax, jobmin, jobmax, strict</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span>
+        <span class="s2">&quot;CIME.XML.env_batch.EnvBatch.get_queue_specs&quot;</span><span class="p">,</span>
+        <span class="n">return_value</span><span class="o">=</span><span class="p">[</span>
+            <span class="mi">1</span><span class="p">,</span>
+            <span class="mi">1</span><span class="p">,</span>
+            <span class="s2">&quot;case.run&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;10:00:00&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;08:00:00&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;12:00:00&quot;</span><span class="p">,</span>
+            <span class="mi">1</span><span class="p">,</span>
+            <span class="mi">1</span><span class="p">,</span>
+            <span class="kc">False</span><span class="p">,</span>
+        <span class="p">],</span>
+    <span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.XML.env_batch.EnvBatch.select_best_queue&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.XML.env_batch.EnvBatch.get_default_queue&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_set_job_defaults_user_walltime</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">get_default_queue</span><span class="p">,</span> <span class="n">select_best_queue</span><span class="p">,</span> <span class="n">get_queue_specs</span><span class="p">,</span> <span class="n">text</span>
+    <span class="p">):</span>
+        <span class="n">case</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
+
+        <span class="n">batch_jobs</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span>
+                <span class="s2">&quot;case.run&quot;</span><span class="p">,</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;template&quot;</span><span class="p">:</span> <span class="s2">&quot;template.case.run&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;prereq&quot;</span><span class="p">:</span> <span class="s2">&quot;$BUILD_COMPLETE and not $TEST&quot;</span><span class="p">,</span>
+                <span class="p">},</span>
+            <span class="p">)</span>
+        <span class="p">]</span>
+
+        <span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;USER_REQUESTED_WALLTIME&quot;</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s2">&quot;10:00:00&quot;</span>
+
+            <span class="k">return</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
+
+        <span class="k">case</span><span class="o">.</span><span class="n">get_value</span> <span class="o">=</span> <span class="n">get_value</span>
+
+        <span class="k">case</span><span class="o">.</span><span class="n">get_env</span><span class="o">.</span><span class="n">return_value</span><span class="o">.</span><span class="n">get_jobs</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;case.run&quot;</span><span class="p">]</span>
+
+        <span class="n">batch</span> <span class="o">=</span> <span class="n">EnvBatch</span><span class="p">()</span>
+
+        <span class="n">batch</span><span class="o">.</span><span class="n">set_job_defaults</span><span class="p">(</span><span class="n">batch_jobs</span><span class="p">,</span> <span class="n">case</span><span class="p">)</span>
+
+        <span class="n">env_workflow</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_env</span><span class="o">.</span><span class="n">return_value</span>
+
+        <span class="n">env_workflow</span><span class="o">.</span><span class="n">set_value</span><span class="o">.</span><span class="n">assert_any_call</span><span class="p">(</span>
+            <span class="s2">&quot;JOB_QUEUE&quot;</span><span class="p">,</span> <span class="s2">&quot;default&quot;</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="s2">&quot;case.run&quot;</span><span class="p">,</span> <span class="n">ignore_type</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
+        <span class="n">env_workflow</span><span class="o">.</span><span class="n">set_value</span><span class="o">.</span><span class="n">assert_any_call</span><span class="p">(</span>
+            <span class="s2">&quot;JOB_WALLCLOCK_TIME&quot;</span><span class="p">,</span> <span class="s2">&quot;10:00:00&quot;</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="s2">&quot;case.run&quot;</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestXMLEnvBatch.test_set_job_defaults_walltimemax_none"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_xml_env_batch.TestXMLEnvBatch.test_set_job_defaults_walltimemax_none">[docs]</a>    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.XML.env_batch.EnvBatch.text&quot;</span><span class="p">,</span> <span class="n">return_value</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">)</span>
+    <span class="c1"># nodemin, nodemax, jobname, walltimemax, jobmin, jobmax, strict</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span>
+        <span class="s2">&quot;CIME.XML.env_batch.EnvBatch.get_queue_specs&quot;</span><span class="p">,</span>
+        <span class="n">return_value</span><span class="o">=</span><span class="p">[</span>
+            <span class="mi">1</span><span class="p">,</span>
+            <span class="mi">1</span><span class="p">,</span>
+            <span class="s2">&quot;case.run&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;10:00:00&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;05:00:00&quot;</span><span class="p">,</span>
+            <span class="kc">None</span><span class="p">,</span>
+            <span class="mi">1</span><span class="p">,</span>
+            <span class="mi">1</span><span class="p">,</span>
+            <span class="kc">False</span><span class="p">,</span>
+        <span class="p">],</span>
+    <span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.XML.env_batch.EnvBatch.select_best_queue&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.XML.env_batch.EnvBatch.get_default_queue&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_set_job_defaults_walltimemax_none</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">get_default_queue</span><span class="p">,</span> <span class="n">select_best_queue</span><span class="p">,</span> <span class="n">get_queue_specs</span><span class="p">,</span> <span class="n">text</span>
+    <span class="p">):</span>
+        <span class="n">case</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
+
+        <span class="n">batch_jobs</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span>
+                <span class="s2">&quot;case.run&quot;</span><span class="p">,</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;template&quot;</span><span class="p">:</span> <span class="s2">&quot;template.case.run&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;prereq&quot;</span><span class="p">:</span> <span class="s2">&quot;$BUILD_COMPLETE and not $TEST&quot;</span><span class="p">,</span>
+                <span class="p">},</span>
+            <span class="p">)</span>
+        <span class="p">]</span>
+
+        <span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;USER_REQUESTED_WALLTIME&quot;</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s2">&quot;08:00:00&quot;</span>
+
+            <span class="k">return</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
+
+        <span class="k">case</span><span class="o">.</span><span class="n">get_value</span> <span class="o">=</span> <span class="n">get_value</span>
+
+        <span class="k">case</span><span class="o">.</span><span class="n">get_env</span><span class="o">.</span><span class="n">return_value</span><span class="o">.</span><span class="n">get_jobs</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;case.run&quot;</span><span class="p">]</span>
+
+        <span class="n">batch</span> <span class="o">=</span> <span class="n">EnvBatch</span><span class="p">()</span>
+
+        <span class="n">batch</span><span class="o">.</span><span class="n">set_job_defaults</span><span class="p">(</span><span class="n">batch_jobs</span><span class="p">,</span> <span class="n">case</span><span class="p">)</span>
+
+        <span class="n">env_workflow</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_env</span><span class="o">.</span><span class="n">return_value</span>
+
+        <span class="n">env_workflow</span><span class="o">.</span><span class="n">set_value</span><span class="o">.</span><span class="n">assert_any_call</span><span class="p">(</span>
+            <span class="s2">&quot;JOB_QUEUE&quot;</span><span class="p">,</span> <span class="s2">&quot;default&quot;</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="s2">&quot;case.run&quot;</span><span class="p">,</span> <span class="n">ignore_type</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
+        <span class="n">env_workflow</span><span class="o">.</span><span class="n">set_value</span><span class="o">.</span><span class="n">assert_any_call</span><span class="p">(</span>
+            <span class="s2">&quot;JOB_WALLCLOCK_TIME&quot;</span><span class="p">,</span> <span class="s2">&quot;08:00:00&quot;</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="s2">&quot;case.run&quot;</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestXMLEnvBatch.test_set_job_defaults_walltimemin_none"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_xml_env_batch.TestXMLEnvBatch.test_set_job_defaults_walltimemin_none">[docs]</a>    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.XML.env_batch.EnvBatch.text&quot;</span><span class="p">,</span> <span class="n">return_value</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">)</span>
+    <span class="c1"># nodemin, nodemax, jobname, walltimemax, jobmin, jobmax, strict</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span>
+        <span class="s2">&quot;CIME.XML.env_batch.EnvBatch.get_queue_specs&quot;</span><span class="p">,</span>
+        <span class="n">return_value</span><span class="o">=</span><span class="p">[</span>
+            <span class="mi">1</span><span class="p">,</span>
+            <span class="mi">1</span><span class="p">,</span>
+            <span class="s2">&quot;case.run&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;10:00:00&quot;</span><span class="p">,</span>
+            <span class="kc">None</span><span class="p">,</span>
+            <span class="s2">&quot;12:00:00&quot;</span><span class="p">,</span>
+            <span class="mi">1</span><span class="p">,</span>
+            <span class="mi">1</span><span class="p">,</span>
+            <span class="kc">False</span><span class="p">,</span>
+        <span class="p">],</span>
+    <span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.XML.env_batch.EnvBatch.select_best_queue&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.XML.env_batch.EnvBatch.get_default_queue&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_set_job_defaults_walltimemin_none</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">get_default_queue</span><span class="p">,</span> <span class="n">select_best_queue</span><span class="p">,</span> <span class="n">get_queue_specs</span><span class="p">,</span> <span class="n">text</span>
+    <span class="p">):</span>
+        <span class="n">case</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
+
+        <span class="n">batch_jobs</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span>
+                <span class="s2">&quot;case.run&quot;</span><span class="p">,</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;template&quot;</span><span class="p">:</span> <span class="s2">&quot;template.case.run&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;prereq&quot;</span><span class="p">:</span> <span class="s2">&quot;$BUILD_COMPLETE and not $TEST&quot;</span><span class="p">,</span>
+                <span class="p">},</span>
+            <span class="p">)</span>
+        <span class="p">]</span>
+
+        <span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;USER_REQUESTED_WALLTIME&quot;</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s2">&quot;08:00:00&quot;</span>
+
+            <span class="k">return</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
+
+        <span class="k">case</span><span class="o">.</span><span class="n">get_value</span> <span class="o">=</span> <span class="n">get_value</span>
+
+        <span class="k">case</span><span class="o">.</span><span class="n">get_env</span><span class="o">.</span><span class="n">return_value</span><span class="o">.</span><span class="n">get_jobs</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;case.run&quot;</span><span class="p">]</span>
+
+        <span class="n">batch</span> <span class="o">=</span> <span class="n">EnvBatch</span><span class="p">()</span>
+
+        <span class="n">batch</span><span class="o">.</span><span class="n">set_job_defaults</span><span class="p">(</span><span class="n">batch_jobs</span><span class="p">,</span> <span class="n">case</span><span class="p">)</span>
+
+        <span class="n">env_workflow</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_env</span><span class="o">.</span><span class="n">return_value</span>
+
+        <span class="n">env_workflow</span><span class="o">.</span><span class="n">set_value</span><span class="o">.</span><span class="n">assert_any_call</span><span class="p">(</span>
+            <span class="s2">&quot;JOB_QUEUE&quot;</span><span class="p">,</span> <span class="s2">&quot;default&quot;</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="s2">&quot;case.run&quot;</span><span class="p">,</span> <span class="n">ignore_type</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
+        <span class="n">env_workflow</span><span class="o">.</span><span class="n">set_value</span><span class="o">.</span><span class="n">assert_any_call</span><span class="p">(</span>
+            <span class="s2">&quot;JOB_WALLCLOCK_TIME&quot;</span><span class="p">,</span> <span class="s2">&quot;08:00:00&quot;</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="s2">&quot;case.run&quot;</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestXMLEnvBatch.test_set_job_defaults_walltimedef"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_xml_env_batch.TestXMLEnvBatch.test_set_job_defaults_walltimedef">[docs]</a>    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.XML.env_batch.EnvBatch.text&quot;</span><span class="p">,</span> <span class="n">return_value</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">)</span>
+    <span class="c1"># nodemin, nodemax, jobname, walltimemax, jobmin, jobmax, strict</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span>
+        <span class="s2">&quot;CIME.XML.env_batch.EnvBatch.get_queue_specs&quot;</span><span class="p">,</span>
+        <span class="n">return_value</span><span class="o">=</span><span class="p">[</span>
+            <span class="mi">1</span><span class="p">,</span>
+            <span class="mi">1</span><span class="p">,</span>
+            <span class="s2">&quot;case.run&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;10:00:00&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;08:00:00&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;12:00:00&quot;</span><span class="p">,</span>
+            <span class="mi">1</span><span class="p">,</span>
+            <span class="mi">1</span><span class="p">,</span>
+            <span class="kc">False</span><span class="p">,</span>
+        <span class="p">],</span>
+    <span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.XML.env_batch.EnvBatch.select_best_queue&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.XML.env_batch.EnvBatch.get_default_queue&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_set_job_defaults_walltimedef</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">get_default_queue</span><span class="p">,</span> <span class="n">select_best_queue</span><span class="p">,</span> <span class="n">get_queue_specs</span><span class="p">,</span> <span class="n">text</span>
+    <span class="p">):</span>
+        <span class="n">case</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
+
+        <span class="n">batch_jobs</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span>
+                <span class="s2">&quot;case.run&quot;</span><span class="p">,</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;template&quot;</span><span class="p">:</span> <span class="s2">&quot;template.case.run&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;prereq&quot;</span><span class="p">:</span> <span class="s2">&quot;$BUILD_COMPLETE and not $TEST&quot;</span><span class="p">,</span>
+                <span class="p">},</span>
+            <span class="p">)</span>
+        <span class="p">]</span>
+
+        <span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;USER_REQUESTED_WALLTIME&quot;</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+
+            <span class="k">return</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
+
+        <span class="k">case</span><span class="o">.</span><span class="n">get_value</span> <span class="o">=</span> <span class="n">get_value</span>
+
+        <span class="k">case</span><span class="o">.</span><span class="n">get_env</span><span class="o">.</span><span class="n">return_value</span><span class="o">.</span><span class="n">get_jobs</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;case.run&quot;</span><span class="p">]</span>
+
+        <span class="n">batch</span> <span class="o">=</span> <span class="n">EnvBatch</span><span class="p">()</span>
+
+        <span class="n">batch</span><span class="o">.</span><span class="n">set_job_defaults</span><span class="p">(</span><span class="n">batch_jobs</span><span class="p">,</span> <span class="n">case</span><span class="p">)</span>
+
+        <span class="n">env_workflow</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_env</span><span class="o">.</span><span class="n">return_value</span>
+
+        <span class="n">env_workflow</span><span class="o">.</span><span class="n">set_value</span><span class="o">.</span><span class="n">assert_any_call</span><span class="p">(</span>
+            <span class="s2">&quot;JOB_QUEUE&quot;</span><span class="p">,</span> <span class="s2">&quot;default&quot;</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="s2">&quot;case.run&quot;</span><span class="p">,</span> <span class="n">ignore_type</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
+        <span class="n">env_workflow</span><span class="o">.</span><span class="n">set_value</span><span class="o">.</span><span class="n">assert_any_call</span><span class="p">(</span>
+            <span class="s2">&quot;JOB_WALLCLOCK_TIME&quot;</span><span class="p">,</span> <span class="s2">&quot;10:00:00&quot;</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="s2">&quot;case.run&quot;</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestXMLEnvBatch.test_set_job_defaults"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_xml_env_batch.TestXMLEnvBatch.test_set_job_defaults">[docs]</a>    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.XML.env_batch.EnvBatch.text&quot;</span><span class="p">,</span> <span class="n">return_value</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">)</span>
+    <span class="c1"># nodemin, nodemax, jobname, walltimemax, jobmin, jobmax, strict</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span>
+        <span class="s2">&quot;CIME.XML.env_batch.EnvBatch.get_queue_specs&quot;</span><span class="p">,</span>
+        <span class="n">return_value</span><span class="o">=</span><span class="p">[</span>
+            <span class="mi">1</span><span class="p">,</span>
+            <span class="mi">1</span><span class="p">,</span>
+            <span class="s2">&quot;case.run&quot;</span><span class="p">,</span>
+            <span class="kc">None</span><span class="p">,</span>
+            <span class="s2">&quot;08:00:00&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;12:00:00&quot;</span><span class="p">,</span>
+            <span class="mi">1</span><span class="p">,</span>
+            <span class="mi">1</span><span class="p">,</span>
+            <span class="kc">False</span><span class="p">,</span>
+        <span class="p">],</span>
+    <span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.XML.env_batch.EnvBatch.select_best_queue&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.XML.env_batch.EnvBatch.get_default_queue&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_set_job_defaults</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">get_default_queue</span><span class="p">,</span> <span class="n">select_best_queue</span><span class="p">,</span> <span class="n">get_queue_specs</span><span class="p">,</span> <span class="n">text</span>
+    <span class="p">):</span>
+        <span class="n">case</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
+
+        <span class="n">batch_jobs</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span>
+                <span class="s2">&quot;case.run&quot;</span><span class="p">,</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;template&quot;</span><span class="p">:</span> <span class="s2">&quot;template.case.run&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;prereq&quot;</span><span class="p">:</span> <span class="s2">&quot;$BUILD_COMPLETE and not $TEST&quot;</span><span class="p">,</span>
+                <span class="p">},</span>
+            <span class="p">)</span>
+        <span class="p">]</span>
+
+        <span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;USER_REQUESTED_WALLTIME&quot;</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+
+            <span class="k">return</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
+
+        <span class="k">case</span><span class="o">.</span><span class="n">get_value</span> <span class="o">=</span> <span class="n">get_value</span>
+
+        <span class="k">case</span><span class="o">.</span><span class="n">get_env</span><span class="o">.</span><span class="n">return_value</span><span class="o">.</span><span class="n">get_jobs</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;case.run&quot;</span><span class="p">]</span>
+
+        <span class="n">batch</span> <span class="o">=</span> <span class="n">EnvBatch</span><span class="p">()</span>
+
+        <span class="n">batch</span><span class="o">.</span><span class="n">set_job_defaults</span><span class="p">(</span><span class="n">batch_jobs</span><span class="p">,</span> <span class="n">case</span><span class="p">)</span>
+
+        <span class="n">env_workflow</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_env</span><span class="o">.</span><span class="n">return_value</span>
+
+        <span class="n">env_workflow</span><span class="o">.</span><span class="n">set_value</span><span class="o">.</span><span class="n">assert_any_call</span><span class="p">(</span>
+            <span class="s2">&quot;JOB_QUEUE&quot;</span><span class="p">,</span> <span class="s2">&quot;default&quot;</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="s2">&quot;case.run&quot;</span><span class="p">,</span> <span class="n">ignore_type</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
+        <span class="n">env_workflow</span><span class="o">.</span><span class="n">set_value</span><span class="o">.</span><span class="n">assert_any_call</span><span class="p">(</span>
+            <span class="s2">&quot;JOB_WALLCLOCK_TIME&quot;</span><span class="p">,</span> <span class="s2">&quot;12:00:00&quot;</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="s2">&quot;case.run&quot;</span>
+        <span class="p">)</span></div></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">unittest</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
+     
+<script>var version_json_loc = "../../../../../versions.json";</script>
+
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
