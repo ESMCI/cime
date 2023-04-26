@@ -224,7 +224,10 @@ class TestScheduler(object):
         self._input_dir = input_dir
         self._pesfile = pesfile
         self._allow_baseline_overwrite = allow_baseline_overwrite
-        self._allow_pnl = allow_pnl
+        if single_exe:
+            self._allow_pnl = True
+        else:
+            self._allow_pnl = allow_pnl
         self._non_local = non_local
         self._build_groups = []
         self._workflow = workflow
