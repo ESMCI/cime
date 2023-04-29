@@ -30,7 +30,7 @@ module perf_mod
    use shr_kind_mod,      only: SHR_KIND_CS, SHR_KIND_CM, SHR_KIND_CX, &
                                 SHR_KIND_R8, SHR_KIND_I8
    use shr_mpi_mod,       only: shr_mpi_barrier, shr_mpi_bcast
-   use shr_file_mod,      only: shr_file_getUnit, shr_file_freeUnit
+   use shr_log_mod,      only: shr_log_getUnit, shr_log_freeUnit
    use namelist_utils,    only: find_group_name
 #endif
    use mpi
@@ -1186,7 +1186,7 @@ contains
      fname(i:i) = " "
    enddo
 
-   unitn = shr_file_getUnit()
+   unitn = shr_log_getUnit()
 
    ! determine what the current output mode is (append or write)
    if (GPTLprint_mode_query() == GPTLprint_write) then
@@ -1391,7 +1391,7 @@ contains
 
    endif
 
-   call shr_file_freeUnit( unitn )
+   call shr_log_freeUnit( unitn )
 
    ! reset GPTL output mode
    if (pr_write) then
@@ -1539,7 +1539,7 @@ contains
        ! Read in the prof_inparm namelist from NLFilename if it exists
 
        write(p_logunit,*) '(t_initf) Read in prof_inparm namelist from: '//trim(NLFilename)
-       unitn = shr_file_getUnit()
+       unitn = shr_log_getUnit()
 
        ierr = 1
        open( unitn, file=trim(NLFilename), status="OLD", form="FORMATTED", access="SEQUENTIAL", iostat=ierr )
@@ -1560,7 +1560,7 @@ contains
           close(unitn)
 
        endif
-       call shr_file_freeUnit( unitn )
+       call shr_log_freeUnit( unitn )
 
     endif
 
@@ -1611,7 +1611,7 @@ contains
           ! Read in the papi_inparm namelist from NLFilename if it exists
 
           write(p_logunit,*) '(t_initf) Read in papi_inparm namelist from: '//trim(NLFilename)
-          unitn = shr_file_getUnit()
+          unitn = shr_log_getUnit()
 
           ierr = 1
           open( unitn, file=trim(NLFilename), status="OLD", form="FORMATTED", access="SEQUENTIAL", iostat=ierr )
@@ -1631,7 +1631,7 @@ contains
              close(unitn)
 
           endif
-          call shr_file_freeUnit( unitn )
+          call shr_log_freeUnit( unitn )
 
           ! if enabled and nothing set, use "defaults"
           if ((papi_ctr1_str(1:11) .eq. "PAPI_NO_CTR") .and. &

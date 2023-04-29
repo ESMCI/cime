@@ -183,6 +183,8 @@ jobs:
         if: ${{ failure() }}
         shell: bash
         run: tar -czvf /testing-logs-${GITHUB_RUN_NUMBER}.tar.gz /storage/cases/
+        # How to download artifacts:
+        # https://docs.github.com/en/actions/managing-workflow-runs/downloading-workflow-artifacts
       - name: Upload testing logs
         if: ${{ failure() }}
         uses: actions/upload-artifact@v3
