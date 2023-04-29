@@ -165,6 +165,7 @@ def generate_makefile_macro(case, caseroot):
                 "gptl",
                 "csm_share",
                 "csm_share_cpl7",
+                "mpi-serial",
             ]
         )
         cmake_macro = os.path.join(caseroot, "Macros.cmake")
