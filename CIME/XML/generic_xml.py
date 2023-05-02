@@ -474,7 +474,7 @@ class GenericXML(object):
         # xmllint provides a better format option for the output file
         xmllint = find_executable("xmllint")
 
-        if xmllint is not None:
+        if xmllint:
             if isinstance(outfile, str):
                 run_cmd_no_fail(
                     "{} --format --output {} -".format(xmllint, outfile),
@@ -691,8 +691,9 @@ class GenericXML(object):
         expect(os.path.isfile(filename), "xml file not found {}".format(filename))
         expect(os.path.isfile(schema), "schema file not found {}".format(schema))
         xmllint = find_executable("xmllint")
+
         expect(
-            os.path.isfile(xmllint),
+            xmllint and os.path.isfile(xmllint),
             " xmllint not found in PATH, xmllint is required for cime.  PATH={}".format(
                 os.environ["PATH"]
             ),
