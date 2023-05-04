@@ -25,11 +25,11 @@ def append_to_user_nl_files(caseroot, component, contents):
             matching the pattern 'user_nl_clm*'. (We do a wildcard match to
             handle multi-instance tests.)
 
-        contents (str or list): Contents to append to the end of each user_nl
-            file. If list, each item will be appended on its own line.
+        contents (str or list-like): Contents to append to the end of each user_nl
+            file. If list-like, each item will be appended on its own line.
     """
     
-    if not isinstance(contents, list):
+    if isinstance(contents, str):
         contents = [contents]
 
     files = _get_list_of_user_nl_files(caseroot, component)
