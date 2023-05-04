@@ -72,6 +72,40 @@ class TestUserNLCopier(unittest.TestCase):
             expected_contents, os.path.join(self._caseroot, filename)
         )
 
+    def test_append_list(self):
+        # Define some variables
+        component = "foo"
+        # deliberately exclude new line from file contents, to make sure that's
+        # handled correctly
+        orig_contents = "bar = 42"
+        contents_to_append_1 = "baz = 101"
+        contents_to_append_2 = "qux = 987"
+        contents_to_append = [
+            contents_to_append_1,
+            contents_to_append_2,
+        ]
+
+        # Setup
+        filename = self.write_user_nl_file(component, orig_contents)
+
+        # Exercise
+        user_nl_utils.append_to_user_nl_files(
+            caseroot=self._caseroot, component=component, contents=contents_to_append
+        )
+
+        # Verify
+        expected_contents = (
+            orig_contents
+            + "\n"
+            + contents_to_append_1
+            + "\n"
+            + contents_to_append_2
+            + "\n"
+        )
+        self.assertFileContentsEqual(
+            expected_contents, os.path.join(self._caseroot, filename)
+        )
+
     def test_append_multiple_files(self):
         # Simulates a multi-instance test
         component = "foo"
