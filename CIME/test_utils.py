@@ -150,7 +150,9 @@ def test_to_string(
 
 def get_test_status_files(test_root, compiler, test_id=None):
     test_id_glob = (
-        "*{}*".format(compiler) if test_id is None else "*{}*".format(test_id)
+        "*{}*".format(compiler)
+        if test_id is None
+        else "*{}*{}*".format(compiler, test_id)
     )
     test_status_files = glob.glob(
         "{}/{}/{}".format(test_root, test_id_glob, TEST_STATUS_FILENAME)
