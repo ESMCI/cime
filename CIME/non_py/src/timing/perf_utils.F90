@@ -26,8 +26,8 @@ module perf_utils
    public perfutils_setunit
    public shr_sys_abort
    public shr_mpi_barrier
-   public shr_file_getUnit
-   public shr_file_freeUnit
+   public shr_log_getUnit
+   public shr_log_freeUnit
    public find_group_name
    public to_lower
    public shr_mpi_bcast
@@ -322,11 +322,11 @@ END SUBROUTINE shr_mpi_bcastl0
 
 !===============================================================================
 
-!================== Routines from csm_share/shr/shr_file_mod.F90 ===============
+!================== Routines from csm_share/shr/shr_log_mod.F90 ===============
 !===============================================================================
 !BOP ===========================================================================
 !
-! !IROUTINE: shr_file_getUnit -- Get a free FORTRAN unit number
+! !IROUTINE: shr_log_getUnit -- Get a free FORTRAN unit number
 !
 ! !DESCRIPTION: Get the next free FORTRAN unit number.
 !
@@ -336,47 +336,47 @@ END SUBROUTINE shr_mpi_bcastl0
 !
 ! !INTERFACE: ------------------------------------------------------------------
 
-INTEGER FUNCTION shr_file_getUnit ()
+INTEGER FUNCTION shr_log_getUnit ()
 
    implicit none
 
 !EOP
 
    !----- local parameters -----
-   integer(SHR_KIND_IN),parameter :: shr_file_minUnit = 10      ! Min unit number to give
-   integer(SHR_KIND_IN),parameter :: shr_file_maxUnit = 99      ! Max unit number to give
+   integer(SHR_KIND_IN),parameter :: shr_log_minUnit = 10      ! Min unit number to give
+   integer(SHR_KIND_IN),parameter :: shr_log_maxUnit = 99      ! Max unit number to give
 
    !----- local variables -----
    integer(SHR_KIND_IN)   :: n      ! loop index
    logical                :: opened ! If unit opened or not
 
    !----- formats -----
-   character(*),parameter :: subName = '(shr_file_getUnit) '
-   character(*),parameter :: F00   = "('(shr_file_getUnit) ',A,I4,A)"
+   character(*),parameter :: subName = '(shr_log_getUnit) '
+   character(*),parameter :: F00   = "('(shr_log_getUnit) ',A,I4,A)"
 
 !-------------------------------------------------------------------------------
 ! Notes:
 !-------------------------------------------------------------------------------
 
    ! --- Choose first available unit other than 0, 5, or 6  ------
-   do n=shr_file_minUnit, shr_file_maxUnit
+   do n=shr_log_minUnit, shr_log_maxUnit
       inquire( n, opened=opened )
       if (n == 5 .or. n == 6 .or. opened) then
          cycle
       end if
-      shr_file_getUnit = n
+      shr_log_getUnit = n
       return
    end do
 
    call shr_sys_abort( subName//': Error: no available units found' )
 
-END FUNCTION shr_file_getUnit
+END FUNCTION shr_log_getUnit
 !===============================================================================
 
 !===============================================================================
 !BOP ===========================================================================
 !
-! !IROUTINE: shr_file_freeUnit -- Free up a FORTRAN unit number
+! !IROUTINE: shr_log_freeUnit -- Free up a FORTRAN unit number
 !
 ! !DESCRIPTION: Free up the given unit number
 !
@@ -386,7 +386,7 @@ END FUNCTION shr_file_getUnit
 !
 ! !INTERFACE: ------------------------------------------------------------------
 
-SUBROUTINE shr_file_freeUnit ( unit)
+SUBROUTINE shr_log_freeUnit ( unit)
 
    implicit none
 
@@ -397,18 +397,18 @@ SUBROUTINE shr_file_freeUnit ( unit)
 !EOP
 
    !----- local parameters -----
-   integer(SHR_KIND_IN),parameter :: shr_file_minUnit = 10      ! Min unit number to give
-   integer(SHR_KIND_IN),parameter :: shr_file_maxUnit = 99      ! Max unit number to give
+   integer(SHR_KIND_IN),parameter :: shr_log_minUnit = 10      ! Min unit number to give
+   integer(SHR_KIND_IN),parameter :: shr_log_maxUnit = 99      ! Max unit number to give
 
    !----- formats -----
-   character(*), parameter :: subName = '(shr_file_freeUnit) '
-   character(*), parameter :: F00 =   "('(shr_file_freeUnit) ',A,I4,A)"
+   character(*), parameter :: subName = '(shr_log_freeUnit) '
+   character(*), parameter :: F00 =   "('(shr_log_freeUnit) ',A,I4,A)"
 
 !-------------------------------------------------------------------------------
 ! Notes:
 !-------------------------------------------------------------------------------
 
-   if (unit < 0 .or. unit > shr_file_maxUnit) then
+   if (unit < 0 .or. unit > shr_log_maxUnit) then
 !pw   if (s_loglev > 0) write(pu_logunit,F00) 'invalid unit number request:', unit
    else if (unit == 0 .or. unit == 5 .or. unit == 6) then
       call shr_sys_abort( subName//': Error: units 0, 5, and 6 must not be freed' )
@@ -416,7 +416,7 @@ SUBROUTINE shr_file_freeUnit ( unit)
 
    return
 
-END SUBROUTINE shr_file_freeUnit
+END SUBROUTINE shr_log_freeUnit
 !===============================================================================
 
 !============= Routines from atm/cam/src/utils/namelist_utils.F90 ==============

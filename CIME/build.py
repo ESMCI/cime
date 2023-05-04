@@ -49,7 +49,13 @@ _CMD_ARGS_FOR_BUILD = (
     "USE_ESMF_LIB",
     "USE_MOAB",
     "CAM_CONFIG_OPTS",
+    "COMP_ATM",
+    "COMP_ICE",
+    "COMP_GLC",
     "COMP_LND",
+    "COMP_OCN",
+    "COMP_ROF",
+    "COMP_WAV",
     "COMPARE_TO_NUOPC",
     "HOMME_TARGET",
     "OCN_SUBMODEL",
@@ -165,6 +171,7 @@ def generate_makefile_macro(case, caseroot):
                 "gptl",
                 "csm_share",
                 "csm_share_cpl7",
+                "mpi-serial",
             ]
         )
         cmake_macro = os.path.join(caseroot, "Macros.cmake")
@@ -749,6 +756,8 @@ def _build_libraries(
         libs = ["gptl", "mct", "pio", "csm_share"]
     elif case.get_value("MODEL") == "cesm":
         libs = ["gptl", "mct", "pio", "csm_share", "csm_share_cpl7"]
+    elif case.get_value("MODEL") == "e3sm":
+        libs = ["gptl", "mct", "spio", "csm_share"]
     else:
         libs = ["gptl", "mct", "pio", "csm_share"]
 
