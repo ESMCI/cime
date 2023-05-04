@@ -28,7 +28,7 @@ def append_to_user_nl_files(caseroot, component, contents):
         contents (str or list-like): Contents to append to the end of each user_nl
             file. If list-like, each item will be appended on its own line.
     """
-    
+
     if isinstance(contents, str):
         contents = [contents]
 
