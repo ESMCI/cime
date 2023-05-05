@@ -252,7 +252,6 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
     <CONTINUE_RUN>FALSE</CONTINUE_RUN>
     <HIST_OPTION>never</HIST_OPTION>
     <HIST_N>-999</HIST_N>
-    <SINGLE_EXE>TRUE</SINGLE_EXE>
   </test>
 
   <test NAME="ERP">
@@ -280,7 +279,6 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
     <HIST_OPTION>$STOP_OPTION</HIST_OPTION>
     <DOUT_S>FALSE</DOUT_S>
     <CONTINUE_RUN>FALSE</CONTINUE_RUN>
-    <SINGLE_EXE>TRUE</SINGLE_EXE>
   </test>
 
   <test NAME="ERS2">
@@ -294,7 +292,6 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
     <HIST_OPTION>$STOP_OPTION</HIST_OPTION>
     <DOUT_S>FALSE</DOUT_S>
     <CONTINUE_RUN>FALSE</CONTINUE_RUN>
-    <SINGLE_EXE>TRUE</SINGLE_EXE>
   </test>
 
   <test NAME="IRT">
@@ -318,7 +315,6 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
     <STOP_N>11</STOP_N>
     <DOUT_S>FALSE</DOUT_S>
     <CONTINUE_RUN>FALSE</CONTINUE_RUN>
-    <SINGLE_EXE>TRUE</SINGLE_EXE>
   </test>
 
   <test NAME="ERR">
@@ -358,7 +354,6 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
     <AVGHIST_OPTION>nmonths</AVGHIST_OPTION>
     <AVGHIST_N>1</AVGHIST_N>
     <DOUT_S>FALSE</DOUT_S>
-    <SINGLE_EXE>TRUE</SINGLE_EXE>
   </test>
 
   <test NAME="HOMME">
@@ -368,7 +363,6 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
     <STOP_N>11</STOP_N>
     <CHECK_TIMING>FALSE</CHECK_TIMING>
     <DOUT_S>FALSE</DOUT_S>
-    <SINGLE_EXE>TRUE</SINGLE_EXE>
   </test>
 
   <test NAME="HOMMEBFB">
@@ -378,7 +372,6 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
     <STOP_N>11</STOP_N>
     <CHECK_TIMING>FALSE</CHECK_TIMING>
     <DOUT_S>FALSE</DOUT_S>
-    <SINGLE_EXE>TRUE</SINGLE_EXE>
   </test>
 
   <test NAME="FUNIT">
@@ -388,7 +381,6 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
     <STOP_N>11</STOP_N>
     <CHECK_TIMING>FALSE</CHECK_TIMING>
     <DOUT_S>FALSE</DOUT_S>
-    <SINGLE_EXE>TRUE</SINGLE_EXE>
   </test>
 
   <test NAME="LDSTA">
@@ -402,7 +394,6 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
     <REST_N>1</REST_N>
     <RUN_STARTDATE>0001-12-29</RUN_STARTDATE>
     <DOUT_S>FALSE</DOUT_S>
-    <SINGLE_EXE>TRUE</SINGLE_EXE>
   </test>
 
   <test NAME="PRE">
@@ -572,7 +563,6 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
     <REST_OPTION>none</REST_OPTION>
     <COMP_RUN_BARRIERS>TRUE</COMP_RUN_BARRIERS>
     <DOUT_S>FALSE</DOUT_S>
-    <SINGLE_EXE>TRUE</SINGLE_EXE>
   </test>
 
   <test NAME="PEA">
@@ -619,7 +609,6 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
     <DOUT_S>FALSE</DOUT_S>
     <CONTINUE_RUN>FALSE</CONTINUE_RUN>
     <OCN_DIAG_MODE>none</OCN_DIAG_MODE>
-    <SINGLE_EXE>TRUE</SINGLE_EXE>
   </test>
 
   <test NAME="MCC">
@@ -645,7 +634,6 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
     <HIST_OPTION>$STOP_OPTION</HIST_OPTION>
     <HIST_N>$STOP_N</HIST_N>
     <RESUBMIT>0</RESUBMIT>
-    <SINGLE_EXE>TRUE</SINGLE_EXE>
   </test>
 
   <test NAME="NCK">
@@ -729,7 +717,6 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
     <REST_OPTION>none</REST_OPTION>
     <HIST_OPTION>$STOP_OPTION</HIST_OPTION>
     <HIST_N>$STOP_N</HIST_N>
-    <SINGLE_EXE>TRUE</SINGLE_EXE>
   </test>
 
   <test NAME="TSC">
@@ -738,7 +725,6 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
     <DOUT_S>FALSE</DOUT_S>
     <CONTINUE_RUN>FALSE</CONTINUE_RUN>
     <REST_OPTION>none</REST_OPTION>
-    <SINGLE_EXE>TRUE</SINGLE_EXE>
   </test>
 
   <test NAME="SMS">
@@ -749,7 +735,6 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
     <REST_OPTION>none</REST_OPTION>
     <HIST_OPTION>$STOP_OPTION</HIST_OPTION>
     <HIST_N>$STOP_N</HIST_N>
-    <SINGLE_EXE>TRUE</SINGLE_EXE>
   </test>
 
 </config_test>
