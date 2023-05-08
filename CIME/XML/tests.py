@@ -3,9 +3,11 @@ Interface to the config_tests.xml file.  This class inherits from GenericEntry
 """
 from CIME.XML.standard_module_setup import *
 
-from CIME import utils
 from CIME.XML.generic_xml import GenericXML
 from CIME.XML.files import Files
+from CIME.utils import find_system_test
+from CIME.SystemTests.system_tests_compare_two import SystemTestsCompareTwo
+from CIME.SystemTests.system_tests_compare_n import SystemTestsCompareN
 
 logger = logging.getLogger(__name__)
 
@@ -28,29 +30,32 @@ class Tests(GenericXML):
             if os.path.isfile(infile):
                 self.read(infile)
 
-    def support_single_exe(self, testnames):
-        valid, invalid = [], []
+    def support_single_exe(self, case):
+        """Checks if case supports --single-exe.
 
-        for testname in testnames:
-            parsed_testname = utils.parse_test_name(testname)
+        Raises:
+            Exception: If system test cannot be found.
+            Exception: If `case` does not support --single-exe.
+        """
+        testname = case.get_value("TESTCASE")
 
-            test_node = self.get_test_node(parsed_testname[0])
+        try:
+            test = find_system_test(testname, case)(case)
+        except Exception as e:
+            raise e
+        else:
+            # valid if subclass is SystemTestsCommon or _separate_builds is false
+            valid = (
+                not issubclass(type(test), SystemTestsCompareTwo)
+                and not issubclass(type(test), SystemTestsCompareN)
+            ) or not test._separate_builds
 
-            try:
-                single_exe_node = self.get_child("SINGLE_EXE", root=test_node)
-            except utils.CIMEError:
-                single_exe_supported = False
-            else:
-                single_exe_supported = utils.convert_to_type(
-                    self.text(single_exe_node), "logical"
-                )
+        if not valid:
+            case_base_id = case.get_value("CASEBASEID")
 
-            if single_exe_supported:
-                valid.append(testname)
-            else:
-                invalid.append(testname)
-
-        return valid, invalid
+            raise Exception(
+                f"{case_base_id} does not support the '--single-exe' option as it requires separate builds"
+            )
 
     def get_test_node(self, testname):
         logger.debug("Get settings for {}".format(testname))

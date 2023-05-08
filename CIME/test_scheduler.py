@@ -224,7 +224,8 @@ class TestScheduler(object):
         self._input_dir = input_dir
         self._pesfile = pesfile
         self._allow_baseline_overwrite = allow_baseline_overwrite
-        if single_exe:
+        self._single_exe = single_exe
+        if self._single_exe:
             self._allow_pnl = True
         else:
             self._allow_pnl = allow_pnl
@@ -997,6 +998,12 @@ class TestScheduler(object):
                 cmdstat in [0, TESTS_FAILED_ERR_CODE],
                 "Fatal error in case.cmpgen_namelists: {}".format(output),
             )
+
+        if self._single_exe:
+            with Case(self._get_test_dir(test), read_only=False) as case:
+                tests = Tests()
+
+                tests.support_single_exe(case)
 
         return rv
 
