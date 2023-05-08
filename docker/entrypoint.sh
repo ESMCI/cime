@@ -82,6 +82,10 @@ function init_e3sm() {
     local extras=""
     local install_path="${INSTALL_PATH:-/src/E3SM}"
     local cache_path="${cache_path:-/storage/inputdata}"
+    local grid1="${cache_path}/cpl/gridmaps/oQU240/map_oQU240_to_ne4np4_aave.160614.nc"
+    local grid2="${cache_path}/share/domains/domain.ocn.ne4np4_oQU240.160614.nc"
+    local grid3="${cache_path}/share/domains/domain.lnd.ne4np4_oQU240.160614.nc"
+
 
     if [[ ! -e "${install_path}" ]]
     then
@@ -106,15 +110,21 @@ function init_e3sm() {
 
     update_cime "${install_path}/cime"
 
-    curl -L --create-dirs \
-        -o ${cache_path}/cpl/gridmaps/oQU240/map_oQU240_to_ne4np4_aave.160614.nc \
-        https://web.lcrc.anl.gov/public/e3sm/inputdata/cpl/gridmaps/oQU240/map_oQU240_to_ne4np4_aave.160614.nc
-    curl -L --create-dirs \
-        -o ${cache_path}/share/domains/domain.ocn.ne4np4_oQU240.160614.nc \
-        https://web.lcrc.anl.gov/public/e3sm/inputdata/share/domains/domain.ocn.ne4np4_oQU240.160614.nc
-    curl -L --create-dirs \
-        -o ${cache_path}/share/domains/domain.lnd.ne4np4_oQU240.160614.nc \
-        https://web.lcrc.anl.gov/public/e3sm/inputdata/share/domains/domain.lnd.ne4np4_oQU240.160614.nc
+    if [[ ! -e "${grid1}" ]]; then
+        curl -L --create-dirs \
+            -o "${grid1}" \
+            https://web.lcrc.anl.gov/public/e3sm/inputdata/cpl/gridmaps/oQU240/map_oQU240_to_ne4np4_aave.160614.nc
+    fi
+    if [[ ! -e "${grid2}" ]]; then
+        curl -L --create-dirs \
+            -o "${grid2}" \
+            https://web.lcrc.anl.gov/public/e3sm/inputdata/share/domains/domain.ocn.ne4np4_oQU240.160614.nc
+    fi
+    if [[ ! -e "${grid3}" ]]; then
+        curl -L --create-dirs \
+            -o "${grid3}" \
+            https://web.lcrc.anl.gov/public/e3sm/inputdata/share/domains/domain.lnd.ne4np4_oQU240.160614.nc
+    fi
 
     cd "${install_path}/cime"
 }
