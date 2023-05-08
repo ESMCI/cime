@@ -324,6 +324,14 @@ CIME.tests.test\_unit\_utils module
    :undoc-members:
    :show-inheritance:
 
+CIME.tests.test\_unit\_xml\_archive\_base module
+------------------------------------------------
+
+.. automodule:: CIME.tests.test_unit_xml_archive_base
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 CIME.tests.test\_unit\_xml\_env\_batch module
 ---------------------------------------------
 

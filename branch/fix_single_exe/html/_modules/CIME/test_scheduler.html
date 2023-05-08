@@ -310,7 +310,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_input_dir</span> <span class="o">=</span> <span class="n">input_dir</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_pesfile</span> <span class="o">=</span> <span class="n">pesfile</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_allow_baseline_overwrite</span> <span class="o">=</span> <span class="n">allow_baseline_overwrite</span>
-        <span class="k">if</span> <span class="n">single_exe</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_single_exe</span> <span class="o">=</span> <span class="n">single_exe</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_single_exe</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_allow_pnl</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_allow_pnl</span> <span class="o">=</span> <span class="n">allow_pnl</span>
@@ -1083,6 +1084,12 @@
                 <span class="n">cmdstat</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">TESTS_FAILED_ERR_CODE</span><span class="p">],</span>
                 <span class="s2">&quot;Fatal error in case.cmpgen_namelists: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">output</span><span class="p">),</span>
             <span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_single_exe</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">Case</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_test_dir</span><span class="p">(</span><span class="n">test</span><span class="p">),</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">as</span> <span class="n">case</span><span class="p">:</span>
+                <span class="n">tests</span> <span class="o">=</span> <span class="n">Tests</span><span class="p">()</span>
+
+                <span class="n">tests</span><span class="o">.</span><span class="n">support_single_exe</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">rv</span>
 

@@ -94,7 +94,7 @@
 
 <div class="viewcode-block" id="append_to_user_nl_files"><a class="viewcode-back" href="../../../../CIME_api/CIME.SystemTests.test_utils.html#CIME.SystemTests.test_utils.user_nl_utils.append_to_user_nl_files">[docs]</a><span class="k">def</span> <span class="nf">append_to_user_nl_files</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="n">component</span><span class="p">,</span> <span class="n">contents</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Append the string given by &#39;contents&#39; to the end of each user_nl file for</span>
+<span class="sd">    Append the string(s) given by &#39;contents&#39; to the end of each user_nl file for</span>
 <span class="sd">    the given component (there may be multiple such user_nl files in the case of</span>
 <span class="sd">    a multi-instance test).</span>
 
@@ -111,8 +111,12 @@
 <span class="sd">            matching the pattern &#39;user_nl_clm*&#39;. (We do a wildcard match to</span>
 <span class="sd">            handle multi-instance tests.)</span>
 
-<span class="sd">        contents (str): Contents to append to the end of each user_nl file</span>
+<span class="sd">        contents (str or list-like): Contents to append to the end of each user_nl</span>
+<span class="sd">            file. If list-like, each item will be appended on its own line.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">contents</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">contents</span> <span class="o">=</span> <span class="p">[</span><span class="n">contents</span><span class="p">]</span>
 
     <span class="n">files</span> <span class="o">=</span> <span class="n">_get_list_of_user_nl_files</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="n">component</span><span class="p">)</span>
 
@@ -121,7 +125,9 @@
 
     <span class="k">for</span> <span class="n">one_file</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">one_file</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">user_nl_file</span><span class="p">:</span>
-            <span class="n">user_nl_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">contents</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span></div>
+            <span class="n">user_nl_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">contents</span><span class="p">:</span>
+                <span class="n">user_nl_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">c</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
 
 <span class="k">def</span> <span class="nf">_get_list_of_user_nl_files</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">component</span><span class="p">):</span>

@@ -128,7 +128,6 @@
 <span class="kn">from</span> <span class="nn">CIME.XML.machines</span> <span class="kn">import</span> <span class="n">Machines</span>
 <span class="kn">from</span> <span class="nn">CIME.case</span> <span class="kn">import</span> <span class="n">Case</span>
 <span class="kn">from</span> <span class="nn">CIME.test_utils</span> <span class="kn">import</span> <span class="n">get_tests_from_xml</span>
-<span class="kn">from</span> <span class="nn">CIME.XML.tests</span> <span class="kn">import</span> <span class="n">Tests</span>
 <span class="kn">from</span> <span class="nn">argparse</span> <span class="kn">import</span> <span class="n">RawTextHelpFormatter</span>
 
 <span class="kn">import</span> <span class="nn">argparse</span><span class="o">,</span> <span class="nn">math</span><span class="o">,</span> <span class="nn">glob</span>
@@ -740,16 +739,6 @@
 
         <span class="n">test_names</span> <span class="o">=</span> <span class="n">get_tests</span><span class="o">.</span><span class="n">get_full_test_names</span><span class="p">(</span>
             <span class="n">args</span><span class="o">.</span><span class="n">testargs</span><span class="p">,</span> <span class="n">mach_obj</span><span class="o">.</span><span class="n">get_machine_name</span><span class="p">(),</span> <span class="n">args</span><span class="o">.</span><span class="n">compiler</span>
-        <span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">single_exe</span><span class="p">:</span>
-        <span class="n">tests</span> <span class="o">=</span> <span class="n">Tests</span><span class="p">()</span>
-
-        <span class="n">_</span><span class="p">,</span> <span class="n">invalid</span> <span class="o">=</span> <span class="n">tests</span><span class="o">.</span><span class="n">support_single_exe</span><span class="p">(</span><span class="n">test_names</span><span class="p">)</span>
-
-        <span class="n">expect</span><span class="p">(</span>
-            <span class="nb">len</span><span class="p">(</span><span class="n">invalid</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;Found tests that do not support `--single-exe`: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">invalid</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="n">expect</span><span class="p">(</span>

@@ -158,6 +158,40 @@
             <span class="n">expected_contents</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_caseroot</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
         <span class="p">)</span></div>
 
+<div class="viewcode-block" id="TestUserNLCopier.test_append_list"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_user_nl_utils.TestUserNLCopier.test_append_list">[docs]</a>    <span class="k">def</span> <span class="nf">test_append_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Define some variables</span>
+        <span class="n">component</span> <span class="o">=</span> <span class="s2">&quot;foo&quot;</span>
+        <span class="c1"># deliberately exclude new line from file contents, to make sure that&#39;s</span>
+        <span class="c1"># handled correctly</span>
+        <span class="n">orig_contents</span> <span class="o">=</span> <span class="s2">&quot;bar = 42&quot;</span>
+        <span class="n">contents_to_append_1</span> <span class="o">=</span> <span class="s2">&quot;baz = 101&quot;</span>
+        <span class="n">contents_to_append_2</span> <span class="o">=</span> <span class="s2">&quot;qux = 987&quot;</span>
+        <span class="n">contents_to_append</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">contents_to_append_1</span><span class="p">,</span>
+            <span class="n">contents_to_append_2</span><span class="p">,</span>
+        <span class="p">]</span>
+
+        <span class="c1"># Setup</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">write_user_nl_file</span><span class="p">(</span><span class="n">component</span><span class="p">,</span> <span class="n">orig_contents</span><span class="p">)</span>
+
+        <span class="c1"># Exercise</span>
+        <span class="n">user_nl_utils</span><span class="o">.</span><span class="n">append_to_user_nl_files</span><span class="p">(</span>
+            <span class="n">caseroot</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_caseroot</span><span class="p">,</span> <span class="n">component</span><span class="o">=</span><span class="n">component</span><span class="p">,</span> <span class="n">contents</span><span class="o">=</span><span class="n">contents_to_append</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Verify</span>
+        <span class="n">expected_contents</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">orig_contents</span>
+            <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="o">+</span> <span class="n">contents_to_append_1</span>
+            <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="o">+</span> <span class="n">contents_to_append_2</span>
+            <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertFileContentsEqual</span><span class="p">(</span>
+            <span class="n">expected_contents</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_caseroot</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="p">)</span></div>
+
 <div class="viewcode-block" id="TestUserNLCopier.test_append_multiple_files"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_user_nl_utils.TestUserNLCopier.test_append_multiple_files">[docs]</a>    <span class="k">def</span> <span class="nf">test_append_multiple_files</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Simulates a multi-instance test</span>
         <span class="n">component</span> <span class="o">=</span> <span class="s2">&quot;foo&quot;</span>

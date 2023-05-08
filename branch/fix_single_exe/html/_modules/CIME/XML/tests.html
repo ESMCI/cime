@@ -89,9 +89,11 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="kn">import</span> <span class="o">*</span>
 
-<span class="kn">from</span> <span class="nn">CIME</span> <span class="kn">import</span> <span class="n">utils</span>
 <span class="kn">from</span> <span class="nn">CIME.XML.generic_xml</span> <span class="kn">import</span> <span class="n">GenericXML</span>
 <span class="kn">from</span> <span class="nn">CIME.XML.files</span> <span class="kn">import</span> <span class="n">Files</span>
+<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="n">find_system_test</span>
+<span class="kn">from</span> <span class="nn">CIME.SystemTests.system_tests_compare_two</span> <span class="kn">import</span> <span class="n">SystemTestsCompareTwo</span>
+<span class="kn">from</span> <span class="nn">CIME.SystemTests.system_tests_compare_n</span> <span class="kn">import</span> <span class="n">SystemTestsCompareN</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -114,29 +116,32 @@
             <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">infile</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">infile</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Tests.support_single_exe"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.tests.Tests.support_single_exe">[docs]</a>    <span class="k">def</span> <span class="nf">support_single_exe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">testnames</span><span class="p">):</span>
-        <span class="n">valid</span><span class="p">,</span> <span class="n">invalid</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+<div class="viewcode-block" id="Tests.support_single_exe"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.tests.Tests.support_single_exe">[docs]</a>    <span class="k">def</span> <span class="nf">support_single_exe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Checks if case supports --single-exe.</span>
 
-        <span class="k">for</span> <span class="n">testname</span> <span class="ow">in</span> <span class="n">testnames</span><span class="p">:</span>
-            <span class="n">parsed_testname</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">parse_test_name</span><span class="p">(</span><span class="n">testname</span><span class="p">)</span>
+<span class="sd">        Raises:</span>
+<span class="sd">            Exception: If system test cannot be found.</span>
+<span class="sd">            Exception: If `case` does not support --single-exe.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">testname</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;TESTCASE&quot;</span><span class="p">)</span>
 
-            <span class="n">test_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_test_node</span><span class="p">(</span><span class="n">parsed_testname</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">test</span> <span class="o">=</span> <span class="n">find_system_test</span><span class="p">(</span><span class="n">testname</span><span class="p">,</span> <span class="n">case</span><span class="p">)(</span><span class="n">case</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">e</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># valid if subclass is SystemTestsCommon or _separate_builds is false</span>
+            <span class="n">valid</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">test</span><span class="p">),</span> <span class="n">SystemTestsCompareTwo</span><span class="p">)</span>
+                <span class="ow">and</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">test</span><span class="p">),</span> <span class="n">SystemTestsCompareN</span><span class="p">)</span>
+            <span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">test</span><span class="o">.</span><span class="n">_separate_builds</span>
 
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">single_exe_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span><span class="s2">&quot;ALLOW_SINGLE_EXE&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">test_node</span><span class="p">)</span>
-            <span class="k">except</span> <span class="n">utils</span><span class="o">.</span><span class="n">CIMEError</span><span class="p">:</span>
-                <span class="n">single_exe_supported</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">single_exe_supported</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">convert_to_type</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">single_exe_node</span><span class="p">),</span> <span class="s2">&quot;logical&quot;</span>
-                <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">valid</span><span class="p">:</span>
+            <span class="n">case_base_id</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEBASEID&quot;</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="n">single_exe_supported</span><span class="p">:</span>
-                <span class="n">valid</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">testname</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">invalid</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">testname</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">valid</span><span class="p">,</span> <span class="n">invalid</span></div>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">case_base_id</span><span class="si">}</span><span class="s2"> does not support the &#39;--single-exe&#39; option as it requires separate builds&quot;</span>
+            <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Tests.get_test_node"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.tests.Tests.get_test_node">[docs]</a>    <span class="k">def</span> <span class="nf">get_test_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">testname</span><span class="p">):</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Get settings for </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">testname</span><span class="p">))</span>

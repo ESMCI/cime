@@ -98,6 +98,11 @@
 <span class="kn">from</span> <span class="nn">CIME.case.case</span> <span class="kn">import</span> <span class="n">Case</span>
 <span class="kn">from</span> <span class="nn">CIME.XML.env_run</span> <span class="kn">import</span> <span class="n">EnvRun</span>
 
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">collectionsAbc</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">abc</span>
+<span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+    <span class="n">collectionsAbc</span> <span class="o">=</span> <span class="n">collections</span>
+
 
 <div class="viewcode-block" id="TestCimeCase"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_cime_case.TestCimeCase">[docs]</a><span class="k">class</span> <span class="nc">TestCimeCase</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">BaseTestCase</span><span class="p">):</span>
 <div class="viewcode-block" id="TestCimeCase.test_cime_case"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_cime_case.TestCimeCase.test_cime_case">[docs]</a>    <span class="k">def</span> <span class="nf">test_cime_case</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -172,7 +177,7 @@
                 <span class="n">prereq</span><span class="o">=</span><span class="n">prereq_name</span><span class="p">,</span> <span class="n">job</span><span class="o">=</span><span class="n">job_name</span><span class="p">,</span> <span class="n">skip_pnl</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dry_run</span><span class="o">=</span><span class="kc">True</span>
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span>
-                <span class="nb">isinstance</span><span class="p">(</span><span class="n">batch_commands</span><span class="p">,</span> <span class="n">collections</span><span class="o">.</span><span class="n">Sequence</span><span class="p">),</span>
+                <span class="nb">isinstance</span><span class="p">(</span><span class="n">batch_commands</span><span class="p">,</span> <span class="n">collectionsAbc</span><span class="o">.</span><span class="n">Sequence</span><span class="p">),</span>
                 <span class="s2">&quot;case.submit_jobs did not return a sequence for a dry run&quot;</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span>
@@ -185,7 +190,7 @@
             <span class="c1"># The prerequisite should be applied to all jobs, though we&#39;re only expecting one</span>
             <span class="k">for</span> <span class="n">batch_cmd</span> <span class="ow">in</span> <span class="n">batch_commands</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span>
-                    <span class="nb">isinstance</span><span class="p">(</span><span class="n">batch_cmd</span><span class="p">,</span> <span class="n">collections</span><span class="o">.</span><span class="n">Sequence</span><span class="p">),</span>
+                    <span class="nb">isinstance</span><span class="p">(</span><span class="n">batch_cmd</span><span class="p">,</span> <span class="n">collectionsAbc</span><span class="o">.</span><span class="n">Sequence</span><span class="p">),</span>
                     <span class="s2">&quot;case.submit_jobs did not return a sequence of sequences&quot;</span><span class="p">,</span>
                 <span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span>
@@ -247,7 +252,7 @@
                 <span class="n">dry_run</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span>
-                <span class="nb">isinstance</span><span class="p">(</span><span class="n">batch_commands</span><span class="p">,</span> <span class="n">collections</span><span class="o">.</span><span class="n">Sequence</span><span class="p">),</span>
+                <span class="nb">isinstance</span><span class="p">(</span><span class="n">batch_commands</span><span class="p">,</span> <span class="n">collectionsAbc</span><span class="o">.</span><span class="n">Sequence</span><span class="p">),</span>
                 <span class="s2">&quot;case.submit_jobs did not return a sequence for a dry run&quot;</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">num_submissions</span> <span class="o">=</span> <span class="mi">1</span>
@@ -276,7 +281,7 @@
                 <span class="n">job</span><span class="o">=</span><span class="n">job_name</span><span class="p">,</span> <span class="n">skip_pnl</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dry_run</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">resubmit_immediate</span><span class="o">=</span><span class="kc">True</span>
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span>
-                <span class="nb">isinstance</span><span class="p">(</span><span class="n">batch_commands</span><span class="p">,</span> <span class="n">collections</span><span class="o">.</span><span class="n">Sequence</span><span class="p">),</span>
+                <span class="nb">isinstance</span><span class="p">(</span><span class="n">batch_commands</span><span class="p">,</span> <span class="n">collectionsAbc</span><span class="o">.</span><span class="n">Sequence</span><span class="p">),</span>
                 <span class="s2">&quot;case.submit_jobs did not return a sequence for a dry run&quot;</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="k">if</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;DOUT_S&quot;</span><span class="p">):</span>

@@ -1048,7 +1048,7 @@
             <span class="k">return</span>
 
         <span class="n">submitargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_submit_args</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">job</span><span class="p">)</span>
-        <span class="n">args_override</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;BATCH_COMMAND_FLAGS&quot;</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="n">job</span><span class="p">)</span>
+        <span class="n">args_override</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;BATCH_COMMAND_FLAGS&quot;</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="n">job</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">args_override</span><span class="p">:</span>
             <span class="n">submitargs</span> <span class="o">=</span> <span class="n">args_override</span>
 

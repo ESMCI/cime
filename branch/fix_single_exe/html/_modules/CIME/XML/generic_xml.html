@@ -560,7 +560,7 @@
         <span class="c1"># xmllint provides a better format option for the output file</span>
         <span class="n">xmllint</span> <span class="o">=</span> <span class="n">find_executable</span><span class="p">(</span><span class="s2">&quot;xmllint&quot;</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">xmllint</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">xmllint</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
                 <span class="n">run_cmd_no_fail</span><span class="p">(</span>
                     <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> --format --output </span><span class="si">{}</span><span class="s2"> -&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">xmllint</span><span class="p">,</span> <span class="n">outfile</span><span class="p">),</span>
@@ -777,8 +777,9 @@
         <span class="n">expect</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">filename</span><span class="p">),</span> <span class="s2">&quot;xml file not found </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
         <span class="n">expect</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">schema</span><span class="p">),</span> <span class="s2">&quot;schema file not found </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">schema</span><span class="p">))</span>
         <span class="n">xmllint</span> <span class="o">=</span> <span class="n">find_executable</span><span class="p">(</span><span class="s2">&quot;xmllint&quot;</span><span class="p">)</span>
+
         <span class="n">expect</span><span class="p">(</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">xmllint</span><span class="p">),</span>
+            <span class="n">xmllint</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">xmllint</span><span class="p">),</span>
             <span class="s2">&quot; xmllint not found in PATH, xmllint is required for cime.  PATH=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                 <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;PATH&quot;</span><span class="p">]</span>
             <span class="p">),</span>

@@ -147,26 +147,7 @@
 <div class="toctree-wrapper compound">
 </div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ ./bless_test_results --help
-Traceback (most recent call last):
-  File &quot;/home/runner/work/cime/cime/CIME/Tools/./bless_test_results&quot;, line 20, in &lt;module&gt;
-    _MACHINE = Machines()
-               ^^^^^^^^^^
-  File &quot;/home/runner/work/cime/cime/CIME/XML/machines.py&quot;, line 37, in __init__
-    files = Files()
-            ^^^^^^^
-  File &quot;/home/runner/work/cime/cime/CIME/XML/files.py&quot;, line 41, in __init__
-    EntryID.__init__(self, infile, schema=schema)
-  File &quot;/home/runner/work/cime/cime/CIME/XML/entry_id.py&quot;, line 15, in __init__
-    GenericXML.__init__(self, infile, schema, read_only=read_only)
-  File &quot;/home/runner/work/cime/cime/CIME/XML/generic_xml.py&quot;, line 78, in __init__
-    self.read(infile, schema)
-  File &quot;/home/runner/work/cime/cime/CIME/XML/generic_xml.py&quot;, line 131, in read
-    self.validate_xml_file(infile, schema)
-  File &quot;/home/runner/work/cime/cime/CIME/XML/generic_xml.py&quot;, line 695, in validate_xml_file
-    os.path.isfile(xmllint),
-    ^^^^^^^^^^^^^^^^^^^^^^^
-  File &quot;&lt;frozen genericpath&gt;&quot;, line 30, in isfile
-TypeError: stat: path should be string, bytes, os.PathLike or integer, not NoneType
+ERROR:  xmllint not found in PATH, xmllint is required for cime.  PATH=/opt/hostedtoolcache/Python/3.11.3/x64/bin:/opt/hostedtoolcache/Python/3.11.3/x64:/home/runner/.local/bin:/opt/pipx_bin:/home/runner/.cargo/bin:/home/runner/.config/composer/vendor/bin:/usr/local/.ghcup/bin:/home/runner/.dotnet/tools:/snap/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
 </pre></div>
 </div>
 </section>
