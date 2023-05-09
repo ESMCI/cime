@@ -25,6 +25,8 @@ try:
 except AttributeError:
     collectionsABC = collections
 
+
+    
 from CIME.utils import run_cmd, run_cmd_no_fail, get_lids, get_current_commit
 import get_tests
 import CIME.test_scheduler, CIME.wait_for_tests
@@ -49,6 +51,9 @@ TEST_ROOT   = None
 NO_FORTRAN_RUN = False
 
 os.environ["CIME_GLOBAL_WALLTIME"] = "0:05:00"
+
+
+
 
 # pragma pylint: disable=protected-access
 ###############################################################################
@@ -77,6 +82,13 @@ def assert_test_status(test_obj, test_name, test_status_obj, test_phase, expecte
 ###############################################################################
     test_status = test_status_obj.get_status(test_phase)
     test_obj.assertEqual(test_status, expected_stat, msg="Problem with {}: for phase '{}': has status '{}', expected '{}'".format(test_name, test_phase, test_status, expected_stat))
+
+def threadisAlive(run_thread):
+    try:
+        threadisAlive = run_thread.isAlive()
+    except AttributeError:
+        threadisAlive = run_thread.is_alive()
+    return threadisAlive
 
 ###############################################################################
 class A_RunUnitTests(unittest.TestCase):
@@ -770,14 +782,14 @@ class M_TestWaitForTests(unittest.TestCase):
 
         time.sleep(5) # Kinda hacky
 
-        self.assertTrue(run_thread.isAlive(), msg="wait_for_tests should have waited")
+        self.assertTrue(threadisAlive(run_thread), msg="wait_for_tests should have waited")
 
         with TestStatus(test_dir=os.path.join(self._testdir_unfinished, "5")) as ts:
             ts.set_status(RUN_PHASE, TEST_PASS_STATUS)
 
         run_thread.join(timeout=10)
 
-        self.assertFalse(run_thread.isAlive(), msg="wait_for_tests should have finished")
+        self.assertFalse(threadisAlive(run_thread), msg="wait_for_tests should have finished")
 
         self.assertTrue(self._thread_error is None, msg="Thread had failure: %s" % self._thread_error)
 
@@ -790,14 +802,14 @@ class M_TestWaitForTests(unittest.TestCase):
 
         time.sleep(5) # Kinda hacky
 
-        self.assertTrue(run_thread.isAlive(), msg="wait_for_tests should have waited")
+        self.assertTrue(threadisAlive(run_thread), msg="wait_for_tests should have waited")
 
         with TestStatus(test_dir=os.path.join(self._testdir_unfinished2, "5")) as ts:
             ts.set_status(RUN_PHASE, TEST_PASS_STATUS)
 
         run_thread.join(timeout=10)
 
-        self.assertFalse(run_thread.isAlive(), msg="wait_for_tests should have finished")
+        self.assertFalse(threadisAlive(run_thread), msg="wait_for_tests should have finished")
 
         self.assertTrue(self._thread_error is None, msg="Thread had failure: %s" % self._thread_error)
 
@@ -811,13 +823,13 @@ class M_TestWaitForTests(unittest.TestCase):
 
         time.sleep(5)
 
-        self.assertTrue(run_thread.isAlive(), msg="wait_for_tests should have waited")
+        self.assertTrue(threadisAlive(run_thread), msg="wait_for_tests should have waited")
 
         kill_python_subprocesses(signal.SIGTERM, expected_num_killed=1, tester=self)
 
         run_thread.join(timeout=10)
 
-        self.assertFalse(run_thread.isAlive(), msg="wait_for_tests should have finished")
+        self.assertFalse(threadisAlive(run_thread), msg="wait_for_tests should have finished")
 
         self.assertTrue(self._thread_error is None, msg="Thread had failure: %s" % self._thread_error)
 
@@ -832,7 +844,7 @@ class M_TestWaitForTests(unittest.TestCase):
 
         run_thread.join(timeout=10)
 
-        self.assertFalse(run_thread.isAlive(), msg="wait_for_tests should have finished")
+        self.assertFalse(threadisAlive(run_thread), msg="wait_for_tests should have finished")
 
         self.assertTrue(self._thread_error is None, msg="Thread had failure: %s" % self._thread_error)
 
@@ -849,13 +861,13 @@ class M_TestWaitForTests(unittest.TestCase):
 
         time.sleep(5)
 
-        self.assertTrue(run_thread.isAlive(), msg="wait_for_tests should have waited")
+        self.assertTrue(threadisAlive(run_thread), msg="wait_for_tests should have waited")
 
         kill_python_subprocesses(signal.SIGTERM, expected_num_killed=1, tester=self)
 
         run_thread.join(timeout=10)
 
-        self.assertFalse(run_thread.isAlive(), msg="wait_for_tests should have finished")
+        self.assertFalse(threadisAlive(run_thread), msg="wait_for_tests should have finished")
         self.assertTrue(self._thread_error is None, msg="Thread had failure: %s" % self._thread_error)
 
         assert_dashboard_has_build(self, "regression_test_kill")
@@ -1289,6 +1301,7 @@ class P_TestJenkinsGenericJob(TestCreateTestCommon):
         self.assert_num_leftovers() # jenkins_generic_job should have automatically cleaned up leftovers from prior run
         assert_dashboard_has_build(self, build_name)
 
+
     ###########################################################################
     def test_jenkins_generic_job_kill(self):
     ###########################################################################
@@ -1303,10 +1316,11 @@ class P_TestJenkinsGenericJob(TestCreateTestCommon):
 
         run_thread.join(timeout=10)
 
-        self.assertFalse(run_thread.isAlive(), msg="jenkins_generic_job should have finished")
+        self.assertFalse(threadisAlive(run_thread), msg="jenkins_generic_job should have finished")
         self.assertTrue(self._thread_error is None, msg="Thread had failure: %s" % self._thread_error)
         assert_dashboard_has_build(self, build_name)
 
+        
 ###############################################################################
 class T_TestRunRestart(TestCreateTestCommon):
 ###############################################################################
