@@ -19,8 +19,11 @@ subprocess.call('/bin/rm -f $(find . -name "*.pyc")', shell=True, cwd=LIB_DIR)
 import six
 from six import assertRaisesRegex
 
-
 import collections
+try:
+    collectionsABC = collections.abc
+except AttributeError:
+    collectionsABC = collections
 
 from CIME.utils import run_cmd, run_cmd_no_fail, get_lids, get_current_commit
 import get_tests
@@ -1601,14 +1604,14 @@ class K_TestCimeCase(TestCreateTestCommon):
             job_name = "case.run"
             prereq_name = 'prereq_test'
             batch_commands = case.submit_jobs(prereq=prereq_name, job=job_name, skip_pnl=True, dry_run=True)
-            self.assertTrue(isinstance(batch_commands, collections.Sequence), "case.submit_jobs did not return a sequence for a dry run")
+            self.assertTrue(isinstance(batch_commands, collectionsABC.Sequence), "case.submit_jobs did not return a sequence for a dry run")
             self.assertTrue(len(batch_commands) > 0, "case.submit_jobs did not return any job submission string")
             # The first element in the internal sequence should just be the job name
             # The second one (batch_cmd_index) should be the actual batch submission command
             batch_cmd_index = 1
             # The prerequisite should be applied to all jobs, though we're only expecting one
             for batch_cmd in batch_commands:
-                self.assertTrue(isinstance(batch_cmd, collections.Sequence), "case.submit_jobs did not return a sequence of sequences")
+                self.assertTrue(isinstance(batch_cmd, collectionsABC.Sequence), "case.submit_jobs did not return a sequence of sequences")
                 self.assertTrue(len(batch_cmd) > batch_cmd_index, "case.submit_jobs returned internal sequences with length <= {}".format(batch_cmd_index))
                 self.assertTrue(isinstance(batch_cmd[1], six.string_types), "case.submit_jobs returned internal sequences without the batch command string as the second parameter: {}".format(batch_cmd[1]))
                 batch_cmd_args = batch_cmd[1]
@@ -1641,7 +1644,7 @@ class K_TestCimeCase(TestCreateTestCommon):
             prereq_name = "prereq_allow_fail_test"
             depend_allow = depend_allow.replace("jobid", prereq_name)
             batch_commands = case.submit_jobs(prereq=prereq_name, allow_fail=True, job=job_name, skip_pnl=True, dry_run=True)
-            self.assertTrue(isinstance(batch_commands, collections.Sequence), "case.submit_jobs did not return a sequence for a dry run")
+            self.assertTrue(isinstance(batch_commands, collectionsABC.Sequence), "case.submit_jobs did not return a sequence for a dry run")
             num_submissions = 1
             if case.get_value("DOUT_S"):
                 num_submissions = 2
@@ -1662,7 +1665,7 @@ class K_TestCimeCase(TestCreateTestCommon):
             num_submissions = 6
             case.set_value("RESUBMIT", num_submissions - 1)
             batch_commands = case.submit_jobs(job=job_name, skip_pnl=True, dry_run=True, resubmit_immediate=True)
-            self.assertTrue(isinstance(batch_commands, collections.Sequence), "case.submit_jobs did not return a sequence for a dry run")
+            self.assertTrue(isinstance(batch_commands, collectionsABC.Sequence), "case.submit_jobs did not return a sequence for a dry run")
             if case.get_value("DOUT_S"):
                 num_submissions = 12
             self.assertTrue(len(batch_commands) == num_submissions, "case.submit_jobs did not return {} submitted jobs".format(num_submissions))
