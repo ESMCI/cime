@@ -331,7 +331,7 @@ def _create_component_modelio_namelists(case, files):
             mfile = os.path.join(confdir, modelio_file)
 
             # if the namelist already exists, update the logfile line only and pass the other lines through
-            if os.path.exists(mfile):
+            if os.path.exists(mfile) and inst_count > 1:
                 logfile = model + inst_string + ".log." + str(lid)
                 # update the logfile in place
                 for line in fileinput.input(mfile,inplace=1):
@@ -343,7 +343,6 @@ def _create_component_modelio_namelists(case, files):
                         # line already has a newline character
                         sys.stdout.write(line)
             else:
-                print('Could not find file ' + str(mfile))
                 allExist = False
                 break
 

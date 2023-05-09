@@ -1526,10 +1526,6 @@ This allows using a different mpirun command to launch unit tests
       <modules mpilib="!mpi-serial">
         <command name="load">netcdf-mpi/4.9.1</command>
         <command name="load">parallel-netcdf/1.12.3</command>
-      </modules>
-
-      <modules>
-	<command name="load">parallelio/2.5.10</command>
 	<command name="load">esmf/8.4.1</command>
       </modules>
 
