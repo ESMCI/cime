@@ -21,6 +21,12 @@ ENV LOGNAME=root
 
 SHELL ["/bin/bash", "-c"]
 
+# First layer as they never change, required for E3SM testing, TODO: fix in unittesting as well
+RUN mkdir -p /cache/cpl/gridmaps/oQU240 /cache/share/domains && \
+    wget -O /cache/cpl/gridmaps/oQU240/map_oQU240_to_ne4np4_aave.160614.nc https://portal.nersc.gov/project/e3sm/inputdata/cpl/gridmaps/oQU240/map_oQU240_to_ne4np4_aave.160614.nc && \
+    wget -O /cache/share/domains/domain.ocn.ne4np4_oQU240.160614.nc https://portal.nersc.gov/project/e3sm/inputdata/share/domains/domain.ocn.ne4np4_oQU240.160614.nc && \
+    wget -O /cache/share/domains/domain.lnd.ne4np4_oQU240.160614.nc https://portal.nersc.gov/project/e3sm/inputdata/share/domains/domain.lnd.ne4np4_oQU240.160614.nc
+
 # Install common packages
 RUN mamba install --yes -c conda-forge \
             cmake \
@@ -33,6 +39,7 @@ RUN mamba install --yes -c conda-forge \
             pytest-cov\
             pyyaml \
             vim \
+            rsync \
             openssh && \
             rm -rf /opt/conda/pkgs/*
 
