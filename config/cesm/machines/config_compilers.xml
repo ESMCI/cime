@@ -835,24 +835,6 @@ using a fortran linker.
   </SLIBS>
 </compiler>
 
-<compiler MACH="edison" COMPILER="intel">
-  <CFLAGS>
-    <append DEBUG="FALSE"> -O2  </append>
-  </CFLAGS>
-  <CONFIG_ARGS>
-    <base> --host=Linux </base>
-  </CONFIG_ARGS>
-  <CPPDEFS>
-    <append MODEL="gptl"> -DHAVE_PAPI </append>
-  </CPPDEFS>
-  <FFLAGS>
-    <append DEBUG="FALSE"> -O2  </append>
-  </FFLAGS>
-  <SLIBS>
-    <append> -L$ENV{NETCDF_DIR} -lnetcdff -Wl,--as-needed,-L$ENV{NETCDF_DIR}/lib -lnetcdff -lnetcdf </append>
-  </SLIBS>
-</compiler>
-
 <compiler MACH="euler2">
   <CPPDEFS>
     <append> -DLINUX </append>
@@ -973,6 +955,15 @@ using a fortran linker.
   </SLIBS>
   <PIO_FILESYSTEM_HINTS>lustre</PIO_FILESYSTEM_HINTS>
 </compiler>
+
+<compiler MACH="gust">
+  <NETCDF_PATH>$ENV{NETCDF}</NETCDF_PATH>
+  <PNETCDF_PATH>$ENV{PNETCDF}</PNETCDF_PATH>
+  <SLIBS>
+    <append> -lnetcdff -lnetcdf </append>
+  </SLIBS>
+</compiler>
+
 
 <compiler MACH="hobart">
   <CPPDEFS>
