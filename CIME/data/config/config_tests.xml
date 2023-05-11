@@ -233,7 +233,6 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
     <HIST_OPTION>ndays</HIST_OPTION>
     <HIST_N>1</HIST_N>
     <DOUT_S>FALSE</DOUT_S>
-    <SINGLE_EXE>TRUE</SINGLE_EXE>
   </test>
 
   <test NAME="ERI">
@@ -305,7 +304,6 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
     <HIST_OPTION>$STOP_OPTION</HIST_OPTION>
     <DOUT_S_SAVE_INTERIM_RESTART_FILES>TRUE</DOUT_S_SAVE_INTERIM_RESTART_FILES>
     <CONTINUE_RUN>FALSE</CONTINUE_RUN>
-    <SINGLE_EXE>TRUE</SINGLE_EXE>
   </test>
 
   <test NAME="ERIO">
@@ -328,7 +326,6 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
     <HIST_OPTION>$STOP_OPTION</HIST_OPTION>
     <RESUBMIT>1</RESUBMIT>
     <CONTINUE_RUN>FALSE</CONTINUE_RUN>
-    <SINGLE_EXE>TRUE</SINGLE_EXE>
   </test>
 
   <test NAME="ERRI">
@@ -343,7 +340,6 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
     <DOUT_S>TRUE</DOUT_S>
     <RESUBMIT>1</RESUBMIT>
     <CONTINUE_RUN>FALSE</CONTINUE_RUN>
-    <SINGLE_EXE>TRUE</SINGLE_EXE>
   </test>
 
   <test NAME="ERT">
@@ -404,7 +400,6 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
     <HIST_OPTION>nhours</HIST_OPTION>
     <HIST_N>1</HIST_N>
     <DOUT_S>FALSE</DOUT_S>
-    <SINGLE_EXE>TRUE</SINGLE_EXE>
   </test>
 
   <test NAME="TESTBUILDFAIL" INFRASTRUCTURE_TEST="TRUE">
@@ -597,7 +592,6 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
     <HIST_N>$STOP_N</HIST_N>
     <DOUT_S>FALSE</DOUT_S>
     <RESUBMIT>1</RESUBMIT>
-    <SINGLE_EXE>TRUE</SINGLE_EXE>
   </test>
 
   <test NAME="PFS">
@@ -676,7 +670,6 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
     <REST_OPTION>never</REST_OPTION>
     <HIST_OPTION>$STOP_OPTION</HIST_OPTION>
     <HIST_N>$STOP_N</HIST_N>
-    <SINGLE_EXE>TRUE</SINGLE_EXE>
   </test>
 
   <test NAME="REUSEINITFILES">
@@ -687,7 +680,6 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
     <REST_OPTION>never</REST_OPTION>
     <HIST_OPTION>$STOP_OPTION</HIST_OPTION>
     <HIST_N>$STOP_N</HIST_N>
-    <SINGLE_EXE>TRUE</SINGLE_EXE>
   </test>
 
   <test NAME="SBN">
