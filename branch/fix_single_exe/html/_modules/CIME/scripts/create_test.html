@@ -304,7 +304,7 @@
         <span class="p">)</span>
 
         <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-            <span class="s2">&quot;--xml-driver&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;--driver&quot;</span><span class="p">,</span>
             <span class="n">choices</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;mct&quot;</span><span class="p">,</span> <span class="s2">&quot;nuopc&quot;</span><span class="p">,</span> <span class="s2">&quot;moab&quot;</span><span class="p">),</span>
             <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Override driver specified in tests and use this one.&quot;</span><span class="p">,</span>
         <span class="p">)</span>
@@ -709,7 +709,7 @@
                 <span class="n">xml_testlist</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">xml_testlist</span><span class="p">,</span>
                 <span class="n">machine</span><span class="o">=</span><span class="n">machine_name</span><span class="p">,</span>
                 <span class="n">compiler</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">compiler</span><span class="p">,</span>
-                <span class="n">driver</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">xml_driver</span><span class="p">,</span>
+                <span class="n">driver</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">driver</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">test_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">test_data</span><span class="p">]</span>
             <span class="k">for</span> <span class="n">test_datum</span> <span class="ow">in</span> <span class="n">test_data</span><span class="p">:</span>
