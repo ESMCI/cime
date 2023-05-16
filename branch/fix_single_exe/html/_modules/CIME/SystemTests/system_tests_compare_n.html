@@ -146,6 +146,8 @@
         <span class="n">run_descriptions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">multisubmit</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">ignore_fieldlist_diffs</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">dry_run</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize a SystemTestsCompareN object. Individual test cases that</span>
@@ -170,7 +172,7 @@
 <span class="sd">                the cases as identical. (This is needed for tests where one case</span>
 <span class="sd">                exercises an option that produces extra diagnostic fields.)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">SystemTestsCommon</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">)</span>
+        <span class="n">SystemTestsCommon</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_separate_builds</span> <span class="o">=</span> <span class="n">separate_builds</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ignore_fieldlist_diffs</span> <span class="o">=</span> <span class="n">ignore_fieldlist_diffs</span>
@@ -215,7 +217,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_cases</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_caseroots</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_caseroots</span><span class="p">()</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_setup_cases_if_not_yet_done</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">dry_run</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_setup_cases_if_not_yet_done</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_multisubmit</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">multisubmit</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cases</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;BATCH_SYSTEM&quot;</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">&quot;none&quot;</span>

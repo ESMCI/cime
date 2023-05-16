@@ -111,7 +111,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1">###########################################################################</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="c1">###########################################################################</span>
         <span class="n">SystemTestsCompareTwo</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
@@ -120,6 +120,7 @@
             <span class="n">run_two_suffix</span><span class="o">=</span><span class="s2">&quot;pr&quot;</span><span class="p">,</span>
             <span class="n">run_one_description</span><span class="o">=</span><span class="s2">&quot;no pause/resume&quot;</span><span class="p">,</span>
             <span class="n">run_two_description</span><span class="o">=</span><span class="s2">&quot;pause/resume&quot;</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_stopopt</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_stopn</span> <span class="o">=</span> <span class="mi">0</span>

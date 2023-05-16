@@ -152,6 +152,8 @@
         <span class="n">multisubmit</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">ignore_fieldlist_diffs</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">case_two_keep_init_generated_files</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">dry_run</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize a SystemTestsCompareTwo object. Individual test cases that</span>
@@ -184,7 +186,7 @@
 <span class="sd">                is provided for the sake of specific tests, e.g., a test of the behavior</span>
 <span class="sd">                of running with init_generated_files in place.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">SystemTestsCommon</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">)</span>
+        <span class="n">SystemTestsCommon</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_separate_builds</span> <span class="o">=</span> <span class="n">separate_builds</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ignore_fieldlist_diffs</span> <span class="o">=</span> <span class="n">ignore_fieldlist_diffs</span>
@@ -222,7 +224,9 @@
         <span class="c1"># _setup_cases_if_not_yet_done</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_case2</span> <span class="o">=</span> <span class="kc">None</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_setup_cases_if_not_yet_done</span><span class="p">()</span>
+        <span class="c1"># Prevent additional setup_case calls when detecting support for `--single-exe`</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">dry_run</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_setup_cases_if_not_yet_done</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_multisubmit</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">multisubmit</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case1</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;BATCH_SYSTEM&quot;</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">&quot;none&quot;</span>

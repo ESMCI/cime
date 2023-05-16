@@ -106,7 +106,7 @@
 
 
 <div class="viewcode-block" id="REUSEINITFILES"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.reuseinitfiles.REUSEINITFILES">[docs]</a><span class="k">class</span> <span class="nc">REUSEINITFILES</span><span class="p">(</span><span class="n">SystemTestsCompareTwo</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">SystemTestsCompareTwo</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">case</span><span class="p">,</span>
@@ -118,6 +118,7 @@
             <span class="c1"># init_generated_files from case1 and then need to make sure they are NOT</span>
             <span class="c1"># deleted like is normally done for tests:</span>
             <span class="n">case_two_keep_init_generated_files</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span>
         <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_case_one_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

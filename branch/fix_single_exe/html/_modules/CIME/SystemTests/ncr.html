@@ -101,7 +101,7 @@
 
 
 <div class="viewcode-block" id="NCR"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.ncr.NCR">[docs]</a><span class="k">class</span> <span class="nc">NCR</span><span class="p">(</span><span class="n">SystemTestsCompareTwo</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        initialize an NCR test</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -112,6 +112,7 @@
             <span class="n">run_two_suffix</span><span class="o">=</span><span class="s2">&quot;singleinst&quot;</span><span class="p">,</span>
             <span class="n">run_one_description</span><span class="o">=</span><span class="s2">&quot;two instances, each with the same number of tasks&quot;</span><span class="p">,</span>
             <span class="n">run_two_description</span><span class="o">=</span><span class="s2">&quot;default build&quot;</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span>
         <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_comp_classes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

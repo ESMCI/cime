@@ -412,20 +412,30 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="s2">&quot;.nc&quot;</span> <span class="ow">in</span> <span class="n">hist1</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Ignoring non-netcdf file </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">hist1</span><span class="p">))</span>
                 <span class="k">continue</span>
-            <span class="n">success</span><span class="p">,</span> <span class="n">cprnc_log_file</span><span class="p">,</span> <span class="n">cprnc_comment</span> <span class="o">=</span> <span class="n">cprnc</span><span class="p">(</span>
-                <span class="n">model</span><span class="p">,</span>
-                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">from_dir1</span><span class="p">,</span> <span class="n">hist1</span><span class="p">),</span>
-                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">from_dir2</span><span class="p">,</span> <span class="n">hist2</span><span class="p">),</span>
-                <span class="n">case</span><span class="p">,</span>
-                <span class="n">from_dir1</span><span class="p">,</span>
-                <span class="n">multiinst_driver_compare</span><span class="o">=</span><span class="n">multiinst_driver_compare</span><span class="p">,</span>
-                <span class="n">outfile_suffix</span><span class="o">=</span><span class="n">outfile_suffix</span><span class="p">,</span>
-                <span class="n">ignore_fieldlist_diffs</span><span class="o">=</span><span class="n">ignore_fieldlist_diffs</span><span class="p">,</span>
-            <span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">success</span><span class="p">,</span> <span class="n">cprnc_log_file</span><span class="p">,</span> <span class="n">cprnc_comment</span> <span class="o">=</span> <span class="n">cprnc</span><span class="p">(</span>
+                    <span class="n">model</span><span class="p">,</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">from_dir1</span><span class="p">,</span> <span class="n">hist1</span><span class="p">),</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">from_dir2</span><span class="p">,</span> <span class="n">hist2</span><span class="p">),</span>
+                    <span class="n">case</span><span class="p">,</span>
+                    <span class="n">from_dir1</span><span class="p">,</span>
+                    <span class="n">multiinst_driver_compare</span><span class="o">=</span><span class="n">multiinst_driver_compare</span><span class="p">,</span>
+                    <span class="n">outfile_suffix</span><span class="o">=</span><span class="n">outfile_suffix</span><span class="p">,</span>
+                    <span class="n">ignore_fieldlist_diffs</span><span class="o">=</span><span class="n">ignore_fieldlist_diffs</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="n">cprnc_comment</span> <span class="o">=</span> <span class="s2">&quot;CPRNC executable not found&quot;</span>
+                <span class="n">cprnc_log_file</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="n">success</span> <span class="o">=</span> <span class="kc">False</span>
+
             <span class="k">if</span> <span class="n">success</span><span class="p">:</span>
                 <span class="n">comments</span> <span class="o">+=</span> <span class="s2">&quot;    </span><span class="si">{}</span><span class="s2"> matched </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">hist1</span><span class="p">,</span> <span class="n">hist2</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">cprnc_comment</span> <span class="o">==</span> <span class="n">CPRNC_FIELDLISTS_DIFFER</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">cprnc_log_file</span><span class="p">:</span>
+                    <span class="n">comments</span> <span class="o">+=</span> <span class="n">cprnc_comment</span>
+                    <span class="n">all_success</span> <span class="o">=</span> <span class="kc">False</span>
+                    <span class="k">return</span> <span class="n">all_success</span><span class="p">,</span> <span class="n">comments</span><span class="p">,</span> <span class="mi">0</span>
+                <span class="k">elif</span> <span class="n">cprnc_comment</span> <span class="o">==</span> <span class="n">CPRNC_FIELDLISTS_DIFFER</span><span class="p">:</span>
                     <span class="n">comments</span> <span class="o">+=</span> <span class="s2">&quot;    </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">hist1</span><span class="p">,</span> <span class="n">FIELDLISTS_DIFFER</span><span class="p">,</span> <span class="n">hist2</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">comments</span> <span class="o">+=</span> <span class="s2">&quot;    </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">hist1</span><span class="p">,</span> <span class="n">DIFF_COMMENT</span><span class="p">,</span> <span class="n">hist2</span><span class="p">)</span>
@@ -514,6 +524,11 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">cprnc_exe</span><span class="p">:</span>
         <span class="n">cprnc_exe</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CCSM_CPRNC&quot;</span><span class="p">)</span>
+    <span class="n">expect</span><span class="p">(</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">cprnc_exe</span><span class="p">)</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">cprnc_exe</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">X_OK</span><span class="p">),</span>
+        <span class="sa">f</span><span class="s2">&quot;cprnc </span><span class="si">{</span><span class="n">cprnc_exe</span><span class="si">}</span><span class="s2"> does not exist or is not executable&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
     <span class="n">basename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">file1</span><span class="p">)</span>
     <span class="n">multiinst_regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;.*</span><span class="si">%s</span><span class="s2">[^_]*(_[0-9]</span><span class="si">{4}</span><span class="s2">)[.]h.?[.][^.]+?[.]nc&quot;</span> <span class="o">%</span> <span class="n">model</span><span class="p">)</span>
     <span class="n">mstr</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>

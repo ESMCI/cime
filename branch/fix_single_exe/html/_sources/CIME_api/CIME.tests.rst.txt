@@ -284,6 +284,14 @@ CIME.tests.test\_unit\_paramgen module
    :undoc-members:
    :show-inheritance:
 
+CIME.tests.test\_unit\_system\_tests module
+-------------------------------------------
+
+.. automodule:: CIME.tests.test_unit_system_tests
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 CIME.tests.test\_unit\_test\_status module
 ------------------------------------------
 

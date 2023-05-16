@@ -99,7 +99,7 @@
 
 
 <div class="viewcode-block" id="PET"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.pet.PET">[docs]</a><span class="k">class</span> <span class="nc">PET</span><span class="p">(</span><span class="n">SystemTestsCompareTwo</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        initialize a test object</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -111,6 +111,7 @@
             <span class="n">run_two_suffix</span><span class="o">=</span><span class="s2">&quot;single_thread&quot;</span><span class="p">,</span>
             <span class="n">run_one_description</span><span class="o">=</span><span class="s2">&quot;default threading&quot;</span><span class="p">,</span>
             <span class="n">run_two_description</span><span class="o">=</span><span class="s2">&quot;threads set to 1&quot;</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span>
         <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_case_one_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

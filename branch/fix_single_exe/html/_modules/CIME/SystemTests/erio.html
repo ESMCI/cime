@@ -96,11 +96,11 @@
 
 
 <div class="viewcode-block" id="ERIO"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.erio.ERIO">[docs]</a><span class="k">class</span> <span class="nc">ERIO</span><span class="p">(</span><span class="n">SystemTestsCommon</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        initialize an object interface to file env_test.xml in the case directory</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">SystemTestsCommon</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">expected</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;TEST&quot;</span><span class="p">])</span>
+        <span class="n">SystemTestsCommon</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">expected</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;TEST&quot;</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_pio_types</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_env</span><span class="p">(</span><span class="s2">&quot;run&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">get_valid_values</span><span class="p">(</span><span class="s2">&quot;PIO_TYPENAME&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_stop_n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;STOP_N&quot;</span><span class="p">)</span>
