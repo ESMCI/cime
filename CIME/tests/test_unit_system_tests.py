@@ -10,6 +10,7 @@ from CIME.SystemTests.system_tests_common import SystemTestsCommon
 from CIME.SystemTests.system_tests_compare_two import SystemTestsCompareTwo
 from CIME.SystemTests.system_tests_compare_n import SystemTestsCompareN
 
+
 class TestCaseSubmit(unittest.TestCase):
     def test_kwargs(self):
         case = mock.MagicMock()
