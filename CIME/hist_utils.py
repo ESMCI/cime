@@ -428,6 +428,11 @@ def cprnc(
     """
     if not cprnc_exe:
         cprnc_exe = case.get_value("CCSM_CPRNC")
+    expect(
+        os.path.isfile(cprnc_exe) and os.access(cprnc_exe, os.X_OK),
+        f"File {cprnc_exe} does not exist or is not executable",
+    )
+
     basename = os.path.basename(file1)
     multiinst_regex = re.compile(r".*%s[^_]*(_[0-9]{4})[.]h.?[.][^.]+?[.]nc" % model)
     mstr = ""

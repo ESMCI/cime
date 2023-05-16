@@ -61,7 +61,7 @@ class BaseTestCase(unittest.TestCase):
         self._hasbatch = self.MACHINE.has_batch_system() and not self.NO_BATCH
         self._do_teardown = not self.NO_TEARDOWN
         self._root_dir = os.getcwd()
-
+        self._cprnc = self.MACHINE.get_value("CCSM_CPRNC")
         customize_path = os.path.join(utils.get_src_root(), "cime_config", "customize")
         self._config = Config.load(customize_path)
 
