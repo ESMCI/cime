@@ -326,20 +326,30 @@ def _compare_hists(
             if not ".nc" in hist1:
                 logger.info("Ignoring non-netcdf file {}".format(hist1))
                 continue
-            success, cprnc_log_file, cprnc_comment = cprnc(
-                model,
-                os.path.join(from_dir1, hist1),
-                os.path.join(from_dir2, hist2),
-                case,
-                from_dir1,
-                multiinst_driver_compare=multiinst_driver_compare,
-                outfile_suffix=outfile_suffix,
-                ignore_fieldlist_diffs=ignore_fieldlist_diffs,
-            )
+            try:
+                success, cprnc_log_file, cprnc_comment = cprnc(
+                    model,
+                    os.path.join(from_dir1, hist1),
+                    os.path.join(from_dir2, hist2),
+                    case,
+                    from_dir1,
+                    multiinst_driver_compare=multiinst_driver_compare,
+                    outfile_suffix=outfile_suffix,
+                    ignore_fieldlist_diffs=ignore_fieldlist_diffs,
+                )
+            except:
+                cprnc_comment = "CPRNC executable not found"
+                cprnc_log_file = None
+                success = False
+
             if success:
                 comments += "    {} matched {}\n".format(hist1, hist2)
             else:
-                if cprnc_comment == CPRNC_FIELDLISTS_DIFFER:
+                if not cprnc_log_file:
+                    comments += cprnc_comment
+                    all_success = False
+                    return all_success, comments, 0
+                elif cprnc_comment == CPRNC_FIELDLISTS_DIFFER:
                     comments += "    {} {} {}\n".format(hist1, FIELDLISTS_DIFFER, hist2)
                 else:
                     comments += "    {} {} {}\n".format(hist1, DIFF_COMMENT, hist2)
@@ -428,6 +438,11 @@ def cprnc(
     """
     if not cprnc_exe:
         cprnc_exe = case.get_value("CCSM_CPRNC")
+    expect(
+        os.path.isfile(cprnc_exe) and os.access(cprnc_exe, os.X_OK),
+        f"cprnc {cprnc_exe} does not exist or is not executable",
+    )
+
     basename = os.path.basename(file1)
     multiinst_regex = re.compile(r".*%s[^_]*(_[0-9]{4})[.]h.?[.][^.]+?[.]nc" % model)
     mstr = ""

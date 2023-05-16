@@ -459,6 +459,8 @@ CIME's scripts regression tests
 for the stand-alone CIME testing. With no arguments, it will run the full suite. You can limit testing to a specific
 test class or even a specific test within a test class.
 
+**CCSM_CPRNC should be defined in config_machines.xml for your system prior to running scripts_regression_tests.py**
+
 Run full suite::
 
   python scripts/lib/CIME/tests/scripts_regression_tests.py
