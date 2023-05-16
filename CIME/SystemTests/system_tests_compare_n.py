@@ -60,6 +60,8 @@ class SystemTestsCompareN(SystemTestsCommon):
         run_descriptions=None,
         multisubmit=False,
         ignore_fieldlist_diffs=False,
+        dry_run=False,
+        **kwargs
     ):
         """
         Initialize a SystemTestsCompareN object. Individual test cases that
@@ -84,7 +86,7 @@ class SystemTestsCompareN(SystemTestsCommon):
                 the cases as identical. (This is needed for tests where one case
                 exercises an option that produces extra diagnostic fields.)
         """
-        SystemTestsCommon.__init__(self, case)
+        SystemTestsCommon.__init__(self, case, **kwargs)
 
         self._separate_builds = separate_builds
         self._ignore_fieldlist_diffs = ignore_fieldlist_diffs
@@ -129,7 +131,8 @@ class SystemTestsCompareN(SystemTestsCommon):
         self._cases[0] = self._case
         self._caseroots = self._get_caseroots()
 
-        self._setup_cases_if_not_yet_done()
+        if not dry_run:
+            self._setup_cases_if_not_yet_done()
 
         self._multisubmit = (
             multisubmit and self._cases[0].get_value("BATCH_SYSTEM") != "none"

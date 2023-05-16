@@ -49,11 +49,11 @@ P_THRESHOLD = 0.005
 
 
 class TSC(SystemTestsCommon):
-    def __init__(self, case):
+    def __init__(self, case, **kwargs):
         """
         initialize an object interface to the TSC test
         """
-        super(TSC, self).__init__(case)
+        super(TSC, self).__init__(case, **kwargs)
         if self._case.get_value("MODEL") == "e3sm":
             self.atmmod = "eam"
             self.lndmod = "elm"

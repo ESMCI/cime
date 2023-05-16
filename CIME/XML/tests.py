@@ -40,7 +40,7 @@ class Tests(GenericXML):
         testname = case.get_value("TESTCASE")
 
         try:
-            test = find_system_test(testname, case)(case)
+            test = find_system_test(testname, case)(case, dry_run=True)
         except Exception as e:
             raise e
         else:

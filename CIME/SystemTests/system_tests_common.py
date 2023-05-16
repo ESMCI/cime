@@ -76,7 +76,9 @@ def is_single_exe_case(case):
 
 
 class SystemTestsCommon(object):
-    def __init__(self, case, expected=None):
+    def __init__(
+        self, case, expected=None, **kwargs
+    ):  # pylint: disable=unused-argument
         """
         initialize a CIME system test object, if the locked env_run.orig.xml
         does not exist copy the current env_run.xml file.  If it does exist restore values
@@ -874,8 +876,8 @@ class FakeTest(SystemTestsCommon):
     in utils.py will work with these classes.
     """
 
-    def __init__(self, case, expected=None):
-        super(FakeTest, self).__init__(case, expected=expected)
+    def __init__(self, case, expected=None, **kwargs):
+        super(FakeTest, self).__init__(case, expected=expected, **kwargs)
         self._script = None
         self._requires_exe = False
         self._case._non_local = True
@@ -1093,8 +1095,8 @@ class TESTBUILDFAIL(TESTRUNPASS):
 
 
 class TESTBUILDFAILEXC(FakeTest):
-    def __init__(self, case):
-        FakeTest.__init__(self, case)
+    def __init__(self, case, **kwargs):
+        FakeTest.__init__(self, case, **kwargs)
         raise RuntimeError("Exception from init")
 
 
