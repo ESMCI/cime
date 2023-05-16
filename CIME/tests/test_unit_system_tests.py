@@ -35,10 +35,16 @@ class TestCaseSubmit(unittest.TestCase):
             "SMS.f19_g16.S",
         )
 
+        orig1 = SystemTestsCompareTwo._get_caseroot
+        orig2 = SystemTestsCompareTwo._get_caseroot2
+
         SystemTestsCompareTwo._get_caseroot = mock.MagicMock()
         SystemTestsCompareTwo._get_caseroot2 = mock.MagicMock()
 
         _ = SystemTestsCompareTwo(case, something="random")
+
+        SystemTestsCompareTwo._get_caseroot = orig1
+        SystemTestsCompareTwo._get_caseroot2 = orig2
 
         case = mock.MagicMock()
 
@@ -50,9 +56,13 @@ class TestCaseSubmit(unittest.TestCase):
             "SMS.f19_g16.S",
         )
 
+        orig = SystemTestsCompareN._get_caseroots
+
         SystemTestsCompareN._get_caseroots = mock.MagicMock()
 
         _ = SystemTestsCompareN(case, something="random")
+
+        SystemTestsCompareN._get_caseroots = orig
 
     def test_dry_run(self):
         case = mock.MagicMock()
@@ -64,6 +74,8 @@ class TestCaseSubmit(unittest.TestCase):
             "/caseroot",
             "SMS.f19_g16.S",
         )
+
+        orig = SystemTestsCompareTwo._setup_cases_if_not_yet_done
 
         SystemTestsCompareTwo._setup_cases_if_not_yet_done = mock.MagicMock()
 
@@ -84,6 +96,10 @@ class TestCaseSubmit(unittest.TestCase):
         system_test = SystemTestsCompareTwo(case)
 
         system_test._setup_cases_if_not_yet_done.assert_called()
+
+        SystemTestsCompareTwo._setup_cases_if_not_yet_done = orig
+
+        orig = SystemTestsCompareN._setup_cases_if_not_yet_done
 
         SystemTestsCompareN._setup_cases_if_not_yet_done = mock.MagicMock()
 
@@ -114,3 +130,5 @@ class TestCaseSubmit(unittest.TestCase):
         system_test = SystemTestsCompareN(case)
 
         system_test._setup_cases_if_not_yet_done.assert_called()
+
+        SystemTestsCompareN._setup_cases_if_not_yet_done = orig
