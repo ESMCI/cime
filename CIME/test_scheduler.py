@@ -1003,7 +1003,12 @@ class TestScheduler(object):
             with Case(self._get_test_dir(test), read_only=False) as case:
                 tests = Tests()
 
-                tests.support_single_exe(case)
+                try:
+                    tests.support_single_exe(case)
+                except Exception:
+                    self._update_test_status_file(test, SETUP_PHASE, TEST_FAIL_STATUS)
+
+                    raise
 
         return rv
 
