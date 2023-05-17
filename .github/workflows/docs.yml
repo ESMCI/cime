@@ -25,7 +25,7 @@ jobs:
       - uses: tj-actions/changed-files@v32
         id: changed-check
         with:
-          files: doc
+          files: doc/**
   build-and-deploy:
     permissions:
       contents: write  #  for peaceiris/actions-gh-pages to push
