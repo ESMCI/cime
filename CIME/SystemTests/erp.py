@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 class ERP(RestartTest):
-    def __init__(self, case):
+    def __init__(self, case, **kwargs):
         """
         initialize a test object
         """
@@ -26,6 +26,7 @@ class ERP(RestartTest):
             run_two_suffix="rest",
             run_one_description="initial",
             run_two_description="restart",
+            **kwargs
         )
 
     def _case_two_setup(self):

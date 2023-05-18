@@ -12,11 +12,11 @@ logger = logging.getLogger(__name__)
 
 
 class ERRI(ERR):
-    def __init__(self, case):
+    def __init__(self, case, **kwargs):
         """
         initialize an object interface to the ERU system test
         """
-        ERR.__init__(self, case)
+        ERR.__init__(self, case, **kwargs)
 
     def _case_two_custom_postrun_action(self):
         rundir = self._case.get_value("RUNDIR")

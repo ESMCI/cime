@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 class PEM(SystemTestsCompareTwo):
-    def __init__(self, case):
+    def __init__(self, case, **kwargs):
         SystemTestsCompareTwo.__init__(
             self,
             case,
@@ -23,6 +23,7 @@ class PEM(SystemTestsCompareTwo):
             run_two_suffix="modpes",
             run_one_description="default pe counts",
             run_two_description="halved pe counts",
+            **kwargs
         )
 
     def _case_one_setup(self):

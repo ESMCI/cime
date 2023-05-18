@@ -10,11 +10,11 @@ logger = logging.getLogger(__name__)
 
 
 class ERIO(SystemTestsCommon):
-    def __init__(self, case):
+    def __init__(self, case, **kwargs):
         """
         initialize an object interface to file env_test.xml in the case directory
         """
-        SystemTestsCommon.__init__(self, case, expected=["TEST"])
+        SystemTestsCommon.__init__(self, case, expected=["TEST"], **kwargs)
 
         self._pio_types = self._case.get_env("run").get_valid_values("PIO_TYPENAME")
         self._stop_n = self._case.get_value("STOP_N")

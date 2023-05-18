@@ -12,11 +12,11 @@ logger = logging.getLogger(__name__)
 
 
 class FUNIT(SystemTestsCommon):
-    def __init__(self, case):
+    def __init__(self, case, **kwargs):
         """
         initialize an object interface to the FUNIT system test
         """
-        SystemTestsCommon.__init__(self, case)
+        SystemTestsCommon.__init__(self, case, **kwargs)
         case.load_env()
 
     def build_phase(self, sharedlib_only=False, model_only=False):

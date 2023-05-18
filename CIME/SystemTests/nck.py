@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 class NCK(SystemTestsCompareTwo):
-    def __init__(self, case):
+    def __init__(self, case, **kwargs):
         self._comp_classes = []
         SystemTestsCompareTwo.__init__(
             self,
@@ -24,6 +24,7 @@ class NCK(SystemTestsCompareTwo):
             run_two_suffix="multiinst",
             run_one_description="one instance",
             run_two_description="two instances",
+            **kwargs,
         )
 
     def _common_setup(self):

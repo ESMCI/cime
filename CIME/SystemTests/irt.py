@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 
 class IRT(RestartTest):
-    def __init__(self, case):
+    def __init__(self, case, **kwargs):
         RestartTest.__init__(
             self,
             case,
@@ -28,6 +28,7 @@ class IRT(RestartTest):
             run_one_description="initial",
             run_two_description="restart",
             multisubmit=False,
+            **kwargs
         )
         self._skip_pnl = False
 

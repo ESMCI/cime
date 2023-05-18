@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 class PEA(SystemTestsCompareTwo):
-    def __init__(self, case):
+    def __init__(self, case, **kwargs):
         SystemTestsCompareTwo.__init__(
             self,
             case,
@@ -22,6 +22,7 @@ class PEA(SystemTestsCompareTwo):
             run_two_suffix="mpi-serial",
             run_one_description="default mpi library",
             run_two_description="mpi-serial",
+            **kwargs,
         )
 
     def _common_setup(self):
