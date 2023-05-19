@@ -278,6 +278,7 @@ def jenkins_generic_job(
     update_success,
     check_throughput,
     check_memory,
+    ignore_memleak,
     pes_file,
     jenkins_id,
     queue,
@@ -417,6 +418,7 @@ def jenkins_generic_job(
         check_throughput=check_throughput,
         check_memory=check_memory,
         ignore_namelists=False,  # don't ignore namelist diffs
+        ignore_memleak=ignore_memleak,
         cdash_build_name=cdash_build_name,
         cdash_project=cdash_project,
         cdash_build_group=cdash_build_group,
