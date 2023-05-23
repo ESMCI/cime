@@ -29,6 +29,7 @@ from CIME.locked_files import LOCKED_DIR, lock_file, is_locked
 import CIME.build as build
 
 import glob, gzip, time, traceback, os
+from contextlib import ExitStack
 
 logger = logging.getLogger(__name__)
 
@@ -48,7 +49,13 @@ def fix_single_exe_case(case):
         True when case required modification otherwise False.
     """
     if is_single_exe_case(case):
-        with case:
+        with ExitStack() as stack:
+            # enter context if case is still read-only, entering the context
+            # multiple times can cause side effects for later calls to
+            # `set_value` when it's assumed the cause is writeable.
+            if case._read_only_mode:
+                stack.enter_context(case)
+
             case.set_value("BUILD_COMPLETE", True)
 
             return True
