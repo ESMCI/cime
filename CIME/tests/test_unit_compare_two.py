@@ -292,11 +292,11 @@ class TestSystemTestsCompareTwo(unittest.TestCase):
         # Setup
         case1root = os.path.join(self.tempdir, "case1")
         case1 = CaseFake(case1root)
+        case1._read_only_mode = False
 
         mytest = SystemTestsCompareTwoFake(case1)
 
         case1.set_value = mock.MagicMock()
-
         case1.get_value = mock.MagicMock()
         case1.get_value.side_effect = ["/tmp", "/tmp/bld", False]
 
