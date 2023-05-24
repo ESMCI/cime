@@ -1,0 +1,14 @@
+
+.. _testreporter.py:
+
+####################################################
+testreporter.py
+####################################################
+
+**testreporter.py** is a script in CIMEROOT/CIME/Tools.
+
+.. toctree::
+   :maxdepth: 1
+
+.. command-output:: ./testreporter.py --help
+   :cwd: ../../../CIME/Tools

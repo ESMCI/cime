@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CIME.tests.test_sys_bless_tests_results &mdash; CIME master documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/pop_ver.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            CIME
+          </a>
+              <div class="version">
+                master
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../what_cime/index.html">What is CIME?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../users_guide/index.html">Case Control System Part 1: Basic Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../users_guide/index.html#case-control-system-part-2-configuration-porting-testing-and-use-cases">Case Control System Part 2: Configuration, Porting, Testing and Use Cases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../build_cpl/index.html">Building a Coupled Model with CIME</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../misc_tools/index.html">Miscellaneous Tools</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../glossary/index.html">Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Tools_user/index.html">User Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../xml_files/index.html">XML Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../CIME_api/modules.html">CIME</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Tools_api/modules.html">Tools</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">CIME</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">CIME.tests.test_sys_bless_tests_results</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for CIME.tests.test_sys_bless_tests_results</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+
+<span class="kn">import</span> <span class="nn">glob</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">stat</span>
+
+<span class="kn">from</span> <span class="nn">CIME</span> <span class="kn">import</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">CIME.tests</span> <span class="kn">import</span> <span class="n">base</span>
+
+
+<div class="viewcode-block" id="TestBlessTestResults"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_bless_tests_results.TestBlessTestResults">[docs]</a><span class="k">class</span> <span class="nc">TestBlessTestResults</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">BaseTestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestBlessTestResults.setUp"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_bless_tests_results.TestBlessTestResults.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
+
+        <span class="c1"># Set a restrictive umask so we can test that SharedAreas used for</span>
+        <span class="c1"># recording baselines are working</span>
+        <span class="n">restrictive_mask</span> <span class="o">=</span> <span class="mo">0o027</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_orig_umask</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">umask</span><span class="p">(</span><span class="n">restrictive_mask</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cprnc</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">skipTest</span><span class="p">(</span>
+                <span class="s2">&quot;Test cannot run without cprnc program defined in config_machines.xml&quot;</span>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestBlessTestResults.tearDown"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_bless_tests_results.TestBlessTestResults.tearDown">[docs]</a>    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">tearDown</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="s2">&quot;TESTRUNDIFF_ALTERNATE&quot;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
+            <span class="k">del</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;TESTRUNDIFF_ALTERNATE&quot;</span><span class="p">]</span>
+
+        <span class="n">os</span><span class="o">.</span><span class="n">umask</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_orig_umask</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestBlessTestResults.test_bless_test_results"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_bless_tests_results.TestBlessTestResults.test_bless_test_results">[docs]</a>    <span class="k">def</span> <span class="nf">test_bless_test_results</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">NO_FORTRAN_RUN</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">skipTest</span><span class="p">(</span><span class="s2">&quot;Skipping fortran test&quot;</span><span class="p">)</span>
+        <span class="c1"># Test resubmit scenario if Machine has a batch system</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">MACHINE</span><span class="o">.</span><span class="n">has_batch_system</span><span class="p">():</span>
+            <span class="n">test_names</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="s2">&quot;TESTRUNDIFFRESUBMIT_Mmpi-serial.f19_g16_rx1.A&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;TESTRUNDIFF_Mmpi-serial.f19_g16_rx1.A&quot;</span><span class="p">,</span>
+            <span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">test_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;TESTRUNDIFF_P1.f19_g16_rx1.A&quot;</span><span class="p">]</span>
+
+        <span class="c1"># Generate some baselines</span>
+        <span class="k">for</span> <span class="n">test_name</span> <span class="ow">in</span> <span class="n">test_names</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">create_test_flag_mode</span> <span class="o">==</span> <span class="s2">&quot;e3sm&quot;</span><span class="p">:</span>
+                <span class="n">genargs</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;-g&quot;</span><span class="p">,</span> <span class="s2">&quot;-o&quot;</span><span class="p">,</span> <span class="s2">&quot;-b&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_baseline_name</span><span class="p">,</span> <span class="n">test_name</span><span class="p">]</span>
+                <span class="n">compargs</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;-c&quot;</span><span class="p">,</span> <span class="s2">&quot;-b&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_baseline_name</span><span class="p">,</span> <span class="n">test_name</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">genargs</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="s2">&quot;-g&quot;</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_baseline_name</span><span class="p">,</span>
+                    <span class="s2">&quot;-o&quot;</span><span class="p">,</span>
+                    <span class="n">test_name</span><span class="p">,</span>
+                    <span class="s2">&quot;--baseline-root &quot;</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_baseline_area</span><span class="p">,</span>
+                <span class="p">]</span>
+                <span class="n">compargs</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="s2">&quot;-c&quot;</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_baseline_name</span><span class="p">,</span>
+                    <span class="n">test_name</span><span class="p">,</span>
+                    <span class="s2">&quot;--baseline-root &quot;</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_baseline_area</span><span class="p">,</span>
+                <span class="p">]</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_create_test</span><span class="p">(</span><span class="n">genargs</span><span class="p">)</span>
+            <span class="c1"># Hist compare should pass</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_create_test</span><span class="p">(</span><span class="n">compargs</span><span class="p">)</span>
+            <span class="c1"># Change behavior</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;TESTRUNDIFF_ALTERNATE&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;True&quot;</span>
+
+            <span class="c1"># Hist compare should now fail</span>
+            <span class="n">test_id</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">-</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_baseline_name</span><span class="p">,</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_timestamp</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_create_test</span><span class="p">(</span><span class="n">compargs</span><span class="p">,</span> <span class="n">test_id</span><span class="o">=</span><span class="n">test_id</span><span class="p">,</span> <span class="n">run_errors</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="c1"># compare_test_results should detect the fail</span>
+            <span class="n">cpr_cmd</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/compare_test_results --test-root </span><span class="si">{}</span><span class="s2"> -t </span><span class="si">{}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">TOOLS_DIR</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testroot</span><span class="p">,</span> <span class="n">test_id</span>
+            <span class="p">)</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_cmd_assert_result</span><span class="p">(</span>
+                <span class="n">cpr_cmd</span><span class="p">,</span> <span class="n">expected_stat</span><span class="o">=</span><span class="n">utils</span><span class="o">.</span><span class="n">TESTS_FAILED_ERR_CODE</span>
+            <span class="p">)</span>
+
+            <span class="c1"># use regex</span>
+            <span class="n">expected_pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;FAIL </span><span class="si">%s</span><span class="s2">[^\s]* BASELINE&quot;</span> <span class="o">%</span> <span class="n">test_name</span><span class="p">)</span>
+            <span class="n">the_match</span> <span class="o">=</span> <span class="n">expected_pattern</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertNotEqual</span><span class="p">(</span>
+                <span class="n">the_match</span><span class="p">,</span>
+                <span class="kc">None</span><span class="p">,</span>
+                <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Cmd &#39;</span><span class="si">%s</span><span class="s2">&#39; failed to display failed test </span><span class="si">%s</span><span class="s2"> in output:</span><span class="se">\n</span><span class="si">%s</span><span class="s2">&quot;</span>
+                <span class="o">%</span> <span class="p">(</span><span class="n">cpr_cmd</span><span class="p">,</span> <span class="n">test_name</span><span class="p">,</span> <span class="n">output</span><span class="p">),</span>
+            <span class="p">)</span>
+            <span class="c1"># Bless</span>
+            <span class="n">utils</span><span class="o">.</span><span class="n">run_cmd_no_fail</span><span class="p">(</span>
+                <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/bless_test_results --test-root </span><span class="si">{}</span><span class="s2"> --hist-only --force -t </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">TOOLS_DIR</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testroot</span><span class="p">,</span> <span class="n">test_id</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+            <span class="c1"># Hist compare should now pass again</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_create_test</span><span class="p">(</span><span class="n">compargs</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">verify_perms</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_baseline_area</span><span class="p">)</span>
+            <span class="k">if</span> <span class="s2">&quot;TESTRUNDIFF_ALTERNATE&quot;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
+                <span class="k">del</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;TESTRUNDIFF_ALTERNATE&quot;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="TestBlessTestResults.test_rebless_namelist"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_bless_tests_results.TestBlessTestResults.test_rebless_namelist">[docs]</a>    <span class="k">def</span> <span class="nf">test_rebless_namelist</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Generate some namelist baselines</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">NO_FORTRAN_RUN</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">skipTest</span><span class="p">(</span><span class="s2">&quot;Skipping fortran test&quot;</span><span class="p">)</span>
+        <span class="n">test_to_change</span> <span class="o">=</span> <span class="s2">&quot;TESTRUNPASS_P1.f19_g16_rx1.A&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">create_test_flag_mode</span> <span class="o">==</span> <span class="s2">&quot;e3sm&quot;</span><span class="p">:</span>
+            <span class="n">genargs</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;-g&quot;</span><span class="p">,</span> <span class="s2">&quot;-o&quot;</span><span class="p">,</span> <span class="s2">&quot;-b&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_baseline_name</span><span class="p">,</span> <span class="s2">&quot;cime_test_only_pass&quot;</span><span class="p">]</span>
+            <span class="n">compargs</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;-c&quot;</span><span class="p">,</span> <span class="s2">&quot;-b&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_baseline_name</span><span class="p">,</span> <span class="s2">&quot;cime_test_only_pass&quot;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">genargs</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;-g&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_baseline_name</span><span class="p">,</span> <span class="s2">&quot;-o&quot;</span><span class="p">,</span> <span class="s2">&quot;cime_test_only_pass&quot;</span><span class="p">]</span>
+            <span class="n">compargs</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;-c&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_baseline_name</span><span class="p">,</span> <span class="s2">&quot;cime_test_only_pass&quot;</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_create_test</span><span class="p">(</span><span class="n">genargs</span><span class="p">)</span>
+
+        <span class="c1"># Basic namelist compare</span>
+        <span class="n">test_id</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">-</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_baseline_name</span><span class="p">,</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_timestamp</span><span class="p">())</span>
+        <span class="n">cases</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_test</span><span class="p">(</span><span class="n">compargs</span><span class="p">,</span> <span class="n">test_id</span><span class="o">=</span><span class="n">test_id</span><span class="p">)</span>
+        <span class="n">casedir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_casedir</span><span class="p">(</span><span class="n">test_to_change</span><span class="p">,</span> <span class="n">cases</span><span class="p">)</span>
+
+        <span class="c1"># Check standalone case.cmpgen_namelists</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_cmd_assert_result</span><span class="p">(</span><span class="s2">&quot;./case.cmpgen_namelists&quot;</span><span class="p">,</span> <span class="n">from_dir</span><span class="o">=</span><span class="n">casedir</span><span class="p">)</span>
+
+        <span class="c1"># compare_test_results should pass</span>
+        <span class="n">cpr_cmd</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/compare_test_results --test-root </span><span class="si">{}</span><span class="s2"> -n -t </span><span class="si">{}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">TOOLS_DIR</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testroot</span><span class="p">,</span> <span class="n">test_id</span>
+        <span class="p">)</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_cmd_assert_result</span><span class="p">(</span><span class="n">cpr_cmd</span><span class="p">)</span>
+
+        <span class="c1"># use regex</span>
+        <span class="n">expected_pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;PASS </span><span class="si">%s</span><span class="s2">[^\s]* NLCOMP&quot;</span> <span class="o">%</span> <span class="n">test_to_change</span><span class="p">)</span>
+        <span class="n">the_match</span> <span class="o">=</span> <span class="n">expected_pattern</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Cmd </span><span class="si">{</span><span class="n">cpr_cmd</span><span class="si">}</span><span class="s2"> failed to display passed test in output:</span><span class="se">\n</span><span class="si">{</span><span class="n">output</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertNotEqual</span><span class="p">(</span>
+            <span class="n">the_match</span><span class="p">,</span>
+            <span class="kc">None</span><span class="p">,</span>
+            <span class="n">msg</span><span class="o">=</span><span class="n">msg</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Modify namelist</span>
+        <span class="n">fake_nl</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2"> &amp;fake_nml</span>
+<span class="s2">   fake_item = &#39;fake&#39;</span>
+<span class="s2">   fake = .true.</span>
+<span class="s2">/&quot;&quot;&quot;</span>
+        <span class="n">baseline_area</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_baseline_area</span>
+        <span class="n">baseline_glob</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">baseline_area</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_baseline_name</span><span class="p">,</span> <span class="s2">&quot;TEST*&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="nb">len</span><span class="p">(</span><span class="n">baseline_glob</span><span class="p">),</span>
+            <span class="mi">3</span><span class="p">,</span>
+            <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Expected three matches, got:</span><span class="se">\n</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">baseline_glob</span><span class="p">),</span>
+        <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">baseline_dir</span> <span class="ow">in</span> <span class="n">baseline_glob</span><span class="p">:</span>
+            <span class="n">nl_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">baseline_dir</span><span class="p">,</span> <span class="s2">&quot;CaseDocs&quot;</span><span class="p">,</span> <span class="s2">&quot;datm_in&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">nl_path</span><span class="p">),</span> <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Missing file </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">nl_path</span><span class="p">)</span>
+
+            <span class="n">os</span><span class="o">.</span><span class="n">chmod</span><span class="p">(</span><span class="n">nl_path</span><span class="p">,</span> <span class="n">stat</span><span class="o">.</span><span class="n">S_IRUSR</span> <span class="o">|</span> <span class="n">stat</span><span class="o">.</span><span class="n">S_IWUSR</span><span class="p">)</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">nl_path</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">nl_file</span><span class="p">:</span>
+                <span class="n">nl_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">fake_nl</span><span class="p">)</span>
+
+        <span class="c1"># Basic namelist compare should now fail</span>
+        <span class="n">test_id</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">-</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_baseline_name</span><span class="p">,</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_timestamp</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_create_test</span><span class="p">(</span><span class="n">compargs</span><span class="p">,</span> <span class="n">test_id</span><span class="o">=</span><span class="n">test_id</span><span class="p">,</span> <span class="n">run_errors</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">casedir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_casedir</span><span class="p">(</span><span class="n">test_to_change</span><span class="p">,</span> <span class="n">cases</span><span class="p">)</span>
+
+        <span class="c1"># Unless namelists are explicitly ignored</span>
+        <span class="n">test_id2</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">-</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_baseline_name</span><span class="p">,</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_timestamp</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_create_test</span><span class="p">(</span><span class="n">compargs</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;--ignore-namelists&quot;</span><span class="p">],</span> <span class="n">test_id</span><span class="o">=</span><span class="n">test_id2</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_cmd_assert_result</span><span class="p">(</span>
+            <span class="s2">&quot;./case.cmpgen_namelists&quot;</span><span class="p">,</span> <span class="n">from_dir</span><span class="o">=</span><span class="n">casedir</span><span class="p">,</span> <span class="n">expected_stat</span><span class="o">=</span><span class="mi">100</span>
+        <span class="p">)</span>
+
+        <span class="c1"># preview namelists should work</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_cmd_assert_result</span><span class="p">(</span><span class="s2">&quot;./preview_namelists&quot;</span><span class="p">,</span> <span class="n">from_dir</span><span class="o">=</span><span class="n">casedir</span><span class="p">)</span>
+
+        <span class="c1"># This should still fail</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_cmd_assert_result</span><span class="p">(</span>
+            <span class="s2">&quot;./case.cmpgen_namelists&quot;</span><span class="p">,</span> <span class="n">from_dir</span><span class="o">=</span><span class="n">casedir</span><span class="p">,</span> <span class="n">expected_stat</span><span class="o">=</span><span class="mi">100</span>
+        <span class="p">)</span>
+
+        <span class="c1"># compare_test_results should fail</span>
+        <span class="n">cpr_cmd</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/compare_test_results --test-root </span><span class="si">{}</span><span class="s2"> -n -t </span><span class="si">{}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">TOOLS_DIR</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testroot</span><span class="p">,</span> <span class="n">test_id</span>
+        <span class="p">)</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_cmd_assert_result</span><span class="p">(</span>
+            <span class="n">cpr_cmd</span><span class="p">,</span> <span class="n">expected_stat</span><span class="o">=</span><span class="n">utils</span><span class="o">.</span><span class="n">TESTS_FAILED_ERR_CODE</span>
+        <span class="p">)</span>
+
+        <span class="c1"># use regex</span>
+        <span class="n">expected_pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;FAIL </span><span class="si">%s</span><span class="s2">[^\s]* NLCOMP&quot;</span> <span class="o">%</span> <span class="n">test_to_change</span><span class="p">)</span>
+        <span class="n">the_match</span> <span class="o">=</span> <span class="n">expected_pattern</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertNotEqual</span><span class="p">(</span>
+            <span class="n">the_match</span><span class="p">,</span>
+            <span class="kc">None</span><span class="p">,</span>
+            <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Cmd &#39;</span><span class="si">%s</span><span class="s2">&#39; failed to display passed test in output:</span><span class="se">\n</span><span class="si">%s</span><span class="s2">&quot;</span>
+            <span class="o">%</span> <span class="p">(</span><span class="n">cpr_cmd</span><span class="p">,</span> <span class="n">output</span><span class="p">),</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Bless</span>
+        <span class="n">new_test_id</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">-</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_baseline_name</span><span class="p">,</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_timestamp</span><span class="p">())</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">run_cmd_no_fail</span><span class="p">(</span>
+            <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/bless_test_results --test-root </span><span class="si">{}</span><span class="s2"> -n --force -t </span><span class="si">{}</span><span class="s2"> --new-test-root=</span><span class="si">{}</span><span class="s2"> --new-test-id=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">TOOLS_DIR</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testroot</span><span class="p">,</span> <span class="n">test_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testroot</span><span class="p">,</span> <span class="n">new_test_id</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Basic namelist compare should now pass again</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_create_test</span><span class="p">(</span><span class="n">compargs</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">verify_perms</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_baseline_area</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
+     
+<script>var version_json_loc = "../../../../../versions.json";</script>
+
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

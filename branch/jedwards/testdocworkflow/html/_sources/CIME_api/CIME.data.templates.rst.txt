@@ -1,0 +1,10 @@
+CIME.data.templates package
+===========================
+
+Module contents
+---------------
+
+.. automodule:: CIME.data.templates
+   :members:
+   :undoc-members:
+   :show-inheritance:

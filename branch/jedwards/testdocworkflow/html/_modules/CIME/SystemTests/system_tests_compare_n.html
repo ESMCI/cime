@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CIME.SystemTests.system_tests_compare_n &mdash; CIME master documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/pop_ver.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            CIME
+          </a>
+              <div class="version">
+                master
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../what_cime/index.html">What is CIME?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../users_guide/index.html">Case Control System Part 1: Basic Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../users_guide/index.html#case-control-system-part-2-configuration-porting-testing-and-use-cases">Case Control System Part 2: Configuration, Porting, Testing and Use Cases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../build_cpl/index.html">Building a Coupled Model with CIME</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../misc_tools/index.html">Miscellaneous Tools</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../glossary/index.html">Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Tools_user/index.html">User Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../xml_files/index.html">XML Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../CIME_api/modules.html">CIME</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Tools_api/modules.html">Tools</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">CIME</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">CIME.SystemTests.system_tests_compare_n</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for CIME.SystemTests.system_tests_compare_n</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Base class for CIME system tests that involve doing multiple runs and comparing the base run (index=0)</span>
+<span class="sd">with the subsequent runs (indices=1..N-1).</span>
+
+<span class="sd">NOTE: Below is the flow of a multisubmit test.</span>
+<span class="sd">Non-batch:</span>
+<span class="sd">case_submit -&gt; case_run     # PHASE 1</span>
+<span class="sd">            -&gt; case_run     # PHASE 2</span>
+<span class="sd">            ...</span>
+<span class="sd">            -&gt; case_run     # PHASE N</span>
+
+<span class="sd">batch:</span>
+<span class="sd">case_submit -&gt; case_run     # PHASE 1</span>
+<span class="sd">case_run    -&gt; case_submit</span>
+<span class="sd">case_submit -&gt; case_run     # PHASE 2</span>
+<span class="sd">...</span>
+<span class="sd">case_submit -&gt; case_run     # PHASE N</span>
+
+<span class="sd">In the __init__ method for your test, you MUST call</span>
+<span class="sd">    SystemTestsCompareN.__init__</span>
+<span class="sd">See the documentation of that method for details.</span>
+
+<span class="sd">Classes that inherit from this are REQUIRED to implement the following method:</span>
+
+<span class="sd">(1) _case_setup</span>
+<span class="sd">    This method will be called to set up case i, where i==0 corresponds to the base case</span>
+<span class="sd">    and i=={1,..N-1} corresponds to subsequent runs to be compared with the base.</span>
+
+<span class="sd">In addition, they MAY require the following methods:</span>
+
+<span class="sd">(1) _common_setup</span>
+<span class="sd">    This method will be called to set up all cases. It should contain any setup</span>
+<span class="sd">    that&#39;s needed in all cases. This is called before _case_setup_config</span>
+
+<span class="sd">(2) _case_custom_prerun_action(self, i):</span>
+<span class="sd">    Use this to do arbitrary actions immediately before running case i</span>
+
+<span class="sd">(3) _case_custom_postrun_action(self, i):</span>
+<span class="sd">    Use this to do arbitrary actions immediately after running case one</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">CIME.SystemTests.system_tests_common</span> <span class="kn">import</span> <span class="n">SystemTestsCommon</span><span class="p">,</span> <span class="n">fix_single_exe_case</span>
+<span class="kn">from</span> <span class="nn">CIME.case</span> <span class="kn">import</span> <span class="n">Case</span>
+<span class="kn">from</span> <span class="nn">CIME.config</span> <span class="kn">import</span> <span class="n">Config</span>
+<span class="kn">from</span> <span class="nn">CIME.test_status</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="kn">import</span> <span class="nn">shutil</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">glob</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="SystemTestsCompareN"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.system_tests_compare_n.SystemTestsCompareN">[docs]</a><span class="k">class</span> <span class="nc">SystemTestsCompareN</span><span class="p">(</span><span class="n">SystemTestsCommon</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">case</span><span class="p">,</span>
+        <span class="n">N</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="n">separate_builds</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">run_suffixes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">run_descriptions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">multisubmit</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">ignore_fieldlist_diffs</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">dry_run</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize a SystemTestsCompareN object. Individual test cases that</span>
+<span class="sd">        inherit from SystemTestsCompareN MUST call this __init__ method.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            case: case object passsed to __init__ method of individual</span>
+<span class="sd">                test. This is the main case associated with the test.</span>
+<span class="sd">            N (int): number of test cases including the base case.</span>
+<span class="sd">            separate_builds (bool): Whether separate builds are needed for the</span>
+<span class="sd">                cases. If False, case[i:1..N-1] uses the case[0] executable.</span>
+<span class="sd">            run_suffixes (list of str, optional): List of suffixes appended to the case names.</span>
+<span class="sd">                Defaults to [&quot;base&quot;, &quot;subsq_1&quot;, &quot;subsq_2&quot;, .. &quot;subsq_N-1&quot;]. Each</span>
+<span class="sd">                suffix must be unique.</span>
+<span class="sd">            run_descriptions (list of str, optional): Descriptions printed to log file</span>
+<span class="sd">                of each case when starting the runs. Defaults to [&#39;&#39;]*N.</span>
+<span class="sd">            multisubmit (bool): Do base and subsequent runs as different submissions.</span>
+<span class="sd">                Designed for tests with RESUBMIT=1</span>
+<span class="sd">            ignore_fieldlist_diffs (bool): If True, then: If the cases differ only in</span>
+<span class="sd">                their field lists (i.e., all shared fields are bit-for-bit, but one case</span>
+<span class="sd">                has some diagnostic fields that are missing from the base case), treat</span>
+<span class="sd">                the cases as identical. (This is needed for tests where one case</span>
+<span class="sd">                exercises an option that produces extra diagnostic fields.)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">SystemTestsCommon</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_separate_builds</span> <span class="o">=</span> <span class="n">separate_builds</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ignore_fieldlist_diffs</span> <span class="o">=</span> <span class="n">ignore_fieldlist_diffs</span>
+
+        <span class="n">expect</span><span class="p">(</span><span class="n">N</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Number of cases must be greater than 1.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cases</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">N</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">N</span> <span class="o">=</span> <span class="n">N</span>
+
+        <span class="k">if</span> <span class="n">run_suffixes</span><span class="p">:</span>
+            <span class="n">expect</span><span class="p">(</span>
+                <span class="nb">isinstance</span><span class="p">(</span><span class="n">run_suffixes</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span>
+                <span class="ow">and</span> <span class="nb">all</span><span class="p">([</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">sfx</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">for</span> <span class="n">sfx</span> <span class="ow">in</span> <span class="n">run_suffixes</span><span class="p">]),</span>
+                <span class="s2">&quot;run_suffixes must be a list of strings&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">expect</span><span class="p">(</span>
+                <span class="nb">len</span><span class="p">(</span><span class="n">run_suffixes</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">,</span>
+                <span class="s2">&quot;run_suffixes list must include </span><span class="si">{}</span><span class="s2"> strings&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">),</span>
+            <span class="p">)</span>
+            <span class="n">expect</span><span class="p">(</span>
+                <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">run_suffixes</span><span class="p">))</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">run_suffixes</span><span class="p">),</span>
+                <span class="s2">&quot;each suffix in run_suffixes must be unique&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_run_suffixes</span> <span class="o">=</span> <span class="p">[</span><span class="n">sfx</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span> <span class="k">for</span> <span class="n">sfx</span> <span class="ow">in</span> <span class="n">run_suffixes</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_run_suffixes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;base&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;subsq_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">N</span><span class="p">)]</span>
+
+        <span class="k">if</span> <span class="n">run_descriptions</span><span class="p">:</span>
+            <span class="n">expect</span><span class="p">(</span>
+                <span class="nb">isinstance</span><span class="p">(</span><span class="n">run_descriptions</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span>
+                <span class="ow">and</span> <span class="nb">all</span><span class="p">([</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">dsc</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">for</span> <span class="n">dsc</span> <span class="ow">in</span> <span class="n">run_descriptions</span><span class="p">]),</span>
+                <span class="s2">&quot;run_descriptions must be a list of strings&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">expect</span><span class="p">(</span>
+                <span class="nb">len</span><span class="p">(</span><span class="n">run_descriptions</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">,</span>
+                <span class="s2">&quot;run_descriptions list must include </span><span class="si">{}</span><span class="s2"> strings&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">),</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_run_descriptions</span> <span class="o">=</span> <span class="n">run_descriptions</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_run_descriptions</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">N</span>
+
+        <span class="c1"># Set the base case for referencing purposes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cases</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_caseroots</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_caseroots</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">dry_run</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_setup_cases_if_not_yet_done</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_multisubmit</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">multisubmit</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cases</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;BATCH_SYSTEM&quot;</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">&quot;none&quot;</span>
+        <span class="p">)</span>
+
+    <span class="c1"># ========================================================================</span>
+    <span class="c1"># Methods that MUST be implemented by specific tests that inherit from this</span>
+    <span class="c1"># base class</span>
+    <span class="c1"># ========================================================================</span>
+
+    <span class="k">def</span> <span class="nf">_case_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method will be called to set up case[i], where case[0] is the base case.</span>
+
+<span class="sd">        This should be written to refer to self._case: this object will point to</span>
+<span class="sd">        case[i] at the point that this is called.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="c1"># ========================================================================</span>
+    <span class="c1"># Methods that MAY be implemented by specific tests that inherit from this</span>
+    <span class="c1"># base class, if they have any work to do in these methods</span>
+    <span class="c1"># ========================================================================</span>
+
+    <span class="k">def</span> <span class="nf">_common_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method will be called to set up all cases. It should contain any setup</span>
+<span class="sd">        that&#39;s needed in both cases.</span>
+
+<span class="sd">        This should be written to refer to self._case: It will be called once with</span>
+<span class="sd">        self._case pointing to case1, and once with self._case pointing to case2.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_case_custom_prerun_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Use to do arbitrary actions immediately before running case i:0..N</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_case_custom_postrun_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Use to do arbitrary actions immediately after running case i:0..N</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+    <span class="c1"># ========================================================================</span>
+    <span class="c1"># Main public methods</span>
+    <span class="c1"># ========================================================================</span>
+
+<div class="viewcode-block" id="SystemTestsCompareN.build_phase"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.system_tests_compare_n.SystemTestsCompareN.build_phase">[docs]</a>    <span class="k">def</span> <span class="nf">build_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sharedlib_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">model_only</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="c1"># Subtle issue: base case is already in a writeable state since it tends to be opened</span>
+        <span class="c1"># with a with statement in all the API entrances in CIME. subsequent cases were</span>
+        <span class="c1"># created via clone, not a with statement, so it&#39;s not in a writeable state,</span>
+        <span class="c1"># so we need to use a with statement here to put it in a writeable state.</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="n">Config</span><span class="o">.</span><span class="n">instance</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">):</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cases</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_separate_builds</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_activate_case</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">build_indv</span><span class="p">(</span>
+                        <span class="n">sharedlib_only</span><span class="o">=</span><span class="n">sharedlib_only</span><span class="p">,</span> <span class="n">model_only</span><span class="o">=</span><span class="n">model_only</span>
+                    <span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_activate_case</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+                    <span class="c1"># Although we&#39;re doing separate builds, it still makes sense</span>
+                    <span class="c1"># to share the sharedlibroot area with case1 so we can reuse</span>
+                    <span class="c1"># pieces of the build from there.</span>
+                    <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">common_sharedlibroot</span><span class="p">:</span>
+                        <span class="c1"># We need to turn off this change for E3SM because it breaks</span>
+                        <span class="c1"># the MPAS build system</span>
+                        <span class="c1">## TODO: ^this logic mimics what&#39;s done in SystemTestsCompareTwo</span>
+                        <span class="c1"># Confirm this is needed in SystemTestsCompareN as well.</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_cases</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span>
+                            <span class="s2">&quot;SHAREDLIBROOT&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cases</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;SHAREDLIBROOT&quot;</span><span class="p">)</span>
+                        <span class="p">)</span>
+
+                    <span class="bp">self</span><span class="o">.</span><span class="n">build_indv</span><span class="p">(</span>
+                        <span class="n">sharedlib_only</span><span class="o">=</span><span class="n">sharedlib_only</span><span class="p">,</span> <span class="n">model_only</span><span class="o">=</span><span class="n">model_only</span>
+                    <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_activate_case</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">build_indv</span><span class="p">(</span>
+                        <span class="n">sharedlib_only</span><span class="o">=</span><span class="n">sharedlib_only</span><span class="p">,</span> <span class="n">model_only</span><span class="o">=</span><span class="n">model_only</span>
+                    <span class="p">)</span>
+                    <span class="c1"># pio_typename may be changed during the build if the default is not a</span>
+                    <span class="c1"># valid value for this build, update case i to reflect this change</span>
+                    <span class="k">for</span> <span class="n">comp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cases</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">get_values</span><span class="p">(</span><span class="s2">&quot;COMP_CLASSES&quot;</span><span class="p">):</span>
+                        <span class="n">comp_pio_typename</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_PIO_TYPENAME&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_cases</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span>
+                            <span class="n">comp_pio_typename</span><span class="p">,</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">_cases</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">comp_pio_typename</span><span class="p">),</span>
+                        <span class="p">)</span>
+
+                    <span class="c1"># The following is needed when _case_two_setup has a case_setup call</span>
+                    <span class="c1"># despite sharing the build (e.g., to change NTHRDS)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_cases</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;BUILD_COMPLETE&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SystemTestsCompareN.run_phase"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.system_tests_compare_n.SystemTestsCompareN.run_phase">[docs]</a>    <span class="k">def</span> <span class="nf">run_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">success_change</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>  <span class="c1"># pylint: disable=arguments-differ</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Runs all phases of the N-phase test and compares base results with subsequent ones</span>
+<span class="sd">        If success_change is True, success requires some files to be different</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">is_first_run</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cases</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;IS_FIRST_RUN&quot;</span><span class="p">)</span>
+
+        <span class="c1"># On a batch system with a multisubmit test &quot;RESUBMIT&quot; is used to track</span>
+        <span class="c1"># which phase is being ran. By the end of the test it equals 0. If the</span>
+        <span class="c1"># the test fails in a way where the RUN_PHASE is PEND then &quot;RESUBMIT&quot;</span>
+        <span class="c1"># does not get reset to 1 on a rerun and the first phase is skipped</span>
+        <span class="c1"># causing the COMPARE_PHASE to fail. This ensures that &quot;RESUBMIT&quot; will</span>
+        <span class="c1"># get reset if the test state is not correct for a rerun.</span>
+        <span class="c1"># NOTE: &quot;IS_FIRST_RUN&quot; is reset in &quot;case_submit.py&quot;</span>
+        <span class="c1">### todo: confirm below code block</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">is_first_run</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_multisubmit</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cases</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RESUBMIT&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
+        <span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_resetup_case</span><span class="p">(</span><span class="n">RUN_PHASE</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">base_phase</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cases</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RESUBMIT&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="p">)</span>  <span class="c1"># Only relevant for multi-submit tests</span>
+        <span class="n">run_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cases</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUN_TYPE&quot;</span><span class="p">)</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="s2">&quot;_multisubmit </span><span class="si">{}</span><span class="s2"> first phase </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_multisubmit</span><span class="p">,</span> <span class="n">base_phase</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="c1"># First run</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_multisubmit</span> <span class="ow">or</span> <span class="n">base_phase</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Doing first run: &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_descriptions</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+            <span class="c1"># Add a PENDing compare phase so that we&#39;ll notice if the second part of compare two</span>
+            <span class="c1"># doesn&#39;t run.</span>
+            <span class="n">compare_phase_name</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_</span><span class="si">{}</span><span class="s2">_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">COMPARE_PHASE</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_suffixes</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_suffixes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="p">)</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span><span class="n">compare_phase_name</span><span class="p">,</span> <span class="n">TEST_PEND_STATUS</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_activate_case</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_case_custom_prerun_action</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">run_indv</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_run_suffixes</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_case_custom_postrun_action</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="c1"># Subsequent runs</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_multisubmit</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">base_phase</span><span class="p">:</span>
+            <span class="c1"># Subtle issue: case1 is already in a writeable state since it tends to be opened</span>
+            <span class="c1"># with a with statement in all the API entrances in CIME. subsq cases were created</span>
+            <span class="c1"># via clone, not a with statement, so it&#39;s not in a writeable state, so we need to</span>
+            <span class="c1"># use a with statement here to put it in a writeable state.</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">):</span>
+                <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cases</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Doing run </span><span class="si">{}</span><span class="s2">: &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_descriptions</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_activate_case</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+                    <span class="c1"># This assures that case i namelists are populated</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_skip_pnl</span> <span class="o">=</span> <span class="kc">False</span>
+                    <span class="c1"># we need to make sure run i is properly staged.</span>
+                    <span class="k">if</span> <span class="n">run_type</span> <span class="o">!=</span> <span class="s2">&quot;startup&quot;</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_cases</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">check_case</span><span class="p">()</span>
+
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_case_custom_prerun_action</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">run_indv</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_run_suffixes</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_case_custom_postrun_action</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+                <span class="c1"># Compare results</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_activate_case</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_link_to_subsq_case_output</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_component_compare_test</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_run_suffixes</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_run_suffixes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                    <span class="n">success_change</span><span class="o">=</span><span class="n">success_change</span><span class="p">,</span>
+                    <span class="n">ignore_fieldlist_diffs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_ignore_fieldlist_diffs</span><span class="p">,</span>
+                <span class="p">)</span></div>
+
+    <span class="c1"># ========================================================================</span>
+    <span class="c1"># Private methods</span>
+    <span class="c1"># ========================================================================</span>
+
+    <span class="k">def</span> <span class="nf">_get_caseroots</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determines and returns caseroot for each cases and returns a list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">casename_base</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cases</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASE&quot;</span><span class="p">)</span>
+        <span class="n">caseroot_base</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_caseroot</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="p">[</span><span class="n">caseroot_base</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">caseroot_base</span><span class="p">,</span> <span class="s2">&quot;case</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="n">casename_base</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">)</span>
+        <span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_get_subsq_output_root</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determines and returns cime_output_root for case i where i!=0</span>
+
+<span class="sd">        Assumes that self._case1 is already set to point to the case1 object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Since subsequent cases have the same name as base, their CIME_OUTPUT_ROOT</span>
+        <span class="c1"># must also be different, so that anything put in</span>
+        <span class="c1"># $CIME_OUTPUT_ROOT/$CASE/ is not accidentally shared between</span>
+        <span class="c1"># cases. (Currently nothing is placed here, but this</span>
+        <span class="c1"># helps prevent future problems.)</span>
+
+        <span class="n">expect</span><span class="p">(</span><span class="n">i</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;ERROR: cannot call _get_subsq_output_root for the base class&quot;</span><span class="p">)</span>
+
+        <span class="n">output_root_i</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cases</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CIME_OUTPUT_ROOT&quot;</span><span class="p">),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cases</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASE&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;case</span><span class="si">{}</span><span class="s2">_output_root&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">output_root_i</span>
+
+    <span class="k">def</span> <span class="nf">_get_subsq_case_exeroot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets exeroot for case i.</span>
+
+<span class="sd">        Returns None if we should use the default value of exeroot.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">expect</span><span class="p">(</span><span class="n">i</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;ERROR: cannot call _get_subsq_case_exeroot for the base class&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_separate_builds</span><span class="p">:</span>
+            <span class="c1"># subsequent case&#39;s EXEROOT needs to be somewhere that (1) is unique</span>
+            <span class="c1"># to this case (considering that all cases have the</span>
+            <span class="c1"># same case name), and (2) does not have too long of a path</span>
+            <span class="c1"># name (because too-long paths can make some compilers</span>
+            <span class="c1"># fail).</span>
+            <span class="n">base_exeroot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cases</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;EXEROOT&quot;</span><span class="p">)</span>
+            <span class="n">case_i_exeroot</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base_exeroot</span><span class="p">,</span> <span class="s2">&quot;case</span><span class="si">{}</span><span class="s2">bld&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Use default exeroot</span>
+            <span class="n">case_i_exeroot</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">case_i_exeroot</span>
+
+    <span class="k">def</span> <span class="nf">_get_subsq_case_rundir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets rundir for case i.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">expect</span><span class="p">(</span><span class="n">i</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;ERROR: cannot call _get_subsq_case_rundir for the base class&quot;</span><span class="p">)</span>
+
+        <span class="c1"># subsequent case&#39;s RUNDIR needs to be somewhere that is unique to this</span>
+        <span class="c1"># case (considering that all cases have the same case</span>
+        <span class="c1"># name). Note that the location below is symmetrical to the</span>
+        <span class="c1"># location of case&#39;s EXEROOT set in _get_subsq_case_exeroot.</span>
+        <span class="n">base_rundir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cases</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">)</span>
+        <span class="n">case_i_rundir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base_rundir</span><span class="p">,</span> <span class="s2">&quot;case</span><span class="si">{}</span><span class="s2">run&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">case_i_rundir</span>
+
+    <span class="k">def</span> <span class="nf">_setup_cases_if_not_yet_done</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determines if subsequent cases already exist on disk. If they do, this method</span>
+<span class="sd">        creates the self.cases entries pointing to the case directories. If they</span>
+<span class="sd">        don&#39;t exist, then this method creates cases[i:1..N-1] as a clone of cases[0], and</span>
+<span class="sd">        sets the self.cases objects appropriately.</span>
+
+<span class="sd">        This also does the setup for all cases including the base case.</span>
+
+<span class="sd">        Assumes that the following variables are already set in self:</span>
+<span class="sd">            _caseroots</span>
+<span class="sd">            _cases[0]</span>
+
+<span class="sd">        Sets self.cases[i:1..N-1]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Use the existence of the cases[N-1] directory to signal whether we have</span>
+        <span class="c1"># done the necessary test setup for all cases: When we initially create</span>
+        <span class="c1"># the last case directory, we set up all cases; then, if we find that</span>
+        <span class="c1"># the last case directory already exists, we assume that the setup has</span>
+        <span class="c1"># already been done for all cases. (In some cases it could be problematic</span>
+        <span class="c1"># to redo the test setup when it&#39;s not needed - e.g., by appending things</span>
+        <span class="c1"># to user_nl files multiple times. This is why we want to make sure to just</span>
+        <span class="c1"># do the test setup once.)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_caseroots</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">):</span>
+                <span class="n">caseroot_i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_caseroots</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_cases</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case_from_existing_caseroot</span><span class="p">(</span><span class="n">caseroot_i</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Create the subsequent cases by cloning the base case.</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_cases</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cases</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">create_clone</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_caseroots</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                    <span class="n">keepexe</span><span class="o">=</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_separate_builds</span><span class="p">,</span>
+                    <span class="n">cime_output_root</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_subsq_output_root</span><span class="p">(</span><span class="n">i</span><span class="p">),</span>
+                    <span class="n">exeroot</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_subsq_case_exeroot</span><span class="p">(</span><span class="n">i</span><span class="p">),</span>
+                    <span class="n">rundir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_subsq_case_rundir</span><span class="p">(</span><span class="n">i</span><span class="p">),</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_write_info_to_subsq_case_output_root</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+            <span class="c1"># Set up all cases, including the base case.</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">):</span>
+                <span class="n">caseroot_i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_caseroots</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_setup_case</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">BaseException</span><span class="p">:</span>
+                    <span class="c1"># If a problem occurred in setting up the test case i, it&#39;s</span>
+                    <span class="c1"># important to remove the case i directory: If it&#39;s kept around,</span>
+                    <span class="c1"># that would signal that test setup was done successfully, and</span>
+                    <span class="c1"># thus doesn&#39;t need to be redone - which is not the case. Of</span>
+                    <span class="c1"># course, we&#39;ll likely be left in an inconsistent state in this</span>
+                    <span class="c1"># case, but if we didn&#39;t remove the case i directory, the next</span>
+                    <span class="c1"># re-build of the test would think, &quot;okay, setup is done, I can</span>
+                    <span class="c1"># move on to the build&quot;, which would be wrong.</span>
+                    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">caseroot_i</span><span class="p">):</span>
+                        <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">caseroot_i</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_activate_case</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                        <span class="s2">&quot;WARNING: Test case setup failed. Case </span><span class="si">{}</span><span class="s2"> has been removed, &quot;</span>
+                        <span class="s2">&quot;but the main case may be in an inconsistent state. &quot;</span>
+                        <span class="s2">&quot;If you want to rerun this test, you should create &quot;</span>
+                        <span class="s2">&quot;a new test rather than trying to rerun this one.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+                    <span class="p">)</span>
+                    <span class="k">raise</span>
+
+    <span class="k">def</span> <span class="nf">_case_from_existing_caseroot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caseroot</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a Case object from an existing caseroot directory</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            caseroot (str): path to existing caseroot</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">Case</span><span class="p">(</span><span class="n">case_root</span><span class="o">=</span><span class="n">caseroot</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_activate_case</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Make case i active for upcoming calls</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_caseroots</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_active_case</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cases</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">_write_info_to_subsq_case_output_root</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Writes a file with some helpful information to case[i]&#39;s</span>
+<span class="sd">        output_root.</span>
+
+<span class="sd">        The motivation here is two-fold:</span>
+
+<span class="sd">        (1) Currently, case i&#39;s output_root directory is empty.</span>
+<span class="sd">            This could be confusing.</span>
+
+<span class="sd">        (2) For users who don&#39;t know where to look, it could be hard to</span>
+<span class="sd">            find case i&#39;s bld and run directories. It is somewhat easier</span>
+<span class="sd">            to stumble upon case i output_root, so we put a file there</span>
+<span class="sd">            pointing them to the right place.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">readme_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_subsq_output_root</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="s2">&quot;README&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">readme_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
+                <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;This directory is typically empty.</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
+                    <span class="s2">&quot;case&#39;s run dir is here: </span><span class="si">{}</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_cases</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">)</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+                <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
+                    <span class="s2">&quot;case&#39;s bld dir is here: </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_cases</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;EXEROOT&quot;</span><span class="p">)</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
+            <span class="c1"># It&#39;s not a big deal if we can&#39;t write the README file</span>
+            <span class="c1"># (e.g., because the directory doesn&#39;t exist or isn&#39;t</span>
+            <span class="c1"># writeable; note that the former may be the case in unit</span>
+            <span class="c1"># tests). So just continue merrily on our way if there was a</span>
+            <span class="c1"># problem.</span>
+            <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">_setup_case</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Does all test-specific set up for the test case i.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Set up case 1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_activate_case</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_common_setup</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_case_setup</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="n">fix_single_exe_case</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cases</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># Flush the case so that, if errors occur later, then at least base case is</span>
+            <span class="c1"># in a correct, post-setup state. This is important because the mere</span>
+            <span class="c1"># existence of a cases[-1] directory signals that setup is done. So if the</span>
+            <span class="c1"># build fails and the user rebuilds, setup won&#39;t be redone - so it&#39;s</span>
+            <span class="c1"># important to ensure that the results of setup are flushed to disk.</span>
+            <span class="c1">#</span>
+            <span class="c1"># Note that base case will be in its post-setup state even if case[i!=0] setup fails.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+            <span class="c1"># This assures that case one namelists are populated</span>
+            <span class="c1"># and creates the case.test script</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">case_setup</span><span class="p">(</span><span class="n">test_mode</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">fix_single_exe_case</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Go back to base case to ensure that&#39;s where we are for any following code</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_activate_case</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_link_to_subsq_case_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Looks for all files in rundir-i matching the pattern casename-i*.nc.run-i-suffix</span>
+
+<span class="sd">        For each file found, makes a link in base rundir pointing to this file; the</span>
+<span class="sd">        link is renamed so that the original occurrence of casename-i is replaced</span>
+<span class="sd">        with base casename.</span>
+
+<span class="sd">        For example:</span>
+
+<span class="sd">        /glade/scratch/sacks/somecase/run/somecase.clm2.h0.nc.run2 -&gt;</span>
+<span class="sd">        /glade/scratch/sacks/somecase.run2/run/somecase.run2.clm2.h0.nc.run2</span>
+
+<span class="sd">        If the destination link already exists and points to the correct</span>
+<span class="sd">        location, it is maintained as is. However, an exception will be raised</span>
+<span class="sd">        if the destination link is not exactly as it should be: we avoid</span>
+<span class="sd">        overwriting some existing file or link.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">expect</span><span class="p">(</span>
+            <span class="n">i</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;ERROR: cannot call _link_to_subsq_case_output for the base class&quot;</span>
+        <span class="p">)</span>
+
+        <span class="n">base_casename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cases</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASE&quot;</span><span class="p">)</span>
+        <span class="n">subsq_casename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cases</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASE&quot;</span><span class="p">)</span>
+        <span class="n">base_rundir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cases</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">)</span>
+        <span class="n">subsq_rundir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cases</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">)</span>
+
+        <span class="n">pattern</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">*.nc.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">subsq_casename</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_suffixes</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="n">subsq_case_files</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">subsq_rundir</span><span class="p">,</span> <span class="n">pattern</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">one_file</span> <span class="ow">in</span> <span class="n">subsq_case_files</span><span class="p">:</span>
+            <span class="n">file_basename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">one_file</span><span class="p">)</span>
+            <span class="n">modified_basename</span> <span class="o">=</span> <span class="n">file_basename</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">subsq_casename</span><span class="p">,</span> <span class="n">base_casename</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">one_link</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base_rundir</span><span class="p">,</span> <span class="n">modified_basename</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">islink</span><span class="p">(</span><span class="n">one_link</span><span class="p">)</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">readlink</span><span class="p">(</span><span class="n">one_link</span><span class="p">)</span> <span class="o">==</span> <span class="n">one_file</span><span class="p">:</span>
+                <span class="c1"># Link is already set up correctly: do nothing</span>
+                <span class="c1"># (os.symlink raises an exception if you try to replace an</span>
+                <span class="c1"># existing file)</span>
+                <span class="k">pass</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">symlink</span><span class="p">(</span><span class="n">one_file</span><span class="p">,</span> <span class="n">one_link</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
+     
+<script>var version_json_loc = "../../../../../versions.json";</script>
+
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
