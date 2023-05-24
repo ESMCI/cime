@@ -455,7 +455,7 @@ CIME's scripts regression tests
 ===============================
 .. _`CIME's scripts regression tests`:
 
-**$CIMEROOT/scripts/lib/CIME/tests/scripts_regression_tests.py** is the suite of internal tests we run
+**$CIMEROOT/CIME/tests/scripts_regression_tests.py** is the suite of internal tests we run
 for the stand-alone CIME testing. With no arguments, it will run the full suite. You can limit testing to a specific
 test class or even a specific test within a test class.
 
@@ -463,15 +463,15 @@ test class or even a specific test within a test class.
 
 Run full suite::
 
-  python scripts/lib/CIME/tests/scripts_regression_tests.py
+  python CIME/tests/scripts_regression_tests.py
 
 Run a test class::
 
-  python scripts/lib/CIME/tests/scripts_regression_tests.py CIME.tests.test_unit_case
+  python CIME/tests/scripts_regression_tests.py CIME.tests.test_unit_case
 
 Run a specific test::
 
-  python scripts/lib/CIME/tests/scripts_regression_tests.py CIME.tests.test_unit_case.TestCaseSubmit.test_check_case
+  python CIME/tests/scripts_regression_tests.py CIME.tests.test_unit_case.TestCaseSubmit.test_check_case
 
 If a test fails, the unittest module that drives scripts_regression_tests wil note the failure, but
 won't print the output of the test until testing has completed. When there are failures for a
