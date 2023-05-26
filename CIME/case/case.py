@@ -1554,18 +1554,22 @@ class Case(object):
                 compiler in ["nvhpc", "cray"],
                 f"Only nvhpc and cray compilers are expected for a GPU run; the user given compiler is {compiler}, ",
             )
-            valid_gpu_type = self.get_value("GPU_TYPE").split(",")
-            valid_gpu_type.remove("none")
+
+            valid_gpu_type = machobj.get_value("GPU_TYPE").split(",")
+            print(f"valid_gpu_types {valid_gpu_type}")
+            if "none" in valid_gpu_type:
+                valid_gpu_type.remove("none")
             expect(
                 gpu_type in valid_gpu_type,
                 f"Unsupported GPU type is given: {gpu_type} ; valid values are {valid_gpu_type}",
             )
-            valid_gpu_offload = self.get_value("GPU_OFFLOAD").split(",")
-            valid_gpu_offload.remove("none")
-            expect(
-                gpu_offload in valid_gpu_offload,
-                f"Unsupported GPU programming model is given: {gpu_offload} ; valid values are {valid_gpu_offload}",
-            )
+            #            valid_gpu_offload = case.get_value("GPU_OFFLOAD").split(",")
+            #            if "none" in valid_gpu_offload:
+            #                valid_gpu_offload.remove("none")
+            #            expect(
+            #                gpu_offload in valid_gpu_offload,
+            #                f"Unsupported GPU programming model is given: {gpu_offload} ; valid values are {valid_gpu_offload}",
+            #            )
             self.gpu_enabled = True
             if ngpus_per_node >= 0:
                 self.set_value(
@@ -1581,8 +1585,11 @@ class Case(object):
             )
 
         # Set these two GPU XML variables here to overwrite the default values
-        self.set_value("GPU_TYPE", str(gpu_type).lower())
-        self.set_value("GPU_OFFLOAD", str(gpu_offload).lower())
+        if gpu_type and gpu_type != "none":
+            self.set_value("GPU_TYPE", gpu_type)
+
+        if gpu_offload and gpu_offload != "none":
+            self.set_value("GPU_OFFLOAD", gpu_offload)
 
         self.initialize_derived_attributes()
 
