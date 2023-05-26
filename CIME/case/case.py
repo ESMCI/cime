@@ -1563,13 +1563,6 @@ class Case(object):
                 gpu_type in valid_gpu_type,
                 f"Unsupported GPU type is given: {gpu_type} ; valid values are {valid_gpu_type}",
             )
-            #            valid_gpu_offload = case.get_value("GPU_OFFLOAD").split(",")
-            #            if "none" in valid_gpu_offload:
-            #                valid_gpu_offload.remove("none")
-            #            expect(
-            #                gpu_offload in valid_gpu_offload,
-            #                f"Unsupported GPU programming model is given: {gpu_offload} ; valid values are {valid_gpu_offload}",
-            #            )
             self.gpu_enabled = True
             if ngpus_per_node >= 0:
                 self.set_value(
