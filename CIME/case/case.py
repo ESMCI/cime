@@ -1555,8 +1555,7 @@ class Case(object):
                 f"Only nvhpc and cray compilers are expected for a GPU run; the user given compiler is {compiler}, ",
             )
 
-            valid_gpu_type = machobj.get_value("GPU_TYPE").split(",")
-            print(f"valid_gpu_types {valid_gpu_type}")
+            valid_gpu_type = machobj.get_value("GPU_TYPES").split(",")
             if "none" in valid_gpu_type:
                 valid_gpu_type.remove("none")
             expect(
@@ -1571,6 +1570,14 @@ class Case(object):
                     if ngpus_per_node <= max_gpus_per_node
                     else max_gpus_per_node,
                 )
+            valid_gpu_offload = machobj.get_value("GPU_OFFLOAD").split(",")
+            if "none" in valid_gpu_offload:
+                valid_gpu_offload.remove("none")
+            expect(
+                gpu_offload in valid_gpu_offload,
+                f"Unsupported GPU offload is given: {gpu_offload} ; valid values are {valid_gpu_offload}",
+            )
+
         elif gpu_offload and str(gpu_offload).lower() != "none":
             expect(
                 False,
