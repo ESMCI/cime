@@ -1585,7 +1585,7 @@ class Case(object):
             )
 
         # Set these two GPU XML variables here to overwrite the default values
-        if gpu_type and gpu_type != "none":
+        if gpu_type:
             self.set_value("GPU_TYPE", gpu_type)
 
         if gpu_offload and gpu_offload != "none":
