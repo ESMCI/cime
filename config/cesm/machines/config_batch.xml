@@ -388,6 +388,18 @@
     </queues>
   </batch_system>
 
+  <batch_system MACH="derecho" type="pbs" >
+    <batch_submit>qsub</batch_submit>
+    <directives>
+      <directive default="/bin/bash" > -S {{ shell }}  </directive>
+      <directive> -l select={{ num_nodes }}:ncpus={{ max_tasks_per_node }}:mpiprocs={{ tasks_per_node }}:ompthreads={{ thread_count }}</directive>
+    </directives>
+    <queues>
+      <queue walltimemax="4:00:00" nodemin="1" nodemax="2488" default="true">main</queue>
+    </queues>
+  </batch_system>
+
+
   <batch_system MACH="eastwind" type="slurm" >
     <batch_submit>sbatch</batch_submit>
     <submit_args>

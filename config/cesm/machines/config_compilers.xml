@@ -744,51 +744,18 @@ using a fortran linker.
   </SLIBS>
 </compiler>
 
-<compiler MACH="cori-haswell" COMPILER="intel">
-  <CONFIG_ARGS>
-    <base> --host=Linux </base>
-  </CONFIG_ARGS>
+<compiler MACH="derecho">
   <CFLAGS>
-    <append> -xCORE-AVX2 </append>
+    <base>  -qno-opt-dynamic-align -fp-model precise -std=gnu99 </base>
+    <append MODEL="mpi-serial"> -std=gnu89 </append>
   </CFLAGS>
-  <FFLAGS>
-    <append> -xCORE-AVX2 </append>
-  </FFLAGS>
+  <NETCDF_PATH>$ENV{NETCDF}</NETCDF_PATH>
+  <PNETCDF_PATH>$ENV{PNETCDF}</PNETCDF_PATH>
   <SLIBS>
-    <append> -L$(NETCDF_DIR) -lnetcdff -Wl,--as-needed,-L$(NETCDF_DIR)/lib -lnetcdff -lnetcdf </append>
+    <append> -lnetcdff -lnetcdf </append>
   </SLIBS>
-    <CPPDEFS>
-    <append MODEL="gptl"> -DHAVE_SLASHPROC </append>
-  </CPPDEFS>
-  <LDFLAGS>
-    <append>-mkl </append>
-  </LDFLAGS>
-  <!-- Bug in the intel/17.0.1 compiler requires this, remove this line when compiler is updated -->
-  <HAS_F2008_CONTIGUOUS>FALSE</HAS_F2008_CONTIGUOUS>
 </compiler>
 
-<compiler MACH="cori-knl" COMPILER="intel">
-  <CONFIG_ARGS>
-    <base> --host=Linux </base>
-  </CONFIG_ARGS>
-  <CFLAGS>
-    <append> -xMIC-AVX512 </append>
-  </CFLAGS>
-  <FFLAGS>
-    <append> -xMIC-AVX512 </append>
-  </FFLAGS>
-  <SLIBS>
-    <append> -L$(NETCDF_DIR) -lnetcdff -Wl,--as-needed,-L$(NETCDF_DIR)/lib -lnetcdff -lnetcdf </append>
-  </SLIBS>
-    <CPPDEFS>
-    <append MODEL="gptl"> -DHAVE_SLASHPROC</append>
-  </CPPDEFS>
-  <LDFLAGS>
-    <append>-mkl -lmemkind -zmuldefs</append>
-  </LDFLAGS>
-  <!-- Bug in the intel/17.0.1 compiler requires this, remove this line when compiler is updated -->
-  <HAS_F2008_CONTIGUOUS>FALSE</HAS_F2008_CONTIGUOUS>
-</compiler>
 
 <compiler MACH="eastwind" COMPILER="intel">
   <CFLAGS>
