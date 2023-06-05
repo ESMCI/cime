@@ -15,6 +15,7 @@ import functools
 import os
 import shutil
 import tempfile
+from unittest import mock
 
 from CIME.SystemTests.system_tests_compare_two import SystemTestsCompareTwo
 import CIME.test_status as test_status
@@ -286,6 +287,40 @@ class TestSystemTestsCompareTwo(unittest.TestCase):
             test_status.COMPARE_PHASE, run_one_suffix, run_two_suffix
         )
         return compare_phase_name
+
+    def test_resetup_case_single_exe(self):
+        # Setup
+        case1root = os.path.join(self.tempdir, "case1")
+        case1 = CaseFake(case1root)
+        case1._read_only_mode = False
+
+        mytest = SystemTestsCompareTwoFake(case1)
+
+        case1.set_value = mock.MagicMock()
+        case1.get_value = mock.MagicMock()
+        case1.get_value.side_effect = ["/tmp", "/tmp/bld", False]
+
+        mytest._resetup_case(test_status.RUN_PHASE, reset=True)
+
+        case1.set_value.assert_not_called()
+
+        case1.get_value.side_effect = ["/tmp", "/tmp/bld", True]
+
+        mytest._resetup_case(test_status.RUN_PHASE, reset=True)
+
+        case1.set_value.assert_not_called()
+
+        case1.get_value.side_effect = ["/tmp", "/other/bld", False]
+
+        mytest._resetup_case(test_status.RUN_PHASE, reset=True)
+
+        case1.set_value.assert_not_called()
+
+        case1.get_value.side_effect = ["/tmp", "/other/bld", True]
+
+        mytest._resetup_case(test_status.RUN_PHASE, reset=True)
+
+        case1.set_value.assert_called_with("BUILD_COMPLETE", True)
 
     def test_setup(self):
         # Ensure that test setup properly sets up case 1 and case 2

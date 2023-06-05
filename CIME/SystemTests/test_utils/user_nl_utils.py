@@ -8,7 +8,7 @@ import glob
 
 def append_to_user_nl_files(caseroot, component, contents):
     """
-    Append the string given by 'contents' to the end of each user_nl file for
+    Append the string(s) given by 'contents' to the end of each user_nl file for
     the given component (there may be multiple such user_nl files in the case of
     a multi-instance test).
 
@@ -25,8 +25,12 @@ def append_to_user_nl_files(caseroot, component, contents):
             matching the pattern 'user_nl_clm*'. (We do a wildcard match to
             handle multi-instance tests.)
 
-        contents (str): Contents to append to the end of each user_nl file
+        contents (str or list-like): Contents to append to the end of each user_nl
+            file. If list-like, each item will be appended on its own line.
     """
+
+    if isinstance(contents, str):
+        contents = [contents]
 
     files = _get_list_of_user_nl_files(caseroot, component)
 
@@ -35,7 +39,9 @@ def append_to_user_nl_files(caseroot, component, contents):
 
     for one_file in files:
         with open(one_file, "a") as user_nl_file:
-            user_nl_file.write("\n" + contents + "\n")
+            user_nl_file.write("\n")
+            for c in contents:
+                user_nl_file.write(c + "\n")
 
 
 def _get_list_of_user_nl_files(path, component):

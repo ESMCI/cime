@@ -30,11 +30,11 @@ def _date_to_datetime(date_obj):
 
 
 class LDSTA(SystemTestsCommon):
-    def __init__(self, case):
+    def __init__(self, case, **kwargs):
         """
         initialize an object interface to the SMS system test
         """
-        SystemTestsCommon.__init__(self, case)
+        SystemTestsCommon.__init__(self, case, **kwargs)
 
     def run_phase(self):
         archive_dir = self._case.get_value("DOUT_S_ROOT")

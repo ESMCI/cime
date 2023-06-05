@@ -13,14 +13,15 @@ from CIME.SystemTests.system_tests_compare_two import SystemTestsCompareTwo
 
 logger = logging.getLogger(__name__)
 
-
 class PEM(SystemTestsCompareTwo):
-    def __init__(self, case):
+
+    def __init__(self, case, **kwargs):
         build_separately = False
         # cice, pop require separate builds
         comps = case.get_compset_components()
         if "cice" in comps or "pop" in comps:
             build_separately = True
+
         SystemTestsCompareTwo.__init__(
             self,
             case,
@@ -28,6 +29,7 @@ class PEM(SystemTestsCompareTwo):
             run_two_suffix="modpes",
             run_one_description="default pe counts",
             run_two_description="halved pe counts",
+            **kwargs
         )
 
     def _case_one_setup(self):

@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 
 class SEQ(SystemTestsCompareTwo):
-    def __init__(self, case):
+    def __init__(self, case, **kwargs):
         """
         initialize an object interface to file env_test.xml in the case directory
         """
@@ -19,6 +19,7 @@ class SEQ(SystemTestsCompareTwo):
             run_two_suffix="seq",
             run_one_description="base",
             run_two_description="sequence",
+            **kwargs
         )
 
     def _case_one_setup(self):

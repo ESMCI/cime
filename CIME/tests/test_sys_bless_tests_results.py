@@ -17,6 +17,10 @@ class TestBlessTestResults(base.BaseTestCase):
         # recording baselines are working
         restrictive_mask = 0o027
         self._orig_umask = os.umask(restrictive_mask)
+        if not self._cprnc:
+            self.skipTest(
+                "Test cannot run without cprnc program defined in config_machines.xml"
+            )
 
     def tearDown(self):
         super().tearDown()

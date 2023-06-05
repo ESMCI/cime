@@ -573,12 +573,16 @@ endif
 
 
 # System libraries (netcdf, mpi, pnetcdf, esmf, trilinos, etc.)
-ifeq (,$(findstring lnetcdf,$(SLIBS)))
-  ifeq ($(NETCDF_SEPARATE), FALSE)
-    SLIBS += -L$(LIB_NETCDF) -lnetcdff -lnetcdf
-  else ifeq ($(NETCDF_SEPARATE), TRUE)
-    SLIBS += -L$(LIB_NETCDF_FORTRAN) -L$(LIB_NETCDF_C) -lnetcdff -lnetcdf
+ifeq ($(NETCDF_SEPARATE), FALSE)
+   ifeq (,$(findstring $(LIB_NETCDF),$(SLIBS)))
+      SLIBS += -L$(LIB_NETCDF) -lnetcdff -lnetcdf
   endif
+else ifeq ($(NETCDF_SEPARATE), TRUE)
+    ifeq (,$(findstring $(LIB_NETCDF_C), $(SLIBS)))
+      SLIBS += -L$(LIB_NETCDF_FORTRAN) -L$(LIB_NETCDF_C) -lnetcdff -lnetcdf
+    else ifeq (,$(findstring $(LIB_NETCDF_FOTRAN), $(SLIBS)))
+      SLIBS += -L$(LIB_NETCDF_FORTRAN) -L$(LIB_NETCDF_C) -lnetcdff -lnetcdf
+    endif
 endif
 
 ifdef LAPACK_LIBDIR
@@ -907,7 +911,7 @@ GENF90 ?= $(CIMEROOT)/CIME/non_py/externals/genf90/genf90.pl
 
 ifeq ($(MPILIB),mpi-serial)
   MPISERIAL = $(INSTALL_SHAREDPATH)/lib/libmpi-serial.a
-  MLIBS += $(MPISERIAL)
+  MLIBS += -L$(INSTALL_SHAREDPATH)/lib -lmpi-serial
   CMAKE_OPTS += -DMPI_C_INCLUDE_PATH=$(INSTALL_SHAREDPATH)/include \
       -DMPI_Fortran_INCLUDE_PATH=$(INSTALL_SHAREDPATH)/include \
       -DMPI_C_LIBRARIES=$(INSTALL_SHAREDPATH)/lib/libmpi-serial.a \

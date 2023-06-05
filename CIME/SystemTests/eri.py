@@ -38,11 +38,11 @@ def _helper(dout_sr, refdate, refsec, rundir):
 
 
 class ERI(SystemTestsCommon):
-    def __init__(self, case):
+    def __init__(self, case, **kwargs):
         """
         initialize an object interface to the ERI system test
         """
-        SystemTestsCommon.__init__(self, case)
+        SystemTestsCommon.__init__(self, case, **kwargs)
         self._testname = "ERI"
 
     def run_phase(self):

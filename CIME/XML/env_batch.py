@@ -38,6 +38,7 @@ class EnvBatch(EnvBase):
         super(EnvBatch, self).__init__(
             case_root, infile, schema=schema, read_only=read_only
         )
+        self._batchtype = self.get_batch_system_type()
 
     # pylint: disable=arguments-differ
     def set_value(self, item, value, subgroup=None, ignore_type=False):
@@ -961,7 +962,7 @@ class EnvBatch(EnvBase):
             return
 
         submitargs = self.get_submit_args(case, job)
-        args_override = self.get_value("BATCH_COMMAND_FLAGS", subgroup=job)
+        args_override = case.get_value("BATCH_COMMAND_FLAGS", subgroup=job)
         if args_override:
             submitargs = args_override
 

@@ -11,11 +11,11 @@ logger = logging.getLogger(__name__)
 
 
 class PFS(SystemTestsCommon):
-    def __init__(self, case):
+    def __init__(self, case, **kwargs):
         """
         initialize an object interface to the PFS system test
         """
-        SystemTestsCommon.__init__(self, case)
+        SystemTestsCommon.__init__(self, case, **kwargs)
 
     def run_phase(self):
         logger.info("doing an 20 day initial test, no restarts written")

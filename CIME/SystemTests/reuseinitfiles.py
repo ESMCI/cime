@@ -20,7 +20,7 @@ from CIME.SystemTests.system_tests_common import INIT_GENERATED_FILES_DIRNAME
 
 
 class REUSEINITFILES(SystemTestsCompareTwo):
-    def __init__(self, case):
+    def __init__(self, case, **kwargs):
         SystemTestsCompareTwo.__init__(
             self,
             case,
@@ -32,6 +32,7 @@ class REUSEINITFILES(SystemTestsCompareTwo):
             # init_generated_files from case1 and then need to make sure they are NOT
             # deleted like is normally done for tests:
             case_two_keep_init_generated_files=True,
+            **kwargs
         )
 
     def _case_one_setup(self):
