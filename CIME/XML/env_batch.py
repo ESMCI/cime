@@ -961,10 +961,7 @@ class EnvBatch(EnvBase):
 
             return
 
-        submitargs = self.get_submit_args(case, job)
-        args_override = case.get_value("BATCH_COMMAND_FLAGS", subgroup=job)
-        if args_override:
-            submitargs = args_override
+        submitargs = case.get_value("BATCH_COMMAND_FLAGS", subgroup=job)
 
         if dep_jobs is not None and len(dep_jobs) > 0:
             logger.debug("dependencies: {}".format(dep_jobs))
