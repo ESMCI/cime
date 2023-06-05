@@ -13,8 +13,8 @@ from CIME.SystemTests.system_tests_compare_two import SystemTestsCompareTwo
 
 logger = logging.getLogger(__name__)
 
-class PEM(SystemTestsCompareTwo):
 
+class PEM(SystemTestsCompareTwo):
     def __init__(self, case, **kwargs):
         build_separately = False
         # cice, pop require separate builds
