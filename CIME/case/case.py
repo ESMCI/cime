@@ -1591,7 +1591,7 @@ class Case(object):
         for job in bjobs:
             if test and job[0] == "case.run" or not test and job[0] == "case.test":
                 continue
-            submitargs = env_batch.get_submit_args(self, job[0])
+            submitargs = env_batch.get_submit_args(self, job[0], resolve=False)
             self.set_value("BATCH_COMMAND_FLAGS", submitargs, subgroup=job[0])
 
         # Make sure that parallel IO is not specified if total_tasks==1
