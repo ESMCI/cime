@@ -209,6 +209,7 @@ class TestScheduler(object):
         single_exe=False,
         workflow=None,
         chksum=False,
+        force_rebuild=False,
     ):
         ###########################################################################
         self._cime_root = get_cime_root()
@@ -396,6 +397,9 @@ class TestScheduler(object):
         if use_existing:
             for test in self._tests:
                 with TestStatus(self._get_test_dir(test)) as ts:
+                    if force_rebuild:
+                        ts.set_status(SHAREDLIB_BUILD_PHASE, TEST_PEND_STATUS)
+
                     for phase, status in ts:
                         if phase in CORE_PHASES:
                             if status in [TEST_PEND_STATUS, TEST_FAIL_STATUS]:
