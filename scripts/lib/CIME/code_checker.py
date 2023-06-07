@@ -22,7 +22,7 @@ def _run_pylint(on_file, interactive):
     cmd_options += ",logging-format-interpolation,no-name-in-module"
     cimeroot = get_cime_root()
 
-    if "scripts/Tools" in on_file:
+    if sys.version_info.major == '2' and "scripts/Tools" in on_file:
         cmd_options +=",relative-import"
 
     # add init-hook option
