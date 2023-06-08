@@ -68,11 +68,41 @@ class TestCreateNewcase(base.BaseTestCase):
         self.run_cmd_assert_result("./case.build", from_dir=testdir)
         with Case(testdir, read_only=False) as case:
             case.set_value("CHARGE_ACCOUNT", "fred")
+            # to be used in next test
+            batch_command = case.get_value("BATCH_COMMAND_FLAGS", subgroup="case.run")
 
         # this should not fail with a locked file issue
         self.run_cmd_assert_result("./case.build", from_dir=testdir)
 
         self.run_cmd_assert_result("./case.st_archive --test-all", from_dir=testdir)
+
+        self.run_cmd_assert_result(
+            './xmlchange --append --subgroup case.run BATCH_COMMAND_FLAGS="-l trythis"',
+            from_dir=testdir,
+        )
+        # Test that changes to BATCH_COMMAND_FLAGS work
+        with Case(testdir, read_only=False) as case:
+            new_batch_command = case.get_value(
+                "BATCH_COMMAND_FLAGS", subgroup="case.run"
+            )
+
+            self.assertTrue(
+                new_batch_command == batch_command + " -l trythis",
+                msg=f"Failed to correctly append BATCH_COMMAND_FLAGS {new_batch_command} {batch_command}#",
+            )
+
+        self.run_cmd_assert_result(
+            "./xmlchange JOB_QUEUE=fred --subgroup case.run --force", from_dir=testdir
+        )
+
+        with Case(testdir, read_only=False) as case:
+            new_batch_command = case.get_value(
+                "BATCH_COMMAND_FLAGS", subgroup="case.run"
+            )
+            self.assertTrue(
+                "fred" in new_batch_command,
+                msg="Failed to update JOB_QUEUE in BATCH_COMMAND_FLAGS",
+            )
 
         # Trying to set values outside of context manager should fail
         case = Case(testdir, read_only=False)
