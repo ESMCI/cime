@@ -69,12 +69,22 @@ class TestCreateNewcase(base.BaseTestCase):
         with Case(testdir, read_only=False) as case:
             case.set_value("CHARGE_ACCOUNT", "fred")
             # to be used in next test
-            batch_command = case.get_value("BATCH_COMMAND_FLAGS", subgroup="case.run")
+            batch_system = case.get_value("BATCH_SYSTEM")
+
+        # on systems (like github workflow) that do not have batch, set this for the next test
+        if batch_system == "none":
+            self.run_cmd_assert_result(
+                './xmlchange --subgroup case.run BATCH_COMMAND_FLAGS="-q \$JOB_QUEUE"',
+                from_dir=testdir,
+            )
 
         # this should not fail with a locked file issue
         self.run_cmd_assert_result("./case.build", from_dir=testdir)
 
         self.run_cmd_assert_result("./case.st_archive --test-all", from_dir=testdir)
+
+        with Case(testdir, read_only=False) as case:
+            batch_command = case.get_value("BATCH_COMMAND_FLAGS", subgroup="case.run")
 
         self.run_cmd_assert_result(
             './xmlchange --append --subgroup case.run BATCH_COMMAND_FLAGS="-l trythis"',
@@ -86,10 +96,10 @@ class TestCreateNewcase(base.BaseTestCase):
                 "BATCH_COMMAND_FLAGS", subgroup="case.run"
             )
 
-            self.assertTrue(
-                new_batch_command == batch_command + " -l trythis",
-                msg=f"Failed to correctly append BATCH_COMMAND_FLAGS {new_batch_command} {batch_command}#",
-            )
+        self.assertTrue(
+            new_batch_command == batch_command + " -l trythis",
+            msg=f"Failed to correctly append BATCH_COMMAND_FLAGS {new_batch_command} {batch_command}#",
+        )
 
         self.run_cmd_assert_result(
             "./xmlchange JOB_QUEUE=fred --subgroup case.run --force", from_dir=testdir
