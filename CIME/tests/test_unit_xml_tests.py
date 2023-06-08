@@ -53,7 +53,7 @@ class TestXMLTests(unittest.TestCase):
     )
     def test_support_single_exe_error(self, _setup_cases_if_not_yet_done):
         with tempfile.TemporaryDirectory() as tdir:
-            test_file = Path(tdir) / "pem.py"
+            test_file = Path(tdir) / "erp.py"
 
             test_file.touch(exist_ok=True)
 
@@ -66,14 +66,14 @@ class TestXMLTests(unittest.TestCase):
             case.get_compset_components.return_value = ()
 
             case.get_value.side_effect = (
-                "PEM",
+                "ERP",
                 tdir,
                 f"{caseroot}",
-                "PEM.f19_g16.S",
+                "ERP.f19_g16.S",
                 "cpl",
-                "PEM.f19_g16.S",
+                "ERP.f19_g16.S",
                 f"{caseroot}",
-                "PEM.f19_g16.S",
+                "ERP.f19_g16.S",
             )
 
             tests = Tests()
