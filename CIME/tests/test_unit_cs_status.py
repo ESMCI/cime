@@ -71,6 +71,23 @@ class TestCsStatus(CustomAssertionsTestStatus):
     # Begin actual tests
     # ------------------------------------------------------------------------
 
+    def test_force_rebuild(self):
+        test_name = "my.test.name"
+        test_dir = "my.test.name.testid"
+        test_dir_path = self.create_test_dir(test_dir)
+        self.create_test_status_core_passes(test_dir_path, test_name)
+        cs_status(
+            [os.path.join(test_dir_path, "TestStatus")],
+            force_rebuild=True,
+            out=self._output,
+        )
+        self.assert_status_of_phase(
+            self._output.getvalue(),
+            test_status.TEST_PEND_STATUS,
+            test_status.SHAREDLIB_BUILD_PHASE,
+            test_name,
+        )
+
     def test_single_test(self):
         """cs_status for a single test should include some minimal expected output"""
         test_name = "my.test.name"
