@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 class ERR(RestartTest):
-    def __init__(self, case):  # pylint: disable=super-init-not-called
+    def __init__(self, case, **kwargs):  # pylint: disable=super-init-not-called
         """
         initialize an object interface to the ERR system test
         """
@@ -22,6 +22,7 @@ class ERR(RestartTest):
             run_one_description="initial",
             run_two_description="restart",
             multisubmit=True,
+            **kwargs
         )
 
     def _case_one_setup(self):

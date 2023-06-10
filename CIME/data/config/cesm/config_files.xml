@@ -416,6 +416,7 @@
       <value component="rtm"       >$COMP_ROOT_DIR_ROF/cime_config/testdefs/testlist_rtm.xml</value>
       <value component="mosart"    >$COMP_ROOT_DIR_ROF/cime_config/testdefs/testlist_mosart.xml</value>
       <value component="mizuroute" >$COMP_ROOT_DIR_ROF/cime_config/testdefs/testlist_mizuRoute.xml</value>
+      <value component="ww3dev"    >$COMP_ROOT_DIR_WAV/cime_config/testdefs/testlist_ww3dev.xml</value>
       <value component="datm"      >$SRCROOT/components/cdeps/datm/cime_config/testdefs/testlist_datm.xml</value>
       <value component="dice"      >$SRCROOT/components/cdeps/dice/cime_config/testdefs/testlist_dice.xml</value>
       <value component="dlnd"      >$SRCROOT/components/cdeps/dlnd/cime_config/testdefs/testlist_dlnd.xml</value>

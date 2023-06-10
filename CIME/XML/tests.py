@@ -5,6 +5,9 @@ from CIME.XML.standard_module_setup import *
 
 from CIME.XML.generic_xml import GenericXML
 from CIME.XML.files import Files
+from CIME.utils import find_system_test
+from CIME.SystemTests.system_tests_compare_two import SystemTestsCompareTwo
+from CIME.SystemTests.system_tests_compare_n import SystemTestsCompareN
 
 logger = logging.getLogger(__name__)
 
@@ -26,6 +29,33 @@ class Tests(GenericXML):
             infile = files.get_value("CONFIG_TESTS_FILE", attribute={"component": comp})
             if os.path.isfile(infile):
                 self.read(infile)
+
+    def support_single_exe(self, case):
+        """Checks if case supports --single-exe.
+
+        Raises:
+            Exception: If system test cannot be found.
+            Exception: If `case` does not support --single-exe.
+        """
+        testname = case.get_value("TESTCASE")
+
+        try:
+            test = find_system_test(testname, case)(case, dry_run=True)
+        except Exception as e:
+            raise e
+        else:
+            # valid if subclass is SystemTestsCommon or _separate_builds is false
+            valid = (
+                not issubclass(type(test), SystemTestsCompareTwo)
+                and not issubclass(type(test), SystemTestsCompareN)
+            ) or not test._separate_builds
+
+        if not valid:
+            case_base_id = case.get_value("CASEBASEID")
+
+            raise Exception(
+                f"{case_base_id} does not support the '--single-exe' option as it requires separate builds"
+            )
 
     def get_test_node(self, testname):
         logger.debug("Get settings for {}".format(testname))

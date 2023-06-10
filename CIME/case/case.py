@@ -224,16 +224,17 @@ class Case(object):
         comp_classes = self.get_values("COMP_CLASSES")
         max_mpitasks_per_node = self.get_value("MAX_MPITASKS_PER_NODE")
         self.async_io = {}
+        asyncio = False
         for comp in comp_classes:
             self.async_io[comp] = self.get_value("PIO_ASYNC_INTERFACE", subgroup=comp)
+            if self.async_io[comp]:
+                asyncio = True
 
-        if any(self.async_io.values()):
-            self.iotasks = 1
-            for comp in comp_classes:
-                if self.async_io[comp]:
-                    self.iotasks = max(
-                        self.iotasks, self.get_value("PIO_NUMTASKS", subgroup=comp)
-                    )
+        self.iotasks = (
+            self.get_value("PIO_ASYNCIO_NTASKS")
+            if self.get_value("PIO_ASYNCIO_NTASKS")
+            else 0
+        )
 
         self.thread_count = env_mach_pes.get_max_thread_count(comp_classes)
 
@@ -256,7 +257,7 @@ class Case(object):
             self.spare_nodes = env_mach_pes.get_spare_nodes(self.num_nodes)
             self.num_nodes += self.spare_nodes
         else:
-            self.total_tasks = env_mach_pes.get_total_tasks(comp_classes) + self.iotasks
+            self.total_tasks = env_mach_pes.get_total_tasks(comp_classes, asyncio)
             self.tasks_per_node = env_mach_pes.get_tasks_per_node(
                 self.total_tasks, self.thread_count
             )
@@ -1227,9 +1228,11 @@ class Case(object):
             key = "NTASKS_{}".format(compclass)
             if key not in pes_ntasks:
                 mach_pes_obj.set_value(key, 1)
+
             key = "NTHRDS_{}".format(compclass)
-            if compclass not in pes_nthrds:
-                mach_pes_obj.set_value(compclass, 1)
+            if key not in pes_nthrds:
+                mach_pes_obj.set_value(key, 1)
+
         if multi_driver:
             mach_pes_obj.set_value("MULTI_DRIVER", True)
 
@@ -1583,6 +1586,13 @@ class Case(object):
             )
 
         env_batch.set_job_defaults(bjobs, self)
+        # Set BATCH_COMMAND_FLAGS to the default values
+
+        for job in bjobs:
+            if test and job[0] == "case.run" or not test and job[0] == "case.test":
+                continue
+            submitargs = env_batch.get_submit_args(self, job[0], resolve=False)
+            self.set_value("BATCH_COMMAND_FLAGS", submitargs, subgroup=job[0])
 
         # Make sure that parallel IO is not specified if total_tasks==1
         if self.total_tasks == 1:
@@ -1701,7 +1711,9 @@ class Case(object):
                     os.path.join(casetools, "mach_syslog"),
                 )
 
-            safe_copy(os.path.join(toolsdir, "e3sm_compile_wrap.py"), casetools)
+            srcroot = self.get_value("SRCROOT")
+            customize_path = os.path.join(srcroot, "cime_config", "customize")
+            safe_copy(os.path.join(customize_path, "e3sm_compile_wrap.py"), casetools)
 
         # add archive_metadata to the CASEROOT but only for CESM
         if config.copy_cesm_tools:
@@ -1718,7 +1730,10 @@ class Case(object):
         if self._comp_interface == "nuopc":
             components.extend(["cdeps"])
 
-        readme_message = """Put source mods for the {component} library in this directory.
+        readme_message_start = (
+            "Put source mods for the {component} library in this directory."
+        )
+        readme_message_end = """
 
 WARNING: SourceMods are not kept under version control, and can easily
 become out of date if changes are made to the source code on which they
@@ -1752,7 +1767,18 @@ leveraging version control (git or svn).
                 # to fail).
                 readme_file = os.path.join(directory, "README")
                 with open(readme_file, "w") as fd:
-                    fd.write(readme_message.format(component=component))
+                    fd.write(readme_message_start.format(component=component))
+
+                    if component == "cdeps":
+                        readme_message_extra = """
+
+Note that this subdirectory should only contain files from CDEPS's
+dshr and streams source code directories.
+Files related to specific data models should go in SourceMods subdirectories
+for those data models (e.g., src.datm)."""
+                        fd.write(readme_message_extra)
+
+                    fd.write(readme_message_end)
 
         if config.copy_cism_source_mods:
             # Note: this is CESM specific, given that we are referencing cism explitly
@@ -1941,6 +1967,10 @@ directory, NOT in this subdirectory."""
 
             return result
 
+    def get_job_id(self, output):
+        env_batch = self.get_env("batch")
+        return env_batch.get_job_id(output)
+
     def report_job_status(self):
         jobmap = self.get_job_info()
         if not jobmap:
@@ -2007,15 +2037,25 @@ directory, NOT in this subdirectory."""
             )
             run_misc_suffix = custom_run_misc_suffix
 
+        aprun_mode = env_mach_specific.get_aprun_mode(mpi_attribs)
+
         # special case for aprun
         if (
             executable is not None
             and "aprun" in executable
-            and not "theta" in self.get_value("MACH")
+            and aprun_mode != "ignore"
+            # and not "theta" in self.get_value("MACH")
         ):
-            aprun_args, num_nodes = get_aprun_cmd_for_case(
-                self, run_exe, overrides=overrides
-            )[0:2]
+            extra_args = env_mach_specific.get_aprun_args(
+                self, mpi_attribs, job, overrides=overrides
+            )
+
+            aprun_args, num_nodes, _, _, _ = get_aprun_cmd_for_case(
+                self,
+                run_exe,
+                overrides=overrides,
+                extra_args=extra_args,
+            )
             if job in ("case.run", "case.test"):
                 expect(
                     (num_nodes + self.spare_nodes) == self.num_nodes,
@@ -2236,7 +2276,7 @@ directory, NOT in this subdirectory."""
         cimeroot = self.get_value("CIMEROOT")
 
         if cmd is None:
-            cmd = list(sys.argv)
+            cmd = self.fix_sys_argv_quotes(list(sys.argv))
 
         if init:
             ctime = time.strftime("%Y-%m-%d %H:%M:%S")
@@ -2274,6 +2314,37 @@ directory, NOT in this subdirectory."""
                 fd.writelines(lines)
         except PermissionError:
             logger.warning("Could not write to 'replay.sh' script")
+
+    def fix_sys_argv_quotes(self, cmd):
+        """Fixes removed quotes from argument list.
+
+        Restores quotes to `--val` and `KEY=VALUE` from sys.argv.
+        """
+        # handle fixing quotes
+        # case 1: "--val", " -nlev 276 "
+        # case 2: "-val" , " -nlev 276 "
+        # case 3: CAM_CONFIG_OPTS=" -nlev 276 "
+        for i, item in enumerate(cmd):
+            if re.match("[-]{1,2}val", item) is not None:
+                if i + 1 >= len(cmd):
+                    continue
+
+                # only quote if value contains spaces
+                if " " in cmd[i + 1]:
+                    cmd[i + 1] = f'"{cmd[i + 1]}"'
+            else:
+                m = re.search("([^=]*)=(.*)", item)
+
+                if m is None:
+                    continue
+
+                g = m.groups()
+
+                # only quote if value contains spaces
+                if " " in g[1]:
+                    cmd[i] = f'{g[0]}="{g[1]}"'
+
+        return cmd
 
     def create(
         self,
@@ -2453,6 +2524,7 @@ directory, NOT in this subdirectory."""
             job = self.get_first_job()
 
         job_id_to_cmd = self.submit_jobs(dry_run=True, job=job)
+
         env_batch = self.get_env("batch")
         for job_id, cmd in job_id_to_cmd:
             write("  FOR JOB: {}".format(job_id))

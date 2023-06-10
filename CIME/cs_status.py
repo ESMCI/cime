@@ -6,7 +6,7 @@ of the tests in one or more test suites
 from __future__ import print_function
 from CIME.XML.standard_module_setup import *
 from CIME.XML.expected_fails_file import ExpectedFailsFile
-from CIME.test_status import TestStatus
+from CIME.test_status import TestStatus, SHAREDLIB_BUILD_PHASE, TEST_PEND_STATUS
 import os
 import sys
 from collections import defaultdict
@@ -20,6 +20,7 @@ def cs_status(
     check_throughput=False,
     check_memory=False,
     expected_fails_filepath=None,
+    force_rebuild=False,
     out=sys.stdout,
 ):
     """Print the test statuses of all tests in test_paths. The default
@@ -56,6 +57,11 @@ def cs_status(
     for test_path in test_paths:
         test_dir = os.path.dirname(test_path)
         ts = TestStatus(test_dir=test_dir)
+
+        if force_rebuild:
+            with ts:
+                ts.set_status(SHAREDLIB_BUILD_PHASE, TEST_PEND_STATUS)
+
         test_id = os.path.basename(test_dir).split(".")[-1]
         if summary:
             output = _overall_output(

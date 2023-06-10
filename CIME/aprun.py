@@ -22,6 +22,7 @@ def _get_aprun_cmd_for_case_impl(
     compiler,
     machine,
     run_exe,
+    extra_args,
 ):
     ###############################################################################
     """
@@ -38,19 +39,22 @@ def _get_aprun_cmd_for_case_impl(
     >>> compiler = "pgi"
     >>> machine = "titan"
     >>> run_exe = "e3sm.exe"
-    >>> _get_aprun_cmd_for_case_impl(ntasks, nthreads, rootpes, pstrids, max_tasks_per_node, max_mpitasks_per_node, pio_numtasks, pio_async_interface, compiler, machine, run_exe)
-    (' -S 4 -n 680 -N 8 -d 2 e3sm.exe : -S 2 -n 128 -N 4 -d 4 e3sm.exe ', 117, 808, 4, 4)
+    >>> _get_aprun_cmd_for_case_impl(ntasks, nthreads, rootpes, pstrids, max_tasks_per_node, max_mpitasks_per_node, pio_numtasks, pio_async_interface, compiler, machine, run_exe, None)
+    ('  -S 4 -n 680 -N 8 -d 2  e3sm.exe : -S 2 -n 128 -N 4 -d 4  e3sm.exe ', 117, 808, 4, 4)
     >>> compiler = "intel"
-    >>> _get_aprun_cmd_for_case_impl(ntasks, nthreads, rootpes, pstrids, max_tasks_per_node, max_mpitasks_per_node, pio_numtasks, pio_async_interface, compiler, machine, run_exe)
-    (' -S 4 -cc numa_node -n 680 -N 8 -d 2 e3sm.exe : -S 2 -cc numa_node -n 128 -N 4 -d 4 e3sm.exe ', 117, 808, 4, 4)
+    >>> _get_aprun_cmd_for_case_impl(ntasks, nthreads, rootpes, pstrids, max_tasks_per_node, max_mpitasks_per_node, pio_numtasks, pio_async_interface, compiler, machine, run_exe, None)
+    ('  -S 4 -cc numa_node -n 680 -N 8 -d 2  e3sm.exe : -S 2 -cc numa_node -n 128 -N 4 -d 4  e3sm.exe ', 117, 808, 4, 4)
 
     >>> ntasks = [64, 64, 64, 64, 64, 64, 64, 64, 1]
     >>> nthreads = [1, 1, 1, 1, 1, 1, 1, 1, 1]
     >>> rootpes = [0, 0, 0, 0, 0, 0, 0, 0, 0]
     >>> pstrids = [1, 1, 1, 1, 1, 1, 1, 1, 1]
-    >>> _get_aprun_cmd_for_case_impl(ntasks, nthreads, rootpes, pstrids, max_tasks_per_node, max_mpitasks_per_node, pio_numtasks, pio_async_interface, compiler, machine, run_exe)
-    (' -S 8 -cc numa_node -n 64 -N 16 -d 1 e3sm.exe ', 4, 64, 16, 1)
+    >>> _get_aprun_cmd_for_case_impl(ntasks, nthreads, rootpes, pstrids, max_tasks_per_node, max_mpitasks_per_node, pio_numtasks, pio_async_interface, compiler, machine, run_exe, None)
+    ('  -S 8 -cc numa_node -n 64 -N 16 -d 1  e3sm.exe ', 4, 64, 16, 1)
     """
+    if extra_args is None:
+        extra_args = {}
+
     max_tasks_per_node = 1 if max_tasks_per_node < 1 else max_tasks_per_node
 
     total_tasks = 0
@@ -78,6 +82,12 @@ def _get_aprun_cmd_for_case_impl(
         if maxt[c1] < 1:
             maxt[c1] = 1
 
+    global_flags = " ".join(
+        [x for x, y in extra_args.items() if y["position"] == "global"]
+    )
+
+    per_flags = " ".join([x for x, y in extra_args.items() if y["position"] == "per"])
+
     # Compute task and thread settings for batch commands
     (
         tasks_per_node,
@@ -88,7 +98,7 @@ def _get_aprun_cmd_for_case_impl(
         total_node_count,
         total_task_count,
         aprun_args,
-    ) = (0, max_mpitasks_per_node, 1, maxt[0], maxt[0], 0, 0, "")
+    ) = (0, max_mpitasks_per_node, 1, maxt[0], maxt[0], 0, 0, f" {global_flags}")
     c1list = list(range(1, total_tasks))
     c1list.append(None)
     for c1 in c1list:
@@ -107,10 +117,11 @@ def _get_aprun_cmd_for_case_impl(
                 if compiler == "intel":
                     aprun_args += " -cc numa_node"
 
-            aprun_args += " -n {:d} -N {:d} -d {:d} {} {}".format(
+            aprun_args += " -n {:d} -N {:d} -d {:d} {} {} {}".format(
                 task_count,
                 tasks_per_node,
                 thread_count,
+                per_flags,
                 run_exe,
                 "" if c1 is None else ":",
             )
@@ -140,7 +151,7 @@ def _get_aprun_cmd_for_case_impl(
 
 
 ###############################################################################
-def get_aprun_cmd_for_case(case, run_exe, overrides=None):
+def get_aprun_cmd_for_case(case, run_exe, overrides=None, extra_args=None):
     ###############################################################################
     """
     Given a case, construct and return the aprun command and optimized node count
@@ -156,6 +167,10 @@ def get_aprun_cmd_for_case(case, run_exe, overrides=None):
             the_list.append(case.get_value("_".join([item_name, model])))
     max_tasks_per_node = case.get_value("MAX_TASKS_PER_NODE")
     if overrides:
+        overrides = {
+            x: y if isinstance(y, int) or y is None else int(y)
+            for x, y in overrides.items()
+        }
         if "max_tasks_per_node" in overrides:
             max_tasks_per_node = overrides["max_tasks_per_node"]
         if "total_tasks" in overrides:
@@ -175,4 +190,5 @@ def get_aprun_cmd_for_case(case, run_exe, overrides=None):
         case.get_value("COMPILER"),
         case.get_value("MACH"),
         run_exe,
+        extra_args,
     )

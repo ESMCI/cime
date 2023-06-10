@@ -88,6 +88,12 @@ def compare_test_results(
 
     all_pass_or_skip = True
 
+    compare_tests_counts = None
+    if compare_tests:
+        compare_tests_counts = dict(
+            [(compare_test, 0) for compare_test in compare_tests]
+        )
+
     for test_status_file in test_status_files:
         test_dir = os.path.dirname(test_status_file)
         ts = TestStatus(test_dir=test_dir)
@@ -96,9 +102,7 @@ def compare_test_results(
         testopts = [] if testopts is None else testopts
         build_only = "B" in testopts
 
-        if compare_tests in [[], None] or CIME.utils.match_any(
-            test_name, compare_tests
-        ):
+        if not compare_tests or CIME.utils.match_any(test_name, compare_tests_counts):
 
             if not hist_only:
                 nl_compare_result = None
@@ -201,6 +205,19 @@ def compare_test_results(
             if detailed_comments:
                 append_status_cprnc_log(
                     "Detailed comments:\n" + detailed_comments, logfile_name, test_dir
+                )
+
+    # Emit a warning if items in compare_tests did not match anything
+    if compare_tests:
+        for compare_test, compare_count in compare_tests_counts.items():
+            if compare_count == 0:
+                logging.warning(
+                    """
+compare test arg '{}' did not match any tests in test_root {} with
+compiler {} and test_id {}. It's possible that one of these arguments
+had a mistake (likely compiler or testid).""".format(
+                        compare_test, test_root, compiler, test_id
+                    )
                 )
 
     return all_pass_or_skip

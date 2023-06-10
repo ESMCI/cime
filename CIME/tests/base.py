@@ -61,9 +61,9 @@ class BaseTestCase(unittest.TestCase):
         self._hasbatch = self.MACHINE.has_batch_system() and not self.NO_BATCH
         self._do_teardown = not self.NO_TEARDOWN
         self._root_dir = os.getcwd()
-
+        self._cprnc = self.MACHINE.get_value("CCSM_CPRNC")
         customize_path = os.path.join(utils.get_src_root(), "cime_config", "customize")
-        config = Config.load(customize_path)
+        self._config = Config.load(customize_path)
 
     def tearDown(self):
         self.kill_subprocesses()
@@ -153,7 +153,7 @@ class BaseTestCase(unittest.TestCase):
 
     def assert_dashboard_has_build(self, build_name, expected_count=1):
         # Do not test E3SM dashboard if model is CESM
-        if Config.instance().test_mode == "e3sm":
+        if self._config.test_mode == "e3sm":
             time.sleep(10)  # Give chance for cdash to update
 
             wget_file = tempfile.mktemp()

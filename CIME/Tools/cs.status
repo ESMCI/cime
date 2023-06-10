@@ -103,6 +103,13 @@ def parse_command_line(args, description):
         help="Test root used when --test-id is given",
     )
 
+    parser.add_argument(
+        "--force-rebuild",
+        action="store_true",
+        help="When used with 'test-id', the"
+        "tests will have their 'BUILD_SHAREDLIB' phase reset to 'PEND'.",
+    )
+
     args = parser.parse_args(args[1:])
 
     _validate_args(args)
@@ -120,10 +127,17 @@ def parse_command_line(args, description):
         args.expected_fails_file,
         args.test_id,
         args.test_root,
+        args.force_rebuild,
     )
 
 
 def _validate_args(args):
+    if args.force_rebuild:
+        expect(
+            args.test_id != [],
+            "Cannot force a rebuild without 'test-id'",
+        )
+
     expect(
         not (args.summary and args.count_fails),
         "--count-fails cannot be specified with --summary",
@@ -158,6 +172,7 @@ def _main_func(description):
         expected_fails_file,
         test_ids,
         test_root,
+        force_rebuild,
     ) = parse_command_line(sys.argv, description)
     for test_id in test_ids:
         test_paths.extend(
@@ -172,6 +187,7 @@ def _main_func(description):
         check_throughput=check_throughput,
         check_memory=check_memory,
         expected_fails_filepath=expected_fails_file,
+        force_rebuild=force_rebuild,
     )
 
 

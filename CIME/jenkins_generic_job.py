@@ -44,11 +44,18 @@ def delete_old_test_data(
             "{}/*{}*{}*".format(clutter_area, mach_comp, test_id_root)
         ):
             if avoid_test_id not in old_file:
-                logging.info("TEST ARCHIVER: Removing {}".format(old_file))
+                logging.info("TEST ARCHIVER: removing {}".format(old_file))
                 if os.path.isdir(old_file):
                     shutil.rmtree(old_file)
                 else:
                     os.remove(old_file)
+
+            else:
+                logging.info(
+                    "TEST ARCHIVER: leaving case {} due to avoiding test id {}".format(
+                        old_file, avoid_test_id
+                    )
+                )
 
 
 ###############################################################################
@@ -157,6 +164,13 @@ def archive_old_test_data(
                         )
                     )
 
+        else:
+            logging.info(
+                "TEST ARCHIVER: leaving case {} due to avoiding test id {}".format(
+                    old_case, avoid_test_id
+                )
+            )
+
     # Check size of archive
     bytes_of_old_test_data = int(
         run_cmd_no_fail("du -sb {}".format(old_test_archive)).split()[0]
@@ -264,8 +278,10 @@ def jenkins_generic_job(
     update_success,
     check_throughput,
     check_memory,
+    ignore_memleak,
     pes_file,
     jenkins_id,
+    queue,
 ):
     ###############################################################################
     """
@@ -353,6 +369,9 @@ def jenkins_generic_job(
     if pes_file is not None:
         create_test_args.append(" --pesfile " + pes_file)
 
+    if queue is not None:
+        create_test_args.append(" --queue " + queue)
+
     create_test_cmd = "./create_test " + " ".join(create_test_args)
 
     if not CIME.wait_for_tests.SIGNAL_RECEIVED:
@@ -399,6 +418,7 @@ def jenkins_generic_job(
         check_throughput=check_throughput,
         check_memory=check_memory,
         ignore_namelists=False,  # don't ignore namelist diffs
+        ignore_memleak=ignore_memleak,
         cdash_build_name=cdash_build_name,
         cdash_project=cdash_project,
         cdash_build_group=cdash_build_group,

@@ -38,7 +38,7 @@ NETCDF_PATH ?= $(NETCDF_FORTRAN_PATH)
 # Default for the netcdf library and include directories
 LIB_NETCDF := $(NETCDF_PATH)/lib
 INC_NETCDF := $(NETCDF_PATH)/include
-LDFLAGS = -L$(LIB_NETCDF) -lnetcdff -Wl,-rpath $(LIB_NETCDF)
+LDFLAGS = -L$(LIB_NETCDF) -lnetcdff -Wl,-rpath=$(LIB_NETCDF)
 
 # Determine platform
 UNAMES := $(shell uname -s)

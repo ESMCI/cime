@@ -29,6 +29,7 @@ from CIME.locked_files import LOCKED_DIR, lock_file, is_locked
 import CIME.build as build
 
 import glob, gzip, time, traceback, os
+from contextlib import ExitStack
 
 logger = logging.getLogger(__name__)
 
@@ -36,8 +37,55 @@ logger = logging.getLogger(__name__)
 INIT_GENERATED_FILES_DIRNAME = "init_generated_files"
 
 
+def fix_single_exe_case(case):
+    """Fixes cases created with --single-exe.
+
+    When tests are created using --single-exe, the test_scheduler will set
+    `BUILD_COMPLETE` to True, but some tests require calls to `case.case_setup`
+    which can resets `BUILD_COMPLETE` to false. This function will check if a
+    case was created with `--single-exe` and ensure `BUILD_COMPLETE` is True.
+
+    Returns:
+        True when case required modification otherwise False.
+    """
+    if is_single_exe_case(case):
+        with ExitStack() as stack:
+            # enter context if case is still read-only, entering the context
+            # multiple times can cause side effects for later calls to
+            # `set_value` when it's assumed the cause is writeable.
+            if case._read_only_mode:
+                stack.enter_context(case)
+
+            case.set_value("BUILD_COMPLETE", True)
+
+            return True
+
+    return False
+
+
+def is_single_exe_case(case):
+    """Determines if the case was created with the --single-exe option.
+
+    If `CASEROOT` is not part of `EXEROOT` and the `TEST` variable is True,
+    then its safe to assume the case was created with `./create_test`
+    and the `--single-exe` option.
+
+    Returns:
+        True when the case was created with `--single-exe` otherwise false.
+    """
+    caseroot = case.get_value("CASEROOT")
+
+    exeroot = case.get_value("EXEROOT")
+
+    test = case.get_value("TEST")
+
+    return caseroot not in exeroot and test
+
+
 class SystemTestsCommon(object):
-    def __init__(self, case, expected=None):
+    def __init__(
+        self, case, expected=None, **kwargs
+    ):  # pylint: disable=unused-argument
         """
         initialize a CIME system test object, if the locked env_run.orig.xml
         does not exist copy the current env_run.xml file.  If it does exist restore values
@@ -59,6 +107,7 @@ class SystemTestsCommon(object):
         self._ninja = False
         self._dry_run = False
         self._user_separate_builds = False
+        self._expected_num_cmp = None
 
     def _init_environment(self, caseroot):
         """
@@ -96,6 +145,7 @@ class SystemTestsCommon(object):
             )
             self._case.set_initial_test_values()
             self._case.case_setup(reset=True, test_mode=True)
+            fix_single_exe_case(self._case)
 
     def build(
         self,
@@ -439,7 +489,9 @@ class SystemTestsCommon(object):
         return allgood == 0
 
     def _component_compare_copy(self, suffix):
-        comments = copy_histfiles(self._case, suffix)
+        comments, num_copied = copy_histfiles(self._case, suffix)
+        self._expected_num_cmp = num_copied
+
         append_testlog(comments, self._orig_caseroot)
 
     def _log_cprnc_output_tail(self, filename_pattern, prepend=None):
@@ -472,11 +524,25 @@ class SystemTestsCommon(object):
             diagnostic fields that are missing from the other case), treat the two cases
             as identical.
         """
-        success, comments = self._do_compare_test(
+        success, comments, num_compared = self._do_compare_test(
             suffix1, suffix2, ignore_fieldlist_diffs=ignore_fieldlist_diffs
         )
         if success_change:
             success = not success
+
+        if (
+            self._expected_num_cmp is not None
+            and num_compared is not None
+            and self._expected_num_cmp != num_compared
+        ):
+            comments = comments.replace("PASS", "")
+            comments += """\nWARNING
+Expected to compare {} hist files, but only compared {}. It's possible
+that the hist_file_extension entry in config_archive.xml is not correct
+for some of your components.
+""".format(
+                self._expected_num_cmp, num_compared
+            )
 
         append_testlog(comments, self._orig_caseroot)
 
@@ -817,8 +883,8 @@ class FakeTest(SystemTestsCommon):
     in utils.py will work with these classes.
     """
 
-    def __init__(self, case, expected=None):
-        super(FakeTest, self).__init__(case, expected=expected)
+    def __init__(self, case, expected=None, **kwargs):
+        super(FakeTest, self).__init__(case, expected=expected, **kwargs)
         self._script = None
         self._requires_exe = False
         self._case._non_local = True
@@ -1036,8 +1102,8 @@ class TESTBUILDFAIL(TESTRUNPASS):
 
 
 class TESTBUILDFAILEXC(FakeTest):
-    def __init__(self, case):
-        FakeTest.__init__(self, case)
+    def __init__(self, case, **kwargs):
+        FakeTest.__init__(self, case, **kwargs)
         raise RuntimeError("Exception from init")
 
 

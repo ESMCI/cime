@@ -7,12 +7,9 @@ import shutil
 import sys
 
 from CIME import utils
-from CIME.config import Config
 from CIME.tests import base
 from CIME.case.case import Case
 from CIME.build import CmakeTmpBuildDir
-
-config = Config.instance()
 
 
 class TestCreateNewcase(base.BaseTestCase):
@@ -37,7 +34,7 @@ class TestCreateNewcase(base.BaseTestCase):
             testdir,
             cls._testroot,
         )
-        if config.allow_unsupported:
+        if self._config.allow_unsupported:
             args += " --run-unsupported"
         if self.TEST_COMPILER is not None:
             args = args + " --compiler %s" % self.TEST_COMPILER
@@ -71,11 +68,51 @@ class TestCreateNewcase(base.BaseTestCase):
         self.run_cmd_assert_result("./case.build", from_dir=testdir)
         with Case(testdir, read_only=False) as case:
             case.set_value("CHARGE_ACCOUNT", "fred")
+            # to be used in next test
+            batch_system = case.get_value("BATCH_SYSTEM")
+
+        # on systems (like github workflow) that do not have batch, set this for the next test
+        if batch_system == "none":
+            self.run_cmd_assert_result(
+                './xmlchange --subgroup case.run BATCH_COMMAND_FLAGS="-q \$JOB_QUEUE"',
+                from_dir=testdir,
+            )
 
         # this should not fail with a locked file issue
         self.run_cmd_assert_result("./case.build", from_dir=testdir)
 
         self.run_cmd_assert_result("./case.st_archive --test-all", from_dir=testdir)
+
+        with Case(testdir, read_only=False) as case:
+            batch_command = case.get_value("BATCH_COMMAND_FLAGS", subgroup="case.run")
+
+        self.run_cmd_assert_result(
+            './xmlchange --append --subgroup case.run BATCH_COMMAND_FLAGS="-l trythis"',
+            from_dir=testdir,
+        )
+        # Test that changes to BATCH_COMMAND_FLAGS work
+        with Case(testdir, read_only=False) as case:
+            new_batch_command = case.get_value(
+                "BATCH_COMMAND_FLAGS", subgroup="case.run"
+            )
+
+        self.assertTrue(
+            new_batch_command == batch_command + " -l trythis",
+            msg=f"Failed to correctly append BATCH_COMMAND_FLAGS {new_batch_command} {batch_command}#",
+        )
+
+        self.run_cmd_assert_result(
+            "./xmlchange JOB_QUEUE=fred --subgroup case.run --force", from_dir=testdir
+        )
+
+        with Case(testdir, read_only=False) as case:
+            new_batch_command = case.get_value(
+                "BATCH_COMMAND_FLAGS", subgroup="case.run"
+            )
+            self.assertTrue(
+                "fred" in new_batch_command,
+                msg="Failed to update JOB_QUEUE in BATCH_COMMAND_FLAGS",
+            )
 
         # Trying to set values outside of context manager should fail
         case = Case(testdir, read_only=False)
@@ -151,7 +188,7 @@ class TestCreateNewcase(base.BaseTestCase):
             " --case %s --compset X --user-mods-dir %s --output-root %s --handle-preexisting-dirs=r"
             % (testdir, user_mods_dir, cls._testroot)
         )
-        if config.allow_unsupported:
+        if self._config.allow_unsupported:
             args += " --run-unsupported"
         if self.TEST_COMPILER is not None:
             args = args + " --compiler %s" % self.TEST_COMPILER
@@ -325,7 +362,7 @@ class TestCreateNewcase(base.BaseTestCase):
 
         cls._testdirs.append(testdir)
 
-        if config.test_mode == "cesm":
+        if self._config.test_mode == "cesm":
             if utils.get_cime_default_driver() == "nuopc":
                 pesfile = os.path.join(
                     utils.get_src_root(),
@@ -352,7 +389,7 @@ class TestCreateNewcase(base.BaseTestCase):
             "--case %s --compset 2000_SATM_XLND_SICE_SOCN_XROF_XGLC_SWAV  --pesfile %s --res f19_g16 --output-root %s --handle-preexisting-dirs=r"
             % (testdir, pesfile, cls._testroot)
         )
-        if config.allow_unsupported:
+        if self._config.allow_unsupported:
             args += " --run-unsupported"
         if self.TEST_COMPILER is not None:
             args += " --compiler %s" % self.TEST_COMPILER
@@ -385,7 +422,7 @@ class TestCreateNewcase(base.BaseTestCase):
             "--case %s --compset 2000_SATM_XLND_SICE_SOCN_XROF_XGLC_SWAV --pesfile %s --res f19_g16 --output-root %s --handle-preexisting-dirs=r"
             % (testdir, pesfile, cls._testroot)
         )
-        if config.allow_unsupported:
+        if self._config.allow_unsupported:
             args += " --run-unsupported"
         if self.TEST_COMPILER is not None:
             args += " --compiler %s" % self.TEST_COMPILER
@@ -422,7 +459,7 @@ class TestCreateNewcase(base.BaseTestCase):
             " --case CreateNewcaseTest --script-root %s --compset X --output-root %s --handle-preexisting-dirs u"
             % (testdir, cls._testroot)
         )
-        if config.allow_unsupported:
+        if self._config.allow_unsupported:
             args += " --run-unsupported"
         if self.TEST_COMPILER is not None:
             args += " --compiler %s" % self.TEST_COMPILER
@@ -544,7 +581,7 @@ class TestCreateNewcase(base.BaseTestCase):
             args += " --res f19_g17 "
         else:
             args += " --res f19_g16 "
-        if config.allow_unsupported:
+        if self._config.allow_unsupported:
             args += " --run-unsupported"
         if self.TEST_COMPILER is not None:
             args += " --compiler %s" % self.TEST_COMPILER
@@ -585,7 +622,7 @@ class TestCreateNewcase(base.BaseTestCase):
             args += " --res f19_g17 "
         else:
             args += " --res f19_g16 "
-        if config.allow_unsupported:
+        if self._config.allow_unsupported:
             args += " --run-unsupported"
         if self.TEST_COMPILER is not None:
             args += " --compiler %s" % self.TEST_COMPILER
@@ -701,7 +738,7 @@ set(NETCDF_PATH /my/netcdf/path)
                 extra_machines_dir=extra_machines_dir,
             )
         )
-        if config.allow_unsupported:
+        if self._config.allow_unsupported:
             args += " --run-unsupported"
 
         if utils.get_cime_default_driver() == "nuopc":
@@ -736,14 +773,20 @@ set(NETCDF_PATH /my/netcdf/path)
         cls = self.__class__
 
         # TODO refactor
-        if config.test_mode == "cesm":
+        if self._config.test_mode == "cesm":
             alternative_driver = ("nuopc",)
         else:
             alternative_driver = ("moab",)
 
         for driver in alternative_driver:
-            if not os.path.exists(
+            if driver == "moab" and not os.path.exists(
                 os.path.join(utils.get_cime_root(), "src", "drivers", driver)
+            ):
+                self.skipTest(
+                    "Skipping driver test for {}, driver not found".format(driver)
+                )
+            if driver == "nuopc" and not os.path.exists(
+                os.path.join(utils.get_src_root(), "components", "cmeps")
             ):
                 self.skipTest(
                     "Skipping driver test for {}, driver not found".format(driver)
@@ -755,7 +798,7 @@ set(NETCDF_PATH /my/netcdf/path)
             args = " --driver {} --case {} --compset X --res f19_g16 --output-root {} --handle-preexisting-dirs=r".format(
                 driver, testdir, cls._testroot
             )
-            if config.allow_unsupported:
+            if self._config.allow_unsupported:
                 args += " --run-unsupported"
             if self.TEST_COMPILER is not None:
                 args = args + " --compiler %s" % self.TEST_COMPILER
@@ -790,7 +833,7 @@ set(NETCDF_PATH /my/netcdf/path)
             " --case %s --compset InvalidCompsetName --output-root %s --handle-preexisting-dirs=r "
             % (testdir, cls._testroot)
         )
-        if config.allow_unsupported:
+        if self._config.allow_unsupported:
             args += " --run-unsupported"
         if self.TEST_COMPILER is not None:
             args = args + " --compiler %s" % self.TEST_COMPILER

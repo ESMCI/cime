@@ -38,6 +38,7 @@ class EnvBatch(EnvBase):
         super(EnvBatch, self).__init__(
             case_root, infile, schema=schema, read_only=read_only
         )
+        self._batchtype = self.get_batch_system_type()
 
     # pylint: disable=arguments-differ
     def set_value(self, item, value, subgroup=None, ignore_type=False):
@@ -76,7 +77,6 @@ class EnvBatch(EnvBase):
         """
         Must default subgroup to something in order to provide single return value
         """
-
         value = None
         node = self.get_optional_child(item, attribute)
         if item in ("BATCH_SYSTEM", "PROJECT_REQUIRED"):
@@ -555,7 +555,7 @@ class EnvBatch(EnvBase):
 
         return "\n".join(result)
 
-    def get_submit_args(self, case, job):
+    def get_submit_args(self, case, job, resolve=True):
         """
         return a list of touples (flag, name)
         """
@@ -563,7 +563,7 @@ class EnvBatch(EnvBase):
 
         submit_arg_nodes = self._get_arg_nodes(case, bs_nodes)
 
-        submitargs = self._process_args(case, submit_arg_nodes, job)
+        submitargs = self._process_args(case, submit_arg_nodes, job, resolve=resolve)
 
         return submitargs
 
@@ -597,10 +597,12 @@ class EnvBatch(EnvBase):
 
         return submit_arg_nodes
 
-    def _process_args(self, case, submit_arg_nodes, job):
+    def _process_args(self, case, submit_arg_nodes, job, resolve=True):
         submitargs = " "
 
         for arg in submit_arg_nodes:
+            name = None
+            flag = None
             try:
                 flag, name = self._get_argument(case, arg)
             except ValueError:
@@ -614,12 +616,25 @@ class EnvBatch(EnvBase):
                     continue
 
             if name is None:
-                submitargs += " {}".format(flag)
+                if " " in flag:
+                    flag, name = flag.split()
+                if name:
+                    if resolve and "$" in name:
+                        rflag = self._resolve_argument(case, flag, name, job)
+                        if len(rflag) > len(flag):
+                            submitargs += " {}".format(rflag)
+                    else:
+                        submitargs += " {} {}".format(flag, name)
+                else:
+                    submitargs += " {}".format(flag)
             else:
-                try:
-                    submitargs += self._resolve_argument(case, flag, name, job)
-                except ValueError:
-                    continue
+                if resolve:
+                    try:
+                        submitargs += self._resolve_argument(case, flag, name, job)
+                    except ValueError:
+                        continue
+                else:
+                    submitargs += " {} {}".format(flag, name)
 
         return submitargs
 
@@ -631,7 +646,6 @@ class EnvBatch(EnvBase):
         # if flag is None then we dealing with new `argument`
         if flag is None:
             flag = self.text(arg)
-
             job_queue_restriction = self.get(arg, "job_queue")
 
             if (
@@ -644,14 +658,24 @@ class EnvBatch(EnvBase):
 
     def _resolve_argument(self, case, flag, name, job):
         submitargs = ""
-
-        if name.startswith("$"):
-            name = name[1:]
+        logger.debug("name is {}".format(name))
+        # if name.startswith("$"):
+        #    name = name[1:]
 
         if "$" in name:
-            # We have a complex expression and must rely on get_resolved_value.
-            # Hopefully, none of the values require subgroup
-            val = case.get_resolved_value(name)
+            parts = name.split("$")
+            logger.debug("parts are {}".format(parts))
+            val = ""
+            for part in parts:
+                if part != "":
+                    logger.debug("part is {}".format(part))
+                    resolved = case.get_value(part, subgroup=job)
+                    if resolved:
+                        val += resolved
+                    else:
+                        val += part
+            logger.debug("val is {}".format(name))
+            val = case.get_resolved_value(val)
         else:
             val = case.get_value(name, subgroup=job)
 
@@ -665,11 +689,9 @@ class EnvBatch(EnvBase):
             else:
                 rval = val
 
-            # We don't want floating-point data
-            try:
+            # We don't want floating-point data (ignore anything else)
+            if str(rval).replace(".", "", 1).isdigit():
                 rval = int(round(float(rval)))
-            except ValueError:
-                pass
 
             # need a correction for tasks per node
             if flag == "-n" and rval <= 0:
@@ -678,7 +700,6 @@ class EnvBatch(EnvBase):
             if flag == "-q" and rval == "batch" and case.get_value("MACH") == "blues":
                 # Special case. Do not provide '-q batch' for blues
                 raise ValueError()
-
             if (
                 flag.rfind("=", len(flag) - 1, len(flag)) >= 0
                 or flag.rfind(":", len(flag) - 1, len(flag)) >= 0
@@ -943,10 +964,7 @@ class EnvBatch(EnvBase):
 
             return
 
-        submitargs = self.get_submit_args(case, job)
-        args_override = self.get_value("BATCH_COMMAND_FLAGS", subgroup=job)
-        if args_override:
-            submitargs = args_override
+        submitargs = case.get_value("BATCH_COMMAND_FLAGS", subgroup=job)
 
         if dep_jobs is not None and len(dep_jobs) > 0:
             logger.debug("dependencies: {}".format(dep_jobs))
@@ -1100,9 +1118,13 @@ class EnvBatch(EnvBase):
 
     def get_job_id(self, output):
         jobid_pattern = self.get_value("jobid_pattern", subgroup=None)
-        expect(
-            jobid_pattern is not None, "Could not find jobid_pattern in env_batch.xml"
-        )
+        if self._batchtype and self._batchtype != "none":
+            expect(
+                jobid_pattern is not None,
+                "Could not find jobid_pattern in env_batch.xml",
+            )
+        else:
+            return output
         search_match = re.search(jobid_pattern, output)
         expect(
             search_match is not None,

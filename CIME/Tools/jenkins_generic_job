@@ -159,6 +159,10 @@ OR
     )
 
     parser.add_argument(
+        "-q", "--queue", help="Force create_test to use a specific queue."
+    )
+
+    parser.add_argument(
         "--check-throughput",
         action="store_true",
         help="Fail if throughput check fails (fail if tests slow down)",
@@ -168,6 +172,12 @@ OR
         "--check-memory",
         action="store_true",
         help="Fail if memory check fails (fail if tests footprint grows)",
+    )
+
+    parser.add_argument(
+        "--ignore-memleak",
+        action="store_true",
+        help="Do not fail if there are memleaks",
     )
 
     parser.add_argument(
@@ -248,8 +258,10 @@ OR
         args.update_success,
         args.check_throughput,
         args.check_memory,
+        args.ignore_memleak,
         args.pes_file,
         args.jenkins_id,
+        args.queue,
     )
 
 
@@ -276,8 +288,10 @@ def _main_func(description):
         update_success,
         check_throughput,
         check_memory,
+        ignore_memleak,
         pes_file,
         jenkins_id,
+        queue,
     ) = parse_command_line(sys.argv, description)
 
     sys.exit(
@@ -302,8 +316,10 @@ def _main_func(description):
             update_success,
             check_throughput,
             check_memory,
+            ignore_memleak,
             pes_file,
             jenkins_id,
+            queue,
         )
         else CIME.utils.TESTS_FAILED_ERR_CODE
     )

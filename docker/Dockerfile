@@ -1,25 +1,31 @@
 ARG MAMBAFORGE_VERSION=4.14.0-0
 FROM condaforge/mambaforge:${MAMBAFORGE_VERSION} AS base
 
-ARG PNETCDF_VERSION=1.12.1
+ARG PNETCDF_VERSION=1.12.3
 ENV PNETCDF_VERSION=${PNETCDF_VERSION}
 
 ARG LIBNETCDF_VERSION=4.8.1
 ENV LIBNETCDF_VERSION=${LIBNETCDF_VERSION}
 
-ARG NETCDF_FORTRAN_VERSION=4.5.4
+ARG NETCDF_FORTRAN_VERSION=4.6.0
 ENV NETCDF_FORTRAN_VERSION=${NETCDF_FORTRAN_VERSION}
 
-ARG ESMF_VERSION=8.2.0
+ARG ESMF_VERSION=8.4.0
 ENV ESMF_VERSION=${ESMF_VERSION}
 
-ARG GCC_VERSION=9.4.*
+ARG GCC_VERSION=10.*
 ENV GCC_VERSION=${GCC_VERSION}
 
 ENV USER=root
 ENV LOGNAME=root
 
 SHELL ["/bin/bash", "-c"]
+
+# First layer as they never change, required for E3SM testing, TODO: fix in unittesting as well
+RUN mkdir -p /cache/cpl/gridmaps/oQU240 /cache/share/domains && \
+    wget -O /cache/cpl/gridmaps/oQU240/map_oQU240_to_ne4np4_aave.160614.nc https://portal.nersc.gov/project/e3sm/inputdata/cpl/gridmaps/oQU240/map_oQU240_to_ne4np4_aave.160614.nc && \
+    wget -O /cache/share/domains/domain.ocn.ne4np4_oQU240.160614.nc https://portal.nersc.gov/project/e3sm/inputdata/share/domains/domain.ocn.ne4np4_oQU240.160614.nc && \
+    wget -O /cache/share/domains/domain.lnd.ne4np4_oQU240.160614.nc https://portal.nersc.gov/project/e3sm/inputdata/share/domains/domain.lnd.ne4np4_oQU240.160614.nc
 
 # Install common packages
 RUN mamba install --yes -c conda-forge \
@@ -33,6 +39,7 @@ RUN mamba install --yes -c conda-forge \
             pytest-cov\
             pyyaml \
             vim \
+            rsync \
             openssh && \
             rm -rf /opt/conda/pkgs/*
 

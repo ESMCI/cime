@@ -6,11 +6,11 @@ from CIME.SystemTests.system_tests_common import SystemTestsCommon
 
 
 class ICP(SystemTestsCommon):
-    def __init__(self, case):
+    def __init__(self, case, **kwargs):
         """
         initialize an object interface to file env_test.xml in the case directory
         """
-        SystemTestsCommon.__init__(self, case)
+        SystemTestsCommon.__init__(self, case, **kwargs)
 
     def build_phase(self, sharedlib_only=False, model_only=False):
         self._case.set_value("CICE_AUTO_DECOMP", "false")

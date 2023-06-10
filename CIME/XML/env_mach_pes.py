@@ -84,8 +84,9 @@ class EnvMachPes(EnvBase):
                         comp, ninst, ninst_max
                     ),
                 )
-        if "NTASKS" in vid or "NTHRDS" in vid:
-            expect(value != 0, "Cannot set NTASKS or NTHRDS to 0")
+
+        if ("NTASKS" in vid or "NTHRDS" in vid) and vid != "PIO_ASYNCIO_NTASKS":
+            expect(value != 0, f"Cannot set NTASKS or NTHRDS to 0 {vid}")
 
         return EnvBase.set_value(
             self, vid, value, subgroup=subgroup, ignore_type=ignore_type
@@ -104,18 +105,41 @@ class EnvMachPes(EnvBase):
                 max_threads = threads
         return max_threads
 
-    def get_total_tasks(self, comp_classes):
+    def get_total_tasks(self, comp_classes, async_interface=False):
         total_tasks = 0
         maxinst = self.get_value("NINST")
+        asyncio_ntasks = 0
+        asyncio_rootpe = 0
+        asyncio_stride = 0
+        asyncio_tasks = []
         if maxinst:
             comp_interface = "nuopc"
+            if async_interface:
+                asyncio_ntasks = self.get_value("PIO_ASYNCIO_NTASKS")
+                asyncio_rootpe = self.get_value("PIO_ASYNCIO_ROOTPE")
+                asyncio_stride = self.get_value("PIO_ASYNCIO_STRIDE")
+            logger.debug(
+                "asyncio ntasks {} rootpe {} stride {}".format(
+                    asyncio_ntasks, asyncio_rootpe, asyncio_stride
+                )
+            )
+            if asyncio_ntasks and asyncio_stride:
+                for i in range(
+                    asyncio_rootpe,
+                    asyncio_rootpe + (asyncio_ntasks * asyncio_stride),
+                    asyncio_stride,
+                ):
+                    asyncio_tasks.append(i)
         else:
             comp_interface = "unknown"
             maxinst = 1
+        tt = 0
+        maxrootpe = 0
         for comp in comp_classes:
             ntasks = self.get_value("NTASKS", attribute={"compclass": comp})
             rootpe = self.get_value("ROOTPE", attribute={"compclass": comp})
             pstrid = self.get_value("PSTRID", attribute={"compclass": comp})
+
             esmf_aware_threading = self.get_value("ESMF_AWARE_THREADING")
             # mct is unaware of threads and they should not be counted here
             # if esmf is thread aware they are included
@@ -128,9 +152,13 @@ class EnvMachPes(EnvBase):
                 ninst = self.get_value("NINST", attribute={"compclass": comp})
                 maxinst = max(maxinst, ninst)
             tt = rootpe + nthrds * ((ntasks - 1) * pstrid + 1)
+            maxrootpe = max(maxrootpe, rootpe)
             total_tasks = max(tt, total_tasks)
+        if asyncio_tasks:
+            total_tasks = total_tasks + len(asyncio_tasks)
         if self.get_value("MULTI_DRIVER"):
             total_tasks *= maxinst
+        logger.debug("asyncio_tasks {}".format(asyncio_tasks))
         return total_tasks
 
     def get_tasks_per_node(self, total_tasks, max_thread_count):
