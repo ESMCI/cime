@@ -509,7 +509,9 @@ def _build_model_cmake(
                     cime_model, bldlog
                 )
             )
-            logger.info("   Calling cmake directly, see top of log file for specific call")
+            logger.info(
+                "   Calling cmake directly, see top of log file for specific call"
+            )
             with open(bldlog, "w") as fd:
                 fd.write("Configuring with cmake cmd:\n{}\n\n".format(cmake_cmd))
 
