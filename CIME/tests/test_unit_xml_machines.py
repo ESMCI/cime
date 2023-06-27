@@ -66,7 +66,7 @@ MACHINE_TEST_XML = """<config_machines version="2.0">
         <command name="load">ubuntu-netcdf-hdf5parallel/4.8.1.3</command>
         <command name="load">ubuntu-parallel-netcdf/1.12.2.3</command>
       </modules>
-    </module_system>    
+    </module_system>
 
     <RUNDIR>$CIME_OUTPUT_ROOT/$CASE/run</RUNDIR>
     <EXEROOT>$CIME_OUTPUT_ROOT/$CASE/bld</EXEROOT>
