@@ -52,7 +52,7 @@ def _iter_model_file_substrs(case):
         yield model
 
 
-def copy_histfiles(case, suffix):
+def copy_histfiles(case, suffix, match_suffix=None):
     """Copy the most recent batch of hist files in a case, adding the given suffix.
 
     This can allow you to temporarily "save" these files so they won't be blown
@@ -73,7 +73,7 @@ def copy_histfiles(case, suffix):
     for model in _iter_model_file_substrs(case):
         comments += "  Copying hist files for model '{}'\n".format(model)
         test_hists = archive.get_latest_hist_files(
-            casename, model, rundir, ref_case=ref_case
+            casename, model, rundir, suffix=match_suffix, ref_case=ref_case
         )
         num_copied += len(test_hists)
         for test_hist in test_hists:
