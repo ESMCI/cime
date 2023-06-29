@@ -22,6 +22,18 @@ EXACT_TEST_CONFIG = """<components version="2.0">
   </comp_archive_spec>
 </components>"""
 
+EXCLUDE_TEST_CONFIG = """<components version="2.0">
+  <comp_archive_spec compname="eam" compclass="atm">
+    <hist_file_extension>unique\.name\.unique.nc</hist_file_extension>
+  </comp_archive_spec>
+  <comp_archive_spec compname="cpl" compclass="drv" exclude_testing="True">
+    <hist_file_extension>unique\.name\.unique.nc</hist_file_extension>
+  </comp_archive_spec>
+  <comp_archive_spec compname="mpasso" compclass="drv" exclude_testing="False">
+    <hist_file_extension>unique\.name\.unique.nc</hist_file_extension>
+  </comp_archive_spec>
+</components>"""
+
 
 class TestXMLArchiveBase(unittest.TestCase):
     @contextmanager
@@ -31,6 +43,23 @@ class TestXMLArchiveBase(unittest.TestCase):
                 Path(temp_dir, x).touch()
 
             yield temp_dir
+
+    def test_exclude_testing(self):
+        archiver = ArchiveBase()
+
+        archiver.read_fd(io.StringIO(EXCLUDE_TEST_CONFIG))
+
+        # no attribute
+        assert not archiver.exclude_testing("eam")
+
+        # not in config
+        assert not archiver.exclude_testing("mpassi")
+
+        # set false
+        assert not archiver.exclude_testing("mpasso")
+
+        # set true
+        assert archiver.exclude_testing("cpl")
 
     def test_match_files(self):
         archiver = ArchiveBase()

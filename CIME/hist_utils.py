@@ -71,6 +71,8 @@ def copy_histfiles(case, suffix, match_suffix=None):
     comments = "Copying hist files to suffix '{}'\n".format(suffix)
     num_copied = 0
     for model in _iter_model_file_substrs(case):
+        if case.get_value("TEST") and archive.exclude_testing(model):
+            continue
         comments += "  Copying hist files for model '{}'\n".format(model)
         test_hists = archive.get_latest_hist_files(
             casename, model, rundir, suffix=match_suffix, ref_case=ref_case

@@ -3,6 +3,7 @@ Base class for archive files.  This class inherits from generic_xml.py
 """
 from CIME.XML.standard_module_setup import *
 from CIME.XML.generic_xml import GenericXML
+from CIME.utils import convert_to_type
 
 logger = logging.getLogger(__name__)
 
@@ -15,6 +16,25 @@ class ArchiveBase(GenericXML):
         return self.scan_optional_child(
             "comp_archive_spec", attributes={"compname": compname}
         )
+
+    def exclude_testing(self, compname):
+        """
+        Checks if component should be excluded from testing.
+        """
+
+        entry = self.get_entry(compname)
+
+        if entry is None:
+            return False
+
+        attrs = self.attrib(entry)
+
+        value = attrs.get("exclude_testing", None)
+
+        if not value:
+            return False
+
+        return convert_to_type(value, "logical")
 
     def _get_file_node_text(self, attnames, archive_entry):
         """
