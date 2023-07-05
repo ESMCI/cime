@@ -9,6 +9,33 @@ logger = logging.getLogger(__name__)
 
 
 class ArchiveBase(GenericXML):
+    def exclude_testing(self, compname):
+        """
+        Checks if component should be excluded from testing.
+        """
+        value = self._get_attribute(compname, "exclude_testing")
+
+        if value is None:
+            return False
+
+        return convert_to_type(value, "logical")
+
+    def _get_attribute(self, compname, attr_name):
+        attrib = self.get_entry_attributes(compname)
+
+        if attrib is None:
+            return None
+
+        return attrib.get(attr_name, None)
+
+    def get_entry_attributes(self, compname):
+        entry = self.get_entry(compname)
+
+        if entry is None:
+            return None
+
+        return self.attrib(entry)
+
     def get_entry(self, compname):
         """
         Returns an xml node corresponding to compname in comp_archive_spec
@@ -16,25 +43,6 @@ class ArchiveBase(GenericXML):
         return self.scan_optional_child(
             "comp_archive_spec", attributes={"compname": compname}
         )
-
-    def exclude_testing(self, compname):
-        """
-        Checks if component should be excluded from testing.
-        """
-
-        entry = self.get_entry(compname)
-
-        if entry is None:
-            return False
-
-        attrs = self.attrib(entry)
-
-        value = attrs.get("exclude_testing", None)
-
-        if not value:
-            return False
-
-        return convert_to_type(value, "logical")
 
     def _get_file_node_text(self, attnames, archive_entry):
         """
