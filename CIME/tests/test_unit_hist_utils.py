@@ -13,17 +13,17 @@ class TestHistUtils(unittest.TestCase):
 
         case.get_env.return_value.get_latest_hist_files.side_effect = [
             ["/tmp/testing.cpl.hi.nc"],
-            ["/tmp/testing.atm.hi.nc"]
+            ["/tmp/testing.atm.hi.nc"],
         ]
 
         case.get_env.return_value.exclude_testing.side_effect = [True, False]
 
         case.get_value.side_effect = [
-            "/tmp",     # RUNDIR
-            None,       # RUN_REFCASE
+            "/tmp",  # RUNDIR
+            None,  # RUN_REFCASE
             "testing",  # CASE
-            True,       # TEST
-            True        # TEST
+            True,  # TEST
+            True,  # TEST
         ]
 
         case.get_compset_components.return_value = ["atm"]
@@ -48,10 +48,10 @@ class TestHistUtils(unittest.TestCase):
         case.get_env.return_value.exclude_testing.return_value = False
 
         case.get_value.side_effect = [
-            "/tmp",     # RUNDIR
-            None,       # RUN_REFCASE
+            "/tmp",  # RUNDIR
+            None,  # RUN_REFCASE
             "testing",  # CASE
-            True,       # TEST
+            True,  # TEST
         ]
 
         case.get_compset_components.return_value = []
