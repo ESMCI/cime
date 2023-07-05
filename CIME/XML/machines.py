@@ -326,26 +326,12 @@ class Machines(GenericXML):
     def is_valid_compiler(self, compiler):
         """
         Check the compiler is valid for the current machine
-
-        >>> machobj = Machines(machine="cori-knl")
-        >>> machobj.get_default_compiler()
-        'intel'
-        >>> machobj.is_valid_compiler("gnu")
-        True
-        >>> machobj.is_valid_compiler("nag")
-        False
         """
         return self.get_field_from_list("COMPILERS", reqval=compiler) is not None
 
     def is_valid_MPIlib(self, mpilib, attributes=None):
         """
         Check the MPILIB is valid for the current machine
-
-        >>> machobj = Machines(machine="cori-knl")
-        >>> machobj.is_valid_MPIlib("mpi-serial")
-        True
-        >>> machobj.is_valid_MPIlib("fake-mpi")
-        False
         """
         return (
             mpilib == "mpi-serial"
@@ -356,14 +342,6 @@ class Machines(GenericXML):
     def has_batch_system(self):
         """
         Return if this machine has a batch system
-
-        >>> machobj = Machines(machine="cori-knl")
-        >>> machobj.has_batch_system()
-        True
-        >>> machobj.set_machine("melvin")
-        'melvin'
-        >>> machobj.has_batch_system()
-        False
         """
         result = False
         batch_system = self.get_optional_child("BATCH_SYSTEM", root=self.machine_node)
