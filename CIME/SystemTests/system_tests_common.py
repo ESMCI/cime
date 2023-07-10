@@ -489,7 +489,8 @@ class SystemTestsCommon(object):
         return allgood == 0
 
     def _component_compare_copy(self, suffix):
-        comments, num_copied = copy_histfiles(self._case, suffix)
+        # Only match .nc files
+        comments, num_copied = copy_histfiles(self._case, suffix, match_suffix="nc")
         self._expected_num_cmp = num_copied
 
         append_testlog(comments, self._orig_caseroot)
