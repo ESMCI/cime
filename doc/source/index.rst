@@ -11,6 +11,8 @@ The Common Infrastructure for Modeling the Earth (CIME - pronounced
 Earth system models, data and stub model components, a driver and associated tools
 and libraries.
 
+Test
+
 Table of contents
 -----------------
 .. toctree::

@@ -4,10 +4,16 @@ on:
   push:
     branches:
       - master
+    paths:
+      - 'doc/**'
 
   pull_request:
     branches:
       - master
+    paths:
+      - 'doc/**'
+
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -20,9 +26,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          fetch-depth: 0
-          lfs: true
-      - uses: tj-actions/changed-files@v32
+          fetch-depth: 2
+      - uses: tj-actions/changed-files@v37
         id: changed-check
         with:
           files: doc/**
@@ -31,9 +36,7 @@ jobs:
       contents: write  #  for peaceiris/actions-gh-pages to push
       pull-requests: write  #  to comment on pull requests
     needs: check-changes
-    if: |
-      needs.check-changes.outputs.any_changed == 'true' &&
-      github.event.pull_request.head.repo.full_name == github.repository
+    if: needs.check-changes.outputs.any_changed == 'true'
     name: Build and deploy documentation
     runs-on: ubuntu-latest
     steps:
@@ -61,7 +64,9 @@ jobs:
         run: |
           make BUILDDIR=${PWD}/_build -C doc/ html
       - name: Push PR preview
-        if: ${{ github.event_name == 'pull_request' }}
+        if: |
+          github.event_name == 'pull_request' &&
+          github.event.pull_request.head.repo.full_name == github.repository
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{secrets.GITHUB_TOKEN}}
