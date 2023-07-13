@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Glossary &mdash; CIME master documentation</title>
@@ -12,10 +12,9 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/sphinx_highlight.js"></script>
         <script src="../_static/pop_ver.js"></script>
@@ -31,14 +30,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../index.html" class="icon icon-home"> CIME
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            CIME
           </a>
               <div class="version">
                 master
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -80,8 +83,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Glossary</li>
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Glossary</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/glossary/index.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -97,7 +100,7 @@
 </div>
 <section id="general">
 <h2>General<a class="headerlink" href="#general" title="Permalink to this heading"></a></h2>
-<dl class="glossary simple">
+<dl class="simple glossary">
 <dt id="term-active-or-prognostic-component">active or prognostic component<a class="headerlink" href="#term-active-or-prognostic-component" title="Permalink to this term"></a></dt><dd><p>Solves a complex set of equations to describe a sub-model’s behavior.</p>
 </dd>
 <dt id="term-case-CASE">case (CASE)<a class="headerlink" href="#term-case-CASE" title="Permalink to this term"></a></dt><dd><p>An instance of a global climate model simulation. A case is defined by a component set, a model grid,
@@ -123,7 +126,7 @@ any data.</p>
 </section>
 <section id="coupling">
 <h2>Coupling<a class="headerlink" href="#coupling" title="Permalink to this heading"></a></h2>
-<dl class="glossary simple">
+<dl class="simple glossary">
 <dt id="term-coupler">coupler<a class="headerlink" href="#term-coupler" title="Permalink to this term"></a></dt><dd><p>A component of the CIME infrastructure that is run from within the driver. It can be run on a
 subset of the total processors, and carries out mapping (interpolation), merging, diagnostics, and other
 calculations.</p>
@@ -143,7 +146,7 @@ level instructions, and, executes the driver time loop.</p>
 </section>
 <section id="files-and-directories">
 <h2>Files and Directories<a class="headerlink" href="#files-and-directories" title="Permalink to this heading"></a></h2>
-<dl class="glossary simple">
+<dl class="simple glossary">
 <dt id="term-archive-directory-DOUT_S_ROOT">archive directory (DOUT_S_ROOT)<a class="headerlink" href="#term-archive-directory-DOUT_S_ROOT" title="Permalink to this term"></a></dt><dd><p>If short term archiving is activated (DOUT_S = TRUE), the restart files and run output files
 are copied to archive directory location (DOUT_S_ROOT).</p>
 </dd>
@@ -177,7 +180,7 @@ in CASEROOT and can be queried and modifed using the xmlquery and xmlchange tool
 </section>
 <section id="development">
 <h2>Development<a class="headerlink" href="#development" title="Permalink to this heading"></a></h2>
-<dl class="glossary simple">
+<dl class="simple glossary">
 <dt id="term-sandbox-SRCROOT">sandbox (SRCROOT)<a class="headerlink" href="#term-sandbox-SRCROOT" title="Permalink to this term"></a></dt><dd><p>A checked out tag on a local or a remote machine. may be edited to create a new tag. or, may
 just be used for running cases.</p>
 </dd>
@@ -193,7 +196,7 @@ to the source code of a component are introduced.</p>
 </section>
 <section id="testing">
 <h2>Testing<a class="headerlink" href="#testing" title="Permalink to this heading"></a></h2>
-<dl class="glossary simple">
+<dl class="simple glossary">
 <dt id="term-baseline">baseline<a class="headerlink" href="#term-baseline" title="Permalink to this term"></a></dt><dd><p>A set of test cases that is run using a tag which is complete, tested, and has no modifications
 in the source code. Used to assess the performance/accuracy of a case that is run using a sandbox.</p>
 </dd>
@@ -210,7 +213,7 @@ into the code base.</p>
 </section>
 <section id="miscellaneous">
 <h2>Miscellaneous<a class="headerlink" href="#miscellaneous" title="Permalink to this heading"></a></h2>
-<dl class="glossary simple">
+<dl class="simple glossary">
 <dt id="term-ESP">ESP<a class="headerlink" href="#term-ESP" title="Permalink to this term"></a></dt><dd><p>External System Processing: handles data assimilation</p>
 </dd>
 </dl>

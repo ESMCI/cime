@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CIME.XML package &mdash; CIME master documentation</title>
@@ -12,10 +12,9 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/sphinx_highlight.js"></script>
         <script src="../_static/pop_ver.js"></script>
@@ -31,14 +30,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../index.html" class="icon icon-home"> CIME
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            CIME
           </a>
               <div class="version">
                 master
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -120,10 +123,10 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="modules.html">CIME</a> &raquo;</li>
-          <li><a href="CIME.html">CIME package</a> &raquo;</li>
-      <li>CIME.XML package</li>
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">CIME</a></li>
+          <li class="breadcrumb-item"><a href="CIME.html">CIME package</a></li>
+      <li class="breadcrumb-item active">CIME.XML package</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/CIME_api/CIME.XML.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -167,6 +170,12 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">CIME.XML.archive_base.</span></span><span class="sig-name descname"><span class="pre">ArchiveBase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">infile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root_name_override</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root_attrib_override</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">read_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/archive_base.html#ArchiveBase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.XML.archive_base.ArchiveBase" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#CIME.XML.generic_xml.GenericXML" title="CIME.XML.generic_xml.GenericXML"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericXML</span></code></a></p>
 <dl class="py method">
+<dt class="sig sig-object py" id="CIME.XML.archive_base.ArchiveBase.exclude_testing">
+<span class="sig-name descname"><span class="pre">exclude_testing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">compname</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/archive_base.html#ArchiveBase.exclude_testing"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.XML.archive_base.ArchiveBase.exclude_testing" title="Permalink to this definition"></a></dt>
+<dd><p>Checks if component should be excluded from testing.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="CIME.XML.archive_base.ArchiveBase.get_all_hist_files">
 <span class="sig-name descname"><span class="pre">get_all_hist_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">casename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suffix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_case</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/archive_base.html#ArchiveBase.get_all_hist_files"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.XML.archive_base.ArchiveBase.get_all_hist_files" title="Permalink to this definition"></a></dt>
 <dd><p>gets all history files in directory from_dir with suffix (if provided)
@@ -178,6 +187,11 @@ ignores files with ref_case in the name if ref_case is provided</p>
 <span class="sig-name descname"><span class="pre">get_entry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">compname</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/archive_base.html#ArchiveBase.get_entry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.XML.archive_base.ArchiveBase.get_entry" title="Permalink to this definition"></a></dt>
 <dd><p>Returns an xml node corresponding to compname in comp_archive_spec</p>
 </dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CIME.XML.archive_base.ArchiveBase.get_entry_attributes">
+<span class="sig-name descname"><span class="pre">get_entry_attributes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">compname</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/archive_base.html#ArchiveBase.get_entry_attributes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.XML.archive_base.ArchiveBase.get_entry_attributes" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="CIME.XML.archive_base.ArchiveBase.get_entry_value">
@@ -686,7 +700,7 @@ with the key attribute but you don’t care what its value is.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="CIME.XML.env_batch.EnvBatch.get_submit_args">
-<span class="sig-name descname"><span class="pre">get_submit_args</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">case</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">job</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_batch.html#EnvBatch.get_submit_args"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.XML.env_batch.EnvBatch.get_submit_args" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_submit_args</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">case</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">job</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolve</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_batch.html#EnvBatch.get_submit_args"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.XML.env_batch.EnvBatch.get_submit_args" title="Permalink to this definition"></a></dt>
 <dd><p>return a list of touples (flag, name)</p>
 </dd></dl>
 
@@ -816,7 +830,7 @@ resubmit_immediate indicates that all jobs indicated by the RESUBMIT option shou
 
 <dl class="py method">
 <dt class="sig sig-object py" id="CIME.XML.env_mach_pes.EnvMachPes.get_total_tasks">
-<span class="sig-name descname"><span class="pre">get_total_tasks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">comp_classes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_mach_pes.html#EnvMachPes.get_total_tasks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.XML.env_mach_pes.EnvMachPes.get_total_tasks" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_total_tasks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">comp_classes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">async_interface</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_mach_pes.html#EnvMachPes.get_total_tasks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.XML.env_mach_pes.EnvMachPes.get_total_tasks" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -853,6 +867,16 @@ to be an error. Default False. This is necessary since implementations
 of environment modules are highlty variable and some systems produce
 stderr output even when things are working fine.</p>
 </dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CIME.XML.env_mach_specific.EnvMachSpecific.get_aprun_args">
+<span class="sig-name descname"><span class="pre">get_aprun_args</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">case</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">job</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overrides</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_mach_specific.html#EnvMachSpecific.get_aprun_args"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.XML.env_mach_specific.EnvMachSpecific.get_aprun_args" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CIME.XML.env_mach_specific.EnvMachSpecific.get_aprun_mode">
+<span class="sig-name descname"><span class="pre">get_aprun_mode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attribs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_mach_specific.html#EnvMachSpecific.get_aprun_mode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.XML.env_mach_specific.EnvMachSpecific.get_aprun_mode" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="CIME.XML.env_mach_specific.EnvMachSpecific.get_module_system_cmd_path">
@@ -1580,43 +1604,18 @@ if it is a valid setting for the machine</p>
 <dt class="sig sig-object py" id="CIME.XML.machines.Machines.has_batch_system">
 <span class="sig-name descname"><span class="pre">has_batch_system</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/machines.html#Machines.has_batch_system"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.XML.machines.Machines.has_batch_system" title="Permalink to this definition"></a></dt>
 <dd><p>Return if this machine has a batch system</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">machobj</span> <span class="o">=</span> <span class="n">Machines</span><span class="p">(</span><span class="n">machine</span><span class="o">=</span><span class="s2">&quot;cori-knl&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">machobj</span><span class="o">.</span><span class="n">has_batch_system</span><span class="p">()</span>
-<span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">machobj</span><span class="o">.</span><span class="n">set_machine</span><span class="p">(</span><span class="s2">&quot;melvin&quot;</span><span class="p">)</span>
-<span class="go">&#39;melvin&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">machobj</span><span class="o">.</span><span class="n">has_batch_system</span><span class="p">()</span>
-<span class="go">False</span>
-</pre></div>
-</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="CIME.XML.machines.Machines.is_valid_MPIlib">
 <span class="sig-name descname"><span class="pre">is_valid_MPIlib</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mpilib</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attributes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/machines.html#Machines.is_valid_MPIlib"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.XML.machines.Machines.is_valid_MPIlib" title="Permalink to this definition"></a></dt>
 <dd><p>Check the MPILIB is valid for the current machine</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">machobj</span> <span class="o">=</span> <span class="n">Machines</span><span class="p">(</span><span class="n">machine</span><span class="o">=</span><span class="s2">&quot;cori-knl&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">machobj</span><span class="o">.</span><span class="n">is_valid_MPIlib</span><span class="p">(</span><span class="s2">&quot;mpi-serial&quot;</span><span class="p">)</span>
-<span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">machobj</span><span class="o">.</span><span class="n">is_valid_MPIlib</span><span class="p">(</span><span class="s2">&quot;fake-mpi&quot;</span><span class="p">)</span>
-<span class="go">False</span>
-</pre></div>
-</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="CIME.XML.machines.Machines.is_valid_compiler">
 <span class="sig-name descname"><span class="pre">is_valid_compiler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">compiler</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/machines.html#Machines.is_valid_compiler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.XML.machines.Machines.is_valid_compiler" title="Permalink to this definition"></a></dt>
 <dd><p>Check the compiler is valid for the current machine</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">machobj</span> <span class="o">=</span> <span class="n">Machines</span><span class="p">(</span><span class="n">machine</span><span class="o">=</span><span class="s2">&quot;cori-knl&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">machobj</span><span class="o">.</span><span class="n">get_default_compiler</span><span class="p">()</span>
-<span class="go">&#39;intel&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">machobj</span><span class="o">.</span><span class="n">is_valid_compiler</span><span class="p">(</span><span class="s2">&quot;gnu&quot;</span><span class="p">)</span>
-<span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">machobj</span><span class="o">.</span><span class="n">is_valid_compiler</span><span class="p">(</span><span class="s2">&quot;nag&quot;</span><span class="p">)</span>
-<span class="go">False</span>
-</pre></div>
-</div>
 </dd></dl>
 
 <dl class="py method">
@@ -1976,6 +1975,17 @@ apply to all machines/compilers for this test:</p>
 <p>If skip_infrastructure_tests is True, then this does not write
 information for tests with the attribute
 INFRASTRUCTURE_TEST=”TRUE”.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CIME.XML.tests.Tests.support_single_exe">
+<span class="sig-name descname"><span class="pre">support_single_exe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">case</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/tests.html#Tests.support_single_exe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.XML.tests.Tests.support_single_exe" title="Permalink to this definition"></a></dt>
+<dd><p>Checks if case supports –single-exe.</p>
+<dl class="simple">
+<dt>Raises:</dt><dd><p>Exception: If system test cannot be found.
+Exception: If <cite>case</cite> does not support –single-exe.</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>

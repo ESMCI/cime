@@ -11,10 +11,9 @@
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/doctools.js"></script>
         <script src="../../_static/sphinx_highlight.js"></script>
         <script src="../../_static/pop_ver.js"></script>
@@ -28,14 +27,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../index.html" class="icon icon-home"> CIME
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            CIME
           </a>
               <div class="version">
                 master
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -69,9 +72,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../index.html">Module code</a> &raquo;</li>
-      <li>CIME.simple_compare</li>
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">CIME.simple_compare</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -88,7 +91,7 @@
 <span class="c1">###############################################################################</span>
 <span class="k">def</span> <span class="nf">_normalize_string_value</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">case</span><span class="p">):</span>
     <span class="c1">###############################################################################</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Some of the strings are inherently prone to diffs, like file</span>
 <span class="sd">    paths, etc. This function attempts to normalize that data so that</span>
 <span class="sd">    it will not cause diffs.</span>
@@ -114,7 +117,7 @@
 <span class="c1">###############################################################################</span>
 <span class="k">def</span> <span class="nf">_skip_comments_and_whitespace</span><span class="p">(</span><span class="n">lines</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
     <span class="c1">###############################################################################</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Starting at idx, return next valid idx of lines that contains real data</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">idx</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">):</span>
@@ -136,7 +139,7 @@
 <span class="c1">###############################################################################</span>
 <span class="k">def</span> <span class="nf">_compare_data</span><span class="p">(</span><span class="n">gold_lines</span><span class="p">,</span> <span class="n">comp_lines</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">offset_method</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="c1">###############################################################################</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    &gt;&gt;&gt; teststr = &#39;&#39;&#39;</span>
 <span class="sd">    ... data1</span>
 <span class="sd">    ... data2 data3</span>
@@ -223,7 +226,7 @@
 <span class="c1">###############################################################################</span>
 <div class="viewcode-block" id="compare_files"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.simple_compare.compare_files">[docs]</a><span class="k">def</span> <span class="nf">compare_files</span><span class="p">(</span><span class="n">gold_file</span><span class="p">,</span> <span class="n">compare_file</span><span class="p">,</span> <span class="n">case</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="c1">###############################################################################</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns true if files are the same, comments are returned too:</span>
 <span class="sd">    (success, comments)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -250,7 +253,7 @@
 <span class="c1">###############################################################################</span>
 <div class="viewcode-block" id="compare_runconfigfiles"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.simple_compare.compare_runconfigfiles">[docs]</a><span class="k">def</span> <span class="nf">compare_runconfigfiles</span><span class="p">(</span><span class="n">gold_file</span><span class="p">,</span> <span class="n">compare_file</span><span class="p">,</span> <span class="n">case</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="c1">###############################################################################</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns true if files are the same, comments are returned too:</span>
 <span class="sd">    (success, comments)</span>
 <span class="sd">    &quot;&quot;&quot;</span>

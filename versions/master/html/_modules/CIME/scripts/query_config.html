@@ -11,10 +11,9 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/doctools.js"></script>
         <script src="../../../_static/sphinx_highlight.js"></script>
         <script src="../../../_static/pop_ver.js"></script>
@@ -28,14 +27,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../../index.html" class="icon icon-home"> CIME
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            CIME
           </a>
               <div class="version">
                 master
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -69,9 +72,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../../index.html">Module code</a> &raquo;</li>
-      <li>CIME.scripts.query_config</li>
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">CIME.scripts.query_config</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -112,7 +115,7 @@
 
 
 <div class="viewcode-block" id="query_grids"><a class="viewcode-back" href="../../../CIME_api/CIME.scripts.html#CIME.scripts.query_config.query_grids">[docs]</a><span class="k">def</span> <span class="nf">query_grids</span><span class="p">(</span><span class="n">files</span><span class="p">,</span> <span class="n">long_output</span><span class="p">,</span> <span class="n">xml</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    query all grids.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">config_file</span> <span class="o">=</span> <span class="n">files</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;GRIDS_SPEC_FILE&quot;</span><span class="p">)</span>
@@ -131,7 +134,7 @@
 
 
 <div class="viewcode-block" id="query_machines"><a class="viewcode-back" href="../../../CIME_api/CIME.scripts.html#CIME.scripts.query_config.query_machines">[docs]</a><span class="k">def</span> <span class="nf">query_machines</span><span class="p">(</span><span class="n">files</span><span class="p">,</span> <span class="n">machine_name</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="n">xml</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    query machines. Defaule: all</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">config_file</span> <span class="o">=</span> <span class="n">files</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MACHINES_SPEC_FILE&quot;</span><span class="p">)</span>
@@ -156,7 +159,7 @@
 
 
 <div class="viewcode-block" id="query_compsets"><a class="viewcode-back" href="../../../CIME_api/CIME.scripts.html#CIME.scripts.query_config.query_compsets">[docs]</a><span class="k">def</span> <span class="nf">query_compsets</span><span class="p">(</span><span class="n">files</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">xml</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    query compset definition give a compset name</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Determine valid component values by checking the value attributes for COMPSETS_SPEC_FILE</span>
@@ -189,7 +192,7 @@
 
 
 <div class="viewcode-block" id="print_compset"><a class="viewcode-back" href="../../../CIME_api/CIME.scripts.html#CIME.scripts.query_config.print_compset">[docs]</a><span class="k">def</span> <span class="nf">print_compset</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="n">all_components</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">xml</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    print compsets associated with the component name, but if all_components is true only</span>
 <span class="sd">    print the details if the associated component is available</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -226,7 +229,7 @@
 
 
 <div class="viewcode-block" id="query_all_components"><a class="viewcode-back" href="../../../CIME_api/CIME.scripts.html#CIME.scripts.query_config.query_all_components">[docs]</a><span class="k">def</span> <span class="nf">query_all_components</span><span class="p">(</span><span class="n">files</span><span class="p">,</span> <span class="n">xml</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    query all components</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">components</span> <span class="o">=</span> <span class="n">get_components</span><span class="p">(</span><span class="n">files</span><span class="p">)</span>
@@ -241,7 +244,7 @@
 
 
 <div class="viewcode-block" id="query_component"><a class="viewcode-back" href="../../../CIME_api/CIME.scripts.html#CIME.scripts.query_config.query_component">[docs]</a><span class="k">def</span> <span class="nf">query_component</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="n">all_components</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">xml</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    query a component by name</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Determine the valid component classes (e.g. atm) for the driver/cpl</span>
@@ -302,7 +305,7 @@
 
 
 <div class="viewcode-block" id="parse_command_line"><a class="viewcode-back" href="../../../CIME_api/CIME.scripts.html#CIME.scripts.query_config.parse_command_line">[docs]</a><span class="k">def</span> <span class="nf">parse_command_line</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">description</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    parse command line arguments</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">cime_model</span> <span class="o">=</span> <span class="n">CIME</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_model</span><span class="p">()</span>
@@ -420,14 +423,14 @@
 
 
 <div class="viewcode-block" id="get_compsets"><a class="viewcode-back" href="../../../CIME_api/CIME.scripts.html#CIME.scripts.query_config.get_compsets">[docs]</a><span class="k">def</span> <span class="nf">get_compsets</span><span class="p">(</span><span class="n">files</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Determine valid component values by checking the value attributes for COMPSETS_SPEC_FILE</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">files</span><span class="o">.</span><span class="n">get_components</span><span class="p">(</span><span class="s2">&quot;COMPSETS_SPEC_FILE&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="get_components"><a class="viewcode-back" href="../../../CIME_api/CIME.scripts.html#CIME.scripts.query_config.get_components">[docs]</a><span class="k">def</span> <span class="nf">get_components</span><span class="p">(</span><span class="n">files</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Determine the valid component classes (e.g. atm) for the driver/cpl</span>
 <span class="sd">    These are then stored in comps_array</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -437,7 +440,7 @@
 
 
 <div class="viewcode-block" id="ArgumentParser"><a class="viewcode-back" href="../../../CIME_api/CIME.scripts.html#CIME.scripts.query_config.ArgumentParser">[docs]</a><span class="k">class</span> <span class="nc">ArgumentParser</span><span class="p">(</span><span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    we override the error message from ArgumentParser to have a more helpful</span>
 <span class="sd">    message in the case of missing arguments</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -478,7 +481,7 @@
 
 
 <div class="viewcode-block" id="Machines"><a class="viewcode-back" href="../../../CIME_api/CIME.scripts.html#CIME.scripts.query_config.Machines">[docs]</a><span class="k">class</span> <span class="nc">Machines</span><span class="p">(</span><span class="n">CIME</span><span class="o">.</span><span class="n">XML</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">Machines</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    we overide print_values from Machines to add current in machine description</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -544,7 +547,7 @@
 
 
 <span class="k">def</span> <span class="nf">_main_func</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    main function</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">grids</span><span class="p">,</span> <span class="n">compsets</span><span class="p">,</span> <span class="n">components</span><span class="p">,</span> <span class="n">machines</span><span class="p">,</span> <span class="n">long_output</span><span class="p">,</span> <span class="n">xml</span><span class="p">,</span> <span class="n">files</span> <span class="o">=</span> <span class="n">parse_command_line</span><span class="p">(</span>

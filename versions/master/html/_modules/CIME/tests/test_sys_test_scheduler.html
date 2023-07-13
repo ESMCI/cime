@@ -11,10 +11,9 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/doctools.js"></script>
         <script src="../../../_static/sphinx_highlight.js"></script>
         <script src="../../../_static/pop_ver.js"></script>
@@ -28,14 +27,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../../index.html" class="icon icon-home"> CIME
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            CIME
           </a>
               <div class="version">
                 master
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -69,9 +72,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../../index.html">Module code</a> &raquo;</li>
-      <li>CIME.tests.test_sys_test_scheduler</li>
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">CIME.tests.test_sys_test_scheduler</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -93,14 +96,13 @@
 <span class="kn">from</span> <span class="nn">CIME</span> <span class="kn">import</span> <span class="n">utils</span>
 <span class="kn">from</span> <span class="nn">CIME</span> <span class="kn">import</span> <span class="n">test_status</span>
 <span class="kn">from</span> <span class="nn">CIME</span> <span class="kn">import</span> <span class="n">test_scheduler</span>
-<span class="kn">from</span> <span class="nn">CIME.config</span> <span class="kn">import</span> <span class="n">Config</span>
 <span class="kn">from</span> <span class="nn">CIME.tests</span> <span class="kn">import</span> <span class="n">base</span>
 
 
 <div class="viewcode-block" id="TestTestScheduler"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_test_scheduler.TestTestScheduler">[docs]</a><span class="k">class</span> <span class="nc">TestTestScheduler</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">BaseTestCase</span><span class="p">):</span>
 <div class="viewcode-block" id="TestTestScheduler.test_chksum"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_test_scheduler.TestTestScheduler.test_chksum">[docs]</a>    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;time.strftime&quot;</span><span class="p">,</span> <span class="n">return_value</span><span class="o">=</span><span class="s2">&quot;00:00:00&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">test_chksum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">strftime</span><span class="p">):</span>  <span class="c1"># pylint: disable=unused-argument</span>
-        <span class="k">if</span> <span class="n">Config</span><span class="o">.</span><span class="n">instance</span><span class="p">()</span><span class="o">.</span><span class="n">test_mode</span> <span class="o">==</span> <span class="s2">&quot;e3sm&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">test_mode</span> <span class="o">==</span> <span class="s2">&quot;e3sm&quot;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">skipTest</span><span class="p">(</span><span class="s2">&quot;Skipping chksum test. Depends on CESM settings&quot;</span><span class="p">)</span>
 
         <span class="n">ts</span> <span class="o">=</span> <span class="n">test_scheduler</span><span class="o">.</span><span class="n">TestScheduler</span><span class="p">(</span>
@@ -363,6 +365,60 @@
                         <span class="n">test_status</span><span class="o">.</span><span class="n">TEST_PASS_STATUS</span><span class="p">,</span>
                     <span class="p">)</span></div>
 
+<div class="viewcode-block" id="TestTestScheduler.test_force_rebuild"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_test_scheduler.TestTestScheduler.test_force_rebuild">[docs]</a>    <span class="k">def</span> <span class="nf">test_force_rebuild</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">tests</span> <span class="o">=</span> <span class="n">get_tests</span><span class="o">.</span><span class="n">get_full_test_names</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="s2">&quot;TESTBUILDFAIL_P1.f19_g16_rx1.A&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;TESTRUNFAIL_P1.f19_g16_rx1.A&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;TESTRUNPASS_P1.f19_g16_rx1.A&quot;</span><span class="p">,</span>
+            <span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_machine</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_compiler</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">test_id</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">-</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_baseline_name</span><span class="p">,</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_timestamp</span><span class="p">())</span>
+        <span class="n">ct</span> <span class="o">=</span> <span class="n">test_scheduler</span><span class="o">.</span><span class="n">TestScheduler</span><span class="p">(</span>
+            <span class="n">tests</span><span class="p">,</span>
+            <span class="n">test_id</span><span class="o">=</span><span class="n">test_id</span><span class="p">,</span>
+            <span class="n">no_batch</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">NO_BATCH</span><span class="p">,</span>
+            <span class="n">test_root</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_testroot</span><span class="p">,</span>
+            <span class="n">output_root</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_testroot</span><span class="p">,</span>
+            <span class="n">compiler</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_compiler</span><span class="p">,</span>
+            <span class="n">mpilib</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">TEST_MPILIB</span><span class="p">,</span>
+            <span class="n">machine_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">MACHINE</span><span class="o">.</span><span class="n">get_machine_name</span><span class="p">(),</span>
+        <span class="p">)</span>
+
+        <span class="n">log_lvl</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">getEffectiveLevel</span><span class="p">()</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">disable</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">CRITICAL</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">ct</span><span class="o">.</span><span class="n">run_tests</span><span class="p">()</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">log_lvl</span><span class="p">)</span>
+
+        <span class="n">ct</span> <span class="o">=</span> <span class="n">test_scheduler</span><span class="o">.</span><span class="n">TestScheduler</span><span class="p">(</span>
+            <span class="n">tests</span><span class="p">,</span>
+            <span class="n">test_id</span><span class="o">=</span><span class="n">test_id</span><span class="p">,</span>
+            <span class="n">no_batch</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">NO_BATCH</span><span class="p">,</span>
+            <span class="n">test_root</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_testroot</span><span class="p">,</span>
+            <span class="n">output_root</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_testroot</span><span class="p">,</span>
+            <span class="n">compiler</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_compiler</span><span class="p">,</span>
+            <span class="n">mpilib</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">TEST_MPILIB</span><span class="p">,</span>
+            <span class="n">machine_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">MACHINE</span><span class="o">.</span><span class="n">get_machine_name</span><span class="p">(),</span>
+            <span class="n">force_rebuild</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">use_existing</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">test_statuses</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/*</span><span class="si">%s</span><span class="s2">/TestStatus&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_testroot</span><span class="p">,</span> <span class="n">test_id</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">test_statuses</span><span class="p">:</span>
+            <span class="n">casedir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+            <span class="n">ts</span> <span class="o">=</span> <span class="n">test_status</span><span class="o">.</span><span class="n">TestStatus</span><span class="p">(</span><span class="n">test_dir</span><span class="o">=</span><span class="n">casedir</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span>
+                <span class="n">ts</span><span class="o">.</span><span class="n">get_status</span><span class="p">(</span><span class="n">test_status</span><span class="o">.</span><span class="n">SHAREDLIB_BUILD_PHASE</span><span class="p">)</span>
+                <span class="o">==</span> <span class="n">test_status</span><span class="o">.</span><span class="n">TEST_PEND_STATUS</span>
+            <span class="p">)</span></div>
+
 <div class="viewcode-block" id="TestTestScheduler.test_c_use_existing"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_test_scheduler.TestTestScheduler.test_c_use_existing">[docs]</a>    <span class="k">def</span> <span class="nf">test_c_use_existing</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">tests</span> <span class="o">=</span> <span class="n">get_tests</span><span class="o">.</span><span class="n">get_full_test_names</span><span class="p">(</span>
             <span class="p">[</span>
@@ -534,7 +590,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_create_test</span><span class="p">(</span><span class="n">args</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestTestScheduler.test_e_test_inferred_compiler"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_test_scheduler.TestTestScheduler.test_e_test_inferred_compiler">[docs]</a>    <span class="k">def</span> <span class="nf">test_e_test_inferred_compiler</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">Config</span><span class="o">.</span><span class="n">instance</span><span class="p">()</span><span class="o">.</span><span class="n">test_mode</span> <span class="o">!=</span> <span class="s2">&quot;e3sm&quot;</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_machine</span> <span class="o">!=</span> <span class="s2">&quot;docker&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">test_mode</span> <span class="o">!=</span> <span class="s2">&quot;e3sm&quot;</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_machine</span> <span class="o">!=</span> <span class="s2">&quot;docker&quot;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">skipTest</span><span class="p">(</span><span class="s2">&quot;Skipping create_test test. Depends on E3SM settings&quot;</span><span class="p">)</span>
 
         <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;SMS.f19_g16_rx1.A.docker_gnuX&quot;</span><span class="p">,</span> <span class="s2">&quot;--no-setup&quot;</span><span class="p">]</span>

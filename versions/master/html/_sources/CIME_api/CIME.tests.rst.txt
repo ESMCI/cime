@@ -172,6 +172,14 @@ CIME.tests.test\_sys\_wait\_for\_tests module
    :undoc-members:
    :show-inheritance:
 
+CIME.tests.test\_unit\_aprun module
+-----------------------------------
+
+.. automodule:: CIME.tests.test_unit_aprun
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 CIME.tests.test\_unit\_case module
 ----------------------------------
 
@@ -260,6 +268,14 @@ CIME.tests.test\_unit\_grids module
    :undoc-members:
    :show-inheritance:
 
+CIME.tests.test\_unit\_hist\_utils module
+-----------------------------------------
+
+.. automodule:: CIME.tests.test_unit_hist_utils
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 CIME.tests.test\_unit\_nmlgen module
 ------------------------------------
 
@@ -272,6 +288,14 @@ CIME.tests.test\_unit\_paramgen module
 --------------------------------------
 
 .. automodule:: CIME.tests.test_unit_paramgen
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+CIME.tests.test\_unit\_system\_tests module
+-------------------------------------------
+
+.. automodule:: CIME.tests.test_unit_system_tests
    :members:
    :undoc-members:
    :show-inheritance:
@@ -316,6 +340,14 @@ CIME.tests.test\_unit\_utils module
    :undoc-members:
    :show-inheritance:
 
+CIME.tests.test\_unit\_xml\_archive\_base module
+------------------------------------------------
+
+.. automodule:: CIME.tests.test_unit_xml_archive_base
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 CIME.tests.test\_unit\_xml\_env\_batch module
 ---------------------------------------------
 
@@ -332,10 +364,26 @@ CIME.tests.test\_unit\_xml\_env\_mach\_specific module
    :undoc-members:
    :show-inheritance:
 
+CIME.tests.test\_unit\_xml\_machines module
+-------------------------------------------
+
+.. automodule:: CIME.tests.test_unit_xml_machines
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 CIME.tests.test\_unit\_xml\_namelist\_definition module
 -------------------------------------------------------
 
 .. automodule:: CIME.tests.test_unit_xml_namelist_definition
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+CIME.tests.test\_unit\_xml\_tests module
+----------------------------------------
+
+.. automodule:: CIME.tests.test_unit_xml_tests
    :members:
    :undoc-members:
    :show-inheritance:

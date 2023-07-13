@@ -11,10 +11,9 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/doctools.js"></script>
         <script src="../../../_static/sphinx_highlight.js"></script>
         <script src="../../../_static/pop_ver.js"></script>
@@ -28,14 +27,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../../index.html" class="icon icon-home"> CIME
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            CIME
           </a>
               <div class="version">
                 master
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -69,9 +72,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../../index.html">Module code</a> &raquo;</li>
-      <li>CIME.tests.test_sys_cime_case</li>
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">CIME.tests.test_sys_cime_case</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -91,12 +94,14 @@
 <span class="kn">import</span> <span class="nn">time</span>
 
 <span class="kn">from</span> <span class="nn">CIME</span> <span class="kn">import</span> <span class="n">utils</span>
-<span class="kn">from</span> <span class="nn">CIME.config</span> <span class="kn">import</span> <span class="n">Config</span>
 <span class="kn">from</span> <span class="nn">CIME.tests</span> <span class="kn">import</span> <span class="n">base</span>
 <span class="kn">from</span> <span class="nn">CIME.case.case</span> <span class="kn">import</span> <span class="n">Case</span>
 <span class="kn">from</span> <span class="nn">CIME.XML.env_run</span> <span class="kn">import</span> <span class="n">EnvRun</span>
 
-<span class="n">config</span> <span class="o">=</span> <span class="n">Config</span><span class="o">.</span><span class="n">instance</span><span class="p">()</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">collectionsAbc</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">abc</span>
+<span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+    <span class="n">collectionsAbc</span> <span class="o">=</span> <span class="n">collections</span>
 
 
 <div class="viewcode-block" id="TestCimeCase"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_cime_case.TestCimeCase">[docs]</a><span class="k">class</span> <span class="nc">TestCimeCase</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">BaseTestCase</span><span class="p">):</span>
@@ -147,7 +152,7 @@
         <span class="n">args</span> <span class="o">=</span> <span class="s2">&quot;--case </span><span class="si">{name}</span><span class="s2"> --script-root </span><span class="si">{testdir}</span><span class="s2"> --compset X --res f19_g16 --handle-preexisting-dirs=r --output-root </span><span class="si">{testdir}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="n">testcase_name</span><span class="p">,</span> <span class="n">testdir</span><span class="o">=</span><span class="n">testdir</span>
         <span class="p">)</span>
-        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">allow_unsupported</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">allow_unsupported</span><span class="p">:</span>
             <span class="n">args</span> <span class="o">+=</span> <span class="s2">&quot; --run-unsupported&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">run_cmd_assert_result</span><span class="p">(</span>
@@ -172,7 +177,7 @@
                 <span class="n">prereq</span><span class="o">=</span><span class="n">prereq_name</span><span class="p">,</span> <span class="n">job</span><span class="o">=</span><span class="n">job_name</span><span class="p">,</span> <span class="n">skip_pnl</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dry_run</span><span class="o">=</span><span class="kc">True</span>
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span>
-                <span class="nb">isinstance</span><span class="p">(</span><span class="n">batch_commands</span><span class="p">,</span> <span class="n">collections</span><span class="o">.</span><span class="n">Sequence</span><span class="p">),</span>
+                <span class="nb">isinstance</span><span class="p">(</span><span class="n">batch_commands</span><span class="p">,</span> <span class="n">collectionsAbc</span><span class="o">.</span><span class="n">Sequence</span><span class="p">),</span>
                 <span class="s2">&quot;case.submit_jobs did not return a sequence for a dry run&quot;</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span>
@@ -185,7 +190,7 @@
             <span class="c1"># The prerequisite should be applied to all jobs, though we&#39;re only expecting one</span>
             <span class="k">for</span> <span class="n">batch_cmd</span> <span class="ow">in</span> <span class="n">batch_commands</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span>
-                    <span class="nb">isinstance</span><span class="p">(</span><span class="n">batch_cmd</span><span class="p">,</span> <span class="n">collections</span><span class="o">.</span><span class="n">Sequence</span><span class="p">),</span>
+                    <span class="nb">isinstance</span><span class="p">(</span><span class="n">batch_cmd</span><span class="p">,</span> <span class="n">collectionsAbc</span><span class="o">.</span><span class="n">Sequence</span><span class="p">),</span>
                     <span class="s2">&quot;case.submit_jobs did not return a sequence of sequences&quot;</span><span class="p">,</span>
                 <span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span>
@@ -247,7 +252,7 @@
                 <span class="n">dry_run</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span>
-                <span class="nb">isinstance</span><span class="p">(</span><span class="n">batch_commands</span><span class="p">,</span> <span class="n">collections</span><span class="o">.</span><span class="n">Sequence</span><span class="p">),</span>
+                <span class="nb">isinstance</span><span class="p">(</span><span class="n">batch_commands</span><span class="p">,</span> <span class="n">collectionsAbc</span><span class="o">.</span><span class="n">Sequence</span><span class="p">),</span>
                 <span class="s2">&quot;case.submit_jobs did not return a sequence for a dry run&quot;</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">num_submissions</span> <span class="o">=</span> <span class="mi">1</span>
@@ -276,7 +281,7 @@
                 <span class="n">job</span><span class="o">=</span><span class="n">job_name</span><span class="p">,</span> <span class="n">skip_pnl</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dry_run</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">resubmit_immediate</span><span class="o">=</span><span class="kc">True</span>
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span>
-                <span class="nb">isinstance</span><span class="p">(</span><span class="n">batch_commands</span><span class="p">,</span> <span class="n">collections</span><span class="o">.</span><span class="n">Sequence</span><span class="p">),</span>
+                <span class="nb">isinstance</span><span class="p">(</span><span class="n">batch_commands</span><span class="p">,</span> <span class="n">collectionsAbc</span><span class="o">.</span><span class="n">Sequence</span><span class="p">),</span>
                 <span class="s2">&quot;case.submit_jobs did not return a sequence for a dry run&quot;</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="k">if</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;DOUT_S&quot;</span><span class="p">):</span>
@@ -396,7 +401,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="s2">&quot;-opt1 -opt2&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestCimeCase.test_cime_case_test_walltime_mgmt_1"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_cime_case.TestCimeCase.test_cime_case_test_walltime_mgmt_1">[docs]</a>    <span class="k">def</span> <span class="nf">test_cime_case_test_walltime_mgmt_1</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">test_mode</span> <span class="o">==</span> <span class="s2">&quot;cesm&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">test_mode</span> <span class="o">==</span> <span class="s2">&quot;cesm&quot;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">skipTest</span><span class="p">(</span><span class="s2">&quot;Skipping walltime test. Depends on E3SM batch settings&quot;</span><span class="p">)</span>
 
         <span class="n">test_name</span> <span class="o">=</span> <span class="s2">&quot;ERS.f19_g16_rx1.A&quot;</span>
@@ -418,7 +423,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="s2">&quot;biggpu&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestCimeCase.test_cime_case_test_walltime_mgmt_2"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_cime_case.TestCimeCase.test_cime_case_test_walltime_mgmt_2">[docs]</a>    <span class="k">def</span> <span class="nf">test_cime_case_test_walltime_mgmt_2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">test_mode</span> <span class="o">==</span> <span class="s2">&quot;cesm&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">test_mode</span> <span class="o">==</span> <span class="s2">&quot;cesm&quot;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">skipTest</span><span class="p">(</span><span class="s2">&quot;Skipping walltime test. Depends on E3SM batch settings&quot;</span><span class="p">)</span>
 
         <span class="n">test_name</span> <span class="o">=</span> <span class="s2">&quot;ERS_P64.f19_g16_rx1.A&quot;</span>
@@ -440,7 +445,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="s2">&quot;biggpu&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestCimeCase.test_cime_case_test_walltime_mgmt_3"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_cime_case.TestCimeCase.test_cime_case_test_walltime_mgmt_3">[docs]</a>    <span class="k">def</span> <span class="nf">test_cime_case_test_walltime_mgmt_3</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">test_mode</span> <span class="o">==</span> <span class="s2">&quot;cesm&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">test_mode</span> <span class="o">==</span> <span class="s2">&quot;cesm&quot;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">skipTest</span><span class="p">(</span><span class="s2">&quot;Skipping walltime test. Depends on E3SM batch settings&quot;</span><span class="p">)</span>
 
         <span class="n">test_name</span> <span class="o">=</span> <span class="s2">&quot;ERS_P64.f19_g16_rx1.A&quot;</span>
@@ -468,7 +473,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="s2">&quot;biggpu&quot;</span><span class="p">)</span>  <span class="c1"># Not smart enough to select faster queue</span></div>
 
 <div class="viewcode-block" id="TestCimeCase.test_cime_case_test_walltime_mgmt_4"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_cime_case.TestCimeCase.test_cime_case_test_walltime_mgmt_4">[docs]</a>    <span class="k">def</span> <span class="nf">test_cime_case_test_walltime_mgmt_4</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">test_mode</span> <span class="o">==</span> <span class="s2">&quot;cesm&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">test_mode</span> <span class="o">==</span> <span class="s2">&quot;cesm&quot;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">skipTest</span><span class="p">(</span><span class="s2">&quot;Skipping walltime test. Depends on E3SM batch settings&quot;</span><span class="p">)</span>
 
         <span class="n">test_name</span> <span class="o">=</span> <span class="s2">&quot;ERS_P1.f19_g16_rx1.A&quot;</span>
@@ -496,7 +501,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="s2">&quot;biggpu&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestCimeCase.test_cime_case_test_walltime_mgmt_5"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_cime_case.TestCimeCase.test_cime_case_test_walltime_mgmt_5">[docs]</a>    <span class="k">def</span> <span class="nf">test_cime_case_test_walltime_mgmt_5</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">test_mode</span> <span class="o">==</span> <span class="s2">&quot;cesm&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">test_mode</span> <span class="o">==</span> <span class="s2">&quot;cesm&quot;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">skipTest</span><span class="p">(</span><span class="s2">&quot;Skipping walltime test. Depends on E3SM batch settings&quot;</span><span class="p">)</span>
 
         <span class="n">test_name</span> <span class="o">=</span> <span class="s2">&quot;ERS_P1.f19_g16_rx1.A&quot;</span>
@@ -587,7 +592,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="s2">&quot;421:32:11&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestCimeCase.test_cime_case_test_walltime_mgmt_8"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_cime_case.TestCimeCase.test_cime_case_test_walltime_mgmt_8">[docs]</a>    <span class="k">def</span> <span class="nf">test_cime_case_test_walltime_mgmt_8</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">test_mode</span> <span class="o">==</span> <span class="s2">&quot;cesm&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">test_mode</span> <span class="o">==</span> <span class="s2">&quot;cesm&quot;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">skipTest</span><span class="p">(</span><span class="s2">&quot;Skipping walltime test. Depends on E3SM batch settings&quot;</span><span class="p">)</span>
 
         <span class="n">test_name</span> <span class="o">=</span> <span class="s2">&quot;SMS_P25600.f19_g16_rx1.A&quot;</span>
@@ -619,7 +624,7 @@
 <div class="viewcode-block" id="TestCimeCase.test_cime_case_test_custom_project"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_cime_case.TestCimeCase.test_cime_case_test_custom_project">[docs]</a>    <span class="k">def</span> <span class="nf">test_cime_case_test_custom_project</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">test_name</span> <span class="o">=</span> <span class="s2">&quot;ERS_P1.f19_g16_rx1.A&quot;</span>
         <span class="c1"># have to use a machine both models know and one that doesn&#39;t put PROJECT in any key paths</span>
-        <span class="n">machine</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">test_custom_project_machine</span>
+        <span class="n">machine</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">test_custom_project_machine</span>
         <span class="n">compiler</span> <span class="o">=</span> <span class="s2">&quot;gnu&quot;</span>
         <span class="n">casedir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_test</span><span class="p">(</span>
             <span class="p">[</span>

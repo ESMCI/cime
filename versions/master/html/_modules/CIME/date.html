@@ -11,10 +11,9 @@
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/doctools.js"></script>
         <script src="../../_static/sphinx_highlight.js"></script>
         <script src="../../_static/pop_ver.js"></script>
@@ -28,14 +27,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../index.html" class="icon icon-home"> CIME
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            CIME
           </a>
               <div class="version">
                 master
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -69,9 +72,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../index.html">Module code</a> &raquo;</li>
-      <li>CIME.date</li>
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">CIME.date</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -88,7 +91,7 @@
 <span class="c1">###############################################################################</span>
 <div class="viewcode-block" id="get_file_date"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.date.get_file_date">[docs]</a><span class="k">def</span> <span class="nf">get_file_date</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
     <span class="c1">###############################################################################</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the date associated with the filename as a date object representing the correct date</span>
 <span class="sd">    Formats supported:</span>
 <span class="sd">    &quot;%Y-%m-%d_%h.%M.%s</span>
@@ -153,7 +156,7 @@
 
 
 <div class="viewcode-block" id="date"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.date.date">[docs]</a><span class="k">class</span> <span class="nc">date</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Simple struct for holding dates and the time of day and performing comparisons</span>
 
 <span class="sd">    Difference in Hour, Minute, or Second</span>
@@ -288,7 +291,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_second</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hms_to_second</span><span class="p">(</span><span class="n">hour</span><span class="p">,</span> <span class="n">minute</span><span class="p">,</span> <span class="n">second</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        &gt;&gt;&gt; str(date(4, 5, 7, second=64))</span>
 <span class="sd">        &#39;date(4, 5, 7, 0, 1, 4)&#39;</span>
 <span class="sd">        &quot;&quot;&quot;</span>

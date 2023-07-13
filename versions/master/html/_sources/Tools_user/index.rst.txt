@@ -38,13 +38,11 @@ and **case.setup**.
    create_test
    cs.status
    e3sm_check_env
-   e3sm_compile_wrap.py
    generate_cylc_workflow.py
    getTiming
    get_case_env
    get_standard_makefile_args
    jenkins_generic_job
-   jenkins_script
    list_e3sm_tests
    mkDepends
    mkSrcfiles

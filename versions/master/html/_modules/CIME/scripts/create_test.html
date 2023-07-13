@@ -11,10 +11,9 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/doctools.js"></script>
         <script src="../../../_static/sphinx_highlight.js"></script>
         <script src="../../../_static/pop_ver.js"></script>
@@ -28,14 +27,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../../index.html" class="icon icon-home"> CIME
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            CIME
           </a>
               <div class="version">
                 master
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -69,9 +72,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../../index.html">Module code</a> &raquo;</li>
-      <li>CIME.scripts.create_test</li>
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">CIME.scripts.create_test</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -301,7 +304,7 @@
         <span class="p">)</span>
 
         <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-            <span class="s2">&quot;--xml-driver&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;--driver&quot;</span><span class="p">,</span>
             <span class="n">choices</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;mct&quot;</span><span class="p">,</span> <span class="s2">&quot;nuopc&quot;</span><span class="p">,</span> <span class="s2">&quot;moab&quot;</span><span class="p">),</span>
             <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Override driver specified in tests and use this one.&quot;</span><span class="p">,</span>
         <span class="p">)</span>
@@ -556,11 +559,24 @@
         <span class="sa">f</span><span class="s2">&quot;The default is </span><span class="si">{</span><span class="n">srcroot_default</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--force-rebuild&quot;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;When used with &#39;use-existing&#39; and &#39;test-id&#39;, the&quot;</span>
+        <span class="s2">&quot;tests will have their &#39;BUILD_SHAREDLIB&#39; phase reset to &#39;PEND&#39;.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
     <span class="n">CIME</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">add_mail_type_args</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
 
     <span class="n">args</span> <span class="o">=</span> <span class="n">CIME</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">parse_args_and_handle_standard_logging_options</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">parser</span><span class="p">)</span>
 
     <span class="n">CIME</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">resolve_mail_type_args</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">force_rebuild</span><span class="p">:</span>
+        <span class="n">expect</span><span class="p">(</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">use_existing</span> <span class="ow">and</span> <span class="n">args</span><span class="o">.</span><span class="n">test_id</span><span class="p">,</span>
+            <span class="s2">&quot;Cannot force a rebuild without &#39;use-existing&#39; and &#39;test-id&#39;&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
 
     <span class="c1"># generate and compare flags may not point to the same directory</span>
     <span class="k">if</span> <span class="n">model_config</span><span class="o">.</span><span class="n">create_test_flag_mode</span> <span class="o">==</span> <span class="s2">&quot;cesm&quot;</span><span class="p">:</span>
@@ -706,7 +722,7 @@
                 <span class="n">xml_testlist</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">xml_testlist</span><span class="p">,</span>
                 <span class="n">machine</span><span class="o">=</span><span class="n">machine_name</span><span class="p">,</span>
                 <span class="n">compiler</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">compiler</span><span class="p">,</span>
-                <span class="n">driver</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">xml_driver</span><span class="p">,</span>
+                <span class="n">driver</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">driver</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">test_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">test_data</span><span class="p">]</span>
             <span class="k">for</span> <span class="n">test_datum</span> <span class="ow">in</span> <span class="n">test_data</span><span class="p">:</span>
@@ -837,6 +853,7 @@
         <span class="n">args</span><span class="o">.</span><span class="n">single_exe</span><span class="p">,</span>
         <span class="n">args</span><span class="o">.</span><span class="n">workflow</span><span class="p">,</span>
         <span class="n">args</span><span class="o">.</span><span class="n">chksum</span><span class="p">,</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">force_rebuild</span><span class="p">,</span>
     <span class="p">)</span></div>
 
 
@@ -996,6 +1013,7 @@
     <span class="n">single_exe</span><span class="p">,</span>
     <span class="n">workflow</span><span class="p">,</span>
     <span class="n">chksum</span><span class="p">,</span>
+    <span class="n">force_rebuild</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="c1">###############################################################################</span>
     <span class="n">impl</span> <span class="o">=</span> <span class="n">TestScheduler</span><span class="p">(</span>
@@ -1036,6 +1054,7 @@
         <span class="n">single_exe</span><span class="o">=</span><span class="n">single_exe</span><span class="p">,</span>
         <span class="n">workflow</span><span class="o">=</span><span class="n">workflow</span><span class="p">,</span>
         <span class="n">chksum</span><span class="o">=</span><span class="n">chksum</span><span class="p">,</span>
+        <span class="n">force_rebuild</span><span class="o">=</span><span class="n">force_rebuild</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">success</span> <span class="o">=</span> <span class="n">impl</span><span class="o">.</span><span class="n">run_tests</span><span class="p">(</span>
@@ -1137,6 +1156,7 @@
         <span class="n">single_exe</span><span class="p">,</span>
         <span class="n">workflow</span><span class="p">,</span>
         <span class="n">chksum</span><span class="p">,</span>
+        <span class="n">force_rebuild</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">=</span> <span class="n">parse_command_line</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">,</span> <span class="n">description</span><span class="p">)</span>
 
     <span class="n">success</span> <span class="o">=</span> <span class="kc">False</span>
@@ -1188,6 +1208,7 @@
             <span class="n">single_exe</span><span class="p">,</span>
             <span class="n">workflow</span><span class="p">,</span>
             <span class="n">chksum</span><span class="p">,</span>
+            <span class="n">force_rebuild</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">run_count</span> <span class="o">+=</span> <span class="mi">1</span>
 

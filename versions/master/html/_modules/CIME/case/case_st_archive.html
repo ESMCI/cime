@@ -11,10 +11,9 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/doctools.js"></script>
         <script src="../../../_static/sphinx_highlight.js"></script>
         <script src="../../../_static/pop_ver.js"></script>
@@ -28,14 +27,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../../index.html" class="icon icon-home"> CIME
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            CIME
           </a>
               <div class="version">
                 master
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -69,9 +72,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../../index.html">Module code</a> &raquo;</li>
-      <li>CIME.case.case_st_archive</li>
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">CIME.case.case_st_archive</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -114,7 +117,7 @@
 <span class="c1">###############################################################################</span>
 <span class="k">def</span> <span class="nf">_get_archive_file_fn</span><span class="p">(</span><span class="n">copy_only</span><span class="p">):</span>
     <span class="c1">###############################################################################</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the function to use for archiving some files</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">safe_copy</span> <span class="k">if</span> <span class="n">copy_only</span> <span class="k">else</span> <span class="n">shutil</span><span class="o">.</span><span class="n">move</span>
@@ -123,7 +126,7 @@
 <span class="c1">###############################################################################</span>
 <span class="k">def</span> <span class="nf">_get_datenames</span><span class="p">(</span><span class="n">casename</span><span class="p">,</span> <span class="n">rundir</span><span class="p">):</span>
     <span class="c1">###############################################################################</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the date objects specifying the times of each file</span>
 <span class="sd">    Note we are assuming that the coupler restart files exist and are consistent with other component datenames</span>
 <span class="sd">    Not doc-testable due to filesystem dependence</span>
@@ -151,7 +154,7 @@
 
 
 <span class="k">def</span> <span class="nf">_datetime_str</span><span class="p">(</span><span class="n">_date</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the standard format associated with filenames.</span>
 
 <span class="sd">    &gt;&gt;&gt; from CIME.date import date</span>
@@ -171,7 +174,7 @@
 
 
 <span class="k">def</span> <span class="nf">_datetime_str_mpas</span><span class="p">(</span><span class="n">_date</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the mpas format associated with filenames.</span>
 
 <span class="sd">    &gt;&gt;&gt; from CIME.date import date</span>
@@ -197,7 +200,7 @@
 <span class="c1">###############################################################################</span>
 <span class="k">def</span> <span class="nf">_get_ninst_info</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">compclass</span><span class="p">):</span>
     <span class="c1">###############################################################################</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the number of instances used by a component and suffix strings for filenames</span>
 <span class="sd">    Not doc-testable due to case dependence</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -221,7 +224,7 @@
 <span class="c1">###############################################################################</span>
 <span class="k">def</span> <span class="nf">_get_component_archive_entries</span><span class="p">(</span><span class="n">components</span><span class="p">,</span> <span class="n">archive</span><span class="p">):</span>
     <span class="c1">###############################################################################</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Each time this generator function is called, it yields a tuple</span>
 <span class="sd">    (archive_entry, compname, compclass) for one component in this</span>
 <span class="sd">    case&#39;s compset components.</span>
@@ -310,7 +313,7 @@
 <span class="c1">###############################################################################</span>
 <span class="k">def</span> <span class="nf">_archive_log_files</span><span class="p">(</span><span class="n">dout_s_root</span><span class="p">,</span> <span class="n">rundir</span><span class="p">,</span> <span class="n">archive_incomplete</span><span class="p">,</span> <span class="n">archive_file_fn</span><span class="p">):</span>
     <span class="c1">###############################################################################</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find all completed log files, or all log files if archive_incomplete is True, and archive them.</span>
 <span class="sd">    Each log file is required to have &quot;.log.&quot; in its name, and completed ones will end with &quot;.gz&quot;</span>
 <span class="sd">    Not doc-testable due to file system dependence</span>
@@ -350,7 +353,7 @@
     <span class="n">rundir</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="c1">###############################################################################</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    perform short term archiving on history files in rundir</span>
 
 <span class="sd">    Not doc-testable due to case and file system dependence</span>
@@ -437,7 +440,7 @@
     <span class="n">rundir</span><span class="p">,</span> <span class="n">archive</span><span class="p">,</span> <span class="n">archive_entry</span><span class="p">,</span> <span class="n">restfile</span><span class="p">,</span> <span class="n">testonly</span><span class="o">=</span><span class="kc">False</span>
 <span class="p">):</span>
     <span class="c1">###############################################################################</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    query restart files to determine history files that are needed for restarts</span>
 
 <span class="sd">    Not doc-testable due to filesystem dependence</span>
@@ -505,7 +508,7 @@
     <span class="n">testonly</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="c1">###############################################################################</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Archive restart files for a single date</span>
 
 <span class="sd">    Returns a dictionary of histfiles that need saving in the run</span>
@@ -572,7 +575,7 @@
     <span class="n">testonly</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="c1">###############################################################################</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Archive restart files for a single date and single component</span>
 
 <span class="sd">    If link_to_last_restart_files is True, then make a symlink to the</span>
@@ -909,7 +912,7 @@
     <span class="n">testonly</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="c1">###############################################################################</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Parse config_archive.xml and perform short term archiving</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -995,7 +998,7 @@
     <span class="bp">self</span><span class="p">,</span> <span class="n">rest_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dout_s_root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rundir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="kc">False</span>
 <span class="p">):</span>
     <span class="c1">###############################################################################</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Take archived restart files and load them into current case.  Use rest_dir if provided otherwise use most recent</span>
 <span class="sd">    restore_from_archive is a member of Class Case</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1039,7 +1042,7 @@
     <span class="bp">self</span><span class="p">,</span> <span class="n">archive_restdir</span><span class="p">,</span> <span class="n">rundir</span><span class="p">,</span> <span class="n">last_date</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">link_to_restart_files</span><span class="o">=</span><span class="kc">False</span>
 <span class="p">):</span>
     <span class="c1">###############################################################################</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convenience function for archiving just the last set of restart</span>
 <span class="sd">    files to a given directory. This also saves files attached to the</span>
 <span class="sd">    restart set, such as rpointer files and necessary history</span>
@@ -1085,7 +1088,7 @@
     <span class="n">resubmit</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="c1">###############################################################################</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create archive object and perform short term archiving</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;resubmit </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">resubmit</span><span class="p">))</span>

@@ -11,10 +11,9 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/doctools.js"></script>
         <script src="../../../_static/sphinx_highlight.js"></script>
         <script src="../../../_static/pop_ver.js"></script>
@@ -28,14 +27,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../../index.html" class="icon icon-home"> CIME
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            CIME
           </a>
               <div class="version">
                 master
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -69,9 +72,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../../index.html">Module code</a> &raquo;</li>
-      <li>CIME.tests.test_unit_custom_assertions_test_status</li>
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">CIME.tests.test_unit_custom_assertions_test_status</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -105,7 +108,7 @@
         <span class="k">return</span> <span class="n">output</span></div>
 
 <div class="viewcode-block" id="TestCustomAssertions.test_assertPhaseAbsent_passes"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_custom_assertions_test_status.TestCustomAssertions.test_assertPhaseAbsent_passes">[docs]</a>    <span class="k">def</span> <span class="nf">test_assertPhaseAbsent_passes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;assert_phase_absent should pass when the phase is absent for</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;assert_phase_absent should pass when the phase is absent for</span>
 <span class="sd">        the given test_name&quot;&quot;&quot;</span>
         <span class="n">test_name1</span> <span class="o">=</span> <span class="s2">&quot;my.test.name1&quot;</span>
         <span class="n">test_name2</span> <span class="o">=</span> <span class="s2">&quot;my.test.name2&quot;</span>
@@ -116,7 +119,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assert_phase_absent</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="s2">&quot;PHASE1&quot;</span><span class="p">,</span> <span class="n">test_name2</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestCustomAssertions.test_assertPhaseAbsent_fails"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_custom_assertions_test_status.TestCustomAssertions.test_assertPhaseAbsent_fails">[docs]</a>    <span class="k">def</span> <span class="nf">test_assertPhaseAbsent_fails</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;assert_phase_absent should fail when the phase is present for</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;assert_phase_absent should fail when the phase is present for</span>
 <span class="sd">        the given test_name&quot;&quot;&quot;</span>
         <span class="n">test_name</span> <span class="o">=</span> <span class="s2">&quot;my.test.name&quot;</span>
         <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_line</span><span class="p">(</span><span class="s2">&quot;PASS&quot;</span><span class="p">,</span> <span class="n">test_name</span><span class="p">,</span> <span class="s2">&quot;PHASE1&quot;</span><span class="p">)</span>
@@ -125,7 +128,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">assert_phase_absent</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="s2">&quot;PHASE1&quot;</span><span class="p">,</span> <span class="n">test_name</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestCustomAssertions.test_assertCorePhases_passes"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_custom_assertions_test_status.TestCustomAssertions.test_assertCorePhases_passes">[docs]</a>    <span class="k">def</span> <span class="nf">test_assertCorePhases_passes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;assert_core_phases passes when it should&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;assert_core_phases passes when it should&quot;&quot;&quot;</span>
         <span class="n">output</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="n">fails</span> <span class="o">=</span> <span class="p">[</span><span class="n">test_status</span><span class="o">.</span><span class="n">CORE_PHASES</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
         <span class="n">test_name</span> <span class="o">=</span> <span class="s2">&quot;my.test.name&quot;</span>
@@ -139,7 +142,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assert_core_phases</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">test_name</span><span class="p">,</span> <span class="n">fails</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestCustomAssertions.test_assertCorePhases_missingPhase_fails"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_custom_assertions_test_status.TestCustomAssertions.test_assertCorePhases_missingPhase_fails">[docs]</a>    <span class="k">def</span> <span class="nf">test_assertCorePhases_missingPhase_fails</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;assert_core_phases fails if there is a missing phase&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;assert_core_phases fails if there is a missing phase&quot;&quot;&quot;</span>
         <span class="n">output</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="n">test_name</span> <span class="o">=</span> <span class="s2">&quot;my.test.name&quot;</span>
         <span class="k">for</span> <span class="n">phase</span> <span class="ow">in</span> <span class="n">test_status</span><span class="o">.</span><span class="n">CORE_PHASES</span><span class="p">:</span>
@@ -152,7 +155,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">assert_core_phases</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">test_name</span><span class="p">,</span> <span class="n">fails</span><span class="o">=</span><span class="p">[])</span></div>
 
 <div class="viewcode-block" id="TestCustomAssertions.test_assertCorePhases_wrongStatus_fails"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_custom_assertions_test_status.TestCustomAssertions.test_assertCorePhases_wrongStatus_fails">[docs]</a>    <span class="k">def</span> <span class="nf">test_assertCorePhases_wrongStatus_fails</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;assert_core_phases fails if a phase has the wrong status&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;assert_core_phases fails if a phase has the wrong status&quot;&quot;&quot;</span>
         <span class="n">output</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="n">test_name</span> <span class="o">=</span> <span class="s2">&quot;my.test.name&quot;</span>
         <span class="k">for</span> <span class="n">phase</span> <span class="ow">in</span> <span class="n">test_status</span><span class="o">.</span><span class="n">CORE_PHASES</span><span class="p">:</span>
@@ -166,7 +169,7 @@
             <span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestCustomAssertions.test_assertCorePhases_wrongName_fails"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_custom_assertions_test_status.TestCustomAssertions.test_assertCorePhases_wrongName_fails">[docs]</a>    <span class="k">def</span> <span class="nf">test_assertCorePhases_wrongName_fails</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;assert_core_phases fails if the test name is wrong&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;assert_core_phases fails if the test name is wrong&quot;&quot;&quot;</span>
         <span class="n">output</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="n">test_name</span> <span class="o">=</span> <span class="s2">&quot;my.test.name&quot;</span>
         <span class="k">for</span> <span class="n">phase</span> <span class="ow">in</span> <span class="n">test_status</span><span class="o">.</span><span class="n">CORE_PHASES</span><span class="p">:</span>
@@ -182,7 +185,7 @@
     <span class="c1"># already covered.</span>
 
 <div class="viewcode-block" id="TestCustomAssertions.test_assertStatusOfPhase_withExtra_passes"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_custom_assertions_test_status.TestCustomAssertions.test_assertStatusOfPhase_withExtra_passes">[docs]</a>    <span class="k">def</span> <span class="nf">test_assertStatusOfPhase_withExtra_passes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Make sure assert_status_of_phase passes when there is some extra text at the</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Make sure assert_status_of_phase passes when there is some extra text at the</span>
 <span class="sd">        end of the line&quot;&quot;&quot;</span>
         <span class="n">test_name</span> <span class="o">=</span> <span class="s2">&quot;my.test.name&quot;</span>
         <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_line</span><span class="p">(</span>
@@ -196,7 +199,7 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestCustomAssertions.test_assertStatusOfPhase_xfailNo_passes"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_custom_assertions_test_status.TestCustomAssertions.test_assertStatusOfPhase_xfailNo_passes">[docs]</a>    <span class="k">def</span> <span class="nf">test_assertStatusOfPhase_xfailNo_passes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;assert_status_of_phase should pass when xfail=&#39;no&#39; and there is no</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;assert_status_of_phase should pass when xfail=&#39;no&#39; and there is no</span>
 <span class="sd">        EXPECTED/UNEXPECTED on the line&quot;&quot;&quot;</span>
         <span class="n">test_name</span> <span class="o">=</span> <span class="s2">&quot;my.test.name&quot;</span>
         <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_line</span><span class="p">(</span>
@@ -215,7 +218,7 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestCustomAssertions.test_assertStatusOfPhase_xfailNo_fails"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_custom_assertions_test_status.TestCustomAssertions.test_assertStatusOfPhase_xfailNo_fails">[docs]</a>    <span class="k">def</span> <span class="nf">test_assertStatusOfPhase_xfailNo_fails</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;assert_status_of_phase should fail when xfail=&#39;no&#39; but the line contains the</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;assert_status_of_phase should fail when xfail=&#39;no&#39; but the line contains the</span>
 <span class="sd">        EXPECTED comment&quot;&quot;&quot;</span>
         <span class="n">test_name</span> <span class="o">=</span> <span class="s2">&quot;my.test.name&quot;</span>
         <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_line</span><span class="p">(</span>
@@ -239,7 +242,7 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestCustomAssertions.test_assertStatusOfPhase_xfailExpected_passes"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_custom_assertions_test_status.TestCustomAssertions.test_assertStatusOfPhase_xfailExpected_passes">[docs]</a>    <span class="k">def</span> <span class="nf">test_assertStatusOfPhase_xfailExpected_passes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;assert_status_of_phase should pass when xfail=&#39;expected&#39; and the line contains</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;assert_status_of_phase should pass when xfail=&#39;expected&#39; and the line contains</span>
 <span class="sd">        the EXPECTED comment&quot;&quot;&quot;</span>
         <span class="n">test_name</span> <span class="o">=</span> <span class="s2">&quot;my.test.name&quot;</span>
         <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_line</span><span class="p">(</span>
@@ -261,7 +264,7 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestCustomAssertions.test_assertStatusOfPhase_xfailExpected_fails"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_custom_assertions_test_status.TestCustomAssertions.test_assertStatusOfPhase_xfailExpected_fails">[docs]</a>    <span class="k">def</span> <span class="nf">test_assertStatusOfPhase_xfailExpected_fails</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;assert_status_of_phase should fail when xfail=&#39;expected&#39; but the line does NOT contain</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;assert_status_of_phase should fail when xfail=&#39;expected&#39; but the line does NOT contain</span>
 <span class="sd">        the EXPECTED comment&quot;&quot;&quot;</span>
         <span class="n">test_name</span> <span class="o">=</span> <span class="s2">&quot;my.test.name&quot;</span>
         <span class="c1"># Note that the line contains the UNEXPECTED comment, but not the EXPECTED comment</span>
@@ -289,7 +292,7 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestCustomAssertions.test_assertStatusOfPhase_xfailUnexpected_passes"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_custom_assertions_test_status.TestCustomAssertions.test_assertStatusOfPhase_xfailUnexpected_passes">[docs]</a>    <span class="k">def</span> <span class="nf">test_assertStatusOfPhase_xfailUnexpected_passes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;assert_status_of_phase should pass when xfail=&#39;unexpected&#39; and the line contains</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;assert_status_of_phase should pass when xfail=&#39;unexpected&#39; and the line contains</span>
 <span class="sd">        the UNEXPECTED comment&quot;&quot;&quot;</span>
         <span class="n">test_name</span> <span class="o">=</span> <span class="s2">&quot;my.test.name&quot;</span>
         <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_line</span><span class="p">(</span>
@@ -311,7 +314,7 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestCustomAssertions.test_assertStatusOfPhase_xfailUnexpected_fails"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_custom_assertions_test_status.TestCustomAssertions.test_assertStatusOfPhase_xfailUnexpected_fails">[docs]</a>    <span class="k">def</span> <span class="nf">test_assertStatusOfPhase_xfailUnexpected_fails</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;assert_status_of_phase should fail when xfail=&#39;unexpected&#39; but the line does NOT</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;assert_status_of_phase should fail when xfail=&#39;unexpected&#39; but the line does NOT</span>
 <span class="sd">        contain the UNEXPECTED comment&quot;&quot;&quot;</span>
         <span class="n">test_name</span> <span class="o">=</span> <span class="s2">&quot;my.test.name&quot;</span>
         <span class="c1"># Note that the line contains the EXPECTED comment, but not the UNEXPECTED comment</span>

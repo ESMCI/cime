@@ -11,10 +11,9 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/doctools.js"></script>
         <script src="../../../_static/sphinx_highlight.js"></script>
         <script src="../../../_static/pop_ver.js"></script>
@@ -28,14 +27,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../../index.html" class="icon icon-home"> CIME
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            CIME
           </a>
               <div class="version">
                 master
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -69,9 +72,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../../index.html">Module code</a> &raquo;</li>
-      <li>CIME.tests.custom_assertions_test_status</li>
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">CIME.tests.custom_assertions_test_status</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -95,7 +98,7 @@
 
 <div class="viewcode-block" id="CustomAssertionsTestStatus"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.custom_assertions_test_status.CustomAssertionsTestStatus">[docs]</a><span class="k">class</span> <span class="nc">CustomAssertionsTestStatus</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
 <div class="viewcode-block" id="CustomAssertionsTestStatus.assert_status_of_phase"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.custom_assertions_test_status.CustomAssertionsTestStatus.assert_status_of_phase">[docs]</a>    <span class="k">def</span> <span class="nf">assert_status_of_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">test_name</span><span class="p">,</span> <span class="n">xfail</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Asserts that &#39;output&#39; contains a line showing the given</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Asserts that &#39;output&#39; contains a line showing the given</span>
 <span class="sd">        status for the given phase for the given test_name.</span>
 
 <span class="sd">        &#39;xfail&#39; should have one of the following values:</span>
@@ -128,7 +131,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertRegex</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">expected_re</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="CustomAssertionsTestStatus.assert_phase_absent"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.custom_assertions_test_status.CustomAssertionsTestStatus.assert_phase_absent">[docs]</a>    <span class="k">def</span> <span class="nf">assert_phase_absent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">test_name</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Asserts that &#39;output&#39; does not contain a status line for the</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Asserts that &#39;output&#39; does not contain a status line for the</span>
 <span class="sd">        given phase and test_name&quot;&quot;&quot;</span>
         <span class="n">expected</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
             <span class="sa">r</span><span class="s2">&quot;^.* +&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_test_name_and_phase_regex</span><span class="p">(</span><span class="n">test_name</span><span class="p">,</span> <span class="n">phase</span><span class="p">),</span>
@@ -138,7 +141,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertNotRegex</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">expected</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="CustomAssertionsTestStatus.assert_core_phases"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.custom_assertions_test_status.CustomAssertionsTestStatus.assert_core_phases">[docs]</a>    <span class="k">def</span> <span class="nf">assert_core_phases</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">test_name</span><span class="p">,</span> <span class="n">fails</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Asserts that &#39;output&#39; contains a line for each of the core test</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Asserts that &#39;output&#39; contains a line for each of the core test</span>
 <span class="sd">        phases for the given test_name. All results should be PASS</span>
 <span class="sd">        except those given by the fails list, which should be FAILS.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -154,7 +157,7 @@
 <div class="viewcode-block" id="CustomAssertionsTestStatus.assert_num_expected_unexpected_fails"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.custom_assertions_test_status.CustomAssertionsTestStatus.assert_num_expected_unexpected_fails">[docs]</a>    <span class="k">def</span> <span class="nf">assert_num_expected_unexpected_fails</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">num_expected</span><span class="p">,</span> <span class="n">num_unexpected</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Asserts that the number of occurrences of expected and unexpected fails in</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Asserts that the number of occurrences of expected and unexpected fails in</span>
 <span class="sd">        &#39;output&#39; matches the given numbers&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
             <span class="n">output</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">test_status</span><span class="o">.</span><span class="n">TEST_EXPECTED_FAILURE_COMMENT</span><span class="p">),</span> <span class="n">num_expected</span>
@@ -166,7 +169,7 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_test_name_and_phase_regex</span><span class="p">(</span><span class="n">test_name</span><span class="p">,</span> <span class="n">phase</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns a regex matching the portion of a TestStatus line</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a regex matching the portion of a TestStatus line</span>
 <span class="sd">        containing the test name and phase&quot;&quot;&quot;</span>
         <span class="c1"># The main purpose of extracting this into a shared method is:</span>
         <span class="c1"># assert_phase_absent could wrongly pass if the format of the</span>

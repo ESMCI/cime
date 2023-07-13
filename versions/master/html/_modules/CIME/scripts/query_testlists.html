@@ -11,10 +11,9 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/doctools.js"></script>
         <script src="../../../_static/sphinx_highlight.js"></script>
         <script src="../../../_static/pop_ver.js"></script>
@@ -28,14 +27,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../../index.html" class="icon icon-home"> CIME
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            CIME
           </a>
               <div class="version">
                 master
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -69,9 +72,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../../index.html">Module code</a> &raquo;</li>
-      <li>CIME.scripts.query_testlists</li>
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">CIME.scripts.query_testlists</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -185,7 +188,7 @@
 <span class="c1">###############################################################################</span>
 <span class="k">def</span> <span class="nf">_check_argument_compatibility</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
     <span class="c1">###############################################################################</span>
-    <span class="sd">&quot;&quot;&quot;Ensures there are no incompatible arguments</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Ensures there are no incompatible arguments</span>
 
 <span class="sd">    If incompatible arguments are found, aborts with a helpful error</span>
 <span class="sd">    message.</span>
@@ -212,7 +215,7 @@
 <span class="c1">###############################################################################</span>
 <span class="k">def</span> <span class="nf">_process_list_type</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
     <span class="c1">###############################################################################</span>
-    <span class="sd">&quot;&quot;&quot;Convert args.list_type into a name that matches one of the keys of the</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert args.list_type into a name that matches one of the keys of the</span>
 <span class="sd">    test data dictionaries</span>
 
 <span class="sd">    Args:</span>
@@ -230,7 +233,7 @@
 <span class="c1">###############################################################################</span>
 <div class="viewcode-block" id="print_test_data"><a class="viewcode-back" href="../../../CIME_api/CIME.scripts.html#CIME.scripts.query_testlists.print_test_data">[docs]</a><span class="k">def</span> <span class="nf">print_test_data</span><span class="p">(</span><span class="n">test_data</span><span class="p">,</span> <span class="n">show_options</span><span class="p">,</span> <span class="n">define_testtypes</span><span class="p">):</span>
     <span class="c1">###############################################################################</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Args:</span>
 <span class="sd">        test_data (dict): dictionary of test data, containing at least these keys:</span>
 <span class="sd">            - name: full test name</span>
@@ -266,7 +269,7 @@
 <span class="c1">###############################################################################</span>
 <div class="viewcode-block" id="count_test_data"><a class="viewcode-back" href="../../../CIME_api/CIME.scripts.html#CIME.scripts.query_testlists.count_test_data">[docs]</a><span class="k">def</span> <span class="nf">count_test_data</span><span class="p">(</span><span class="n">test_data</span><span class="p">):</span>
     <span class="c1">###############################################################################</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Args:</span>
 <span class="sd">        test_data (dict): dictionary of test data, containing at least these keys:</span>
 <span class="sd">            - name: full test name</span>
@@ -306,7 +309,7 @@
 <span class="c1">###############################################################################</span>
 <div class="viewcode-block" id="list_test_data"><a class="viewcode-back" href="../../../CIME_api/CIME.scripts.html#CIME.scripts.query_testlists.list_test_data">[docs]</a><span class="k">def</span> <span class="nf">list_test_data</span><span class="p">(</span><span class="n">test_data</span><span class="p">,</span> <span class="n">list_type</span><span class="p">):</span>
     <span class="c1">###############################################################################</span>
-    <span class="sd">&quot;&quot;&quot;List categories, machines or compilers</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;List categories, machines or compilers</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        test_data (dict): dictionary of test data, containing at least these keys:</span>

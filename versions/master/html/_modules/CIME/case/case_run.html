@@ -11,10 +11,9 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/doctools.js"></script>
         <script src="../../../_static/sphinx_highlight.js"></script>
         <script src="../../../_static/pop_ver.js"></script>
@@ -28,14 +27,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../../index.html" class="icon icon-home"> CIME
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            CIME
           </a>
               <div class="version">
                 master
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -69,9 +72,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../../index.html">Module code</a> &raquo;</li>
-      <li>CIME.case.case_run</li>
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">CIME.case.case_run</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -321,7 +324,7 @@
                         <span class="k">case</span><span class="o">.</span><span class="n">case_st_archive</span><span class="p">(</span><span class="n">resubmit</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
                         <span class="k">case</span><span class="o">.</span><span class="n">restore_from_archive</span><span class="p">()</span>
 
-                    <span class="n">lid</span> <span class="o">=</span> <span class="n">new_lid</span><span class="p">()</span>
+                    <span class="n">lid</span> <span class="o">=</span> <span class="n">new_lid</span><span class="p">(</span><span class="n">case</span><span class="o">=</span><span class="n">case</span><span class="p">)</span>
                     <span class="k">case</span><span class="o">.</span><span class="n">create_namelists</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">cmd_success</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">loop</span><span class="p">:</span>
@@ -392,11 +395,11 @@
         <span class="n">file_prefix</span> <span class="o">=</span> <span class="s2">&quot;cpl&quot;</span>
 
     <span class="n">cpl_ninst</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="k">if</span> <span class="n">file_prefix</span> <span class="o">!=</span> <span class="s2">&quot;drv&quot;</span> <span class="ow">and</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MULTI_DRIVER&quot;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MULTI_DRIVER&quot;</span><span class="p">):</span>
         <span class="n">cpl_ninst</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;NINST_MAX&quot;</span><span class="p">)</span>
     <span class="n">cpl_logs</span> <span class="o">=</span> <span class="p">[]</span>
 
-    <span class="k">if</span> <span class="n">file_prefix</span> <span class="o">!=</span> <span class="s2">&quot;drv&quot;</span> <span class="ow">and</span> <span class="n">cpl_ninst</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">cpl_ninst</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">inst</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">cpl_ninst</span><span class="p">):</span>
             <span class="n">cpl_logs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                 <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="n">file_prefix</span> <span class="o">+</span> <span class="s2">&quot;_</span><span class="si">%04d</span><span class="s2">.log.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">inst</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">lid</span><span class="p">)</span>
@@ -408,7 +411,6 @@
 
     <span class="c1"># find the last model.log and cpl.log</span>
     <span class="n">model_logfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="n">model</span> <span class="o">+</span> <span class="s2">&quot;.log.&quot;</span> <span class="o">+</span> <span class="n">lid</span><span class="p">)</span>
-
     <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">model_logfile</span><span class="p">):</span>
         <span class="n">expect</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;Model did not complete, no </span><span class="si">{}</span><span class="s2"> log file &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">model_logfile</span><span class="p">))</span>
     <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">model_logfile</span><span class="p">)</span><span class="o">.</span><span class="n">st_size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
@@ -416,6 +418,7 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">count_ok</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">cpl_logfile</span> <span class="ow">in</span> <span class="n">cpl_logs</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;cpl_logfile </span><span class="si">{</span><span class="n">cpl_logfile</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">cpl_logfile</span><span class="p">):</span>
                 <span class="k">break</span>
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">cpl_logfile</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
@@ -440,7 +443,7 @@
 <span class="c1">######################################################################################</span>
 <span class="k">def</span> <span class="nf">_resubmit_check</span><span class="p">(</span><span class="n">case</span><span class="p">):</span>
     <span class="c1">###############################################################################</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    check to see if we need to do resubmission from this particular job,</span>
 <span class="sd">    Note that Mira requires special logic</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -519,7 +522,7 @@
     <span class="c1"># Set up the run, run the model, do the postrun steps</span>
 
     <span class="c1"># set up the LID</span>
-    <span class="n">lid</span> <span class="o">=</span> <span class="n">new_lid</span><span class="p">()</span>
+    <span class="n">lid</span> <span class="o">=</span> <span class="n">new_lid</span><span class="p">(</span><span class="n">case</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
 
     <span class="n">prerun_script</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;PRERUN_SCRIPT&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">prerun_script</span><span class="p">:</span>

@@ -11,10 +11,9 @@
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/doctools.js"></script>
         <script src="../../_static/sphinx_highlight.js"></script>
         <script src="../../_static/pop_ver.js"></script>
@@ -28,14 +27,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../index.html" class="icon icon-home"> CIME
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            CIME
           </a>
               <div class="version">
                 master
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -69,9 +72,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../index.html">Module code</a> &raquo;</li>
-      <li>CIME.test_scheduler</li>
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">CIME.test_scheduler</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -292,6 +295,7 @@
         <span class="n">single_exe</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">workflow</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">chksum</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">force_rebuild</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="c1">###########################################################################</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cime_root</span> <span class="o">=</span> <span class="n">get_cime_root</span><span class="p">()</span>
@@ -307,7 +311,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_input_dir</span> <span class="o">=</span> <span class="n">input_dir</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_pesfile</span> <span class="o">=</span> <span class="n">pesfile</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_allow_baseline_overwrite</span> <span class="o">=</span> <span class="n">allow_baseline_overwrite</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_allow_pnl</span> <span class="o">=</span> <span class="n">allow_pnl</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_single_exe</span> <span class="o">=</span> <span class="n">single_exe</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_single_exe</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_allow_pnl</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_allow_pnl</span> <span class="o">=</span> <span class="n">allow_pnl</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_non_local</span> <span class="o">=</span> <span class="n">non_local</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_build_groups</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_workflow</span> <span class="o">=</span> <span class="n">workflow</span>
@@ -475,6 +483,9 @@
         <span class="k">if</span> <span class="n">use_existing</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">test</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tests</span><span class="p">:</span>
                 <span class="k">with</span> <span class="n">TestStatus</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_test_dir</span><span class="p">(</span><span class="n">test</span><span class="p">))</span> <span class="k">as</span> <span class="n">ts</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">force_rebuild</span><span class="p">:</span>
+                        <span class="n">ts</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span><span class="n">SHAREDLIB_BUILD_PHASE</span><span class="p">,</span> <span class="n">TEST_PEND_STATUS</span><span class="p">)</span>
+
                     <span class="k">for</span> <span class="n">phase</span><span class="p">,</span> <span class="n">status</span> <span class="ow">in</span> <span class="n">ts</span><span class="p">:</span>
                         <span class="k">if</span> <span class="n">phase</span> <span class="ow">in</span> <span class="n">CORE_PHASES</span><span class="p">:</span>
                             <span class="k">if</span> <span class="n">status</span> <span class="ow">in</span> <span class="p">[</span><span class="n">TEST_PEND_STATUS</span><span class="p">,</span> <span class="n">TEST_FAIL_STATUS</span><span class="p">]:</span>
@@ -520,7 +531,7 @@
 
         <span class="c1"># Setup build groups</span>
         <span class="k">if</span> <span class="n">single_exe</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_build_groups</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_tests</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_build_groups</span> <span class="o">=</span> <span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tests</span><span class="o">.</span><span class="n">keys</span><span class="p">())]</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">share_exes</span><span class="p">:</span>
             <span class="c1"># Any test that&#39;s in a shared-enabled suite with other tests should share exes</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_build_groups</span> <span class="o">=</span> <span class="n">get_build_groups</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tests</span><span class="p">)</span>
@@ -1078,6 +1089,17 @@
                 <span class="s2">&quot;Fatal error in case.cmpgen_namelists: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">output</span><span class="p">),</span>
             <span class="p">)</span>
 
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_single_exe</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">Case</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_test_dir</span><span class="p">(</span><span class="n">test</span><span class="p">),</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">as</span> <span class="n">case</span><span class="p">:</span>
+                <span class="n">tests</span> <span class="o">=</span> <span class="n">Tests</span><span class="p">()</span>
+
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">tests</span><span class="o">.</span><span class="n">support_single_exe</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_update_test_status_file</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="n">SETUP_PHASE</span><span class="p">,</span> <span class="n">TEST_FAIL_STATUS</span><span class="p">)</span>
+
+                    <span class="k">raise</span>
+
         <span class="k">return</span> <span class="n">rv</span>
 
     <span class="c1">###########################################################################</span>
@@ -1243,7 +1265,7 @@
     <span class="c1">###########################################################################</span>
     <span class="k">def</span> <span class="nf">_update_test_status_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test</span><span class="p">,</span> <span class="n">test_phase</span><span class="p">,</span> <span class="n">status</span><span class="p">):</span>
         <span class="c1">###########################################################################</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        In general, test_scheduler should not be responsible for updating</span>
 <span class="sd">        the TestStatus file, but there are a few cases where it has to.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1483,7 +1505,7 @@
         <span class="n">ignore_memleak</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="c1">###########################################################################</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Main API for this class.</span>
 
 <span class="sd">        Return True if all tests passed.</span>

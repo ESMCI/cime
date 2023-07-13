@@ -11,10 +11,9 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/doctools.js"></script>
         <script src="../../../_static/sphinx_highlight.js"></script>
         <script src="../../../_static/pop_ver.js"></script>
@@ -28,14 +27,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../../index.html" class="icon icon-home"> CIME
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            CIME
           </a>
               <div class="version">
                 master
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -69,9 +72,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../../index.html">Module code</a> &raquo;</li>
-      <li>CIME.tests.test_unit_user_mod_support</li>
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">CIME.tests.test_unit_user_mod_support</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -114,7 +117,7 @@
         <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_user_mods_parent_dir</span><span class="p">,</span> <span class="n">ignore_errors</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestUserModSupport.createUserMod"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_user_mod_support.TestUserModSupport.createUserMod">[docs]</a>    <span class="k">def</span> <span class="nf">createUserMod</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">include_dirs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Create a user_mods directory with the given name.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a user_mods directory with the given name.</span>
 
 <span class="sd">        This directory is created within self._user_mods_parent_dir</span>
 
@@ -167,7 +170,7 @@
         <span class="n">expected_sourcemod</span><span class="p">,</span>
         <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Asserts that the contents of the files in self._caseroot match expectations</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Asserts that the contents of the files in self._caseroot match expectations</span>
 
 <span class="sd">        If msg is provided, it is printed for some failing assertions</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -225,7 +228,7 @@
             <span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestUserModSupport.test_two_applications"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_user_mod_support.TestUserModSupport.test_two_applications">[docs]</a>    <span class="k">def</span> <span class="nf">test_two_applications</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;If apply_user_mods is called twice, the second should appear after the first so that it takes precedence.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;If apply_user_mods is called twice, the second should appear after the first so that it takes precedence.&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">createUserMod</span><span class="p">(</span><span class="s2">&quot;foo1&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">createUserMod</span><span class="p">(</span><span class="s2">&quot;foo2&quot;</span><span class="p">)</span>
@@ -243,7 +246,7 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestUserModSupport.test_include"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_user_mod_support.TestUserModSupport.test_include">[docs]</a>    <span class="k">def</span> <span class="nf">test_include</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;If there is an included mod, the main one should appear after the included one so that it takes precedence.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;If there is an included mod, the main one should appear after the included one so that it takes precedence.&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">createUserMod</span><span class="p">(</span><span class="s2">&quot;base&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">createUserMod</span><span class="p">(</span><span class="s2">&quot;derived&quot;</span><span class="p">,</span> <span class="n">include_dirs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;base&quot;</span><span class="p">])</span>
@@ -260,7 +263,7 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestUserModSupport.test_duplicate_includes"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_user_mod_support.TestUserModSupport.test_duplicate_includes">[docs]</a>    <span class="k">def</span> <span class="nf">test_duplicate_includes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Test multiple includes, where both include the same base mod.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Test multiple includes, where both include the same base mod.</span>
 
 <span class="sd">        The base mod should only be included once.</span>
 <span class="sd">        &quot;&quot;&quot;</span>

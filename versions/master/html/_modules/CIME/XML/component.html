@@ -11,10 +11,9 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/doctools.js"></script>
         <script src="../../../_static/sphinx_highlight.js"></script>
         <script src="../../../_static/pop_ver.js"></script>
@@ -28,14 +27,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../../index.html" class="icon icon-home"> CIME
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            CIME
           </a>
               <div class="version">
                 master
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -69,9 +72,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../../index.html">Module code</a> &raquo;</li>
-      <li>CIME.XML.component</li>
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">CIME.XML.component</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -95,7 +98,7 @@
 
 <div class="viewcode-block" id="Component"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.component.Component">[docs]</a><span class="k">class</span> <span class="nc">Component</span><span class="p">(</span><span class="n">EntryID</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infile</span><span class="p">,</span> <span class="n">comp_class</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        initialize a Component obect from the component xml file in infile</span>
 <span class="sd">        associate the component class with comp_class if provided.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -120,7 +123,7 @@
         <span class="k">return</span> <span class="n">EntryID</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">attribute</span><span class="p">,</span> <span class="n">resolved</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Component.get_valid_model_components"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.component.Component.get_valid_model_components">[docs]</a>    <span class="k">def</span> <span class="nf">get_valid_model_components</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        return a list of all possible valid generic (e.g. atm, clm, ...) model components</span>
 <span class="sd">        from the entries in the model CONFIG_CPL_FILE</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -131,7 +134,7 @@
         <span class="k">return</span> <span class="n">components</span></div>
 
     <span class="k">def</span> <span class="nf">_get_value_match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">exact_match</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        return the best match for the node &lt;values&gt; entries</span>
 <span class="sd">        Note that a component object uses a different matching algorithm than an entryid object</span>
 <span class="sd">        For a component object the _get_value_match used is below  and is not the one in entry_id.py</span>
@@ -227,7 +230,7 @@
             <span class="k">return</span> <span class="s2">&quot;&quot;</span></div>
 
     <span class="k">def</span> <span class="nf">_get_description_v3</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compsetname</span><span class="p">,</span> <span class="n">comp_class</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        version 3 of the config_component.xml file has the description section at the top of the file</span>
 <span class="sd">        the description field has one attribute &#39;modifier_mode&#39; which has allowed values</span>
 <span class="sd">        &#39;*&#39; 0 or more modifiers (default)</span>
@@ -315,7 +318,7 @@
         <span class="k">return</span> <span class="n">desc</span>
 
     <span class="k">def</span> <span class="nf">_get_description_match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compsetname</span><span class="p">,</span> <span class="n">reqset</span><span class="p">,</span> <span class="n">fullset</span><span class="p">,</span> <span class="n">modifier_mode</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">        &gt;&gt;&gt; obj = Component(&#39;testingonly&#39;, &#39;ATM&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; obj._get_description_match(&quot;1850_DATM%CRU_FRED&quot;,set([&quot;DATM&quot;]), set([&quot;DATM&quot;,&quot;CRU&quot;,&quot;HSI&quot;]), &quot;*&quot;)</span>
@@ -400,7 +403,7 @@
         <span class="k">return</span> <span class="n">desc</span>
 
 <div class="viewcode-block" id="Component.print_values"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.component.Component.print_values">[docs]</a>    <span class="k">def</span> <span class="nf">print_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        print values for help and description in target config_component.xml file</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">helpnode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span><span class="s2">&quot;help&quot;</span><span class="p">)</span>
@@ -413,7 +416,7 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;   </span><span class="si">{:20s}</span><span class="s2"> : </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">text</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)))</span></div>
 
 <div class="viewcode-block" id="Component.return_values"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.component.Component.return_values">[docs]</a>    <span class="k">def</span> <span class="nf">return_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        return a list of hashes from target config_component.xml file</span>
 <span class="sd">        This routine is used by external tools in https://github.com/NCAR/CESM_xml2html</span>
 <span class="sd">        &quot;&quot;&quot;</span>

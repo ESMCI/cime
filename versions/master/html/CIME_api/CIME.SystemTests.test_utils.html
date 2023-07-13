@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CIME.SystemTests.test_utils package &mdash; CIME master documentation</title>
@@ -12,10 +12,9 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/sphinx_highlight.js"></script>
         <script src="../_static/pop_ver.js"></script>
@@ -31,14 +30,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../index.html" class="icon icon-home"> CIME
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            CIME
           </a>
               <div class="version">
                 master
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -120,11 +123,11 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="modules.html">CIME</a> &raquo;</li>
-          <li><a href="CIME.html">CIME package</a> &raquo;</li>
-          <li><a href="CIME.SystemTests.html">CIME.SystemTests package</a> &raquo;</li>
-      <li>CIME.SystemTests.test_utils package</li>
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">CIME</a></li>
+          <li class="breadcrumb-item"><a href="CIME.html">CIME package</a></li>
+          <li class="breadcrumb-item"><a href="CIME.SystemTests.html">CIME.SystemTests package</a></li>
+      <li class="breadcrumb-item active">CIME.SystemTests.test_utils package</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/CIME_api/CIME.SystemTests.test_utils.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -145,7 +148,7 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="CIME.SystemTests.test_utils.user_nl_utils.append_to_user_nl_files">
 <span class="sig-prename descclassname"><span class="pre">CIME.SystemTests.test_utils.user_nl_utils.</span></span><span class="sig-name descname"><span class="pre">append_to_user_nl_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">caseroot</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">component</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contents</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/SystemTests/test_utils/user_nl_utils.html#append_to_user_nl_files"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.SystemTests.test_utils.user_nl_utils.append_to_user_nl_files" title="Permalink to this definition"></a></dt>
-<dd><p>Append the string given by ‘contents’ to the end of each user_nl file for
+<dd><p>Append the string(s) given by ‘contents’ to the end of each user_nl file for
 the given component (there may be multiple such user_nl files in the case of
 a multi-instance test).</p>
 <p>Also puts new lines before and after the appended text - so ‘contents’
@@ -159,8 +162,9 @@ component=’clm’, this function will operate on all user_nl files
 matching the pattern ‘user_nl_clm*’. (We do a wildcard match to
 handle multi-instance tests.)</p>
 </dd>
+<dt>contents (str or list-like): Contents to append to the end of each user_nl</dt><dd><p>file. If list-like, each item will be appended on its own line.</p>
+</dd>
 </dl>
-<p>contents (str): Contents to append to the end of each user_nl file</p>
 </dd>
 </dl>
 </dd></dl>

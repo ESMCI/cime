@@ -11,10 +11,9 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/doctools.js"></script>
         <script src="../../../_static/sphinx_highlight.js"></script>
         <script src="../../../_static/pop_ver.js"></script>
@@ -28,14 +27,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../../index.html" class="icon icon-home"> CIME
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            CIME
           </a>
               <div class="version">
                 master
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -69,9 +72,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../../index.html">Module code</a> &raquo;</li>
-      <li>CIME.tests.test_sys_create_newcase</li>
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">CIME.tests.test_sys_create_newcase</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -90,12 +93,9 @@
 <span class="kn">import</span> <span class="nn">sys</span>
 
 <span class="kn">from</span> <span class="nn">CIME</span> <span class="kn">import</span> <span class="n">utils</span>
-<span class="kn">from</span> <span class="nn">CIME.config</span> <span class="kn">import</span> <span class="n">Config</span>
 <span class="kn">from</span> <span class="nn">CIME.tests</span> <span class="kn">import</span> <span class="n">base</span>
 <span class="kn">from</span> <span class="nn">CIME.case.case</span> <span class="kn">import</span> <span class="n">Case</span>
 <span class="kn">from</span> <span class="nn">CIME.build</span> <span class="kn">import</span> <span class="n">CmakeTmpBuildDir</span>
-
-<span class="n">config</span> <span class="o">=</span> <span class="n">Config</span><span class="o">.</span><span class="n">instance</span><span class="p">()</span>
 
 
 <div class="viewcode-block" id="TestCreateNewcase"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_create_newcase.TestCreateNewcase">[docs]</a><span class="k">class</span> <span class="nc">TestCreateNewcase</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">BaseTestCase</span><span class="p">):</span>
@@ -120,7 +120,7 @@
             <span class="n">testdir</span><span class="p">,</span>
             <span class="bp">cls</span><span class="o">.</span><span class="n">_testroot</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">allow_unsupported</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">allow_unsupported</span><span class="p">:</span>
             <span class="n">args</span> <span class="o">+=</span> <span class="s2">&quot; --run-unsupported&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">TEST_COMPILER</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">args</span> <span class="o">=</span> <span class="n">args</span> <span class="o">+</span> <span class="s2">&quot; --compiler </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">TEST_COMPILER</span>
@@ -154,11 +154,51 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">run_cmd_assert_result</span><span class="p">(</span><span class="s2">&quot;./case.build&quot;</span><span class="p">,</span> <span class="n">from_dir</span><span class="o">=</span><span class="n">testdir</span><span class="p">)</span>
         <span class="k">with</span> <span class="n">Case</span><span class="p">(</span><span class="n">testdir</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">as</span> <span class="n">case</span><span class="p">:</span>
             <span class="k">case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;CHARGE_ACCOUNT&quot;</span><span class="p">,</span> <span class="s2">&quot;fred&quot;</span><span class="p">)</span>
+            <span class="c1"># to be used in next test</span>
+            <span class="n">batch_system</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;BATCH_SYSTEM&quot;</span><span class="p">)</span>
+
+        <span class="c1"># on systems (like github workflow) that do not have batch, set this for the next test</span>
+        <span class="k">if</span> <span class="n">batch_system</span> <span class="o">==</span> <span class="s2">&quot;none&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">run_cmd_assert_result</span><span class="p">(</span>
+                <span class="s1">&#39;./xmlchange --subgroup case.run BATCH_COMMAND_FLAGS=&quot;-q \$JOB_QUEUE&quot;&#39;</span><span class="p">,</span>
+                <span class="n">from_dir</span><span class="o">=</span><span class="n">testdir</span><span class="p">,</span>
+            <span class="p">)</span>
 
         <span class="c1"># this should not fail with a locked file issue</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">run_cmd_assert_result</span><span class="p">(</span><span class="s2">&quot;./case.build&quot;</span><span class="p">,</span> <span class="n">from_dir</span><span class="o">=</span><span class="n">testdir</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">run_cmd_assert_result</span><span class="p">(</span><span class="s2">&quot;./case.st_archive --test-all&quot;</span><span class="p">,</span> <span class="n">from_dir</span><span class="o">=</span><span class="n">testdir</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">Case</span><span class="p">(</span><span class="n">testdir</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">as</span> <span class="n">case</span><span class="p">:</span>
+            <span class="n">batch_command</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;BATCH_COMMAND_FLAGS&quot;</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="s2">&quot;case.run&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_cmd_assert_result</span><span class="p">(</span>
+            <span class="s1">&#39;./xmlchange --append --subgroup case.run BATCH_COMMAND_FLAGS=&quot;-l trythis&quot;&#39;</span><span class="p">,</span>
+            <span class="n">from_dir</span><span class="o">=</span><span class="n">testdir</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="c1"># Test that changes to BATCH_COMMAND_FLAGS work</span>
+        <span class="k">with</span> <span class="n">Case</span><span class="p">(</span><span class="n">testdir</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">as</span> <span class="n">case</span><span class="p">:</span>
+            <span class="n">new_batch_command</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span>
+                <span class="s2">&quot;BATCH_COMMAND_FLAGS&quot;</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="s2">&quot;case.run&quot;</span>
+            <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span>
+            <span class="n">new_batch_command</span> <span class="o">==</span> <span class="n">batch_command</span> <span class="o">+</span> <span class="s2">&quot; -l trythis&quot;</span><span class="p">,</span>
+            <span class="n">msg</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Failed to correctly append BATCH_COMMAND_FLAGS </span><span class="si">{</span><span class="n">new_batch_command</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">batch_command</span><span class="si">}</span><span class="s2">#&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_cmd_assert_result</span><span class="p">(</span>
+            <span class="s2">&quot;./xmlchange JOB_QUEUE=fred --subgroup case.run --force&quot;</span><span class="p">,</span> <span class="n">from_dir</span><span class="o">=</span><span class="n">testdir</span>
+        <span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">Case</span><span class="p">(</span><span class="n">testdir</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">as</span> <span class="n">case</span><span class="p">:</span>
+            <span class="n">new_batch_command</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span>
+                <span class="s2">&quot;BATCH_COMMAND_FLAGS&quot;</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="s2">&quot;case.run&quot;</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span>
+                <span class="s2">&quot;fred&quot;</span> <span class="ow">in</span> <span class="n">new_batch_command</span><span class="p">,</span>
+                <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Failed to update JOB_QUEUE in BATCH_COMMAND_FLAGS&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
 
         <span class="c1"># Trying to set values outside of context manager should fail</span>
         <span class="n">case</span> <span class="o">=</span> <span class="n">Case</span><span class="p">(</span><span class="n">testdir</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -234,7 +274,7 @@
             <span class="s2">&quot; --case </span><span class="si">%s</span><span class="s2"> --compset X --user-mods-dir </span><span class="si">%s</span><span class="s2"> --output-root </span><span class="si">%s</span><span class="s2"> --handle-preexisting-dirs=r&quot;</span>
             <span class="o">%</span> <span class="p">(</span><span class="n">testdir</span><span class="p">,</span> <span class="n">user_mods_dir</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_testroot</span><span class="p">)</span>
         <span class="p">)</span>
-        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">allow_unsupported</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">allow_unsupported</span><span class="p">:</span>
             <span class="n">args</span> <span class="o">+=</span> <span class="s2">&quot; --run-unsupported&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">TEST_COMPILER</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">args</span> <span class="o">=</span> <span class="n">args</span> <span class="o">+</span> <span class="s2">&quot; --compiler </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">TEST_COMPILER</span>
@@ -408,7 +448,7 @@
 
         <span class="bp">cls</span><span class="o">.</span><span class="n">_testdirs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">testdir</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">test_mode</span> <span class="o">==</span> <span class="s2">&quot;cesm&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">test_mode</span> <span class="o">==</span> <span class="s2">&quot;cesm&quot;</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_cime_default_driver</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;nuopc&quot;</span><span class="p">:</span>
                 <span class="n">pesfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
                     <span class="n">utils</span><span class="o">.</span><span class="n">get_src_root</span><span class="p">(),</span>
@@ -435,7 +475,7 @@
             <span class="s2">&quot;--case </span><span class="si">%s</span><span class="s2"> --compset 2000_SATM_XLND_SICE_SOCN_XROF_XGLC_SWAV  --pesfile </span><span class="si">%s</span><span class="s2"> --res f19_g16 --output-root </span><span class="si">%s</span><span class="s2"> --handle-preexisting-dirs=r&quot;</span>
             <span class="o">%</span> <span class="p">(</span><span class="n">testdir</span><span class="p">,</span> <span class="n">pesfile</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_testroot</span><span class="p">)</span>
         <span class="p">)</span>
-        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">allow_unsupported</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">allow_unsupported</span><span class="p">:</span>
             <span class="n">args</span> <span class="o">+=</span> <span class="s2">&quot; --run-unsupported&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">TEST_COMPILER</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">args</span> <span class="o">+=</span> <span class="s2">&quot; --compiler </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">TEST_COMPILER</span>
@@ -468,7 +508,7 @@
             <span class="s2">&quot;--case </span><span class="si">%s</span><span class="s2"> --compset 2000_SATM_XLND_SICE_SOCN_XROF_XGLC_SWAV --pesfile </span><span class="si">%s</span><span class="s2"> --res f19_g16 --output-root </span><span class="si">%s</span><span class="s2"> --handle-preexisting-dirs=r&quot;</span>
             <span class="o">%</span> <span class="p">(</span><span class="n">testdir</span><span class="p">,</span> <span class="n">pesfile</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_testroot</span><span class="p">)</span>
         <span class="p">)</span>
-        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">allow_unsupported</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">allow_unsupported</span><span class="p">:</span>
             <span class="n">args</span> <span class="o">+=</span> <span class="s2">&quot; --run-unsupported&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">TEST_COMPILER</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">args</span> <span class="o">+=</span> <span class="s2">&quot; --compiler </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">TEST_COMPILER</span>
@@ -505,7 +545,7 @@
             <span class="s2">&quot; --case CreateNewcaseTest --script-root </span><span class="si">%s</span><span class="s2"> --compset X --output-root </span><span class="si">%s</span><span class="s2"> --handle-preexisting-dirs u&quot;</span>
             <span class="o">%</span> <span class="p">(</span><span class="n">testdir</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_testroot</span><span class="p">)</span>
         <span class="p">)</span>
-        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">allow_unsupported</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">allow_unsupported</span><span class="p">:</span>
             <span class="n">args</span> <span class="o">+=</span> <span class="s2">&quot; --run-unsupported&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">TEST_COMPILER</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">args</span> <span class="o">+=</span> <span class="s2">&quot; --compiler </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">TEST_COMPILER</span>
@@ -608,7 +648,7 @@
         <span class="bp">cls</span><span class="o">.</span><span class="n">_do_teardown</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">testdir</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestCreateNewcase.test_j_createnewcase_user_compset_vs_alias"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_create_newcase.TestCreateNewcase.test_j_createnewcase_user_compset_vs_alias">[docs]</a>    <span class="k">def</span> <span class="nf">test_j_createnewcase_user_compset_vs_alias</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a compset using the alias and another compset using the full compset name</span>
 <span class="sd">        and make sure they are the same by comparing the namelist files in CaseDocs.</span>
 <span class="sd">        Ignore the modelio files and clean the directory names out first.</span>
@@ -627,7 +667,7 @@
             <span class="n">args</span> <span class="o">+=</span> <span class="s2">&quot; --res f19_g17 &quot;</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">args</span> <span class="o">+=</span> <span class="s2">&quot; --res f19_g16 &quot;</span>
-        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">allow_unsupported</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">allow_unsupported</span><span class="p">:</span>
             <span class="n">args</span> <span class="o">+=</span> <span class="s2">&quot; --run-unsupported&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">TEST_COMPILER</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">args</span> <span class="o">+=</span> <span class="s2">&quot; --compiler </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">TEST_COMPILER</span>
@@ -668,7 +708,7 @@
             <span class="n">args</span> <span class="o">+=</span> <span class="s2">&quot; --res f19_g17 &quot;</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">args</span> <span class="o">+=</span> <span class="s2">&quot; --res f19_g16 &quot;</span>
-        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">allow_unsupported</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">allow_unsupported</span><span class="p">:</span>
             <span class="n">args</span> <span class="o">+=</span> <span class="s2">&quot; --run-unsupported&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">TEST_COMPILER</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">args</span> <span class="o">+=</span> <span class="s2">&quot; --compiler </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">TEST_COMPILER</span>
@@ -784,7 +824,7 @@
                 <span class="n">extra_machines_dir</span><span class="o">=</span><span class="n">extra_machines_dir</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="p">)</span>
-        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">allow_unsupported</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">allow_unsupported</span><span class="p">:</span>
             <span class="n">args</span> <span class="o">+=</span> <span class="s2">&quot; --run-unsupported&quot;</span>
 
         <span class="k">if</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_cime_default_driver</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;nuopc&quot;</span><span class="p">:</span>
@@ -819,14 +859,20 @@
         <span class="bp">cls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span>
 
         <span class="c1"># TODO refactor</span>
-        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">test_mode</span> <span class="o">==</span> <span class="s2">&quot;cesm&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">test_mode</span> <span class="o">==</span> <span class="s2">&quot;cesm&quot;</span><span class="p">:</span>
             <span class="n">alternative_driver</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;nuopc&quot;</span><span class="p">,)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">alternative_driver</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;moab&quot;</span><span class="p">,)</span>
 
         <span class="k">for</span> <span class="n">driver</span> <span class="ow">in</span> <span class="n">alternative_driver</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span>
+            <span class="k">if</span> <span class="n">driver</span> <span class="o">==</span> <span class="s2">&quot;moab&quot;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span>
                 <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">get_cime_root</span><span class="p">(),</span> <span class="s2">&quot;src&quot;</span><span class="p">,</span> <span class="s2">&quot;drivers&quot;</span><span class="p">,</span> <span class="n">driver</span><span class="p">)</span>
+            <span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">skipTest</span><span class="p">(</span>
+                    <span class="s2">&quot;Skipping driver test for </span><span class="si">{}</span><span class="s2">, driver not found&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">driver</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="n">driver</span> <span class="o">==</span> <span class="s2">&quot;nuopc&quot;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">get_src_root</span><span class="p">(),</span> <span class="s2">&quot;components&quot;</span><span class="p">,</span> <span class="s2">&quot;cmeps&quot;</span><span class="p">)</span>
             <span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">skipTest</span><span class="p">(</span>
                     <span class="s2">&quot;Skipping driver test for </span><span class="si">{}</span><span class="s2">, driver not found&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">driver</span><span class="p">)</span>
@@ -838,7 +884,7 @@
             <span class="n">args</span> <span class="o">=</span> <span class="s2">&quot; --driver </span><span class="si">{}</span><span class="s2"> --case </span><span class="si">{}</span><span class="s2"> --compset X --res f19_g16 --output-root </span><span class="si">{}</span><span class="s2"> --handle-preexisting-dirs=r&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                 <span class="n">driver</span><span class="p">,</span> <span class="n">testdir</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_testroot</span>
             <span class="p">)</span>
-            <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">allow_unsupported</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">allow_unsupported</span><span class="p">:</span>
                 <span class="n">args</span> <span class="o">+=</span> <span class="s2">&quot; --run-unsupported&quot;</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">TEST_COMPILER</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">args</span> <span class="o">=</span> <span class="n">args</span> <span class="o">+</span> <span class="s2">&quot; --compiler </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">TEST_COMPILER</span>
@@ -873,7 +919,7 @@
             <span class="s2">&quot; --case </span><span class="si">%s</span><span class="s2"> --compset InvalidCompsetName --output-root </span><span class="si">%s</span><span class="s2"> --handle-preexisting-dirs=r &quot;</span>
             <span class="o">%</span> <span class="p">(</span><span class="n">testdir</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_testroot</span><span class="p">)</span>
         <span class="p">)</span>
-        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">allow_unsupported</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">allow_unsupported</span><span class="p">:</span>
             <span class="n">args</span> <span class="o">+=</span> <span class="s2">&quot; --run-unsupported&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">TEST_COMPILER</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">args</span> <span class="o">=</span> <span class="n">args</span> <span class="o">+</span> <span class="s2">&quot; --compiler </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">TEST_COMPILER</span>

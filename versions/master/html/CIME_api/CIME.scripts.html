@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CIME.scripts package &mdash; CIME master documentation</title>
@@ -12,10 +12,9 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/sphinx_highlight.js"></script>
         <script src="../_static/pop_ver.js"></script>
@@ -31,14 +30,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../index.html" class="icon icon-home"> CIME
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            CIME
           </a>
               <div class="version">
                 master
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -120,10 +123,10 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="modules.html">CIME</a> &raquo;</li>
-          <li><a href="CIME.html">CIME package</a> &raquo;</li>
-      <li>CIME.scripts package</li>
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">CIME</a></li>
+          <li class="breadcrumb-item"><a href="CIME.html">CIME package</a></li>
+      <li class="breadcrumb-item active">CIME.scripts package</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/CIME_api/CIME.scripts.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -205,7 +208,7 @@
 <a class="reference external" href="https://github.com/ESMCI/cime">https://github.com/ESMCI/cime</a></p>
 <dl class="py function">
 <dt class="sig sig-object py" id="CIME.scripts.create_test.create_test">
-<span class="sig-prename descclassname"><span class="pre">CIME.scripts.create_test.</span></span><span class="sig-name descname"><span class="pre">create_test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">test_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compiler</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">machine_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_run</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_build</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_setup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">baseline_root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clean</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">baseline_cmp_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">baseline_gen_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">namelists_only</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parallel_jobs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">walltime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">single_submit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proc_pool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_existing</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_timing</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">queue</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_baseline_overwrite</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_procs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_threads</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mpilib</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pesfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_count</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mail_user</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mail_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_throughput</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_memory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_namelists</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_memleak</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_pnl</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">non_local</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">single_exe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">workflow</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chksum</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/scripts/create_test.html#create_test"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.scripts.create_test.create_test" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">CIME.scripts.create_test.</span></span><span class="sig-name descname"><span class="pre">create_test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">test_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compiler</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">machine_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_run</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_build</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_setup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">baseline_root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clean</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">baseline_cmp_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">baseline_gen_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">namelists_only</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parallel_jobs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">walltime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">single_submit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proc_pool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_existing</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_timing</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">queue</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_baseline_overwrite</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_procs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_threads</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mpilib</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pesfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_count</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mail_user</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mail_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_throughput</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_memory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_namelists</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_memleak</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_pnl</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">non_local</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">single_exe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">workflow</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chksum</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_rebuild</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/scripts/create_test.html#create_test"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.scripts.create_test.create_test" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py function">

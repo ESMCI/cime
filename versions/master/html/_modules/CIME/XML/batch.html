@@ -11,10 +11,9 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/doctools.js"></script>
         <script src="../../../_static/sphinx_highlight.js"></script>
         <script src="../../../_static/pop_ver.js"></script>
@@ -28,14 +27,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../../index.html" class="icon icon-home"> CIME
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            CIME
           </a>
               <div class="version">
                 master
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -69,9 +72,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../../index.html">Module code</a> &raquo;</li>
-      <li>CIME.XML.batch</li>
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">CIME.XML.batch</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -104,7 +107,7 @@
         <span class="n">files</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">extra_machines_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        initialize an object</span>
 
 <span class="sd">        If extra_machines_dir is provided, it should be a string giving a path to an</span>
@@ -144,13 +147,13 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">set_batch_system</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_system</span><span class="p">,</span> <span class="n">machine</span><span class="o">=</span><span class="n">machine</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Batch.get_batch_system"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.batch.Batch.get_batch_system">[docs]</a>    <span class="k">def</span> <span class="nf">get_batch_system</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the name of the batch system</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_system</span></div>
 
 <div class="viewcode-block" id="Batch.get_optional_batch_node"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.batch.Batch.get_optional_batch_node">[docs]</a>    <span class="k">def</span> <span class="nf">get_optional_batch_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodename</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return data on a node for a batch system</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">expect</span><span class="p">(</span>
@@ -174,7 +177,7 @@
             <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Batch.set_batch_system"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.batch.Batch.set_batch_system">[docs]</a>    <span class="k">def</span> <span class="nf">set_batch_system</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch_system</span><span class="p">,</span> <span class="n">machine</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets the batch system block in the Batch object</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">machine</span> <span class="o">=</span> <span class="n">machine</span> <span class="k">if</span> <span class="n">machine</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">machine</span>
@@ -197,7 +200,7 @@
 
     <span class="c1"># pylint: disable=arguments-differ</span>
 <div class="viewcode-block" id="Batch.get_value"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.batch.Batch.get_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">resolved</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get Value of fields in the config_batch.xml file</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">expect</span><span class="p">(</span>
@@ -220,7 +223,7 @@
         <span class="k">return</span> <span class="n">value</span></div>
 
 <div class="viewcode-block" id="Batch.get_batch_jobs"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.batch.Batch.get_batch_jobs">[docs]</a>    <span class="k">def</span> <span class="nf">get_batch_jobs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a list of jobs with the first element the name of the case script</span>
 <span class="sd">        and the second a dict of qualifiers for the job</span>
 <span class="sd">        &quot;&quot;&quot;</span>

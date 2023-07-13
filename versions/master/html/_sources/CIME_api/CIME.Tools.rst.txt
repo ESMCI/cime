@@ -4,14 +4,6 @@ CIME.Tools package
 Submodules
 ----------
 
-CIME.Tools.e3sm\_compile\_wrap module
--------------------------------------
-
-.. automodule:: CIME.Tools.e3sm_compile_wrap
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 CIME.Tools.generate\_cylc\_workflow module
 ------------------------------------------
 

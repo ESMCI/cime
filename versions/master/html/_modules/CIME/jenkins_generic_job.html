@@ -11,10 +11,9 @@
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/doctools.js"></script>
         <script src="../../_static/sphinx_highlight.js"></script>
         <script src="../../_static/pop_ver.js"></script>
@@ -28,14 +27,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../index.html" class="icon icon-home"> CIME
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            CIME
           </a>
               <div class="version">
                 master
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -69,9 +72,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../index.html">Module code</a> &raquo;</li>
-      <li>CIME.jenkins_generic_job</li>
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">CIME.jenkins_generic_job</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -90,7 +93,7 @@
 <span class="c1">##############################################################################</span>
 <div class="viewcode-block" id="cleanup_queue"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.jenkins_generic_job.cleanup_queue">[docs]</a><span class="k">def</span> <span class="nf">cleanup_queue</span><span class="p">(</span><span class="n">test_root</span><span class="p">,</span> <span class="n">test_id</span><span class="p">):</span>
     <span class="c1">###############################################################################</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Delete all jobs left in the queue</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">teststatus_file</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">iglob</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/*</span><span class="si">{}</span><span class="s2">*/TestStatus&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">test_root</span><span class="p">,</span> <span class="n">test_id</span><span class="p">)):</span>
@@ -127,11 +130,18 @@
             <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/*</span><span class="si">{}</span><span class="s2">*</span><span class="si">{}</span><span class="s2">*&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">clutter_area</span><span class="p">,</span> <span class="n">mach_comp</span><span class="p">,</span> <span class="n">test_id_root</span><span class="p">)</span>
         <span class="p">):</span>
             <span class="k">if</span> <span class="n">avoid_test_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">old_file</span><span class="p">:</span>
-                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;TEST ARCHIVER: Removing </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">old_file</span><span class="p">))</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;TEST ARCHIVER: removing </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">old_file</span><span class="p">))</span>
                 <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">old_file</span><span class="p">):</span>
                     <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">old_file</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">old_file</span><span class="p">)</span></div>
+                    <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">old_file</span><span class="p">)</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                    <span class="s2">&quot;TEST ARCHIVER: leaving case </span><span class="si">{}</span><span class="s2"> due to avoiding test id </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">old_file</span><span class="p">,</span> <span class="n">avoid_test_id</span>
+                    <span class="p">)</span>
+                <span class="p">)</span></div>
 
 
 <span class="c1">###############################################################################</span>
@@ -240,6 +250,13 @@
                         <span class="p">)</span>
                     <span class="p">)</span>
 
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="s2">&quot;TEST ARCHIVER: leaving case </span><span class="si">{}</span><span class="s2"> due to avoiding test id </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">old_case</span><span class="p">,</span> <span class="n">avoid_test_id</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
     <span class="c1"># Check size of archive</span>
     <span class="n">bytes_of_old_test_data</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span>
         <span class="n">run_cmd_no_fail</span><span class="p">(</span><span class="s2">&quot;du -sb </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">old_test_archive</span><span class="p">))</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
@@ -347,11 +364,13 @@
     <span class="n">update_success</span><span class="p">,</span>
     <span class="n">check_throughput</span><span class="p">,</span>
     <span class="n">check_memory</span><span class="p">,</span>
+    <span class="n">ignore_memleak</span><span class="p">,</span>
     <span class="n">pes_file</span><span class="p">,</span>
     <span class="n">jenkins_id</span><span class="p">,</span>
+    <span class="n">queue</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="c1">###############################################################################</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return True if all tests passed</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">use_batch</span> <span class="o">=</span> <span class="n">machine</span><span class="o">.</span><span class="n">has_batch_system</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">no_batch</span>
@@ -436,6 +455,9 @@
     <span class="k">if</span> <span class="n">pes_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">create_test_args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot; --pesfile &quot;</span> <span class="o">+</span> <span class="n">pes_file</span><span class="p">)</span>
 
+    <span class="k">if</span> <span class="n">queue</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">create_test_args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot; --queue &quot;</span> <span class="o">+</span> <span class="n">queue</span><span class="p">)</span>
+
     <span class="n">create_test_cmd</span> <span class="o">=</span> <span class="s2">&quot;./create_test &quot;</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">create_test_args</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">CIME</span><span class="o">.</span><span class="n">wait_for_tests</span><span class="o">.</span><span class="n">SIGNAL_RECEIVED</span><span class="p">:</span>
@@ -482,6 +504,7 @@
         <span class="n">check_throughput</span><span class="o">=</span><span class="n">check_throughput</span><span class="p">,</span>
         <span class="n">check_memory</span><span class="o">=</span><span class="n">check_memory</span><span class="p">,</span>
         <span class="n">ignore_namelists</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># don&#39;t ignore namelist diffs</span>
+        <span class="n">ignore_memleak</span><span class="o">=</span><span class="n">ignore_memleak</span><span class="p">,</span>
         <span class="n">cdash_build_name</span><span class="o">=</span><span class="n">cdash_build_name</span><span class="p">,</span>
         <span class="n">cdash_project</span><span class="o">=</span><span class="n">cdash_project</span><span class="p">,</span>
         <span class="n">cdash_build_group</span><span class="o">=</span><span class="n">cdash_build_group</span><span class="p">,</span>

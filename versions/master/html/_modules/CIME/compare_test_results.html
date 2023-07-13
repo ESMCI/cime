@@ -11,10 +11,9 @@
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/doctools.js"></script>
         <script src="../../_static/sphinx_highlight.js"></script>
         <script src="../../_static/pop_ver.js"></script>
@@ -28,14 +27,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../index.html" class="icon icon-home"> CIME
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            CIME
           </a>
               <div class="version">
                 master
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -69,9 +72,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../index.html">Module code</a> &raquo;</li>
-      <li>CIME.compare_test_results</li>
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">CIME.compare_test_results</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -148,7 +151,7 @@
     <span class="n">hist_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="c1">###############################################################################</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compares with baselines for all matching tests</span>
 
 <span class="sd">    Outputs results for each test to stdout (one line per test); possible status</span>
@@ -171,6 +174,12 @@
 
     <span class="n">all_pass_or_skip</span> <span class="o">=</span> <span class="kc">True</span>
 
+    <span class="n">compare_tests_counts</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">compare_tests</span><span class="p">:</span>
+        <span class="n">compare_tests_counts</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="p">[(</span><span class="n">compare_test</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">compare_test</span> <span class="ow">in</span> <span class="n">compare_tests</span><span class="p">]</span>
+        <span class="p">)</span>
+
     <span class="k">for</span> <span class="n">test_status_file</span> <span class="ow">in</span> <span class="n">test_status_files</span><span class="p">:</span>
         <span class="n">test_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">test_status_file</span><span class="p">)</span>
         <span class="n">ts</span> <span class="o">=</span> <span class="n">TestStatus</span><span class="p">(</span><span class="n">test_dir</span><span class="o">=</span><span class="n">test_dir</span><span class="p">)</span>
@@ -179,9 +188,7 @@
         <span class="n">testopts</span> <span class="o">=</span> <span class="p">[]</span> <span class="k">if</span> <span class="n">testopts</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">testopts</span>
         <span class="n">build_only</span> <span class="o">=</span> <span class="s2">&quot;B&quot;</span> <span class="ow">in</span> <span class="n">testopts</span>
 
-        <span class="k">if</span> <span class="n">compare_tests</span> <span class="ow">in</span> <span class="p">[[],</span> <span class="kc">None</span><span class="p">]</span> <span class="ow">or</span> <span class="n">CIME</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">match_any</span><span class="p">(</span>
-            <span class="n">test_name</span><span class="p">,</span> <span class="n">compare_tests</span>
-        <span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">compare_tests</span> <span class="ow">or</span> <span class="n">CIME</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">match_any</span><span class="p">(</span><span class="n">test_name</span><span class="p">,</span> <span class="n">compare_tests_counts</span><span class="p">):</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="n">hist_only</span><span class="p">:</span>
                 <span class="n">nl_compare_result</span> <span class="o">=</span> <span class="kc">None</span>
@@ -284,6 +291,19 @@
             <span class="k">if</span> <span class="n">detailed_comments</span><span class="p">:</span>
                 <span class="n">append_status_cprnc_log</span><span class="p">(</span>
                     <span class="s2">&quot;Detailed comments:</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">detailed_comments</span><span class="p">,</span> <span class="n">logfile_name</span><span class="p">,</span> <span class="n">test_dir</span>
+                <span class="p">)</span>
+
+    <span class="c1"># Emit a warning if items in compare_tests did not match anything</span>
+    <span class="k">if</span> <span class="n">compare_tests</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">compare_test</span><span class="p">,</span> <span class="n">compare_count</span> <span class="ow">in</span> <span class="n">compare_tests_counts</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">compare_count</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+<span class="w">                    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">compare test arg &#39;{}&#39; did not match any tests in test_root {} with</span>
+<span class="sd">compiler {} and test_id {}. It&#39;s possible that one of these arguments</span>
+<span class="sd">had a mistake (likely compiler or testid).&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">compare_test</span><span class="p">,</span> <span class="n">test_root</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">test_id</span>
+                    <span class="p">)</span>
                 <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">all_pass_or_skip</span></div>

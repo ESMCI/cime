@@ -4,14 +4,6 @@ Tools package
 Submodules
 ----------
 
-Tools.e3sm\_compile\_wrap module
---------------------------------
-
-.. automodule:: Tools.e3sm_compile_wrap
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 Tools.generate\_cylc\_workflow module
 -------------------------------------
 

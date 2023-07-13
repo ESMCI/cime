@@ -11,10 +11,9 @@
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/doctools.js"></script>
         <script src="../../_static/sphinx_highlight.js"></script>
         <script src="../../_static/pop_ver.js"></script>
@@ -28,14 +27,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../index.html" class="icon icon-home"> CIME
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            CIME
           </a>
               <div class="version">
                 master
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -69,9 +72,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../index.html">Module code</a> &raquo;</li>
-      <li>CIME.compare_namelists</li>
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">CIME.compare_namelists</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -93,7 +96,7 @@
 <span class="c1">###############################################################################</span>
 <span class="k">def</span> <span class="nf">_normalize_lists</span><span class="p">(</span><span class="n">value_str</span><span class="p">):</span>
     <span class="c1">###############################################################################</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    &gt;&gt;&gt; _normalize_lists(&quot;&#39;one two&#39; &#39;three four&#39;&quot;)</span>
 <span class="sd">    &quot;&#39;one two&#39;,&#39;three four&#39;&quot;</span>
 <span class="sd">    &gt;&gt;&gt; _normalize_lists(&quot;&#39;one two&#39;   &#39;three four&#39;&quot;)</span>
@@ -148,7 +151,7 @@
 <span class="c1">###############################################################################</span>
 <span class="k">def</span> <span class="nf">_interpret_value</span><span class="p">(</span><span class="n">value_str</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
     <span class="c1">###############################################################################</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    &gt;&gt;&gt; _interpret_value(&quot;one&quot;, &quot;foo&quot;)</span>
 <span class="sd">    &#39;one&#39;</span>
 <span class="sd">    &gt;&gt;&gt; _interpret_value(&quot;one, two&quot;, &quot;foo&quot;)</span>
@@ -211,7 +214,7 @@
 <span class="c1">###############################################################################</span>
 <span class="k">def</span> <span class="nf">_parse_namelists</span><span class="p">(</span><span class="n">namelist_lines</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
     <span class="c1">###############################################################################</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return data in form: {namelist -&gt; {key -&gt; value} }.</span>
 <span class="sd">      value can be an int, string, list, or dict</span>
 
@@ -469,7 +472,7 @@
 <span class="c1">###############################################################################</span>
 <span class="k">def</span> <span class="nf">_normalize_string_value</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">case</span><span class="p">):</span>
     <span class="c1">###############################################################################</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Some of the string in namelists will contain data that&#39;s inherently prone</span>
 <span class="sd">    to diffs, like file paths, etc. This function attempts to normalize that</span>
 <span class="sd">    data so that it will not cause diffs.</span>
@@ -507,7 +510,7 @@
 <span class="c1">###############################################################################</span>
 <span class="k">def</span> <span class="nf">_compare_values</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">gold_value</span><span class="p">,</span> <span class="n">comp_value</span><span class="p">,</span> <span class="n">case</span><span class="p">):</span>
     <span class="c1">###############################################################################</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compare values for a specific variable in a namelist.</span>
 
 <span class="sd">    Returns comments</span>
@@ -584,7 +587,7 @@
 <span class="c1">###############################################################################</span>
 <span class="k">def</span> <span class="nf">_compare_namelists</span><span class="p">(</span><span class="n">gold_namelists</span><span class="p">,</span> <span class="n">comp_namelists</span><span class="p">,</span> <span class="n">case</span><span class="p">):</span>
     <span class="c1">###############################################################################</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compare two namelists. Print diff information if any.</span>
 <span class="sd">    Returns comments</span>
 <span class="sd">    Note there will only be comments if the namelists were not an exact match</span>
@@ -765,7 +768,7 @@
 <span class="c1">###############################################################################</span>
 <div class="viewcode-block" id="compare_namelist_files"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.compare_namelists.compare_namelist_files">[docs]</a><span class="k">def</span> <span class="nf">compare_namelist_files</span><span class="p">(</span><span class="n">gold_file</span><span class="p">,</span> <span class="n">compare_file</span><span class="p">,</span> <span class="n">case</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="c1">###############################################################################</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns (is_match, comments)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">expect</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">gold_file</span><span class="p">),</span> <span class="s2">&quot;File not found: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">gold_file</span><span class="p">))</span>

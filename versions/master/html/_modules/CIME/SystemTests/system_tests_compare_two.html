@@ -11,10 +11,9 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/doctools.js"></script>
         <script src="../../../_static/sphinx_highlight.js"></script>
         <script src="../../../_static/pop_ver.js"></script>
@@ -28,14 +27,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../../index.html" class="icon icon-home"> CIME
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            CIME
           </a>
               <div class="version">
                 master
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -69,9 +72,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../../index.html">Module code</a> &raquo;</li>
-      <li>CIME.SystemTests.system_tests_compare_two</li>
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">CIME.SystemTests.system_tests_compare_two</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -128,7 +131,7 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">CIME.SystemTests.system_tests_common</span> <span class="kn">import</span> <span class="n">SystemTestsCommon</span>
+<span class="kn">from</span> <span class="nn">CIME.SystemTests.system_tests_common</span> <span class="kn">import</span> <span class="n">SystemTestsCommon</span><span class="p">,</span> <span class="n">fix_single_exe_case</span>
 <span class="kn">from</span> <span class="nn">CIME.case</span> <span class="kn">import</span> <span class="n">Case</span>
 <span class="kn">from</span> <span class="nn">CIME.config</span> <span class="kn">import</span> <span class="n">Config</span>
 <span class="kn">from</span> <span class="nn">CIME.test_status</span> <span class="kn">import</span> <span class="o">*</span>
@@ -149,8 +152,10 @@
         <span class="n">multisubmit</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">ignore_fieldlist_diffs</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">case_two_keep_init_generated_files</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">dry_run</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize a SystemTestsCompareTwo object. Individual test cases that</span>
 <span class="sd">        inherit from SystemTestsCompareTwo MUST call this __init__ method.</span>
 
@@ -181,7 +186,7 @@
 <span class="sd">                is provided for the sake of specific tests, e.g., a test of the behavior</span>
 <span class="sd">                of running with init_generated_files in place.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">SystemTestsCommon</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">)</span>
+        <span class="n">SystemTestsCommon</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_separate_builds</span> <span class="o">=</span> <span class="n">separate_builds</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ignore_fieldlist_diffs</span> <span class="o">=</span> <span class="n">ignore_fieldlist_diffs</span>
@@ -219,7 +224,9 @@
         <span class="c1"># _setup_cases_if_not_yet_done</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_case2</span> <span class="o">=</span> <span class="kc">None</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_setup_cases_if_not_yet_done</span><span class="p">()</span>
+        <span class="c1"># Prevent additional setup_case calls when detecting support for `--single-exe`</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">dry_run</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_setup_cases_if_not_yet_done</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_multisubmit</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">multisubmit</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case1</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;BATCH_SYSTEM&quot;</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">&quot;none&quot;</span>
@@ -231,7 +238,7 @@
     <span class="c1"># ========================================================================</span>
 
     <span class="k">def</span> <span class="nf">_case_one_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method will be called to set up case 1, the &quot;base&quot; case.</span>
 
 <span class="sd">        This should be written to refer to self._case: this object will point to</span>
@@ -240,7 +247,7 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
     <span class="k">def</span> <span class="nf">_case_two_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method will be called to set up case 2, the &quot;test&quot; case</span>
 
 <span class="sd">        This should be written to refer to self._case: this object will point to</span>
@@ -254,7 +261,7 @@
     <span class="c1"># ========================================================================</span>
 
     <span class="k">def</span> <span class="nf">_common_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method will be called to set up both cases. It should contain any setup</span>
 <span class="sd">        that&#39;s needed in both cases. This is called before _case_one_setup or</span>
 <span class="sd">        _case_two_setup.</span>
@@ -264,22 +271,22 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">_case_one_custom_prerun_action</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Use to do arbitrary actions immediately before running case one</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">_case_two_custom_prerun_action</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Use to do arbitrary actions immediately before running case two</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">_case_one_custom_postrun_action</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Use to do arbitrary actions immediately after running case one</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">_case_two_custom_postrun_action</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Use to do arbitrary actions immediately after running case two</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -324,7 +331,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_case2</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;BUILD_COMPLETE&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SystemTestsCompareTwo.run_phase"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.system_tests_compare_two.SystemTestsCompareTwo.run_phase">[docs]</a>    <span class="k">def</span> <span class="nf">run_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">success_change</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>  <span class="c1"># pylint: disable=arguments-differ</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Runs both phases of the two-phase test and compares their results</span>
 <span class="sd">        If success_change is True, success requires some files to be different</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -404,7 +411,7 @@
             <span class="p">)</span></div>
 
 <div class="viewcode-block" id="SystemTestsCompareTwo.copy_case1_restarts_to_case2"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.system_tests_compare_two.SystemTestsCompareTwo.copy_case1_restarts_to_case2">[docs]</a>    <span class="k">def</span> <span class="nf">copy_case1_restarts_to_case2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Makes a copy (or symlink) of restart files and related files</span>
 <span class="sd">        (necessary history files, rpointer files) from case1 to case2.</span>
 
@@ -424,7 +431,7 @@
     <span class="c1"># ========================================================================</span>
 
     <span class="k">def</span> <span class="nf">_get_caseroot2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Determines and returns caseroot for case2</span>
 
 <span class="sd">        Assumes that self._case1 is already set to point to the case1 object</span>
@@ -438,7 +445,7 @@
         <span class="k">return</span> <span class="n">caseroot2</span>
 
     <span class="k">def</span> <span class="nf">_get_output_root2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Determines and returns cime_output_root for case2</span>
 
 <span class="sd">        Assumes that self._case1 is already set to point to the case1 object</span>
@@ -456,7 +463,7 @@
         <span class="k">return</span> <span class="n">output_root2</span>
 
     <span class="k">def</span> <span class="nf">_get_case2_exeroot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Gets exeroot for case2.</span>
 
 <span class="sd">        Returns None if we should use the default value of exeroot.</span>
@@ -475,7 +482,7 @@
         <span class="k">return</span> <span class="n">case2_exeroot</span>
 
     <span class="k">def</span> <span class="nf">_get_case2_rundir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Gets rundir for case2.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># case2&#39;s RUNDIR needs to be somewhere that is unique to this</span>
@@ -487,7 +494,7 @@
         <span class="k">return</span> <span class="n">case2_rundir</span>
 
     <span class="k">def</span> <span class="nf">_setup_cases_if_not_yet_done</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Determines if case2 already exists on disk. If it does, this method</span>
 <span class="sd">        creates the self._case2 object pointing to the case directory. If it</span>
 <span class="sd">        doesn&#39;t exist, then this method creates case2 as a clone of case1, and</span>
@@ -545,7 +552,7 @@
                 <span class="k">raise</span>
 
     <span class="k">def</span> <span class="nf">_case_from_existing_caseroot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caseroot</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a Case object from an existing caseroot directory</span>
 
 <span class="sd">        Args:</span>
@@ -554,21 +561,21 @@
         <span class="k">return</span> <span class="n">Case</span><span class="p">(</span><span class="n">case_root</span><span class="o">=</span><span class="n">caseroot</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_activate_case1</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Make case 1 active for upcoming calls</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_caseroot1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_active_case</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_case1</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_activate_case2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Make case 2 active for upcoming calls</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_caseroot2</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_active_case</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_case2</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_write_info_to_case2_output_root</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Writes a file with some helpful information to case2&#39;s</span>
 <span class="sd">        output_root.</span>
 
@@ -606,7 +613,7 @@
             <span class="k">pass</span>
 
     <span class="k">def</span> <span class="nf">_setup_cases</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Does all test-specific set up for the two test cases.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -631,6 +638,7 @@
         <span class="c1"># This assures that case one namelists are populated</span>
         <span class="c1"># and creates the case.test script</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">case_setup</span><span class="p">(</span><span class="n">test_mode</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">fix_single_exe_case</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="p">)</span>
 
         <span class="c1"># Set up case 2</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case2</span><span class="p">:</span>
@@ -638,11 +646,13 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_common_setup</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_case_two_setup</span><span class="p">()</span>
 
+        <span class="n">fix_single_exe_case</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_case2</span><span class="p">)</span>
+
         <span class="c1"># Go back to case 1 to ensure that&#39;s where we are for any following code</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_activate_case1</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_link_to_case2_output</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Looks for all files in rundir2 matching the pattern casename2*.nc.run2suffix</span>
 
 <span class="sd">        For each file found, makes a link in rundir1 pointing to this file; the</span>

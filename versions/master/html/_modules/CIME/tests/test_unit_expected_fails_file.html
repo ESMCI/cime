@@ -11,10 +11,9 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/doctools.js"></script>
         <script src="../../../_static/sphinx_highlight.js"></script>
         <script src="../../../_static/pop_ver.js"></script>
@@ -28,14 +27,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../../index.html" class="icon icon-home"> CIME
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            CIME
           </a>
               <div class="version">
                 master
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -69,9 +72,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../../index.html">Module code</a> &raquo;</li>
-      <li>CIME.tests.test_unit_expected_fails_file</li>
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">CIME.tests.test_unit_expected_fails_file</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -101,7 +104,7 @@
         <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_workdir</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestExpectedFailsFile.test_basic"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_expected_fails_file.TestExpectedFailsFile.test_basic">[docs]</a>    <span class="k">def</span> <span class="nf">test_basic</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Basic test of the parsing of an expected fails file&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Basic test of the parsing of an expected fails file&quot;&quot;&quot;</span>
         <span class="n">contents</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;?xml version= &quot;1.0&quot;?&gt;</span>
 <span class="s2">&lt;expectedFails version=&quot;1.1&quot;&gt;</span>
 <span class="s2">  &lt;test name=&quot;my.test.1&quot;&gt;</span>
@@ -143,7 +146,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">xfails</span><span class="p">,</span> <span class="n">expected</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestExpectedFailsFile.test_same_test_appears_twice"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_expected_fails_file.TestExpectedFailsFile.test_same_test_appears_twice">[docs]</a>    <span class="k">def</span> <span class="nf">test_same_test_appears_twice</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;If the same test appears twice, its information should be appended.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;If the same test appears twice, its information should be appended.</span>
 
 <span class="sd">        This is not the typical, expected layout of the file, but it should be handled</span>
 <span class="sd">        correctly in case the file is written this way.</span>
@@ -178,7 +181,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">xfails</span><span class="p">,</span> <span class="n">expected</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestExpectedFailsFile.test_invalid_file"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_expected_fails_file.TestExpectedFailsFile.test_invalid_file">[docs]</a>    <span class="k">def</span> <span class="nf">test_invalid_file</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Given an invalid file, an exception should be raised in schema validation&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Given an invalid file, an exception should be raised in schema validation&quot;&quot;&quot;</span>
 
         <span class="c1"># This file is missing a &lt;status&gt; element in the &lt;phase&gt; block.</span>
         <span class="c1">#</span>

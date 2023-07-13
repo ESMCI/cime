@@ -11,10 +11,9 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/doctools.js"></script>
         <script src="../../../_static/sphinx_highlight.js"></script>
         <script src="../../../_static/pop_ver.js"></script>
@@ -28,14 +27,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../../index.html" class="icon icon-home"> CIME
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            CIME
           </a>
               <div class="version">
                 master
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -69,9 +72,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../../index.html">Module code</a> &raquo;</li>
-      <li>CIME.SystemTests.system_tests_common</li>
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">CIME.SystemTests.system_tests_common</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -112,6 +115,7 @@
 <span class="kn">import</span> <span class="nn">CIME.build</span> <span class="k">as</span> <span class="nn">build</span>
 
 <span class="kn">import</span> <span class="nn">glob</span><span class="o">,</span> <span class="nn">gzip</span><span class="o">,</span> <span class="nn">time</span><span class="o">,</span> <span class="nn">traceback</span><span class="o">,</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">ExitStack</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -119,9 +123,56 @@
 <span class="n">INIT_GENERATED_FILES_DIRNAME</span> <span class="o">=</span> <span class="s2">&quot;init_generated_files&quot;</span>
 
 
+<div class="viewcode-block" id="fix_single_exe_case"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.system_tests_common.fix_single_exe_case">[docs]</a><span class="k">def</span> <span class="nf">fix_single_exe_case</span><span class="p">(</span><span class="n">case</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fixes cases created with --single-exe.</span>
+
+<span class="sd">    When tests are created using --single-exe, the test_scheduler will set</span>
+<span class="sd">    `BUILD_COMPLETE` to True, but some tests require calls to `case.case_setup`</span>
+<span class="sd">    which can resets `BUILD_COMPLETE` to false. This function will check if a</span>
+<span class="sd">    case was created with `--single-exe` and ensure `BUILD_COMPLETE` is True.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        True when case required modification otherwise False.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">is_single_exe_case</span><span class="p">(</span><span class="n">case</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">ExitStack</span><span class="p">()</span> <span class="k">as</span> <span class="n">stack</span><span class="p">:</span>
+            <span class="c1"># enter context if case is still read-only, entering the context</span>
+            <span class="c1"># multiple times can cause side effects for later calls to</span>
+            <span class="c1"># `set_value` when it&#39;s assumed the cause is writeable.</span>
+            <span class="k">if</span> <span class="n">case</span><span class="o">.</span><span class="n">_read_only_mode</span><span class="p">:</span>
+                <span class="n">stack</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
+
+            <span class="k">case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;BUILD_COMPLETE&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="is_single_exe_case"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.system_tests_common.is_single_exe_case">[docs]</a><span class="k">def</span> <span class="nf">is_single_exe_case</span><span class="p">(</span><span class="n">case</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Determines if the case was created with the --single-exe option.</span>
+
+<span class="sd">    If `CASEROOT` is not part of `EXEROOT` and the `TEST` variable is True,</span>
+<span class="sd">    then its safe to assume the case was created with `./create_test`</span>
+<span class="sd">    and the `--single-exe` option.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        True when the case was created with `--single-exe` otherwise false.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">caseroot</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">)</span>
+
+    <span class="n">exeroot</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;EXEROOT&quot;</span><span class="p">)</span>
+
+    <span class="n">test</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;TEST&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">caseroot</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">exeroot</span> <span class="ow">and</span> <span class="n">test</span></div>
+
+
 <div class="viewcode-block" id="SystemTestsCommon"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.system_tests_common.SystemTestsCommon">[docs]</a><span class="k">class</span> <span class="nc">SystemTestsCommon</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">expected</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">expected</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">):</span>  <span class="c1"># pylint: disable=unused-argument</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        initialize a CIME system test object, if the locked env_run.orig.xml</span>
 <span class="sd">        does not exist copy the current env_run.xml file.  If it does exist restore values</span>
 <span class="sd">        changed in a previous run of the test.</span>
@@ -142,16 +193,17 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_ninja</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_dry_run</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_user_separate_builds</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_expected_num_cmp</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="nf">_init_environment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caseroot</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Do initializations of environment variables that are needed in __init__</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Needed for sh scripts</span>
         <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">caseroot</span>
 
     <span class="k">def</span> <span class="nf">_init_locked_files</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caseroot</span><span class="p">,</span> <span class="n">expected</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        If the locked env_run.orig.xml does not exist, copy the current</span>
 <span class="sd">        env_run.xml file. If it does exist, restore values changed in a previous</span>
 <span class="sd">        run of the test.</span>
@@ -162,7 +214,7 @@
             <span class="n">lock_file</span><span class="p">(</span><span class="s2">&quot;env_run.xml&quot;</span><span class="p">,</span> <span class="n">caseroot</span><span class="o">=</span><span class="n">caseroot</span><span class="p">,</span> <span class="n">newname</span><span class="o">=</span><span class="s2">&quot;env_run.orig.xml&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_resetup_case</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Re-setup this case. This is necessary if user is re-running an already-run</span>
 <span class="sd">        phase.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -179,6 +231,7 @@
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_initial_test_values</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">case_setup</span><span class="p">(</span><span class="n">reset</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">test_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">fix_single_exe_case</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="p">)</span>
 
 <div class="viewcode-block" id="SystemTestsCommon.build"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.system_tests_common.SystemTestsCommon.build">[docs]</a>    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -188,7 +241,7 @@
         <span class="n">dry_run</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">separate_builds</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Do NOT override this method, this method is the framework that</span>
 <span class="sd">        controls the build phase. build_phase is the extension point</span>
 <span class="sd">        that subclasses should use.</span>
@@ -238,7 +291,7 @@
         <span class="k">return</span> <span class="n">success</span></div>
 
 <div class="viewcode-block" id="SystemTestsCommon.build_phase"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.system_tests_common.SystemTestsCommon.build_phase">[docs]</a>    <span class="k">def</span> <span class="nf">build_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sharedlib_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">model_only</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is the default build phase implementation, it just does an individual build.</span>
 <span class="sd">        This is the subclass&#39; extension point if they need to define a custom build</span>
 <span class="sd">        phase.</span>
@@ -248,7 +301,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">build_indv</span><span class="p">(</span><span class="n">sharedlib_only</span><span class="o">=</span><span class="n">sharedlib_only</span><span class="p">,</span> <span class="n">model_only</span><span class="o">=</span><span class="n">model_only</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SystemTestsCommon.build_indv"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.system_tests_common.SystemTestsCommon.build_indv">[docs]</a>    <span class="k">def</span> <span class="nf">build_indv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sharedlib_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">model_only</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Perform an individual build</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MODEL&quot;</span><span class="p">)</span>
@@ -270,7 +323,7 @@
         <span class="n">build</span><span class="o">.</span><span class="n">clean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="p">,</span> <span class="n">cleanlist</span><span class="o">=</span><span class="n">comps</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SystemTestsCommon.run"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.system_tests_common.SystemTestsCommon.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip_pnl</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Do NOT override this method, this method is the framework that controls</span>
 <span class="sd">        the run phase. run_phase is the extension point that subclasses should use.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -420,7 +473,7 @@
         <span class="k">return</span> <span class="n">success</span></div>
 
 <div class="viewcode-block" id="SystemTestsCommon.run_phase"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.system_tests_common.SystemTestsCommon.run_phase">[docs]</a>    <span class="k">def</span> <span class="nf">run_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is the default run phase implementation, it just does an individual run.</span>
 <span class="sd">        This is the subclass&#39; extension point if they need to define a custom run phase.</span>
 
@@ -429,13 +482,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">run_indv</span><span class="p">()</span></div>
 
     <span class="k">def</span> <span class="nf">_get_caseroot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the current CASEROOT value</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_caseroot</span>
 
     <span class="k">def</span> <span class="nf">_set_active_case</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Use for tests that have multiple cases</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_case</span> <span class="o">=</span> <span class="n">case</span>
@@ -449,7 +502,7 @@
         <span class="n">submit_resubmits</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">keep_init_generated_files</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Perform an individual run. Raises an EXCEPTION on fail.</span>
 
 <span class="sd">        keep_init_generated_files: If False (the default), we remove the</span>
@@ -522,7 +575,10 @@
         <span class="k">return</span> <span class="n">allgood</span> <span class="o">==</span> <span class="mi">0</span>
 
     <span class="k">def</span> <span class="nf">_component_compare_copy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">suffix</span><span class="p">):</span>
-        <span class="n">comments</span> <span class="o">=</span> <span class="n">copy_histfiles</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="p">,</span> <span class="n">suffix</span><span class="p">)</span>
+        <span class="c1"># Only match .nc files</span>
+        <span class="n">comments</span><span class="p">,</span> <span class="n">num_copied</span> <span class="o">=</span> <span class="n">copy_histfiles</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="p">,</span> <span class="n">suffix</span><span class="p">,</span> <span class="n">match_suffix</span><span class="o">=</span><span class="s2">&quot;nc&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_expected_num_cmp</span> <span class="o">=</span> <span class="n">num_copied</span>
+
         <span class="n">append_testlog</span><span class="p">(</span><span class="n">comments</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_orig_caseroot</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_log_cprnc_output_tail</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename_pattern</span><span class="p">,</span> <span class="n">prepend</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -546,7 +602,7 @@
     <span class="k">def</span> <span class="nf">_component_compare_test</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">suffix1</span><span class="p">,</span> <span class="n">suffix2</span><span class="p">,</span> <span class="n">success_change</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ignore_fieldlist_diffs</span><span class="o">=</span><span class="kc">False</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return value is not generally checked, but is provided in case a custom</span>
 <span class="sd">        run case needs indirection based on success.</span>
 <span class="sd">        If success_change is True, success requires some files to be different.</span>
@@ -555,11 +611,25 @@
 <span class="sd">            diagnostic fields that are missing from the other case), treat the two cases</span>
 <span class="sd">            as identical.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">success</span><span class="p">,</span> <span class="n">comments</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_compare_test</span><span class="p">(</span>
+        <span class="n">success</span><span class="p">,</span> <span class="n">comments</span><span class="p">,</span> <span class="n">num_compared</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_compare_test</span><span class="p">(</span>
             <span class="n">suffix1</span><span class="p">,</span> <span class="n">suffix2</span><span class="p">,</span> <span class="n">ignore_fieldlist_diffs</span><span class="o">=</span><span class="n">ignore_fieldlist_diffs</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">success_change</span><span class="p">:</span>
             <span class="n">success</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">success</span>
+
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_expected_num_cmp</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="ow">and</span> <span class="n">num_compared</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_expected_num_cmp</span> <span class="o">!=</span> <span class="n">num_compared</span>
+        <span class="p">):</span>
+            <span class="n">comments</span> <span class="o">=</span> <span class="n">comments</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;PASS&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="n">comments</span> <span class="o">+=</span> <span class="s2">&quot;&quot;&quot;</span><span class="se">\n</span><span class="s2">WARNING</span>
+<span class="s2">Expected to compare </span><span class="si">{}</span><span class="s2"> hist files, but only compared </span><span class="si">{}</span><span class="s2">. It&#39;s possible</span>
+<span class="s2">that the hist_file_extension entry in config_archive.xml is not correct</span>
+<span class="s2">for some of your components.</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_expected_num_cmp</span><span class="p">,</span> <span class="n">num_compared</span>
+            <span class="p">)</span>
 
         <span class="n">append_testlog</span><span class="p">(</span><span class="n">comments</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_orig_caseroot</span><span class="p">)</span>
 
@@ -576,7 +646,7 @@
         <span class="k">return</span> <span class="n">success</span>
 
     <span class="k">def</span> <span class="nf">_do_compare_test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">suffix1</span><span class="p">,</span> <span class="n">suffix2</span><span class="p">,</span> <span class="n">ignore_fieldlist_diffs</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Wraps the call to compare_test to facilitate replacement in unit</span>
 <span class="sd">        tests</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -593,7 +663,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span><span class="n">STARCHIVE_PHASE</span><span class="p">,</span> <span class="n">TEST_FAIL_STATUS</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_get_mem_usage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cpllog</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Examine memory usage as recorded in the cpl log file and look for unexpected</span>
 <span class="sd">        increases.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -617,7 +687,7 @@
         <span class="k">return</span> <span class="n">memlist</span>
 
     <span class="k">def</span> <span class="nf">_get_throughput</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cpllog</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Examine memory usage as recorded in the cpl log file and look for unexpected</span>
 <span class="sd">        increases.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -630,7 +700,7 @@
         <span class="k">return</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="nf">_phase_modifying_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">function</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Ensures that unexpected exceptions from phases will result in a FAIL result</span>
 <span class="sd">        in the TestStatus file for that phase.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -651,7 +721,7 @@
                 <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_check_for_memleak</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Examine memory usage as recorded in the cpl log file and look for unexpected</span>
 <span class="sd">        increases.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -698,7 +768,7 @@
                         <span class="p">)</span>
 
 <div class="viewcode-block" id="SystemTestsCommon.compare_env_run"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.system_tests_common.SystemTestsCommon.compare_env_run">[docs]</a>    <span class="k">def</span> <span class="nf">compare_env_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expected</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compare env_run file to original and warn about differences</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">components</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_values</span><span class="p">(</span><span class="s2">&quot;COMP_CLASSES&quot;</span><span class="p">)</span>
@@ -723,7 +793,7 @@
         <span class="k">return</span> <span class="kc">True</span></div>
 
     <span class="k">def</span> <span class="nf">_get_latest_cpl_logs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        find and return the latest cpl log file in the run directory</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">coupler_log_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">)</span>
@@ -839,7 +909,7 @@
                             <span class="n">append_testlog</span><span class="p">(</span><span class="n">comment</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_orig_caseroot</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_compare_baseline</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        compare the current test output to a baseline result</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="p">:</span>
@@ -860,7 +930,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span><span class="n">BASELINE_PHASE</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">comments</span><span class="o">=</span><span class="n">ts_comments</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_generate_baseline</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        generate a new baseline case based on the current test</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="p">:</span>
@@ -892,7 +962,7 @@
 
 
 <div class="viewcode-block" id="FakeTest"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.system_tests_common.FakeTest">[docs]</a><span class="k">class</span> <span class="nc">FakeTest</span><span class="p">(</span><span class="n">SystemTestsCommon</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Inheriters of the FakeTest Class are intended to test the code.</span>
 
 <span class="sd">    All members of the FakeTest Class must</span>
@@ -900,8 +970,8 @@
 <span class="sd">    in utils.py will work with these classes.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">expected</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">FakeTest</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">expected</span><span class="o">=</span><span class="n">expected</span><span class="p">)</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">expected</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">FakeTest</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">expected</span><span class="o">=</span><span class="n">expected</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_script</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_requires_exe</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">_non_local</span> <span class="o">=</span> <span class="kc">True</span>
@@ -979,7 +1049,7 @@
 
 
 <div class="viewcode-block" id="TESTRUNDIFF"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.system_tests_common.TESTRUNDIFF">[docs]</a><span class="k">class</span> <span class="nc">TESTRUNDIFF</span><span class="p">(</span><span class="n">FakeTest</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    You can generate a diff with this test as follows:</span>
 <span class="sd">    1) Run the test and generate a baseline</span>
 <span class="sd">    2) set TESTRUNDIFF_ALTERNATE environment variable to TRUE</span>
@@ -1056,7 +1126,7 @@
 
 
 <div class="viewcode-block" id="TESTRUNFAILRESET"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.system_tests_common.TESTRUNFAILRESET">[docs]</a><span class="k">class</span> <span class="nc">TESTRUNFAILRESET</span><span class="p">(</span><span class="n">TESTRUNFAIL</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;This fake test can fail for two reasons:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;This fake test can fail for two reasons:</span>
 <span class="sd">    1. As in the TESTRUNFAIL test: If the environment variable TESTRUNFAIL_PASS is *not* set</span>
 <span class="sd">    2. Even if that environment variable *is* set, it will fail if STOP_N differs from the</span>
 <span class="sd">       original value</span>
@@ -1119,8 +1189,8 @@
 
 
 <div class="viewcode-block" id="TESTBUILDFAILEXC"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.system_tests_common.TESTBUILDFAILEXC">[docs]</a><span class="k">class</span> <span class="nc">TESTBUILDFAILEXC</span><span class="p">(</span><span class="n">FakeTest</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">):</span>
-        <span class="n">FakeTest</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">)</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">FakeTest</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Exception from init&quot;</span><span class="p">)</span></div>
 
 
@@ -1131,13 +1201,13 @@
         <span class="n">new_stop_n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;STOP_N&quot;</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span>
 
         <span class="n">script</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">cd </span><span class="si">{caseroot}</span><span class="s2"></span>
-<span class="s2">./xmlchange --file env_test.xml STOP_N=</span><span class="si">{stopn}</span><span class="s2"></span>
+<span class="s2">cd </span><span class="si">{caseroot}</span>
+<span class="s2">./xmlchange --file env_test.xml STOP_N=</span><span class="si">{stopn}</span>
 <span class="s2">./xmlchange RESUBMIT=1,STOP_N=</span><span class="si">{stopn}</span><span class="s2">,CONTINUE_RUN=FALSE,RESUBMIT_SETS_CONTINUE_RUN=FALSE</span>
 <span class="s2">cd -</span>
 <span class="si">{originalexe}</span><span class="s2"> &quot;$@&quot;</span>
-<span class="s2">cd </span><span class="si">{caseroot}</span><span class="s2"></span>
-<span class="s2">./xmlchange run_exe=</span><span class="si">{modelexe}</span><span class="s2"></span>
+<span class="s2">cd </span><span class="si">{caseroot}</span>
+<span class="s2">./xmlchange run_exe=</span><span class="si">{modelexe}</span>
 <span class="s2">sleep 5</span>
 <span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
             <span class="n">originalexe</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_original_exe</span><span class="p">,</span>

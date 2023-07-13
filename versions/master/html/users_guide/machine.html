@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>4. Defining the machine &mdash; CIME master documentation</title>
@@ -12,10 +12,9 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/sphinx_highlight.js"></script>
         <script src="../_static/pop_ver.js"></script>
@@ -31,14 +30,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../index.html" class="icon icon-home"> CIME
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            CIME
           </a>
               <div class="version">
                 master
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -94,9 +97,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="index.html">Case Control System Part 1: Basic Usage</a> &raquo;</li>
-      <li><span class="section-number">4. </span>Defining the machine</li>
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Case Control System Part 1: Basic Usage</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">4. </span>Defining the machine</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/users_guide/machine.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -156,9 +159,34 @@ This is itself an element that has sub-elements that must be filled:</p>
 <li><p>May have optional attributes of <code class="docutils literal notranslate"><span class="pre">compiler</span></code>, <code class="docutils literal notranslate"><span class="pre">mpilib</span></code> and/or <code class="docutils literal notranslate"><span class="pre">threaded</span></code></p></li>
 <li><p>May have an optional <code class="docutils literal notranslate"><span class="pre">&lt;arguments&gt;</span></code> element which in turn contains one or more <code class="docutils literal notranslate"><span class="pre">&lt;arg&gt;</span></code> elements.
 These specify the arguments to the mpi executable and are dependent on your mpi library implementation.</p></li>
-<li><p>May have an option <code class="docutils literal notranslate"><span class="pre">&lt;run_exe&gt;</span></code> element which overrides the <code class="docutils literal notranslate"><span class="pre">default_run_exe</span></code></p></li>
-<li><p>May have an option <code class="docutils literal notranslate"><span class="pre">&lt;run_misc_suffix&gt;</span></code> element which overrides the <code class="docutils literal notranslate"><span class="pre">default_run_misc_suffix</span></code></p></li>
+<li><p>May have an optional <code class="docutils literal notranslate"><span class="pre">&lt;run_exe&gt;</span></code> element which overrides the <code class="docutils literal notranslate"><span class="pre">default_run_exe</span></code></p></li>
+<li><p>May have an optional <code class="docutils literal notranslate"><span class="pre">&lt;run_misc_suffix&gt;</span></code> element which overrides the <code class="docutils literal notranslate"><span class="pre">default_run_misc_suffix</span></code></p></li>
+<li><p>May have an optional <code class="docutils literal notranslate"><span class="pre">&lt;aprun_mode&gt;</span></code> element which controls how CIME generates arguments when <code class="docutils literal notranslate"><span class="pre">&lt;executable&gt;</span></code> contains <code class="docutils literal notranslate"><span class="pre">aprun</span></code>.</p></li>
 </ul>
+<p>The <code class="docutils literal notranslate"><span class="pre">&lt;aprun_mode&gt;</span></code> element can be one of the following. The default value is <code class="docutils literal notranslate"><span class="pre">ignore</span></code>.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ignore</span></code> will cause CIME to ignore it’s aprun module and join the values found in <code class="docutils literal notranslate"><span class="pre">&lt;arguments&gt;</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">default</span></code> will use CIME’s aprun module to generate arguments.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">override</span></code> behaves the same as <code class="docutils literal notranslate"><span class="pre">default</span></code> expect it will use <code class="docutils literal notranslate"><span class="pre">&lt;arguments&gt;</span></code> to mutate the generated arguments. When using this mode a <code class="docutils literal notranslate"><span class="pre">position</span></code> attribute can be placed on <code class="docutils literal notranslate"><span class="pre">&lt;arg&gt;</span></code> tags to specify how it’s used.</p></li>
+</ul>
+<p>The <code class="docutils literal notranslate"><span class="pre">position</span></code> attribute on <code class="docutils literal notranslate"><span class="pre">&lt;arg&gt;</span></code> can take one of the following values. The default value is <code class="docutils literal notranslate"><span class="pre">per</span></code>.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">global</span></code> causes the value of the <code class="docutils literal notranslate"><span class="pre">&lt;arg&gt;</span></code> element to be used as a global argument for <code class="docutils literal notranslate"><span class="pre">aprun</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">per</span></code> causes the value of the <code class="docutils literal notranslate"><span class="pre">&lt;arg&gt;</span></code> element to be appended to each separate binaries arguments.</p></li>
+</ul>
+<p>Example using <code class="docutils literal notranslate"><span class="pre">override</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">executable</span><span class="o">&gt;</span><span class="n">aprun</span><span class="o">&lt;/</span><span class="n">executable</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="n">aprun_mode</span><span class="o">&gt;</span><span class="n">override</span><span class="o">&lt;/</span><span class="n">aprun_mode</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="n">arguments</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">arg</span> <span class="n">position</span><span class="o">=</span><span class="s2">&quot;global&quot;</span><span class="o">&gt;-</span><span class="n">e</span> <span class="n">DEBUG</span><span class="o">=</span><span class="n">true</span><span class="o">&lt;/</span><span class="n">arg</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">arg</span><span class="o">&gt;-</span><span class="n">j</span> <span class="mi">20</span><span class="o">&lt;/</span><span class="n">arg</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">arguments</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>Sample command output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">aprun</span> <span class="o">-</span><span class="n">e</span> <span class="n">DEBUG</span><span class="o">=</span><span class="n">true</span> <span class="o">...</span> <span class="o">-</span><span class="n">j</span> <span class="mi">20</span> <span class="n">e3sm</span><span class="o">.</span><span class="n">exe</span> <span class="p">:</span> <span class="o">...</span> <span class="o">-</span><span class="n">j</span> <span class="mi">20</span> <span class="n">e3sm</span><span class="o">.</span><span class="n">exe</span>
+</pre></div>
+</div>
 </li>
 <li><p><code class="docutils literal notranslate"><span class="pre">module_system</span></code>: How and what modules to load on this system. Module systems allow you to easily load multiple compiler environments on a machine. CIME provides support for two types of module tools: <a class="reference external" href="http://www.tacc.utexas.edu/tacc-projects/mclay/lmod">module</a> and <a class="reference external" href="http://www.mcs.anl.gov/hs/software/systems/softenv/softenv-intro.html">soft</a>. If neither of these is available on your machine, simply set <code class="docutils literal notranslate"><span class="pre">&lt;module_system</span> <span class="pre">type=&quot;none&quot;\&gt;</span></code>.</p></li>
 <li><dl>

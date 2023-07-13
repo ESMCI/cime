@@ -11,10 +11,9 @@
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/doctools.js"></script>
         <script src="../../_static/sphinx_highlight.js"></script>
         <script src="../../_static/pop_ver.js"></script>
@@ -28,14 +27,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../index.html" class="icon icon-home"> CIME
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            CIME
           </a>
               <div class="version">
                 master
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -69,9 +72,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../index.html">Module code</a> &raquo;</li>
-      <li>CIME.build</li>
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">CIME.build</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -132,7 +135,13 @@
     <span class="s2">&quot;USE_ESMF_LIB&quot;</span><span class="p">,</span>
     <span class="s2">&quot;USE_MOAB&quot;</span><span class="p">,</span>
     <span class="s2">&quot;CAM_CONFIG_OPTS&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;COMP_ATM&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;COMP_ICE&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;COMP_GLC&quot;</span><span class="p">,</span>
     <span class="s2">&quot;COMP_LND&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;COMP_OCN&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;COMP_ROF&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;COMP_WAV&quot;</span><span class="p">,</span>
     <span class="s2">&quot;COMPARE_TO_NUOPC&quot;</span><span class="p">,</span>
     <span class="s2">&quot;HOMME_TARGET&quot;</span><span class="p">,</span>
     <span class="s2">&quot;OCN_SUBMODEL&quot;</span><span class="p">,</span>
@@ -144,13 +153,13 @@
 
 
 <div class="viewcode-block" id="CmakeTmpBuildDir"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.build.CmakeTmpBuildDir">[docs]</a><span class="k">class</span> <span class="nc">CmakeTmpBuildDir</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Use to create a temporary cmake build dir for the purposes of querying</span>
 <span class="sd">    Macros.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">macroloc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rootdir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tmpdir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        macroloc: The dir containing the cmake macros, default is pwd. This can be a case or CMAKE_MACROS_DIR</span>
 <span class="sd">        rootdir:  The dir containing the tmpdir, default is macroloc</span>
 <span class="sd">        tmpdir:   The name of the tempdir, default is &quot;cmaketmp&quot;</span>
@@ -186,7 +195,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_entered</span> <span class="o">=</span> <span class="kc">False</span>
 
 <div class="viewcode-block" id="CmakeTmpBuildDir.get_makefile_vars"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.build.CmakeTmpBuildDir.get_makefile_vars">[docs]</a>    <span class="k">def</span> <span class="nf">get_makefile_vars</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">comp</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cmake_args</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Run cmake and process output to a list of variable settings</span>
 
 <span class="sd">        case can be None if caller is providing their own cmake args</span>
@@ -201,7 +210,7 @@
             <span class="p">)</span>
 
         <span class="n">cmake_args</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">get_standard_cmake_args</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="s2">&quot;DO_NOT_USE&quot;</span><span class="p">,</span> <span class="n">shared_lib</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">get_standard_cmake_args</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="s2">&quot;DO_NOT_USE&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">cmake_args</span> <span class="ow">is</span> <span class="kc">None</span>
             <span class="k">else</span> <span class="n">cmake_args</span>
         <span class="p">)</span>
@@ -231,7 +240,7 @@
 
 
 <div class="viewcode-block" id="generate_makefile_macro"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.build.generate_makefile_macro">[docs]</a><span class="k">def</span> <span class="nf">generate_makefile_macro</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">caseroot</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generates a flat Makefile macro file based on the CMake cache system.</span>
 <span class="sd">    This macro is only used by certain sharedlibs since components use CMake.</span>
 <span class="sd">    Since indirection based on comp_name is allowed for sharedlibs, each sharedlib must generate</span>
@@ -248,6 +257,7 @@
                 <span class="s2">&quot;gptl&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;csm_share&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;csm_share_cpl7&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;mpi-serial&quot;</span><span class="p">,</span>
             <span class="p">]</span>
         <span class="p">)</span>
         <span class="n">cmake_macro</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="s2">&quot;Macros.cmake&quot;</span><span class="p">)</span>
@@ -279,7 +289,7 @@
 
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="s2">&quot;Macros.make&quot;</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
         <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
-            <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd"># This file is auto-generated, do not edit. If you want to change</span>
 <span class="sd"># sharedlib flags, you can edit the cmake_macros in this case. You</span>
 <span class="sd"># can change flags for specific sharedlibs only by checking COMP_NAME.</span>
@@ -316,7 +326,7 @@
     <span class="k">return</span> <span class="n">comps</span>
 
 
-<div class="viewcode-block" id="get_standard_cmake_args"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.build.get_standard_cmake_args">[docs]</a><span class="k">def</span> <span class="nf">get_standard_cmake_args</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">sharedpath</span><span class="p">,</span> <span class="n">shared_lib</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="get_standard_cmake_args"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.build.get_standard_cmake_args">[docs]</a><span class="k">def</span> <span class="nf">get_standard_cmake_args</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">sharedpath</span><span class="p">):</span>
     <span class="n">cmake_args</span> <span class="o">=</span> <span class="s2">&quot;-DCIME_MODEL=</span><span class="si">{}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MODEL&quot;</span><span class="p">))</span>
     <span class="n">cmake_args</span> <span class="o">+=</span> <span class="s2">&quot;-DSRC_ROOT=</span><span class="si">{}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;SRCROOT&quot;</span><span class="p">))</span>
     <span class="n">cmake_args</span> <span class="o">+=</span> <span class="s2">&quot; -Dcompile_threaded=</span><span class="si">{}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
@@ -332,7 +342,9 @@
         <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;EXEROOT&quot;</span><span class="p">),</span> <span class="n">sharedpath</span><span class="p">)</span>
     <span class="p">)</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">shared_lib</span><span class="p">:</span>
+    <span class="c1"># if sharedlibs are common to entire suite, they cannot be customized</span>
+    <span class="c1"># per case/compset</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">common_sharedlibroot</span><span class="p">:</span>
         <span class="n">cmake_args</span> <span class="o">+=</span> <span class="s2">&quot; -DUSE_KOKKOS=</span><span class="si">{}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">stringify_bool</span><span class="p">(</span><span class="n">uses_kokkos</span><span class="p">(</span><span class="n">case</span><span class="p">)))</span>
         <span class="n">comps</span> <span class="o">=</span> <span class="n">_get_compset_comps</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
         <span class="n">cmake_args</span> <span class="o">+=</span> <span class="s2">&quot; -DCOMP_NAMES=&#39;</span><span class="si">{}</span><span class="s2">&#39; &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">comps</span><span class="p">))</span>
@@ -394,8 +406,9 @@
 <span class="p">):</span>
     <span class="c1">###############################################################################</span>
     <span class="n">logs</span> <span class="o">=</span> <span class="p">[]</span>
-
     <span class="n">thread_bad_results</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">libroot</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">exeroot</span><span class="p">,</span> <span class="s2">&quot;lib&quot;</span><span class="p">)</span>
+    <span class="n">bldroot</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">for</span> <span class="n">model</span><span class="p">,</span> <span class="n">comp</span><span class="p">,</span> <span class="n">nthrds</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">config_dir</span> <span class="ow">in</span> <span class="n">complist</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">buildlist</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">model</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">buildlist</span><span class="p">:</span>
             <span class="k">continue</span>
@@ -419,9 +432,8 @@
 
         <span class="n">smp</span> <span class="o">=</span> <span class="n">nthrds</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">build_threaded</span>
 
-        <span class="n">bldroot</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">exeroot</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="s2">&quot;obj&quot;</span><span class="p">)</span>
-        <span class="n">libroot</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">exeroot</span><span class="p">,</span> <span class="s2">&quot;lib&quot;</span><span class="p">)</span>
         <span class="n">file_build</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">exeroot</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">.bldlog.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">lid</span><span class="p">))</span>
+        <span class="n">bldroot</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">exeroot</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="s2">&quot;obj&quot;</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;bldroot is </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">bldroot</span><span class="p">))</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;libroot is </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">libroot</span><span class="p">))</span>
 
@@ -496,7 +508,6 @@
                 <span class="n">cime_model</span><span class="p">,</span> <span class="n">config_dir</span><span class="p">,</span> <span class="n">file_build</span>
             <span class="p">)</span>
         <span class="p">)</span>
-
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_build</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
             <span class="n">stat</span> <span class="o">=</span> <span class="n">run_cmd</span><span class="p">(</span>
                 <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/buildexe </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">config_dir</span><span class="p">,</span> <span class="n">caseroot</span><span class="p">,</span> <span class="n">libroot</span><span class="p">,</span> <span class="n">bldroot</span><span class="p">),</span>
@@ -547,59 +558,63 @@
             <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">build_dir</span><span class="p">)</span>
 
     <span class="c1"># Components-specific cmake args. Cmake requires all component inputs to be available</span>
-    <span class="c1"># regardless of requested build list</span>
-    <span class="n">cmp_cmake_args</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-    <span class="n">all_models</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">files</span> <span class="o">=</span> <span class="n">Files</span><span class="p">(</span><span class="n">comp_interface</span><span class="o">=</span><span class="n">comp_interface</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">model</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">config_dir</span> <span class="ow">in</span> <span class="n">complist</span><span class="p">:</span>
-        <span class="c1"># Create the Filepath and CIME_cppdefs files</span>
-        <span class="k">if</span> <span class="n">model</span> <span class="o">==</span> <span class="s2">&quot;cpl&quot;</span><span class="p">:</span>
-            <span class="n">config_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                <span class="n">files</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;COMP_ROOT_DIR_CPL&quot;</span><span class="p">),</span> <span class="s2">&quot;cime_config&quot;</span>
-            <span class="p">)</span>
-
-        <span class="n">cmp_cmake_args</span> <span class="o">+=</span> <span class="n">_create_build_metadata_for_component</span><span class="p">(</span>
-            <span class="n">config_dir</span><span class="p">,</span> <span class="n">libroot</span><span class="p">,</span> <span class="n">bldroot</span><span class="p">,</span> <span class="n">case</span>
-        <span class="p">)</span>
-        <span class="n">all_models</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
-
-    <span class="c1"># Call CMake</span>
-    <span class="n">cmake_args</span> <span class="o">=</span> <span class="n">get_standard_cmake_args</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">sharedpath</span><span class="p">)</span>
-    <span class="n">cmake_env</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-    <span class="n">ninja_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">srcroot</span><span class="p">,</span> <span class="s2">&quot;externals/ninja/bin&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">ninja</span><span class="p">:</span>
-        <span class="n">cmake_args</span> <span class="o">+=</span> <span class="s2">&quot; -GNinja &quot;</span>
-        <span class="n">cmake_env</span> <span class="o">+=</span> <span class="s2">&quot;PATH=</span><span class="si">{}</span><span class="s2">:$PATH &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ninja_path</span><span class="p">)</span>
-
-    <span class="c1"># Glue all pieces together:</span>
-    <span class="c1">#  - cmake environment</span>
-    <span class="c1">#  - common (i.e. project-wide) cmake args</span>
-    <span class="c1">#  - component-specific cmake args</span>
-    <span class="c1">#  - path to src folder</span>
+    <span class="c1"># regardless of requested build list. We do not want to re-invoke cmake</span>
+    <span class="c1"># if it has already been called.</span>
     <span class="n">do_timing</span> <span class="o">=</span> <span class="s2">&quot;/usr/bin/time -p &quot;</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s2">&quot;/usr/bin/time&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
-    <span class="n">cmake_cmd</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">cmake </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">/components&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-        <span class="n">cmake_env</span><span class="p">,</span> <span class="n">do_timing</span><span class="p">,</span> <span class="n">cmake_args</span><span class="p">,</span> <span class="n">cmp_cmake_args</span><span class="p">,</span> <span class="n">srcroot</span>
-    <span class="p">)</span>
-    <span class="n">stat</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="k">if</span> <span class="n">dry_run</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;CMake cmd:</span><span class="se">\n</span><span class="s2">cd </span><span class="si">{}</span><span class="s2"> &amp;&amp; </span><span class="si">{}</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">bldroot</span><span class="p">,</span> <span class="n">cmake_cmd</span><span class="p">))</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-            <span class="s2">&quot;Configuring full </span><span class="si">{}</span><span class="s2"> model with output to file </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">cime_model</span><span class="p">,</span> <span class="n">bldlog</span>
-            <span class="p">)</span>
-        <span class="p">)</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;   Calling cmake directly, see top of log file for specific call&quot;</span><span class="p">)</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">bldlog</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
-            <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Configuring with cmake cmd:</span><span class="se">\n</span><span class="si">{}</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cmake_cmd</span><span class="p">))</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bldroot</span><span class="p">,</span> <span class="s2">&quot;CMakeCache.txt&quot;</span><span class="p">)):</span>
+        <span class="n">cmp_cmake_args</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">all_models</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="n">Files</span><span class="p">(</span><span class="n">comp_interface</span><span class="o">=</span><span class="n">comp_interface</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">model</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">config_dir</span> <span class="ow">in</span> <span class="n">complist</span><span class="p">:</span>
+            <span class="c1"># Create the Filepath and CIME_cppdefs files</span>
+            <span class="k">if</span> <span class="n">model</span> <span class="o">==</span> <span class="s2">&quot;cpl&quot;</span><span class="p">:</span>
+                <span class="n">config_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                    <span class="n">files</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;COMP_ROOT_DIR_CPL&quot;</span><span class="p">),</span> <span class="s2">&quot;cime_config&quot;</span>
+                <span class="p">)</span>
 
-        <span class="c1"># Add logging before running</span>
-        <span class="n">cmake_cmd</span> <span class="o">=</span> <span class="s2">&quot;(</span><span class="si">{}</span><span class="s2">) &gt;&gt; </span><span class="si">{}</span><span class="s2"> 2&gt;&amp;1&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cmake_cmd</span><span class="p">,</span> <span class="n">bldlog</span><span class="p">)</span>
-        <span class="n">stat</span> <span class="o">=</span> <span class="n">run_cmd</span><span class="p">(</span><span class="n">cmake_cmd</span><span class="p">,</span> <span class="n">from_dir</span><span class="o">=</span><span class="n">bldroot</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">expect</span><span class="p">(</span>
-            <span class="n">stat</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span>
-            <span class="s2">&quot;BUILD FAIL: cmake config </span><span class="si">{}</span><span class="s2"> failed, cat </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cime_model</span><span class="p">,</span> <span class="n">bldlog</span><span class="p">),</span>
+            <span class="n">cmp_cmake_args</span> <span class="o">+=</span> <span class="n">_create_build_metadata_for_component</span><span class="p">(</span>
+                <span class="n">config_dir</span><span class="p">,</span> <span class="n">libroot</span><span class="p">,</span> <span class="n">bldroot</span><span class="p">,</span> <span class="n">case</span>
+            <span class="p">)</span>
+            <span class="n">all_models</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+
+        <span class="c1"># Call CMake</span>
+        <span class="n">cmake_args</span> <span class="o">=</span> <span class="n">get_standard_cmake_args</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">sharedpath</span><span class="p">)</span>
+        <span class="n">cmake_env</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">ninja_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">srcroot</span><span class="p">,</span> <span class="s2">&quot;externals/ninja/bin&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ninja</span><span class="p">:</span>
+            <span class="n">cmake_args</span> <span class="o">+=</span> <span class="s2">&quot; -GNinja &quot;</span>
+            <span class="n">cmake_env</span> <span class="o">+=</span> <span class="s2">&quot;PATH=</span><span class="si">{}</span><span class="s2">:$PATH &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ninja_path</span><span class="p">)</span>
+
+        <span class="c1"># Glue all pieces together:</span>
+        <span class="c1">#  - cmake environment</span>
+        <span class="c1">#  - common (i.e. project-wide) cmake args</span>
+        <span class="c1">#  - component-specific cmake args</span>
+        <span class="c1">#  - path to src folder</span>
+        <span class="n">cmake_cmd</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">cmake </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">/components&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">cmake_env</span><span class="p">,</span> <span class="n">do_timing</span><span class="p">,</span> <span class="n">cmake_args</span><span class="p">,</span> <span class="n">cmp_cmake_args</span><span class="p">,</span> <span class="n">srcroot</span>
         <span class="p">)</span>
+        <span class="n">stat</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">dry_run</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;CMake cmd:</span><span class="se">\n</span><span class="s2">cd </span><span class="si">{}</span><span class="s2"> &amp;&amp; </span><span class="si">{}</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">bldroot</span><span class="p">,</span> <span class="n">cmake_cmd</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="s2">&quot;Configuring full </span><span class="si">{}</span><span class="s2"> model with output to file </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">cime_model</span><span class="p">,</span> <span class="n">bldlog</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="s2">&quot;   Calling cmake directly, see top of log file for specific call&quot;</span>
+            <span class="p">)</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">bldlog</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
+                <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Configuring with cmake cmd:</span><span class="se">\n</span><span class="si">{}</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cmake_cmd</span><span class="p">))</span>
+
+            <span class="c1"># Add logging before running</span>
+            <span class="n">cmake_cmd</span> <span class="o">=</span> <span class="s2">&quot;(</span><span class="si">{}</span><span class="s2">) &gt;&gt; </span><span class="si">{}</span><span class="s2"> 2&gt;&amp;1&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cmake_cmd</span><span class="p">,</span> <span class="n">bldlog</span><span class="p">)</span>
+            <span class="n">stat</span> <span class="o">=</span> <span class="n">run_cmd</span><span class="p">(</span><span class="n">cmake_cmd</span><span class="p">,</span> <span class="n">from_dir</span><span class="o">=</span><span class="n">bldroot</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">expect</span><span class="p">(</span>
+                <span class="n">stat</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="s2">&quot;BUILD FAIL: cmake config </span><span class="si">{}</span><span class="s2"> failed, cat </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cime_model</span><span class="p">,</span> <span class="n">bldlog</span><span class="p">),</span>
+            <span class="p">)</span>
 
     <span class="c1"># Set up buildlist</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">buildlist</span><span class="p">:</span>
@@ -681,7 +696,7 @@
     <span class="n">buildlist</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="c1">###############################################################################</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    check if a build needs to be done and warn if a clean is warrented first</span>
 <span class="sd">    returns the relative sharedpath directory for sharedlibraries</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -719,7 +734,7 @@
 
     <span class="n">expect</span><span class="p">(</span>
         <span class="n">ninst_build</span> <span class="o">==</span> <span class="n">ninst_value</span> <span class="ow">or</span> <span class="n">ninst_build</span> <span class="o">==</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">ERROR, NINST VALUES HAVE CHANGED</span>
 <span class="sd">  NINST_BUILD = {}</span>
 <span class="sd">  NINST_VALUE = {}</span>
@@ -738,7 +753,7 @@
 
     <span class="n">expect</span><span class="p">(</span>
         <span class="n">smp_build</span> <span class="o">==</span> <span class="n">smpstr</span> <span class="ow">or</span> <span class="n">smp_build</span> <span class="o">==</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">ERROR, SMP VALUES HAVE CHANGED</span>
 <span class="sd">  SMP_BUILD = {}</span>
 <span class="sd">  SMP_VALUE = {}</span>
@@ -758,7 +773,7 @@
 
     <span class="n">expect</span><span class="p">(</span>
         <span class="n">build_status</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">ERROR env_build HAS CHANGED</span>
 <span class="sd">  A manual clean of your obj directories is required</span>
 <span class="sd">  You should execute the following:</span>
@@ -815,6 +830,8 @@
         <span class="n">libs</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;gptl&quot;</span><span class="p">,</span> <span class="s2">&quot;mct&quot;</span><span class="p">,</span> <span class="s2">&quot;pio&quot;</span><span class="p">,</span> <span class="s2">&quot;csm_share&quot;</span><span class="p">]</span>
     <span class="k">elif</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MODEL&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;cesm&quot;</span><span class="p">:</span>
         <span class="n">libs</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;gptl&quot;</span><span class="p">,</span> <span class="s2">&quot;mct&quot;</span><span class="p">,</span> <span class="s2">&quot;pio&quot;</span><span class="p">,</span> <span class="s2">&quot;csm_share&quot;</span><span class="p">,</span> <span class="s2">&quot;csm_share_cpl7&quot;</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MODEL&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;e3sm&quot;</span><span class="p">:</span>
+        <span class="n">libs</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;gptl&quot;</span><span class="p">,</span> <span class="s2">&quot;mct&quot;</span><span class="p">,</span> <span class="s2">&quot;spio&quot;</span><span class="p">,</span> <span class="s2">&quot;csm_share&quot;</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">libs</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;gptl&quot;</span><span class="p">,</span> <span class="s2">&quot;mct&quot;</span><span class="p">,</span> <span class="s2">&quot;pio&quot;</span><span class="p">,</span> <span class="s2">&quot;csm_share&quot;</span><span class="p">]</span>
 
@@ -1007,7 +1024,7 @@
 <span class="c1">###############################################################################</span>
 <span class="k">def</span> <span class="nf">_create_build_metadata_for_component</span><span class="p">(</span><span class="n">config_dir</span><span class="p">,</span> <span class="n">libroot</span><span class="p">,</span> <span class="n">bldroot</span><span class="p">,</span> <span class="n">case</span><span class="p">):</span>
     <span class="c1">###############################################################################</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Ensure that crucial Filepath and CIME_CPPDEFS files exist for this component.</span>
 <span class="sd">    In many cases, the bld/configure script will have already created these.</span>
 <span class="sd">    &quot;&quot;&quot;</span>

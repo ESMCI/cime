@@ -11,10 +11,9 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/doctools.js"></script>
         <script src="../../../_static/sphinx_highlight.js"></script>
         <script src="../../../_static/pop_ver.js"></script>
@@ -28,14 +27,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../../index.html" class="icon icon-home"> CIME
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            CIME
           </a>
               <div class="version">
                 master
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -69,9 +72,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../../index.html">Module code</a> &raquo;</li>
-      <li>CIME.tests.test_unit_paramgen</li>
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">CIME.tests.test_unit_paramgen</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -107,7 +110,7 @@
 <span class="n">_MOM_INPUT_YAML</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Global:</span>
 <span class="s2">    INPUTDIR:</span>
-<span class="s2">        value: $</span><span class="si">{DIN_LOC_ROOT}</span><span class="s2">/ocn/mom/$</span><span class="si">{OCN_GRID}</span><span class="s2"></span>
+<span class="s2">        value: $</span><span class="si">{DIN_LOC_ROOT}</span><span class="s2">/ocn/mom/$</span><span class="si">{OCN_GRID}</span>
 <span class="s2">    RESTORE_SALINITY:</span>
 <span class="s2">        value:</span>
 <span class="s2">            $OCN_GRID == &quot;tx0.66v1&quot; and $COMP_ATM == &quot;datm&quot;: True  # for C and G compsets on tx0.66v1</span>
@@ -208,7 +211,7 @@
 
 
 <div class="viewcode-block" id="DummyCase"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_paramgen.DummyCase">[docs]</a><span class="k">class</span> <span class="nc">DummyCase</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;A dummy Case class that mimics CIME class objects&#39; get_value method.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A dummy Case class that mimics CIME class objects&#39; get_value method.&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="DummyCase.get_value"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_paramgen.DummyCase.get_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varname</span><span class="p">):</span>
         <span class="n">d</span> <span class="o">=</span> <span class="p">{</span>
@@ -241,13 +244,13 @@
 
 
 <div class="viewcode-block" id="TestParamGen"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_paramgen.TestParamGen">[docs]</a><span class="k">class</span> <span class="nc">TestParamGen</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Tests some basic functionality of the</span>
 <span class="sd">    CIME.ParamGen.paramgen&#39;s ParamGen class</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="TestParamGen.test_init_data"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_paramgen.TestParamGen.test_init_data">[docs]</a>    <span class="k">def</span> <span class="nf">test_init_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Tests the ParamGen initializer with and without an initial data.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Tests the ParamGen initializer with and without an initial data.&quot;&quot;&quot;</span>
         <span class="c1"># empty</span>
         <span class="n">_</span> <span class="o">=</span> <span class="n">ParamGen</span><span class="p">({})</span>
         <span class="c1"># with data</span>
@@ -255,21 +258,21 @@
         <span class="n">_</span> <span class="o">=</span> <span class="n">ParamGen</span><span class="p">(</span><span class="n">data_dict</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestParamGen.test_reduce"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_paramgen.TestParamGen.test_reduce">[docs]</a>    <span class="k">def</span> <span class="nf">test_reduce</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Tests the reduce method of ParamGen on data with explicit guards (True or False).&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Tests the reduce method of ParamGen on data with explicit guards (True or False).&quot;&quot;&quot;</span>
         <span class="n">data_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;False&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;True&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">}</span>
         <span class="n">obj</span> <span class="o">=</span> <span class="n">ParamGen</span><span class="p">(</span><span class="n">data_dict</span><span class="p">)</span>
         <span class="n">obj</span><span class="o">.</span><span class="n">reduce</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestParamGen.test_nested_reduce"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_paramgen.TestParamGen.test_nested_reduce">[docs]</a>    <span class="k">def</span> <span class="nf">test_nested_reduce</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Tests the reduce method of ParamGen on data with nested guards.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Tests the reduce method of ParamGen on data with nested guards.&quot;&quot;&quot;</span>
         <span class="n">data_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;False&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;True&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;2&gt;3&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;2&lt;3&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">}}</span>
         <span class="n">obj</span> <span class="o">=</span> <span class="n">ParamGen</span><span class="p">(</span><span class="n">data_dict</span><span class="p">)</span>
         <span class="n">obj</span><span class="o">.</span><span class="n">reduce</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestParamGen.test_outer_guards"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_paramgen.TestParamGen.test_outer_guards">[docs]</a>    <span class="k">def</span> <span class="nf">test_outer_guards</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Tests the reduce method on data with outer guards enclosing parameter definitions.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Tests the reduce method on data with outer guards enclosing parameter definitions.&quot;&quot;&quot;</span>
         <span class="n">data_dict</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;False&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;param&quot;</span><span class="p">:</span> <span class="s2">&quot;foo&quot;</span><span class="p">},</span>
             <span class="s2">&quot;True&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;param&quot;</span><span class="p">:</span> <span class="s2">&quot;bar&quot;</span><span class="p">},</span>
@@ -279,7 +282,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;param&quot;</span><span class="p">:</span> <span class="s2">&quot;bar&quot;</span><span class="p">})</span></div>
 
 <div class="viewcode-block" id="TestParamGen.test_match"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_paramgen.TestParamGen.test_match">[docs]</a>    <span class="k">def</span> <span class="nf">test_match</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Tests the default behavior of returning the last match and the optional behavior of returning the</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Tests the default behavior of returning the last match and the optional behavior of returning the</span>
 <span class="sd">        first match.&quot;&quot;&quot;</span>
 
         <span class="n">data_dict</span> <span class="o">=</span> <span class="p">{</span>
@@ -297,7 +300,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="s2">&quot;foo&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestParamGen.test_undefined_var"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_paramgen.TestParamGen.test_undefined_var">[docs]</a>    <span class="k">def</span> <span class="nf">test_undefined_var</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Tests the reduce method of ParamGen on nested guards where an undefined expandable var is specified</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Tests the reduce method of ParamGen on nested guards where an undefined expandable var is specified</span>
 <span class="sd">        below a guard that evaluates to False. The undefined var should not lead to an error since the enclosing</span>
 <span class="sd">        guard evaluates to false.&quot;&quot;&quot;</span>
 
@@ -314,7 +317,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;param&quot;</span><span class="p">:</span> <span class="s2">&quot;foo&quot;</span><span class="p">})</span></div>
 
 <div class="viewcode-block" id="TestParamGen.test_expandable_vars"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_paramgen.TestParamGen.test_expandable_vars">[docs]</a>    <span class="k">def</span> <span class="nf">test_expandable_vars</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Tests the reduce method of ParamGen expandable vars in guards.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Tests the reduce method of ParamGen expandable vars in guards.&quot;&quot;&quot;</span>
 
         <span class="c1"># define an expansion function, i.e., a mapping for expandable var names to their values</span>
         <span class="n">test_map</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;alpha&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;beta&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;gamma&quot;</span><span class="p">:</span> <span class="s2">&quot;xyz&quot;</span><span class="p">}</span>
@@ -331,7 +334,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;param&quot;</span><span class="p">:</span> <span class="s2">&quot;baz&quot;</span><span class="p">})</span></div>
 
 <div class="viewcode-block" id="TestParamGen.test_formula_expansion"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_paramgen.TestParamGen.test_formula_expansion">[docs]</a>    <span class="k">def</span> <span class="nf">test_formula_expansion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Tests the formula expansion feature of ParamGen.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Tests the formula expansion feature of ParamGen.&quot;&quot;&quot;</span>
 
         <span class="c1"># define an expansion function, i.e., a mapping for expandable var names to their values</span>
         <span class="n">test_map</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;alpha&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">}</span>
@@ -351,10 +354,10 @@
 
 
 <div class="viewcode-block" id="TestParamGenYamlConstructor"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_paramgen.TestParamGenYamlConstructor">[docs]</a><span class="k">class</span> <span class="nc">TestParamGenYamlConstructor</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A unit test class for testing ParamGen&#39;s yaml constructor.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A unit test class for testing ParamGen&#39;s yaml constructor.&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="TestParamGenYamlConstructor.test_mom_input"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_paramgen.TestParamGenYamlConstructor.test_mom_input">[docs]</a>    <span class="k">def</span> <span class="nf">test_mom_input</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Test MOM_input file generation via a subset of original MOM_input.yaml&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Test MOM_input file generation via a subset of original MOM_input.yaml&quot;&quot;&quot;</span>
 
         <span class="c1"># Create temporary YAML file:</span>
         <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">()</span> <span class="k">as</span> <span class="n">temp</span><span class="p">:</span>
@@ -392,7 +395,7 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestParamGenYamlConstructor.test_input_data_list"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_paramgen.TestParamGenYamlConstructor.test_input_data_list">[docs]</a>    <span class="k">def</span> <span class="nf">test_input_data_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Test mom.input_data_list file generation via a subset of original input_data_list.yaml&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Test mom.input_data_list file generation via a subset of original input_data_list.yaml&quot;&quot;&quot;</span>
 
         <span class="c1"># Create temporary YAML file:</span>
         <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">()</span> <span class="k">as</span> <span class="n">temp</span><span class="p">:</span>
@@ -441,10 +444,10 @@
 
 
 <div class="viewcode-block" id="TestParamGenXmlConstructor"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_paramgen.TestParamGenXmlConstructor">[docs]</a><span class="k">class</span> <span class="nc">TestParamGenXmlConstructor</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A unit test class for testing ParamGen&#39;s xml constructor.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A unit test class for testing ParamGen&#39;s xml constructor.&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="TestParamGenXmlConstructor.test_single_key_val_guard"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_paramgen.TestParamGenXmlConstructor.test_single_key_val_guard">[docs]</a>    <span class="k">def</span> <span class="nf">test_single_key_val_guard</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Test xml entry values with single key=value guards&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Test xml entry values with single key=value guards&quot;&quot;&quot;</span>
 
         <span class="c1"># Create temporary YAML file:</span>
         <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">()</span> <span class="k">as</span> <span class="n">temp</span><span class="p">:</span>
@@ -461,7 +464,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">pg</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;test_nml&quot;</span><span class="p">][</span><span class="s2">&quot;foo&quot;</span><span class="p">][</span><span class="s2">&quot;values&quot;</span><span class="p">],</span> <span class="s2">&quot;beta&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestParamGenXmlConstructor.test_mixed_guard"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_paramgen.TestParamGenXmlConstructor.test_mixed_guard">[docs]</a>    <span class="k">def</span> <span class="nf">test_mixed_guard</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Tests multiple key=value guards mixed with explicit (flexible) guards.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Tests multiple key=value guards mixed with explicit (flexible) guards.&quot;&quot;&quot;</span>
 
         <span class="c1"># Create temporary YAML file:</span>
         <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">()</span> <span class="k">as</span> <span class="n">temp</span><span class="p">:</span>
@@ -478,7 +481,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">pg</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;test_nml&quot;</span><span class="p">][</span><span class="s2">&quot;bar&quot;</span><span class="p">][</span><span class="s2">&quot;values&quot;</span><span class="p">],</span> <span class="s2">&quot;epsilon&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestParamGenXmlConstructor.test_mixed_guard_first"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_paramgen.TestParamGenXmlConstructor.test_mixed_guard_first">[docs]</a>    <span class="k">def</span> <span class="nf">test_mixed_guard_first</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Tests multiple key=value guards mixed with explicit (flexible) guards</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Tests multiple key=value guards mixed with explicit (flexible) guards</span>
 <span class="sd">        with match=first option.&quot;&quot;&quot;</span>
 
         <span class="c1"># Create temporary YAML file:</span>
@@ -496,7 +499,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">pg</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;test_nml&quot;</span><span class="p">][</span><span class="s2">&quot;bar&quot;</span><span class="p">][</span><span class="s2">&quot;values&quot;</span><span class="p">],</span> <span class="s2">&quot;delta&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestParamGenXmlConstructor.test_no_match"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_paramgen.TestParamGenXmlConstructor.test_no_match">[docs]</a>    <span class="k">def</span> <span class="nf">test_no_match</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Tests an xml entry with no match, i.e., no guards evaluating to True.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Tests an xml entry with no match, i.e., no guards evaluating to True.&quot;&quot;&quot;</span>
 
         <span class="c1"># Create temporary YAML file:</span>
         <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">()</span> <span class="k">as</span> <span class="n">temp</span><span class="p">:</span>
@@ -513,7 +516,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">pg</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;test_nml&quot;</span><span class="p">][</span><span class="s2">&quot;baz&quot;</span><span class="p">][</span><span class="s2">&quot;values&quot;</span><span class="p">],</span> <span class="kc">None</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestParamGenXmlConstructor.test_default_var"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_paramgen.TestParamGenXmlConstructor.test_default_var">[docs]</a>    <span class="k">def</span> <span class="nf">test_default_var</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Test to check if default val is assigned when all guards eval to False&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Test to check if default val is assigned when all guards eval to False&quot;&quot;&quot;</span>
 
         <span class="c1"># Create temporary YAML file:</span>
         <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">()</span> <span class="k">as</span> <span class="n">temp</span><span class="p">:</span>
@@ -530,7 +533,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">pg</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;test_nml&quot;</span><span class="p">][</span><span class="s2">&quot;foo&quot;</span><span class="p">][</span><span class="s2">&quot;values&quot;</span><span class="p">],</span> <span class="s2">&quot;alpha&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestParamGenXmlConstructor.test_duplicate_entry_error"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_paramgen.TestParamGenXmlConstructor.test_duplicate_entry_error">[docs]</a>    <span class="k">def</span> <span class="nf">test_duplicate_entry_error</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test to make sure duplicate ids raise the correct error</span>
 <span class="sd">        when the &quot;no_duplicates&quot; flag is True.</span>
 <span class="sd">        &quot;&quot;&quot;</span>

@@ -11,10 +11,9 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/doctools.js"></script>
         <script src="../../../_static/sphinx_highlight.js"></script>
         <script src="../../../_static/pop_ver.js"></script>
@@ -28,14 +27,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../../index.html" class="icon icon-home"> CIME
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            CIME
           </a>
               <div class="version">
                 master
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -69,9 +72,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../../index.html">Module code</a> &raquo;</li>
-      <li>CIME.XML.entry_id</li>
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">CIME.XML.entry_id</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -99,7 +102,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">groups</span> <span class="o">=</span> <span class="p">{}</span>
 
 <div class="viewcode-block" id="EntryID.get_default_value"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.entry_id.EntryID.get_default_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_default_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set the value of an entry to the default value for that entry</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_value_match</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">attributes</span><span class="p">)</span>
@@ -134,7 +137,7 @@
         <span class="n">entry_node</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">replacement_for_none</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Handle this case:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Handle this case:</span>
 <span class="sd">        &lt;entry id ...&gt;</span>
 <span class="sd">         &lt;values&gt;</span>
 <span class="sd">          &lt;value A=&quot;a1&quot;&gt;X&lt;/value&gt;</span>
@@ -173,7 +176,7 @@
     <span class="k">def</span> <span class="nf">_get_value_match</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">exact_match</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">replacement_for_none</span><span class="o">=</span><span class="kc">None</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Note that the component class has a specific version of this function</span>
 
 <span class="sd">        If replacement_for_none is provided, then: if the found text value would give a</span>
@@ -351,7 +354,7 @@
         <span class="k">return</span> <span class="n">new_valid_values</span>
 
     <span class="k">def</span> <span class="nf">_set_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">vid</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ignore_type</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set the value of an entry-id field to value</span>
 <span class="sd">        Returns the value or None if not found</span>
 <span class="sd">        subgroup is ignored in the general routine and applied in specific methods</span>
@@ -383,7 +386,7 @@
         <span class="k">return</span> <span class="n">str_value</span></div>
 
 <div class="viewcode-block" id="EntryID.set_value"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.entry_id.EntryID.set_value">[docs]</a>    <span class="k">def</span> <span class="nf">set_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ignore_type</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set the value of an entry-id field to value</span>
 <span class="sd">        Returns the value or None if not found</span>
 <span class="sd">        subgroup is ignored in the general routine and applied in specific methods</span>
@@ -400,7 +403,7 @@
         <span class="k">return</span> <span class="n">val</span></div>
 
 <div class="viewcode-block" id="EntryID.get_values"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.entry_id.EntryID.get_values">[docs]</a>    <span class="k">def</span> <span class="nf">get_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">resolved</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Same functionality as get_value but it returns a list, if the</span>
 <span class="sd">        value in xml contains commas the list have multiple elements split on</span>
 <span class="sd">        commas</span>
@@ -425,7 +428,7 @@
 
     <span class="c1"># pylint: disable=arguments-differ</span>
 <div class="viewcode-block" id="EntryID.get_value"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.entry_id.EntryID.get_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">resolved</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a value for entry with id attribute vid.</span>
 <span class="sd">        or from the values field if the attribute argument is provided</span>
 <span class="sd">        and matches</span>
@@ -453,7 +456,7 @@
             <span class="k">return</span> <span class="n">convert_to_type</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">type_str</span><span class="p">,</span> <span class="n">vid</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">resolved</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        internal get_value, does not convert to type</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;(_get_value) (</span><span class="si">{}</span><span class="s2">, </span><span class="si">{}</span><span class="s2">, </span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">attribute</span><span class="p">,</span> <span class="n">resolved</span><span class="p">,</span> <span class="n">subgroup</span><span class="p">))</span>
@@ -503,7 +506,7 @@
         <span class="k">return</span> <span class="n">elements</span></div>
 
 <div class="viewcode-block" id="EntryID.add_elements_by_group"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.entry_id.EntryID.add_elements_by_group">[docs]</a>    <span class="k">def</span> <span class="nf">add_elements_by_group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">srcobj</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">infile</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add elements from srcobj to self under the appropriate</span>
 <span class="sd">        group element, entries to be added must have a child element</span>
 <span class="sd">        &lt;file&gt; with value &quot;infile&quot;</span>
@@ -549,7 +552,7 @@
         <span class="k">return</span> <span class="n">nodelist</span></div>
 
 <div class="viewcode-block" id="EntryID.cleanupnode"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.entry_id.EntryID.cleanupnode">[docs]</a>    <span class="k">def</span> <span class="nf">cleanupnode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        in env_base.py, not expected to get here</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">expect</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="s2">&quot; Not expected to be here </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">)))</span></div>

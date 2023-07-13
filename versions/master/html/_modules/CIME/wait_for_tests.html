@@ -11,10 +11,9 @@
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/doctools.js"></script>
         <script src="../../_static/sphinx_highlight.js"></script>
         <script src="../../_static/pop_ver.js"></script>
@@ -28,14 +27,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../index.html" class="icon icon-home"> CIME
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            CIME
           </a>
               <div class="version">
                 master
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -69,9 +72,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../index.html">Module code</a> &raquo;</li>
-      <li>CIME.wait_for_tests</li>
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">CIME.wait_for_tests</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -521,7 +524,7 @@
 <span class="s2">&lt;Upload&gt;</span>
 <span class="s2">&lt;File filename=&quot;</span><span class="si">{}</span><span class="s2">&quot;&gt;</span>
 <span class="s2">&lt;Content encoding=&quot;base64&quot;&gt;</span>
-<span class="si">{}</span><span class="s2"></span>
+<span class="si">{}</span>
 <span class="s2">&lt;/Content&gt;</span>
 <span class="s2">&lt;/File&gt;</span>
 <span class="s2">&lt;/Upload&gt;</span>
@@ -567,27 +570,27 @@
 
     <span class="k">for</span> <span class="n">drop_method</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;https&quot;</span><span class="p">,</span> <span class="s2">&quot;http&quot;</span><span class="p">]:</span>
         <span class="n">dart_config</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">SourceDirectory: </span><span class="si">{0}</span><span class="s2"></span>
-<span class="s2">BuildDirectory: </span><span class="si">{0}</span><span class="s2"></span>
+<span class="s2">SourceDirectory: </span><span class="si">{0}</span>
+<span class="s2">BuildDirectory: </span><span class="si">{0}</span>
 
 <span class="s2"># Site is something like machine.domain, i.e. pragmatic.crd</span>
-<span class="s2">Site: </span><span class="si">{1}</span><span class="s2"></span>
+<span class="s2">Site: </span><span class="si">{1}</span>
 
 <span class="s2"># Build name is osname-revision-compiler, i.e. Linux-2.4.2-2smp-c++</span>
-<span class="s2">BuildName: </span><span class="si">{2}</span><span class="s2"></span>
+<span class="s2">BuildName: </span><span class="si">{2}</span>
 
 <span class="s2"># Submission information</span>
 <span class="s2">IsCDash: TRUE</span>
 <span class="s2">CDashVersion:</span>
 <span class="s2">QueryCDashVersion:</span>
 <span class="s2">DropSite: my.cdash.org</span>
-<span class="s2">DropLocation: /submit.php?project=</span><span class="si">{3}</span><span class="s2"></span>
+<span class="s2">DropLocation: /submit.php?project=</span><span class="si">{3}</span>
 <span class="s2">DropSiteUser:</span>
 <span class="s2">DropSitePassword:</span>
 <span class="s2">DropSiteMode:</span>
-<span class="s2">DropMethod: </span><span class="si">{6}</span><span class="s2"></span>
+<span class="s2">DropMethod: </span><span class="si">{6}</span>
 <span class="s2">TriggerSite:</span>
-<span class="s2">ScpCommand: </span><span class="si">{4}</span><span class="s2"></span>
+<span class="s2">ScpCommand: </span><span class="si">{4}</span>
 
 <span class="s2"># Dashboard start time</span>
 <span class="s2">NightlyStartTime: </span><span class="si">{5}</span><span class="s2"> UTC</span>

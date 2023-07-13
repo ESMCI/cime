@@ -11,10 +11,9 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/doctools.js"></script>
         <script src="../../../_static/sphinx_highlight.js"></script>
         <script src="../../../_static/pop_ver.js"></script>
@@ -28,14 +27,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../../index.html" class="icon icon-home"> CIME
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            CIME
           </a>
               <div class="version">
                 master
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -69,9 +72,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../../index.html">Module code</a> &raquo;</li>
-      <li>CIME.case.case</li>
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">CIME.case.case</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -131,7 +134,7 @@
 
 
 <div class="viewcode-block" id="Case"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case">[docs]</a><span class="k">class</span> <span class="nc">Case</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    https://github.com/ESMCI/cime/wiki/Developers-Introduction</span>
 <span class="sd">    The Case class is the heart of the CIME Case Control system.  All</span>
 <span class="sd">    interactions with a Case take part through this class.  All of the</span>
@@ -297,7 +300,7 @@
         <span class="k">return</span> <span class="n">vid</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">False</span></div>
 
 <div class="viewcode-block" id="Case.initialize_derived_attributes"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.initialize_derived_attributes">[docs]</a>    <span class="k">def</span> <span class="nf">initialize_derived_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        These are derived variables which can be used in the config_* files</span>
 <span class="sd">        for variable substitution using the {{ var }} syntax</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -307,16 +310,17 @@
         <span class="n">comp_classes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_values</span><span class="p">(</span><span class="s2">&quot;COMP_CLASSES&quot;</span><span class="p">)</span>
         <span class="n">max_mpitasks_per_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MAX_MPITASKS_PER_NODE&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">async_io</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">asyncio</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">for</span> <span class="n">comp</span> <span class="ow">in</span> <span class="n">comp_classes</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">async_io</span><span class="p">[</span><span class="n">comp</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;PIO_ASYNC_INTERFACE&quot;</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="n">comp</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">async_io</span><span class="p">[</span><span class="n">comp</span><span class="p">]:</span>
+                <span class="n">asyncio</span> <span class="o">=</span> <span class="kc">True</span>
 
-        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">async_io</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">iotasks</span> <span class="o">=</span> <span class="mi">1</span>
-            <span class="k">for</span> <span class="n">comp</span> <span class="ow">in</span> <span class="n">comp_classes</span><span class="p">:</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">async_io</span><span class="p">[</span><span class="n">comp</span><span class="p">]:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">iotasks</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">iotasks</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;PIO_NUMTASKS&quot;</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="n">comp</span><span class="p">)</span>
-                    <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">iotasks</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;PIO_ASYNCIO_NTASKS&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;PIO_ASYNCIO_NTASKS&quot;</span><span class="p">)</span>
+            <span class="k">else</span> <span class="mi">0</span>
+        <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">thread_count</span> <span class="o">=</span> <span class="n">env_mach_pes</span><span class="o">.</span><span class="n">get_max_thread_count</span><span class="p">(</span><span class="n">comp_classes</span><span class="p">)</span>
 
@@ -339,7 +343,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">spare_nodes</span> <span class="o">=</span> <span class="n">env_mach_pes</span><span class="o">.</span><span class="n">get_spare_nodes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">num_nodes</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">spare_nodes</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">total_tasks</span> <span class="o">=</span> <span class="n">env_mach_pes</span><span class="o">.</span><span class="n">get_total_tasks</span><span class="p">(</span><span class="n">comp_classes</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">iotasks</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">total_tasks</span> <span class="o">=</span> <span class="n">env_mach_pes</span><span class="o">.</span><span class="n">get_total_tasks</span><span class="p">(</span><span class="n">comp_classes</span><span class="p">,</span> <span class="n">asyncio</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">tasks_per_node</span> <span class="o">=</span> <span class="n">env_mach_pes</span><span class="o">.</span><span class="n">get_tasks_per_node</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">total_tasks</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">thread_count</span>
             <span class="p">)</span>
@@ -449,7 +453,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_files</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_env_entryid_files</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_env_generic_files</span></div>
 
 <div class="viewcode-block" id="Case.get_case_root"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.get_case_root">[docs]</a>    <span class="k">def</span> <span class="nf">get_case_root</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns the root directory for this case.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the root directory for this case.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_caseroot</span></div>
 
 <div class="viewcode-block" id="Case.get_env"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.get_env">[docs]</a>    <span class="k">def</span> <span class="nf">get_env</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">short_name</span><span class="p">,</span> <span class="n">allow_missing</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -553,7 +557,7 @@
         <span class="k">return</span> <span class="n">result</span></div>
 
 <div class="viewcode-block" id="Case.get_record_fields"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.get_record_fields">[docs]</a>    <span class="k">def</span> <span class="nf">get_record_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;get_record_fields gets individual requested field from an entry_id file</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;get_record_fields gets individual requested field from an entry_id file</span>
 <span class="sd">        this routine is used only by xmlquery&quot;&quot;&quot;</span>
         <span class="c1"># Empty result</span>
         <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
@@ -637,7 +641,7 @@
         <span class="n">allow_undefined</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">return_file</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        If a file has been defined, and the variable is in the file,</span>
 <span class="sd">        then that value will be set in the file object and the resovled value</span>
 <span class="sd">        is returned unless return_file is True, in which case (resolved_value, filename)</span>
@@ -671,7 +675,7 @@
             <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Case.set_valid_values"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.set_valid_values">[docs]</a>    <span class="k">def</span> <span class="nf">set_valid_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">valid_values</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Update or create a valid_values entry for item and populate it</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">expect</span><span class="p">(</span>
@@ -707,7 +711,7 @@
                 <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">lookups</span><span class="p">[</span><span class="n">key</span><span class="p">]</span></div>
 
     <span class="k">def</span> <span class="nf">_set_compset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compset_name</span><span class="p">,</span> <span class="n">files</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Loop through all the compset files and find the compset</span>
 <span class="sd">        specifation file that matches either the input &#39;compset_name&#39;.</span>
 <span class="sd">        Note that the input compset name (i.e. compset_name) can be</span>
@@ -793,7 +797,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_primary_component</span></div>
 
     <span class="k">def</span> <span class="nf">_find_primary_component</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        try to glean the primary component based on compset name</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">progcomps</span> <span class="o">=</span> <span class="p">{}</span>
@@ -860,7 +864,7 @@
         <span class="k">return</span> <span class="n">primary_component</span>
 
     <span class="k">def</span> <span class="nf">_valid_compset_impl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compset_name</span><span class="p">,</span> <span class="n">compset_alias</span><span class="p">,</span> <span class="n">comp_classes</span><span class="p">,</span> <span class="n">comp_hash</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Add stub models missing in &lt;compset_name&gt;, return full compset name.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add stub models missing in &lt;compset_name&gt;, return full compset name.</span>
 <span class="sd">        &lt;comp_classes&gt; is a list of all supported component classes.</span>
 <span class="sd">        &lt;comp_hash&gt; is a dictionary where each key is a supported component</span>
 <span class="sd">        (e.g., datm) and the associated value is the index in &lt;comp_classes&gt; of</span>
@@ -959,7 +963,7 @@
     <span class="n">__mod_match_re__</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;([^%]*[^0-9%]+)&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Case.valid_compset"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.valid_compset">[docs]</a>    <span class="k">def</span> <span class="nf">valid_compset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compset_name</span><span class="p">,</span> <span class="n">compset_alias</span><span class="p">,</span> <span class="n">files</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Add stub models missing in &lt;compset_name&gt;, return full compset name.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add stub models missing in &lt;compset_name&gt;, return full compset name.</span>
 <span class="sd">        &lt;files&gt; is used to collect set of all supported components.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># First, create hash of model names</span>
@@ -996,7 +1000,7 @@
         <span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_set_info_from_primary_component</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="n">pesfile</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets file and directory paths that depend on the primary component of</span>
 <span class="sd">        this compset.</span>
 
@@ -1310,9 +1314,11 @@
             <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;NTASKS_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">compclass</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">pes_ntasks</span><span class="p">:</span>
                 <span class="n">mach_pes_obj</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
             <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;NTHRDS_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">compclass</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">compclass</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">pes_nthrds</span><span class="p">:</span>
-                <span class="n">mach_pes_obj</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">compclass</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">pes_nthrds</span><span class="p">:</span>
+                <span class="n">mach_pes_obj</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="n">multi_driver</span><span class="p">:</span>
             <span class="n">mach_pes_obj</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;MULTI_DRIVER&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
 
@@ -1666,6 +1672,13 @@
             <span class="p">)</span>
 
         <span class="n">env_batch</span><span class="o">.</span><span class="n">set_job_defaults</span><span class="p">(</span><span class="n">bjobs</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="c1"># Set BATCH_COMMAND_FLAGS to the default values</span>
+
+        <span class="k">for</span> <span class="n">job</span> <span class="ow">in</span> <span class="n">bjobs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">test</span> <span class="ow">and</span> <span class="n">job</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;case.run&quot;</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">test</span> <span class="ow">and</span> <span class="n">job</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;case.test&quot;</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">submitargs</span> <span class="o">=</span> <span class="n">env_batch</span><span class="o">.</span><span class="n">get_submit_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">resolve</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;BATCH_COMMAND_FLAGS&quot;</span><span class="p">,</span> <span class="n">submitargs</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="n">job</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
         <span class="c1"># Make sure that parallel IO is not specified if total_tasks==1</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_tasks</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
@@ -1784,7 +1797,9 @@
                     <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">casetools</span><span class="p">,</span> <span class="s2">&quot;mach_syslog&quot;</span><span class="p">),</span>
                 <span class="p">)</span>
 
-            <span class="n">safe_copy</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">toolsdir</span><span class="p">,</span> <span class="s2">&quot;e3sm_compile_wrap.py&quot;</span><span class="p">),</span> <span class="n">casetools</span><span class="p">)</span>
+            <span class="n">srcroot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;SRCROOT&quot;</span><span class="p">)</span>
+            <span class="n">customize_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">srcroot</span><span class="p">,</span> <span class="s2">&quot;cime_config&quot;</span><span class="p">,</span> <span class="s2">&quot;customize&quot;</span><span class="p">)</span>
+            <span class="n">safe_copy</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">customize_path</span><span class="p">,</span> <span class="s2">&quot;e3sm_compile_wrap.py&quot;</span><span class="p">),</span> <span class="n">casetools</span><span class="p">)</span>
 
         <span class="c1"># add archive_metadata to the CASEROOT but only for CESM</span>
         <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">copy_cesm_tools</span><span class="p">:</span>
@@ -1801,7 +1816,10 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_comp_interface</span> <span class="o">==</span> <span class="s2">&quot;nuopc&quot;</span><span class="p">:</span>
             <span class="n">components</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s2">&quot;cdeps&quot;</span><span class="p">])</span>
 
-        <span class="n">readme_message</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;Put source mods for the </span><span class="si">{component}</span><span class="s2"> library in this directory.</span>
+        <span class="n">readme_message_start</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;Put source mods for the </span><span class="si">{component}</span><span class="s2"> library in this directory.&quot;</span>
+        <span class="p">)</span>
+        <span class="n">readme_message_end</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 
 <span class="s2">WARNING: SourceMods are not kept under version control, and can easily</span>
 <span class="s2">become out of date if changes are made to the source code on which they</span>
@@ -1835,7 +1853,18 @@
                 <span class="c1"># to fail).</span>
                 <span class="n">readme_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="s2">&quot;README&quot;</span><span class="p">)</span>
                 <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">readme_file</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
-                    <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">readme_message</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">component</span><span class="o">=</span><span class="n">component</span><span class="p">))</span>
+                    <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">readme_message_start</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">component</span><span class="o">=</span><span class="n">component</span><span class="p">))</span>
+
+                    <span class="k">if</span> <span class="n">component</span> <span class="o">==</span> <span class="s2">&quot;cdeps&quot;</span><span class="p">:</span>
+                        <span class="n">readme_message_extra</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+
+<span class="s2">Note that this subdirectory should only contain files from CDEPS&#39;s</span>
+<span class="s2">dshr and streams source code directories.</span>
+<span class="s2">Files related to specific data models should go in SourceMods subdirectories</span>
+<span class="s2">for those data models (e.g., src.datm).&quot;&quot;&quot;</span>
+                        <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">readme_message_extra</span><span class="p">)</span>
+
+                    <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">readme_message_end</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">copy_cism_source_mods</span><span class="p">:</span>
             <span class="c1"># Note: this is CESM specific, given that we are referencing cism explitly</span>
@@ -1928,7 +1957,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_create_caseroot_tools</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Case.apply_user_mods"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.apply_user_mods">[docs]</a>    <span class="k">def</span> <span class="nf">apply_user_mods</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_mods_dirs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        User mods can be specified on the create_newcase command line (usually when called from create test)</span>
 <span class="sd">        or they can be in the compset definition, or both.</span>
 
@@ -1965,7 +1994,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">read_xml</span><span class="p">()</span></div>
 
     <span class="k">def</span> <span class="nf">_get_comp_user_mods</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        For a component &#39;foo&#39;, gets the value of FOO_USER_MODS.</span>
 
 <span class="sd">        Returns None if no value was found, or if the value is an empty string.</span>
@@ -2009,7 +2038,7 @@
         <span class="k">return</span> <span class="n">result</span></div>
 
 <div class="viewcode-block" id="Case.get_job_info"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.get_job_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_job_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get information on batch jobs associated with this case</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">xml_job_ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;JOB_IDS&quot;</span><span class="p">)</span>
@@ -2023,6 +2052,10 @@
                 <span class="n">result</span><span class="p">[</span><span class="n">jobname</span><span class="p">]</span> <span class="o">=</span> <span class="n">jobid</span>
 
             <span class="k">return</span> <span class="n">result</span></div>
+
+<div class="viewcode-block" id="Case.get_job_id"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.get_job_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_job_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">):</span>
+        <span class="n">env_batch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_env</span><span class="p">(</span><span class="s2">&quot;batch&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">env_batch</span><span class="o">.</span><span class="n">get_job_id</span><span class="p">(</span><span class="n">output</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Case.report_job_status"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.report_job_status">[docs]</a>    <span class="k">def</span> <span class="nf">report_job_status</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">jobmap</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_job_info</span><span class="p">()</span>
@@ -2090,15 +2123,25 @@
             <span class="p">)</span>
             <span class="n">run_misc_suffix</span> <span class="o">=</span> <span class="n">custom_run_misc_suffix</span>
 
+        <span class="n">aprun_mode</span> <span class="o">=</span> <span class="n">env_mach_specific</span><span class="o">.</span><span class="n">get_aprun_mode</span><span class="p">(</span><span class="n">mpi_attribs</span><span class="p">)</span>
+
         <span class="c1"># special case for aprun</span>
         <span class="k">if</span> <span class="p">(</span>
             <span class="n">executable</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
             <span class="ow">and</span> <span class="s2">&quot;aprun&quot;</span> <span class="ow">in</span> <span class="n">executable</span>
-            <span class="ow">and</span> <span class="ow">not</span> <span class="s2">&quot;theta&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MACH&quot;</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="n">aprun_mode</span> <span class="o">!=</span> <span class="s2">&quot;ignore&quot;</span>
+            <span class="c1"># and not &quot;theta&quot; in self.get_value(&quot;MACH&quot;)</span>
         <span class="p">):</span>
-            <span class="n">aprun_args</span><span class="p">,</span> <span class="n">num_nodes</span> <span class="o">=</span> <span class="n">get_aprun_cmd_for_case</span><span class="p">(</span>
-                <span class="bp">self</span><span class="p">,</span> <span class="n">run_exe</span><span class="p">,</span> <span class="n">overrides</span><span class="o">=</span><span class="n">overrides</span>
-            <span class="p">)[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span>
+            <span class="n">extra_args</span> <span class="o">=</span> <span class="n">env_mach_specific</span><span class="o">.</span><span class="n">get_aprun_args</span><span class="p">(</span>
+                <span class="bp">self</span><span class="p">,</span> <span class="n">mpi_attribs</span><span class="p">,</span> <span class="n">job</span><span class="p">,</span> <span class="n">overrides</span><span class="o">=</span><span class="n">overrides</span>
+            <span class="p">)</span>
+
+            <span class="n">aprun_args</span><span class="p">,</span> <span class="n">num_nodes</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">get_aprun_cmd_for_case</span><span class="p">(</span>
+                <span class="bp">self</span><span class="p">,</span>
+                <span class="n">run_exe</span><span class="p">,</span>
+                <span class="n">overrides</span><span class="o">=</span><span class="n">overrides</span><span class="p">,</span>
+                <span class="n">extra_args</span><span class="o">=</span><span class="n">extra_args</span><span class="p">,</span>
+            <span class="p">)</span>
             <span class="k">if</span> <span class="n">job</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;case.run&quot;</span><span class="p">,</span> <span class="s2">&quot;case.test&quot;</span><span class="p">):</span>
                 <span class="n">expect</span><span class="p">(</span>
                     <span class="p">(</span><span class="n">num_nodes</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">spare_nodes</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">,</span>
@@ -2158,7 +2201,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_loaded_envs</span></div>
 
 <div class="viewcode-block" id="Case.get_build_threaded"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.get_build_threaded">[docs]</a>    <span class="k">def</span> <span class="nf">get_build_threaded</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns True if current settings require a threaded build/run.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">force_threaded</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;FORCE_BUILD_SMP&quot;</span><span class="p">)</span>
@@ -2168,7 +2211,7 @@
         <span class="k">return</span> <span class="n">smp_present</span></div>
 
     <span class="k">def</span> <span class="nf">_check_testlists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compset_alias</span><span class="p">,</span> <span class="n">grid_name</span><span class="p">,</span> <span class="n">files</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        CESM only: check the testlist file for tests of this compset grid combination</span>
 
 <span class="sd">        compset_alias should be None for a user-defined compset (i.e., a compset</span>
@@ -2219,7 +2262,7 @@
             <span class="p">)</span>
 
 <div class="viewcode-block" id="Case.set_file"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.set_file">[docs]</a>    <span class="k">def</span> <span class="nf">set_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xmlfile</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        force the case object to consider only xmlfile</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">expect</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">xmlfile</span><span class="p">),</span> <span class="s2">&quot;Could not find file </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">xmlfile</span><span class="p">))</span>
@@ -2278,7 +2321,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">new_env_file</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="Case.update_env"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.update_env">[docs]</a>    <span class="k">def</span> <span class="nf">update_env</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_object</span><span class="p">,</span> <span class="n">env_file</span><span class="p">,</span> <span class="n">blow_away</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Replace a case env object file</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">old_object</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_env</span><span class="p">(</span><span class="n">env_file</span><span class="p">)</span>
@@ -2299,7 +2342,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_object</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Case.get_latest_cpl_log"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.get_latest_cpl_log">[docs]</a>    <span class="k">def</span> <span class="nf">get_latest_cpl_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coupler_log_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cplname</span><span class="o">=</span><span class="s2">&quot;cpl&quot;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        find and return the latest cpl log file in the</span>
 <span class="sd">        coupler_log_path directory</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -2319,7 +2362,7 @@
         <span class="n">cimeroot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CIMEROOT&quot;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">cmd</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">cmd</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span>
+            <span class="n">cmd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fix_sys_argv_quotes</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">))</span>
 
         <span class="k">if</span> <span class="n">init</span><span class="p">:</span>
             <span class="n">ctime</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">)</span>
@@ -2357,6 +2400,37 @@
                 <span class="n">fd</span><span class="o">.</span><span class="n">writelines</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">PermissionError</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Could not write to &#39;replay.sh&#39; script&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Case.fix_sys_argv_quotes"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.fix_sys_argv_quotes">[docs]</a>    <span class="k">def</span> <span class="nf">fix_sys_argv_quotes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Fixes removed quotes from argument list.</span>
+
+<span class="sd">        Restores quotes to `--val` and `KEY=VALUE` from sys.argv.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># handle fixing quotes</span>
+        <span class="c1"># case 1: &quot;--val&quot;, &quot; -nlev 276 &quot;</span>
+        <span class="c1"># case 2: &quot;-val&quot; , &quot; -nlev 276 &quot;</span>
+        <span class="c1"># case 3: CAM_CONFIG_OPTS=&quot; -nlev 276 &quot;</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">cmd</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s2">&quot;[-]{1,2}val&quot;</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">cmd</span><span class="p">):</span>
+                    <span class="k">continue</span>
+
+                <span class="c1"># only quote if value contains spaces</span>
+                <span class="k">if</span> <span class="s2">&quot; &quot;</span> <span class="ow">in</span> <span class="n">cmd</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]:</span>
+                    <span class="n">cmd</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">cmd</span><span class="p">[</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">m</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;([^=]*)=(.*)&quot;</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">m</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">continue</span>
+
+                <span class="n">g</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">groups</span><span class="p">()</span>
+
+                <span class="c1"># only quote if value contains spaces</span>
+                <span class="k">if</span> <span class="s2">&quot; &quot;</span> <span class="ow">in</span> <span class="n">g</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                    <span class="n">cmd</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">g</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">=&quot;</span><span class="si">{</span><span class="n">g</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
+
+        <span class="k">return</span> <span class="n">cmd</span></div>
 
 <div class="viewcode-block" id="Case.create"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.create">[docs]</a>    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -2485,7 +2559,7 @@
             <span class="k">raise</span></div>
 
 <div class="viewcode-block" id="Case.new_hash"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.new_hash">[docs]</a>    <span class="k">def</span> <span class="nf">new_hash</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Creates a hash&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a hash&quot;&quot;&quot;</span>
         <span class="n">args</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span>
         <span class="n">ctime</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">)</span>
         <span class="n">hostname</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">getfqdn</span><span class="p">()</span>
@@ -2496,7 +2570,7 @@
         <span class="k">return</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Case.is_save_timing_dir_project"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.is_save_timing_dir_project">[docs]</a>    <span class="k">def</span> <span class="nf">is_save_timing_dir_project</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check whether the project is permitted to archive performance data in the location</span>
 <span class="sd">        specified for the current machine</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -2536,6 +2610,7 @@
             <span class="n">job</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_first_job</span><span class="p">()</span>
 
         <span class="n">job_id_to_cmd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">submit_jobs</span><span class="p">(</span><span class="n">dry_run</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">job</span><span class="o">=</span><span class="n">job</span><span class="p">)</span>
+
         <span class="n">env_batch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_env</span><span class="p">(</span><span class="s2">&quot;batch&quot;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">job_id</span><span class="p">,</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">job_id_to_cmd</span><span class="p">:</span>
             <span class="n">write</span><span class="p">(</span><span class="s2">&quot;  FOR JOB: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">job_id</span><span class="p">))</span>

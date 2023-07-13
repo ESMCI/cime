@@ -11,10 +11,9 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/doctools.js"></script>
         <script src="../../../_static/sphinx_highlight.js"></script>
         <script src="../../../_static/pop_ver.js"></script>
@@ -28,14 +27,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../../index.html" class="icon icon-home"> CIME
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            CIME
           </a>
               <div class="version">
                 master
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -69,9 +72,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../../index.html">Module code</a> &raquo;</li>
-      <li>CIME.BuildTools.configure</li>
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">CIME.BuildTools.configure</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -130,7 +133,7 @@
     <span class="n">threaded</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">extra_machines_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Add Macros, Depends, and env_mach_specific files to a directory.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Add Macros, Depends, and env_mach_specific files to a directory.</span>
 
 <span class="sd">    Arguments:</span>
 <span class="sd">    machobj - Machines argument for this machine.</span>
@@ -196,7 +199,7 @@
 
 
 <div class="viewcode-block" id="copy_depends_files"><a class="viewcode-back" href="../../../CIME_api/CIME.BuildTools.html#CIME.BuildTools.configure.copy_depends_files">[docs]</a><span class="k">def</span> <span class="nf">copy_depends_files</span><span class="p">(</span><span class="n">machine_name</span><span class="p">,</span> <span class="n">machines_dir</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">,</span> <span class="n">compiler</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Copy any system or compiler Depends files if they do not exist in the output directory</span>
 <span class="sd">    If there is a match for Depends.machine_name.compiler copy that and ignore the others</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -236,12 +239,20 @@
 <div class="viewcode-block" id="FakeCase.get_build_threaded"><a class="viewcode-back" href="../../../CIME_api/CIME.BuildTools.html#CIME.BuildTools.configure.FakeCase.get_build_threaded">[docs]</a>    <span class="k">def</span> <span class="nf">get_build_threaded</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;SMP_PRESENT&quot;</span><span class="p">)</span></div>
 
+<div class="viewcode-block" id="FakeCase.get_case_root"><a class="viewcode-back" href="../../../CIME_api/CIME.BuildTools.html#CIME.BuildTools.configure.FakeCase.get_case_root">[docs]</a>    <span class="k">def</span> <span class="nf">get_case_root</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the root directory for this case.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">)</span></div>
+
 <div class="viewcode-block" id="FakeCase.get_value"><a class="viewcode-back" href="../../../CIME_api/CIME.BuildTools.html#CIME.BuildTools.configure.FakeCase.get_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attrib</span><span class="p">):</span>
         <span class="n">expect</span><span class="p">(</span>
             <span class="n">attrib</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vals</span><span class="p">,</span>
             <span class="s2">&quot;FakeCase does not support getting value of &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">attrib</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vals</span><span class="p">[</span><span class="n">attrib</span><span class="p">]</span></div></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vals</span><span class="p">[</span><span class="n">attrib</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="FakeCase.set_value"><a class="viewcode-back" href="../../../CIME_api/CIME.BuildTools.html#CIME.BuildTools.configure.FakeCase.set_value">[docs]</a>    <span class="k">def</span> <span class="nf">set_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attrib</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets a given variable value for the case&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vals</span><span class="p">[</span><span class="n">attrib</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span></div></div>
 
 
 <div class="viewcode-block" id="generate_env_mach_specific"><a class="viewcode-back" href="../../../CIME_api/CIME.BuildTools.html#CIME.BuildTools.configure.generate_env_mach_specific">[docs]</a><span class="k">def</span> <span class="nf">generate_env_mach_specific</span><span class="p">(</span>
@@ -256,7 +267,7 @@
     <span class="n">threaded</span><span class="p">,</span>
     <span class="n">noenv</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    env_mach_specific generation.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">ems_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="s2">&quot;env_mach_specific.xml&quot;</span><span class="p">)</span>

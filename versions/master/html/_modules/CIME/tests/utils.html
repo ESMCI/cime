@@ -11,10 +11,9 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/doctools.js"></script>
         <script src="../../../_static/sphinx_highlight.js"></script>
         <script src="../../../_static/pop_ver.js"></script>
@@ -28,14 +27,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../../index.html" class="icon icon-home"> CIME
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            CIME
           </a>
               <div class="version">
                 master
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -69,9 +72,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../../index.html">Module code</a> &raquo;</li>
-      <li>CIME.tests.utils</li>
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">CIME.tests.utils</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -158,30 +161,30 @@
 
 
 <div class="viewcode-block" id="MockMachines"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.utils.MockMachines">[docs]</a><span class="k">class</span> <span class="nc">MockMachines</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A mock version of the Machines object to simplify testing.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A mock version of the Machines object to simplify testing.&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">os_</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Store the name.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Store the name.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">os</span> <span class="o">=</span> <span class="n">os_</span>
 
 <div class="viewcode-block" id="MockMachines.get_machine_name"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.utils.MockMachines.get_machine_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_machine_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return the name we were given.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the name we were given.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span></div>
 
 <div class="viewcode-block" id="MockMachines.get_value"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.utils.MockMachines.get_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var_name</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Allow the operating system to be queried.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Allow the operating system to be queried.&quot;&quot;&quot;</span>
         <span class="k">assert</span> <span class="n">var_name</span> <span class="o">==</span> <span class="s2">&quot;OS&quot;</span><span class="p">,</span> <span class="p">(</span>
             <span class="s2">&quot;Build asked for a value not &quot;</span> <span class="s2">&quot;implemented in the testing infrastructure.&quot;</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">os</span></div>
 
 <div class="viewcode-block" id="MockMachines.is_valid_compiler"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.utils.MockMachines.is_valid_compiler">[docs]</a>    <span class="k">def</span> <span class="nf">is_valid_compiler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_</span><span class="p">):</span>  <span class="c1"># pylint:disable=no-self-use</span>
-        <span class="sd">&quot;&quot;&quot;Assume all compilers are valid.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Assume all compilers are valid.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="MockMachines.is_valid_MPIlib"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.utils.MockMachines.is_valid_MPIlib">[docs]</a>    <span class="k">def</span> <span class="nf">is_valid_MPIlib</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Assume all MPILIB settings are valid.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Assume all MPILIB settings are valid.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
     <span class="c1"># pragma pylint: disable=unused-argument</span>
@@ -194,7 +197,7 @@
 
 <div class="viewcode-block" id="MakefileTester"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.utils.MakefileTester">[docs]</a><span class="k">class</span> <span class="nc">MakefileTester</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
-    <span class="sd">&quot;&quot;&quot;Helper class for checking Makefile output.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Helper class for checking Makefile output.</span>
 
 <span class="sd">    Public methods:</span>
 <span class="sd">    __init__</span>
@@ -211,7 +214,7 @@
 <span class="s2">&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">make_string</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Constructor for Makefile test helper class.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Constructor for Makefile test helper class.</span>
 
 <span class="sd">        Arguments:</span>
 <span class="sd">        parent - The TestCase object that is using this item.</span>
@@ -221,7 +224,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">make_string</span> <span class="o">=</span> <span class="n">make_string</span>
 
 <div class="viewcode-block" id="MakefileTester.query_var"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.utils.MakefileTester.query_var">[docs]</a>    <span class="k">def</span> <span class="nf">query_var</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var_name</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">var</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Request the value of a variable in the Makefile, as a string.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Request the value of a variable in the Makefile, as a string.</span>
 
 <span class="sd">        Arguments:</span>
 <span class="sd">        var_name - Name of the variable to query.</span>
@@ -270,7 +273,7 @@
         <span class="k">return</span> <span class="n">query_result</span></div>
 
 <div class="viewcode-block" id="MakefileTester.assert_variable_equals"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.utils.MakefileTester.assert_variable_equals">[docs]</a>    <span class="k">def</span> <span class="nf">assert_variable_equals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var_name</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">env</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Assert that a variable in the Makefile has a given value.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Assert that a variable in the Makefile has a given value.</span>
 
 <span class="sd">        Arguments:</span>
 <span class="sd">        var_name - Name of variable to check.</span>
@@ -281,7 +284,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">query_var</span><span class="p">(</span><span class="n">var_name</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">var</span><span class="p">),</span> <span class="n">value</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="MakefileTester.assert_variable_matches"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.utils.MakefileTester.assert_variable_matches">[docs]</a>    <span class="k">def</span> <span class="nf">assert_variable_matches</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var_name</span><span class="p">,</span> <span class="n">regex</span><span class="p">,</span> <span class="n">env</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Assert that a variable in the Makefile matches a regex.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Assert that a variable in the Makefile matches a regex.</span>
 
 <span class="sd">        Arguments:</span>
 <span class="sd">        var_name - Name of variable to check.</span>
@@ -294,7 +297,7 @@
 
 <div class="viewcode-block" id="CMakeTester"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.utils.CMakeTester">[docs]</a><span class="k">class</span> <span class="nc">CMakeTester</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
-    <span class="sd">&quot;&quot;&quot;Helper class for checking CMake output.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Helper class for checking CMake output.</span>
 
 <span class="sd">    Public methods:</span>
 <span class="sd">    __init__</span>
@@ -309,7 +312,7 @@
 <span class="s2">&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">cmake_string</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Constructor for CMake test helper class.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Constructor for CMake test helper class.</span>
 
 <span class="sd">        Arguments:</span>
 <span class="sd">        parent - The TestCase object that is using this item.</span>
@@ -319,7 +322,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">cmake_string</span> <span class="o">=</span> <span class="n">cmake_string</span>
 
 <div class="viewcode-block" id="CMakeTester.query_var"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.utils.CMakeTester.query_var">[docs]</a>    <span class="k">def</span> <span class="nf">query_var</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var_name</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">var</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Request the value of a variable in Macros.cmake, as a string.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Request the value of a variable in Macros.cmake, as a string.</span>
 
 <span class="sd">        Arguments:</span>
 <span class="sd">        var_name - Name of the variable to query.</span>
@@ -371,7 +374,7 @@
         <span class="k">return</span> <span class="n">query_result</span></div>
 
 <div class="viewcode-block" id="CMakeTester.assert_variable_equals"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.utils.CMakeTester.assert_variable_equals">[docs]</a>    <span class="k">def</span> <span class="nf">assert_variable_equals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var_name</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">env</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Assert that a variable in the CMakeLists has a given value.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Assert that a variable in the CMakeLists has a given value.</span>
 
 <span class="sd">        Arguments:</span>
 <span class="sd">        var_name - Name of variable to check.</span>
@@ -382,7 +385,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">query_var</span><span class="p">(</span><span class="n">var_name</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">var</span><span class="p">),</span> <span class="n">value</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="CMakeTester.assert_variable_matches"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.utils.CMakeTester.assert_variable_matches">[docs]</a>    <span class="k">def</span> <span class="nf">assert_variable_matches</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var_name</span><span class="p">,</span> <span class="n">regex</span><span class="p">,</span> <span class="n">env</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Assert that a variable in the CMkeLists matches a regex.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Assert that a variable in the CMkeLists matches a regex.</span>
 
 <span class="sd">        Arguments:</span>
 <span class="sd">        var_name - Name of variable to check.</span>
