@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CIME.tests.test_sys_create_newcase &mdash; CIME master documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/pop_ver.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            CIME
+          </a>
+              <div class="version">
+                master
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../what_cime/index.html">What is CIME?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../users_guide/index.html">Case Control System Part 1: Basic Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../users_guide/index.html#case-control-system-part-2-configuration-porting-testing-and-use-cases">Case Control System Part 2: Configuration, Porting, Testing and Use Cases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../build_cpl/index.html">Building a Coupled Model with CIME</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../misc_tools/index.html">Miscellaneous Tools</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../glossary/index.html">Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Tools_user/index.html">User Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../xml_files/index.html">XML Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../CIME_api/modules.html">CIME</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Tools_api/modules.html">Tools</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">CIME</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">CIME.tests.test_sys_create_newcase</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for CIME.tests.test_sys_create_newcase</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+
+<span class="kn">import</span> <span class="nn">filecmp</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="kn">from</span> <span class="nn">CIME</span> <span class="kn">import</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">CIME.tests</span> <span class="kn">import</span> <span class="n">base</span>
+<span class="kn">from</span> <span class="nn">CIME.case.case</span> <span class="kn">import</span> <span class="n">Case</span>
+<span class="kn">from</span> <span class="nn">CIME.build</span> <span class="kn">import</span> <span class="n">CmakeTmpBuildDir</span>
+
+
+<div class="viewcode-block" id="TestCreateNewcase"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_create_newcase.TestCreateNewcase">[docs]</a><span class="k">class</span> <span class="nc">TestCreateNewcase</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">BaseTestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestCreateNewcase.setUpClass"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_create_newcase.TestCreateNewcase.setUpClass">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">setUpClass</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_testdirs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_do_teardown</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_testroot</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">TEST_ROOT</span><span class="p">,</span> <span class="s2">&quot;TestCreateNewcase&quot;</span><span class="p">)</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_root_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="TestCreateNewcase.tearDown"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_create_newcase.TestCreateNewcase.tearDown">[docs]</a>    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">cls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_root_dir</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestCreateNewcase.test_a_createnewcase"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_create_newcase.TestCreateNewcase.test_a_createnewcase">[docs]</a>    <span class="k">def</span> <span class="nf">test_a_createnewcase</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">cls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span>
+
+        <span class="n">testdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_testroot</span><span class="p">,</span> <span class="s2">&quot;testcreatenewcase&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">testdir</span><span class="p">):</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">testdir</span><span class="p">)</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="s2">&quot; --case </span><span class="si">%s</span><span class="s2"> --compset X --output-root </span><span class="si">%s</span><span class="s2"> --handle-preexisting-dirs=r&quot;</span> <span class="o">%</span> <span class="p">(</span>
+            <span class="n">testdir</span><span class="p">,</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">_testroot</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">allow_unsupported</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">+=</span> <span class="s2">&quot; --run-unsupported&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">TEST_COMPILER</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="n">args</span> <span class="o">+</span> <span class="s2">&quot; --compiler </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">TEST_COMPILER</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">TEST_MPILIB</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="n">args</span> <span class="o">+</span> <span class="s2">&quot; --mpilib </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">TEST_MPILIB</span>
+        <span class="k">if</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_cime_default_driver</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;nuopc&quot;</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">+=</span> <span class="s2">&quot; --res f19_g17 &quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">+=</span> <span class="s2">&quot; --res f19_g16 &quot;</span>
+
+        <span class="n">args</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; --machine </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">MACHINE</span><span class="o">.</span><span class="n">get_machine_name</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_testdirs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">testdir</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_cmd_assert_result</span><span class="p">(</span>
+            <span class="s2">&quot;./create_newcase </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">args</span><span class="p">),</span> <span class="n">from_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">SCRIPT_DIR</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">testdir</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">testdir</span><span class="p">,</span> <span class="s2">&quot;case.setup&quot;</span><span class="p">)))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_cmd_assert_result</span><span class="p">(</span><span class="s2">&quot;./case.setup&quot;</span><span class="p">,</span> <span class="n">from_dir</span><span class="o">=</span><span class="n">testdir</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_cmd_assert_result</span><span class="p">(</span><span class="s2">&quot;./case.build&quot;</span><span class="p">,</span> <span class="n">from_dir</span><span class="o">=</span><span class="n">testdir</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">Case</span><span class="p">(</span><span class="n">testdir</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">as</span> <span class="n">case</span><span class="p">:</span>
+            <span class="n">ntasks</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;NTASKS_ATM&quot;</span><span class="p">)</span>
+            <span class="k">case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;NTASKS_ATM&quot;</span><span class="p">,</span> <span class="n">ntasks</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># this should fail with a locked file issue</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_cmd_assert_result</span><span class="p">(</span><span class="s2">&quot;./case.build&quot;</span><span class="p">,</span> <span class="n">from_dir</span><span class="o">=</span><span class="n">testdir</span><span class="p">,</span> <span class="n">expected_stat</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_cmd_assert_result</span><span class="p">(</span><span class="s2">&quot;./case.setup --reset&quot;</span><span class="p">,</span> <span class="n">from_dir</span><span class="o">=</span><span class="n">testdir</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_cmd_assert_result</span><span class="p">(</span><span class="s2">&quot;./case.build&quot;</span><span class="p">,</span> <span class="n">from_dir</span><span class="o">=</span><span class="n">testdir</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">Case</span><span class="p">(</span><span class="n">testdir</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">as</span> <span class="n">case</span><span class="p">:</span>
+            <span class="k">case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;CHARGE_ACCOUNT&quot;</span><span class="p">,</span> <span class="s2">&quot;fred&quot;</span><span class="p">)</span>
+            <span class="c1"># to be used in next test</span>
+            <span class="n">batch_system</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;BATCH_SYSTEM&quot;</span><span class="p">)</span>
+
+        <span class="c1"># on systems (like github workflow) that do not have batch, set this for the next test</span>
+        <span class="k">if</span> <span class="n">batch_system</span> <span class="o">==</span> <span class="s2">&quot;none&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">run_cmd_assert_result</span><span class="p">(</span>
+                <span class="s1">&#39;./xmlchange --subgroup case.run BATCH_COMMAND_FLAGS=&quot;-q \$JOB_QUEUE&quot;&#39;</span><span class="p">,</span>
+                <span class="n">from_dir</span><span class="o">=</span><span class="n">testdir</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="c1"># this should not fail with a locked file issue</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_cmd_assert_result</span><span class="p">(</span><span class="s2">&quot;./case.build&quot;</span><span class="p">,</span> <span class="n">from_dir</span><span class="o">=</span><span class="n">testdir</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_cmd_assert_result</span><span class="p">(</span><span class="s2">&quot;./case.st_archive --test-all&quot;</span><span class="p">,</span> <span class="n">from_dir</span><span class="o">=</span><span class="n">testdir</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">Case</span><span class="p">(</span><span class="n">testdir</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">as</span> <span class="n">case</span><span class="p">:</span>
+            <span class="n">batch_command</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;BATCH_COMMAND_FLAGS&quot;</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="s2">&quot;case.run&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_cmd_assert_result</span><span class="p">(</span>
+            <span class="s1">&#39;./xmlchange --append --subgroup case.run BATCH_COMMAND_FLAGS=&quot;-l trythis&quot;&#39;</span><span class="p">,</span>
+            <span class="n">from_dir</span><span class="o">=</span><span class="n">testdir</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="c1"># Test that changes to BATCH_COMMAND_FLAGS work</span>
+        <span class="k">with</span> <span class="n">Case</span><span class="p">(</span><span class="n">testdir</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">as</span> <span class="n">case</span><span class="p">:</span>
+            <span class="n">new_batch_command</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span>
+                <span class="s2">&quot;BATCH_COMMAND_FLAGS&quot;</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="s2">&quot;case.run&quot;</span>
+            <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span>
+            <span class="n">new_batch_command</span> <span class="o">==</span> <span class="n">batch_command</span> <span class="o">+</span> <span class="s2">&quot; -l trythis&quot;</span><span class="p">,</span>
+            <span class="n">msg</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Failed to correctly append BATCH_COMMAND_FLAGS </span><span class="si">{</span><span class="n">new_batch_command</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">batch_command</span><span class="si">}</span><span class="s2">#&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_cmd_assert_result</span><span class="p">(</span>
+            <span class="s2">&quot;./xmlchange JOB_QUEUE=fred --subgroup case.run --force&quot;</span><span class="p">,</span> <span class="n">from_dir</span><span class="o">=</span><span class="n">testdir</span>
+        <span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">Case</span><span class="p">(</span><span class="n">testdir</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">as</span> <span class="n">case</span><span class="p">:</span>
+            <span class="n">new_batch_command</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span>
+                <span class="s2">&quot;BATCH_COMMAND_FLAGS&quot;</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="s2">&quot;case.run&quot;</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span>
+                <span class="s2">&quot;fred&quot;</span> <span class="ow">in</span> <span class="n">new_batch_command</span><span class="p">,</span>
+                <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Failed to update JOB_QUEUE in BATCH_COMMAND_FLAGS&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Trying to set values outside of context manager should fail</span>
+        <span class="n">case</span> <span class="o">=</span> <span class="n">Case</span><span class="p">(</span><span class="n">testdir</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">CIMEError</span><span class="p">):</span>
+            <span class="k">case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;NTASKS_ATM&quot;</span><span class="p">,</span> <span class="mi">42</span><span class="p">)</span>
+
+        <span class="c1"># Trying to read_xml with pending changes should fail</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">CIMEError</span><span class="p">):</span>
+            <span class="k">with</span> <span class="n">Case</span><span class="p">(</span><span class="n">testdir</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">as</span> <span class="n">case</span><span class="p">:</span>
+                <span class="k">case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;CHARGE_ACCOUNT&quot;</span><span class="p">,</span> <span class="s2">&quot;fouc&quot;</span><span class="p">)</span>
+                <span class="k">case</span><span class="o">.</span><span class="n">read_xml</span><span class="p">()</span>
+
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_do_teardown</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">testdir</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestCreateNewcase.test_aa_no_flush_on_instantiate"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_create_newcase.TestCreateNewcase.test_aa_no_flush_on_instantiate">[docs]</a>    <span class="k">def</span> <span class="nf">test_aa_no_flush_on_instantiate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">testdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">_testroot</span><span class="p">,</span> <span class="s2">&quot;testcreatenewcase&quot;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">Case</span><span class="p">(</span><span class="n">testdir</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">as</span> <span class="n">case</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">env_file</span> <span class="ow">in</span> <span class="n">case</span><span class="o">.</span><span class="n">_files</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span>
+                    <span class="n">env_file</span><span class="o">.</span><span class="n">needsrewrite</span><span class="p">,</span>
+                    <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Instantiating a case should not trigger a flush call&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">Case</span><span class="p">(</span><span class="n">testdir</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">as</span> <span class="n">case</span><span class="p">:</span>
+            <span class="k">case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;HIST_OPTION&quot;</span><span class="p">,</span> <span class="s2">&quot;nyears&quot;</span><span class="p">)</span>
+            <span class="n">runfile</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_env</span><span class="p">(</span><span class="s2">&quot;run&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span>
+                <span class="n">runfile</span><span class="o">.</span><span class="n">needsrewrite</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Expected flush call not triggered&quot;</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">env_file</span> <span class="ow">in</span> <span class="n">case</span><span class="o">.</span><span class="n">_files</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">env_file</span> <span class="o">!=</span> <span class="n">runfile</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span>
+                        <span class="n">env_file</span><span class="o">.</span><span class="n">needsrewrite</span><span class="p">,</span>
+                        <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Unexpected flush triggered for file </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                            <span class="n">env_file</span><span class="o">.</span><span class="n">filename</span>
+                        <span class="p">),</span>
+                    <span class="p">)</span>
+            <span class="c1"># Flush the file</span>
+            <span class="n">runfile</span><span class="o">.</span><span class="n">write</span><span class="p">()</span>
+            <span class="c1"># set it again to the same value</span>
+            <span class="k">case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;HIST_OPTION&quot;</span><span class="p">,</span> <span class="s2">&quot;nyears&quot;</span><span class="p">)</span>
+            <span class="c1"># now the file should not need to be flushed</span>
+            <span class="k">for</span> <span class="n">env_file</span> <span class="ow">in</span> <span class="n">case</span><span class="o">.</span><span class="n">_files</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span>
+                    <span class="n">env_file</span><span class="o">.</span><span class="n">needsrewrite</span><span class="p">,</span>
+                    <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Unexpected flush triggered for file </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">env_file</span><span class="o">.</span><span class="n">filename</span>
+                    <span class="p">),</span>
+                <span class="p">)</span>
+
+        <span class="c1"># Check once more with a new instance</span>
+        <span class="k">with</span> <span class="n">Case</span><span class="p">(</span><span class="n">testdir</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">as</span> <span class="n">case</span><span class="p">:</span>
+            <span class="k">case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;HIST_OPTION&quot;</span><span class="p">,</span> <span class="s2">&quot;nyears&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">env_file</span> <span class="ow">in</span> <span class="n">case</span><span class="o">.</span><span class="n">_files</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span>
+                    <span class="n">env_file</span><span class="o">.</span><span class="n">needsrewrite</span><span class="p">,</span>
+                    <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Unexpected flush triggered for file </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">env_file</span><span class="o">.</span><span class="n">filename</span>
+                    <span class="p">),</span>
+                <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestCreateNewcase.test_b_user_mods"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_create_newcase.TestCreateNewcase.test_b_user_mods">[docs]</a>    <span class="k">def</span> <span class="nf">test_b_user_mods</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">cls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span>
+
+        <span class="n">testdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_testroot</span><span class="p">,</span> <span class="s2">&quot;testusermods&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">testdir</span><span class="p">):</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">testdir</span><span class="p">)</span>
+
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_testdirs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">testdir</span><span class="p">)</span>
+
+        <span class="n">user_mods_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s2">&quot;user_mods_test1&quot;</span><span class="p">)</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot; --case </span><span class="si">%s</span><span class="s2"> --compset X --user-mods-dir </span><span class="si">%s</span><span class="s2"> --output-root </span><span class="si">%s</span><span class="s2"> --handle-preexisting-dirs=r&quot;</span>
+            <span class="o">%</span> <span class="p">(</span><span class="n">testdir</span><span class="p">,</span> <span class="n">user_mods_dir</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_testroot</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">allow_unsupported</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">+=</span> <span class="s2">&quot; --run-unsupported&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">TEST_COMPILER</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="n">args</span> <span class="o">+</span> <span class="s2">&quot; --compiler </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">TEST_COMPILER</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">TEST_MPILIB</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="n">args</span> <span class="o">+</span> <span class="s2">&quot; --mpilib </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">TEST_MPILIB</span>
+        <span class="k">if</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_cime_default_driver</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;nuopc&quot;</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">+=</span> <span class="s2">&quot; --res f19_g17 &quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">+=</span> <span class="s2">&quot; --res f19_g16 &quot;</span>
+
+        <span class="n">args</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; --machine </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">MACHINE</span><span class="o">.</span><span class="n">get_machine_name</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_cmd_assert_result</span><span class="p">(</span>
+            <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/create_newcase </span><span class="si">%s</span><span class="s2"> &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">SCRIPT_DIR</span><span class="p">,</span> <span class="n">args</span><span class="p">),</span> <span class="n">from_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">SCRIPT_DIR</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">testdir</span><span class="p">,</span> <span class="s2">&quot;SourceMods&quot;</span><span class="p">,</span> <span class="s2">&quot;src.drv&quot;</span><span class="p">,</span> <span class="s2">&quot;somefile.F90&quot;</span><span class="p">)</span>
+            <span class="p">),</span>
+            <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;User_mods SourceMod missing&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">testdir</span><span class="p">,</span> <span class="s2">&quot;user_nl_cpl&quot;</span><span class="p">),</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
+            <span class="n">contents</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span>
+                <span class="s2">&quot;a different cpl test option&quot;</span> <span class="ow">in</span> <span class="n">contents</span><span class="p">,</span>
+                <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;User_mods contents of user_nl_cpl missing&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span>
+                <span class="s2">&quot;a cpl namelist option&quot;</span> <span class="ow">in</span> <span class="n">contents</span><span class="p">,</span>
+                <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;User_mods contents of user_nl_cpl missing&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_do_teardown</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">testdir</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestCreateNewcase.test_c_create_clone_keepexe"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_create_newcase.TestCreateNewcase.test_c_create_clone_keepexe">[docs]</a>    <span class="k">def</span> <span class="nf">test_c_create_clone_keepexe</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">cls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span>
+
+        <span class="n">testdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_testroot</span><span class="p">,</span> <span class="s2">&quot;test_create_clone_keepexe&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">testdir</span><span class="p">):</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">testdir</span><span class="p">)</span>
+        <span class="n">prevtestdir</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_testdirs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">user_mods_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s2">&quot;user_mods_test3&quot;</span><span class="p">)</span>
+
+        <span class="n">cmd</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/create_clone --clone </span><span class="si">%s</span><span class="s2"> --case </span><span class="si">%s</span><span class="s2"> --keepexe --user-mods-dir </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">SCRIPT_DIR</span><span class="p">,</span>
+            <span class="n">prevtestdir</span><span class="p">,</span>
+            <span class="n">testdir</span><span class="p">,</span>
+            <span class="n">user_mods_dir</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_cmd_assert_result</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">from_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">SCRIPT_DIR</span><span class="p">,</span> <span class="n">expected_stat</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_do_teardown</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">testdir</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestCreateNewcase.test_d_create_clone_new_user"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_create_newcase.TestCreateNewcase.test_d_create_clone_new_user">[docs]</a>    <span class="k">def</span> <span class="nf">test_d_create_clone_new_user</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">cls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span>
+
+        <span class="n">testdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_testroot</span><span class="p">,</span> <span class="s2">&quot;test_create_clone_new_user&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">testdir</span><span class="p">):</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">testdir</span><span class="p">)</span>
+        <span class="n">prevtestdir</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_testdirs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_testdirs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">testdir</span><span class="p">)</span>
+        <span class="c1"># change the USER and CIME_OUTPUT_ROOT to nonsense values</span>
+        <span class="c1"># this is intended as a test of whether create_clone is independent of user</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_cmd_assert_result</span><span class="p">(</span>
+            <span class="s2">&quot;./xmlchange USER=this_is_not_a_user&quot;</span><span class="p">,</span> <span class="n">from_dir</span><span class="o">=</span><span class="n">prevtestdir</span>
+        <span class="p">)</span>
+
+        <span class="n">fakeoutputroot</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_testroot</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;USER&quot;</span><span class="p">),</span> <span class="s2">&quot;this_is_not_a_user&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_cmd_assert_result</span><span class="p">(</span>
+            <span class="s2">&quot;./xmlchange CIME_OUTPUT_ROOT=</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">fakeoutputroot</span><span class="p">,</span> <span class="n">from_dir</span><span class="o">=</span><span class="n">prevtestdir</span>
+        <span class="p">)</span>
+
+        <span class="c1"># this test should pass (user name is replaced)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_cmd_assert_result</span><span class="p">(</span>
+            <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/create_clone --clone </span><span class="si">%s</span><span class="s2"> --case </span><span class="si">%s</span><span class="s2"> &quot;</span>
+            <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">SCRIPT_DIR</span><span class="p">,</span> <span class="n">prevtestdir</span><span class="p">,</span> <span class="n">testdir</span><span class="p">),</span>
+            <span class="n">from_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">SCRIPT_DIR</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">testdir</span><span class="p">)</span>
+        <span class="c1"># this test should pass</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_cmd_assert_result</span><span class="p">(</span>
+            <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/create_clone --clone </span><span class="si">%s</span><span class="s2"> --case </span><span class="si">%s</span><span class="s2"> --cime-output-root </span><span class="si">%s</span><span class="s2">&quot;</span>
+            <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">SCRIPT_DIR</span><span class="p">,</span> <span class="n">prevtestdir</span><span class="p">,</span> <span class="n">testdir</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_testroot</span><span class="p">),</span>
+            <span class="n">from_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">SCRIPT_DIR</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_do_teardown</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">testdir</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestCreateNewcase.test_dd_create_clone_not_writable"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_create_newcase.TestCreateNewcase.test_dd_create_clone_not_writable">[docs]</a>    <span class="k">def</span> <span class="nf">test_dd_create_clone_not_writable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">cls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span>
+
+        <span class="n">testdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_testroot</span><span class="p">,</span> <span class="s2">&quot;test_create_clone_not_writable&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">testdir</span><span class="p">):</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">testdir</span><span class="p">)</span>
+        <span class="n">prevtestdir</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_testdirs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_testdirs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">testdir</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">Case</span><span class="p">(</span><span class="n">prevtestdir</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">as</span> <span class="n">case1</span><span class="p">:</span>
+            <span class="n">case2</span> <span class="o">=</span> <span class="n">case1</span><span class="o">.</span><span class="n">create_clone</span><span class="p">(</span><span class="n">testdir</span><span class="p">)</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">CIMEError</span><span class="p">):</span>
+                <span class="n">case2</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;CHARGE_ACCOUNT&quot;</span><span class="p">,</span> <span class="s2">&quot;fouc&quot;</span><span class="p">)</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_do_teardown</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">testdir</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestCreateNewcase.test_e_xmlquery"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_create_newcase.TestCreateNewcase.test_e_xmlquery">[docs]</a>    <span class="k">def</span> <span class="nf">test_e_xmlquery</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Set script and script path</span>
+        <span class="n">xmlquery</span> <span class="o">=</span> <span class="s2">&quot;./xmlquery&quot;</span>
+        <span class="bp">cls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span>
+        <span class="n">casedir</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_testdirs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># Check for environment</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">SCRIPT_DIR</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">TOOLS_DIR</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">casedir</span><span class="p">,</span> <span class="n">xmlquery</span><span class="p">)))</span>
+
+        <span class="c1"># Test command line options</span>
+        <span class="k">with</span> <span class="n">Case</span><span class="p">(</span><span class="n">casedir</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">non_local</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">as</span> <span class="n">case</span><span class="p">:</span>
+            <span class="n">STOP_N</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;STOP_N&quot;</span><span class="p">)</span>
+            <span class="n">COMP_CLASSES</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_values</span><span class="p">(</span><span class="s2">&quot;COMP_CLASSES&quot;</span><span class="p">)</span>
+            <span class="n">BUILD_COMPLETE</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;BUILD_COMPLETE&quot;</span><span class="p">)</span>
+            <span class="n">cmd</span> <span class="o">=</span> <span class="n">xmlquery</span> <span class="o">+</span> <span class="s2">&quot; --non-local STOP_N --value&quot;</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">run_cmd_no_fail</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">from_dir</span><span class="o">=</span><span class="n">casedir</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">output</span> <span class="o">==</span> <span class="nb">str</span><span class="p">(</span><span class="n">STOP_N</span><span class="p">),</span> <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> != </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">STOP_N</span><span class="p">))</span>
+            <span class="n">cmd</span> <span class="o">=</span> <span class="n">xmlquery</span> <span class="o">+</span> <span class="s2">&quot; --non-local BUILD_COMPLETE --value&quot;</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">run_cmd_no_fail</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">from_dir</span><span class="o">=</span><span class="n">casedir</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">output</span> <span class="o">==</span> <span class="s2">&quot;TRUE&quot;</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> != </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">BUILD_COMPLETE</span><span class="p">))</span>
+            <span class="c1"># we expect DOCN_MODE to be undefined in this X compset</span>
+            <span class="c1"># this test assures that we do not try to resolve this as a compvar</span>
+            <span class="n">cmd</span> <span class="o">=</span> <span class="n">xmlquery</span> <span class="o">+</span> <span class="s2">&quot; --non-local DOCN_MODE --value&quot;</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">run_cmd</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">from_dir</span><span class="o">=</span><span class="n">casedir</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span>
+                <span class="n">error</span> <span class="o">==</span> <span class="s2">&quot;ERROR:  No results found for variable DOCN_MODE&quot;</span><span class="p">,</span>
+                <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;unexpected result for DOCN_MODE, output </span><span class="si">{}</span><span class="s2">, error </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">output</span><span class="p">,</span> <span class="n">error</span>
+                <span class="p">),</span>
+            <span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">comp</span> <span class="ow">in</span> <span class="n">COMP_CLASSES</span><span class="p">:</span>
+                <span class="n">caseresult</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;NTASKS_</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">comp</span><span class="p">)</span>
+                <span class="n">cmd</span> <span class="o">=</span> <span class="n">xmlquery</span> <span class="o">+</span> <span class="s2">&quot; --non-local NTASKS_</span><span class="si">%s</span><span class="s2"> --value&quot;</span> <span class="o">%</span> <span class="n">comp</span>
+                <span class="n">output</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">run_cmd_no_fail</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">from_dir</span><span class="o">=</span><span class="n">casedir</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span>
+                    <span class="n">output</span> <span class="o">==</span> <span class="nb">str</span><span class="p">(</span><span class="n">caseresult</span><span class="p">),</span> <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> != </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">caseresult</span><span class="p">)</span>
+                <span class="p">)</span>
+                <span class="n">cmd</span> <span class="o">=</span> <span class="n">xmlquery</span> <span class="o">+</span> <span class="s2">&quot; --non-local NTASKS --subgroup </span><span class="si">%s</span><span class="s2"> --value&quot;</span> <span class="o">%</span> <span class="n">comp</span>
+                <span class="n">output</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">run_cmd_no_fail</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">from_dir</span><span class="o">=</span><span class="n">casedir</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span>
+                    <span class="n">output</span> <span class="o">==</span> <span class="nb">str</span><span class="p">(</span><span class="n">caseresult</span><span class="p">),</span> <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> != </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">caseresult</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">MACHINE</span><span class="o">.</span><span class="n">has_batch_system</span><span class="p">():</span>
+                <span class="n">JOB_QUEUE</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;JOB_QUEUE&quot;</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="s2">&quot;case.run&quot;</span><span class="p">)</span>
+                <span class="n">cmd</span> <span class="o">=</span> <span class="n">xmlquery</span> <span class="o">+</span> <span class="s2">&quot; --non-local JOB_QUEUE --subgroup case.run --value&quot;</span>
+                <span class="n">output</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">run_cmd_no_fail</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">from_dir</span><span class="o">=</span><span class="n">casedir</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span>
+                    <span class="n">output</span> <span class="o">==</span> <span class="n">JOB_QUEUE</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> != </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">JOB_QUEUE</span><span class="p">)</span>
+                <span class="p">)</span>
+
+            <span class="n">cmd</span> <span class="o">=</span> <span class="n">xmlquery</span> <span class="o">+</span> <span class="s2">&quot; --non-local --listall&quot;</span>
+            <span class="n">utils</span><span class="o">.</span><span class="n">run_cmd_no_fail</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">from_dir</span><span class="o">=</span><span class="n">casedir</span><span class="p">)</span>
+
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_do_teardown</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_testroot</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestCreateNewcase.test_f_createnewcase_with_user_compset"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_create_newcase.TestCreateNewcase.test_f_createnewcase_with_user_compset">[docs]</a>    <span class="k">def</span> <span class="nf">test_f_createnewcase_with_user_compset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">cls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span>
+
+        <span class="n">testdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_testroot</span><span class="p">,</span> <span class="s2">&quot;testcreatenewcase_with_user_compset&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">testdir</span><span class="p">):</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">testdir</span><span class="p">)</span>
+
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_testdirs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">testdir</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">test_mode</span> <span class="o">==</span> <span class="s2">&quot;cesm&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_cime_default_driver</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;nuopc&quot;</span><span class="p">:</span>
+                <span class="n">pesfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                    <span class="n">utils</span><span class="o">.</span><span class="n">get_src_root</span><span class="p">(),</span>
+                    <span class="s2">&quot;components&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;cmeps&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;cime_config&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;config_pes.xml&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">pesfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                    <span class="n">utils</span><span class="o">.</span><span class="n">get_src_root</span><span class="p">(),</span>
+                    <span class="s2">&quot;components&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;cpl7&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;driver&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;cime_config&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;config_pes.xml&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">pesfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="n">utils</span><span class="o">.</span><span class="n">get_src_root</span><span class="p">(),</span> <span class="s2">&quot;driver-mct&quot;</span><span class="p">,</span> <span class="s2">&quot;cime_config&quot;</span><span class="p">,</span> <span class="s2">&quot;config_pes.xml&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">args</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;--case </span><span class="si">%s</span><span class="s2"> --compset 2000_SATM_XLND_SICE_SOCN_XROF_XGLC_SWAV  --pesfile </span><span class="si">%s</span><span class="s2"> --res f19_g16 --output-root </span><span class="si">%s</span><span class="s2"> --handle-preexisting-dirs=r&quot;</span>
+            <span class="o">%</span> <span class="p">(</span><span class="n">testdir</span><span class="p">,</span> <span class="n">pesfile</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_testroot</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">allow_unsupported</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">+=</span> <span class="s2">&quot; --run-unsupported&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">TEST_COMPILER</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">+=</span> <span class="s2">&quot; --compiler </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">TEST_COMPILER</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">TEST_MPILIB</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="n">args</span> <span class="o">+</span> <span class="s2">&quot; --mpilib </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">TEST_MPILIB</span>
+
+        <span class="n">args</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; --machine </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">MACHINE</span><span class="o">.</span><span class="n">get_machine_name</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_cmd_assert_result</span><span class="p">(</span>
+            <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/create_newcase </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">SCRIPT_DIR</span><span class="p">,</span> <span class="n">args</span><span class="p">),</span> <span class="n">from_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">SCRIPT_DIR</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_cmd_assert_result</span><span class="p">(</span><span class="s2">&quot;./case.setup&quot;</span><span class="p">,</span> <span class="n">from_dir</span><span class="o">=</span><span class="n">testdir</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_cmd_assert_result</span><span class="p">(</span><span class="s2">&quot;./case.build&quot;</span><span class="p">,</span> <span class="n">from_dir</span><span class="o">=</span><span class="n">testdir</span><span class="p">)</span>
+
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_do_teardown</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">testdir</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestCreateNewcase.test_g_createnewcase_with_user_compset_and_env_mach_pes"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_create_newcase.TestCreateNewcase.test_g_createnewcase_with_user_compset_and_env_mach_pes">[docs]</a>    <span class="k">def</span> <span class="nf">test_g_createnewcase_with_user_compset_and_env_mach_pes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">cls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span>
+
+        <span class="n">testdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">_testroot</span><span class="p">,</span> <span class="s2">&quot;testcreatenewcase_with_user_compset_and_env_mach_pes&quot;</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">testdir</span><span class="p">):</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">testdir</span><span class="p">)</span>
+        <span class="n">previous_testdir</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_testdirs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_testdirs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">testdir</span><span class="p">)</span>
+
+        <span class="n">pesfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">previous_testdir</span><span class="p">,</span> <span class="s2">&quot;env_mach_pes.xml&quot;</span><span class="p">)</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;--case </span><span class="si">%s</span><span class="s2"> --compset 2000_SATM_XLND_SICE_SOCN_XROF_XGLC_SWAV --pesfile </span><span class="si">%s</span><span class="s2"> --res f19_g16 --output-root </span><span class="si">%s</span><span class="s2"> --handle-preexisting-dirs=r&quot;</span>
+            <span class="o">%</span> <span class="p">(</span><span class="n">testdir</span><span class="p">,</span> <span class="n">pesfile</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_testroot</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">allow_unsupported</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">+=</span> <span class="s2">&quot; --run-unsupported&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">TEST_COMPILER</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">+=</span> <span class="s2">&quot; --compiler </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">TEST_COMPILER</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">TEST_MPILIB</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">+=</span> <span class="s2">&quot; --mpilib </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">TEST_MPILIB</span>
+
+        <span class="n">args</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; --machine </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">MACHINE</span><span class="o">.</span><span class="n">get_machine_name</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_cmd_assert_result</span><span class="p">(</span>
+            <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/create_newcase </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">SCRIPT_DIR</span><span class="p">,</span> <span class="n">args</span><span class="p">),</span> <span class="n">from_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">SCRIPT_DIR</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_cmd_assert_result</span><span class="p">(</span>
+            <span class="s2">&quot;diff env_mach_pes.xml </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">previous_testdir</span><span class="p">),</span> <span class="n">from_dir</span><span class="o">=</span><span class="n">testdir</span>
+        <span class="p">)</span>
+        <span class="c1"># this line should cause the diff to fail (I assume no machine is going to default to 17 tasks)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_cmd_assert_result</span><span class="p">(</span><span class="s2">&quot;./xmlchange NTASKS=17&quot;</span><span class="p">,</span> <span class="n">from_dir</span><span class="o">=</span><span class="n">testdir</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_cmd_assert_result</span><span class="p">(</span>
+            <span class="s2">&quot;diff env_mach_pes.xml </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">previous_testdir</span><span class="p">),</span>
+            <span class="n">from_dir</span><span class="o">=</span><span class="n">testdir</span><span class="p">,</span>
+            <span class="n">expected_stat</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_do_teardown</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">testdir</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestCreateNewcase.test_h_primary_component"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_create_newcase.TestCreateNewcase.test_h_primary_component">[docs]</a>    <span class="k">def</span> <span class="nf">test_h_primary_component</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">cls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span>
+
+        <span class="n">testdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_testroot</span><span class="p">,</span> <span class="s2">&quot;testprimarycomponent&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">testdir</span><span class="p">):</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">testdir</span><span class="p">)</span>
+
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_testdirs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">testdir</span><span class="p">)</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot; --case CreateNewcaseTest --script-root </span><span class="si">%s</span><span class="s2"> --compset X --output-root </span><span class="si">%s</span><span class="s2"> --handle-preexisting-dirs u&quot;</span>
+            <span class="o">%</span> <span class="p">(</span><span class="n">testdir</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_testroot</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">allow_unsupported</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">+=</span> <span class="s2">&quot; --run-unsupported&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">TEST_COMPILER</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">+=</span> <span class="s2">&quot; --compiler </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">TEST_COMPILER</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">TEST_MPILIB</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">+=</span> <span class="s2">&quot; --mpilib </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">TEST_MPILIB</span>
+        <span class="k">if</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_cime_default_driver</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;nuopc&quot;</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">+=</span> <span class="s2">&quot; --res f19_g17 &quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">+=</span> <span class="s2">&quot; --res f19_g16 &quot;</span>
+
+        <span class="n">args</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; --machine </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">MACHINE</span><span class="o">.</span><span class="n">get_machine_name</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_cmd_assert_result</span><span class="p">(</span>
+            <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/create_newcase </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">SCRIPT_DIR</span><span class="p">,</span> <span class="n">args</span><span class="p">),</span> <span class="n">from_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">SCRIPT_DIR</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">testdir</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">testdir</span><span class="p">,</span> <span class="s2">&quot;case.setup&quot;</span><span class="p">)))</span>
+
+        <span class="k">with</span> <span class="n">Case</span><span class="p">(</span><span class="n">testdir</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">as</span> <span class="n">case</span><span class="p">:</span>
+            <span class="k">case</span><span class="o">.</span><span class="n">_compsetname</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;COMPSET&quot;</span><span class="p">)</span>
+            <span class="k">case</span><span class="o">.</span><span class="n">set_comp_classes</span><span class="p">(</span><span class="n">case</span><span class="o">.</span><span class="n">get_values</span><span class="p">(</span><span class="s2">&quot;COMP_CLASSES&quot;</span><span class="p">))</span>
+            <span class="n">primary</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">_find_primary_component</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+                <span class="n">primary</span><span class="p">,</span>
+                <span class="s2">&quot;drv&quot;</span><span class="p">,</span>
+                <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;primary component test expected drv but got </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">primary</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="c1"># now we are going to corrupt the case so that we can do more primary_component testing</span>
+            <span class="k">case</span><span class="o">.</span><span class="n">set_valid_values</span><span class="p">(</span><span class="s2">&quot;COMP_GLC&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">,fred&quot;</span> <span class="o">%</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;COMP_GLC&quot;</span><span class="p">))</span>
+            <span class="k">case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;COMP_GLC&quot;</span><span class="p">,</span> <span class="s2">&quot;fred&quot;</span><span class="p">)</span>
+            <span class="n">primary</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">_find_primary_component</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+                <span class="n">primary</span><span class="p">,</span>
+                <span class="s2">&quot;fred&quot;</span><span class="p">,</span>
+                <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;primary component test expected fred but got </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">primary</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">case</span><span class="o">.</span><span class="n">set_valid_values</span><span class="p">(</span><span class="s2">&quot;COMP_ICE&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">,wilma&quot;</span> <span class="o">%</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;COMP_ICE&quot;</span><span class="p">))</span>
+            <span class="k">case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;COMP_ICE&quot;</span><span class="p">,</span> <span class="s2">&quot;wilma&quot;</span><span class="p">)</span>
+            <span class="n">primary</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">_find_primary_component</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+                <span class="n">primary</span><span class="p">,</span>
+                <span class="s2">&quot;wilma&quot;</span><span class="p">,</span>
+                <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;primary component test expected wilma but got </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">primary</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="k">case</span><span class="o">.</span><span class="n">set_valid_values</span><span class="p">(</span>
+                <span class="s2">&quot;COMP_OCN&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">,bambam,docn&quot;</span> <span class="o">%</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;COMP_OCN&quot;</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="k">case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;COMP_OCN&quot;</span><span class="p">,</span> <span class="s2">&quot;bambam&quot;</span><span class="p">)</span>
+            <span class="n">primary</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">_find_primary_component</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+                <span class="n">primary</span><span class="p">,</span>
+                <span class="s2">&quot;bambam&quot;</span><span class="p">,</span>
+                <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;primary component test expected bambam but got </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">primary</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="k">case</span><span class="o">.</span><span class="n">set_valid_values</span><span class="p">(</span><span class="s2">&quot;COMP_LND&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">,barney&quot;</span> <span class="o">%</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;COMP_LND&quot;</span><span class="p">))</span>
+            <span class="k">case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;COMP_LND&quot;</span><span class="p">,</span> <span class="s2">&quot;barney&quot;</span><span class="p">)</span>
+            <span class="n">primary</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">_find_primary_component</span><span class="p">()</span>
+            <span class="c1"># This is a &quot;J&quot; compset</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+                <span class="n">primary</span><span class="p">,</span>
+                <span class="s2">&quot;allactive&quot;</span><span class="p">,</span>
+                <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;primary component test expected allactive but got </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">primary</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;COMP_OCN&quot;</span><span class="p">,</span> <span class="s2">&quot;docn&quot;</span><span class="p">)</span>
+            <span class="k">case</span><span class="o">.</span><span class="n">set_valid_values</span><span class="p">(</span><span class="s2">&quot;COMP_LND&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">,barney&quot;</span> <span class="o">%</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;COMP_LND&quot;</span><span class="p">))</span>
+            <span class="k">case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;COMP_LND&quot;</span><span class="p">,</span> <span class="s2">&quot;barney&quot;</span><span class="p">)</span>
+            <span class="n">primary</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">_find_primary_component</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+                <span class="n">primary</span><span class="p">,</span>
+                <span class="s2">&quot;barney&quot;</span><span class="p">,</span>
+                <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;primary component test expected barney but got </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">primary</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">case</span><span class="o">.</span><span class="n">set_valid_values</span><span class="p">(</span><span class="s2">&quot;COMP_ATM&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">,wilma&quot;</span> <span class="o">%</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;COMP_ATM&quot;</span><span class="p">))</span>
+            <span class="k">case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;COMP_ATM&quot;</span><span class="p">,</span> <span class="s2">&quot;wilma&quot;</span><span class="p">)</span>
+            <span class="n">primary</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">_find_primary_component</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+                <span class="n">primary</span><span class="p">,</span>
+                <span class="s2">&quot;wilma&quot;</span><span class="p">,</span>
+                <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;primary component test expected wilma but got </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">primary</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="c1"># this is a &quot;E&quot; compset</span>
+            <span class="k">case</span><span class="o">.</span><span class="n">_compsetname</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">_compsetname</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;XOCN&quot;</span><span class="p">,</span> <span class="s2">&quot;DOCN%SOM&quot;</span><span class="p">)</span>
+            <span class="n">primary</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">_find_primary_component</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+                <span class="n">primary</span><span class="p">,</span>
+                <span class="s2">&quot;allactive&quot;</span><span class="p">,</span>
+                <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;primary component test expected allactive but got </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">primary</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="c1"># finally a &quot;B&quot; compset</span>
+            <span class="k">case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;COMP_OCN&quot;</span><span class="p">,</span> <span class="s2">&quot;bambam&quot;</span><span class="p">)</span>
+            <span class="n">primary</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">_find_primary_component</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+                <span class="n">primary</span><span class="p">,</span>
+                <span class="s2">&quot;allactive&quot;</span><span class="p">,</span>
+                <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;primary component test expected allactive but got </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">primary</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_do_teardown</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">testdir</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestCreateNewcase.test_j_createnewcase_user_compset_vs_alias"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_create_newcase.TestCreateNewcase.test_j_createnewcase_user_compset_vs_alias">[docs]</a>    <span class="k">def</span> <span class="nf">test_j_createnewcase_user_compset_vs_alias</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a compset using the alias and another compset using the full compset name</span>
+<span class="sd">        and make sure they are the same by comparing the namelist files in CaseDocs.</span>
+<span class="sd">        Ignore the modelio files and clean the directory names out first.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">cls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span>
+
+        <span class="n">testdir1</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_testroot</span><span class="p">,</span> <span class="s2">&quot;testcreatenewcase_user_compset&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">testdir1</span><span class="p">):</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">testdir1</span><span class="p">)</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_testdirs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">testdir1</span><span class="p">)</span>
+
+        <span class="n">args</span> <span class="o">=</span> <span class="s2">&quot; --case CreateNewcaseTest --script-root </span><span class="si">{}</span><span class="s2"> --compset 2000_DATM%NYF_SLND_SICE_DOCN%SOMAQP_SROF_SGLC_SWAV --output-root </span><span class="si">{}</span><span class="s2"> --handle-preexisting-dirs u&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">testdir1</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_testroot</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_cime_default_driver</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;nuopc&quot;</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">+=</span> <span class="s2">&quot; --res f19_g17 &quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">+=</span> <span class="s2">&quot; --res f19_g16 &quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">allow_unsupported</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">+=</span> <span class="s2">&quot; --run-unsupported&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">TEST_COMPILER</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">+=</span> <span class="s2">&quot; --compiler </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">TEST_COMPILER</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">TEST_MPILIB</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">+=</span> <span class="s2">&quot; --mpilib </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">TEST_MPILIB</span>
+
+        <span class="n">args</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; --machine </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">MACHINE</span><span class="o">.</span><span class="n">get_machine_name</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_cmd_assert_result</span><span class="p">(</span>
+            <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/create_newcase </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">SCRIPT_DIR</span><span class="p">,</span> <span class="n">args</span><span class="p">),</span>
+            <span class="n">from_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">SCRIPT_DIR</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_cmd_assert_result</span><span class="p">(</span><span class="s2">&quot;./case.setup &quot;</span><span class="p">,</span> <span class="n">from_dir</span><span class="o">=</span><span class="n">testdir1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_cmd_assert_result</span><span class="p">(</span><span class="s2">&quot;./preview_namelists &quot;</span><span class="p">,</span> <span class="n">from_dir</span><span class="o">=</span><span class="n">testdir1</span><span class="p">)</span>
+
+        <span class="n">dir1</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">testdir1</span><span class="p">,</span> <span class="s2">&quot;CaseDocs&quot;</span><span class="p">)</span>
+        <span class="n">dir2</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">testdir1</span><span class="p">,</span> <span class="s2">&quot;CleanCaseDocs&quot;</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">dir2</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">_file</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">dir1</span><span class="p">):</span>
+            <span class="k">if</span> <span class="s2">&quot;modelio&quot;</span> <span class="ow">in</span> <span class="n">_file</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dir1</span><span class="p">,</span> <span class="n">_file</span><span class="p">),</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fi</span><span class="p">:</span>
+                <span class="n">file_text</span> <span class="o">=</span> <span class="n">fi</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+                <span class="n">file_text</span> <span class="o">=</span> <span class="n">file_text</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">testdir1</span><span class="p">),</span> <span class="s2">&quot;PATH&quot;</span><span class="p">)</span>
+                <span class="n">file_text</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;logfile =.*&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">file_text</span><span class="p">)</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dir2</span><span class="p">,</span> <span class="n">_file</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fo</span><span class="p">:</span>
+                <span class="n">fo</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">file_text</span><span class="p">)</span>
+        <span class="n">cleancasedocs1</span> <span class="o">=</span> <span class="n">dir2</span>
+
+        <span class="n">testdir2</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_testroot</span><span class="p">,</span> <span class="s2">&quot;testcreatenewcase_alias_compset&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">testdir2</span><span class="p">):</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">testdir2</span><span class="p">)</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_testdirs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">testdir2</span><span class="p">)</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="s2">&quot; --case CreateNewcaseTest --script-root </span><span class="si">{}</span><span class="s2"> --compset ADSOMAQP --output-root </span><span class="si">{}</span><span class="s2"> --handle-preexisting-dirs u&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">testdir2</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_testroot</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_cime_default_driver</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;nuopc&quot;</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">+=</span> <span class="s2">&quot; --res f19_g17 &quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">+=</span> <span class="s2">&quot; --res f19_g16 &quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">allow_unsupported</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">+=</span> <span class="s2">&quot; --run-unsupported&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">TEST_COMPILER</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">+=</span> <span class="s2">&quot; --compiler </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">TEST_COMPILER</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">TEST_MPILIB</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">+=</span> <span class="s2">&quot; --mpilib </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">TEST_MPILIB</span>
+
+        <span class="n">args</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; --machine </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">MACHINE</span><span class="o">.</span><span class="n">get_machine_name</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_cmd_assert_result</span><span class="p">(</span>
+            <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/create_newcase </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">SCRIPT_DIR</span><span class="p">,</span> <span class="n">args</span><span class="p">),</span>
+            <span class="n">from_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">SCRIPT_DIR</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_cmd_assert_result</span><span class="p">(</span><span class="s2">&quot;./case.setup &quot;</span><span class="p">,</span> <span class="n">from_dir</span><span class="o">=</span><span class="n">testdir2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_cmd_assert_result</span><span class="p">(</span><span class="s2">&quot;./preview_namelists &quot;</span><span class="p">,</span> <span class="n">from_dir</span><span class="o">=</span><span class="n">testdir2</span><span class="p">)</span>
+
+        <span class="n">dir1</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">testdir2</span><span class="p">,</span> <span class="s2">&quot;CaseDocs&quot;</span><span class="p">)</span>
+        <span class="n">dir2</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">testdir2</span><span class="p">,</span> <span class="s2">&quot;CleanCaseDocs&quot;</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">dir2</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">_file</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">dir1</span><span class="p">):</span>
+            <span class="k">if</span> <span class="s2">&quot;modelio&quot;</span> <span class="ow">in</span> <span class="n">_file</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dir1</span><span class="p">,</span> <span class="n">_file</span><span class="p">),</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fi</span><span class="p">:</span>
+                <span class="n">file_text</span> <span class="o">=</span> <span class="n">fi</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+                <span class="n">file_text</span> <span class="o">=</span> <span class="n">file_text</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">testdir2</span><span class="p">),</span> <span class="s2">&quot;PATH&quot;</span><span class="p">)</span>
+                <span class="n">file_text</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;logfile =.*&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">file_text</span><span class="p">)</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dir2</span><span class="p">,</span> <span class="n">_file</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fo</span><span class="p">:</span>
+                <span class="n">fo</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">file_text</span><span class="p">)</span>
+
+        <span class="n">cleancasedocs2</span> <span class="o">=</span> <span class="n">dir2</span>
+        <span class="n">dcmp</span> <span class="o">=</span> <span class="n">filecmp</span><span class="o">.</span><span class="n">dircmp</span><span class="p">(</span><span class="n">cleancasedocs1</span><span class="p">,</span> <span class="n">cleancasedocs2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span>
+            <span class="nb">len</span><span class="p">(</span><span class="n">dcmp</span><span class="o">.</span><span class="n">diff_files</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;CaseDocs differ </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dcmp</span><span class="o">.</span><span class="n">diff_files</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_do_teardown</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">testdir1</span><span class="p">)</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_do_teardown</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">testdir2</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestCreateNewcase.test_k_append_config"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_create_newcase.TestCreateNewcase.test_k_append_config">[docs]</a>    <span class="k">def</span> <span class="nf">test_k_append_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">machlist_before</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">MACHINE</span><span class="o">.</span><span class="n">list_available_machines</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="nb">len</span><span class="p">(</span><span class="n">machlist_before</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Problem reading machine list&quot;</span>
+        <span class="p">)</span>
+
+        <span class="n">newmachfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="n">utils</span><span class="o">.</span><span class="n">get_cime_root</span><span class="p">(),</span>
+            <span class="s2">&quot;CIME&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;data&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;config&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;xml_schemas&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;config_machines_template.xml&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">MACHINE</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">newmachfile</span><span class="p">)</span>
+        <span class="n">machlist_after</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">MACHINE</span><span class="o">.</span><span class="n">list_available_machines</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="nb">len</span><span class="p">(</span><span class="n">machlist_after</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">machlist_before</span><span class="p">),</span>
+            <span class="mi">1</span><span class="p">,</span>
+            <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Not able to append config_machines.xml </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="nb">len</span><span class="p">(</span><span class="n">machlist_after</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">machlist_before</span><span class="p">)</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="s2">&quot;mymachine&quot;</span> <span class="ow">in</span> <span class="n">machlist_after</span><span class="p">,</span>
+            <span class="kc">True</span><span class="p">,</span>
+            <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Not able to append config_machines.xml&quot;</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestCreateNewcase.test_ka_createnewcase_extra_machines_dir"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_create_newcase.TestCreateNewcase.test_ka_createnewcase_extra_machines_dir">[docs]</a>    <span class="k">def</span> <span class="nf">test_ka_createnewcase_extra_machines_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Test that we pick up changes in both config_machines.xml and</span>
+        <span class="c1"># cmake macros in a directory specified with the --extra-machines-dir</span>
+        <span class="c1"># argument to create_newcase.</span>
+        <span class="bp">cls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span>
+        <span class="n">casename</span> <span class="o">=</span> <span class="s2">&quot;testcreatenewcase_extra_machines_dir&quot;</span>
+
+        <span class="c1"># Setup: stage some xml files in a temporary directory</span>
+        <span class="n">extra_machines_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">_testroot</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_machine_config&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">casename</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">extra_machines_dir</span><span class="p">,</span> <span class="s2">&quot;cmake_macros&quot;</span><span class="p">))</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_do_teardown</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">extra_machines_dir</span><span class="p">)</span>
+        <span class="n">newmachfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="n">utils</span><span class="o">.</span><span class="n">get_cime_root</span><span class="p">(),</span>
+            <span class="s2">&quot;CIME&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;data&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;config&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;xml_schemas&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;config_machines_template.xml&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">safe_copy</span><span class="p">(</span>
+            <span class="n">newmachfile</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">extra_machines_dir</span><span class="p">,</span> <span class="s2">&quot;config_machines.xml&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">cmake_macro_text</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
+<span class="s2">set(NETCDF_PATH /my/netcdf/path)</span>
+<span class="s2">&quot;&quot;&quot;</span>
+        <span class="n">cmake_macro_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="n">extra_machines_dir</span><span class="p">,</span> <span class="s2">&quot;cmake_macros&quot;</span><span class="p">,</span> <span class="s2">&quot;mymachine.cmake&quot;</span>
+        <span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">cmake_macro_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">cmake_macro</span><span class="p">:</span>
+            <span class="n">cmake_macro</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">cmake_macro_text</span><span class="p">)</span>
+
+        <span class="c1"># Create the case</span>
+        <span class="n">testdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_testroot</span><span class="p">,</span> <span class="n">casename</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">testdir</span><span class="p">):</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">testdir</span><span class="p">)</span>
+        <span class="c1"># In the following, note that &#39;mymachine&#39; is the machine name defined in</span>
+        <span class="c1"># config_machines_template.xml</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot; --case </span><span class="si">{testdir}</span><span class="s2"> --compset X --mach mymachine&quot;</span>
+            <span class="s2">&quot; --output-root </span><span class="si">{testroot}</span><span class="s2"> --non-local&quot;</span>
+            <span class="s2">&quot; --extra-machines-dir </span><span class="si">{extra_machines_dir}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">testdir</span><span class="o">=</span><span class="n">testdir</span><span class="p">,</span>
+                <span class="n">testroot</span><span class="o">=</span><span class="bp">cls</span><span class="o">.</span><span class="n">_testroot</span><span class="p">,</span>
+                <span class="n">extra_machines_dir</span><span class="o">=</span><span class="n">extra_machines_dir</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">allow_unsupported</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">+=</span> <span class="s2">&quot; --run-unsupported&quot;</span>
+
+        <span class="k">if</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_cime_default_driver</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;nuopc&quot;</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">+=</span> <span class="s2">&quot; --res f19_g17 &quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">+=</span> <span class="s2">&quot; --res f19_g16 &quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_cmd_assert_result</span><span class="p">(</span>
+            <span class="s2">&quot;./create_newcase </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">args</span><span class="p">),</span> <span class="n">from_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">SCRIPT_DIR</span>
+        <span class="p">)</span>
+
+        <span class="n">args</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; --machine </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">MACHINE</span><span class="o">.</span><span class="n">get_machine_name</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_do_teardown</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">testdir</span><span class="p">)</span>
+
+        <span class="c1"># Run case.setup</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_cmd_assert_result</span><span class="p">(</span><span class="s2">&quot;./case.setup --non-local&quot;</span><span class="p">,</span> <span class="n">from_dir</span><span class="o">=</span><span class="n">testdir</span><span class="p">)</span>
+
+        <span class="c1"># Make sure Macros file contains expected text</span>
+
+        <span class="k">with</span> <span class="n">Case</span><span class="p">(</span><span class="n">testdir</span><span class="p">,</span> <span class="n">non_local</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">as</span> <span class="n">case</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">CmakeTmpBuildDir</span><span class="p">(</span><span class="n">macroloc</span><span class="o">=</span><span class="n">testdir</span><span class="p">)</span> <span class="k">as</span> <span class="n">cmaketmp</span><span class="p">:</span>
+                <span class="n">macros_contents</span> <span class="o">=</span> <span class="n">cmaketmp</span><span class="o">.</span><span class="n">get_makefile_vars</span><span class="p">(</span><span class="n">case</span><span class="o">=</span><span class="n">case</span><span class="p">)</span>
+
+            <span class="n">expected_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s2">&quot;NETCDF_PATH.*/my/netcdf/path&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span>
+                <span class="n">expected_re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">macros_contents</span><span class="p">),</span>
+                <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> not found in:</span><span class="se">\n</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">expected_re</span><span class="o">.</span><span class="n">pattern</span><span class="p">,</span> <span class="n">macros_contents</span><span class="p">),</span>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestCreateNewcase.test_m_createnewcase_alternate_drivers"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_create_newcase.TestCreateNewcase.test_m_createnewcase_alternate_drivers">[docs]</a>    <span class="k">def</span> <span class="nf">test_m_createnewcase_alternate_drivers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Test that case.setup runs for nuopc and moab drivers</span>
+        <span class="bp">cls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span>
+
+        <span class="c1"># TODO refactor</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">test_mode</span> <span class="o">==</span> <span class="s2">&quot;cesm&quot;</span><span class="p">:</span>
+            <span class="n">alternative_driver</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;nuopc&quot;</span><span class="p">,)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">alternative_driver</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;moab&quot;</span><span class="p">,)</span>
+
+        <span class="k">for</span> <span class="n">driver</span> <span class="ow">in</span> <span class="n">alternative_driver</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">driver</span> <span class="o">==</span> <span class="s2">&quot;moab&quot;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">get_cime_root</span><span class="p">(),</span> <span class="s2">&quot;src&quot;</span><span class="p">,</span> <span class="s2">&quot;drivers&quot;</span><span class="p">,</span> <span class="n">driver</span><span class="p">)</span>
+            <span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">skipTest</span><span class="p">(</span>
+                    <span class="s2">&quot;Skipping driver test for </span><span class="si">{}</span><span class="s2">, driver not found&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">driver</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="n">driver</span> <span class="o">==</span> <span class="s2">&quot;nuopc&quot;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">get_src_root</span><span class="p">(),</span> <span class="s2">&quot;components&quot;</span><span class="p">,</span> <span class="s2">&quot;cmeps&quot;</span><span class="p">)</span>
+            <span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">skipTest</span><span class="p">(</span>
+                    <span class="s2">&quot;Skipping driver test for </span><span class="si">{}</span><span class="s2">, driver not found&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">driver</span><span class="p">)</span>
+                <span class="p">)</span>
+
+            <span class="n">testdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_testroot</span><span class="p">,</span> <span class="s2">&quot;testcreatenewcase.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">driver</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">testdir</span><span class="p">):</span>
+                <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">testdir</span><span class="p">)</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="s2">&quot; --driver </span><span class="si">{}</span><span class="s2"> --case </span><span class="si">{}</span><span class="s2"> --compset X --res f19_g16 --output-root </span><span class="si">{}</span><span class="s2"> --handle-preexisting-dirs=r&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">driver</span><span class="p">,</span> <span class="n">testdir</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_testroot</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">allow_unsupported</span><span class="p">:</span>
+                <span class="n">args</span> <span class="o">+=</span> <span class="s2">&quot; --run-unsupported&quot;</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">TEST_COMPILER</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">args</span> <span class="o">=</span> <span class="n">args</span> <span class="o">+</span> <span class="s2">&quot; --compiler </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">TEST_COMPILER</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">TEST_MPILIB</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">args</span> <span class="o">=</span> <span class="n">args</span> <span class="o">+</span> <span class="s2">&quot; --mpilib </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">TEST_MPILIB</span>
+
+            <span class="n">args</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; --machine </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">MACHINE</span><span class="o">.</span><span class="n">get_machine_name</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+
+            <span class="bp">cls</span><span class="o">.</span><span class="n">_testdirs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">testdir</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">run_cmd_assert_result</span><span class="p">(</span>
+                <span class="s2">&quot;./create_newcase </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">args</span><span class="p">),</span> <span class="n">from_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">SCRIPT_DIR</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">testdir</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">testdir</span><span class="p">,</span> <span class="s2">&quot;case.setup&quot;</span><span class="p">)))</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">run_cmd_assert_result</span><span class="p">(</span><span class="s2">&quot;./case.setup&quot;</span><span class="p">,</span> <span class="n">from_dir</span><span class="o">=</span><span class="n">testdir</span><span class="p">)</span>
+            <span class="k">with</span> <span class="n">Case</span><span class="p">(</span><span class="n">testdir</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">as</span> <span class="n">case</span><span class="p">:</span>
+                <span class="n">comp_interface</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;COMP_INTERFACE&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span>
+                    <span class="n">driver</span> <span class="o">==</span> <span class="n">comp_interface</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> != </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">driver</span><span class="p">,</span> <span class="n">comp_interface</span><span class="p">)</span>
+                <span class="p">)</span>
+
+            <span class="bp">cls</span><span class="o">.</span><span class="n">_do_teardown</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">testdir</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestCreateNewcase.test_n_createnewcase_bad_compset"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_create_newcase.TestCreateNewcase.test_n_createnewcase_bad_compset">[docs]</a>    <span class="k">def</span> <span class="nf">test_n_createnewcase_bad_compset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">cls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span>
+
+        <span class="n">testdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_testroot</span><span class="p">,</span> <span class="s2">&quot;testcreatenewcase_bad_compset&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">testdir</span><span class="p">):</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">testdir</span><span class="p">)</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot; --case </span><span class="si">%s</span><span class="s2"> --compset InvalidCompsetName --output-root </span><span class="si">%s</span><span class="s2"> --handle-preexisting-dirs=r &quot;</span>
+            <span class="o">%</span> <span class="p">(</span><span class="n">testdir</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_testroot</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">allow_unsupported</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">+=</span> <span class="s2">&quot; --run-unsupported&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">TEST_COMPILER</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="n">args</span> <span class="o">+</span> <span class="s2">&quot; --compiler </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">TEST_COMPILER</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">TEST_MPILIB</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="n">args</span> <span class="o">+</span> <span class="s2">&quot; --mpilib </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">TEST_MPILIB</span>
+        <span class="k">if</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_cime_default_driver</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;nuopc&quot;</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">+=</span> <span class="s2">&quot; --res f19_g17 &quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">+=</span> <span class="s2">&quot; --res f19_g16 &quot;</span>
+
+        <span class="n">args</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; --machine </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">MACHINE</span><span class="o">.</span><span class="n">get_machine_name</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_cmd_assert_result</span><span class="p">(</span>
+            <span class="s2">&quot;./create_newcase </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">args</span><span class="p">),</span> <span class="n">from_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">SCRIPT_DIR</span><span class="p">,</span> <span class="n">expected_stat</span><span class="o">=</span><span class="mi">1</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">testdir</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="TestCreateNewcase.tearDownClass"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_create_newcase.TestCreateNewcase.tearDownClass">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">tearDownClass</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="n">do_teardown</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="nb">len</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_do_teardown</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+            <span class="ow">and</span> <span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">()</span> <span class="o">==</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="ow">not</span> <span class="bp">cls</span><span class="o">.</span><span class="n">NO_TEARDOWN</span>
+        <span class="p">)</span>
+        <span class="n">rmtestroot</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">for</span> <span class="n">tfile</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_testdirs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">tfile</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_do_teardown</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Detected failed test or user request no teardown&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Leaving case directory : </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">tfile</span><span class="p">)</span>
+                <span class="n">rmtestroot</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">elif</span> <span class="n">do_teardown</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Attempt to remove directory </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tfile</span><span class="p">))</span>
+                    <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">tfile</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">BaseException</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Could not remove directory </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tfile</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">rmtestroot</span> <span class="ow">and</span> <span class="n">do_teardown</span><span class="p">:</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_testroot</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
+     
+<script>var version_json_loc = "../../../../../versions.json";</script>
+
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

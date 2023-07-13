@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CIME.SystemTests.tsc &mdash; CIME master documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/pop_ver.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            CIME
+          </a>
+              <div class="version">
+                master
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../what_cime/index.html">What is CIME?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../users_guide/index.html">Case Control System Part 1: Basic Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../users_guide/index.html#case-control-system-part-2-configuration-porting-testing-and-use-cases">Case Control System Part 2: Configuration, Porting, Testing and Use Cases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../build_cpl/index.html">Building a Coupled Model with CIME</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../misc_tools/index.html">Miscellaneous Tools</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../glossary/index.html">Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Tools_user/index.html">User Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../xml_files/index.html">XML Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../CIME_api/modules.html">CIME</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Tools_api/modules.html">Tools</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">CIME</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">CIME.SystemTests.tsc</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for CIME.SystemTests.tsc</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Solution reproducibility test based on time-step convergence</span>
+<span class="sd">The CESM/ACME model&#39;s</span>
+<span class="sd">multi-instance capability is used to conduct an ensemble</span>
+<span class="sd">of simulations starting from different initial conditions.</span>
+
+<span class="sd">This class inherits from SystemTestsCommon.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">from</span> <span class="nn">distutils</span> <span class="kn">import</span> <span class="n">dir_util</span>
+
+<span class="kn">import</span> <span class="nn">CIME.test_status</span>
+<span class="kn">import</span> <span class="nn">CIME.utils</span>
+<span class="kn">from</span> <span class="nn">CIME.SystemTests.system_tests_common</span> <span class="kn">import</span> <span class="n">SystemTestsCommon</span>
+<span class="kn">from</span> <span class="nn">CIME.case.case_setup</span> <span class="kn">import</span> <span class="n">case_setup</span>
+<span class="kn">from</span> <span class="nn">CIME.hist_utils</span> <span class="kn">import</span> <span class="n">rename_all_hist_files</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.machines</span> <span class="kn">import</span> <span class="n">Machines</span>
+
+<span class="kn">import</span> <span class="nn">evv4esm</span>  <span class="c1"># pylint: disable=import-error</span>
+<span class="kn">from</span> <span class="nn">evv4esm.__main__</span> <span class="kn">import</span> <span class="n">main</span> <span class="k">as</span> <span class="n">evv</span>  <span class="c1"># pylint: disable=import-error</span>
+
+<span class="n">evv_lib_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">evv4esm</span><span class="o">.</span><span class="vm">__file__</span><span class="p">))</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="n">NINST</span> <span class="o">=</span> <span class="mi">12</span>
+<span class="n">SIM_LENGTH</span> <span class="o">=</span> <span class="mi">600</span>  <span class="c1"># seconds</span>
+<span class="n">OUT_FREQ</span> <span class="o">=</span> <span class="mi">10</span>  <span class="c1"># seconds</span>
+<span class="n">INSPECT_AT</span> <span class="o">=</span> <span class="p">[</span><span class="mi">300</span><span class="p">,</span> <span class="mi">450</span><span class="p">,</span> <span class="mi">600</span><span class="p">]</span>  <span class="c1"># seconds</span>
+<span class="n">INIT_COND_FILE_TEMPLATE</span> <span class="o">=</span> <span class="s2">&quot;20210915.v2.ne4_oQU240.F2010.</span><span class="si">{}</span><span class="s2">.</span><span class="si">{}</span><span class="s2">.0002-</span><span class="si">{:02d}</span><span class="s2">-01-00000.nc&quot;</span>
+<span class="n">VAR_LIST</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;T&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Q&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;V&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CLDLIQ&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CLDICE&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;NUMLIQ&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;NUMICE&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;num_a1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;num_a2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;num_a3&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+<span class="n">P_THRESHOLD</span> <span class="o">=</span> <span class="mf">0.005</span>
+
+
+<div class="viewcode-block" id="TSC"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.tsc.TSC">[docs]</a><span class="k">class</span> <span class="nc">TSC</span><span class="p">(</span><span class="n">SystemTestsCommon</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        initialize an object interface to the TSC test</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">TSC</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MODEL&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;e3sm&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">atmmod</span> <span class="o">=</span> <span class="s2">&quot;eam&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lndmod</span> <span class="o">=</span> <span class="s2">&quot;elm&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">atmmodIC</span> <span class="o">=</span> <span class="s2">&quot;eam&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lndmodIC</span> <span class="o">=</span> <span class="s2">&quot;elm&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">atmmod</span> <span class="o">=</span> <span class="s2">&quot;cam&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lndmod</span> <span class="o">=</span> <span class="s2">&quot;clm&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">atmmodIC</span> <span class="o">=</span> <span class="s2">&quot;cam&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lndmodIC</span> <span class="o">=</span> <span class="s2">&quot;clm2&quot;</span>
+
+<div class="viewcode-block" id="TSC.build_phase"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.tsc.TSC.build_phase">[docs]</a>    <span class="k">def</span> <span class="nf">build_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sharedlib_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">model_only</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="c1"># Only want this to happen once. It will impact the sharedlib build</span>
+        <span class="c1"># so it has to happen there.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">model_only</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Starting to build multi-instance exe&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">comp</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;ATM&quot;</span><span class="p">,</span> <span class="s2">&quot;OCN&quot;</span><span class="p">,</span> <span class="s2">&quot;WAV&quot;</span><span class="p">,</span> <span class="s2">&quot;GLC&quot;</span><span class="p">,</span> <span class="s2">&quot;ICE&quot;</span><span class="p">,</span> <span class="s2">&quot;ROF&quot;</span><span class="p">,</span> <span class="s2">&quot;LND&quot;</span><span class="p">]:</span>
+                <span class="n">ntasks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;NTASKS_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;ROOTPE_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;NINST_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">),</span> <span class="n">NINST</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;NTASKS_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">),</span> <span class="n">ntasks</span> <span class="o">*</span> <span class="n">NINST</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;ROOTPE_CPL&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;NTASKS_CPL&quot;</span><span class="p">,</span> <span class="n">ntasks</span> <span class="o">*</span> <span class="n">NINST</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+            <span class="n">case_setup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="p">,</span> <span class="n">test_mode</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">build_indv</span><span class="p">(</span><span class="n">sharedlib_only</span><span class="o">=</span><span class="n">sharedlib_only</span><span class="p">,</span> <span class="n">model_only</span><span class="o">=</span><span class="n">model_only</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_run_with_specified_dtime</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dtime</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Conduct one multi-instance run with a specified time step size.</span>
+
+<span class="sd">        :param dtime (int): Specified time step size in seconds</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">coupling_frequency</span> <span class="o">=</span> <span class="mi">86400</span> <span class="o">//</span> <span class="n">dtime</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;ATM_NCPL&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">coupling_frequency</span><span class="p">))</span>
+        <span class="n">se_tstep</span> <span class="o">=</span> <span class="n">dtime</span> <span class="o">/</span> <span class="mi">12</span>
+
+        <span class="n">nsteps</span> <span class="o">=</span> <span class="n">SIM_LENGTH</span> <span class="o">//</span> <span class="n">dtime</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;STOP_N&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">nsteps</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;STOP_OPTION&quot;</span><span class="p">,</span> <span class="s2">&quot;nsteps&quot;</span><span class="p">)</span>
+
+        <span class="n">csmdata_root</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;DIN_LOC_ROOT&quot;</span><span class="p">)</span>
+        <span class="n">csmdata_atm</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">csmdata_root</span><span class="p">,</span> <span class="s2">&quot;atm/cam/inic/homme/ne4_v2_init&quot;</span><span class="p">)</span>
+        <span class="n">csmdata_lnd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">csmdata_root</span><span class="p">,</span> <span class="s2">&quot;lnd/clm2/initdata/ne4_oQU240_v2_init&quot;</span><span class="p">)</span>
+
+        <span class="n">nstep_output</span> <span class="o">=</span> <span class="n">OUT_FREQ</span> <span class="o">//</span> <span class="n">dtime</span>
+        <span class="k">for</span> <span class="n">iinst</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">NINST</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">fatm_in</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="n">csmdata_atm</span><span class="p">,</span>
+                <span class="n">INIT_COND_FILE_TEMPLATE</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">atmmodIC</span><span class="p">,</span> <span class="s2">&quot;i&quot;</span><span class="p">,</span> <span class="n">iinst</span><span class="p">),</span>
+            <span class="p">)</span>
+            <span class="n">flnd_in</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="n">csmdata_lnd</span><span class="p">,</span>
+                <span class="n">INIT_COND_FILE_TEMPLATE</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lndmodIC</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">iinst</span><span class="p">),</span>
+            <span class="p">)</span>
+
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;user_nl_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">atmmod</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">iinst</span><span class="si">:</span><span class="s2">04d</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;w+&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">atmnlfile</span><span class="p">:</span>
+
+                <span class="n">atmnlfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ncdata  = &#39;</span><span class="si">{}</span><span class="s2">&#39; </span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fatm_in</span><span class="p">))</span>
+
+                <span class="n">atmnlfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;dtime = </span><span class="si">{}</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dtime</span><span class="p">))</span>
+                <span class="n">atmnlfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;se_tstep = </span><span class="si">{}</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">se_tstep</span><span class="p">))</span>
+                <span class="n">atmnlfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;iradsw = 2 </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">atmnlfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;iradlw = 2 </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+                <span class="n">atmnlfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;avgflag_pertape = &#39;I&#39; </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">atmnlfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;nhtfrq = </span><span class="si">{}</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nstep_output</span><span class="p">))</span>
+                <span class="n">atmnlfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;mfilt = 1 </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">atmnlfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ndens = 1 </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">atmnlfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;empty_htapes = .true. </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">atmnlfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
+                    <span class="s2">&quot;fincl1 = &#39;PS&#39;,&#39;U&#39;,&#39;LANDFRAC&#39;,</span><span class="si">{}</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s2">&quot;&#39;</span><span class="si">{}</span><span class="s2">&#39;,&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">VAR_LIST</span><span class="p">])[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;user_nl_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">lndmod</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">iinst</span><span class="si">:</span><span class="s2">04d</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;w+&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">lndnlfile</span><span class="p">:</span>
+                <span class="n">lndnlfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;finidat = &#39;</span><span class="si">{}</span><span class="s2">&#39; </span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">flnd_in</span><span class="p">))</span>
+                <span class="n">lndnlfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;dtime = </span><span class="si">{}</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dtime</span><span class="p">))</span>
+
+        <span class="c1"># Force rebuild namelists</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_skip_pnl</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_indv</span><span class="p">()</span>
+
+        <span class="n">rename_all_hist_files</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;DT</span><span class="si">{:04d}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dtime</span><span class="p">))</span>
+
+<div class="viewcode-block" id="TSC.run_phase"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.tsc.TSC.run_phase">[docs]</a>    <span class="k">def</span> <span class="nf">run_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_run_with_specified_dtime</span><span class="p">(</span><span class="n">dtime</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;GENERATE_BASELINE&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_run_with_specified_dtime</span><span class="p">(</span><span class="n">dtime</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_compare_baseline</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span> <span class="k">as</span> <span class="n">ts</span><span class="p">:</span>
+            <span class="n">ts</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span>
+                <span class="n">CIME</span><span class="o">.</span><span class="n">test_status</span><span class="o">.</span><span class="n">BASELINE_PHASE</span><span class="p">,</span> <span class="n">CIME</span><span class="o">.</span><span class="n">test_status</span><span class="o">.</span><span class="n">TEST_FAIL_STATUS</span>
+            <span class="p">)</span>
+
+            <span class="n">run_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">)</span>
+            <span class="n">case_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASE&quot;</span><span class="p">)</span>
+            <span class="n">base_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;BASELINE_ROOT&quot;</span><span class="p">),</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;BASECMP_CASE&quot;</span><span class="p">),</span>
+            <span class="p">)</span>
+
+            <span class="n">test_name</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">case_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">evv_config</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">test_name</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;module&quot;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">evv_lib_dir</span><span class="p">,</span> <span class="s2">&quot;extensions&quot;</span><span class="p">,</span> <span class="s2">&quot;tsc.py&quot;</span><span class="p">),</span>
+                    <span class="s2">&quot;test-case&quot;</span><span class="p">:</span> <span class="n">case_name</span><span class="p">,</span>
+                    <span class="s2">&quot;test-dir&quot;</span><span class="p">:</span> <span class="n">run_dir</span><span class="p">,</span>
+                    <span class="s2">&quot;ref-case&quot;</span><span class="p">:</span> <span class="s2">&quot;Baseline&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;ref-dir&quot;</span><span class="p">:</span> <span class="n">base_dir</span><span class="p">,</span>
+                    <span class="s2">&quot;time-slice&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">OUT_FREQ</span><span class="p">,</span> <span class="n">SIM_LENGTH</span><span class="p">],</span>
+                    <span class="s2">&quot;inspect-times&quot;</span><span class="p">:</span> <span class="n">INSPECT_AT</span><span class="p">,</span>
+                    <span class="s2">&quot;variables&quot;</span><span class="p">:</span> <span class="n">VAR_LIST</span><span class="p">,</span>
+                    <span class="s2">&quot;p-threshold&quot;</span><span class="p">:</span> <span class="n">P_THRESHOLD</span><span class="p">,</span>
+                    <span class="s2">&quot;component&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">atmmod</span><span class="p">,</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+
+            <span class="n">json_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">run_dir</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">case_name</span><span class="p">,</span> <span class="s2">&quot;json&quot;</span><span class="p">]))</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">json_file</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">config_file</span><span class="p">:</span>
+                <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">evv_config</span><span class="p">,</span> <span class="n">config_file</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+
+            <span class="n">evv_out_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">run_dir</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">case_name</span><span class="p">,</span> <span class="s2">&quot;evv&quot;</span><span class="p">]))</span>
+            <span class="n">evv</span><span class="p">([</span><span class="s2">&quot;-e&quot;</span><span class="p">,</span> <span class="n">json_file</span><span class="p">,</span> <span class="s2">&quot;-o&quot;</span><span class="p">,</span> <span class="n">evv_out_dir</span><span class="p">])</span>
+
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">evv_out_dir</span><span class="p">,</span> <span class="s2">&quot;index.json&quot;</span><span class="p">),</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">evv_f</span><span class="p">:</span>
+                <span class="n">evv_status</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">evv_f</span><span class="p">)</span>
+
+            <span class="n">comments</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="k">for</span> <span class="n">evv_ele</span> <span class="ow">in</span> <span class="n">evv_status</span><span class="p">[</span><span class="s2">&quot;Page&quot;</span><span class="p">][</span><span class="s2">&quot;elements&quot;</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="s2">&quot;Table&quot;</span> <span class="ow">in</span> <span class="n">evv_ele</span><span class="p">:</span>
+                    <span class="n">comments</span> <span class="o">=</span> <span class="s2">&quot;; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                        <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">evv_ele</span><span class="p">[</span><span class="s2">&quot;Table&quot;</span><span class="p">][</span><span class="s2">&quot;data&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                    <span class="p">)</span>
+                    <span class="k">if</span> <span class="n">evv_ele</span><span class="p">[</span><span class="s2">&quot;Table&quot;</span><span class="p">][</span><span class="s2">&quot;data&quot;</span><span class="p">][</span><span class="s2">&quot;Test status&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;pass&quot;</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span>
+                            <span class="n">CIME</span><span class="o">.</span><span class="n">test_status</span><span class="o">.</span><span class="n">BASELINE_PHASE</span><span class="p">,</span>
+                            <span class="n">CIME</span><span class="o">.</span><span class="n">test_status</span><span class="o">.</span><span class="n">TEST_PASS_STATUS</span><span class="p">,</span>
+                        <span class="p">)</span>
+                    <span class="k">break</span>
+
+            <span class="n">status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">get_status</span><span class="p">(</span><span class="n">CIME</span><span class="o">.</span><span class="n">test_status</span><span class="o">.</span><span class="n">BASELINE_PHASE</span><span class="p">)</span>
+            <span class="n">mach_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MACH&quot;</span><span class="p">)</span>
+            <span class="n">mach_obj</span> <span class="o">=</span> <span class="n">Machines</span><span class="p">(</span><span class="n">machine</span><span class="o">=</span><span class="n">mach_name</span><span class="p">)</span>
+            <span class="n">htmlroot</span> <span class="o">=</span> <span class="n">CIME</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_htmlroot</span><span class="p">(</span><span class="n">mach_obj</span><span class="p">)</span>
+            <span class="n">urlroot</span> <span class="o">=</span> <span class="n">CIME</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_urlroot</span><span class="p">(</span><span class="n">mach_obj</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">htmlroot</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">with</span> <span class="n">CIME</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">SharedArea</span><span class="p">():</span>
+                    <span class="n">dir_util</span><span class="o">.</span><span class="n">copy_tree</span><span class="p">(</span>
+                        <span class="n">evv_out_dir</span><span class="p">,</span>
+                        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">htmlroot</span><span class="p">,</span> <span class="s2">&quot;evv&quot;</span><span class="p">,</span> <span class="n">case_name</span><span class="p">),</span>
+                        <span class="n">preserve_mode</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="k">if</span> <span class="n">urlroot</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">urlroot</span> <span class="o">=</span> <span class="s2">&quot;[</span><span class="si">{}</span><span class="s2">_URL]&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mach_name</span><span class="o">.</span><span class="n">capitalize</span><span class="p">())</span>
+                <span class="n">viewing</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/evv/</span><span class="si">{}</span><span class="s2">/index.html&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">urlroot</span><span class="p">,</span> <span class="n">case_name</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">viewing</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="s2">&quot;</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="s2">&quot;    EVV viewing instructions can be found at: &quot;</span>
+                    <span class="s2">&quot;        https://github.com/E3SM-Project/E3SM/blob/master/cime/scripts/&quot;</span>
+                    <span class="s2">&quot;climate_reproducibility/README.md#test-passfail-and-extended-output&quot;</span>
+                    <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">evv_out_dir</span><span class="p">)</span>
+                <span class="p">)</span>
+
+            <span class="n">comments</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> for test &#39;</span><span class="si">{}</span><span class="s2">&#39;.</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;    </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;    EVV results can be viewed at:</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;        </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">CIME</span><span class="o">.</span><span class="n">test_status</span><span class="o">.</span><span class="n">BASELINE_PHASE</span><span class="p">,</span>
+                    <span class="n">status</span><span class="p">,</span>
+                    <span class="n">test_name</span><span class="p">,</span>
+                    <span class="n">comments</span><span class="p">,</span>
+                    <span class="n">viewing</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+            <span class="n">CIME</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">append_testlog</span><span class="p">(</span><span class="n">comments</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_orig_caseroot</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_generate_baseline</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">TSC</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">_generate_baseline</span><span class="p">()</span>
+
+        <span class="k">with</span> <span class="n">CIME</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">SharedArea</span><span class="p">():</span>
+            <span class="n">basegen_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;BASELINE_ROOT&quot;</span><span class="p">),</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;BASEGEN_CASE&quot;</span><span class="p">),</span>
+            <span class="p">)</span>
+
+            <span class="n">rundir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">)</span>
+            <span class="n">ref_case</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUN_REFCASE&quot;</span><span class="p">)</span>
+
+            <span class="n">env_archive</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_env</span><span class="p">(</span><span class="s2">&quot;archive&quot;</span><span class="p">)</span>
+            <span class="n">hists</span> <span class="o">=</span> <span class="n">env_archive</span><span class="o">.</span><span class="n">get_all_hist_files</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASE&quot;</span><span class="p">),</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">atmmod</span><span class="p">,</span>
+                <span class="n">rundir</span><span class="p">,</span>
+                <span class="sa">r</span><span class="s2">&quot;DT\d*&quot;</span><span class="p">,</span>
+                <span class="n">ref_case</span><span class="o">=</span><span class="n">ref_case</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">hists</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="n">hist</span><span class="p">)</span> <span class="k">for</span> <span class="n">hist</span> <span class="ow">in</span> <span class="n">hists</span><span class="p">]</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;TSC additional baseline files: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">hists</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">hist</span> <span class="ow">in</span> <span class="n">hists</span><span class="p">:</span>
+                <span class="n">basename</span> <span class="o">=</span> <span class="n">hist</span><span class="p">[</span><span class="n">hist</span><span class="o">.</span><span class="n">rfind</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">atmmod</span><span class="p">)</span> <span class="p">:]</span>
+                <span class="n">baseline</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">basegen_dir</span><span class="p">,</span> <span class="n">basename</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">baseline</span><span class="p">):</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">baseline</span><span class="p">)</span>
+
+                <span class="n">CIME</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">safe_copy</span><span class="p">(</span><span class="n">hist</span><span class="p">,</span> <span class="n">baseline</span><span class="p">,</span> <span class="n">preserve_meta</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
+     
+<script>var version_json_loc = "../../../../../versions.json";</script>
+
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

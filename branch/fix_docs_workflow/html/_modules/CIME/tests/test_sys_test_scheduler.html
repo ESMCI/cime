@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CIME.tests.test_sys_test_scheduler &mdash; CIME master documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/pop_ver.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            CIME
+          </a>
+              <div class="version">
+                master
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../what_cime/index.html">What is CIME?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../users_guide/index.html">Case Control System Part 1: Basic Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../users_guide/index.html#case-control-system-part-2-configuration-porting-testing-and-use-cases">Case Control System Part 2: Configuration, Porting, Testing and Use Cases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../build_cpl/index.html">Building a Coupled Model with CIME</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../misc_tools/index.html">Miscellaneous Tools</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../glossary/index.html">Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Tools_user/index.html">User Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../xml_files/index.html">XML Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../CIME_api/modules.html">CIME</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Tools_api/modules.html">Tools</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">CIME</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">CIME.tests.test_sys_test_scheduler</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for CIME.tests.test_sys_test_scheduler</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+
+<span class="kn">import</span> <span class="nn">glob</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">unittest</span>
+<span class="kn">from</span> <span class="nn">unittest</span> <span class="kn">import</span> <span class="n">mock</span>
+
+<span class="kn">from</span> <span class="nn">CIME</span> <span class="kn">import</span> <span class="n">get_tests</span>
+<span class="kn">from</span> <span class="nn">CIME</span> <span class="kn">import</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">CIME</span> <span class="kn">import</span> <span class="n">test_status</span>
+<span class="kn">from</span> <span class="nn">CIME</span> <span class="kn">import</span> <span class="n">test_scheduler</span>
+<span class="kn">from</span> <span class="nn">CIME.tests</span> <span class="kn">import</span> <span class="n">base</span>
+
+
+<div class="viewcode-block" id="TestTestScheduler"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_test_scheduler.TestTestScheduler">[docs]</a><span class="k">class</span> <span class="nc">TestTestScheduler</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">BaseTestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestTestScheduler.test_chksum"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_test_scheduler.TestTestScheduler.test_chksum">[docs]</a>    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;time.strftime&quot;</span><span class="p">,</span> <span class="n">return_value</span><span class="o">=</span><span class="s2">&quot;00:00:00&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_chksum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">strftime</span><span class="p">):</span>  <span class="c1"># pylint: disable=unused-argument</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">test_mode</span> <span class="o">==</span> <span class="s2">&quot;e3sm&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">skipTest</span><span class="p">(</span><span class="s2">&quot;Skipping chksum test. Depends on CESM settings&quot;</span><span class="p">)</span>
+
+        <span class="n">ts</span> <span class="o">=</span> <span class="n">test_scheduler</span><span class="o">.</span><span class="n">TestScheduler</span><span class="p">(</span>
+            <span class="p">[</span><span class="s2">&quot;SEQ_Ln9.f19_g16_rx1.A.cori-haswell_gnu&quot;</span><span class="p">],</span>
+            <span class="n">machine_name</span><span class="o">=</span><span class="s2">&quot;cori-haswell&quot;</span><span class="p">,</span>
+            <span class="n">chksum</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">test_root</span><span class="o">=</span><span class="s2">&quot;/tests&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">mock</span><span class="o">.</span><span class="n">patch</span><span class="o">.</span><span class="n">object</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="s2">&quot;_shell_cmd_for_phase&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">_shell_cmd_for_phase</span><span class="p">:</span>
+            <span class="n">ts</span><span class="o">.</span><span class="n">_run_phase</span><span class="p">(</span>
+                <span class="s2">&quot;SEQ_Ln9.f19_g16_rx1.A.cori-haswell_gnu&quot;</span>
+            <span class="p">)</span>  <span class="c1"># pylint: disable=protected-access</span>
+
+            <span class="n">_shell_cmd_for_phase</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span>
+                <span class="s2">&quot;SEQ_Ln9.f19_g16_rx1.A.cori-haswell_gnu&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;./case.submit --skip-preview-namelist --chksum&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;RUN&quot;</span><span class="p">,</span>
+                <span class="n">from_dir</span><span class="o">=</span><span class="s2">&quot;/tests/SEQ_Ln9.f19_g16_rx1.A.cori-haswell_gnu.00:00:00&quot;</span><span class="p">,</span>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestTestScheduler.test_a_phases"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_test_scheduler.TestTestScheduler.test_a_phases">[docs]</a>    <span class="k">def</span> <span class="nf">test_a_phases</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># exclude the MEMLEAK tests here.</span>
+        <span class="n">tests</span> <span class="o">=</span> <span class="n">get_tests</span><span class="o">.</span><span class="n">get_full_test_names</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="s2">&quot;cime_test_only&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;^TESTMEMLEAKFAIL_P1.f09_g16.X&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;^TESTMEMLEAKPASS_P1.f09_g16.X&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;^TESTRUNSTARCFAIL_P1.f19_g16_rx1.A&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;^TESTTESTDIFF_P1.f19_g16_rx1.A&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;^TESTBUILDFAILEXC_P1.f19_g16_rx1.A&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;^TESTRUNFAILEXC_P1.f19_g16_rx1.A&quot;</span><span class="p">,</span>
+            <span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_machine</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_compiler</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tests</span><span class="p">),</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="n">ct</span> <span class="o">=</span> <span class="n">test_scheduler</span><span class="o">.</span><span class="n">TestScheduler</span><span class="p">(</span>
+            <span class="n">tests</span><span class="p">,</span>
+            <span class="n">test_root</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_testroot</span><span class="p">,</span>
+            <span class="n">output_root</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_testroot</span><span class="p">,</span>
+            <span class="n">compiler</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_compiler</span><span class="p">,</span>
+            <span class="n">mpilib</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">TEST_MPILIB</span><span class="p">,</span>
+            <span class="n">machine_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">MACHINE</span><span class="o">.</span><span class="n">get_machine_name</span><span class="p">(),</span>
+        <span class="p">)</span>
+
+        <span class="n">build_fail_test</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">tests</span> <span class="k">if</span> <span class="s2">&quot;TESTBUILDFAIL&quot;</span> <span class="ow">in</span> <span class="n">item</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">run_fail_test</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">tests</span> <span class="k">if</span> <span class="s2">&quot;TESTRUNFAIL&quot;</span> <span class="ow">in</span> <span class="n">item</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">pass_test</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">tests</span> <span class="k">if</span> <span class="s2">&quot;TESTRUNPASS&quot;</span> <span class="ow">in</span> <span class="n">item</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span>
+            <span class="s2">&quot;BUILDFAIL&quot;</span> <span class="ow">in</span> <span class="n">build_fail_test</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Wrong test &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">build_fail_test</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span>
+            <span class="s2">&quot;RUNFAIL&quot;</span> <span class="ow">in</span> <span class="n">run_fail_test</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Wrong test &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">run_fail_test</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="s2">&quot;RUNPASS&quot;</span> <span class="ow">in</span> <span class="n">pass_test</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Wrong test &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">pass_test</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">phase</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ct</span><span class="o">.</span><span class="n">_phases</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">test</span> <span class="ow">in</span> <span class="n">ct</span><span class="o">.</span><span class="n">_tests</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">phase</span> <span class="o">==</span> <span class="n">test_scheduler</span><span class="o">.</span><span class="n">TEST_START</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="k">elif</span> <span class="n">phase</span> <span class="o">==</span> <span class="n">test_status</span><span class="o">.</span><span class="n">MODEL_BUILD_PHASE</span><span class="p">:</span>
+                    <span class="n">ct</span><span class="o">.</span><span class="n">_update_test_status</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">test_status</span><span class="o">.</span><span class="n">TEST_PEND_STATUS</span><span class="p">)</span>
+
+                    <span class="k">if</span> <span class="n">test</span> <span class="o">==</span> <span class="n">build_fail_test</span><span class="p">:</span>
+                        <span class="n">ct</span><span class="o">.</span><span class="n">_update_test_status</span><span class="p">(</span>
+                            <span class="n">test</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">test_status</span><span class="o">.</span><span class="n">TEST_FAIL_STATUS</span>
+                        <span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">ct</span><span class="o">.</span><span class="n">_is_broken</span><span class="p">(</span><span class="n">test</span><span class="p">))</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">ct</span><span class="o">.</span><span class="n">_work_remains</span><span class="p">(</span><span class="n">test</span><span class="p">))</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">ct</span><span class="o">.</span><span class="n">_update_test_status</span><span class="p">(</span>
+                            <span class="n">test</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">test_status</span><span class="o">.</span><span class="n">TEST_PASS_STATUS</span>
+                        <span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">ct</span><span class="o">.</span><span class="n">_is_broken</span><span class="p">(</span><span class="n">test</span><span class="p">))</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">ct</span><span class="o">.</span><span class="n">_work_remains</span><span class="p">(</span><span class="n">test</span><span class="p">))</span>
+
+                <span class="k">elif</span> <span class="n">phase</span> <span class="o">==</span> <span class="n">test_status</span><span class="o">.</span><span class="n">RUN_PHASE</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">test</span> <span class="o">==</span> <span class="n">build_fail_test</span><span class="p">:</span>
+                        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">CIMEError</span><span class="p">):</span>
+                            <span class="n">ct</span><span class="o">.</span><span class="n">_update_test_status</span><span class="p">(</span>
+                                <span class="n">test</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">test_status</span><span class="o">.</span><span class="n">TEST_PEND_STATUS</span>
+                            <span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">ct</span><span class="o">.</span><span class="n">_update_test_status</span><span class="p">(</span>
+                            <span class="n">test</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">test_status</span><span class="o">.</span><span class="n">TEST_PEND_STATUS</span>
+                        <span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">ct</span><span class="o">.</span><span class="n">_work_remains</span><span class="p">(</span><span class="n">test</span><span class="p">))</span>
+
+                        <span class="k">if</span> <span class="n">test</span> <span class="o">==</span> <span class="n">run_fail_test</span><span class="p">:</span>
+                            <span class="n">ct</span><span class="o">.</span><span class="n">_update_test_status</span><span class="p">(</span>
+                                <span class="n">test</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">test_status</span><span class="o">.</span><span class="n">TEST_FAIL_STATUS</span>
+                            <span class="p">)</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">ct</span><span class="o">.</span><span class="n">_is_broken</span><span class="p">(</span><span class="n">test</span><span class="p">))</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">ct</span><span class="o">.</span><span class="n">_update_test_status</span><span class="p">(</span>
+                                <span class="n">test</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">test_status</span><span class="o">.</span><span class="n">TEST_PASS_STATUS</span>
+                            <span class="p">)</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">ct</span><span class="o">.</span><span class="n">_is_broken</span><span class="p">(</span><span class="n">test</span><span class="p">))</span>
+
+                    <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">ct</span><span class="o">.</span><span class="n">_work_remains</span><span class="p">(</span><span class="n">test</span><span class="p">))</span>
+
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">CIMEError</span><span class="p">):</span>
+                        <span class="n">ct</span><span class="o">.</span><span class="n">_update_test_status</span><span class="p">(</span>
+                            <span class="n">test</span><span class="p">,</span> <span class="n">ct</span><span class="o">.</span><span class="n">_phases</span><span class="p">[</span><span class="n">idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">],</span> <span class="n">test_status</span><span class="o">.</span><span class="n">TEST_PEND_STATUS</span>
+                        <span class="p">)</span>
+
+                    <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">CIMEError</span><span class="p">):</span>
+                        <span class="n">ct</span><span class="o">.</span><span class="n">_update_test_status</span><span class="p">(</span>
+                            <span class="n">test</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">test_status</span><span class="o">.</span><span class="n">TEST_PASS_STATUS</span>
+                        <span class="p">)</span>
+
+                    <span class="n">ct</span><span class="o">.</span><span class="n">_update_test_status</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">test_status</span><span class="o">.</span><span class="n">TEST_PEND_STATUS</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">ct</span><span class="o">.</span><span class="n">_is_broken</span><span class="p">(</span><span class="n">test</span><span class="p">))</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">ct</span><span class="o">.</span><span class="n">_work_remains</span><span class="p">(</span><span class="n">test</span><span class="p">))</span>
+
+                    <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">CIMEError</span><span class="p">):</span>
+                        <span class="n">ct</span><span class="o">.</span><span class="n">_update_test_status</span><span class="p">(</span>
+                            <span class="n">test</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">test_status</span><span class="o">.</span><span class="n">TEST_PEND_STATUS</span>
+                        <span class="p">)</span>
+
+                    <span class="n">ct</span><span class="o">.</span><span class="n">_update_test_status</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">test_status</span><span class="o">.</span><span class="n">TEST_PASS_STATUS</span><span class="p">)</span>
+
+                    <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">CIMEError</span><span class="p">):</span>
+                        <span class="n">ct</span><span class="o">.</span><span class="n">_update_test_status</span><span class="p">(</span>
+                            <span class="n">test</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">test_status</span><span class="o">.</span><span class="n">TEST_FAIL_STATUS</span>
+                        <span class="p">)</span>
+
+                    <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">ct</span><span class="o">.</span><span class="n">_is_broken</span><span class="p">(</span><span class="n">test</span><span class="p">))</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">ct</span><span class="o">.</span><span class="n">_work_remains</span><span class="p">(</span><span class="n">test</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="TestTestScheduler.test_b_full"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_test_scheduler.TestTestScheduler.test_b_full">[docs]</a>    <span class="k">def</span> <span class="nf">test_b_full</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">tests</span> <span class="o">=</span> <span class="n">get_tests</span><span class="o">.</span><span class="n">get_full_test_names</span><span class="p">(</span>
+            <span class="p">[</span><span class="s2">&quot;cime_test_only&quot;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_machine</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compiler</span>
+        <span class="p">)</span>
+        <span class="n">test_id</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">-</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_baseline_name</span><span class="p">,</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_timestamp</span><span class="p">())</span>
+        <span class="n">ct</span> <span class="o">=</span> <span class="n">test_scheduler</span><span class="o">.</span><span class="n">TestScheduler</span><span class="p">(</span>
+            <span class="n">tests</span><span class="p">,</span>
+            <span class="n">test_id</span><span class="o">=</span><span class="n">test_id</span><span class="p">,</span>
+            <span class="n">no_batch</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">NO_BATCH</span><span class="p">,</span>
+            <span class="n">test_root</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_testroot</span><span class="p">,</span>
+            <span class="n">output_root</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_testroot</span><span class="p">,</span>
+            <span class="n">compiler</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_compiler</span><span class="p">,</span>
+            <span class="n">mpilib</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">TEST_MPILIB</span><span class="p">,</span>
+            <span class="n">machine_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">MACHINE</span><span class="o">.</span><span class="n">get_machine_name</span><span class="p">(),</span>
+        <span class="p">)</span>
+
+        <span class="n">build_fail_test</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">tests</span> <span class="k">if</span> <span class="s2">&quot;TESTBUILDFAIL_&quot;</span> <span class="ow">in</span> <span class="n">item</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">build_fail_exc_test</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">tests</span> <span class="k">if</span> <span class="s2">&quot;TESTBUILDFAILEXC&quot;</span> <span class="ow">in</span> <span class="n">item</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">run_fail_test</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">tests</span> <span class="k">if</span> <span class="s2">&quot;TESTRUNFAIL_&quot;</span> <span class="ow">in</span> <span class="n">item</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">run_fail_exc_test</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">tests</span> <span class="k">if</span> <span class="s2">&quot;TESTRUNFAILEXC&quot;</span> <span class="ow">in</span> <span class="n">item</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">pass_test</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">tests</span> <span class="k">if</span> <span class="s2">&quot;TESTRUNPASS&quot;</span> <span class="ow">in</span> <span class="n">item</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">test_diff_test</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">tests</span> <span class="k">if</span> <span class="s2">&quot;TESTTESTDIFF&quot;</span> <span class="ow">in</span> <span class="n">item</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">mem_fail_test</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">tests</span> <span class="k">if</span> <span class="s2">&quot;TESTMEMLEAKFAIL&quot;</span> <span class="ow">in</span> <span class="n">item</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">mem_pass_test</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">tests</span> <span class="k">if</span> <span class="s2">&quot;TESTMEMLEAKPASS&quot;</span> <span class="ow">in</span> <span class="n">item</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">st_arch_fail_test</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">tests</span> <span class="k">if</span> <span class="s2">&quot;TESTRUNSTARCFAIL&quot;</span> <span class="ow">in</span> <span class="n">item</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">log_lvl</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">getEffectiveLevel</span><span class="p">()</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">disable</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">CRITICAL</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">ct</span><span class="o">.</span><span class="n">run_tests</span><span class="p">()</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">log_lvl</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_wait_for_tests</span><span class="p">(</span><span class="n">test_id</span><span class="p">,</span> <span class="n">expect_works</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="n">test_statuses</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/*</span><span class="si">%s</span><span class="s2">/TestStatus&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_testroot</span><span class="p">,</span> <span class="n">test_id</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tests</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">test_statuses</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">test_statuses</span><span class="p">:</span>
+            <span class="n">ts</span> <span class="o">=</span> <span class="n">test_status</span><span class="o">.</span><span class="n">TestStatus</span><span class="p">(</span><span class="n">test_dir</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+            <span class="n">test_name</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span>
+            <span class="n">log_files</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span>
+                <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">*</span><span class="si">%s</span><span class="s2">/TestStatus.log&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_testroot</span><span class="p">,</span> <span class="n">test_name</span><span class="p">,</span> <span class="n">test_id</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+                <span class="nb">len</span><span class="p">(</span><span class="n">log_files</span><span class="p">),</span>
+                <span class="mi">1</span><span class="p">,</span>
+                <span class="s2">&quot;Expected exactly one test_status.TestStatus.log file, found </span><span class="si">%d</span><span class="s2">&quot;</span>
+                <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">log_files</span><span class="p">),</span>
+            <span class="p">)</span>
+            <span class="n">log_file</span> <span class="o">=</span> <span class="n">log_files</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">test_name</span> <span class="o">==</span> <span class="n">build_fail_test</span><span class="p">:</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">assert_test_status</span><span class="p">(</span>
+                    <span class="n">test_name</span><span class="p">,</span>
+                    <span class="n">ts</span><span class="p">,</span>
+                    <span class="n">test_status</span><span class="o">.</span><span class="n">MODEL_BUILD_PHASE</span><span class="p">,</span>
+                    <span class="n">test_status</span><span class="o">.</span><span class="n">TEST_FAIL_STATUS</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">log_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span>
+                    <span class="s2">&quot;Intentional fail for testing infrastructure&quot;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">,</span>
+                    <span class="s2">&quot;Broken test did not report build error:</span><span class="se">\n</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">data</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">elif</span> <span class="n">test_name</span> <span class="o">==</span> <span class="n">build_fail_exc_test</span><span class="p">:</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">log_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">assert_test_status</span><span class="p">(</span>
+                    <span class="n">test_name</span><span class="p">,</span>
+                    <span class="n">ts</span><span class="p">,</span>
+                    <span class="n">test_status</span><span class="o">.</span><span class="n">SHAREDLIB_BUILD_PHASE</span><span class="p">,</span>
+                    <span class="n">test_status</span><span class="o">.</span><span class="n">TEST_FAIL_STATUS</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span>
+                    <span class="s2">&quot;Exception from init&quot;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">,</span>
+                    <span class="s2">&quot;Broken test did not report build error:</span><span class="se">\n</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">data</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">elif</span> <span class="n">test_name</span> <span class="o">==</span> <span class="n">run_fail_test</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">assert_test_status</span><span class="p">(</span>
+                    <span class="n">test_name</span><span class="p">,</span> <span class="n">ts</span><span class="p">,</span> <span class="n">test_status</span><span class="o">.</span><span class="n">RUN_PHASE</span><span class="p">,</span> <span class="n">test_status</span><span class="o">.</span><span class="n">TEST_FAIL_STATUS</span>
+                <span class="p">)</span>
+            <span class="k">elif</span> <span class="n">test_name</span> <span class="o">==</span> <span class="n">run_fail_exc_test</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">assert_test_status</span><span class="p">(</span>
+                    <span class="n">test_name</span><span class="p">,</span> <span class="n">ts</span><span class="p">,</span> <span class="n">test_status</span><span class="o">.</span><span class="n">RUN_PHASE</span><span class="p">,</span> <span class="n">test_status</span><span class="o">.</span><span class="n">TEST_FAIL_STATUS</span>
+                <span class="p">)</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">log_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span>
+                    <span class="s2">&quot;Exception from run_phase&quot;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">,</span>
+                    <span class="s2">&quot;Broken test did not report run error:</span><span class="se">\n</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">data</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">elif</span> <span class="n">test_name</span> <span class="o">==</span> <span class="n">mem_fail_test</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">assert_test_status</span><span class="p">(</span>
+                    <span class="n">test_name</span><span class="p">,</span>
+                    <span class="n">ts</span><span class="p">,</span>
+                    <span class="n">test_status</span><span class="o">.</span><span class="n">MEMLEAK_PHASE</span><span class="p">,</span>
+                    <span class="n">test_status</span><span class="o">.</span><span class="n">TEST_FAIL_STATUS</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">assert_test_status</span><span class="p">(</span>
+                    <span class="n">test_name</span><span class="p">,</span> <span class="n">ts</span><span class="p">,</span> <span class="n">test_status</span><span class="o">.</span><span class="n">RUN_PHASE</span><span class="p">,</span> <span class="n">test_status</span><span class="o">.</span><span class="n">TEST_PASS_STATUS</span>
+                <span class="p">)</span>
+            <span class="k">elif</span> <span class="n">test_name</span> <span class="o">==</span> <span class="n">test_diff_test</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">assert_test_status</span><span class="p">(</span>
+                    <span class="n">test_name</span><span class="p">,</span> <span class="n">ts</span><span class="p">,</span> <span class="s2">&quot;COMPARE_base_rest&quot;</span><span class="p">,</span> <span class="n">test_status</span><span class="o">.</span><span class="n">TEST_FAIL_STATUS</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">assert_test_status</span><span class="p">(</span>
+                    <span class="n">test_name</span><span class="p">,</span> <span class="n">ts</span><span class="p">,</span> <span class="n">test_status</span><span class="o">.</span><span class="n">RUN_PHASE</span><span class="p">,</span> <span class="n">test_status</span><span class="o">.</span><span class="n">TEST_PASS_STATUS</span>
+                <span class="p">)</span>
+            <span class="k">elif</span> <span class="n">test_name</span> <span class="o">==</span> <span class="n">st_arch_fail_test</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">assert_test_status</span><span class="p">(</span>
+                    <span class="n">test_name</span><span class="p">,</span> <span class="n">ts</span><span class="p">,</span> <span class="n">test_status</span><span class="o">.</span><span class="n">RUN_PHASE</span><span class="p">,</span> <span class="n">test_status</span><span class="o">.</span><span class="n">TEST_PASS_STATUS</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">assert_test_status</span><span class="p">(</span>
+                    <span class="n">test_name</span><span class="p">,</span>
+                    <span class="n">ts</span><span class="p">,</span>
+                    <span class="n">test_status</span><span class="o">.</span><span class="n">STARCHIVE_PHASE</span><span class="p">,</span>
+                    <span class="n">test_status</span><span class="o">.</span><span class="n">TEST_FAIL_STATUS</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">test_name</span> <span class="ow">in</span> <span class="p">[</span><span class="n">pass_test</span><span class="p">,</span> <span class="n">mem_pass_test</span><span class="p">])</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">assert_test_status</span><span class="p">(</span>
+                    <span class="n">test_name</span><span class="p">,</span> <span class="n">ts</span><span class="p">,</span> <span class="n">test_status</span><span class="o">.</span><span class="n">RUN_PHASE</span><span class="p">,</span> <span class="n">test_status</span><span class="o">.</span><span class="n">TEST_PASS_STATUS</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="n">test_name</span> <span class="o">==</span> <span class="n">mem_pass_test</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">assert_test_status</span><span class="p">(</span>
+                        <span class="n">test_name</span><span class="p">,</span>
+                        <span class="n">ts</span><span class="p">,</span>
+                        <span class="n">test_status</span><span class="o">.</span><span class="n">MEMLEAK_PHASE</span><span class="p">,</span>
+                        <span class="n">test_status</span><span class="o">.</span><span class="n">TEST_PASS_STATUS</span><span class="p">,</span>
+                    <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestTestScheduler.test_force_rebuild"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_test_scheduler.TestTestScheduler.test_force_rebuild">[docs]</a>    <span class="k">def</span> <span class="nf">test_force_rebuild</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">tests</span> <span class="o">=</span> <span class="n">get_tests</span><span class="o">.</span><span class="n">get_full_test_names</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="s2">&quot;TESTBUILDFAIL_P1.f19_g16_rx1.A&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;TESTRUNFAIL_P1.f19_g16_rx1.A&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;TESTRUNPASS_P1.f19_g16_rx1.A&quot;</span><span class="p">,</span>
+            <span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_machine</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_compiler</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">test_id</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">-</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_baseline_name</span><span class="p">,</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_timestamp</span><span class="p">())</span>
+        <span class="n">ct</span> <span class="o">=</span> <span class="n">test_scheduler</span><span class="o">.</span><span class="n">TestScheduler</span><span class="p">(</span>
+            <span class="n">tests</span><span class="p">,</span>
+            <span class="n">test_id</span><span class="o">=</span><span class="n">test_id</span><span class="p">,</span>
+            <span class="n">no_batch</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">NO_BATCH</span><span class="p">,</span>
+            <span class="n">test_root</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_testroot</span><span class="p">,</span>
+            <span class="n">output_root</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_testroot</span><span class="p">,</span>
+            <span class="n">compiler</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_compiler</span><span class="p">,</span>
+            <span class="n">mpilib</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">TEST_MPILIB</span><span class="p">,</span>
+            <span class="n">machine_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">MACHINE</span><span class="o">.</span><span class="n">get_machine_name</span><span class="p">(),</span>
+        <span class="p">)</span>
+
+        <span class="n">log_lvl</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">getEffectiveLevel</span><span class="p">()</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">disable</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">CRITICAL</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">ct</span><span class="o">.</span><span class="n">run_tests</span><span class="p">()</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">log_lvl</span><span class="p">)</span>
+
+        <span class="n">ct</span> <span class="o">=</span> <span class="n">test_scheduler</span><span class="o">.</span><span class="n">TestScheduler</span><span class="p">(</span>
+            <span class="n">tests</span><span class="p">,</span>
+            <span class="n">test_id</span><span class="o">=</span><span class="n">test_id</span><span class="p">,</span>
+            <span class="n">no_batch</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">NO_BATCH</span><span class="p">,</span>
+            <span class="n">test_root</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_testroot</span><span class="p">,</span>
+            <span class="n">output_root</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_testroot</span><span class="p">,</span>
+            <span class="n">compiler</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_compiler</span><span class="p">,</span>
+            <span class="n">mpilib</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">TEST_MPILIB</span><span class="p">,</span>
+            <span class="n">machine_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">MACHINE</span><span class="o">.</span><span class="n">get_machine_name</span><span class="p">(),</span>
+            <span class="n">force_rebuild</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">use_existing</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">test_statuses</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/*</span><span class="si">%s</span><span class="s2">/TestStatus&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_testroot</span><span class="p">,</span> <span class="n">test_id</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">test_statuses</span><span class="p">:</span>
+            <span class="n">casedir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+            <span class="n">ts</span> <span class="o">=</span> <span class="n">test_status</span><span class="o">.</span><span class="n">TestStatus</span><span class="p">(</span><span class="n">test_dir</span><span class="o">=</span><span class="n">casedir</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span>
+                <span class="n">ts</span><span class="o">.</span><span class="n">get_status</span><span class="p">(</span><span class="n">test_status</span><span class="o">.</span><span class="n">SHAREDLIB_BUILD_PHASE</span><span class="p">)</span>
+                <span class="o">==</span> <span class="n">test_status</span><span class="o">.</span><span class="n">TEST_PEND_STATUS</span>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestTestScheduler.test_c_use_existing"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_test_scheduler.TestTestScheduler.test_c_use_existing">[docs]</a>    <span class="k">def</span> <span class="nf">test_c_use_existing</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">tests</span> <span class="o">=</span> <span class="n">get_tests</span><span class="o">.</span><span class="n">get_full_test_names</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="s2">&quot;TESTBUILDFAIL_P1.f19_g16_rx1.A&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;TESTRUNFAIL_P1.f19_g16_rx1.A&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;TESTRUNPASS_P1.f19_g16_rx1.A&quot;</span><span class="p">,</span>
+            <span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_machine</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_compiler</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">test_id</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">-</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_baseline_name</span><span class="p">,</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_timestamp</span><span class="p">())</span>
+        <span class="n">ct</span> <span class="o">=</span> <span class="n">test_scheduler</span><span class="o">.</span><span class="n">TestScheduler</span><span class="p">(</span>
+            <span class="n">tests</span><span class="p">,</span>
+            <span class="n">test_id</span><span class="o">=</span><span class="n">test_id</span><span class="p">,</span>
+            <span class="n">no_batch</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">NO_BATCH</span><span class="p">,</span>
+            <span class="n">test_root</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_testroot</span><span class="p">,</span>
+            <span class="n">output_root</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_testroot</span><span class="p">,</span>
+            <span class="n">compiler</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_compiler</span><span class="p">,</span>
+            <span class="n">mpilib</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">TEST_MPILIB</span><span class="p">,</span>
+            <span class="n">machine_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">MACHINE</span><span class="o">.</span><span class="n">get_machine_name</span><span class="p">(),</span>
+        <span class="p">)</span>
+
+        <span class="n">build_fail_test</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">tests</span> <span class="k">if</span> <span class="s2">&quot;TESTBUILDFAIL&quot;</span> <span class="ow">in</span> <span class="n">item</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">run_fail_test</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">tests</span> <span class="k">if</span> <span class="s2">&quot;TESTRUNFAIL&quot;</span> <span class="ow">in</span> <span class="n">item</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">pass_test</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">tests</span> <span class="k">if</span> <span class="s2">&quot;TESTRUNPASS&quot;</span> <span class="ow">in</span> <span class="n">item</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">log_lvl</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">getEffectiveLevel</span><span class="p">()</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">disable</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">CRITICAL</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">ct</span><span class="o">.</span><span class="n">run_tests</span><span class="p">()</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">log_lvl</span><span class="p">)</span>
+
+        <span class="n">test_statuses</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/*</span><span class="si">%s</span><span class="s2">/TestStatus&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_testroot</span><span class="p">,</span> <span class="n">test_id</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tests</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">test_statuses</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_wait_for_tests</span><span class="p">(</span><span class="n">test_id</span><span class="p">,</span> <span class="n">expect_works</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">test_statuses</span><span class="p">:</span>
+            <span class="n">casedir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="n">ts</span> <span class="o">=</span> <span class="n">test_status</span><span class="o">.</span><span class="n">TestStatus</span><span class="p">(</span><span class="n">test_dir</span><span class="o">=</span><span class="n">casedir</span><span class="p">)</span>
+            <span class="n">test_name</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">test_name</span> <span class="o">==</span> <span class="n">build_fail_test</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">assert_test_status</span><span class="p">(</span>
+                    <span class="n">test_name</span><span class="p">,</span>
+                    <span class="n">ts</span><span class="p">,</span>
+                    <span class="n">test_status</span><span class="o">.</span><span class="n">MODEL_BUILD_PHASE</span><span class="p">,</span>
+                    <span class="n">test_status</span><span class="o">.</span><span class="n">TEST_FAIL_STATUS</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="k">with</span> <span class="n">test_status</span><span class="o">.</span><span class="n">TestStatus</span><span class="p">(</span><span class="n">test_dir</span><span class="o">=</span><span class="n">casedir</span><span class="p">)</span> <span class="k">as</span> <span class="n">ts</span><span class="p">:</span>
+                    <span class="n">ts</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span>
+                        <span class="n">test_status</span><span class="o">.</span><span class="n">MODEL_BUILD_PHASE</span><span class="p">,</span> <span class="n">test_status</span><span class="o">.</span><span class="n">TEST_PEND_STATUS</span>
+                    <span class="p">)</span>
+            <span class="k">elif</span> <span class="n">test_name</span> <span class="o">==</span> <span class="n">run_fail_test</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">assert_test_status</span><span class="p">(</span>
+                    <span class="n">test_name</span><span class="p">,</span> <span class="n">ts</span><span class="p">,</span> <span class="n">test_status</span><span class="o">.</span><span class="n">RUN_PHASE</span><span class="p">,</span> <span class="n">test_status</span><span class="o">.</span><span class="n">TEST_FAIL_STATUS</span>
+                <span class="p">)</span>
+                <span class="k">with</span> <span class="n">test_status</span><span class="o">.</span><span class="n">TestStatus</span><span class="p">(</span><span class="n">test_dir</span><span class="o">=</span><span class="n">casedir</span><span class="p">)</span> <span class="k">as</span> <span class="n">ts</span><span class="p">:</span>
+                    <span class="n">ts</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span>
+                        <span class="n">test_status</span><span class="o">.</span><span class="n">SUBMIT_PHASE</span><span class="p">,</span> <span class="n">test_status</span><span class="o">.</span><span class="n">TEST_PEND_STATUS</span>
+                    <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">test_name</span> <span class="o">==</span> <span class="n">pass_test</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">assert_test_status</span><span class="p">(</span>
+                    <span class="n">test_name</span><span class="p">,</span>
+                    <span class="n">ts</span><span class="p">,</span>
+                    <span class="n">test_status</span><span class="o">.</span><span class="n">MODEL_BUILD_PHASE</span><span class="p">,</span>
+                    <span class="n">test_status</span><span class="o">.</span><span class="n">TEST_PASS_STATUS</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">assert_test_status</span><span class="p">(</span>
+                    <span class="n">test_name</span><span class="p">,</span>
+                    <span class="n">ts</span><span class="p">,</span>
+                    <span class="n">test_status</span><span class="o">.</span><span class="n">SUBMIT_PHASE</span><span class="p">,</span>
+                    <span class="n">test_status</span><span class="o">.</span><span class="n">TEST_PASS_STATUS</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">assert_test_status</span><span class="p">(</span>
+                    <span class="n">test_name</span><span class="p">,</span> <span class="n">ts</span><span class="p">,</span> <span class="n">test_status</span><span class="o">.</span><span class="n">RUN_PHASE</span><span class="p">,</span> <span class="n">test_status</span><span class="o">.</span><span class="n">TEST_PASS_STATUS</span>
+                <span class="p">)</span>
+
+        <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;TESTBUILDFAIL_PASS&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;True&quot;</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;TESTRUNFAIL_PASS&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;True&quot;</span>
+        <span class="n">ct2</span> <span class="o">=</span> <span class="n">test_scheduler</span><span class="o">.</span><span class="n">TestScheduler</span><span class="p">(</span>
+            <span class="n">tests</span><span class="p">,</span>
+            <span class="n">test_id</span><span class="o">=</span><span class="n">test_id</span><span class="p">,</span>
+            <span class="n">no_batch</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">NO_BATCH</span><span class="p">,</span>
+            <span class="n">use_existing</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">test_root</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_testroot</span><span class="p">,</span>
+            <span class="n">output_root</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_testroot</span><span class="p">,</span>
+            <span class="n">compiler</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_compiler</span><span class="p">,</span>
+            <span class="n">mpilib</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">TEST_MPILIB</span><span class="p">,</span>
+            <span class="n">machine_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">MACHINE</span><span class="o">.</span><span class="n">get_machine_name</span><span class="p">(),</span>
+        <span class="p">)</span>
+
+        <span class="n">log_lvl</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">getEffectiveLevel</span><span class="p">()</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">disable</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">CRITICAL</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">ct2</span><span class="o">.</span><span class="n">run_tests</span><span class="p">()</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">log_lvl</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_wait_for_tests</span><span class="p">(</span><span class="n">test_id</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">test_statuses</span><span class="p">:</span>
+            <span class="n">ts</span> <span class="o">=</span> <span class="n">test_status</span><span class="o">.</span><span class="n">TestStatus</span><span class="p">(</span><span class="n">test_dir</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+            <span class="n">test_name</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assert_test_status</span><span class="p">(</span>
+                <span class="n">test_name</span><span class="p">,</span>
+                <span class="n">ts</span><span class="p">,</span>
+                <span class="n">test_status</span><span class="o">.</span><span class="n">MODEL_BUILD_PHASE</span><span class="p">,</span>
+                <span class="n">test_status</span><span class="o">.</span><span class="n">TEST_PASS_STATUS</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assert_test_status</span><span class="p">(</span>
+                <span class="n">test_name</span><span class="p">,</span> <span class="n">ts</span><span class="p">,</span> <span class="n">test_status</span><span class="o">.</span><span class="n">SUBMIT_PHASE</span><span class="p">,</span> <span class="n">test_status</span><span class="o">.</span><span class="n">TEST_PASS_STATUS</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assert_test_status</span><span class="p">(</span>
+                <span class="n">test_name</span><span class="p">,</span> <span class="n">ts</span><span class="p">,</span> <span class="n">test_status</span><span class="o">.</span><span class="n">RUN_PHASE</span><span class="p">,</span> <span class="n">test_status</span><span class="o">.</span><span class="n">TEST_PASS_STATUS</span>
+            <span class="p">)</span>
+
+        <span class="k">del</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;TESTBUILDFAIL_PASS&quot;</span><span class="p">]</span>
+        <span class="k">del</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;TESTRUNFAIL_PASS&quot;</span><span class="p">]</span>
+
+        <span class="c1"># test that passed tests are not re-run</span>
+
+        <span class="n">ct2</span> <span class="o">=</span> <span class="n">test_scheduler</span><span class="o">.</span><span class="n">TestScheduler</span><span class="p">(</span>
+            <span class="n">tests</span><span class="p">,</span>
+            <span class="n">test_id</span><span class="o">=</span><span class="n">test_id</span><span class="p">,</span>
+            <span class="n">no_batch</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">NO_BATCH</span><span class="p">,</span>
+            <span class="n">use_existing</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">test_root</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_testroot</span><span class="p">,</span>
+            <span class="n">output_root</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_testroot</span><span class="p">,</span>
+            <span class="n">compiler</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_compiler</span><span class="p">,</span>
+            <span class="n">mpilib</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">TEST_MPILIB</span><span class="p">,</span>
+            <span class="n">machine_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">MACHINE</span><span class="o">.</span><span class="n">get_machine_name</span><span class="p">(),</span>
+        <span class="p">)</span>
+
+        <span class="n">log_lvl</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">getEffectiveLevel</span><span class="p">()</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">disable</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">CRITICAL</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">ct2</span><span class="o">.</span><span class="n">run_tests</span><span class="p">()</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">log_lvl</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_wait_for_tests</span><span class="p">(</span><span class="n">test_id</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">test_statuses</span><span class="p">:</span>
+            <span class="n">ts</span> <span class="o">=</span> <span class="n">test_status</span><span class="o">.</span><span class="n">TestStatus</span><span class="p">(</span><span class="n">test_dir</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+            <span class="n">test_name</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assert_test_status</span><span class="p">(</span>
+                <span class="n">test_name</span><span class="p">,</span>
+                <span class="n">ts</span><span class="p">,</span>
+                <span class="n">test_status</span><span class="o">.</span><span class="n">MODEL_BUILD_PHASE</span><span class="p">,</span>
+                <span class="n">test_status</span><span class="o">.</span><span class="n">TEST_PASS_STATUS</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assert_test_status</span><span class="p">(</span>
+                <span class="n">test_name</span><span class="p">,</span> <span class="n">ts</span><span class="p">,</span> <span class="n">test_status</span><span class="o">.</span><span class="n">SUBMIT_PHASE</span><span class="p">,</span> <span class="n">test_status</span><span class="o">.</span><span class="n">TEST_PASS_STATUS</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assert_test_status</span><span class="p">(</span>
+                <span class="n">test_name</span><span class="p">,</span> <span class="n">ts</span><span class="p">,</span> <span class="n">test_status</span><span class="o">.</span><span class="n">RUN_PHASE</span><span class="p">,</span> <span class="n">test_status</span><span class="o">.</span><span class="n">TEST_PASS_STATUS</span>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestTestScheduler.test_d_retry"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_test_scheduler.TestTestScheduler.test_d_retry">[docs]</a>    <span class="k">def</span> <span class="nf">test_d_retry</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;TESTBUILDFAIL_P1.f19_g16_rx1.A&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;TESTRUNFAILRESET_P1.f19_g16_rx1.A&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;TESTRUNPASS_P1.f19_g16_rx1.A&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;--retry=1&quot;</span><span class="p">,</span>
+        <span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_create_test</span><span class="p">(</span><span class="n">args</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestTestScheduler.test_e_test_inferred_compiler"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_test_scheduler.TestTestScheduler.test_e_test_inferred_compiler">[docs]</a>    <span class="k">def</span> <span class="nf">test_e_test_inferred_compiler</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">test_mode</span> <span class="o">!=</span> <span class="s2">&quot;e3sm&quot;</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_machine</span> <span class="o">!=</span> <span class="s2">&quot;docker&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">skipTest</span><span class="p">(</span><span class="s2">&quot;Skipping create_test test. Depends on E3SM settings&quot;</span><span class="p">)</span>
+
+        <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;SMS.f19_g16_rx1.A.docker_gnuX&quot;</span><span class="p">,</span> <span class="s2">&quot;--no-setup&quot;</span><span class="p">]</span>
+
+        <span class="n">case</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_test</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">default_baseline_area</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_cmd_assert_result</span><span class="p">(</span>
+            <span class="s2">&quot;./xmlquery --value BASELINE_ROOT&quot;</span><span class="p">,</span> <span class="n">from_dir</span><span class="o">=</span><span class="n">case</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">result</span><span class="p">)[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;gnuX&quot;</span><span class="p">)</span></div></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">unittest</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
+     
+<script>var version_json_loc = "../../../../../versions.json";</script>
+
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

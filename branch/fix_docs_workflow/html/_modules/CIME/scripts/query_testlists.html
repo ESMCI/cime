@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CIME.scripts.query_testlists &mdash; CIME master documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/pop_ver.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            CIME
+          </a>
+              <div class="version">
+                master
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../what_cime/index.html">What is CIME?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../users_guide/index.html">Case Control System Part 1: Basic Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../users_guide/index.html#case-control-system-part-2-configuration-porting-testing-and-use-cases">Case Control System Part 2: Configuration, Porting, Testing and Use Cases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../build_cpl/index.html">Building a Coupled Model with CIME</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../misc_tools/index.html">Miscellaneous Tools</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../glossary/index.html">Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Tools_user/index.html">User Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../xml_files/index.html">XML Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../CIME_api/modules.html">CIME</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Tools_api/modules.html">Tools</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">CIME</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">CIME.scripts.query_testlists</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for CIME.scripts.query_testlists</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Script to query xml test lists, displaying all tests in human-readable form.</span>
+
+<span class="sd">Usage:</span>
+<span class="sd">   ./query_testlists [--show-options] [--define-testtypes]</span>
+<span class="sd">      Display a list of tests</span>
+<span class="sd">   ./query_testlists --count</span>
+<span class="sd">      Count tests by category/machine/compiler</span>
+<span class="sd">   ./query_testlists --list {category,categories,machine,machines,compiler,compilers}</span>
+<span class="sd">      List the available options for --xml-category, --xml-machine, or --xml-compiler</span>
+
+<span class="sd">   All of the above support the various --xml-* arguments for subsetting which tests are included.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">CIME.Tools.standard_script_setup</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">CIME.test_utils</span> <span class="kn">import</span> <span class="n">get_tests_from_xml</span><span class="p">,</span> <span class="n">test_to_string</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.tests</span> <span class="kn">import</span> <span class="n">Tests</span>
+<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="n">expect</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="c1">###############################################################################</span>
+<div class="viewcode-block" id="parse_command_line"><a class="viewcode-back" href="../../../CIME_api/CIME.scripts.html#CIME.scripts.query_testlists.parse_command_line">[docs]</a><span class="k">def</span> <span class="nf">parse_command_line</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">description</span><span class="p">):</span>
+    <span class="c1">###############################################################################</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
+        <span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">,</span> <span class="n">formatter_class</span><span class="o">=</span><span class="n">argparse</span><span class="o">.</span><span class="n">RawTextHelpFormatter</span>
+    <span class="p">)</span>
+
+    <span class="n">CIME</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">setup_standard_logging_options</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--count&quot;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Rather than listing tests, just give counts by category/machine/compiler.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--list&quot;</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;list_type&quot;</span><span class="p">,</span>
+        <span class="n">choices</span><span class="o">=</span><span class="p">[</span>
+            <span class="s2">&quot;category&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;categories&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;machine&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;machines&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;compiler&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;compilers&quot;</span><span class="p">,</span>
+        <span class="p">],</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Rather than listing tests, list the available options for</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="s2">&quot;--xml-category, --xml-machine, or --xml-compiler.</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="s2">&quot;(The singular and plural forms are equivalent - so &#39;--list category&#39;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="s2">&quot;is equivalent to &#39;--list categories&#39;, etc.)&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--show-options&quot;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;For each test, also show options for that test</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="s2">&quot;(wallclock time, memory leak tolerance, etc.).</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="s2">&quot;(Has no effect with --list or --count options.)&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--define-testtypes&quot;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;At the top of the list of tests, define all of the possible test types.</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="s2">&quot;(Has no effect with --list or --count options.)&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--xml-category&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Only include tests in this category; default is all categories.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--xml-machine&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Only include tests for this machine; default is all machines.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--xml-compiler&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Only include tests for this compiler; default is all compilers.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--xml-testlist&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Path to testlist file from which tests are gathered;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="s2">&quot;default is all files specified in config_files.xml.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">args</span> <span class="o">=</span> <span class="n">CIME</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">parse_args_and_handle_standard_logging_options</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">parser</span><span class="p">)</span>
+
+    <span class="n">_check_argument_compatibility</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">list_type</span><span class="p">:</span>
+        <span class="n">_process_list_type</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">args</span></div>
+
+
+<span class="c1">###############################################################################</span>
+<span class="k">def</span> <span class="nf">_check_argument_compatibility</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+    <span class="c1">###############################################################################</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Ensures there are no incompatible arguments</span>
+
+<span class="sd">    If incompatible arguments are found, aborts with a helpful error</span>
+<span class="sd">    message.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">expect</span><span class="p">(</span>
+        <span class="ow">not</span> <span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">count</span> <span class="ow">and</span> <span class="n">args</span><span class="o">.</span><span class="n">list_type</span><span class="p">),</span>
+        <span class="s2">&quot;Cannot specify both --count and --list arguments.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">count</span><span class="p">:</span>
+        <span class="n">expect</span><span class="p">(</span><span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">show_options</span><span class="p">,</span> <span class="s2">&quot;--show-options is incompatible with --count&quot;</span><span class="p">)</span>
+        <span class="n">expect</span><span class="p">(</span>
+            <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">define_testtypes</span><span class="p">,</span> <span class="s2">&quot;--define-testtypes is incompatible with --count&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">list_type</span><span class="p">:</span>
+        <span class="n">expect</span><span class="p">(</span><span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">show_options</span><span class="p">,</span> <span class="s2">&quot;--show-options is incompatible with --list&quot;</span><span class="p">)</span>
+        <span class="n">expect</span><span class="p">(</span>
+            <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">define_testtypes</span><span class="p">,</span> <span class="s2">&quot;--define-testtypes is incompatible with --list&quot;</span>
+        <span class="p">)</span>
+
+
+<span class="c1">###############################################################################</span>
+<span class="k">def</span> <span class="nf">_process_list_type</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+    <span class="c1">###############################################################################</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert args.list_type into a name that matches one of the keys of the</span>
+<span class="sd">    test data dictionaries</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        args: object containing list_type string attribute</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">list_type</span> <span class="o">==</span> <span class="s2">&quot;categories&quot;</span><span class="p">:</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">list_type</span> <span class="o">=</span> <span class="s2">&quot;category&quot;</span>
+    <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">list_type</span> <span class="o">==</span> <span class="s2">&quot;machines&quot;</span><span class="p">:</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">list_type</span> <span class="o">=</span> <span class="s2">&quot;machine&quot;</span>
+    <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">list_type</span> <span class="o">==</span> <span class="s2">&quot;compilers&quot;</span><span class="p">:</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">list_type</span> <span class="o">=</span> <span class="s2">&quot;compiler&quot;</span>
+
+
+<span class="c1">###############################################################################</span>
+<div class="viewcode-block" id="print_test_data"><a class="viewcode-back" href="../../../CIME_api/CIME.scripts.html#CIME.scripts.query_testlists.print_test_data">[docs]</a><span class="k">def</span> <span class="nf">print_test_data</span><span class="p">(</span><span class="n">test_data</span><span class="p">,</span> <span class="n">show_options</span><span class="p">,</span> <span class="n">define_testtypes</span><span class="p">):</span>
+    <span class="c1">###############################################################################</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Args:</span>
+<span class="sd">        test_data (dict): dictionary of test data, containing at least these keys:</span>
+<span class="sd">            - name: full test name</span>
+<span class="sd">            - category: test category</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">define_testtypes</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;#&quot;</span> <span class="o">*</span> <span class="mi">72</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Test types&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;----------&quot;</span><span class="p">)</span>
+        <span class="n">test_definitions</span> <span class="o">=</span> <span class="n">Tests</span><span class="p">()</span>
+        <span class="n">test_definitions</span><span class="o">.</span><span class="n">print_values</span><span class="p">(</span><span class="n">skip_infrastructure_tests</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;#&quot;</span> <span class="o">*</span> <span class="mi">72</span><span class="p">)</span>
+
+    <span class="n">categories</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">([</span><span class="n">item</span><span class="p">[</span><span class="s2">&quot;category&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">test_data</span><span class="p">]))</span>
+    <span class="n">max_category_len</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">category</span><span class="p">)</span> <span class="k">for</span> <span class="n">category</span> <span class="ow">in</span> <span class="n">categories</span><span class="p">])</span>
+    <span class="n">max_test_len</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">])</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">test_data</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">category</span> <span class="ow">in</span> <span class="n">categories</span><span class="p">:</span>
+        <span class="n">test_subset</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">one_test</span> <span class="k">for</span> <span class="n">one_test</span> <span class="ow">in</span> <span class="n">test_data</span> <span class="k">if</span> <span class="n">one_test</span><span class="p">[</span><span class="s2">&quot;category&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">category</span>
+        <span class="p">]</span>
+        <span class="k">for</span> <span class="n">one_test</span> <span class="ow">in</span> <span class="n">test_subset</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="n">test_to_string</span><span class="p">(</span>
+                    <span class="n">test</span><span class="o">=</span><span class="n">one_test</span><span class="p">,</span>
+                    <span class="n">category_field_width</span><span class="o">=</span><span class="n">max_category_len</span><span class="p">,</span>
+                    <span class="n">test_field_width</span><span class="o">=</span><span class="n">max_test_len</span><span class="p">,</span>
+                    <span class="n">show_options</span><span class="o">=</span><span class="n">show_options</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span></div>
+
+
+<span class="c1">###############################################################################</span>
+<div class="viewcode-block" id="count_test_data"><a class="viewcode-back" href="../../../CIME_api/CIME.scripts.html#CIME.scripts.query_testlists.count_test_data">[docs]</a><span class="k">def</span> <span class="nf">count_test_data</span><span class="p">(</span><span class="n">test_data</span><span class="p">):</span>
+    <span class="c1">###############################################################################</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Args:</span>
+<span class="sd">        test_data (dict): dictionary of test data, containing at least these keys:</span>
+<span class="sd">            - name: full test name</span>
+<span class="sd">            - category: test category</span>
+<span class="sd">            - machine</span>
+<span class="sd">            - compiler</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">tab_stop</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="mi">4</span>
+
+    <span class="n">categories</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">([</span><span class="n">item</span><span class="p">[</span><span class="s2">&quot;category&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">test_data</span><span class="p">]))</span>
+    <span class="k">for</span> <span class="n">category</span> <span class="ow">in</span> <span class="n">categories</span><span class="p">:</span>
+        <span class="n">tests_this_category</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">one_test</span> <span class="k">for</span> <span class="n">one_test</span> <span class="ow">in</span> <span class="n">test_data</span> <span class="k">if</span> <span class="n">one_test</span><span class="p">[</span><span class="s2">&quot;category&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">category</span>
+        <span class="p">]</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">category</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">tests_this_category</span><span class="p">)))</span>
+
+        <span class="n">machines</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">([</span><span class="n">item</span><span class="p">[</span><span class="s2">&quot;machine&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">tests_this_category</span><span class="p">]))</span>
+        <span class="k">for</span> <span class="n">machine</span> <span class="ow">in</span> <span class="n">machines</span><span class="p">:</span>
+            <span class="n">tests_this_machine</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">one_test</span>
+                <span class="k">for</span> <span class="n">one_test</span> <span class="ow">in</span> <span class="n">tests_this_category</span>
+                <span class="k">if</span> <span class="n">one_test</span><span class="p">[</span><span class="s2">&quot;machine&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">machine</span>
+            <span class="p">]</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s%s</span><span class="s2">: </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">tab_stop</span><span class="p">,</span> <span class="n">machine</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">tests_this_machine</span><span class="p">)))</span>
+
+            <span class="n">compilers</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">([</span><span class="n">item</span><span class="p">[</span><span class="s2">&quot;compiler&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">tests_this_machine</span><span class="p">]))</span>
+            <span class="k">for</span> <span class="n">compiler</span> <span class="ow">in</span> <span class="n">compilers</span><span class="p">:</span>
+                <span class="n">tests_this_compiler</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">one_test</span>
+                    <span class="k">for</span> <span class="n">one_test</span> <span class="ow">in</span> <span class="n">tests_this_machine</span>
+                    <span class="k">if</span> <span class="n">one_test</span><span class="p">[</span><span class="s2">&quot;compiler&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">compiler</span>
+                <span class="p">]</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s%s</span><span class="s2">: </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">tab_stop</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">tests_this_compiler</span><span class="p">)))</span></div>
+
+
+<span class="c1">###############################################################################</span>
+<div class="viewcode-block" id="list_test_data"><a class="viewcode-back" href="../../../CIME_api/CIME.scripts.html#CIME.scripts.query_testlists.list_test_data">[docs]</a><span class="k">def</span> <span class="nf">list_test_data</span><span class="p">(</span><span class="n">test_data</span><span class="p">,</span> <span class="n">list_type</span><span class="p">):</span>
+    <span class="c1">###############################################################################</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;List categories, machines or compilers</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        test_data (dict): dictionary of test data, containing at least these keys:</span>
+<span class="sd">            - category</span>
+<span class="sd">            - machine</span>
+<span class="sd">            - compiler</span>
+<span class="sd">        list_type (str): one of &#39;category&#39;, &#39;machine&#39; or &#39;compiler&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">items</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">([</span><span class="n">one_test</span><span class="p">[</span><span class="n">list_type</span><span class="p">]</span> <span class="k">for</span> <span class="n">one_test</span> <span class="ow">in</span> <span class="n">test_data</span><span class="p">]))</span>
+    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">item</span><span class="p">)</span></div>
+
+
+<span class="c1">###############################################################################</span>
+<span class="k">def</span> <span class="nf">_main_func</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="c1">###############################################################################</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parse_command_line</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">,</span> <span class="n">description</span><span class="p">)</span>
+
+    <span class="n">test_data</span> <span class="o">=</span> <span class="n">get_tests_from_xml</span><span class="p">(</span>
+        <span class="n">xml_machine</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">xml_machine</span><span class="p">,</span>
+        <span class="n">xml_category</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">xml_category</span><span class="p">,</span>
+        <span class="n">xml_compiler</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">xml_compiler</span><span class="p">,</span>
+        <span class="n">xml_testlist</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">xml_testlist</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">expect</span><span class="p">(</span>
+        <span class="n">test_data</span><span class="p">,</span>
+        <span class="s2">&quot;No tests found with the following options (where &#39;None&#39; means no subsetting on that attribute):</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="s2">&quot;</span><span class="se">\t</span><span class="s2">Machine = </span><span class="si">%s</span><span class="se">\n\t</span><span class="s2">Category = </span><span class="si">%s</span><span class="se">\n\t</span><span class="s2">Compiler = </span><span class="si">%s</span><span class="se">\n\t</span><span class="s2">Testlist = </span><span class="si">%s</span><span class="s2">&quot;</span>
+        <span class="o">%</span> <span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">xml_machine</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">xml_category</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">xml_compiler</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">xml_testlist</span><span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">count</span><span class="p">:</span>
+        <span class="n">count_test_data</span><span class="p">(</span><span class="n">test_data</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">list_type</span><span class="p">:</span>
+        <span class="n">list_test_data</span><span class="p">(</span><span class="n">test_data</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">list_type</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">print_test_data</span><span class="p">(</span><span class="n">test_data</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">show_options</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">define_testtypes</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">_main_func</span><span class="p">(</span><span class="vm">__doc__</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
+     
+<script>var version_json_loc = "../../../../../versions.json";</script>
+
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

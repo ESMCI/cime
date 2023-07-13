@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CIME.tests.test_unit_two_link_to_case2_output &mdash; CIME master documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/pop_ver.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            CIME
+          </a>
+              <div class="version">
+                master
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../what_cime/index.html">What is CIME?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../users_guide/index.html">Case Control System Part 1: Basic Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../users_guide/index.html#case-control-system-part-2-configuration-porting-testing-and-use-cases">Case Control System Part 2: Configuration, Porting, Testing and Use Cases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../build_cpl/index.html">Building a Coupled Model with CIME</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../misc_tools/index.html">Miscellaneous Tools</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../glossary/index.html">Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Tools_user/index.html">User Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../xml_files/index.html">XML Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../CIME_api/modules.html">CIME</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Tools_api/modules.html">Tools</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">CIME</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">CIME.tests.test_unit_two_link_to_case2_output</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for CIME.tests.test_unit_two_link_to_case2_output</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module contains unit tests of the method</span>
+<span class="sd">SystemTestsCompareTwo._link_to_case2_output</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># Ignore privacy concerns for unit tests, so that unit tests can access</span>
+<span class="c1"># protected members of the system under test</span>
+<span class="c1">#</span>
+<span class="c1"># pylint:disable=protected-access</span>
+
+<span class="kn">import</span> <span class="nn">unittest</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">tempfile</span>
+<span class="kn">from</span> <span class="nn">CIME.SystemTests.system_tests_compare_two</span> <span class="kn">import</span> <span class="n">SystemTestsCompareTwo</span>
+<span class="kn">from</span> <span class="nn">CIME.tests.case_fake</span> <span class="kn">import</span> <span class="n">CaseFake</span>
+
+<span class="c1"># ========================================================================</span>
+<span class="c1"># Fake version of SystemTestsCompareTwo that overrides some functionality for</span>
+<span class="c1"># the sake of unit testing</span>
+<span class="c1"># ========================================================================</span>
+
+
+<div class="viewcode-block" id="SystemTestsCompareTwoFake"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_two_link_to_case2_output.SystemTestsCompareTwoFake">[docs]</a><span class="k">class</span> <span class="nc">SystemTestsCompareTwoFake</span><span class="p">(</span><span class="n">SystemTestsCompareTwo</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case1</span><span class="p">,</span> <span class="n">run_two_suffix</span><span class="o">=</span><span class="s2">&quot;test&quot;</span><span class="p">):</span>
+
+        <span class="n">SystemTestsCompareTwo</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">case1</span><span class="p">,</span> <span class="n">separate_builds</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">run_two_suffix</span><span class="o">=</span><span class="n">run_two_suffix</span>
+        <span class="p">)</span>
+
+    <span class="c1"># ------------------------------------------------------------------------</span>
+    <span class="c1"># Stubs of methods called by SystemTestsCommon.__init__ that interact with</span>
+    <span class="c1"># the system or case object in ways we want to avoid here</span>
+    <span class="c1"># ------------------------------------------------------------------------</span>
+
+    <span class="k">def</span> <span class="nf">_init_environment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caseroot</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">_init_locked_files</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caseroot</span><span class="p">,</span> <span class="n">expected</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">_init_case_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="c1"># ------------------------------------------------------------------------</span>
+    <span class="c1"># Stubs of methods that are typically provided by the individual test</span>
+    <span class="c1"># ------------------------------------------------------------------------</span>
+
+    <span class="k">def</span> <span class="nf">_case_one_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">_case_two_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+
+<span class="c1"># ========================================================================</span>
+<span class="c1"># Test class itself</span>
+<span class="c1"># ========================================================================</span>
+
+
+<div class="viewcode-block" id="TestLinkToCase2Output"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_two_link_to_case2_output.TestLinkToCase2Output">[docs]</a><span class="k">class</span> <span class="nc">TestLinkToCase2Output</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+
+    <span class="c1"># ========================================================================</span>
+    <span class="c1"># Test helper functions</span>
+    <span class="c1"># ========================================================================</span>
+
+<div class="viewcode-block" id="TestLinkToCase2Output.setUp"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_two_link_to_case2_output.TestLinkToCase2Output.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">original_wd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+        <span class="c1"># Create a sandbox in which case directories can be created</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tempdir</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="TestLinkToCase2Output.tearDown"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_two_link_to_case2_output.TestLinkToCase2Output.tearDown">[docs]</a>    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Some tests trigger a chdir call in the SUT; make sure we return to the</span>
+        <span class="c1"># original directory at the end of the test</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">original_wd</span><span class="p">)</span>
+
+        <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tempdir</span><span class="p">,</span> <span class="n">ignore_errors</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestLinkToCase2Output.setup_test_and_directories"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_two_link_to_case2_output.TestLinkToCase2Output.setup_test_and_directories">[docs]</a>    <span class="k">def</span> <span class="nf">setup_test_and_directories</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">casename1</span><span class="p">,</span> <span class="n">run2_suffix</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns test object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">case1root</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tempdir</span><span class="p">,</span> <span class="n">casename1</span><span class="p">)</span>
+        <span class="n">case1</span> <span class="o">=</span> <span class="n">CaseFake</span><span class="p">(</span><span class="n">case1root</span><span class="p">)</span>
+        <span class="n">mytest</span> <span class="o">=</span> <span class="n">SystemTestsCompareTwoFake</span><span class="p">(</span><span class="n">case1</span><span class="p">,</span> <span class="n">run_two_suffix</span><span class="o">=</span><span class="n">run2_suffix</span><span class="p">)</span>
+        <span class="n">mytest</span><span class="o">.</span><span class="n">_case1</span><span class="o">.</span><span class="n">make_rundir</span><span class="p">()</span>  <span class="c1"># pylint: disable=maybe-no-member</span>
+        <span class="n">mytest</span><span class="o">.</span><span class="n">_case2</span><span class="o">.</span><span class="n">make_rundir</span><span class="p">()</span>  <span class="c1"># pylint: disable=maybe-no-member</span>
+
+        <span class="k">return</span> <span class="n">mytest</span></div>
+
+<div class="viewcode-block" id="TestLinkToCase2Output.create_file_in_rundir2"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_two_link_to_case2_output.TestLinkToCase2Output.create_file_in_rundir2">[docs]</a>    <span class="k">def</span> <span class="nf">create_file_in_rundir2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mytest</span><span class="p">,</span> <span class="n">core_filename</span><span class="p">,</span> <span class="n">run2_suffix</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a file in rundir2 named CASE2.CORE_FILENAME.nc.RUN2_SUFFIX</span>
+<span class="sd">        (where CASE2 is the casename of case2)</span>
+
+<span class="sd">        Returns full path to the file created</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">.</span><span class="si">{}</span><span class="s2">.nc.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">mytest</span><span class="o">.</span><span class="n">_case2</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASE&quot;</span><span class="p">),</span> <span class="n">core_filename</span><span class="p">,</span> <span class="n">run2_suffix</span>
+        <span class="p">)</span>
+        <span class="n">filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">mytest</span><span class="o">.</span><span class="n">_case2</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">),</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">filepath</span></div>
+
+    <span class="c1"># ========================================================================</span>
+    <span class="c1"># Begin actual tests</span>
+    <span class="c1"># ========================================================================</span>
+
+<div class="viewcode-block" id="TestLinkToCase2Output.test_basic"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_two_link_to_case2_output.TestLinkToCase2Output.test_basic">[docs]</a>    <span class="k">def</span> <span class="nf">test_basic</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Setup</span>
+        <span class="n">casename1</span> <span class="o">=</span> <span class="s2">&quot;mytest&quot;</span>
+        <span class="n">run2_suffix</span> <span class="o">=</span> <span class="s2">&quot;run2&quot;</span>
+
+        <span class="n">mytest</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">setup_test_and_directories</span><span class="p">(</span><span class="n">casename1</span><span class="p">,</span> <span class="n">run2_suffix</span><span class="p">)</span>
+        <span class="n">filepath1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_file_in_rundir2</span><span class="p">(</span><span class="n">mytest</span><span class="p">,</span> <span class="s2">&quot;clm2.h0&quot;</span><span class="p">,</span> <span class="n">run2_suffix</span><span class="p">)</span>
+        <span class="n">filepath2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_file_in_rundir2</span><span class="p">(</span><span class="n">mytest</span><span class="p">,</span> <span class="s2">&quot;clm2.h1&quot;</span><span class="p">,</span> <span class="n">run2_suffix</span><span class="p">)</span>
+
+        <span class="c1"># Exercise</span>
+        <span class="n">mytest</span><span class="o">.</span><span class="n">_link_to_case2_output</span><span class="p">()</span>
+
+        <span class="c1"># Verify</span>
+        <span class="n">expected_link_filename1</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">.clm2.h0.nc.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">casename1</span><span class="p">,</span> <span class="n">run2_suffix</span><span class="p">)</span>
+        <span class="n">expected_link_filepath1</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="n">mytest</span><span class="o">.</span><span class="n">_case1</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">),</span> <span class="n">expected_link_filename1</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">islink</span><span class="p">(</span><span class="n">expected_link_filepath1</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">filepath1</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">readlink</span><span class="p">(</span><span class="n">expected_link_filepath1</span><span class="p">))</span>
+
+        <span class="n">expected_link_filename2</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">.clm2.h1.nc.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">casename1</span><span class="p">,</span> <span class="n">run2_suffix</span><span class="p">)</span>
+        <span class="n">expected_link_filepath2</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="n">mytest</span><span class="o">.</span><span class="n">_case1</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">),</span> <span class="n">expected_link_filename2</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">islink</span><span class="p">(</span><span class="n">expected_link_filepath2</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">filepath2</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">readlink</span><span class="p">(</span><span class="n">expected_link_filepath2</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="TestLinkToCase2Output.test_existing_link"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_two_link_to_case2_output.TestLinkToCase2Output.test_existing_link">[docs]</a>    <span class="k">def</span> <span class="nf">test_existing_link</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Setup</span>
+        <span class="n">casename1</span> <span class="o">=</span> <span class="s2">&quot;mytest&quot;</span>
+        <span class="n">run2_suffix</span> <span class="o">=</span> <span class="s2">&quot;run2&quot;</span>
+
+        <span class="n">mytest</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">setup_test_and_directories</span><span class="p">(</span><span class="n">casename1</span><span class="p">,</span> <span class="n">run2_suffix</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">create_file_in_rundir2</span><span class="p">(</span><span class="n">mytest</span><span class="p">,</span> <span class="s2">&quot;clm2.h0&quot;</span><span class="p">,</span> <span class="n">run2_suffix</span><span class="p">)</span>
+
+        <span class="c1"># Create initial link via a call to _link_to_case2_output</span>
+        <span class="n">mytest</span><span class="o">.</span><span class="n">_link_to_case2_output</span><span class="p">()</span>
+
+        <span class="c1"># Exercise</span>
+        <span class="c1"># See what happens when we try to recreate that link</span>
+        <span class="n">mytest</span><span class="o">.</span><span class="n">_link_to_case2_output</span><span class="p">()</span></div></div>
+
+        <span class="c1"># (No verification: Test passes if no exception was raised)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">unittest</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
+     
+<script>var version_json_loc = "../../../../../versions.json";</script>
+
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
