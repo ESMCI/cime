@@ -4,10 +4,14 @@ on:
   push:
     branches:
       - master
+    paths:
+      - 'CIME/**'
 
   pull_request:
     branches:
       - master
+    paths:
+      - 'CIME/**'
 
 concurrency:
   group: ${{ github.ref }}
