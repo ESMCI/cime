@@ -1,0 +1,14 @@
+
+.. _normalize_cases:
+
+####################################################
+normalize_cases
+####################################################
+
+**normalize_cases** is a script in CIMEROOT/CIME/Tools.
+
+.. toctree::
+   :maxdepth: 1
+
+.. command-output:: ./normalize_cases --help
+   :cwd: ../../../CIME/Tools

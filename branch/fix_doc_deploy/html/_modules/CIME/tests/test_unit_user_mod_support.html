@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CIME.tests.test_unit_user_mod_support &mdash; CIME master documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/pop_ver.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            CIME
+          </a>
+              <div class="version">
+                master
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../what_cime/index.html">What is CIME?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../users_guide/index.html">Case Control System Part 1: Basic Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../users_guide/index.html#case-control-system-part-2-configuration-porting-testing-and-use-cases">Case Control System Part 2: Configuration, Porting, Testing and Use Cases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../build_cpl/index.html">Building a Coupled Model with CIME</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../misc_tools/index.html">Miscellaneous Tools</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../glossary/index.html">Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Tools_user/index.html">User Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../xml_files/index.html">XML Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../CIME_api/modules.html">CIME</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Tools_api/modules.html">Tools</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">CIME</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">CIME.tests.test_unit_user_mod_support</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for CIME.tests.test_unit_user_mod_support</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+
+<span class="kn">import</span> <span class="nn">unittest</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">tempfile</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">CIME.user_mod_support</span> <span class="kn">import</span> <span class="n">apply_user_mods</span>
+<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="n">CIMEError</span>
+
+<span class="c1"># ========================================================================</span>
+<span class="c1"># Define some parameters</span>
+<span class="c1"># ========================================================================</span>
+
+<span class="n">_SOURCEMODS</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;SourceMods&quot;</span><span class="p">,</span> <span class="s2">&quot;src.drv&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="TestUserModSupport"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_user_mod_support.TestUserModSupport">[docs]</a><span class="k">class</span> <span class="nc">TestUserModSupport</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+
+    <span class="c1"># ========================================================================</span>
+    <span class="c1"># Test helper functions</span>
+    <span class="c1"># ========================================================================</span>
+
+<div class="viewcode-block" id="TestUserModSupport.setUp"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_user_mod_support.TestUserModSupport.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_caseroot</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_caseroot_sourcemods</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_caseroot</span><span class="p">,</span> <span class="n">_SOURCEMODS</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_caseroot_sourcemods</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_user_mods_parent_dir</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="TestUserModSupport.tearDown"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_user_mod_support.TestUserModSupport.tearDown">[docs]</a>    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_caseroot</span><span class="p">,</span> <span class="n">ignore_errors</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_user_mods_parent_dir</span><span class="p">,</span> <span class="n">ignore_errors</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestUserModSupport.createUserMod"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_user_mod_support.TestUserModSupport.createUserMod">[docs]</a>    <span class="k">def</span> <span class="nf">createUserMod</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">include_dirs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a user_mods directory with the given name.</span>
+
+<span class="sd">        This directory is created within self._user_mods_parent_dir</span>
+
+<span class="sd">        For name=&#39;foo&#39;, it will contain:</span>
+
+<span class="sd">        - A user_nl_cpl file with contents:</span>
+<span class="sd">          foo</span>
+
+<span class="sd">        - A shell_commands file with contents:</span>
+<span class="sd">          echo foo &gt;&gt; /PATH/TO/CASEROOT/shell_commands_result</span>
+
+<span class="sd">        - A file in _SOURCEMODS named myfile.F90 with contents:</span>
+<span class="sd">          foo</span>
+
+<span class="sd">        If include_dirs is given, it should be a list of strings, giving names</span>
+<span class="sd">        of other user_mods directories to include. e.g., if include_dirs is</span>
+<span class="sd">        [&#39;foo1&#39;, &#39;foo2&#39;], then this will create a file &#39;include_user_mods&#39; that</span>
+<span class="sd">        contains paths to the &#39;foo1&#39; and &#39;foo2&#39; user_mods directories, one per</span>
+<span class="sd">        line.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">mod_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_user_mods_parent_dir</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">mod_dir</span><span class="p">)</span>
+        <span class="n">mod_dir_sourcemods</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">mod_dir</span><span class="p">,</span> <span class="n">_SOURCEMODS</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">mod_dir_sourcemods</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">mod_dir</span><span class="p">,</span> <span class="s2">&quot;user_nl_cpl&quot;</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">user_nl_cpl</span><span class="p">:</span>
+            <span class="n">user_nl_cpl</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">mod_dir</span><span class="p">,</span> <span class="s2">&quot;shell_commands&quot;</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">shell_commands</span><span class="p">:</span>
+            <span class="n">command</span> <span class="o">=</span> <span class="s2">&quot;echo </span><span class="si">{}</span><span class="s2"> &gt;&gt; </span><span class="si">{}</span><span class="s2">/shell_commands_result</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_caseroot</span>
+            <span class="p">)</span>
+            <span class="n">shell_commands</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">mod_dir_sourcemods</span><span class="p">,</span> <span class="s2">&quot;myfile.F90&quot;</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f90_file</span><span class="p">:</span>
+            <span class="n">f90_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">include_dirs</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">mod_dir</span><span class="p">,</span> <span class="s2">&quot;include_user_mods&quot;</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span>
+            <span class="p">)</span> <span class="k">as</span> <span class="n">include_user_mods</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">one_include</span> <span class="ow">in</span> <span class="n">include_dirs</span><span class="p">:</span>
+                    <span class="n">include_user_mods</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
+                        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_user_mods_parent_dir</span><span class="p">,</span> <span class="n">one_include</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestUserModSupport.assertResults"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_user_mod_support.TestUserModSupport.assertResults">[docs]</a>    <span class="k">def</span> <span class="nf">assertResults</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">expected_user_nl_cpl</span><span class="p">,</span>
+        <span class="n">expected_shell_commands_result</span><span class="p">,</span>
+        <span class="n">expected_sourcemod</span><span class="p">,</span>
+        <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Asserts that the contents of the files in self._caseroot match expectations</span>
+
+<span class="sd">        If msg is provided, it is printed for some failing assertions</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">path_to_user_nl_cpl</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_caseroot</span><span class="p">,</span> <span class="s2">&quot;user_nl_cpl&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">path_to_user_nl_cpl</span><span class="p">),</span>
+            <span class="n">msg</span><span class="o">=</span><span class="n">msg</span> <span class="o">+</span> <span class="s2">&quot;: user_nl_cpl does not exist&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path_to_user_nl_cpl</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">user_nl_cpl</span><span class="p">:</span>
+            <span class="n">contents</span> <span class="o">=</span> <span class="n">user_nl_cpl</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">expected_user_nl_cpl</span><span class="p">,</span> <span class="n">contents</span><span class="p">)</span>
+
+        <span class="n">path_to_shell_commands_result</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_caseroot</span><span class="p">,</span> <span class="s2">&quot;shell_commands_result&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">path_to_shell_commands_result</span><span class="p">),</span>
+            <span class="n">msg</span><span class="o">=</span><span class="n">msg</span> <span class="o">+</span> <span class="s2">&quot;: shell_commands_result does not exist&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path_to_shell_commands_result</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">shell_commands_result</span><span class="p">:</span>
+            <span class="n">contents</span> <span class="o">=</span> <span class="n">shell_commands_result</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">expected_shell_commands_result</span><span class="p">,</span> <span class="n">contents</span><span class="p">)</span>
+
+        <span class="n">path_to_sourcemod</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_caseroot_sourcemods</span><span class="p">,</span> <span class="s2">&quot;myfile.F90&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">path_to_sourcemod</span><span class="p">),</span>
+            <span class="n">msg</span><span class="o">=</span><span class="n">msg</span> <span class="o">+</span> <span class="s2">&quot;: sourcemod file does not exist&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path_to_sourcemod</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">sourcemod</span><span class="p">:</span>
+            <span class="n">contents</span> <span class="o">=</span> <span class="n">sourcemod</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">expected_sourcemod</span><span class="p">,</span> <span class="n">contents</span><span class="p">)</span></div>
+
+    <span class="c1"># ========================================================================</span>
+    <span class="c1"># Begin actual tests</span>
+    <span class="c1"># ========================================================================</span>
+
+<div class="viewcode-block" id="TestUserModSupport.test_basic"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_user_mod_support.TestUserModSupport.test_basic">[docs]</a>    <span class="k">def</span> <span class="nf">test_basic</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">createUserMod</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">)</span>
+        <span class="n">apply_user_mods</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_caseroot</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_user_mods_parent_dir</span><span class="p">,</span> <span class="s2">&quot;foo&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertResults</span><span class="p">(</span>
+            <span class="n">expected_user_nl_cpl</span><span class="o">=</span><span class="s2">&quot;foo</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">expected_shell_commands_result</span><span class="o">=</span><span class="s2">&quot;foo</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">expected_sourcemod</span><span class="o">=</span><span class="s2">&quot;foo</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;test_basic&quot;</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestUserModSupport.test_keepexe"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_user_mod_support.TestUserModSupport.test_keepexe">[docs]</a>    <span class="k">def</span> <span class="nf">test_keepexe</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">createUserMod</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaisesRegex</span><span class="p">(</span><span class="n">CIMEError</span><span class="p">,</span> <span class="s2">&quot;cannot have any source mods&quot;</span><span class="p">):</span>
+            <span class="n">apply_user_mods</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_caseroot</span><span class="p">,</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_user_mods_parent_dir</span><span class="p">,</span> <span class="s2">&quot;foo&quot;</span><span class="p">),</span>
+                <span class="n">keepexe</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestUserModSupport.test_two_applications"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_user_mod_support.TestUserModSupport.test_two_applications">[docs]</a>    <span class="k">def</span> <span class="nf">test_two_applications</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;If apply_user_mods is called twice, the second should appear after the first so that it takes precedence.&quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">createUserMod</span><span class="p">(</span><span class="s2">&quot;foo1&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">createUserMod</span><span class="p">(</span><span class="s2">&quot;foo2&quot;</span><span class="p">)</span>
+        <span class="n">apply_user_mods</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_caseroot</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_user_mods_parent_dir</span><span class="p">,</span> <span class="s2">&quot;foo1&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">apply_user_mods</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_caseroot</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_user_mods_parent_dir</span><span class="p">,</span> <span class="s2">&quot;foo2&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertResults</span><span class="p">(</span>
+            <span class="n">expected_user_nl_cpl</span><span class="o">=</span><span class="s2">&quot;foo1</span><span class="se">\n</span><span class="s2">foo2</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">expected_shell_commands_result</span><span class="o">=</span><span class="s2">&quot;foo1</span><span class="se">\n</span><span class="s2">foo2</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">expected_sourcemod</span><span class="o">=</span><span class="s2">&quot;foo2</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;test_two_applications&quot;</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestUserModSupport.test_include"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_user_mod_support.TestUserModSupport.test_include">[docs]</a>    <span class="k">def</span> <span class="nf">test_include</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;If there is an included mod, the main one should appear after the included one so that it takes precedence.&quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">createUserMod</span><span class="p">(</span><span class="s2">&quot;base&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">createUserMod</span><span class="p">(</span><span class="s2">&quot;derived&quot;</span><span class="p">,</span> <span class="n">include_dirs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;base&quot;</span><span class="p">])</span>
+
+        <span class="n">apply_user_mods</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_caseroot</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_user_mods_parent_dir</span><span class="p">,</span> <span class="s2">&quot;derived&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertResults</span><span class="p">(</span>
+            <span class="n">expected_user_nl_cpl</span><span class="o">=</span><span class="s2">&quot;base</span><span class="se">\n</span><span class="s2">derived</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">expected_shell_commands_result</span><span class="o">=</span><span class="s2">&quot;base</span><span class="se">\n</span><span class="s2">derived</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">expected_sourcemod</span><span class="o">=</span><span class="s2">&quot;derived</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;test_include&quot;</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestUserModSupport.test_duplicate_includes"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_user_mod_support.TestUserModSupport.test_duplicate_includes">[docs]</a>    <span class="k">def</span> <span class="nf">test_duplicate_includes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Test multiple includes, where both include the same base mod.</span>
+
+<span class="sd">        The base mod should only be included once.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">createUserMod</span><span class="p">(</span><span class="s2">&quot;base&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">createUserMod</span><span class="p">(</span><span class="s2">&quot;derived1&quot;</span><span class="p">,</span> <span class="n">include_dirs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;base&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">createUserMod</span><span class="p">(</span><span class="s2">&quot;derived2&quot;</span><span class="p">,</span> <span class="n">include_dirs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;base&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">createUserMod</span><span class="p">(</span><span class="s2">&quot;derived_combo&quot;</span><span class="p">,</span> <span class="n">include_dirs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;derived1&quot;</span><span class="p">,</span> <span class="s2">&quot;derived2&quot;</span><span class="p">])</span>
+
+        <span class="n">apply_user_mods</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_caseroot</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_user_mods_parent_dir</span><span class="p">,</span> <span class="s2">&quot;derived_combo&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="c1"># NOTE(wjs, 2017-04-15) The ordering of derived1 vs. derived2 is not</span>
+        <span class="c1"># critical here: If this aspect of the behavior changes, the</span>
+        <span class="c1"># expected_contents can be changed to match the new behavior in this</span>
+        <span class="c1"># respect.</span>
+        <span class="n">expected_contents</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;base</span>
+<span class="s2">derived2</span>
+<span class="s2">derived1</span>
+<span class="s2">derived_combo</span>
+<span class="s2">&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertResults</span><span class="p">(</span>
+            <span class="n">expected_user_nl_cpl</span><span class="o">=</span><span class="n">expected_contents</span><span class="p">,</span>
+            <span class="n">expected_shell_commands_result</span><span class="o">=</span><span class="n">expected_contents</span><span class="p">,</span>
+            <span class="n">expected_sourcemod</span><span class="o">=</span><span class="s2">&quot;derived_combo</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;test_duplicate_includes&quot;</span><span class="p">,</span>
+        <span class="p">)</span></div></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">unittest</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
+     
+<script>var version_json_loc = "../../../../../versions.json";</script>
+
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

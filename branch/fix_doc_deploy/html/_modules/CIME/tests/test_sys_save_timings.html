@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CIME.tests.test_sys_save_timings &mdash; CIME master documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/pop_ver.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            CIME
+          </a>
+              <div class="version">
+                master
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../what_cime/index.html">What is CIME?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../users_guide/index.html">Case Control System Part 1: Basic Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../users_guide/index.html#case-control-system-part-2-configuration-porting-testing-and-use-cases">Case Control System Part 2: Configuration, Porting, Testing and Use Cases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../build_cpl/index.html">Building a Coupled Model with CIME</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../misc_tools/index.html">Miscellaneous Tools</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../glossary/index.html">Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Tools_user/index.html">User Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../xml_files/index.html">XML Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../CIME_api/modules.html">CIME</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Tools_api/modules.html">Tools</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">CIME</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">CIME.tests.test_sys_save_timings</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for CIME.tests.test_sys_save_timings</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+
+<span class="kn">import</span> <span class="nn">getpass</span>
+<span class="kn">import</span> <span class="nn">glob</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">from</span> <span class="nn">CIME</span> <span class="kn">import</span> <span class="n">provenance</span>
+<span class="kn">from</span> <span class="nn">CIME</span> <span class="kn">import</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">CIME.tests</span> <span class="kn">import</span> <span class="n">base</span>
+<span class="kn">from</span> <span class="nn">CIME.case.case</span> <span class="kn">import</span> <span class="n">Case</span>
+
+
+<div class="viewcode-block" id="TestSaveTimings"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_save_timings.TestSaveTimings">[docs]</a><span class="k">class</span> <span class="nc">TestSaveTimings</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">BaseTestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestSaveTimings.simple_test"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_save_timings.TestSaveTimings.simple_test">[docs]</a>    <span class="k">def</span> <span class="nf">simple_test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">manual_timing</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">NO_FORTRAN_RUN</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">skipTest</span><span class="p">(</span><span class="s2">&quot;Skipping fortran test&quot;</span><span class="p">)</span>
+        <span class="n">timing_flag</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="n">manual_timing</span> <span class="k">else</span> <span class="s2">&quot;--save-timing&quot;</span>
+        <span class="n">driver</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_cime_default_driver</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">driver</span> <span class="o">==</span> <span class="s2">&quot;mct&quot;</span><span class="p">:</span>
+            <span class="n">walltime</span> <span class="o">=</span> <span class="s2">&quot;00:15:00&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">walltime</span> <span class="o">=</span> <span class="s2">&quot;00:30:00&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_create_test</span><span class="p">(</span>
+            <span class="p">[</span><span class="s2">&quot;SMS_Ln9_P1.f19_g16_rx1.A&quot;</span><span class="p">,</span> <span class="n">timing_flag</span><span class="p">,</span> <span class="s2">&quot;--walltime=&quot;</span> <span class="o">+</span> <span class="n">walltime</span><span class="p">],</span>
+            <span class="n">test_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_baseline_name</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">statuses</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span>
+            <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/*</span><span class="si">%s</span><span class="s2">/TestStatus&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_testroot</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_baseline_name</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="nb">len</span><span class="p">(</span><span class="n">statuses</span><span class="p">),</span>
+            <span class="mi">1</span><span class="p">,</span>
+            <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Should have had exactly one match, found </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">statuses</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">casedir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">statuses</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="k">with</span> <span class="n">Case</span><span class="p">(</span><span class="n">casedir</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">as</span> <span class="n">case</span><span class="p">:</span>
+            <span class="n">lids</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_lids</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
+            <span class="n">timing_dir</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;SAVE_TIMING_DIR&quot;</span><span class="p">)</span>
+            <span class="n">casename</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASE&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">lids</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Expected one LID, found </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">lids</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">manual_timing</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">run_cmd_assert_result</span><span class="p">(</span>
+                <span class="s2">&quot;cd </span><span class="si">%s</span><span class="s2"> &amp;&amp; </span><span class="si">%s</span><span class="s2">/save_provenance postrun&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">casedir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">TOOLS_DIR</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">test_mode</span> <span class="o">==</span> <span class="s2">&quot;e3sm&quot;</span><span class="p">:</span>
+            <span class="n">provenance_glob</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="n">timing_dir</span><span class="p">,</span>
+                <span class="s2">&quot;performance_archive&quot;</span><span class="p">,</span>
+                <span class="n">getpass</span><span class="o">.</span><span class="n">getuser</span><span class="p">(),</span>
+                <span class="n">casename</span><span class="p">,</span>
+                <span class="n">lids</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;*&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">provenance_dirs</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">provenance_glob</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+                <span class="nb">len</span><span class="p">(</span><span class="n">provenance_dirs</span><span class="p">),</span>
+                <span class="mi">1</span><span class="p">,</span>
+                <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;wrong number of provenance dirs, expected 1, got </span><span class="si">{}</span><span class="s2">, looked for </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">provenance_dirs</span><span class="p">,</span> <span class="n">provenance_glob</span>
+                <span class="p">),</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">verify_perms</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">provenance_dirs</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="TestSaveTimings.test_save_timings"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_save_timings.TestSaveTimings.test_save_timings">[docs]</a>    <span class="k">def</span> <span class="nf">test_save_timings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">simple_test</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="TestSaveTimings.test_save_timings_manual"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_save_timings.TestSaveTimings.test_save_timings_manual">[docs]</a>    <span class="k">def</span> <span class="nf">test_save_timings_manual</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">simple_test</span><span class="p">(</span><span class="n">manual_timing</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_record_success</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">test_name</span><span class="p">,</span>
+        <span class="n">test_success</span><span class="p">,</span>
+        <span class="n">commit</span><span class="p">,</span>
+        <span class="n">exp_last_pass</span><span class="p">,</span>
+        <span class="n">exp_trans_fail</span><span class="p">,</span>
+        <span class="n">baseline_dir</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="n">provenance</span><span class="o">.</span><span class="n">save_test_success</span><span class="p">(</span>
+            <span class="n">baseline_dir</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">test_name</span><span class="p">,</span> <span class="n">test_success</span><span class="p">,</span> <span class="n">force_commit_test</span><span class="o">=</span><span class="n">commit</span>
+        <span class="p">)</span>
+        <span class="n">was_success</span><span class="p">,</span> <span class="n">last_pass</span><span class="p">,</span> <span class="n">trans_fail</span> <span class="o">=</span> <span class="n">provenance</span><span class="o">.</span><span class="n">get_test_success</span><span class="p">(</span>
+            <span class="n">baseline_dir</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">test_name</span><span class="p">,</span> <span class="n">testing</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="n">test_success</span><span class="p">,</span>
+            <span class="n">was_success</span><span class="p">,</span>
+            <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Broken was_success </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">test_name</span><span class="p">,</span> <span class="n">commit</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="n">last_pass</span><span class="p">,</span>
+            <span class="n">exp_last_pass</span><span class="p">,</span>
+            <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Broken last_pass </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">test_name</span><span class="p">,</span> <span class="n">commit</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="n">trans_fail</span><span class="p">,</span>
+            <span class="n">exp_trans_fail</span><span class="p">,</span>
+            <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Broken trans_fail </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">test_name</span><span class="p">,</span> <span class="n">commit</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">test_success</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">exp_last_pass</span><span class="p">,</span> <span class="n">commit</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Should never&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TestSaveTimings.test_success_recording"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_save_timings.TestSaveTimings.test_success_recording">[docs]</a>    <span class="k">def</span> <span class="nf">test_success_recording</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">test_mode</span> <span class="o">==</span> <span class="s2">&quot;e3sm&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">skipTest</span><span class="p">(</span><span class="s2">&quot;Skipping success recording tests. E3SM feature&quot;</span><span class="p">)</span>
+
+        <span class="n">fake_test1</span> <span class="o">=</span> <span class="s2">&quot;faketest1&quot;</span>
+        <span class="n">fake_test2</span> <span class="o">=</span> <span class="s2">&quot;faketest2&quot;</span>
+        <span class="n">baseline_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_baseline_area</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_baseline_name</span><span class="p">)</span>
+
+        <span class="c1"># Test initial state</span>
+        <span class="n">was_success</span><span class="p">,</span> <span class="n">last_pass</span><span class="p">,</span> <span class="n">trans_fail</span> <span class="o">=</span> <span class="n">provenance</span><span class="o">.</span><span class="n">get_test_success</span><span class="p">(</span>
+            <span class="n">baseline_dir</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">fake_test1</span><span class="p">,</span> <span class="n">testing</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">was_success</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Broken initial was_success&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">last_pass</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Broken initial last_pass&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">trans_fail</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Broken initial trans_fail&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Test first result (test1 fails, test2 passes)</span>
+        <span class="c1">#                    test_name , success, commit , expP , expTF, baseline)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_record_success</span><span class="p">(</span><span class="n">fake_test1</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;AAA&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;AAA&quot;</span><span class="p">,</span> <span class="n">baseline_dir</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_record_success</span><span class="p">(</span><span class="n">fake_test2</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;AAA&quot;</span><span class="p">,</span> <span class="s2">&quot;AAA&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">baseline_dir</span><span class="p">)</span>
+
+        <span class="c1"># Test second result matches first (no transition) (test1 fails, test2 passes)</span>
+        <span class="c1">#                    test_name , success, commit , expP , expTF, baseline)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_record_success</span><span class="p">(</span><span class="n">fake_test1</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;BBB&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;AAA&quot;</span><span class="p">,</span> <span class="n">baseline_dir</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_record_success</span><span class="p">(</span><span class="n">fake_test2</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;BBB&quot;</span><span class="p">,</span> <span class="s2">&quot;BBB&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">baseline_dir</span><span class="p">)</span>
+
+        <span class="c1"># Test transition to new state (first real transition) (test1 passes, test2 fails)</span>
+        <span class="c1">#                    test_name , success, commit , expP , expTF, baseline)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_record_success</span><span class="p">(</span><span class="n">fake_test1</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;CCC&quot;</span><span class="p">,</span> <span class="s2">&quot;CCC&quot;</span><span class="p">,</span> <span class="s2">&quot;AAA&quot;</span><span class="p">,</span> <span class="n">baseline_dir</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_record_success</span><span class="p">(</span><span class="n">fake_test2</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;CCC&quot;</span><span class="p">,</span> <span class="s2">&quot;BBB&quot;</span><span class="p">,</span> <span class="s2">&quot;CCC&quot;</span><span class="p">,</span> <span class="n">baseline_dir</span><span class="p">)</span>
+
+        <span class="c1"># Test transition to new state (second real transition) (test1 fails, test2 passes)</span>
+        <span class="c1">#                    test_name , success, commit , expP , expTF, baseline)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_record_success</span><span class="p">(</span><span class="n">fake_test1</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;DDD&quot;</span><span class="p">,</span> <span class="s2">&quot;CCC&quot;</span><span class="p">,</span> <span class="s2">&quot;DDD&quot;</span><span class="p">,</span> <span class="n">baseline_dir</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_record_success</span><span class="p">(</span><span class="n">fake_test2</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;DDD&quot;</span><span class="p">,</span> <span class="s2">&quot;DDD&quot;</span><span class="p">,</span> <span class="s2">&quot;CCC&quot;</span><span class="p">,</span> <span class="n">baseline_dir</span><span class="p">)</span>
+
+        <span class="c1"># Test final repeat (test1 fails, test2 passes)</span>
+        <span class="c1">#                    test_name , success, commit , expP , expTF, baseline)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_record_success</span><span class="p">(</span><span class="n">fake_test1</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;EEE&quot;</span><span class="p">,</span> <span class="s2">&quot;CCC&quot;</span><span class="p">,</span> <span class="s2">&quot;DDD&quot;</span><span class="p">,</span> <span class="n">baseline_dir</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_record_success</span><span class="p">(</span><span class="n">fake_test2</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;EEE&quot;</span><span class="p">,</span> <span class="s2">&quot;EEE&quot;</span><span class="p">,</span> <span class="s2">&quot;CCC&quot;</span><span class="p">,</span> <span class="n">baseline_dir</span><span class="p">)</span>
+
+        <span class="c1"># Test final transition (test1 passes, test2 fails)</span>
+        <span class="c1">#                    test_name , success, commit , expP , expTF, baseline)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_record_success</span><span class="p">(</span><span class="n">fake_test1</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;FFF&quot;</span><span class="p">,</span> <span class="s2">&quot;FFF&quot;</span><span class="p">,</span> <span class="s2">&quot;DDD&quot;</span><span class="p">,</span> <span class="n">baseline_dir</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_record_success</span><span class="p">(</span><span class="n">fake_test2</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;FFF&quot;</span><span class="p">,</span> <span class="s2">&quot;EEE&quot;</span><span class="p">,</span> <span class="s2">&quot;FFF&quot;</span><span class="p">,</span> <span class="n">baseline_dir</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
+     
+<script>var version_json_loc = "../../../../../versions.json";</script>
+
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

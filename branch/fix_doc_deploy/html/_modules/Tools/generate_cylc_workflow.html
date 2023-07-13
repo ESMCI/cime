@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tools.generate_cylc_workflow &mdash; CIME master documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+        <script src="../../_static/pop_ver.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            CIME
+          </a>
+              <div class="version">
+                master
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../what_cime/index.html">What is CIME?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../users_guide/index.html">Case Control System Part 1: Basic Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../users_guide/index.html#case-control-system-part-2-configuration-porting-testing-and-use-cases">Case Control System Part 2: Configuration, Porting, Testing and Use Cases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../build_cpl/index.html">Building a Coupled Model with CIME</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../misc_tools/index.html">Miscellaneous Tools</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../glossary/index.html">Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../Tools_user/index.html">User Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../xml_files/index.html">XML Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../CIME_api/modules.html">CIME</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../Tools_api/modules.html">Tools</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">CIME</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">Tools.generate_cylc_workflow</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for Tools.generate_cylc_workflow</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Generates a cylc workflow file for the case.  See https://cylc.github.io for details about cylc</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s2">&quot;..&quot;</span><span class="p">,</span> <span class="s2">&quot;..&quot;</span><span class="p">)))</span>
+
+<span class="kn">from</span> <span class="nn">CIME.Tools.standard_script_setup</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="kn">from</span> <span class="nn">CIME.case</span> <span class="kn">import</span> <span class="n">Case</span>
+<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="n">expect</span><span class="p">,</span> <span class="n">transform_vars</span>
+
+<span class="kn">import</span> <span class="nn">argparse</span><span class="o">,</span> <span class="nn">re</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="c1">###############################################################################</span>
+<div class="viewcode-block" id="parse_command_line"><a class="viewcode-back" href="../../Tools_api/Tools.html#Tools.generate_cylc_workflow.parse_command_line">[docs]</a><span class="k">def</span> <span class="nf">parse_command_line</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">description</span><span class="p">):</span>
+    <span class="c1">###############################################################################</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
+        <span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">,</span> <span class="n">formatter_class</span><span class="o">=</span><span class="n">argparse</span><span class="o">.</span><span class="n">RawTextHelpFormatter</span>
+    <span class="p">)</span>
+
+    <span class="n">CIME</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">setup_standard_logging_options</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;caseroot&quot;</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;?&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Case directory for which namelists are generated.</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="s2">&quot;Default is current directory.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--cycles&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;The number of cycles to run, default is RESUBMIT&quot;</span>
+    <span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--ensemble&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;generate suite.rc for an ensemble of cases, the case name argument must end in an integer.</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="s2">&quot;for example: ./generate_cylc_workflow.py --ensemble 4 </span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="s2">&quot;will generate a workflow file in the current case, if that case is named case.01,&quot;</span>
+        <span class="s2">&quot;the workflow will include case.01, case.02, case.03 and case.04&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">args</span> <span class="o">=</span> <span class="n">CIME</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">parse_args_and_handle_standard_logging_options</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">parser</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">args</span><span class="o">.</span><span class="n">caseroot</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">cycles</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">ensemble</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="cylc_get_ensemble_first_and_last"><a class="viewcode-back" href="../../Tools_api/Tools.html#Tools.generate_cylc_workflow.cylc_get_ensemble_first_and_last">[docs]</a><span class="k">def</span> <span class="nf">cylc_get_ensemble_first_and_last</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">ensemble</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">ensemble</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">1</span><span class="p">,</span> <span class="kc">None</span>
+    <span class="n">casename</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASE&quot;</span><span class="p">)</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(.*[^\d])(\d+)$&quot;</span><span class="p">,</span> <span class="n">casename</span><span class="p">)</span>
+    <span class="n">minval</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+    <span class="n">maxval</span> <span class="o">=</span> <span class="n">minval</span> <span class="o">+</span> <span class="n">ensemble</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">minval</span><span class="p">,</span> <span class="n">maxval</span></div>
+
+
+<div class="viewcode-block" id="cylc_get_case_path_string"><a class="viewcode-back" href="../../Tools_api/Tools.html#Tools.generate_cylc_workflow.cylc_get_case_path_string">[docs]</a><span class="k">def</span> <span class="nf">cylc_get_case_path_string</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">ensemble</span><span class="p">):</span>
+    <span class="n">caseroot</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">)</span>
+    <span class="n">casename</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASE&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ensemble</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">caseroot</span><span class="p">)</span>
+    <span class="n">basepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">caseroot</span> <span class="o">+</span> <span class="s2">&quot;/..&quot;</span><span class="p">)</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(.*[^\d])(\d+)$&quot;</span><span class="p">,</span> <span class="n">casename</span><span class="p">)</span>
+
+    <span class="n">expect</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="s2">&quot;casename </span><span class="si">{}</span><span class="s2"> must end in an integer for ensemble method&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">casename</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="s1">&#39;</span><span class="si">{basepath}</span><span class="s1">/</span><span class="si">{basename}</span><span class="s1">$(printf &quot;%0</span><span class="si">{intlen}</span><span class="s1">d&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">basepath</span><span class="o">=</span><span class="n">basepath</span><span class="p">,</span> <span class="n">basename</span><span class="o">=</span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">intlen</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+        <span class="p">)</span>
+        <span class="o">+</span> <span class="s2">&quot; $</span><span class="si">{CYLC_TASK_PARAM_member}</span><span class="s2">);&quot;</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="cylc_batch_job_template"><a class="viewcode-back" href="../../Tools_api/Tools.html#Tools.generate_cylc_workflow.cylc_batch_job_template">[docs]</a><span class="k">def</span> <span class="nf">cylc_batch_job_template</span><span class="p">(</span><span class="n">job</span><span class="p">,</span> <span class="n">jobname</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">ensemble</span><span class="p">):</span>
+
+    <span class="n">env_batch</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_env</span><span class="p">(</span><span class="s2">&quot;batch&quot;</span><span class="p">)</span>
+    <span class="n">batch_system_type</span> <span class="o">=</span> <span class="n">env_batch</span><span class="o">.</span><span class="n">get_batch_system_type</span><span class="p">()</span>
+    <span class="n">batchsubmit</span> <span class="o">=</span> <span class="n">env_batch</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;batch_submit&quot;</span><span class="p">)</span>
+    <span class="n">submit_args</span> <span class="o">=</span> <span class="n">env_batch</span><span class="o">.</span><span class="n">get_submit_args</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">job</span><span class="p">)</span>
+    <span class="n">case_path_string</span> <span class="o">=</span> <span class="n">cylc_get_case_path_string</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">ensemble</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">(</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    [[{jobname}&lt;member&gt;]]</span>
+<span class="sd">    script = cd {case_path_string} ./case.submit --job {job}</span>
+<span class="sd">    [[[job]]]</span>
+<span class="sd">      batch system = {batch_system_type}</span>
+<span class="sd">      batch submit command template = {batchsubmit} {submit_args}  &#39;%(job)s&#39;</span>
+<span class="sd">    [[[directives]]]</span>
+<span class="sd">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">jobname</span><span class="o">=</span><span class="n">jobname</span><span class="p">,</span>
+            <span class="n">job</span><span class="o">=</span><span class="n">job</span><span class="p">,</span>
+            <span class="n">case_path_string</span><span class="o">=</span><span class="n">case_path_string</span><span class="p">,</span>
+            <span class="n">batch_system_type</span><span class="o">=</span><span class="n">batch_system_type</span><span class="p">,</span>
+            <span class="n">batchsubmit</span><span class="o">=</span><span class="n">batchsubmit</span><span class="p">,</span>
+            <span class="n">submit_args</span><span class="o">=</span><span class="n">submit_args</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="o">+</span> <span class="s2">&quot;{{ batchdirectives }}</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="cylc_script_job_template"><a class="viewcode-back" href="../../Tools_api/Tools.html#Tools.generate_cylc_workflow.cylc_script_job_template">[docs]</a><span class="k">def</span> <span class="nf">cylc_script_job_template</span><span class="p">(</span><span class="n">job</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">ensemble</span><span class="p">):</span>
+    <span class="n">case_path_string</span> <span class="o">=</span> <span class="n">cylc_get_case_path_string</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">ensemble</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    [[</span><span class="si">{job}</span><span class="s2">&lt;member&gt;]]</span>
+<span class="s2">    script = cd </span><span class="si">{case_path_string}</span><span class="s2"> ./case.submit --job </span><span class="si">{job}</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="n">job</span><span class="o">=</span><span class="n">job</span><span class="p">,</span> <span class="n">case_path_string</span><span class="o">=</span><span class="n">case_path_string</span>
+    <span class="p">)</span></div>
+
+
+<span class="c1">###############################################################################</span>
+<span class="k">def</span> <span class="nf">_main_func</span><span class="p">(</span><span class="n">description</span><span class="p">):</span>
+    <span class="c1">###############################################################################</span>
+    <span class="n">caseroot</span><span class="p">,</span> <span class="n">cycles</span><span class="p">,</span> <span class="n">ensemble</span> <span class="o">=</span> <span class="n">parse_command_line</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">,</span> <span class="n">description</span><span class="p">)</span>
+
+    <span class="n">expect</span><span class="p">(</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="s2">&quot;CaseStatus&quot;</span><span class="p">)),</span>
+        <span class="s2">&quot;case.setup must be run prior to running </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="k">with</span> <span class="n">Case</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">as</span> <span class="n">case</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">cycles</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">cycles</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RESUBMIT&quot;</span><span class="p">))</span>
+        <span class="n">env_batch</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_env</span><span class="p">(</span><span class="s2">&quot;batch&quot;</span><span class="p">)</span>
+        <span class="n">env_workflow</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_env</span><span class="p">(</span><span class="s2">&quot;workflow&quot;</span><span class="p">)</span>
+        <span class="n">jobs</span> <span class="o">=</span> <span class="n">env_workflow</span><span class="o">.</span><span class="n">get_jobs</span><span class="p">()</span>
+        <span class="n">casename</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASE&quot;</span><span class="p">)</span>
+        <span class="n">input_template</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="k">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MACHDIR&quot;</span><span class="p">),</span> <span class="s2">&quot;cylc_suite.rc.template&quot;</span>
+        <span class="p">)</span>
+
+        <span class="n">overrides</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;cycles&quot;</span><span class="p">:</span> <span class="n">cycles</span><span class="p">,</span> <span class="s2">&quot;casename&quot;</span><span class="p">:</span> <span class="n">casename</span><span class="p">}</span>
+        <span class="n">input_text</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">input_template</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
+        <span class="n">first</span><span class="p">,</span> <span class="n">last</span> <span class="o">=</span> <span class="n">cylc_get_ensemble_first_and_last</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">ensemble</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ensemble</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">overrides</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;members&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">first</span><span class="p">)})</span>
+            <span class="n">overrides</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                <span class="p">{</span><span class="s2">&quot;workflow_description&quot;</span><span class="p">:</span> <span class="s2">&quot;case </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASE&quot;</span><span class="p">))}</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">overrides</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;members&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">..</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">first</span><span class="p">,</span> <span class="n">last</span><span class="p">)})</span>
+            <span class="n">firstcase</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASE&quot;</span><span class="p">)</span>
+            <span class="n">intlen</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">last</span><span class="p">))</span>
+            <span class="n">lastcase</span> <span class="o">=</span> <span class="n">firstcase</span><span class="p">[:</span><span class="o">-</span><span class="n">intlen</span><span class="p">]</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">last</span><span class="p">)</span>
+            <span class="n">overrides</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;workflow_description&quot;</span><span class="p">:</span> <span class="s2">&quot;ensemble from </span><span class="si">{}</span><span class="s2"> to </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">firstcase</span><span class="p">,</span> <span class="n">lastcase</span>
+                    <span class="p">)</span>
+                <span class="p">}</span>
+            <span class="p">)</span>
+        <span class="n">overrides</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+            <span class="p">{</span><span class="s2">&quot;case_path_string&quot;</span><span class="p">:</span> <span class="n">cylc_get_case_path_string</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">ensemble</span><span class="p">)}</span>
+        <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">job</span> <span class="ow">in</span> <span class="n">jobs</span><span class="p">:</span>
+            <span class="n">jobname</span> <span class="o">=</span> <span class="n">job</span>
+            <span class="k">if</span> <span class="n">job</span> <span class="o">==</span> <span class="s2">&quot;case.st_archive&quot;</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">job</span> <span class="o">==</span> <span class="s2">&quot;case.run&quot;</span><span class="p">:</span>
+                <span class="n">jobname</span> <span class="o">=</span> <span class="s2">&quot;run&quot;</span>
+                <span class="n">overrides</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">env_batch</span><span class="o">.</span><span class="n">get_job_overrides</span><span class="p">(</span><span class="n">job</span><span class="p">,</span> <span class="n">case</span><span class="p">))</span>
+                <span class="n">overrides</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;job_id&quot;</span><span class="p">:</span> <span class="s2">&quot;run.&quot;</span> <span class="o">+</span> <span class="n">casename</span><span class="p">})</span>
+                <span class="n">input_text</span> <span class="o">=</span> <span class="n">input_text</span> <span class="o">+</span> <span class="n">cylc_batch_job_template</span><span class="p">(</span>
+                    <span class="n">job</span><span class="p">,</span> <span class="n">jobname</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">ensemble</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">depends_on</span> <span class="o">=</span> <span class="n">env_workflow</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;dependency&quot;</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="n">job</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">depends_on</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;case.&quot;</span><span class="p">):</span>
+                    <span class="n">depends_on</span> <span class="o">=</span> <span class="n">depends_on</span><span class="p">[</span><span class="mi">5</span><span class="p">:]</span>
+                <span class="n">input_text</span> <span class="o">=</span> <span class="n">input_text</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
+                    <span class="s2">&quot; =&gt; &quot;</span> <span class="o">+</span> <span class="n">depends_on</span><span class="p">,</span> <span class="s2">&quot; =&gt; &quot;</span> <span class="o">+</span> <span class="n">depends_on</span> <span class="o">+</span> <span class="s2">&quot;&lt;member&gt; =&gt; &quot;</span> <span class="o">+</span> <span class="n">job</span>
+                <span class="p">)</span>
+
+                <span class="n">overrides</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">env_batch</span><span class="o">.</span><span class="n">get_job_overrides</span><span class="p">(</span><span class="n">job</span><span class="p">,</span> <span class="n">case</span><span class="p">))</span>
+                <span class="n">overrides</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;job_id&quot;</span><span class="p">:</span> <span class="n">job</span> <span class="o">+</span> <span class="s2">&quot;.&quot;</span> <span class="o">+</span> <span class="n">casename</span><span class="p">})</span>
+                <span class="k">if</span> <span class="s2">&quot;total_tasks&quot;</span> <span class="ow">in</span> <span class="n">overrides</span> <span class="ow">and</span> <span class="n">overrides</span><span class="p">[</span><span class="s2">&quot;total_tasks&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">input_text</span> <span class="o">=</span> <span class="n">input_text</span> <span class="o">+</span> <span class="n">cylc_batch_job_template</span><span class="p">(</span>
+                        <span class="n">job</span><span class="p">,</span> <span class="n">jobname</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">ensemble</span>
+                    <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">input_text</span> <span class="o">=</span> <span class="n">input_text</span> <span class="o">+</span> <span class="n">cylc_script_job_template</span><span class="p">(</span>
+                        <span class="n">jobname</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">ensemble</span>
+                    <span class="p">)</span>
+
+            <span class="n">overrides</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;batchdirectives&quot;</span><span class="p">:</span> <span class="n">env_batch</span><span class="o">.</span><span class="n">get_batch_directives</span><span class="p">(</span>
+                        <span class="n">case</span><span class="p">,</span> <span class="n">job</span><span class="p">,</span> <span class="n">overrides</span><span class="o">=</span><span class="n">overrides</span><span class="p">,</span> <span class="n">output_format</span><span class="o">=</span><span class="s2">&quot;cylc&quot;</span>
+                    <span class="p">)</span>
+                <span class="p">}</span>
+            <span class="p">)</span>
+            <span class="c1"># we need to re-transform for each job to get job size correctly</span>
+            <span class="n">input_text</span> <span class="o">=</span> <span class="n">transform_vars</span><span class="p">(</span>
+                <span class="n">input_text</span><span class="p">,</span> <span class="n">case</span><span class="o">=</span><span class="n">case</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="n">job</span><span class="p">,</span> <span class="n">overrides</span><span class="o">=</span><span class="n">overrides</span>
+            <span class="p">)</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;suite.rc&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">case</span><span class="o">.</span><span class="n">get_resolved_value</span><span class="p">(</span><span class="n">input_text</span><span class="p">))</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">_main_func</span><span class="p">(</span><span class="vm">__doc__</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
+     
+<script>var version_json_loc = "../../../../versions.json";</script>
+
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
