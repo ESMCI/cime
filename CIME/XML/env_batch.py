@@ -970,12 +970,11 @@ class EnvBatch(EnvBase):
         if not project:
             # If there is no project then we need to remove the project flag
             # slurm defines --account only on machines that require it, so this strip isn't required
-            if batch_system == "pbs" or batch_system=="cobalt":
-                submitargs = submitargs.replace("-A","")
+            if batch_system == "pbs" or batch_system == "cobalt":
+                submitargs = submitargs.replace("-A", "")
             elif batch_system == "lsf":
-                submitargs = submitargs.replace("-P","")
-            
-            
+                submitargs = submitargs.replace("-P", "")
+
         if dep_jobs is not None and len(dep_jobs) > 0:
             logger.debug("dependencies: {}".format(dep_jobs))
             if allow_fail:
@@ -1033,8 +1032,7 @@ class EnvBatch(EnvBase):
 
             if mail_type:
                 mail_type = mail_type.split(",")  # pylint: disable=no-member
-        
-                
+
         if mail_type:
             mail_type_flag = self.get_value("batch_mail_type_flag", subgroup=None)
             if mail_type_flag is not None:
