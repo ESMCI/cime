@@ -239,6 +239,8 @@ def parse_command_line(args, cimeroot, description):
 
     parser.add_argument(
         "--driver",
+        # use get_cime_default_driver rather than config.driver_default as it considers
+        # environment, user config then config.driver_default
         default=get_cime_default_driver(),
         choices=drv_choices,
         help=drv_help,
