@@ -219,7 +219,7 @@ def parse_command_line(args, description):
 
         parser.add_argument(
             "--driver",
-            choices=("mct", "nuopc", "moab"),
+            choices=model_config.driver_choices,
             help="Override driver specified in tests and use this one.",
         )
 
