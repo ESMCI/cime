@@ -26,7 +26,9 @@ def deprecate_action(message):
     class ActionStoreDeprecated(Action):
         def __call__(self, parser, namespace, values, option_string=None):
             raise DeprecationWarning(f"{option_string} is deprecated{message}")
+
     return ActionStoreDeprecated
+
 
 def import_from_file(name, file_path):
     loader = importlib.machinery.SourceFileLoader(name, file_path)

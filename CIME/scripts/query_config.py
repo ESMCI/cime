@@ -314,7 +314,7 @@ def parse_command_line(args, description):
 
     parser.add_argument(
         "--comp_interface",
-        choices=supported_comp_interfaces, # same as config.driver_choices
+        choices=supported_comp_interfaces,  # same as config.driver_choices
         default="mct",
         action=deprecate_action(", use --driver argument"),
         help="DEPRECATED: Use --driver argument",
