@@ -969,11 +969,16 @@ class EnvBatch(EnvBase):
 
         if not project:
             # If there is no project then we need to remove the project flag
-            # slurm defines --account only on machines that require it, so this strip isn't required
-            if batch_system == "pbs" or batch_system == "cobalt":
+            if (
+                batch_system == "pbs"
+                or batch_system == "cobalt"
+                and " -A " in submitargs
+            ):
                 submitargs = submitargs.replace("-A", "")
-            elif batch_system == "lsf":
+            elif batch_system == "lsf" and " -P " in submitargs:
                 submitargs = submitargs.replace("-P", "")
+            elif batch_system == "slurm" and " --account " in submitargs:
+                submitargs = submitargs.replace("--account", "")
 
         if dep_jobs is not None and len(dep_jobs) > 0:
             logger.debug("dependencies: {}".format(dep_jobs))
