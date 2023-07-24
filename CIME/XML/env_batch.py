@@ -970,10 +970,8 @@ class EnvBatch(EnvBase):
         if not project:
             # If there is no project then we need to remove the project flag
             if (
-                batch_system == "pbs"
-                or batch_system == "cobalt"
-                and " -A " in submitargs
-            ):
+                batch_system == "pbs" or batch_system == "cobalt"
+            ) and " -A " in submitargs:
                 submitargs = submitargs.replace("-A", "")
             elif batch_system == "lsf" and " -P " in submitargs:
                 submitargs = submitargs.replace("-P", "")
