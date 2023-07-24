@@ -1116,6 +1116,7 @@ def _case_build_impl(
     ninst_build = case.get_value("NINST_BUILD")
     smp_value = case.get_value("SMP_VALUE")
     clm_use_petsc = case.get_value("CLM_USE_PETSC")
+    mpaso_use_petsc = case.get_value("MPASO_USE_PETSC")
     cism_use_trilinos = case.get_value("CISM_USE_TRILINOS")
     mali_use_albany = case.get_value("MALI_USE_ALBANY")
     mach = case.get_value("MACH")
@@ -1140,7 +1141,7 @@ def _case_build_impl(
     # the future there may be others -- so USE_PETSC will be true if
     # ANY of those are true.
 
-    use_petsc = clm_use_petsc
+    use_petsc = bool(clm_use_petsc) or bool(mpaso_use_petsc)
     case.set_value("USE_PETSC", use_petsc)
 
     # Set the overall USE_TRILINOS variable to TRUE if any of the
