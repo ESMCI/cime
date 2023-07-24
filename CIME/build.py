@@ -1141,7 +1141,7 @@ def _case_build_impl(
     # the future there may be others -- so USE_PETSC will be true if
     # ANY of those are true.
 
-    use_petsc = clm_use_petsc or mpaso_use_petsc
+    use_petsc = bool(clm_use_petsc) or bool(mpaso_use_petsc)
     case.set_value("USE_PETSC", use_petsc)
 
     # Set the overall USE_TRILINOS variable to TRUE if any of the
