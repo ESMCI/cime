@@ -44,6 +44,8 @@ RUN mamba install --yes -c conda-forge \
             rm -rf /opt/conda/pkgs/*
 
 # Install version locked packages
+# gcc, gxx, gfortran provide symlinks for x86_64-conda-linux-gnu-*
+# ar and ranlib are not symlinked
 RUN mamba install --yes -c conda-forge \
             libnetcdf=${LIBNETCDF_VERSION}=*openmpi* \
             netcdf-fortran=${NETCDF_FORTRAN_VERSION}=*openmpi* \
@@ -51,7 +53,10 @@ RUN mamba install --yes -c conda-forge \
             gcc_linux-64=${GCC_VERSION} \
             gxx_linux-64=${GCC_VERSION} \
             openmpi-mpifort \
-            gfortran_linux-64=${GCC_VERSION} && \
+            gfortran_linux-64=${GCC_VERSION} \
+            gcc \
+            gxx \
+            gfortran && \
             rm -rf /opt/conda/pkgs/* && \
             ln -sf /opt/conda/bin/x86_64-conda-linux-gnu-ar /opt/conda/bin/ar && \
             ln -sf /opt/conda/bin/x86_64-conda-linux-gnu-ranlib /opt/conda/bin/ranlib
