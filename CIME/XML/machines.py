@@ -41,9 +41,12 @@ class Machines(GenericXML):
         logger.debug("Verifying using schema {}".format(schema))
 
         self.machines_dir = os.path.dirname(infile)
+        if os.path.exists(infile):
+            checked_files.append(infile)
+        else:
+            expect(False, f"file not found {infile}")
 
         GenericXML.__init__(self, infile, schema)
-        checked_files.append(infile)
 
         # Append the contents of $HOME/.cime/config_machines.xml if it exists.
         #
