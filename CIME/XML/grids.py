@@ -27,7 +27,7 @@ class Grids(GenericXML):
         schema = files.get_schema("GRIDS_SPEC_FILE")
         expect(
             os.path.isfile(infile) and os.access(infile, os.R_OK),
-            f"ERROR: grid file not found {infile}",
+            f" grid file not found {infile}",
         )
         try:
             GenericXML.__init__(self, infile, schema)
