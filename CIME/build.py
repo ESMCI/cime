@@ -248,8 +248,8 @@ def get_standard_cmake_args(case, sharedpath):
     )
 
     ocn_model = case.get_value("COMP_OCN")
-    atm_model = case.get_value("COMP_ATM")
-    if ocn_model == "mom" or atm_model == "fv3gfs":
+    atm_dycore = case.get_value("CAM_DYCORE")
+    if ocn_model == "mom" or (atm_dycore and atm_dycore == "fv3"):
         cmake_args += " -DUSE_FMS=TRUE "
 
     cmake_args += " -DINSTALL_SHAREDPATH={} ".format(
@@ -266,6 +266,7 @@ def get_standard_cmake_args(case, sharedpath):
     for var in _CMD_ARGS_FOR_BUILD:
         cmake_args += xml_to_make_variable(case, var, cmake=True)
 
+    atm_model = case.get_value("COMP_ATM")
     if atm_model == "scream":
         cmake_args += xml_to_make_variable(case, "HOMME_TARGET", cmake=True)
 
@@ -761,8 +762,9 @@ def _build_libraries(
         libs.append("CDEPS")
 
     ocn_model = case.get_value("COMP_OCN")
-    atm_model = case.get_value("COMP_ATM")
-    if ocn_model == "mom" or atm_model == "fv3gfs":
+
+    atm_dycore = case.get_value("CAM_DYCORE")
+    if ocn_model == "mom" or (atm_dycore and atm_dycore == "fv3"):
         libs.append("FMS")
 
     files = Files(comp_interface=comp_interface)
