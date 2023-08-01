@@ -140,8 +140,8 @@ MACHINE_TEST_XML = """<config_machines version="2.0">
 class TestUnitXMLMachines(unittest.TestCase):
     def setUp(self):
         Machines._FILEMAP = {}
-
-        self.machine = Machines()
+        # read_only=False for github testing
+        self.machine = Machines(machine="centos7-linux")
 
         self.machine.read_fd(io.StringIO(MACHINE_TEST_XML))
 
