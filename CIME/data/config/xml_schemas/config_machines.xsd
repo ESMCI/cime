@@ -253,7 +253,7 @@
   </xs:element>
   <xs:element name="command">
     <xs:complexType mixed="true">
-      <xs:attribute ref="name" use="required"/>
+      <xs:attribute name="name" use="required" type="xs:string"/>
     </xs:complexType>
   </xs:element>
   <xs:element name="environment_variables">
