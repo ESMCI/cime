@@ -352,6 +352,15 @@ disk with a set of changes that will be applied to each case.</p>
 <span class="o">&gt;</span> <span class="n">SourceMods</span><span class="o">/</span><span class="n">src</span><span class="o">.</span><span class="n">cam</span><span class="o">/</span><span class="n">dyncomp</span><span class="o">.</span><span class="n">F90</span>
 </pre></div>
 </div>
+<p>It is important to note that the file containing the <strong>xmlchange</strong>
+commands must be named <code class="docutils literal notranslate"><span class="pre">shell_commands</span></code> in order for it to be recognised
+and run upon case creation.</p>
+<p>The structure of the component directories do not need to be the
+same as in the component source code. As an example, should the user
+want to modify the <code class="docutils literal notranslate"><span class="pre">src/dynamics/eul/dyncomp.F90</span></code> file within the
+CAM source code, the modified file should be put into the directory
+<code class="docutils literal notranslate"><span class="pre">SourceMods/src.cam</span></code> directly. There is no need to mimic the source
+code structure, such as <code class="docutils literal notranslate"><span class="pre">SourceMods/src.cam/dynamics/eul</span></code>.</p>
 <p>When the user calls <strong>create_newcase</strong> with the <code class="docutils literal notranslate"><span class="pre">--user-mods-dir</span></code> pointing to the
 full pathname of the directory containing these changes, then the <code class="docutils literal notranslate"><span class="pre">CASEROOT</span></code> will be
 created with these changes applied.</p>

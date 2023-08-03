@@ -266,6 +266,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#CIME.utils.copy_globs"><code class="docutils literal notranslate"><span class="pre">copy_globs()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#CIME.utils.copy_local_macros_to_dir"><code class="docutils literal notranslate"><span class="pre">copy_local_macros_to_dir()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#CIME.utils.copyifnewer"><code class="docutils literal notranslate"><span class="pre">copyifnewer()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#CIME.utils.deprecate_action"><code class="docutils literal notranslate"><span class="pre">deprecate_action()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#CIME.utils.does_file_have_string"><code class="docutils literal notranslate"><span class="pre">does_file_have_string()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#CIME.utils.expect"><code class="docutils literal notranslate"><span class="pre">expect()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#CIME.utils.file_contains_python_function"><code class="docutils literal notranslate"><span class="pre">file_contains_python_function()</span></code></a></li>
@@ -927,7 +928,10 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.XML.html#module-CIME.XML.env_build">CIME.XML.env_build module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="CIME.XML.html#CIME.XML.env_build.EnvBuild"><code class="docutils literal notranslate"><span class="pre">EnvBuild</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.XML.html#CIME.XML.env_build.EnvBuild"><code class="docutils literal notranslate"><span class="pre">EnvBuild</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.html#CIME.XML.env_build.EnvBuild.set_value"><code class="docutils literal notranslate"><span class="pre">EnvBuild.set_value()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.XML.html#module-CIME.XML.env_case">CIME.XML.env_case module</a><ul>
@@ -1944,6 +1948,8 @@
 <li class="toctree-l2"><a class="reference internal" href="CIME.tests.html#module-CIME.tests.test_unit_test_status">CIME.tests.test_unit_test_status module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="CIME.tests.html#CIME.tests.test_unit_test_status.TestTestStatus"><code class="docutils literal notranslate"><span class="pre">TestTestStatus</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="CIME.tests.html#CIME.tests.test_unit_test_status.TestTestStatus.setUp"><code class="docutils literal notranslate"><span class="pre">TestTestStatus.setUp()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.tests.html#CIME.tests.test_unit_test_status.TestTestStatus.test_current_is"><code class="docutils literal notranslate"><span class="pre">TestTestStatus.test_current_is()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.tests.html#CIME.tests.test_unit_test_status.TestTestStatus.test_get_latest_phase"><code class="docutils literal notranslate"><span class="pre">TestTestStatus.test_get_latest_phase()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="CIME.tests.html#CIME.tests.test_unit_test_status.TestTestStatus.test_psdump_corePhasesPass"><code class="docutils literal notranslate"><span class="pre">TestTestStatus.test_psdump_corePhasesPass()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="CIME.tests.html#CIME.tests.test_unit_test_status.TestTestStatus.test_psdump_oneCorePhaseFails"><code class="docutils literal notranslate"><span class="pre">TestTestStatus.test_psdump_oneCorePhaseFails()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="CIME.tests.html#CIME.tests.test_unit_test_status.TestTestStatus.test_psdump_oneCorePhaseFailsAbsentFromXFails"><code class="docutils literal notranslate"><span class="pre">TestTestStatus.test_psdump_oneCorePhaseFailsAbsentFromXFails()</span></code></a></li>
@@ -4133,6 +4139,11 @@ RUN state are no longer valid.</p></li>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">CIME.test_status.</span></span><span class="sig-name descname"><span class="pre">TestStatus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">test_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_io</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/test_status.html#TestStatus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.test_status.TestStatus" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py method">
+<dt class="sig sig-object py" id="CIME.test_status.TestStatus.current_is">
+<span class="sig-name descname"><span class="pre">current_is</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phase</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/test_status.html#TestStatus.current_is"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.test_status.TestStatus.current_is" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="CIME.test_status.TestStatus.flush">
 <span class="sig-name descname"><span class="pre">flush</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/test_status.html#TestStatus.flush"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.test_status.TestStatus.flush" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
@@ -4140,6 +4151,11 @@ RUN state are no longer valid.</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="CIME.test_status.TestStatus.get_comment">
 <span class="sig-name descname"><span class="pre">get_comment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phase</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/test_status.html#TestStatus.get_comment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.test_status.TestStatus.get_comment" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CIME.test_status.TestStatus.get_latest_phase">
+<span class="sig-name descname"><span class="pre">get_latest_phase</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/test_status.html#TestStatus.get_latest_phase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.test_status.TestStatus.get_latest_phase" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -4605,6 +4621,11 @@ be appended with the <cite>lid</cite>.</p>
 <span class="sig-prename descclassname"><span class="pre">CIME.utils.</span></span><span class="sig-name descname"><span class="pre">copyifnewer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">src</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#copyifnewer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.utils.copyifnewer" title="Permalink to this definition"></a></dt>
 <dd><p>if dest does not exist or is older than src copy src to dest</p>
 </dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="CIME.utils.deprecate_action">
+<span class="sig-prename descclassname"><span class="pre">CIME.utils.</span></span><span class="sig-name descname"><span class="pre">deprecate_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#deprecate_action"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.utils.deprecate_action" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="CIME.utils.does_file_have_string">

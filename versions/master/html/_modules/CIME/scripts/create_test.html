@@ -305,7 +305,7 @@
 
         <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
             <span class="s2">&quot;--driver&quot;</span><span class="p">,</span>
-            <span class="n">choices</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;mct&quot;</span><span class="p">,</span> <span class="s2">&quot;nuopc&quot;</span><span class="p">,</span> <span class="s2">&quot;moab&quot;</span><span class="p">),</span>
+            <span class="n">choices</span><span class="o">=</span><span class="n">model_config</span><span class="o">.</span><span class="n">driver_choices</span><span class="p">,</span>
             <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Override driver specified in tests and use this one.&quot;</span><span class="p">,</span>
         <span class="p">)</span>
 

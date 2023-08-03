@@ -240,6 +240,7 @@
         <span class="n">ninja</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">dry_run</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">separate_builds</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">skip_submit</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Do NOT override this method, this method is the framework that</span>
@@ -250,6 +251,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_ninja</span> <span class="o">=</span> <span class="n">ninja</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_dry_run</span> <span class="o">=</span> <span class="n">dry_run</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_user_separate_builds</span> <span class="o">=</span> <span class="n">separate_builds</span>
+
+        <span class="n">was_run_pend</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">current_is</span><span class="p">(</span><span class="n">RUN_PHASE</span><span class="p">,</span> <span class="n">TEST_PEND_STATUS</span><span class="p">)</span>
+
         <span class="k">for</span> <span class="n">phase_name</span><span class="p">,</span> <span class="n">phase_bool</span> <span class="ow">in</span> <span class="p">[</span>
             <span class="p">(</span><span class="n">SHAREDLIB_BUILD_PHASE</span><span class="p">,</span> <span class="ow">not</span> <span class="n">model_only</span><span class="p">),</span>
             <span class="p">(</span><span class="n">MODEL_BUILD_PHASE</span><span class="p">,</span> <span class="ow">not</span> <span class="n">sharedlib_only</span><span class="p">),</span>
@@ -287,6 +291,15 @@
                             <span class="n">TEST_PASS_STATUS</span> <span class="k">if</span> <span class="n">success</span> <span class="k">else</span> <span class="n">TEST_FAIL_STATUS</span><span class="p">,</span>
                             <span class="n">comments</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;time=</span><span class="si">{:d}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">time_taken</span><span class="p">))),</span>
                         <span class="p">)</span>
+
+        <span class="c1"># Building model while job is queued and awaiting run</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">skip_submit</span>
+            <span class="ow">and</span> <span class="n">was_run_pend</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">current_is</span><span class="p">(</span><span class="n">SUBMIT_PHASE</span><span class="p">,</span> <span class="n">TEST_PEND_STATUS</span><span class="p">)</span>
+        <span class="p">):</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span><span class="n">SUBMIT_PHASE</span><span class="p">,</span> <span class="n">TEST_PASS_STATUS</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">success</span></div>
 

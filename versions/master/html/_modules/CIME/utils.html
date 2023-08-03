@@ -94,6 +94,7 @@
 <span class="kn">import</span> <span class="nn">importlib.util</span>
 <span class="kn">import</span> <span class="nn">errno</span><span class="o">,</span> <span class="nn">signal</span><span class="o">,</span> <span class="nn">warnings</span><span class="o">,</span> <span class="nn">filecmp</span>
 <span class="kn">import</span> <span class="nn">stat</span> <span class="k">as</span> <span class="nn">statlib</span>
+<span class="kn">from</span> <span class="nn">argparse</span> <span class="kn">import</span> <span class="n">Action</span>
 <span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">contextmanager</span>
 
 <span class="kn">from</span> <span class="nn">distutils</span> <span class="kn">import</span> <span class="n">file_util</span>
@@ -105,6 +106,14 @@
 <span class="c1"># Fix to pass user defined `srcroot` to `CIME.XML.generic_xml.GenericXML`</span>
 <span class="c1"># where it&#39;s used to resolve $SRCROOT in XML config files.</span>
 <span class="n">GLOBAL</span> <span class="o">=</span> <span class="p">{}</span>
+
+
+<div class="viewcode-block" id="deprecate_action"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.utils.deprecate_action">[docs]</a><span class="k">def</span> <span class="nf">deprecate_action</span><span class="p">(</span><span class="n">message</span><span class="p">):</span>
+    <span class="k">class</span> <span class="nc">ActionStoreDeprecated</span><span class="p">(</span><span class="n">Action</span><span class="p">):</span>
+        <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parser</span><span class="p">,</span> <span class="n">namespace</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">option_string</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">DeprecationWarning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">option_string</span><span class="si">}</span><span class="s2"> is deprecated</span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">ActionStoreDeprecated</span></div>
 
 
 <div class="viewcode-block" id="import_from_file"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.utils.import_from_file">[docs]</a><span class="k">def</span> <span class="nf">import_from_file</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">file_path</span><span class="p">):</span>

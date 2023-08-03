@@ -226,8 +226,8 @@
 <div class="viewcode-block" id="TestUnitXMLMachines"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_xml_machines.TestUnitXMLMachines">[docs]</a><span class="k">class</span> <span class="nc">TestUnitXMLMachines</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
 <div class="viewcode-block" id="TestUnitXMLMachines.setUp"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_xml_machines.TestUnitXMLMachines.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">Machines</span><span class="o">.</span><span class="n">_FILEMAP</span> <span class="o">=</span> <span class="p">{}</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">machine</span> <span class="o">=</span> <span class="n">Machines</span><span class="p">()</span>
+        <span class="c1"># read_only=False for github testing</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">machine</span> <span class="o">=</span> <span class="n">Machines</span><span class="p">(</span><span class="n">machine</span><span class="o">=</span><span class="s2">&quot;centos7-linux&quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">machine</span><span class="o">.</span><span class="n">read_fd</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">(</span><span class="n">MACHINE_TEST_XML</span><span class="p">))</span>
 

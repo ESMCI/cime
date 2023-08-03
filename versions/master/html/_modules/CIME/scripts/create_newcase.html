@@ -325,6 +325,8 @@
 
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s2">&quot;--driver&quot;</span><span class="p">,</span>
+        <span class="c1"># use get_cime_default_driver rather than config.driver_default as it considers</span>
+        <span class="c1"># environment, user config then config.driver_default</span>
         <span class="n">default</span><span class="o">=</span><span class="n">get_cime_default_driver</span><span class="p">(),</span>
         <span class="n">choices</span><span class="o">=</span><span class="n">drv_choices</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="n">drv_help</span><span class="p">,</span>

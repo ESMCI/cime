@@ -104,7 +104,22 @@
 <span class="sd">        initialize an object interface to file env_build.xml in the case directory</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">schema</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">get_schema_path</span><span class="p">(),</span> <span class="s2">&quot;env_entry_id.xsd&quot;</span><span class="p">)</span>
-        <span class="n">EnvBase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case_root</span><span class="p">,</span> <span class="n">infile</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="n">read_only</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_caseroot</span> <span class="o">=</span> <span class="n">case_root</span>
+        <span class="n">EnvBase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case_root</span><span class="p">,</span> <span class="n">infile</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="n">read_only</span><span class="p">)</span>
+
+<div class="viewcode-block" id="EnvBuild.set_value"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_build.EnvBuild.set_value">[docs]</a>    <span class="k">def</span> <span class="nf">set_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ignore_type</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the value of an entry-id field to value</span>
+<span class="sd">        Returns the value or None if not found</span>
+<span class="sd">        subgroup is ignored in the general routine and applied in specific methods</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Do not allow any of these to be the same as CASEROOT</span>
+        <span class="k">if</span> <span class="n">vid</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;EXEROOT&quot;</span><span class="p">,</span> <span class="s2">&quot;OBJDIR&quot;</span><span class="p">,</span> <span class="s2">&quot;LIBROOT&quot;</span><span class="p">):</span>
+            <span class="n">utils</span><span class="o">.</span><span class="n">expect</span><span class="p">(</span><span class="n">value</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_caseroot</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Cannot set </span><span class="si">{</span><span class="n">vid</span><span class="si">}</span><span class="s2"> to CASEROOT&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">EnvBuild</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span>
+            <span class="n">vid</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="n">subgroup</span><span class="p">,</span> <span class="n">ignore_type</span><span class="o">=</span><span class="n">ignore_type</span>
+        <span class="p">)</span></div></div>
 </pre></div>
 
            </div>

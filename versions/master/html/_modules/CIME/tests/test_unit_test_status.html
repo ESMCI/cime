@@ -127,6 +127,20 @@
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ts</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_ts</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span><span class="n">phase</span><span class="p">,</span> <span class="n">status</span><span class="p">)</span>
 
+<div class="viewcode-block" id="TestTestStatus.test_get_latest_phase"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_test_status.TestTestStatus.test_get_latest_phase">[docs]</a>    <span class="k">def</span> <span class="nf">test_get_latest_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ts</span><span class="o">.</span><span class="n">get_latest_phase</span><span class="p">()</span> <span class="o">==</span> <span class="n">test_status</span><span class="o">.</span><span class="n">RUN_PHASE</span></div>
+
+<div class="viewcode-block" id="TestTestStatus.test_current_is"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_test_status.TestTestStatus.test_current_is">[docs]</a>    <span class="k">def</span> <span class="nf">test_current_is</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ts</span><span class="o">.</span><span class="n">current_is</span><span class="p">(</span><span class="n">test_status</span><span class="o">.</span><span class="n">RUN_PHASE</span><span class="p">,</span> <span class="n">test_status</span><span class="o">.</span><span class="n">TEST_PASS_STATUS</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ts</span><span class="o">.</span><span class="n">current_is</span><span class="p">(</span>
+            <span class="n">test_status</span><span class="o">.</span><span class="n">RUN_PHASE</span><span class="p">,</span> <span class="n">test_status</span><span class="o">.</span><span class="n">TEST_PEND_STATUS</span>
+        <span class="p">)</span>
+
+        <span class="k">assert</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ts</span><span class="o">.</span><span class="n">current_is</span><span class="p">(</span>
+            <span class="n">test_status</span><span class="o">.</span><span class="n">SUBMIT_PHASE</span><span class="p">,</span> <span class="n">test_status</span><span class="o">.</span><span class="n">TEST_PASS_STATUS</span>
+        <span class="p">)</span></div>
+
     <span class="c1"># ------------------------------------------------------------------------</span>
     <span class="c1"># Tests of TestStatus.phase_statuses_dump</span>
     <span class="c1"># ------------------------------------------------------------------------</span>

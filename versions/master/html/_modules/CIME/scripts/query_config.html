@@ -94,7 +94,7 @@
 
 <span class="kn">from</span> <span class="nn">CIME.Tools.standard_script_setup</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="n">expect</span>
+<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="n">expect</span><span class="p">,</span> <span class="n">get_cime_default_driver</span><span class="p">,</span> <span class="n">deprecate_action</span>
 <span class="kn">from</span> <span class="nn">CIME.XML.files</span> <span class="kn">import</span> <span class="n">Files</span>
 <span class="kn">from</span> <span class="nn">CIME.XML.component</span> <span class="kn">import</span> <span class="n">Component</span>
 <span class="kn">from</span> <span class="nn">CIME.XML.compsets</span> <span class="kn">import</span> <span class="n">Compsets</span>
@@ -400,8 +400,16 @@
 
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s2">&quot;--comp_interface&quot;</span><span class="p">,</span>
-        <span class="n">choices</span><span class="o">=</span><span class="n">supported_comp_interfaces</span><span class="p">,</span>
+        <span class="n">choices</span><span class="o">=</span><span class="n">supported_comp_interfaces</span><span class="p">,</span>  <span class="c1"># same as config.driver_choices</span>
         <span class="n">default</span><span class="o">=</span><span class="s2">&quot;mct&quot;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="n">deprecate_action</span><span class="p">(</span><span class="s2">&quot;, use --driver argument&quot;</span><span class="p">),</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;DEPRECATED: Use --driver argument&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--driver&quot;</span><span class="p">,</span>
+        <span class="n">choices</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">driver_choices</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">get_cime_default_driver</span><span class="p">(),</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Coupler/Driver interface&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 
@@ -418,7 +426,7 @@
         <span class="n">args</span><span class="o">.</span><span class="n">machines</span><span class="p">,</span>
         <span class="n">args</span><span class="o">.</span><span class="n">long</span><span class="p">,</span>
         <span class="n">args</span><span class="o">.</span><span class="n">xml</span><span class="p">,</span>
-        <span class="n">files</span><span class="p">[</span><span class="n">args</span><span class="o">.</span><span class="n">comp_interface</span><span class="p">],</span>
+        <span class="n">files</span><span class="p">[</span><span class="n">args</span><span class="o">.</span><span class="n">driver</span><span class="p">],</span>
     <span class="p">)</span></div>
 
 

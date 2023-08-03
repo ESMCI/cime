@@ -360,6 +360,17 @@
 <div class="viewcode-block" id="TestStatus.get_comment"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.test_status.TestStatus.get_comment">[docs]</a>    <span class="k">def</span> <span class="nf">get_comment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phase</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phase_statuses</span><span class="p">[</span><span class="n">phase</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">phase</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phase_statuses</span> <span class="k">else</span> <span class="kc">None</span></div>
 
+<div class="viewcode-block" id="TestStatus.current_is"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.test_status.TestStatus.current_is">[docs]</a>    <span class="k">def</span> <span class="nf">current_is</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">status</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">latest</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_latest_phase</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">return</span> <span class="n">latest</span> <span class="o">==</span> <span class="n">phase</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_status</span><span class="p">(</span><span class="n">phase</span><span class="p">)</span> <span class="o">==</span> <span class="n">status</span></div>
+
+<div class="viewcode-block" id="TestStatus.get_latest_phase"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.test_status.TestStatus.get_latest_phase">[docs]</a>    <span class="k">def</span> <span class="nf">get_latest_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_phase_statuses</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span></div>
+
 <div class="viewcode-block" id="TestStatus.phase_statuses_dump"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.test_status.TestStatus.phase_statuses_dump">[docs]</a>    <span class="k">def</span> <span class="nf">phase_statuses_dump</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">skip_passes</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">skip_phase_list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">xfails</span><span class="o">=</span><span class="kc">None</span>
     <span class="p">):</span>

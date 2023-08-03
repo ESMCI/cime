@@ -154,7 +154,7 @@ usage: create_test [-h] [-d] [-v] [-s] [--no-run] [--no-build] [--no-setup]
                    [--clean] [-m MACHINE] [--mpilib MPILIB] [-c COMPARE]
                    [-g GENERATE] [--xml-machine XML_MACHINE]
                    [--xml-compiler XML_COMPILER] [--xml-category XML_CATEGORY]
-                   [--xml-testlist XML_TESTLIST] [--driver {mct,nuopc,moab}]
+                   [--xml-testlist XML_TESTLIST] [--driver {mct,nuopc}]
                    [--compiler COMPILER] [-n] [-p PROJECT] [-t TEST_ID]
                    [-j PARALLEL_JOBS] [--proc-pool PROC_POOL]
                    [--walltime WALLTIME] [-q QUEUE] [-f TESTFILE] [-o]
@@ -223,8 +223,7 @@ options:
                         The default is all if any --xml- argument is used.
   --xml-testlist XML_TESTLIST
                         Use this testlist to lookup tests.The default is specified in config_files.xml
-  --driver {mct,nuopc,moab}
-                        Override driver specified in tests and use this one.
+  --driver {mct,nuopc}  Override driver specified in tests and use this one.
   --compiler COMPILER   Compiler for building cime. Default will be the name in the 
                         Testname or the default defined for the machine.
   -n, --namelists-only  Only perform namelist actions for tests

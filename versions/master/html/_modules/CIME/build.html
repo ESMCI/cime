@@ -334,8 +334,8 @@
     <span class="p">)</span>
 
     <span class="n">ocn_model</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;COMP_OCN&quot;</span><span class="p">)</span>
-    <span class="n">atm_model</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;COMP_ATM&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">ocn_model</span> <span class="o">==</span> <span class="s2">&quot;mom&quot;</span> <span class="ow">or</span> <span class="n">atm_model</span> <span class="o">==</span> <span class="s2">&quot;fv3gfs&quot;</span><span class="p">:</span>
+    <span class="n">atm_dycore</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CAM_DYCORE&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ocn_model</span> <span class="o">==</span> <span class="s2">&quot;mom&quot;</span> <span class="ow">or</span> <span class="p">(</span><span class="n">atm_dycore</span> <span class="ow">and</span> <span class="n">atm_dycore</span> <span class="o">==</span> <span class="s2">&quot;fv3&quot;</span><span class="p">):</span>
         <span class="n">cmake_args</span> <span class="o">+=</span> <span class="s2">&quot; -DUSE_FMS=TRUE &quot;</span>
 
     <span class="n">cmake_args</span> <span class="o">+=</span> <span class="s2">&quot; -DINSTALL_SHAREDPATH=</span><span class="si">{}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
@@ -352,6 +352,7 @@
     <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">_CMD_ARGS_FOR_BUILD</span><span class="p">:</span>
         <span class="n">cmake_args</span> <span class="o">+=</span> <span class="n">xml_to_make_variable</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">cmake</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
+    <span class="n">atm_model</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;COMP_ATM&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">atm_model</span> <span class="o">==</span> <span class="s2">&quot;scream&quot;</span><span class="p">:</span>
         <span class="n">cmake_args</span> <span class="o">+=</span> <span class="n">xml_to_make_variable</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="s2">&quot;HOMME_TARGET&quot;</span><span class="p">,</span> <span class="n">cmake</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
@@ -847,8 +848,9 @@
         <span class="n">libs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;CDEPS&quot;</span><span class="p">)</span>
 
     <span class="n">ocn_model</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;COMP_OCN&quot;</span><span class="p">)</span>
-    <span class="n">atm_model</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;COMP_ATM&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">ocn_model</span> <span class="o">==</span> <span class="s2">&quot;mom&quot;</span> <span class="ow">or</span> <span class="n">atm_model</span> <span class="o">==</span> <span class="s2">&quot;fv3gfs&quot;</span><span class="p">:</span>
+
+    <span class="n">atm_dycore</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CAM_DYCORE&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ocn_model</span> <span class="o">==</span> <span class="s2">&quot;mom&quot;</span> <span class="ow">or</span> <span class="p">(</span><span class="n">atm_dycore</span> <span class="ow">and</span> <span class="n">atm_dycore</span> <span class="o">==</span> <span class="s2">&quot;fv3&quot;</span><span class="p">):</span>
         <span class="n">libs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;FMS&quot;</span><span class="p">)</span>
 
     <span class="n">files</span> <span class="o">=</span> <span class="n">Files</span><span class="p">(</span><span class="n">comp_interface</span><span class="o">=</span><span class="n">comp_interface</span><span class="p">)</span>
@@ -1202,6 +1204,7 @@
     <span class="n">ninst_build</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;NINST_BUILD&quot;</span><span class="p">)</span>
     <span class="n">smp_value</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;SMP_VALUE&quot;</span><span class="p">)</span>
     <span class="n">clm_use_petsc</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CLM_USE_PETSC&quot;</span><span class="p">)</span>
+    <span class="n">mpaso_use_petsc</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MPASO_USE_PETSC&quot;</span><span class="p">)</span>
     <span class="n">cism_use_trilinos</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CISM_USE_TRILINOS&quot;</span><span class="p">)</span>
     <span class="n">mali_use_albany</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MALI_USE_ALBANY&quot;</span><span class="p">)</span>
     <span class="n">mach</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MACH&quot;</span><span class="p">)</span>
@@ -1226,7 +1229,7 @@
     <span class="c1"># the future there may be others -- so USE_PETSC will be true if</span>
     <span class="c1"># ANY of those are true.</span>
 
-    <span class="n">use_petsc</span> <span class="o">=</span> <span class="n">clm_use_petsc</span>
+    <span class="n">use_petsc</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">clm_use_petsc</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">bool</span><span class="p">(</span><span class="n">mpaso_use_petsc</span><span class="p">)</span>
     <span class="k">case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;USE_PETSC&quot;</span><span class="p">,</span> <span class="n">use_petsc</span><span class="p">)</span>
 
     <span class="c1"># Set the overall USE_TRILINOS variable to TRUE if any of the</span>

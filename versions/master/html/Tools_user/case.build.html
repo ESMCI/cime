@@ -148,7 +148,7 @@
 </div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ ./case.build --help
 usage: case.build [-h] [-d] [-v] [-s] [--ninja] [--separate-builds]
-                  [--dry-run]
+                  [--skip-submit] [--dry-run]
                   [--sharedlib-only | -m | -b {cpl,atm,lnd,ice,ocn,rof,glc,wav,esp,iac,csmshare,mct,pio,gptl} [{cpl,atm,lnd,ice,ocn,rof,glc,wav,esp,iac,csmshare,mct,pio,gptl} ...]
                   | --skip-provenance-check | --clean-all | --clean
                   [{cpl,atm,lnd,ice,ocn,rof,glc,wav,esp,iac,csmshare,mct,pio,gptl} ...]
@@ -207,6 +207,7 @@ options:
   -s, --silent          Print only warnings and error messages
   --ninja               Use ninja backed for CMake (instead of gmake). The ninja backend is better at scanning fortran dependencies but seems to be less reliable across different platforms and compilers.
   --separate-builds     Build each component one at a time, separately, with output going to separate logs
+  --skip-submit         Sets the current test phase to RUN, skipping the SUBMIT phase. This may be useful if rebuilding the model while this test is in the batch queue. ONLY USE IF A TEST CASE, OTHERWISE IGNORED.
   --dry-run             Just print the cmake and ninja commands.
   --sharedlib-only      Only build shared libraries.
   -m, --model-only      Assume shared libraries are already built.
