@@ -207,6 +207,17 @@ As an example, the directory could contain the following files: ::
   > shell_commands  (this would contain ./xmlchange commands)
   > SourceMods/src.cam/dyncomp.F90
 
+It is important to note that the file containing the **xmlchange** 
+commands must be named ``shell_commands`` in order for it to be recognised
+and run upon case creation.
+
+The structure of the component directories do not need to be the 
+same as in the component source code. As an example, should the user
+want to modify the ``src/dynamics/eul/dyncomp.F90`` file within the 
+CAM source code, the modified file should be put into the directory 
+``SourceMods/src.cam`` directly. There is no need to mimic the source
+code structure, such as ``SourceMods/src.cam/dynamics/eul``.
+
 When the user calls **create_newcase** with the ``--user-mods-dir`` pointing to the
 full pathname of the directory containing these changes, then the ``CASEROOT`` will be
 created with these changes applied.
