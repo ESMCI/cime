@@ -38,6 +38,7 @@ class EnvBatch(EnvBase):
         super(EnvBatch, self).__init__(
             case_root, infile, schema=schema, read_only=read_only
         )
+        self._batchtype = self.get_batch_system_type()
 
     # pylint: disable=arguments-differ
     def set_value(self, item, value, subgroup=None, ignore_type=False):
@@ -554,7 +555,7 @@ class EnvBatch(EnvBase):
 
         return "\n".join(result)
 
-    def get_submit_args(self, case, job):
+    def get_submit_args(self, case, job, resolve=True):
         """
         return a list of touples (flag, name)
         """
@@ -562,7 +563,7 @@ class EnvBatch(EnvBase):
 
         submit_arg_nodes = self._get_arg_nodes(case, bs_nodes)
 
-        submitargs = self._process_args(case, submit_arg_nodes, job)
+        submitargs = self._process_args(case, submit_arg_nodes, job, resolve=resolve)
 
         return submitargs
 
@@ -596,7 +597,7 @@ class EnvBatch(EnvBase):
 
         return submit_arg_nodes
 
-    def _process_args(self, case, submit_arg_nodes, job):
+    def _process_args(self, case, submit_arg_nodes, job, resolve=True):
         submitargs = " "
 
         for arg in submit_arg_nodes:
@@ -606,7 +607,6 @@ class EnvBatch(EnvBase):
                 flag, name = self._get_argument(case, arg)
             except ValueError:
                 continue
-
             if self._batchtype == "cobalt" and job == "case.st_archive":
                 if flag == "-n":
                     name = "task_count"
@@ -618,7 +618,7 @@ class EnvBatch(EnvBase):
                 if " " in flag:
                     flag, name = flag.split()
                 if name:
-                    if "$" in name:
+                    if resolve and "$" in name:
                         rflag = self._resolve_argument(case, flag, name, job)
                         # This is to prevent -gpu_type=none in qsub args
                         if rflag.endswith("=none"):
@@ -630,10 +630,13 @@ class EnvBatch(EnvBase):
                 else:
                     submitargs += " {}".format(flag)
             else:
-                try:
-                    submitargs += self._resolve_argument(case, flag, name, job)
-                except ValueError:
-                    continue
+                if resolve:
+                    try:
+                        submitargs += self._resolve_argument(case, flag, name, job)
+                    except ValueError:
+                        continue
+                else:
+                    submitargs += " {} {}".format(flag, name)
 
         return submitargs
 
@@ -963,10 +966,20 @@ class EnvBatch(EnvBase):
 
             return
 
-        submitargs = self.get_submit_args(case, job)
-        args_override = self.get_value("BATCH_COMMAND_FLAGS", subgroup=job)
-        if args_override:
-            submitargs = args_override
+        submitargs = case.get_value("BATCH_COMMAND_FLAGS", subgroup=job, resolved=False)
+
+        project = case.get_value("PROJECT", subgroup=job)
+
+        if not project:
+            # If there is no project then we need to remove the project flag
+            if (
+                batch_system == "pbs" or batch_system == "cobalt"
+            ) and " -A " in submitargs:
+                submitargs = submitargs.replace("-A", "")
+            elif batch_system == "lsf" and " -P " in submitargs:
+                submitargs = submitargs.replace("-P", "")
+            elif batch_system == "slurm" and " --account " in submitargs:
+                submitargs = submitargs.replace("--account", "")
 
         if dep_jobs is not None and len(dep_jobs) > 0:
             logger.debug("dependencies: {}".format(dep_jobs))

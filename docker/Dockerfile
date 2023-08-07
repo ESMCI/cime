@@ -21,6 +21,12 @@ ENV LOGNAME=root
 
 SHELL ["/bin/bash", "-c"]
 
+# First layer as they never change, required for E3SM testing, TODO: fix in unittesting as well
+RUN mkdir -p /cache/cpl/gridmaps/oQU240 /cache/share/domains && \
+    wget -O /cache/cpl/gridmaps/oQU240/map_oQU240_to_ne4np4_aave.160614.nc https://portal.nersc.gov/project/e3sm/inputdata/cpl/gridmaps/oQU240/map_oQU240_to_ne4np4_aave.160614.nc && \
+    wget -O /cache/share/domains/domain.ocn.ne4np4_oQU240.160614.nc https://portal.nersc.gov/project/e3sm/inputdata/share/domains/domain.ocn.ne4np4_oQU240.160614.nc && \
+    wget -O /cache/share/domains/domain.lnd.ne4np4_oQU240.160614.nc https://portal.nersc.gov/project/e3sm/inputdata/share/domains/domain.lnd.ne4np4_oQU240.160614.nc
+
 # Install common packages
 RUN mamba install --yes -c conda-forge \
             cmake \
@@ -33,10 +39,13 @@ RUN mamba install --yes -c conda-forge \
             pytest-cov\
             pyyaml \
             vim \
+            rsync \
             openssh && \
             rm -rf /opt/conda/pkgs/*
 
 # Install version locked packages
+# gcc, gxx, gfortran provide symlinks for x86_64-conda-linux-gnu-*
+# ar and ranlib are not symlinked
 RUN mamba install --yes -c conda-forge \
             libnetcdf=${LIBNETCDF_VERSION}=*openmpi* \
             netcdf-fortran=${NETCDF_FORTRAN_VERSION}=*openmpi* \
@@ -44,7 +53,10 @@ RUN mamba install --yes -c conda-forge \
             gcc_linux-64=${GCC_VERSION} \
             gxx_linux-64=${GCC_VERSION} \
             openmpi-mpifort \
-            gfortran_linux-64=${GCC_VERSION} && \
+            gfortran_linux-64=${GCC_VERSION} \
+            gcc \
+            gxx \
+            gfortran && \
             rm -rf /opt/conda/pkgs/* && \
             ln -sf /opt/conda/bin/x86_64-conda-linux-gnu-ar /opt/conda/bin/ar && \
             ln -sf /opt/conda/bin/x86_64-conda-linux-gnu-ranlib /opt/conda/bin/ranlib

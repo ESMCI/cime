@@ -6,7 +6,7 @@
  <xs:attribute name="compclass" type="xs:string"/>
  <xs:attribute name="version" type="xs:string"/>
  <xs:attribute name="disposition" type="xs:string"/>
-
+ <xs:attribute name="exclude_testing" type="xs:boolean"/>
 
  <!-- definition of simple elements -->
  <xs:element name="rest_file_extension" type="xs:string"/>
@@ -50,6 +50,7 @@
      </xs:sequence>
      <xs:attribute ref="compname" use="required"/>
      <xs:attribute ref="compclass" use="required"/>
+     <xs:attribute ref="exclude_testing"/>
    </xs:complexType>
  </xs:element>
 

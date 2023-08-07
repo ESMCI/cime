@@ -218,8 +218,8 @@ def parse_command_line(args, description):
         )
 
         parser.add_argument(
-            "--xml-driver",
-            choices=("mct", "nuopc", "moab"),
+            "--driver",
+            choices=model_config.driver_choices,
             help="Override driver specified in tests and use this one.",
         )
 
@@ -473,11 +473,24 @@ def parse_command_line(args, description):
         f"The default is {srcroot_default}",
     )
 
+    parser.add_argument(
+        "--force-rebuild",
+        action="store_true",
+        help="When used with 'use-existing' and 'test-id', the"
+        "tests will have their 'BUILD_SHAREDLIB' phase reset to 'PEND'.",
+    )
+
     CIME.utils.add_mail_type_args(parser)
 
     args = CIME.utils.parse_args_and_handle_standard_logging_options(args, parser)
 
     CIME.utils.resolve_mail_type_args(args)
+
+    if args.force_rebuild:
+        expect(
+            args.use_existing and args.test_id,
+            "Cannot force a rebuild without 'use-existing' and 'test-id'",
+        )
 
     # generate and compare flags may not point to the same directory
     if model_config.create_test_flag_mode == "cesm":
@@ -623,7 +636,7 @@ def parse_command_line(args, description):
                 xml_testlist=args.xml_testlist,
                 machine=machine_name,
                 compiler=args.compiler,
-                driver=args.xml_driver,
+                driver=args.driver,
             )
             test_names = [item["name"] for item in test_data]
             for test_datum in test_data:
@@ -754,6 +767,7 @@ def parse_command_line(args, description):
         args.single_exe,
         args.workflow,
         args.chksum,
+        args.force_rebuild,
     )
 
 
@@ -913,6 +927,7 @@ def create_test(
     single_exe,
     workflow,
     chksum,
+    force_rebuild,
 ):
     ###############################################################################
     impl = TestScheduler(
@@ -953,6 +968,7 @@ def create_test(
         single_exe=single_exe,
         workflow=workflow,
         chksum=chksum,
+        force_rebuild=force_rebuild,
     )
 
     success = impl.run_tests(
@@ -1054,6 +1070,7 @@ def _main_func(description=None):
         single_exe,
         workflow,
         chksum,
+        force_rebuild,
     ) = parse_command_line(sys.argv, description)
 
     success = False
@@ -1105,6 +1122,7 @@ def _main_func(description=None):
             single_exe,
             workflow,
             chksum,
+            force_rebuild,
         )
         run_count += 1
 

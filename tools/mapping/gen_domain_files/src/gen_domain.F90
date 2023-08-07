@@ -53,7 +53,7 @@ program fmain
   set_omask   = .false.
 
   ! Make sure we have arguments
-  nargs = iargc()
+  nargs = command_argument_count()
   if (nargs == 0) then
      write(6,*)'invoke gen_domain -h for usage'
      stop
@@ -64,47 +64,47 @@ program fmain
   n = 1
   do while (n <= nargs)
     arg = ' '
-    call getarg (n, arg)
+    call get_command_argument (n, arg)
     n = n + 1
 
     select case (arg)
     case ('-m')
        ! input mapping file
-       call getarg (n, arg)
+       call get_command_argument (n, arg)
        n = n + 1
        fmap = trim(arg)
        cmdline = trim(cmdline) // ' -m ' // trim(arg)
     case ('-o')
        ! output ocean grid name
-       call getarg (n, arg)
+       call get_command_argument (n, arg)
        n = n + 1
        fn1_out = trim(arg)
        cmdline = trim(cmdline) // ' -o ' // trim(arg)
     case ('-l')
        ! output land grid name
-       call getarg (n, arg)
+       call get_command_argument (n, arg)
        n = n + 1
        fn2_out = trim(arg)
        cmdline = trim(cmdline) // ' -l ' // trim(arg)
     case ('-p')
        ! set pole on this grid [0,1,2]
-       call getarg (n, arg)
+       call get_command_argument (n, arg)
        n = n + 1
        set_fv_pole_yc = ichar(trim(arg))-48
        write(6,*)'set_fv_pole_yc is ',set_fv_pole_yc
     case ('--fminval')
        ! set fminval (min allowable land fraction)
-       call getarg (n, arg)
+       call get_command_argument (n, arg)
        n = n + 1
        read(arg,*) fminval
     case ('--fmaxval')
        ! set fminval (min allowable land fraction)
-       call getarg (n, arg)
+       call get_command_argument (n, arg)
        n = n + 1
        read(arg,*) fmaxval
     case ('-c')
        ! user comment
-       call getarg (n, arg)
+       call get_command_argument (n, arg)
        n = n + 1
        usercomment = trim(arg)
     case ('--set-omask')

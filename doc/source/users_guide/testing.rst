@@ -450,54 +450,9 @@ If this test will only be run as a single test, you can now create a test name
 and follow the individual_ test instructions for create_test.
 If you want this test to be part of a suite, then it must be described in the relevant testlists_YYY.xml file.
 
-===============================
-CIME's scripts regression tests
-===============================
-.. _`CIME's scripts regression tests`:
+======================
+CIME Developer's guide
+======================
+.. _`CIME Developer's guide`:
 
-**$CIMEROOT/scripts/lib/CIME/tests/scripts_regression_tests.py** is the suite of internal tests we run
-for the stand-alone CIME testing. With no arguments, it will run the full suite. You can limit testing to a specific
-test class or even a specific test within a test class.
-
-Run full suite::
-
-  python scripts/lib/CIME/tests/scripts_regression_tests.py
-
-Run a test class::
-
-  python scripts/lib/CIME/tests/scripts_regression_tests.py CIME.tests.test_unit_case
-
-Run a specific test::
-
-  python scripts/lib/CIME/tests/scripts_regression_tests.py CIME.tests.test_unit_case.TestCaseSubmit.test_check_case
-
-If a test fails, the unittest module that drives scripts_regression_tests wil note the failure, but
-won't print the output of the test until testing has completed. When there are failures for a
-test, the case directories for that test will not be cleaned up so that the user can do a post-mortem
-analysis. The user will be notified of the specific directories that will be left for them to
-examine.
-
-The test suite can also be ran with `pytest` and `pytest-cov`. After the test suite is done running
-a coverage report will be presented.
-
-Install dependencies::
-
-  python -m pip install pytest pytest-cov
-
-Run full suite::
-
-  pytest -vvv
-
-Run just unit tests::
-
-  pytest -vvv scripts/lib/CIME/tests/test_unit*
-
-Run a test class::
-
-  pytest -vvv scripts/lib/CIME/tests/test_unit_case.py
-
-Run a specific test::
-
-  pytest -vvv scripts/lib/CIME/tests/test_unit_case.py::TestCaseSubmit::test_check_case
-
-More description can be found in https://github.com/ESCOMP/ctsm/wiki/System-Testing-Guide
+The CIME Developer's guide can be found on the project's GitHub `wiki <https://github.com/ESMCI/cime/wiki/CIME-Developers-Guide>`_.

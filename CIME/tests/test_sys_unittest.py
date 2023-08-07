@@ -28,6 +28,10 @@ class TestUnitTest(base.BaseTestCase):
         macros_to_check = [
             os.path.join(cmake_macros_dir, "{}_{}.cmake".format(compiler, mach)),
             os.path.join(cmake_macros_dir, "{}.cmake".format(mach)),
+            os.path.join(
+                os.environ.get("HOME"), ".cime", "{}_{}.cmake".format(compiler, mach)
+            ),
+            os.path.join(os.environ.get("HOME"), ".cime", "{}.cmake".format(mach)),
         ]
 
         for macro_to_check in macros_to_check:

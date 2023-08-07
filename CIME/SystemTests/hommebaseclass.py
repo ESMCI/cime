@@ -14,11 +14,11 @@ logger = logging.getLogger(__name__)
 
 
 class HommeBase(SystemTestsCommon):
-    def __init__(self, case):
+    def __init__(self, case, **kwargs):
         """
         initialize an object interface to the SMS system test
         """
-        SystemTestsCommon.__init__(self, case)
+        SystemTestsCommon.__init__(self, case, **kwargs)
         case.load_env()
         self.csnd = "not defined"
         self.cmakesuffix = self.csnd

@@ -28,11 +28,11 @@ NINST = 30
 
 
 class MVK(SystemTestsCommon):
-    def __init__(self, case):
+    def __init__(self, case, **kwargs):
         """
         initialize an object interface to the MVK test
         """
-        SystemTestsCommon.__init__(self, case)
+        SystemTestsCommon.__init__(self, case, **kwargs)
 
         if self._case.get_value("MODEL") == "e3sm":
             self.component = "eam"

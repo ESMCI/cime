@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 class PET(SystemTestsCompareTwo):
-    def __init__(self, case):
+    def __init__(self, case, **kwargs):
         """
         initialize a test object
         """
@@ -25,6 +25,7 @@ class PET(SystemTestsCompareTwo):
             run_two_suffix="single_thread",
             run_one_description="default threading",
             run_two_description="threads set to 1",
+            **kwargs
         )
 
     def _case_one_setup(self):

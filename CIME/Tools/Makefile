@@ -541,7 +541,7 @@ cospsimulator_intr.o: $(COSP_LIBDIR)/libcosp.a
 endif
 
 ifdef FV3CORE_LIBDIR
-$(FV3CORE_LIBDIR)/libfv3core.a: $(EXEROOT)/FMS/libfms.a
+$(FV3CORE_LIBDIR)/libfv3core.a: $(LIBROOT)/libfms.a
 	$(MAKE) -C $(FV3CORE_LIBDIR) complib COMPLIB='$(FV3CORE_LIBDIR)/libfv3core.a' F90='$(FC)' CC='$(CC)' FFLAGS='$(FFLAGS) $(FC_AUTO_R8)'  CFLAGS='$(CFLAGS)' INCLDIR='$(INCLDIR)' FC_TYPE='$(COMPILER)'
 
 dyn_grid.o: $(FV3CORE_LIBDIR)/libfv3core.a
@@ -878,7 +878,7 @@ endif
 
 ifdef FV3CORE_LIBDIR
   ULIBDEP += $(FV3CORE_LIBDIR)/libfv3core.a
-  ULIBDEP += $(EXEROOT)/FMS/libfms.a
+  ULIBDEP += $(LIBROOT)/libfms.a
 endif
 
 ifdef MPAS_LIBDIR
@@ -914,7 +914,7 @@ GENF90 ?= $(CIMEROOT)/CIME/non_py/externals/genf90/genf90.pl
 
 ifeq ($(MPILIB),mpi-serial)
   MPISERIAL = $(INSTALL_SHAREDPATH)/lib/libmpi-serial.a
-  MLIBS += $(MPISERIAL)
+  MLIBS += -L$(INSTALL_SHAREDPATH)/lib -lmpi-serial
   CMAKE_OPTS += -DMPI_C_INCLUDE_PATH=$(INSTALL_SHAREDPATH)/include \
       -DMPI_Fortran_INCLUDE_PATH=$(INSTALL_SHAREDPATH)/include \
       -DMPI_C_LIBRARIES=$(INSTALL_SHAREDPATH)/lib/libmpi-serial.a \
