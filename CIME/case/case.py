@@ -1579,6 +1579,11 @@ class Case(object):
                 False,
                 "Both gpu-type and gpu-offload must be defined if either is defined",
             )
+        elif ngpus_per_node != 0:
+            expect(
+                False,
+                f"ngpus_per_node is expected to be 0 for a pure CPU run ; {ngpus_per_node} is provided instead ;", 
+            )
 
         # Set these two GPU XML variables here to overwrite the default values
         self.set_value("GPU_TYPE", str(gpu_type).lower())
