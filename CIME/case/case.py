@@ -2106,19 +2106,10 @@ directory, NOT in this subdirectory."""
             mpi_arg_string += " : "
 
         ngpus_per_node = self.get_value("NGPUS_PER_NODE")
-        if ngpus_per_node and ngpus_per_node > 0 and config.gpus_use_set_device_rank:
-            if self.get_value("MACH") == "gust" or self.get_value("MACH") == "derecho":
-                mpi_arg_string = mpi_arg_string + " get_local_rank "
-            else:
-                # this wrapper script only works with OpenMPI library
-                # has been tested on Casper
-                expect(
-                    self.get_value("MPILIB") == "openmpi",
-                    "The wrapper script only works with OpenMPI library; {} is currently used".format(self.get_value("MPILIB")),
-                )
-                rundir = self.get_value("RUNDIR")
-                output_name = rundir + "/set_device_rank.sh"
-                mpi_arg_string = mpi_arg_string + " " + output_name + " "
+        if ngpus_per_node and ngpus_per_node > 0:
+            mpi_gpu_run_script = self.get_value("MPI_GPU_WRAPPER_SCRIPT")
+            if mpi_gpu_run_script:
+                mpi_arg_string = mpi_arg_string + " " + mpi_gpu_run_script
 
         return self.get_resolved_value(
             "{} {} {} {}".format(
