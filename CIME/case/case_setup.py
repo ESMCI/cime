@@ -21,7 +21,6 @@ from CIME.utils import (
     copy_local_macros_to_dir,
 )
 from CIME.utils import batch_jobid
-from CIME.utils import transform_vars
 from CIME.test_status import *
 from CIME.locked_files import unlock_file, lock_file
 

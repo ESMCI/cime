@@ -74,6 +74,7 @@ class Case(object):
 
     This class extends across multiple files, class members external to this file
     are listed in the following imports
+
     """
 
     from CIME.case.case_setup import case_setup
@@ -123,7 +124,7 @@ class Case(object):
         self._env_generic_files = []
         self._files = []
         self._comp_interface = None
-        self.gpu_enabled = False 
+        self.gpu_enabled = False
         self._non_local = non_local
         self.read_xml()
 
@@ -1541,7 +1542,7 @@ class Case(object):
         #        3. if ngpus-per-node argument is equal to 0, it will be updated to 1 automatically.
         # ----------------------------------------------------------------------------------------------------------
         max_gpus_per_node = self.get_value("MAX_GPUS_PER_NODE")
-        if gpu_type and str(gpu_type).lower() != 'none':
+        if gpu_type and str(gpu_type).lower() != "none":
             expect(
                 max_gpus_per_node,
                 f"GPUS are not defined for machine={machine_name} and compiler={compiler}",
@@ -1574,7 +1575,7 @@ class Case(object):
                     if ngpus_per_node <= max_gpus_per_node
                     else max_gpus_per_node,
                 )
-        elif gpu_offload and str(gpu_offload).lower() != 'none':
+        elif gpu_offload and str(gpu_offload).lower() != "none":
             expect(
                 False,
                 "Both gpu-type and gpu-offload must be defined if either is defined",
@@ -1582,7 +1583,7 @@ class Case(object):
         elif ngpus_per_node != 0:
             expect(
                 False,
-                f"ngpus_per_node is expected to be 0 for a pure CPU run ; {ngpus_per_node} is provided instead ;", 
+                f"ngpus_per_node is expected to be 0 for a pure CPU run ; {ngpus_per_node} is provided instead ;",
             )
 
         # Set these two GPU XML variables here to overwrite the default values
