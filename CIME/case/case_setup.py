@@ -67,6 +67,9 @@ def _build_usernl_files(case, model, comp):
     if comp == "cpl":
         if not os.path.exists("user_nl_cpl"):
             safe_copy(os.path.join(model_dir, "user_nl_cpl"), ".")
+    if comp == "dart":
+        if not os.path.exists("user_nl_dart"):
+            safe_copy(os.path.join(model_dir, "user_nl_dart"), ".")
     else:
         if comp_interface == "nuopc":
             ninst = case.get_value("NINST")

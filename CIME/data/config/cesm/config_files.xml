@@ -286,6 +286,7 @@
     <type>char</type>
     <default_value>unset</default_value>
     <values>
+      <value component="dart" comp_interface="nuopc" >$SRCROOT/components/dart</value>
       <value component="desp" comp_interface="mct"   >$SRCROOT/components/cpl7/components/data_comps_$COMP_INTERFACE/desp</value>
       <value component="desp" comp_interface="nuopc" >$CIMEROOT/CIME/non_py/src/components/data_comps_$COMP_INTERFACE/desp</value>
       <value component="sesp" comp_interface="mct"   >$SRCROOT/components/cpl7/components/stub_comps_$COMP_INTERFACE/sesp</value>
