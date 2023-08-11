@@ -481,6 +481,7 @@ class ParamGen:
         self._data = deepcopy(self._original_data)
         self._reduced = False
 
+    # TODO: REMOVE BELOW DUPLICATE METHOD. USE AN NML CLASS INSTANCE INSTEAD.
     def write_nml(self, output_path):
         """Writes the reduced data in Fortran namelist format if the data conforms to the format.
 
@@ -501,6 +502,8 @@ class ParamGen:
             assert isinstance(var, dict), "Invalid data format"
             for vls in var.values():
                 # vnm is the var name, and vls is its values element
+                if vls is None:
+                    continue # no values, likely because all guards evaluate to False.
                 assert isinstance(vls, dict), "Invalid data format"
                 for val in vls:
                     # val is a value in the values dict
@@ -511,6 +514,10 @@ class ParamGen:
             for module in self._data:
                 nml.write("&{}\n".format(module))
                 for var in self._data[module]:
+                    if self._data[module][var] is None or self._data[module][var]["values"] is None:
+                        # if the value of a particular variable is None (because all guards are false),
+                        # then, skip writing the variable.
+                        continue
                     val = str(self._data[module][var]["values"]).strip()
                     if val is not None:
                         nml.write("    {} = {}\n".format(var, val))
