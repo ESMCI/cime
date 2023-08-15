@@ -41,7 +41,7 @@ class TestCaseFake(unittest.TestCase):
         shutil.rmtree(self.tempdir, ignore_errors=True)
 
     def _compare_test_results(self, baseline, test_id, phases, **kwargs):
-        test_status_root = os.path.join(self.test_root, test_id)
+        test_status_root = os.path.join(self.test_root, "gnu." + test_id)
         os.makedirs(test_status_root)
 
         with TestStatus(test_status_root, "test") as status:

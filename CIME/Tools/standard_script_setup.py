@@ -41,6 +41,5 @@ os.environ["CIMEROOT"] = cimeroot
 
 import CIME.utils
 
-
 CIME.utils.stop_buffering_output()
 import logging, argparse

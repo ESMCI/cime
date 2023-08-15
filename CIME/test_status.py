@@ -274,6 +274,17 @@ class TestStatus(object):
     def get_comment(self, phase):
         return self._phase_statuses[phase][1] if phase in self._phase_statuses else None
 
+    def current_is(self, phase, status):
+        try:
+            latest = self.get_latest_phase()
+        except KeyError:
+            return False
+
+        return latest == phase and self.get_status(phase) == status
+
+    def get_latest_phase(self):
+        return list(self._phase_statuses.keys())[-1]
+
     def phase_statuses_dump(
         self, prefix="", skip_passes=False, skip_phase_list=None, xfails=None
     ):

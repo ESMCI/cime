@@ -106,15 +106,9 @@ function init_e3sm() {
 
     update_cime "${install_path}/cime"
 
-    curl -L --create-dirs \
-        -o ${cache_path}/cpl/gridmaps/oQU240/map_oQU240_to_ne4np4_aave.160614.nc \
-        https://web.lcrc.anl.gov/public/e3sm/inputdata/cpl/gridmaps/oQU240/map_oQU240_to_ne4np4_aave.160614.nc
-    curl -L --create-dirs \
-        -o ${cache_path}/share/domains/domain.ocn.ne4np4_oQU240.160614.nc \
-        https://web.lcrc.anl.gov/public/e3sm/inputdata/share/domains/domain.ocn.ne4np4_oQU240.160614.nc
-    curl -L --create-dirs \
-        -o ${cache_path}/share/domains/domain.lnd.ne4np4_oQU240.160614.nc \
-        https://web.lcrc.anl.gov/public/e3sm/inputdata/share/domains/domain.lnd.ne4np4_oQU240.160614.nc
+    mkdir -p /storage/inputdata
+
+    rsync -vr /cache/ /storage/inputdata/
 
     cd "${install_path}/cime"
 }

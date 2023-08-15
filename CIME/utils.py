@@ -8,6 +8,7 @@ import io, logging, gzip, sys, os, time, re, shutil, glob, string, random, impor
 import importlib.util
 import errno, signal, warnings, filecmp
 import stat as statlib
+from argparse import Action
 from contextlib import contextmanager
 
 from distutils import file_util
@@ -19,6 +20,14 @@ logger = logging.getLogger(__name__)
 # Fix to pass user defined `srcroot` to `CIME.XML.generic_xml.GenericXML`
 # where it's used to resolve $SRCROOT in XML config files.
 GLOBAL = {}
+
+
+def deprecate_action(message):
+    class ActionStoreDeprecated(Action):
+        def __call__(self, parser, namespace, values, option_string=None):
+            raise DeprecationWarning(f"{option_string} is deprecated{message}")
+
+    return ActionStoreDeprecated
 
 
 def import_from_file(name, file_path):

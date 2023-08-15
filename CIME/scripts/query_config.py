@@ -8,7 +8,7 @@ information will be listed for each.
 
 from CIME.Tools.standard_script_setup import *
 import re
-from CIME.utils import expect
+from CIME.utils import expect, get_cime_default_driver, deprecate_action
 from CIME.XML.files import Files
 from CIME.XML.component import Component
 from CIME.XML.compsets import Compsets
@@ -314,8 +314,16 @@ def parse_command_line(args, description):
 
     parser.add_argument(
         "--comp_interface",
-        choices=supported_comp_interfaces,
+        choices=supported_comp_interfaces,  # same as config.driver_choices
         default="mct",
+        action=deprecate_action(", use --driver argument"),
+        help="DEPRECATED: Use --driver argument",
+    )
+
+    parser.add_argument(
+        "--driver",
+        choices=config.driver_choices,
+        default=get_cime_default_driver(),
         help="Coupler/Driver interface",
     )
 
@@ -332,7 +340,7 @@ def parse_command_line(args, description):
         args.machines,
         args.long,
         args.xml,
-        files[args.comp_interface],
+        files[args.driver],
     )
 
 
