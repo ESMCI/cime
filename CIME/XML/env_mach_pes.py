@@ -65,10 +65,9 @@ class EnvMachPes(EnvBase):
             if ngpus_per_node is None:
                 ngpus_per_node = self.get_value("NGPUS_PER_NODE")
             if (ngpus_per_node and value) and value < 0:
-                if ngpus_per_node > 0:
-                    value = -1 * value * max_cputasks_per_gpu_node
-                else:
-                    value = -1 * value * max_mpitasks_per_node
+                value = -1 * value * max_cputasks_per_gpu_node
+            elif value:
+                value = -1 * value * max_mpitasks_per_node
         # in the nuopc driver there is only one NINST value
         # so that NINST_{comp} = NINST
         if "NINST_" in vid and value is None:
@@ -163,6 +162,7 @@ class EnvMachPes(EnvBase):
             tt = rootpe + nthrds * ((ntasks - 1) * pstrid + 1)
             maxrootpe = max(maxrootpe, rootpe)
             total_tasks = max(tt, total_tasks)
+
         if asyncio_tasks:
             total_tasks = total_tasks + len(asyncio_tasks)
         if self.get_value("MULTI_DRIVER"):
