@@ -178,11 +178,6 @@ class Config:
             desc="If set to `True` then COMP_ROOT_DIR_CPL is set using UFS_DRIVER if defined.",
         )
         self._set_attribute(
-            "gpus_use_set_device_rank",
-            True,
-            desc="If set to `True` and NGPUS_PER_NODE > 0 then `$RUNDIR/set_device_rank.sh` is appended when the MPI run command is generated.",
-        )
-        self._set_attribute(
             "test_custom_project_machine",
             "melvin",
             desc="Sets the machine name to use when testing a machine with no PROJECT.",

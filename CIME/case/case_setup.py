@@ -21,7 +21,6 @@ from CIME.utils import (
     copy_local_macros_to_dir,
 )
 from CIME.utils import batch_jobid
-from CIME.utils import transform_vars
 from CIME.test_status import *
 from CIME.locked_files import unlock_file, lock_file
 
@@ -482,31 +481,3 @@ def case_setup(self, clean=False, test_mode=False, reset=False, keep=None):
             caseroot=caseroot,
             is_batch=is_batch,
         )
-
-    # put the following section here to make sure the rundir is generated first
-    machdir = self.get_value("MACHDIR")
-    mach = self.get_value("MACH")
-    ngpus_per_node = self.get_value("NGPUS_PER_NODE")
-    overrides = {}
-    overrides["ngpus_per_node"] = ngpus_per_node
-    input_template = os.path.join(machdir, "mpi_run_gpu.{}".format(mach))
-    if os.path.isfile(input_template):
-        # update the wrapper script that sets the device id for each MPI rank
-        output_text = transform_vars(
-            open(input_template, "r").read(), case=self, overrides=overrides
-        )
-
-        # write it out to the run dir
-        rundir = self.get_value("RUNDIR")
-        output_name = os.path.join(rundir, "set_device_rank.sh")
-        logger.info("Creating file {}".format(output_name))
-        with open(output_name, "w") as f:
-            f.write(output_text)
-
-        # make the wrapper script executable
-        if os.path.isfile(output_name):
-            os.system("chmod +x " + output_name)
-        else:
-            expect(
-                False, "The file {} is not written out correctly.".format(output_name)
-            )
