@@ -64,7 +64,7 @@ class EnvMachPes(EnvBase):
                 max_cputasks_per_gpu_node = self.get_value("MAX_CPUTASKS_PER_GPU_NODE")
             if ngpus_per_node is None:
                 ngpus_per_node = self.get_value("NGPUS_PER_NODE")
-            if value is not None and value < 0:
+            if (ngpus_per_node and value) and value < 0:
                 if ngpus_per_node > 0:
                     value = -1 * value * max_cputasks_per_gpu_node
                 else:
