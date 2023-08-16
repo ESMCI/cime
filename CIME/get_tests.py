@@ -115,7 +115,6 @@ _CIME_TESTS = {
             "ERR_Ln9.f45_g37_rx1.A",
             "ERP_Ln9.f45_g37_rx1.A",
             "SMS_D_Ln9_Mmpi-serial.f19_g16_rx1.A",
-            "DAE.ww3a.ADWAV",
             "PET_Ln9_P4.f19_f19.A",
             "PEM_Ln9_P4.f19_f19.A",
             "SMS_Ln3.T42_T42.S",
