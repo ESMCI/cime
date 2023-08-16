@@ -1587,8 +1587,10 @@ class Case(object):
             )
 
         # Set these two GPU XML variables here to overwrite the default values
-        self.set_value("GPU_TYPE", str(gpu_type).lower())
-        self.set_value("GPU_OFFLOAD", str(gpu_offload).lower())
+        if gpu_type:
+            self.set_value("GPU_TYPE", str(gpu_type).lower())
+        if gpu_offload:
+            self.set_value("GPU_OFFLOAD", str(gpu_offload).lower())
 
         self.initialize_derived_attributes()
 
