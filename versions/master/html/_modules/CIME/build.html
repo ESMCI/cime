@@ -332,6 +332,20 @@
     <span class="n">cmake_args</span> <span class="o">+=</span> <span class="s2">&quot; -Dcompile_threaded=</span><span class="si">{}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
         <span class="n">stringify_bool</span><span class="p">(</span><span class="n">case</span><span class="o">.</span><span class="n">get_build_threaded</span><span class="p">())</span>
     <span class="p">)</span>
+    <span class="c1"># check settings for GPU</span>
+    <span class="n">gpu_type</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;GPU_TYPE&quot;</span><span class="p">)</span>
+    <span class="n">gpu_offload</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;GPU_OFFLOAD&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">gpu_type</span> <span class="o">!=</span> <span class="s2">&quot;none&quot;</span><span class="p">:</span>
+        <span class="n">expect</span><span class="p">(</span>
+            <span class="n">gpu_offload</span> <span class="o">!=</span> <span class="s2">&quot;none&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Both GPU_TYPE and GPU_OFFLOAD must be defined if either is&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">cmake_args</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; -DGPU_TYPE=</span><span class="si">{</span><span class="n">gpu_type</span><span class="si">}</span><span class="s2"> -DGPU_OFFLOAD=</span><span class="si">{</span><span class="n">gpu_offload</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">expect</span><span class="p">(</span>
+            <span class="n">gpu_offload</span> <span class="o">==</span> <span class="s2">&quot;none&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Both GPU_TYPE and GPU_OFFLOAD must be defined if either is&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
 
     <span class="n">ocn_model</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;COMP_OCN&quot;</span><span class="p">)</span>
     <span class="n">atm_dycore</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CAM_DYCORE&quot;</span><span class="p">)</span>

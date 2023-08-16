@@ -357,6 +357,18 @@
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Specify number of GPUs used for simulation. &quot;</span><span class="p">,</span>
     <span class="p">)</span>
 
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--gpu-type&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Specify type of GPU hardware - currently supported are v100, a100, mi250&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--gpu-offload&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Specify gpu offload method - currently supported are openacc, openmp, combined&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
     <span class="n">args</span> <span class="o">=</span> <span class="n">CIME</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">parse_args_and_handle_standard_logging_options</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">parser</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">srcroot</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -433,6 +445,8 @@
         <span class="n">args</span><span class="o">.</span><span class="n">extra_machines_dir</span><span class="p">,</span>
         <span class="n">args</span><span class="o">.</span><span class="n">case_group</span><span class="p">,</span>
         <span class="n">args</span><span class="o">.</span><span class="n">ngpus_per_node</span><span class="p">,</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">gpu_type</span><span class="p">,</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">gpu_offload</span><span class="p">,</span>
     <span class="p">)</span></div>
 
 
@@ -470,6 +484,8 @@
         <span class="n">extra_machines_dir</span><span class="p">,</span>
         <span class="n">case_group</span><span class="p">,</span>
         <span class="n">ngpus_per_node</span><span class="p">,</span>
+        <span class="n">gpu_type</span><span class="p">,</span>
+        <span class="n">gpu_offload</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">=</span> <span class="n">parse_command_line</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">,</span> <span class="n">cimeroot</span><span class="p">,</span> <span class="n">description</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">script_root</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -535,6 +551,8 @@
             <span class="n">extra_machines_dir</span><span class="o">=</span><span class="n">extra_machines_dir</span><span class="p">,</span>
             <span class="n">case_group</span><span class="o">=</span><span class="n">case_group</span><span class="p">,</span>
             <span class="n">ngpus_per_node</span><span class="o">=</span><span class="n">ngpus_per_node</span><span class="p">,</span>
+            <span class="n">gpu_type</span><span class="o">=</span><span class="n">gpu_type</span><span class="p">,</span>
+            <span class="n">gpu_offload</span><span class="o">=</span><span class="n">gpu_offload</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="c1"># Called after create since casedir does not exist yet</span>

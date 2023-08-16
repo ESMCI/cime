@@ -264,11 +264,6 @@
             <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;If set to `True` then COMP_ROOT_DIR_CPL is set using UFS_DRIVER if defined.&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_attribute</span><span class="p">(</span>
-            <span class="s2">&quot;gpus_use_set_device_rank&quot;</span><span class="p">,</span>
-            <span class="kc">True</span><span class="p">,</span>
-            <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;If set to `True` and NGPUS_PER_NODE &gt; 0 then `$RUNDIR/set_device_rank.sh` is appended when the MPI run command is generated.&quot;</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_set_attribute</span><span class="p">(</span>
             <span class="s2">&quot;test_custom_project_machine&quot;</span><span class="p">,</span>
             <span class="s2">&quot;melvin&quot;</span><span class="p">,</span>
             <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Sets the machine name to use when testing a machine with no PROJECT.&quot;</span><span class="p">,</span>

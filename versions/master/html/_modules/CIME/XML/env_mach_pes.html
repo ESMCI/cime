@@ -128,6 +128,8 @@
         <span class="n">resolved</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">subgroup</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">max_mpitasks_per_node</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">max_cputasks_per_gpu_node</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">ngpus_per_node</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>  <span class="c1"># pylint: disable=arguments-differ</span>
         <span class="c1"># Special variable NINST_MAX is used to determine the number of</span>
         <span class="c1"># drivers in multi-driver mode.</span>
@@ -144,7 +146,13 @@
         <span class="k">if</span> <span class="s2">&quot;NTASKS&quot;</span> <span class="ow">in</span> <span class="n">vid</span> <span class="ow">or</span> <span class="s2">&quot;ROOTPE&quot;</span> <span class="ow">in</span> <span class="n">vid</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">max_mpitasks_per_node</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">max_mpitasks_per_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MAX_MPITASKS_PER_NODE&quot;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">value</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">max_cputasks_per_gpu_node</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">max_cputasks_per_gpu_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MAX_CPUTASKS_PER_GPU_NODE&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">ngpus_per_node</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">ngpus_per_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;NGPUS_PER_NODE&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">ngpus_per_node</span> <span class="ow">and</span> <span class="n">value</span><span class="p">)</span> <span class="ow">and</span> <span class="n">value</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">value</span> <span class="o">*</span> <span class="n">max_cputasks_per_gpu_node</span>
+            <span class="k">elif</span> <span class="n">value</span> <span class="ow">and</span> <span class="n">value</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">value</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">value</span> <span class="o">*</span> <span class="n">max_mpitasks_per_node</span>
         <span class="c1"># in the nuopc driver there is only one NINST value</span>
         <span class="c1"># so that NINST_{comp} = NINST</span>
@@ -240,6 +248,7 @@
             <span class="n">tt</span> <span class="o">=</span> <span class="n">rootpe</span> <span class="o">+</span> <span class="n">nthrds</span> <span class="o">*</span> <span class="p">((</span><span class="n">ntasks</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">pstrid</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
             <span class="n">maxrootpe</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">maxrootpe</span><span class="p">,</span> <span class="n">rootpe</span><span class="p">)</span>
             <span class="n">total_tasks</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">tt</span><span class="p">,</span> <span class="n">total_tasks</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="n">asyncio_tasks</span><span class="p">:</span>
             <span class="n">total_tasks</span> <span class="o">=</span> <span class="n">total_tasks</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">asyncio_tasks</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MULTI_DRIVER&quot;</span><span class="p">):</span>
@@ -253,13 +262,24 @@
             <span class="s2">&quot;totaltasks &gt; 0 expected, totaltasks = </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">total_tasks</span><span class="p">),</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_comp_interface</span> <span class="o">==</span> <span class="s2">&quot;nuopc&quot;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;ESMF_AWARE_THREADING&quot;</span><span class="p">):</span>
-            <span class="n">tasks_per_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MAX_MPITASKS_PER_NODE&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;NGPUS_PER_NODE&quot;</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">tasks_per_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MAX_CPUTASKS_PER_GPU_NODE&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">tasks_per_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MAX_MPITASKS_PER_NODE&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">tasks_per_node</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MAX_TASKS_PER_NODE&quot;</span><span class="p">)</span> <span class="o">//</span> <span class="n">max_thread_count</span><span class="p">,</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MAX_MPITASKS_PER_NODE&quot;</span><span class="p">),</span>
-                <span class="n">total_tasks</span><span class="p">,</span>
-            <span class="p">)</span>
+            <span class="n">ngpus_per_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;NGPUS_PER_NODE&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">ngpus_per_node</span> <span class="ow">and</span> <span class="n">ngpus_per_node</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">tasks_per_node</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MAX_TASKS_PER_NODE&quot;</span><span class="p">)</span> <span class="o">//</span> <span class="n">max_thread_count</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MAX_CPUTASKS_PER_GPU_NODE&quot;</span><span class="p">),</span>
+                    <span class="n">total_tasks</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">tasks_per_node</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MAX_TASKS_PER_NODE&quot;</span><span class="p">)</span> <span class="o">//</span> <span class="n">max_thread_count</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MAX_MPITASKS_PER_NODE&quot;</span><span class="p">),</span>
+                    <span class="n">total_tasks</span><span class="p">,</span>
+                <span class="p">)</span>
         <span class="k">return</span> <span class="n">tasks_per_node</span> <span class="k">if</span> <span class="n">tasks_per_node</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">1</span></div>
 
 <div class="viewcode-block" id="EnvMachPes.get_total_nodes"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_pes.EnvMachPes.get_total_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">get_total_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">total_tasks</span><span class="p">,</span> <span class="n">max_thread_count</span><span class="p">):</span>

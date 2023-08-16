@@ -378,6 +378,7 @@
         <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_clean</span> <span class="o">=</span> <span class="n">clean</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_namelists_only</span> <span class="o">=</span> <span class="n">namelists_only</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_walltime</span> <span class="o">=</span> <span class="n">walltime</span>
@@ -755,8 +756,17 @@
                     <span class="n">pesize</span> <span class="o">=</span> <span class="n">case_opt</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
                     <span class="n">create_newcase_cmd</span> <span class="o">+=</span> <span class="s2">&quot; --pecount </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pesize</span><span class="p">)</span>
                 <span class="k">elif</span> <span class="n">case_opt</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;G&quot;</span><span class="p">):</span>
-                    <span class="n">ngpus_per_node</span> <span class="o">=</span> <span class="n">case_opt</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
-                    <span class="n">create_newcase_cmd</span> <span class="o">+=</span> <span class="s2">&quot; --ngpus-per-node </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ngpus_per_node</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="s2">&quot;-&quot;</span> <span class="ow">in</span> <span class="n">case_opt</span><span class="p">:</span>
+                        <span class="n">ngpus_per_node</span><span class="p">,</span> <span class="n">gpu_type</span><span class="p">,</span> <span class="n">gpu_offload</span> <span class="o">=</span> <span class="n">case_opt</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">error</span> <span class="o">=</span> <span class="s2">&quot;GPU test argument format is ngpus_per_node-gpu_type-gpu_offload&quot;</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_log_output</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="n">error</span><span class="p">)</span>
+                        <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="n">error</span>
+                    <span class="n">create_newcase_cmd</span> <span class="o">+=</span> <span class="p">(</span>
+                        <span class="s2">&quot; --ngpus-per-node </span><span class="si">{}</span><span class="s2"> --gpu-type </span><span class="si">{}</span><span class="s2"> --gpu-offload </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                            <span class="n">ngpus_per_node</span><span class="p">,</span> <span class="n">gpu_type</span><span class="p">,</span> <span class="n">gpu_offload</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
                 <span class="k">elif</span> <span class="n">case_opt</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;V&quot;</span><span class="p">):</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_cime_driver</span> <span class="o">=</span> <span class="n">case_opt</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
                     <span class="n">create_newcase_cmd</span> <span class="o">+=</span> <span class="s2">&quot; --driver </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cime_driver</span><span class="p">)</span>

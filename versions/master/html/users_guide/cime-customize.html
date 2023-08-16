@@ -220,82 +220,77 @@
 <td><p>bool</p></td>
 <td><p>If set to <cite>True</cite> then <cite>SMP=</cite> is added to model compile command.</p></td>
 </tr>
-<tr class="row-odd"><td><p>gpus_use_set_device_rank</p></td>
-<td><p>True</p></td>
-<td><p>bool</p></td>
-<td><p>If set to <cite>True</cite> and NGPUS_PER_NODE &gt; 0 then <cite>$RUNDIR/set_device_rank.sh</cite> is appended when the MPI run command is generated.</p></td>
-</tr>
-<tr class="row-even"><td><p>make_case_run_batch_script</p></td>
+<tr class="row-odd"><td><p>make_case_run_batch_script</p></td>
 <td><p>False</p></td>
 <td><p>bool</p></td>
 <td><p>If set to <cite>True</cite> and case is not a test then <cite>case.run.sh</cite> is created in case directory from <cite>$MACHDIR/template.case.run.sh</cite>.</p></td>
 </tr>
-<tr class="row-odd"><td><p>mct_path</p></td>
+<tr class="row-even"><td><p>mct_path</p></td>
 <td><p>{srcroot}/libraries/mct</p></td>
 <td><p>str</p></td>
 <td><p>Sets the path to the mct library.</p></td>
 </tr>
-<tr class="row-even"><td><p>serialize_sharedlib_builds</p></td>
+<tr class="row-odd"><td><p>serialize_sharedlib_builds</p></td>
 <td><p>True</p></td>
 <td><p>bool</p></td>
 <td><p>If set to <cite>True</cite> then the TestScheduler will use <cite>proc_pool + 1</cite> processors to build shared libraries otherwise a single processor is used.</p></td>
 </tr>
-<tr class="row-odd"><td><p>set_comp_root_dir_cpl</p></td>
+<tr class="row-even"><td><p>set_comp_root_dir_cpl</p></td>
 <td><p>True</p></td>
 <td><p>bool</p></td>
 <td><p>If set to <cite>True</cite> then COMP_ROOT_DIR_CPL is set for the case.</p></td>
 </tr>
-<tr class="row-even"><td><p>share_exes</p></td>
+<tr class="row-odd"><td><p>share_exes</p></td>
 <td><p>False</p></td>
 <td><p>bool</p></td>
 <td><p>If set to <cite>True</cite> then the TestScheduler will share exes between tests.</p></td>
 </tr>
-<tr class="row-odd"><td><p>shared_clm_component</p></td>
+<tr class="row-even"><td><p>shared_clm_component</p></td>
 <td><p>True</p></td>
 <td><p>bool</p></td>
 <td><p>If set to <cite>True</cite> and then the <cite>clm</cite> land component is built as a shared lib.</p></td>
 </tr>
-<tr class="row-even"><td><p>sort_tests</p></td>
+<tr class="row-odd"><td><p>sort_tests</p></td>
 <td><p>False</p></td>
 <td><p>bool</p></td>
 <td><p>If set to <cite>True</cite> then the TestScheduler will sort tests by runtime.</p></td>
 </tr>
-<tr class="row-odd"><td><p>test_custom_project_machine</p></td>
+<tr class="row-even"><td><p>test_custom_project_machine</p></td>
 <td><p>melvin</p></td>
 <td><p>str</p></td>
 <td><p>Sets the machine name to use when testing a machine with no PROJECT.</p></td>
 </tr>
-<tr class="row-even"><td><p>test_mode</p></td>
+<tr class="row-odd"><td><p>test_mode</p></td>
 <td><p>cesm</p></td>
 <td><p>str</p></td>
 <td><p>Sets the testing mode, this changes various configuration for CIME’s unit and system tests.</p></td>
 </tr>
-<tr class="row-odd"><td><p>ufs_alternative_config</p></td>
+<tr class="row-even"><td><p>ufs_alternative_config</p></td>
 <td><p>False</p></td>
 <td><p>bool</p></td>
 <td><p>If set to <cite>True</cite> and UFS_DRIVER is set to <cite>nems</cite> then model config dir is set to <cite>$CIMEROOT/../src/model/NEMS/cime/cime_config</cite>.</p></td>
 </tr>
-<tr class="row-even"><td><p>use_kokkos</p></td>
+<tr class="row-odd"><td><p>use_kokkos</p></td>
 <td><p>False</p></td>
 <td><p>bool</p></td>
 <td><p>If set to <cite>True</cite> and CAM_TARGET is <cite>preqx_kokkos</cite>, <cite>theta-l</cite> or <cite>theta-l_kokkos</cite> then kokkos is built with the shared libs.</p></td>
 </tr>
-<tr class="row-odd"><td><p>use_nems_comp_root_dir</p></td>
+<tr class="row-even"><td><p>use_nems_comp_root_dir</p></td>
 <td><p>False</p></td>
 <td><p>bool</p></td>
 <td><p>If set to <cite>True</cite> then COMP_ROOT_DIR_CPL is set using UFS_DRIVER if defined.</p></td>
 </tr>
-<tr class="row-even"><td><p>use_testreporter_template</p></td>
+<tr class="row-odd"><td><p>use_testreporter_template</p></td>
 <td><p>True</p></td>
 <td><p>bool</p></td>
 <td><p>If set to <cite>True</cite> then the TestScheduler will create <cite>testreporter</cite> in $CIME_OUTPUT_ROOT.</p></td>
 </tr>
-<tr class="row-odd"><td><p>verbose_run_phase</p></td>
+<tr class="row-even"><td><p>verbose_run_phase</p></td>
 <td><p>False</p></td>
 <td><p>bool</p></td>
 <td><p>If set to <cite>True</cite> then after a SystemTests successful run phase the elapsed time is recorded to BASELINE_ROOT, on a failure the test is checked against the previous run and potential breaking merges are listed in the testlog.</p></td>
 </tr>
-<tr class="row-even"><td><p>xml_component_key</p></td>
+<tr class="row-odd"><td><p>xml_component_key</p></td>
 <td><p>COMP_ROOT_DIR_{}</p></td>
 <td><p>str</p></td>
 <td><p>The string template used as the key to query the XML system to find a components root directory e.g. the template <cite>COMP_ROOT_DIR_{}</cite> and component <cite>LND</cite> becomes <cite>COMP_ROOT_DIR_LND</cite>.</p></td>

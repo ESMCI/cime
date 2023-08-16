@@ -160,7 +160,8 @@ usage: create_newcase [-h] [-d] [-v] [-s] --case CASENAME --compset COMPSET
                       [--driver {mct,nuopc}] [-n]
                       [--extra-machines-dir EXTRA_MACHINES_DIR]
                       [--case-group CASE_GROUP]
-                      [--ngpus-per-node NGPUS_PER_NODE]
+                      [--ngpus-per-node NGPUS_PER_NODE] [--gpu-type GPU_TYPE]
+                      [--gpu-offload GPU_OFFLOAD]
 
 options:
   -h, --help            show this help message and exit
@@ -248,7 +249,10 @@ options:
   --case-group CASE_GROUP
                         Add this case to a case group
   --ngpus-per-node NGPUS_PER_NODE
-                        Specify number of GPUs used for simulation.
+                        Specify number of GPUs used for simulation. 
+  --gpu-type GPU_TYPE   Specify type of GPU hardware - currently supported are v100, a100, mi250
+  --gpu-offload GPU_OFFLOAD
+                        Specify gpu offload method - currently supported are openacc, openmp, combined
 </pre></div>
 </div>
 </section>
