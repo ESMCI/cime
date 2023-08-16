@@ -1152,7 +1152,6 @@ class Case(object):
         comment = None
         force_tasks = None
         force_thrds = None
-
         if match1:
             opti_tasks = match1.group(1)
             if opti_tasks.isdigit():
@@ -1222,7 +1221,6 @@ class Case(object):
             pstrid = pes_pstrid[pstrid_str] if pstrid_str in pes_pstrid else 1
 
             totaltasks.append((ntasks + rootpe) * nthrds)
-
             mach_pes_obj.set_value(ntasks_str, ntasks)
             mach_pes_obj.set_value(nthrds_str, nthrds)
             mach_pes_obj.set_value(rootpe_str, rootpe)
@@ -1399,7 +1397,6 @@ class Case(object):
             if not dmax:
                 dmax = machobj.get_value(name)
             if dmax:
-                print(f"here name is {name} and dmax is {dmax}")
                 self.set_value(name, dmax)
             elif name == "MAX_CPUTASKS_PER_GPU_NODE":
                 logger.debug(

@@ -66,7 +66,7 @@ class EnvMachPes(EnvBase):
                 ngpus_per_node = self.get_value("NGPUS_PER_NODE")
             if (ngpus_per_node and value) and value < 0:
                 value = -1 * value * max_cputasks_per_gpu_node
-            elif value:
+            elif value and value < 0:
                 value = -1 * value * max_mpitasks_per_node
         # in the nuopc driver there is only one NINST value
         # so that NINST_{comp} = NINST
