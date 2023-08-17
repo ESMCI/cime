@@ -458,7 +458,10 @@ class Case(object):
     def get_value(self, item, attribute=None, resolved=True, subgroup=None):
         if item == "GPU_ENABLED":
             if not self.gpu_enabled:
-                if self.get_value("GPU_TYPE") != "none":
+                if (
+                    self.get_value("GPU_TYPE") != "none"
+                    and self.get_value("NGPUS_PER_NODE") > 0
+                ):
                     self.gpu_enabled = True
             return "true" if self.gpu_enabled else "false"
 
