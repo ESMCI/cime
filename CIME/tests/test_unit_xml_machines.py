@@ -141,7 +141,8 @@ class TestUnitXMLMachines(unittest.TestCase):
     def setUp(self):
         Machines._FILEMAP = {}
         # read_only=False for github testing
-        self.machine = Machines(machine="centos7-linux")
+        # MACHINE IS SET BELOW TO USE DEFINITION IN "MACHINE_TEST_XML"
+        self.machine = Machines()
 
         self.machine.read_fd(io.StringIO(MACHINE_TEST_XML))
 
