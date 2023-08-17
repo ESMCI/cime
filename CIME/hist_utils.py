@@ -72,7 +72,9 @@ def copy_histfiles(case, suffix, match_suffix=None):
     num_copied = 0
     for model in _iter_model_file_substrs(case):
         if case.get_value("TEST") and archive.exclude_testing(model):
-            logger.info("Case is a test and component %r is excluded from comparison")
+            logger.info(
+                "Case is a test and component %r is excluded from comparison", model
+            )
 
             continue
         comments += "  Copying hist files for model '{}'\n".format(model)
@@ -292,7 +294,9 @@ def _compare_hists(
     ref_case = case.get_value("RUN_REFCASE")
     for model in _iter_model_file_substrs(case):
         if case.get_value("TEST") and archive.exclude_testing(model):
-            logger.info("Case is a test and component %r is excluded from comparison")
+            logger.info(
+                "Case is a test and component %r is excluded from comparison", model
+            )
 
             continue
         if model == "cpl" and suffix2 == "multiinst":
