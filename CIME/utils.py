@@ -1149,9 +1149,6 @@ def get_full_test_name(
     ]
 
     result = partial_test
-    print(
-        f"partial_testcase {partial_testcase} partial_machine {partial_machine} partial_compiler {partial_compiler}"
-    )
     for partial_val, arg_val, name in required_fields:
         if partial_val is None:
             # Add to result based on args
@@ -1161,7 +1158,6 @@ def get_full_test_name(
                     partial_test, name
                 ),
             )
-            print(f"name = {name} result = {result}")
             if name == "machine" and "*_" in result:
                 result = result.replace("*_", arg_val + "_")
             elif name == "compiler" and "_*" in result:
@@ -1220,9 +1216,7 @@ def get_full_test_name(
                 partial_test, partial_caseopts, caseopts
             ),
         )
-    print(
-        f" partial_test {partial_test} machine {machine} compiler {compiler} result {result}"
-    )
+
     return result
 
 
