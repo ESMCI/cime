@@ -31,10 +31,7 @@ logger = logging.getLogger(__name__)
 NINST = 30
 
 # INIT_FILE_ROOT = "/global/cscratch1/sd/salil/initial_conditions"
-INIT_FILE_ROOT = "/lcrc/group/e3sm/ac.mkelleher/scratch/initial_conditions"
-INIT_FILE_NAME = (
-    f"{INIT_FILE_ROOT}/inic_oQU240_from_GMPAS_mpaso.rst.0050-01-01_00000.nc"
-)
+
 PERT_FILE_TEMPLATE = "mpaso_oQ240_perturbed_inic_{ens:04d}.nc"
 
 # No output is on by default for mpas-ocean
@@ -170,13 +167,19 @@ class MVKO(SystemTestsCommon):
             case_setup(self._case, test_mode=False, reset=True)
         rundir = self._case.get_value("RUNDIR")
 
+        in_data_root = self._case.get_value("DIN_LOC_ROOT")
+        init_file_path = os.path.join(
+            in_data_root,
+            "ocn/mpas-o/oQU240/inic/gmpas-nyf",
+            "20220404.GMPAS-NYF.T62_oQU240.inic.mpaso.rst.0050-01-01_00000.nc",
+        )
         for iinst in range(1, NINST + 1):
             pert_file_name = PERT_FILE_TEMPLATE.format(ens=iinst)
             pert_file = os.path.join(rundir, pert_file_name)
             if not os.path.exists(rundir):
                 logging.warning(f"CREATE {rundir}")
                 os.mkdir(rundir)
-            perturb_init(INIT_FILE_NAME, field_name="temperature", outfile=pert_file)
+            perturb_init(init_file_path, field_name="temperature", outfile=pert_file)
 
             # Write yearly averages to custom output file
             tss_climatology_config = [
