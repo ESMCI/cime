@@ -1587,9 +1587,9 @@ class Case(object):
             )
 
         # Set these two GPU XML variables here to overwrite the default values
-        if gpu_type:
+        # Only set them for "cesm" model
+        if self._cime_model == "cesm":
             self.set_value("GPU_TYPE", str(gpu_type).lower())
-        if gpu_offload:
             self.set_value("GPU_OFFLOAD", str(gpu_offload).lower())
 
         self.initialize_derived_attributes()
