@@ -441,6 +441,15 @@ class SystemTestsCommon(object):
         stop_option = self._case.get_value("STOP_OPTION")
         run_type = self._case.get_value("RUN_TYPE")
         rundir = self._case.get_value("RUNDIR")
+        try:
+            self._case.check_all_input_data()
+        except CIMEError:
+            caseroot = self._case.get_value("CASEROOT")
+            raise CIMEError(
+                "Could not find all inputdata on any server, try "
+                "manually running `./check_input_data --download "
+                f"--versbose` from {caseroot!r}."
+            ) from None
         if submit_resubmits is None:
             do_resub = self._case.get_value("BATCH_SYSTEM") != "none"
         else:
