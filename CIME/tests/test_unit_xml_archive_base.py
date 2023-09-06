@@ -12,7 +12,7 @@ from CIME.XML.archive_base import ArchiveBase
 
 TEST_CONFIG = """<components version="2.0">
   <comp_archive_spec compname="eam" compclass="atm">
-    <hist_file_extension>unique\.name\.unique</hist_file_extension>
+    <hist_file_extension>unique\.name\.unique.*</hist_file_extension>
   </comp_archive_spec>
 </components>"""
 
