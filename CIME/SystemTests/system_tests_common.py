@@ -154,6 +154,7 @@ class SystemTestsCommon(object):
         ninja=False,
         dry_run=False,
         separate_builds=False,
+        skip_submit=False,
     ):
         """
         Do NOT override this method, this method is the framework that
@@ -164,6 +165,9 @@ class SystemTestsCommon(object):
         self._ninja = ninja
         self._dry_run = dry_run
         self._user_separate_builds = separate_builds
+
+        was_run_pend = self._test_status.current_is(RUN_PHASE, TEST_PEND_STATUS)
+
         for phase_name, phase_bool in [
             (SHAREDLIB_BUILD_PHASE, not model_only),
             (MODEL_BUILD_PHASE, not sharedlib_only),
@@ -201,6 +205,15 @@ class SystemTestsCommon(object):
                             TEST_PASS_STATUS if success else TEST_FAIL_STATUS,
                             comments=("time={:d}".format(int(time_taken))),
                         )
+
+        # Building model while job is queued and awaiting run
+        if (
+            skip_submit
+            and was_run_pend
+            and self._test_status.current_is(SUBMIT_PHASE, TEST_PEND_STATUS)
+        ):
+            with self._test_status:
+                self._test_status.set_status(SUBMIT_PHASE, TEST_PASS_STATUS)
 
         return success
 
@@ -489,7 +502,8 @@ class SystemTestsCommon(object):
         return allgood == 0
 
     def _component_compare_copy(self, suffix):
-        comments, num_copied = copy_histfiles(self._case, suffix)
+        # Only match .nc files
+        comments, num_copied = copy_histfiles(self._case, suffix, match_suffix="nc")
         self._expected_num_cmp = num_copied
 
         append_testlog(comments, self._orig_caseroot)

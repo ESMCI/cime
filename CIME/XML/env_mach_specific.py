@@ -320,7 +320,8 @@ class EnvMachSpecific(EnvBase):
 
     def _compute_actions(self, nodes, child_tag, case, job=None):
         result = []  # list of tuples ("name", "argument")
-        compiler, mpilib = case.get_value("COMPILER"), case.get_value("MPILIB")
+        compiler = case.get_value("COMPILER")
+        mpilib = case.get_value("MPILIB")
 
         for node in nodes:
             if self._match_attribs(self.attrib(node), case, job=job):

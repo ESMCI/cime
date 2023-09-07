@@ -106,6 +106,8 @@ function init_e3sm() {
 
     update_cime "${install_path}/cime"
 
+    mkdir -p /storage/inputdata
+
     rsync -vr /cache/ /storage/inputdata/
 
     cd "${install_path}/cime"

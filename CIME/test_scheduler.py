@@ -209,6 +209,7 @@ class TestScheduler(object):
         single_exe=False,
         workflow=None,
         chksum=False,
+        force_rebuild=False,
     ):
         ###########################################################################
         self._cime_root = get_cime_root()
@@ -291,6 +292,7 @@ class TestScheduler(object):
         )
 
         self._clean = clean
+
         self._namelists_only = namelists_only
 
         self._walltime = walltime
@@ -396,6 +398,9 @@ class TestScheduler(object):
         if use_existing:
             for test in self._tests:
                 with TestStatus(self._get_test_dir(test)) as ts:
+                    if force_rebuild:
+                        ts.set_status(SHAREDLIB_BUILD_PHASE, TEST_PEND_STATUS)
+
                     for phase, status in ts:
                         if phase in CORE_PHASES:
                             if status in [TEST_PEND_STATUS, TEST_FAIL_STATUS]:
@@ -665,8 +670,17 @@ class TestScheduler(object):
                     pesize = case_opt[1:]
                     create_newcase_cmd += " --pecount {}".format(pesize)
                 elif case_opt.startswith("G"):
-                    ngpus_per_node = case_opt[1:]
-                    create_newcase_cmd += " --ngpus-per-node {}".format(ngpus_per_node)
+                    if "-" in case_opt:
+                        ngpus_per_node, gpu_type, gpu_offload = case_opt[1:].split("-")
+                    else:
+                        error = "GPU test argument format is ngpus_per_node-gpu_type-gpu_offload"
+                        self._log_output(test, error)
+                        return False, error
+                    create_newcase_cmd += (
+                        " --ngpus-per-node {} --gpu-type {} --gpu-offload {}".format(
+                            ngpus_per_node, gpu_type, gpu_offload
+                        )
+                    )
                 elif case_opt.startswith("V"):
                     self._cime_driver = case_opt[1:]
                     create_newcase_cmd += " --driver {}".format(self._cime_driver)

@@ -364,8 +364,10 @@ def get_histfiles_for_restarts(
     histfiles = set()
     rest_hist_varname = archive.get_entry_value("rest_history_varname", archive_entry)
     if rest_hist_varname != "unset":
-        cmd = "ncdump -v {} {} ".format(
-            rest_hist_varname, os.path.join(rundir, restfile)
+        ncdump = shutil.which("ncdump")
+        expect(ncdump, "ncdump not found in path")
+        cmd = "{} -v {} {} ".format(
+            ncdump, rest_hist_varname, os.path.join(rundir, restfile)
         )
         if testonly:
             out = "{} =".format(rest_hist_varname)

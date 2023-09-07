@@ -42,6 +42,8 @@ class EnvMachPes(EnvBase):
         resolved=True,
         subgroup=None,
         max_mpitasks_per_node=None,
+        max_cputasks_per_gpu_node=None,
+        ngpus_per_node=None,
     ):  # pylint: disable=arguments-differ
         # Special variable NINST_MAX is used to determine the number of
         # drivers in multi-driver mode.
@@ -58,7 +60,13 @@ class EnvMachPes(EnvBase):
         if "NTASKS" in vid or "ROOTPE" in vid:
             if max_mpitasks_per_node is None:
                 max_mpitasks_per_node = self.get_value("MAX_MPITASKS_PER_NODE")
-            if value is not None and value < 0:
+            if max_cputasks_per_gpu_node is None:
+                max_cputasks_per_gpu_node = self.get_value("MAX_CPUTASKS_PER_GPU_NODE")
+            if ngpus_per_node is None:
+                ngpus_per_node = self.get_value("NGPUS_PER_NODE")
+            if (ngpus_per_node and value) and value < 0:
+                value = -1 * value * max_cputasks_per_gpu_node
+            elif value and value < 0:
                 value = -1 * value * max_mpitasks_per_node
         # in the nuopc driver there is only one NINST value
         # so that NINST_{comp} = NINST
@@ -154,6 +162,7 @@ class EnvMachPes(EnvBase):
             tt = rootpe + nthrds * ((ntasks - 1) * pstrid + 1)
             maxrootpe = max(maxrootpe, rootpe)
             total_tasks = max(tt, total_tasks)
+
         if asyncio_tasks:
             total_tasks = total_tasks + len(asyncio_tasks)
         if self.get_value("MULTI_DRIVER"):
@@ -167,13 +176,24 @@ class EnvMachPes(EnvBase):
             "totaltasks > 0 expected, totaltasks = {}".format(total_tasks),
         )
         if self._comp_interface == "nuopc" and self.get_value("ESMF_AWARE_THREADING"):
-            tasks_per_node = self.get_value("MAX_MPITASKS_PER_NODE")
+            if self.get_value("NGPUS_PER_NODE") > 0:
+                tasks_per_node = self.get_value("MAX_CPUTASKS_PER_GPU_NODE")
+            else:
+                tasks_per_node = self.get_value("MAX_MPITASKS_PER_NODE")
         else:
-            tasks_per_node = min(
-                self.get_value("MAX_TASKS_PER_NODE") // max_thread_count,
-                self.get_value("MAX_MPITASKS_PER_NODE"),
-                total_tasks,
-            )
+            ngpus_per_node = self.get_value("NGPUS_PER_NODE")
+            if ngpus_per_node and ngpus_per_node > 0:
+                tasks_per_node = min(
+                    self.get_value("MAX_TASKS_PER_NODE") // max_thread_count,
+                    self.get_value("MAX_CPUTASKS_PER_GPU_NODE"),
+                    total_tasks,
+                )
+            else:
+                tasks_per_node = min(
+                    self.get_value("MAX_TASKS_PER_NODE") // max_thread_count,
+                    self.get_value("MAX_MPITASKS_PER_NODE"),
+                    total_tasks,
+                )
         return tasks_per_node if tasks_per_node > 0 else 1
 
     def get_total_nodes(self, total_tasks, max_thread_count):
