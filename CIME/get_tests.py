@@ -23,6 +23,7 @@ except ImportError:
 #     "inherit" : (suite1, suite2, ...), # Optional. Suites to inherit tests from. Default is None. Tuple, list, or str.
 #     "time"    : "HH:MM:SS",            # Optional. Recommended upper-limit on test time.
 #     "share"   : True|False,            # Optional. If True, all tests in this suite share a build. Default is False.
+#     "perf"    : True|False,            # Optional. If True, all tests in this suite will do performance tracking. Default is False.
 #     "tests"   : (test1, test2, ...)    # Optional. The list of tests for this suite. See above for format. Tuple, list, or str. This is the ONLY inheritable attribute.
 # }
 
@@ -87,6 +88,16 @@ _CIME_TESTS = {
             "SMS_P4.f19_g16_rx1.X",
             "SMS_P8.f19_g16_rx1.X",
             "SMS_P16.f19_g16_rx1.X",
+        ),
+    },
+    "cime_test_perf": {
+        "time": "0:10:00",
+        "perf": True,
+        "tests": (
+            "SMS_P2.f19_g16_rx1.Z",
+            "SMS_P4.f19_g16_rx1.Z",
+            "SMS_P8.f19_g16_rx1.Z",
+            "SMS_P16.f19_g16_rx1.Z",
         ),
     },
     "cime_test_repeat": {
@@ -159,12 +170,12 @@ def _get_key_data(raw_dict, key, the_type):
 def get_test_data(suite):
     ###############################################################################
     """
-    For a given suite, returns (inherit, time, share, tests)
+    For a given suite, returns (inherit, time, share, perf, tests)
     """
     raw_dict = _ALL_TESTS[suite]
     for key in raw_dict.keys():
         expect(
-            key in ["inherit", "time", "share", "tests"],
+            key in ["inherit", "time", "share", "perf", "tests"],
             "Unexpected test key '{}'".format(key),
         )
 
@@ -172,6 +183,7 @@ def get_test_data(suite):
         _get_key_data(raw_dict, "inherit", tuple),
         _get_key_data(raw_dict, "time", str),
         _get_key_data(raw_dict, "share", bool),
+        _get_key_data(raw_dict, "perf", bool),
         _get_key_data(raw_dict, "tests", tuple),
     )
 
@@ -201,7 +213,7 @@ def get_test_suite(
         "Compiler {} not valid for machine {}".format(compiler, machine),
     )
 
-    inherits_from, _, _, tests_raw = get_test_data(suite)
+    inherits_from, _, _, _, tests_raw = get_test_data(suite)
     tests = []
     for item in tests_raw:
         expect(
@@ -297,6 +309,27 @@ def get_build_groups(tests):
 
     return [tuple(item[0]) for item in build_groups]
 
+
+###############################################################################
+def is_perf_test(test):
+    ###############################################################################
+    """
+    Is the provided test in a suite with perf=True?
+
+    >>> is_perf_test("SMS_P2.f19_g16_rx1.Z.melvin_gnu")
+    True
+    >>> is_perf_test("SMS_P2.f19_g16_rx1.X.melvin_gnu")
+    False
+    """
+    # Get a list of performance suites
+    suites = get_test_suites()
+    perf_suites = []
+    for suite in suites:
+        perf = get_test_data(suite)[3]
+        if perf and suite_has_test(suite, test, skip_inherit=True):
+            return True
+
+    return False
 
 ###############################################################################
 def infer_arch_from_tests(testargs):
