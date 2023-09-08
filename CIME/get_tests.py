@@ -323,13 +323,13 @@ def is_perf_test(test):
     """
     # Get a list of performance suites
     suites = get_test_suites()
-    perf_suites = []
     for suite in suites:
         perf = get_test_data(suite)[3]
         if perf and suite_has_test(suite, test, skip_inherit=True):
             return True
 
     return False
+
 
 ###############################################################################
 def infer_arch_from_tests(testargs):
