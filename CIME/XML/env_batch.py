@@ -15,6 +15,7 @@ from CIME.utils import (
     get_batch_script_for_job,
     get_logging_options,
     format_time,
+    add_flag_to_cmd,
 )
 from CIME.locked_files import lock_file, unlock_file
 from collections import OrderedDict
@@ -607,6 +608,7 @@ class EnvBatch(EnvBase):
                 flag, name = self._get_argument(case, arg)
             except ValueError:
                 continue
+
             if self._batchtype == "cobalt" and job == "case.st_archive":
                 if flag == "-n":
                     name = "task_count"
@@ -626,7 +628,7 @@ class EnvBatch(EnvBase):
                         if len(rflag) > len(flag):
                             submitargs += " {}".format(rflag)
                     else:
-                        submitargs += " {} {}".format(flag, name)
+                        submitargs += " " + add_flag_to_cmd(flag, name)
                 else:
                     submitargs += " {}".format(flag)
             else:
@@ -636,7 +638,7 @@ class EnvBatch(EnvBase):
                     except ValueError:
                         continue
                 else:
-                    submitargs += " {} {}".format(flag, name)
+                    submitargs += " " + add_flag_to_cmd(flag, name)
 
         return submitargs
 
@@ -702,13 +704,8 @@ class EnvBatch(EnvBase):
             if flag == "-q" and rval == "batch" and case.get_value("MACH") == "blues":
                 # Special case. Do not provide '-q batch' for blues
                 raise ValueError()
-            if (
-                flag.rfind("=", len(flag) - 1, len(flag)) >= 0
-                or flag.rfind(":", len(flag) - 1, len(flag)) >= 0
-            ):
-                submitargs = " {}{}".format(flag, str(rval).strip())
-            else:
-                submitargs = " {} {}".format(flag, str(rval).strip())
+
+            submitargs = " " + add_flag_to_cmd(flag, rval)
 
         return submitargs
 
