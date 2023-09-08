@@ -94,10 +94,10 @@ _CIME_TESTS = {
         "time": "0:10:00",
         "perf": True,
         "tests": (
-            "SMS_P2.f19_g16_rx1.Z",
-            "SMS_P4.f19_g16_rx1.Z",
-            "SMS_P8.f19_g16_rx1.Z",
-            "SMS_P16.f19_g16_rx1.Z",
+            "SMS_P2.T42_T42.S",
+            "SMS_P4.T42_T42.S",
+            "SMS_P8.T42_T42.S",
+            "SMS_P16.T42_T42.S",
         ),
     },
     "cime_test_repeat": {
@@ -316,7 +316,7 @@ def is_perf_test(test):
     """
     Is the provided test in a suite with perf=True?
 
-    >>> is_perf_test("SMS_P2.f19_g16_rx1.Z.melvin_gnu")
+    >>> is_perf_test("SMS_P2.T42_T42.S.melvin_gnu")
     True
     >>> is_perf_test("SMS_P2.f19_g16_rx1.X.melvin_gnu")
     False
