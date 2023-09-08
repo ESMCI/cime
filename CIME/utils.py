@@ -2691,6 +2691,7 @@ def clear_folder(_dir):
             except Exception as e:
                 print(e)
 
+
 def add_flag_to_cmd(flag, val):
     """
     Given a flag and value for a shell command, return a string
