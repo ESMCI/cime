@@ -13,7 +13,7 @@ import traceback, stat, threading, time, glob
 from collections import OrderedDict
 
 from CIME.XML.standard_module_setup import *
-from CIME.get_tests import get_recommended_test_time, get_build_groups
+from CIME.get_tests import get_recommended_test_time, get_build_groups, is_perf_test
 from CIME.utils import (
     append_status,
     append_testlog,
@@ -967,7 +967,10 @@ class TestScheduler(object):
                 )
             envtest.set_initial_values(case)
             case.set_value("TEST", True)
-            case.set_value("SAVE_TIMING", self._save_timing)
+            if is_perf_test(test):
+                case.set_value("SAVE_TIMING", True)
+            else:
+                case.set_value("SAVE_TIMING", self._save_timing)
 
             # handle single-exe here, all cases will use the EXEROOT from
             # the first case in the build group
