@@ -370,6 +370,33 @@ class ParamGen:
         if self._match == "last":
             return data_dict[guards_eval_true[-1]]
         raise RuntimeError("Unknown match option.")
+
+    @staticmethod
+    def _process_values(value, expand_func):
+        """Process value(s) from a  key:value pair by
+            (1) expanding any expandable variables (preceded by $), and
+            (2) evaluating formulas if there are any.
+        """
+
+        if isinstance(value, list):
+            for i in range(len(value)):
+                assert (
+                    not isinstance(value[i],dict)
+                ), f"A dictionary cannot appear in a list of values!: {value[i]}"
+                assert (
+                    not isinstance(value[i],list)
+                ), f"Cannot have nested lists as values!: {value[i]}"
+                if isinstance(value[i], str):
+                    value[i] = ParamGen._expand_vars(value[i], expand_func)
+                if is_formula(value[i]):
+                    value[i] = eval_formula(value[i].strip()[1:])
+
+        elif isinstance(value, str):
+            value = ParamGen._expand_vars(value, expand_func)
+        if is_formula(value):
+            value = eval_formula(value.strip()[1:])
+
+        return value
     
     def _reduce_recursive(self, data, expand_func=None):
         """A recursive method to reduce a given data_dict. This method is intended to be called by the reduce method
@@ -392,11 +419,8 @@ class ParamGen:
 
         else: # data is not a dict, and so is a value.
 
-            # (4) Finally, process values by expanding vars and applying formulas
-            if isinstance(data, str):
-                data = ParamGen._expand_vars(data, expand_func)
-            if is_formula(data):
-                data = eval_formula(data.strip()[1:])
+            # (4) Finally, process values by expanding $VARs and applying formulas
+            data = ParamGen._process_values(data, expand_func)
             
         return data
 
@@ -481,7 +505,6 @@ class ParamGen:
         self._data = deepcopy(self._original_data)
         self._reduced = False
 
-    # TODO: REMOVE BELOW DUPLICATE METHOD. USE AN NML CLASS INSTANCE INSTEAD.
     def write_nml(self, output_path):
         """Writes the reduced data in Fortran namelist format if the data conforms to the format.
 
@@ -489,6 +512,8 @@ class ParamGen:
         ----------
         output_path: str object
             Path to the namelist file to be created.
+
+        WARNING: this method is deprecated. ParamGen_NML class should instead be used for namelist files.
         """
 
         assert (

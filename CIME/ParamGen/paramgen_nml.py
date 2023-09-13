@@ -75,7 +75,6 @@ class ParamGen_NML(ParamGen):
 
         return data_dict
 
-    # todo, move write_nml from ParamGen to this derived class.
     def write_nml(self, output_path):
         """Writes the reduced data in Fortran namelist format if the data conforms to the format.
 
@@ -98,10 +97,6 @@ class ParamGen_NML(ParamGen):
                 # vnm is the var name, and vls is its values element
                 if vls is None:
                     continue # no values, likely because all guards evaluate to False.
-                if not isinstance(vls, dict):
-                    print("------------------------")
-                    print(vls)
-                    print("------------------------")
                 assert isinstance(vls, dict), "Invalid data format"
                 for val in vls:
                     # val is a value in the values dict
