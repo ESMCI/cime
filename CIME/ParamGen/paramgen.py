@@ -383,9 +383,6 @@ class ParamGen:
                 assert (
                     not isinstance(value[i],dict)
                 ), f"A dictionary cannot appear in a list of values!: {value[i]}"
-                assert (
-                    not isinstance(value[i],list)
-                ), f"Cannot have nested lists as values!: {value[i]}"
                 if isinstance(value[i], str):
                     value[i] = ParamGen._expand_vars(value[i], expand_func)
                 if is_formula(value[i]):
