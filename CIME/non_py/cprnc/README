@@ -13,14 +13,15 @@ Quick Start Guide:
 ------------------
 
 On cime supported systems you can generate a cmake Macros file using the following
-(assuming you are running the command from the directory CIME/data/cprnc):
+(assuming you are running the command from the directory CIME/non_py/cprnc):
 
 export CIMEROOT=../..
-MPILIB=mpi-serial source ./.env_mach_specific.sh
-../configure --macros-format=CMake --mpilib=mpi-serial
 
-Next run cmake . to build the Makefile and then
-make to build cprnc.
+../../scripts/configure --macros-format=CMake --mpilib=mpi-serial
+MPILIB=mpi-serial source ./.env_mach_specific.sh
+# Flags if you are using the intel compiler:
+CC=icc FC=ifort cmake -DBLDROOT=. -DCASEROOT=. -DCOMPILER=intel -DMACH=cheyenne -DSRC_ROOT=../../../ .
+make
 
 Finally, put the resulting executable in CCSM_CPRNC as defined in
 config_machines.xml.
