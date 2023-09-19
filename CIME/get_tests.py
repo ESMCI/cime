@@ -320,13 +320,18 @@ def is_perf_test(test):
     True
     >>> is_perf_test("SMS_P2.f19_g16_rx1.X.melvin_gnu")
     False
+    >>> is_perf_test("PFS_P2.f19_g16_rx1.X.melvin_gnu")
+    True
     """
     # Get a list of performance suites
-    suites = get_test_suites()
-    for suite in suites:
-        perf = get_test_data(suite)[3]
-        if perf and suite_has_test(suite, test, skip_inherit=True):
-            return True
+    if test.startswith("PFS"):
+        return True
+    else:
+        suites = get_test_suites()
+        for suite in suites:
+            perf = get_test_data(suite)[3]
+            if perf and suite_has_test(suite, test, skip_inherit=True):
+                return True
 
     return False
 
