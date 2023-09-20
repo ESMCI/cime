@@ -18,7 +18,7 @@ mapping file using the tool found in
 ../../check_maps/
 
 See the README file in that directory for more details, but basically the tool
-is based on ESMF's ESMF_RegridWeightGenCheck untility. It maps 5 different
+is based on ESMF's ESMF_RegridWeightGenCheck utility. It maps 5 different
 global patterns from source to destination and compares the errors; for any
 conservative maps, it also checks for conservation.
 
@@ -66,8 +66,8 @@ where
    Load the serial ESMF tools rather than the parallel tools
    (necessary for mapping grids with a single point).
  --machine (or -mach)
-   Name of the machine you are running on. Currently supports cheyenne,
-   geyser, caldera, and pronghorn. Note that this script will
+   Name of the machine you are running on. Currently supports derecho, cheyenne,
+   geyser, casper, and pronghorn. Note that this script will
    determine the machine name automatically from the hostfile command.
  -d
    toggle debug-only

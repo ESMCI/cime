@@ -49,11 +49,16 @@ Cheyenne:
 $ module load esmf_libs/7.0.0
 $ module load esmf-7.0.0-ncdfio-uni-O
 
+Derecho:
+$ module purge
+$ module load intel mpi-serial esmf/8.5.0  mkl/2023.0.0
+
 This will set ESMFMKFILE. With this variable set, enter the src/ directory and
 run gmake
 
 $ cd src
 $ gmake [VERBOSE=TRUE]
+$ gmake ESMF_F90COMPILER=ifort ESMF_F90LINKER=ifort (derecho)
 
 VERBOSE=TRUE turns on some extra diagnostic output and is optional.
 

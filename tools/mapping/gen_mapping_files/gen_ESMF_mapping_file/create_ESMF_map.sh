@@ -223,6 +223,9 @@ if [ $MACH == "UNSET" ]; then
     pronghorn* )
       MACH="dav"
     ;;
+    de* )
+      MACH="derecho"
+    ;;
     *)
       echo "Can not determine machine name from hostname '$hostname'"
       exit 1
@@ -337,6 +340,20 @@ case $MACH in
     fi
     # need to load module to access ncatted
     module load nco
+# derecho
+    esmfvers=8.5.0
+    module purge
+    module load intel/2023.0.0
+    if [ "$serial" == "TRUE" ]; then
+      # No MPIEXEC
+      if [ -z "$MPIEXEC" ]; then
+        MPIEXEC=""
+      fi
+      module load esmf/8.5.0
+    else
+        module load cray-mpich/8.1.25
+        module load esmf/8.5.0
+    fi
   ;;
   *)
     echo "Machine $MACH NOT recognized"
