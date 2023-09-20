@@ -751,6 +751,9 @@ for some of your components.
         return lastcpllogs
 
     def _compare_memory(self):
+        """
+        Compares current test memory usage to baseline.
+        """
         with self._test_status:
             # compare memory usage to baseline
             baseline_name = self._case.get_value("BASECMP_CASE")
@@ -758,44 +761,68 @@ for some of your components.
                 self._case.get_value("BASELINE_ROOT"), baseline_name
             )
             newestcpllogfiles = self._get_latest_cpl_logs()
-            if len(newestcpllogfiles) > 0:
-                memlist = self._get_mem_usage(newestcpllogfiles[0])
+
+            # do we need this loop? when is there more than one coupler file?
             for cpllog in newestcpllogfiles:
-                m = re.search(r"/({}.*.log).*.gz".format(self._cpllog), cpllog)
-                if m is not None:
-                    baselog = os.path.join(basecmp_dir, m.group(1)) + ".gz"
-                if baselog is None or not os.path.isfile(baselog):
-                    # for backward compatibility
-                    baselog = os.path.join(basecmp_dir, self._cpllog + ".log")
-                if os.path.isfile(baselog) and len(memlist) > 3:
-                    blmem = self._get_mem_usage(baselog)
-                    blmem = 0 if blmem == [] else blmem[-1][1]
-                    curmem = memlist[-1][1]
-                    diff = 0.0 if blmem == 0 else (curmem - blmem) / blmem
-                    tolerance = self._case.get_value("TEST_MEMLEAK_TOLERANCE")
-                    if tolerance is None:
-                        tolerance = 0.1
-                    comment = "MEMCOMP: Memory usage highwater has changed by {:.2f}% relative to baseline".format(
-                        diff * 100
-                    )
-                    append_testlog(comment, self._orig_caseroot)
-                    if (
-                        diff < tolerance
-                        and self._test_status.get_status(MEMCOMP_PHASE) is None
-                    ):
-                        self._test_status.set_status(MEMCOMP_PHASE, TEST_PASS_STATUS)
-                    elif (
-                        self._test_status.get_status(MEMCOMP_PHASE) != TEST_FAIL_STATUS
-                    ):
-                        comment = "Error: Memory usage increase >{:d}% from baseline's {:f} to {:f}".format(
-                            int(tolerance * 100), blmem, curmem
-                        )
-                        self._test_status.set_status(
-                            MEMCOMP_PHASE, TEST_FAIL_STATUS, comments=comment
-                        )
-                        append_testlog(comment, self._orig_caseroot)
+                try:
+                    baseline_mem = self._read_baseline_mem(basecmp_dir)
+                except FileNotFoundError as e:
+                    logger.debug("Could not read baseline memory usage: %s", e)
+
+                    continue
+                else:
+                    self._compare_current_memory(baseline_mem, cpllog)
+
+    def _compare_current_memory(self, baseline, cpllog):
+        """
+        Compares current test memory usage against ``baseline``.
+
+        If the difference cannot be calculated then it's defaulted to "0.0".
+
+        Parameters
+        ----------
+        baseline : float
+            Baseline throughput value.
+        cpllog : str
+            Path to the current coupler log.
+        """
+        memlist = self._get_mem_usage(cpllog)
+
+        if len(memlist) > 3:
+            try:
+                current = memlist[-1][1]
+            except IndexError:
+                current = 0
+
+            try:
+                diff = (current - baseline) / baseline
+            except ZeroDivisionError:
+                diff = 0.0
+
+            tolerance = self._case.get_value("TEST_MEMLEAK_TOLERANCE")
+            if tolerance is None:
+                tolerance = 0.1
+            comment = "MEMCOMP: Memory usage highwater has changed by {:.2f}% relative to baseline".format(
+                diff * 100
+            )
+            append_testlog(comment, self._orig_caseroot)
+            if diff < tolerance and self._test_status.get_status(MEMCOMP_PHASE) is None:
+                self._test_status.set_status(MEMCOMP_PHASE, TEST_PASS_STATUS)
+            elif self._test_status.get_status(MEMCOMP_PHASE) != TEST_FAIL_STATUS:
+                comment = "Error: Memory usage increase >{:d}% from baseline's {:f} to {:f}".format(
+                    int(tolerance * 100), baseline, current
+                )
+                self._test_status.set_status(
+                    MEMCOMP_PHASE, TEST_FAIL_STATUS, comments=comment
+                )
+                append_testlog(comment, self._orig_caseroot)
+        else:
+            logger.debug("Found less than 4 memory usage data points")
 
     def _compare_throughput(self):
+        """
+        Compares current test throughput to baseline.
+        """
         with self._test_status:
             # compare memory usage to baseline
             baseline_name = self._case.get_value("BASECMP_CASE")
@@ -803,50 +830,68 @@ for some of your components.
                 self._case.get_value("BASELINE_ROOT"), baseline_name
             )
             newestcpllogfiles = self._get_latest_cpl_logs()
+            # do we need this loop? when is there more than one coupler file?
             for cpllog in newestcpllogfiles:
-                m = re.search(r"/({}.*.log).*.gz".format(self._cpllog), cpllog)
-                if m is not None:
-                    baselog = os.path.join(basecmp_dir, m.group(1)) + ".gz"
-                if baselog is None or not os.path.isfile(baselog):
-                    # for backward compatibility
-                    baselog = os.path.join(basecmp_dir, self._cpllog)
+                try:
+                    baseline_tput = self._read_baseline_tput(basecmp_dir)
+                except (FileNotFoundError, IndexError, ValueError) as e:
+                    logger.debug("Could not read baseline throughput: %s", e)
 
-                if os.path.isfile(baselog):
-                    # compare throughput to baseline
-                    current = self._get_throughput(cpllog)
-                    baseline = self._get_throughput(baselog)
-                    # comparing ypd so bigger is better
-                    if baseline is not None and current is not None:
-                        diff = (baseline - current) / baseline
-                        tolerance = self._case.get_value("TEST_TPUT_TOLERANCE")
-                        if tolerance is None:
-                            tolerance = 0.1
-                        expect(
-                            tolerance > 0.0,
-                            "Bad value for throughput tolerance in test",
-                        )
-                        comment = "TPUTCOMP: Computation time changed by {:.2f}% relative to baseline".format(
-                            diff * 100
-                        )
-                        append_testlog(comment, self._orig_caseroot)
-                        if (
-                            diff < tolerance
-                            and self._test_status.get_status(THROUGHPUT_PHASE) is None
-                        ):
-                            self._test_status.set_status(
-                                THROUGHPUT_PHASE, TEST_PASS_STATUS
-                            )
-                        elif (
-                            self._test_status.get_status(THROUGHPUT_PHASE)
-                            != TEST_FAIL_STATUS
-                        ):
-                            comment = "Error: TPUTCOMP: Computation time increase > {:d}% from baseline".format(
-                                int(tolerance * 100)
-                            )
-                            self._test_status.set_status(
-                                THROUGHPUT_PHASE, TEST_FAIL_STATUS, comments=comment
-                            )
-                            append_testlog(comment, self._orig_caseroot)
+                    # Default behavior was to skip comparison if baseline file did not exist or no values found
+                    continue
+                else:
+                    self._compare_current_throughput(baseline_tput, cpllog)
+
+    def _compare_current_throughput(self, baseline, cpllog):
+        """
+        Compares current test throughput against ``baseline``.
+
+        If the difference cannot be calculated then the phase is skipped.
+
+        Parameters
+        ----------
+        baseline : float
+            Baseline throughput value.
+        cpllog : str
+            Path to the current coupler log.
+        """
+        current = self._get_throughput(cpllog)
+
+        try:
+            # comparing ypd so bigger is better
+            diff = (baseline - current) / baseline
+        except ValueError:
+            # Should we default the diff to 0.0 as with _compare_current_memory?
+            logger.debug(
+                "Could not determine change in throughput between baseline %s and current %s",
+                baseline,
+                current,
+            )
+        else:
+            tolerance = self._case.get_value("TEST_TPUT_TOLERANCE")
+            if tolerance is None:
+                tolerance = 0.1
+            expect(
+                tolerance > 0.0,
+                "Bad value for throughput tolerance in test",
+            )
+            comment = "TPUTCOMP: Computation time changed by {:.2f}% relative to baseline".format(
+                diff * 100
+            )
+            append_testlog(comment, self._orig_caseroot)
+            if (
+                diff < tolerance
+                and self._test_status.get_status(THROUGHPUT_PHASE) is None
+            ):
+                self._test_status.set_status(THROUGHPUT_PHASE, TEST_PASS_STATUS)
+            elif self._test_status.get_status(THROUGHPUT_PHASE) != TEST_FAIL_STATUS:
+                comment = "Error: TPUTCOMP: Computation time increase > {:d}% from baseline".format(
+                    int(tolerance * 100)
+                )
+                self._test_status.set_status(
+                    THROUGHPUT_PHASE, TEST_FAIL_STATUS, comments=comment
+                )
+                append_testlog(comment, self._orig_caseroot)
 
     def _compare_baseline(self):
         """
@@ -899,6 +944,149 @@ for some of your components.
                             os.path.join(basegen_dir, baselog),
                             preserve_meta=False,
                         )
+
+                        self._write_baseline_tput(basegen_dir, cpllog)
+
+                        self._write_baseline_mem(basegen_dir, cpllog)
+
+    def _write_baseline_tput(self, baseline_dir, cpllog):
+        """
+        Writes baseline throughput to file.
+
+        A "-1" indicates that no throughput data was available from the coupler log.
+
+        Parameters
+        ----------
+        baseline_dir : str
+            Path to the baseline directory.
+        cpllog : str
+            Path to the current coupler log.
+        """
+        tput_file = os.path.join(baseline_dir, "cpl-tput.log")
+
+        tput = self._get_throughput(cpllog)
+
+        with open(tput_file, "w") as fd:
+            fd.write("# Throughput in simulated years per compute day\n")
+            fd.write(
+                "# A -1 indicates no throughput data was available from the test\n"
+            )
+
+            if tput is None:
+                fd.write("-1")
+            else:
+                fd.write(str(tput))
+
+    def _write_baseline_mem(self, baseline_dir, cpllog):
+        """
+        Writes baseline memory usage highwater to file.
+
+        A "-1" indicates that no memory usage data was available from the coupler log.
+
+        Parameters
+        ----------
+        baseline_dir : str
+            Path to the baseline directory.
+        cpllog : str
+            Path to the current coupler log.
+        """
+        mem_file = os.path.join(baseline_dir, "cpl-mem.log")
+
+        mem = self._get_mem_usage(cpllog)
+
+        with open(mem_file, "w") as fd:
+            fd.write("# Memory usage highwater\n")
+            fd.write(
+                "# A -1 indicates no memory usage data was available from the test\n"
+            )
+
+            try:
+                fd.write(str(mem[-1][1]))
+            except IndexError:
+                fd.write("-1")
+
+    def _read_baseline_tput(self, baseline_dir):
+        """
+        Reads throughput baseline.
+
+        Parameters
+        ----------
+        baseline_dir : str
+            Path to the baseline directory.
+
+        Returns
+        -------
+        float
+            Value of the throughput.
+
+        Raises
+        ------
+        FileNotFoundError
+            If baseline file does not exist.
+        IndexError
+            If no throughput value is found.
+        ValueError
+            If throughput value is not a float.
+        """
+        return self._read_baseline_value(os.path.join(baseline_dir, "cpl-tput.log"))
+
+    def _read_baseline_mem(self, baseline_dir):
+        """
+        Reads memory usage highwater baseline.
+
+        The default behvaior was to return 0 if no usage data was found.
+
+        Parameters
+        ----------
+        baseline_dir : str
+            Path to the baseline directory.
+
+        Returns
+        -------
+        float
+            Value of the highwater memory usage.
+
+        Raises
+        ------
+        FileNotFoundError
+            If baseline file does not exist.
+        """
+        try:
+            memory = self._read_baseline_value(
+                os.path.join(baseline_dir, "cpl-mem.log")
+            )
+        except (IndexError, ValueError):
+            memory = 0
+
+        return memory
+
+    def _read_baseline_value(self, baseline_file):
+        """
+        Read baseline value from file.
+
+        Parameters
+        ----------
+        baseline_file : str
+            Path to baseline file.
+
+        Returns
+        -------
+        float
+            Baseline value.
+
+        Raises
+        ------
+        FileNotFoundError
+            If ``baseline_file`` is not found.
+        IndexError
+            If not values are present in ``baseline_file``.
+        ValueError
+            If value in ``baseline_file`` is not a float.
+        """
+        with open(baseline_file) as fd:
+            lines = [x for x in fd.readlines() if not x.startswith("#")]
+
+        return float(lines[0])
 
 
 class FakeTest(SystemTestsCommon):
