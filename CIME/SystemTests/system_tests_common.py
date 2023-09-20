@@ -775,6 +775,10 @@ for some of your components.
                     tolerance = self._case.get_value("TEST_MEMLEAK_TOLERANCE")
                     if tolerance is None:
                         tolerance = 0.1
+                    comment = "MEMCOMP: Memory usage highwater has changed by {:.2f}% relative to baseline".format(
+                        diff * 100
+                    )
+                    append_testlog(comment, self._orig_caseroot)
                     if (
                         diff < tolerance
                         and self._test_status.get_status(MEMCOMP_PHASE) is None
