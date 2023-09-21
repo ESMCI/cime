@@ -66,169 +66,169 @@ def create_mock_case(tempdir, idx=None, cpllog_data=None):
 
 
 class TestCaseSubmit(unittest.TestCase):
+    @mock.patch("CIME.SystemTests.system_tests_common.compare_throughput")
     @mock.patch("CIME.SystemTests.system_tests_common.append_testlog")
-    def test_compare_throughput(self, append_testlog):
+    def test_compare_throughput(self, append_testlog, compare_throughput):
+        compare_throughput.return_value = (True, 0.02, 0.05, 200, 201)
+
         with tempfile.TemporaryDirectory() as tempdir:
-            case, caseroot, baseline_root, run_dir = create_mock_case(
-                tempdir, cpllog_data=CPLLOG
-            )
+            caseroot = Path(tempdir) / "caseroot"
+            caseroot.mkdir(parents=True, exist_ok=False)
 
-            base_case, base_caseroot, _, _ = create_mock_case(
-                tempdir, idx=1, cpllog_data=CPLLOG
-            )
-
+            case = mock.MagicMock()
             case.get_value.side_effect = (
-                str(caseroot),
+                str(Path(tempdir) / "caseroot"),
                 "ERIO.ne30_g16_rx1.A.docker_gnu",
                 "mct",
-                "master/ERIO.ne30_g16_rx1.A.docker_gnu",
-                str(baseline_root),
-                str(run_dir),
-                0.05,
             )
-
-            baseline_dir = baseline_root / "master" / "ERIO.ne30_g16_rx1.A.docker_gnu"
-            baseline_dir.mkdir(parents=True, exist_ok=False)
-            baseline_mem = baseline_dir / "cpl-mem.log"
-
-            with open(baseline_mem, "w") as fd:
-                fd.write(str("1673.89"))
-
-            common = SystemTestsCommon(case)
-
-            common._compare_memory()
-
-            assert common._test_status.get_overall_test_status() == ("PASS", None)
-
-            append_testlog.assert_any_call(
-                "MEMCOMP: Memory usage highwater has changed by 0.00% relative to baseline",
-                str(caseroot),
-            )
-
-    @mock.patch("CIME.SystemTests.system_tests_common.append_testlog")
-    def test_compare_throughput_fail(self, append_testlog):
-        with tempfile.TemporaryDirectory() as tempdir:
-            case, caseroot, baseline_root, run_dir = create_mock_case(
-                tempdir, cpllog_data=CPLLOG
-            )
-
-            base_case, base_caseroot, _, _ = create_mock_case(
-                tempdir, idx=1, cpllog_data=CPLLOG
-            )
-
-            case.get_value.side_effect = (
-                str(caseroot),
-                "ERIO.ne30_g16_rx1.A.docker_gnu",
-                "mct",
-                "master/ERIO.ne30_g16_rx1.A.docker_gnu",
-                str(baseline_root),
-                str(run_dir),
-                0.05,
-            )
-
-            baseline_dir = baseline_root / "master" / "ERIO.ne30_g16_rx1.A.docker_gnu"
-            baseline_dir.mkdir(parents=True, exist_ok=False)
-            baseline_mem = baseline_dir / "cpl-mem.log"
-
-            with open(baseline_mem, "w") as fd:
-                fd.write(str("1473.89"))
-
-            common = SystemTestsCommon(case)
-
-            common._compare_memory()
-
-            assert common._test_status.get_overall_test_status() == ("PASS", None)
-
-            append_testlog.assert_any_call(
-                "MEMCOMP: Memory usage highwater has changed by 13.57% relative to baseline",
-                str(caseroot),
-            )
-            append_testlog.assert_any_call(
-                "Error: Memory usage increase >5% from baseline's 1473.890000 to 1673.890000",
-                str(caseroot),
-            )
-
-    @mock.patch("CIME.SystemTests.system_tests_common.append_testlog")
-    def test_compare_memory(self, append_testlog):
-        with tempfile.TemporaryDirectory() as tempdir:
-            case, caseroot, baseline_root, run_dir = create_mock_case(
-                tempdir, cpllog_data=CPLLOG
-            )
-
-            base_case, base_caseroot, _, _ = create_mock_case(
-                tempdir, idx=1, cpllog_data=CPLLOG
-            )
-
-            case.get_value.side_effect = (
-                str(caseroot),
-                "ERIO.ne30_g16_rx1.A.docker_gnu",
-                "mct",
-                "master/ERIO.ne30_g16_rx1.A.docker_gnu",
-                str(baseline_root),
-                str(run_dir),
-                0.05,
-            )
-
-            baseline_dir = baseline_root / "master" / "ERIO.ne30_g16_rx1.A.docker_gnu"
-            baseline_dir.mkdir(parents=True, exist_ok=False)
-            baseline_tput = baseline_dir / "cpl-tput.log"
-
-            with open(baseline_tput, "w") as fd:
-                fd.write(str("719.635"))
 
             common = SystemTestsCommon(case)
 
             common._compare_throughput()
 
-            assert common._test_status.get_overall_test_status() == ("PASS", None)
+        assert common._test_status.get_overall_test_status() == ("PASS", None)
 
-            append_testlog.assert_any_call(
-                "TPUTCOMP: Computation time changed by 0.00% relative to baseline",
-                str(caseroot),
-            )
+        append_testlog.assert_any_call(
+            "TPUTCOMP: Computation time changed by 2.00% relative to baseline",
+            str(caseroot),
+        )
 
+    @mock.patch("CIME.SystemTests.system_tests_common.compare_throughput")
     @mock.patch("CIME.SystemTests.system_tests_common.append_testlog")
-    def test_compare_memory_fail(self, append_testlog):
+    def test_compare_throughput_error_diff(self, append_testlog, compare_throughput):
+        compare_throughput.return_value = (None, 0.02, 0.05, 200, 201)
+
         with tempfile.TemporaryDirectory() as tempdir:
-            case, caseroot, baseline_root, run_dir = create_mock_case(
-                tempdir, cpllog_data=CPLLOG
-            )
+            caseroot = Path(tempdir) / "caseroot"
+            caseroot.mkdir(parents=True, exist_ok=False)
 
-            base_case, base_caseroot, _, _ = create_mock_case(
-                tempdir, idx=1, cpllog_data=CPLLOG
-            )
-
+            case = mock.MagicMock()
             case.get_value.side_effect = (
-                str(caseroot),
+                str(Path(tempdir) / "caseroot"),
                 "ERIO.ne30_g16_rx1.A.docker_gnu",
                 "mct",
-                "master/ERIO.ne30_g16_rx1.A.docker_gnu",
-                str(baseline_root),
-                str(run_dir),
-                0.05,
             )
-
-            baseline_dir = baseline_root / "master" / "ERIO.ne30_g16_rx1.A.docker_gnu"
-            baseline_dir.mkdir(parents=True, exist_ok=False)
-            baseline_tput = baseline_dir / "cpl-tput.log"
-
-            with open(baseline_tput, "w") as fd:
-                fd.write(str("900.635"))
 
             common = SystemTestsCommon(case)
 
             common._compare_throughput()
 
-            assert common._test_status.get_overall_test_status() == ("PASS", None)
+        assert common._test_status.get_overall_test_status() == ("PASS", None)
 
-            append_testlog.assert_any_call(
-                "TPUTCOMP: Computation time changed by 20.10% relative to baseline",
-                str(caseroot),
+        append_testlog.assert_not_called()
+
+    @mock.patch("CIME.SystemTests.system_tests_common.compare_throughput")
+    @mock.patch("CIME.SystemTests.system_tests_common.append_testlog")
+    def test_compare_throughput_fail(self, append_testlog, compare_throughput):
+        compare_throughput.return_value = (False, 0.02, 0.05, 200, 201)
+
+        with tempfile.TemporaryDirectory() as tempdir:
+            caseroot = Path(tempdir) / "caseroot"
+            caseroot.mkdir(parents=True, exist_ok=False)
+
+            case = mock.MagicMock()
+            case.get_value.side_effect = (
+                str(Path(tempdir) / "caseroot"),
+                "ERIO.ne30_g16_rx1.A.docker_gnu",
+                "mct",
             )
-            append_testlog.assert_any_call(
-                "Error: TPUTCOMP: Computation time increase > 5% from baseline",
+
+            common = SystemTestsCommon(case)
+
+            common._compare_throughput()
+
+        assert common._test_status.get_overall_test_status() == ("PASS", None)
+
+        append_testlog.assert_any_call(
+            "TPUTCOMP: Computation time changed by 2.00% relative to baseline",
+            str(caseroot),
+        )
+        append_testlog.assert_any_call(
+            "Error: TPUTCOMP: Computation time increase > 5% from baseline",
+            str(caseroot),
+        )
+
+    @mock.patch("CIME.SystemTests.system_tests_common.compare_memory")
+    @mock.patch("CIME.SystemTests.system_tests_common.append_testlog")
+    def test_compare_memory(self, append_testlog, compare_memory):
+        compare_memory.return_value = (True, 0.02, 0.05, 1000, 1002)
+
+        with tempfile.TemporaryDirectory() as tempdir:
+            caseroot = Path(tempdir) / "caseroot"
+            caseroot.mkdir(parents=True, exist_ok=False)
+
+            case = mock.MagicMock()
+            case.get_value.side_effect = (
                 str(caseroot),
+                "ERIO.ne30_g16_rx1.A.docker_gnu",
+                "mct",
             )
+
+            common = SystemTestsCommon(case)
+
+            common._compare_memory()
+
+        assert common._test_status.get_overall_test_status() == ("PASS", None)
+
+        append_testlog.assert_any_call(
+            "MEMCOMP: Memory usage highwater has changed by 2.00% relative to baseline",
+            str(caseroot),
+        )
+
+    @mock.patch("CIME.SystemTests.system_tests_common.compare_memory")
+    @mock.patch("CIME.SystemTests.system_tests_common.append_testlog")
+    def test_compare_memory_erorr_diff(self, append_testlog, compare_memory):
+        compare_memory.return_value = (None, 0.02, 0.05, 1000, 1002)
+
+        with tempfile.TemporaryDirectory() as tempdir:
+            caseroot = Path(tempdir) / "caseroot"
+            caseroot.mkdir(parents=True, exist_ok=False)
+
+            case = mock.MagicMock()
+            case.get_value.side_effect = (
+                str(caseroot),
+                "ERIO.ne30_g16_rx1.A.docker_gnu",
+                "mct",
+            )
+
+            common = SystemTestsCommon(case)
+
+            common._compare_memory()
+
+        assert common._test_status.get_overall_test_status() == ("PASS", None)
+
+        append_testlog.assert_not_called()
+
+    @mock.patch("CIME.SystemTests.system_tests_common.compare_memory")
+    @mock.patch("CIME.SystemTests.system_tests_common.append_testlog")
+    def test_compare_memory_erorr_fail(self, append_testlog, compare_memory):
+        compare_memory.return_value = (False, 0.02, 0.05, 1000, 1002)
+
+        with tempfile.TemporaryDirectory() as tempdir:
+            caseroot = Path(tempdir) / "caseroot"
+            caseroot.mkdir(parents=True, exist_ok=False)
+
+            case = mock.MagicMock()
+            case.get_value.side_effect = (
+                str(caseroot),
+                "ERIO.ne30_g16_rx1.A.docker_gnu",
+                "mct",
+            )
+
+            common = SystemTestsCommon(case)
+
+            common._compare_memory()
+
+        assert common._test_status.get_overall_test_status() == ("PASS", None)
+
+        append_testlog.assert_any_call(
+            "MEMCOMP: Memory usage highwater has changed by 2.00% relative to baseline",
+            str(caseroot),
+        )
+        append_testlog.assert_any_call(
+            "Error: Memory usage increase >5% from baseline's 1000.000000 to 1002.000000",
+            str(caseroot),
+        )
 
     def test_generate_baseline(self):
         with tempfile.TemporaryDirectory() as tempdir:
@@ -254,6 +254,7 @@ class TestCaseSubmit(unittest.TestCase):
                 str(baseline_root),
                 "master/ERIO.ne30_g16_rx1.A.docker_gnu",
                 str(run_dir),
+                "mct",
             )
 
             common = SystemTestsCommon(case)
