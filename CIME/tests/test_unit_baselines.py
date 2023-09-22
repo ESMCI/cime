@@ -9,19 +9,19 @@ from pathlib import Path
 from CIME import baselines
 from CIME.tests.test_unit_system_tests import CPLLOG
 
+
 def create_mock_case(tempdir, get_latest_cpl_logs):
     caseroot = Path(tempdir, "0", "caseroot")
     rundir = caseroot / "run"
 
-    get_latest_cpl_logs.return_value = (
-        str(rundir / "cpl.log.gz"),
-    )
+    get_latest_cpl_logs.return_value = (str(rundir / "cpl.log.gz"),)
 
     baseline_root = Path(tempdir, "baselines")
 
     case = mock.MagicMock()
 
     return case, caseroot, rundir, baseline_root
+
 
 class TestUnitBaseline(unittest.TestCase):
     def test_get_throughput_no_file(self):
@@ -49,16 +49,28 @@ class TestUnitBaseline(unittest.TestCase):
 
             mem_usage = baselines.get_mem_usage(str(cpl_log_path))
 
-        assert mem_usage == [(10102.0, 1673.89), (10103.0, 1673.89), (10104.0, 1673.89), (10105.0, 1673.89)]
+        assert mem_usage == [
+            (10102.0, 1673.89),
+            (10103.0, 1673.89),
+            (10104.0, 1673.89),
+            (10105.0, 1673.89),
+        ]
 
     @mock.patch("CIME.baselines.os.path.isfile")
     def test_get_mem_usage(self, isfile):
         isfile.return_value = True
 
-        with mock.patch("builtins.open", mock.mock_open(read_data=CPLLOG.encode("utf-8"))) as mock_file:
+        with mock.patch(
+            "builtins.open", mock.mock_open(read_data=CPLLOG.encode("utf-8"))
+        ) as mock_file:
             mem_usage = baselines.get_mem_usage("/tmp/cpl.log")
 
-        assert mem_usage == [(10102.0, 1673.89), (10103.0, 1673.89), (10104.0, 1673.89), (10105.0, 1673.89)]
+        assert mem_usage == [
+            (10102.0, 1673.89),
+            (10103.0, 1673.89),
+            (10104.0, 1673.89),
+            (10105.0, 1673.89),
+        ]
 
     def test_read_baseline_mem_empty(self):
         with mock.patch("builtins.open", mock.mock_open(read_data="")) as mock_file:
@@ -96,42 +108,30 @@ class TestUnitBaseline(unittest.TestCase):
 
         assert baseline == 200
 
-    @mock.patch("CIME.baselines.get_mem_usage")
-    def test_write_baseline_mem_no_value(self, get_mem_usage):
-        get_mem_usage.return_value = []
-
+    def test_write_baseline_mem_no_value(self):
         with mock.patch("builtins.open", mock.mock_open()) as mock_file:
-            baselines.write_baseline_mem("/tmp", "/tmp/cpl.log")
+            baselines.write_baseline_mem("/tmp", [])
 
         mock_file.assert_called_with("/tmp/cpl-mem.log", "w")
         mock_file.return_value.write.assert_called_with("-1")
 
-    @mock.patch("CIME.baselines.get_mem_usage")
-    def test_write_baseline_mem(self, get_mem_usage):
-        get_mem_usage.return_value = [(1, 200)]
-
+    def test_write_baseline_mem(self):
         with mock.patch("builtins.open", mock.mock_open()) as mock_file:
-            baselines.write_baseline_mem("/tmp", "/tmp/cpl.log")
+            baselines.write_baseline_mem("/tmp", [(1, 200)])
 
         mock_file.assert_called_with("/tmp/cpl-mem.log", "w")
         mock_file.return_value.write.assert_called_with("200")
 
-    @mock.patch("CIME.baselines.get_throughput")
-    def test_write_baseline_tput_no_value(self, get_throughput):
-        get_throughput.return_value = None
-
+    def test_write_baseline_tput_no_value(self):
         with mock.patch("builtins.open", mock.mock_open()) as mock_file:
-            baselines.write_baseline_tput("/tmp", "/tmp/cpl.log")
+            baselines.write_baseline_tput("/tmp", None)
 
         mock_file.assert_called_with("/tmp/cpl-tput.log", "w")
         mock_file.return_value.write.assert_called_with("-1")
 
-    @mock.patch("CIME.baselines.get_throughput")
-    def test_write_baseline_tput(self, get_throughput):
-        get_throughput.return_value = 200
-
+    def test_write_baseline_tput(self):
         with mock.patch("builtins.open", mock.mock_open()) as mock_file:
-            baselines.write_baseline_tput("/tmp", "/tmp/cpl.log")
+            baselines.write_baseline_tput("/tmp", 200)
 
         mock_file.assert_called_with("/tmp/cpl-tput.log", "w")
         mock_file.return_value.write.assert_called_with("200")
@@ -139,7 +139,9 @@ class TestUnitBaseline(unittest.TestCase):
     @mock.patch("CIME.baselines.get_throughput")
     @mock.patch("CIME.baselines.read_baseline_tput")
     @mock.patch("CIME.baselines.get_latest_cpl_logs")
-    def test_compare_throughput_no_baseline_file(self, get_latest_cpl_logs, read_baseline_tput, get_throughput):
+    def test_compare_throughput_no_baseline_file(
+        self, get_latest_cpl_logs, read_baseline_tput, get_throughput
+    ):
         read_baseline_tput.side_effect = FileNotFoundError
 
         get_throughput.return_value = 504
@@ -153,18 +155,17 @@ class TestUnitBaseline(unittest.TestCase):
                 0.05,
             )
 
-            below_tolerance, diff, tolerance,  baseline, current = baselines.compare_throughput(case)
+            (below_tolerance, comment) = baselines.compare_throughput(case)
 
         assert below_tolerance is None
-        assert diff == None
-        assert tolerance == 0.05
-        assert baseline == None
-        assert current == None
+        assert comment == "Could not read baseline throughput file: "
 
     @mock.patch("CIME.baselines.get_throughput")
     @mock.patch("CIME.baselines.read_baseline_tput")
     @mock.patch("CIME.baselines.get_latest_cpl_logs")
-    def test_compare_throughput_no_baseline(self, get_latest_cpl_logs, read_baseline_tput, get_throughput):
+    def test_compare_throughput_no_baseline(
+        self, get_latest_cpl_logs, read_baseline_tput, get_throughput
+    ):
         read_baseline_tput.return_value = None
 
         get_throughput.return_value = 504
@@ -178,18 +179,17 @@ class TestUnitBaseline(unittest.TestCase):
                 0.05,
             )
 
-            below_tolerance, diff, tolerance,  baseline, current = baselines.compare_throughput(case)
+            (below_tolerance, comment) = baselines.compare_throughput(case)
 
         assert below_tolerance is None
-        assert diff == None
-        assert tolerance == 0.05
-        assert baseline == None
-        assert current == 504
+        assert comment == "Could not determine diff with baseline None and current 504"
 
     @mock.patch("CIME.baselines.get_throughput")
     @mock.patch("CIME.baselines.read_baseline_tput")
     @mock.patch("CIME.baselines.get_latest_cpl_logs")
-    def test_compare_throughput_no_tolerance(self, get_latest_cpl_logs, read_baseline_tput, get_throughput):
+    def test_compare_throughput_no_tolerance(
+        self, get_latest_cpl_logs, read_baseline_tput, get_throughput
+    ):
         read_baseline_tput.return_value = 500
 
         get_throughput.return_value = 504
@@ -200,21 +200,49 @@ class TestUnitBaseline(unittest.TestCase):
             case.get_value.side_effect = (
                 str(baseline_root),
                 "master/ERIO.ne30_g16_rx1.A.docker_gnu",
-                None
+                None,
             )
 
-            below_tolerance, diff, tolerance,  baseline, current = baselines.compare_throughput(case)
+            (below_tolerance, comment) = baselines.compare_throughput(case)
 
         assert below_tolerance
-        assert diff == -0.008
-        assert tolerance == 0.1
-        assert baseline == 500
-        assert current == 504
+        assert (
+            comment
+            == "TPUTCOMP: Computation time changed by -0.80% relative to baseline"
+        )
 
     @mock.patch("CIME.baselines.get_throughput")
     @mock.patch("CIME.baselines.read_baseline_tput")
     @mock.patch("CIME.baselines.get_latest_cpl_logs")
-    def test_compare_throughput(self, get_latest_cpl_logs, read_baseline_tput, get_throughput):
+    def test_compare_throughput_above_threshold(
+        self, get_latest_cpl_logs, read_baseline_tput, get_throughput
+    ):
+        read_baseline_tput.return_value = 1000
+
+        get_throughput.return_value = 504
+
+        with tempfile.TemporaryDirectory() as tempdir:
+            case, _, _, baseline_root = create_mock_case(tempdir, get_latest_cpl_logs)
+
+            case.get_value.side_effect = (
+                str(baseline_root),
+                "master/ERIO.ne30_g16_rx1.A.docker_gnu",
+                0.05,
+            )
+
+            (below_tolerance, comment) = baselines.compare_throughput(case)
+
+        assert not below_tolerance
+        assert (
+            comment == "Error: TPUTCOMP: Computation time increase > 5% from baseline"
+        )
+
+    @mock.patch("CIME.baselines.get_throughput")
+    @mock.patch("CIME.baselines.read_baseline_tput")
+    @mock.patch("CIME.baselines.get_latest_cpl_logs")
+    def test_compare_throughput(
+        self, get_latest_cpl_logs, read_baseline_tput, get_throughput
+    ):
         read_baseline_tput.return_value = 500
 
         get_throughput.return_value = 504
@@ -228,18 +256,20 @@ class TestUnitBaseline(unittest.TestCase):
                 0.05,
             )
 
-            below_tolerance, diff, tolerance,  baseline, current = baselines.compare_throughput(case)
+            (below_tolerance, comment) = baselines.compare_throughput(case)
 
         assert below_tolerance
-        assert diff == -0.008
-        assert tolerance == 0.05
-        assert baseline == 500
-        assert current == 504
+        assert (
+            comment
+            == "TPUTCOMP: Computation time changed by -0.80% relative to baseline"
+        )
 
     @mock.patch("CIME.baselines.get_mem_usage")
     @mock.patch("CIME.baselines.read_baseline_mem")
     @mock.patch("CIME.baselines.get_latest_cpl_logs")
-    def test_compare_memory_no_baseline(self, get_latest_cpl_logs, read_baseline_mem, get_mem_usage):
+    def test_compare_memory_no_baseline(
+        self, get_latest_cpl_logs, read_baseline_mem, get_mem_usage
+    ):
         read_baseline_mem.return_value = None
 
         get_mem_usage.return_value = [
@@ -258,18 +288,20 @@ class TestUnitBaseline(unittest.TestCase):
                 0.05,
             )
 
-            below_tolerance, diff, tolerance,  baseline, current = baselines.compare_memory(case)
+            (below_tolerance, comment) = baselines.compare_memory(case)
 
         assert below_tolerance
-        assert diff == 0.0
-        assert tolerance == 0.05
-        assert baseline == 0.0
-        assert current == 1003.0
+        assert (
+            comment
+            == "MEMCOMP: Memory usage highwater has changed by 0.00% relative to baseline"
+        )
 
     @mock.patch("CIME.baselines.get_mem_usage")
     @mock.patch("CIME.baselines.read_baseline_mem")
     @mock.patch("CIME.baselines.get_latest_cpl_logs")
-    def test_compare_memory_not_enough_samples(self, get_latest_cpl_logs, read_baseline_mem, get_mem_usage):
+    def test_compare_memory_not_enough_samples(
+        self, get_latest_cpl_logs, read_baseline_mem, get_mem_usage
+    ):
         read_baseline_mem.return_value = 1000.0
 
         get_mem_usage.return_value = [
@@ -286,18 +318,17 @@ class TestUnitBaseline(unittest.TestCase):
                 0.05,
             )
 
-            below_tolerance, diff, tolerance,  baseline, current = baselines.compare_memory(case)
+            (below_tolerance, comment) = baselines.compare_memory(case)
 
         assert below_tolerance is None
-        assert diff == None
-        assert tolerance == 0.05
-        assert baseline == 1000.0
-        assert current == None
+        assert comment == "Found 2 memory usage samples, need atleast 4"
 
     @mock.patch("CIME.baselines.get_mem_usage")
     @mock.patch("CIME.baselines.read_baseline_mem")
     @mock.patch("CIME.baselines.get_latest_cpl_logs")
-    def test_compare_memory_no_baseline_file(self, get_latest_cpl_logs, read_baseline_mem, get_mem_usage):
+    def test_compare_memory_no_baseline_file(
+        self, get_latest_cpl_logs, read_baseline_mem, get_mem_usage
+    ):
         read_baseline_mem.side_effect = FileNotFoundError
 
         get_mem_usage.return_value = [
@@ -316,18 +347,17 @@ class TestUnitBaseline(unittest.TestCase):
                 0.05,
             )
 
-            below_tolerance, diff, tolerance,  baseline, current = baselines.compare_memory(case)
+            (below_tolerance, comment) = baselines.compare_memory(case)
 
         assert below_tolerance is None
-        assert diff == None
-        assert tolerance == 0.05
-        assert baseline == None
-        assert current == None
+        assert comment == "Could not read baseline memory usage: "
 
     @mock.patch("CIME.baselines.get_mem_usage")
     @mock.patch("CIME.baselines.read_baseline_mem")
     @mock.patch("CIME.baselines.get_latest_cpl_logs")
-    def test_compare_memory_no_tolerance(self, get_latest_cpl_logs, read_baseline_mem, get_mem_usage):
+    def test_compare_memory_no_tolerance(
+        self, get_latest_cpl_logs, read_baseline_mem, get_mem_usage
+    ):
         read_baseline_mem.return_value = 1000.0
 
         get_mem_usage.return_value = [
@@ -346,18 +376,52 @@ class TestUnitBaseline(unittest.TestCase):
                 None,
             )
 
-            below_tolerance, diff, tolerance, baseline, current = baselines.compare_memory(case)
+            (below_tolerance, comment) = baselines.compare_memory(case)
 
         assert below_tolerance
-        assert diff == 0.003
-        assert tolerance == 0.1
-        assert baseline == 1000.0
-        assert current == 1003.0
+        assert (
+            comment
+            == "MEMCOMP: Memory usage highwater has changed by 0.30% relative to baseline"
+        )
 
     @mock.patch("CIME.baselines.get_mem_usage")
     @mock.patch("CIME.baselines.read_baseline_mem")
     @mock.patch("CIME.baselines.get_latest_cpl_logs")
-    def test_compare_memory(self, get_latest_cpl_logs, read_baseline_mem, get_mem_usage):
+    def test_compare_memory_above_threshold(
+        self, get_latest_cpl_logs, read_baseline_mem, get_mem_usage
+    ):
+        read_baseline_mem.return_value = 1000.0
+
+        get_mem_usage.return_value = [
+            (1, 2000.0),
+            (2, 2001.0),
+            (3, 2002.0),
+            (4, 2003.0),
+        ]
+
+        with tempfile.TemporaryDirectory() as tempdir:
+            case, _, _, baseline_root = create_mock_case(tempdir, get_latest_cpl_logs)
+
+            case.get_value.side_effect = (
+                str(baseline_root),
+                "master/ERIO.ne30_g16_rx1.A.docker_gnu",
+                0.05,
+            )
+
+            (below_tolerance, comment) = baselines.compare_memory(case)
+
+        assert not below_tolerance
+        assert (
+            comment
+            == "Error: Memory usage increase >5% from baseline's 1000.000000 to 2003.000000"
+        )
+
+    @mock.patch("CIME.baselines.get_mem_usage")
+    @mock.patch("CIME.baselines.read_baseline_mem")
+    @mock.patch("CIME.baselines.get_latest_cpl_logs")
+    def test_compare_memory(
+        self, get_latest_cpl_logs, read_baseline_mem, get_mem_usage
+    ):
         read_baseline_mem.return_value = 1000.0
 
         get_mem_usage.return_value = [
@@ -376,13 +440,13 @@ class TestUnitBaseline(unittest.TestCase):
                 0.05,
             )
 
-            below_tolerance, diff, tolerance, baseline, current = baselines.compare_memory(case)
+            (below_tolerance, comment) = baselines.compare_memory(case)
 
         assert below_tolerance
-        assert diff == 0.003
-        assert tolerance == 0.05
-        assert baseline == 1000.0
-        assert current == 1003.0
+        assert (
+            comment
+            == "MEMCOMP: Memory usage highwater has changed by 0.30% relative to baseline"
+        )
 
     def test_get_latest_cpl_logs_found_multiple(self):
         with tempfile.TemporaryDirectory() as tempdir:
@@ -404,7 +468,9 @@ class TestUnitBaseline(unittest.TestCase):
             latest_cpl_logs = baselines.get_latest_cpl_logs(case)
 
         assert len(latest_cpl_logs) == 2
-        assert sorted(latest_cpl_logs) == sorted([str(cpl_log_path), str(cpl_log_2_path)])
+        assert sorted(latest_cpl_logs) == sorted(
+            [str(cpl_log_path), str(cpl_log_2_path)]
+        )
 
     def test_get_latest_cpl_logs_found_single(self):
         with tempfile.TemporaryDirectory() as tempdir:

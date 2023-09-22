@@ -28,6 +28,7 @@ from CIME.provenance import save_test_time, get_test_success
 from CIME.locked_files import LOCKED_DIR, lock_file, is_locked
 from CIME.baselines import (
     get_latest_cpl_logs,
+    get_throughput,
     get_mem_usage,
     compare_memory,
     compare_throughput,
@@ -704,15 +705,9 @@ for some of your components.
         Compares current test memory usage to baseline.
         """
         with self._test_status:
-            below_tolerance, diff, tolerance, baseline, current = compare_memory(
-                self._case
-            )
+            below_tolerance, comment = compare_memory(self._case)
 
             if below_tolerance is not None:
-                comment = "MEMCOMP: Memory usage highwater has changed by {:.2f}% relative to baseline".format(
-                    diff * 100
-                )
-
                 append_testlog(comment, self._orig_caseroot)
 
                 if (
@@ -721,39 +716,29 @@ for some of your components.
                 ):
                     self._test_status.set_status(MEMCOMP_PHASE, TEST_PASS_STATUS)
                 elif self._test_status.get_status(MEMCOMP_PHASE) != TEST_FAIL_STATUS:
-                    comment = "Error: Memory usage increase >{:d}% from baseline's {:f} to {:f}".format(
-                        int(tolerance * 100), baseline, current
-                    )
                     self._test_status.set_status(
                         MEMCOMP_PHASE, TEST_FAIL_STATUS, comments=comment
                     )
-                    append_testlog(comment, self._orig_caseroot)
 
     def _compare_throughput(self):
         """
         Compares current test throughput to baseline.
         """
         with self._test_status:
-            below_tolerance, diff, tolerance, _, _ = compare_throughput(self._case)
+            below_tolerance, comment = compare_throughput(self._case)
 
             if below_tolerance is not None:
-                comment = "TPUTCOMP: Computation time changed by {:.2f}% relative to baseline".format(
-                    diff * 100
-                )
                 append_testlog(comment, self._orig_caseroot)
+
                 if (
                     below_tolerance
                     and self._test_status.get_status(THROUGHPUT_PHASE) is None
                 ):
                     self._test_status.set_status(THROUGHPUT_PHASE, TEST_PASS_STATUS)
                 elif self._test_status.get_status(THROUGHPUT_PHASE) != TEST_FAIL_STATUS:
-                    comment = "Error: TPUTCOMP: Computation time increase > {:d}% from baseline".format(
-                        int(tolerance * 100)
-                    )
                     self._test_status.set_status(
                         THROUGHPUT_PHASE, TEST_FAIL_STATUS, comments=comment
                     )
-                    append_testlog(comment, self._orig_caseroot)
 
     def _compare_baseline(self):
         """
@@ -807,9 +792,13 @@ for some of your components.
                             preserve_meta=False,
                         )
 
-                        write_baseline_tput(basegen_dir, cpllog)
+                        tput = get_throughput(cpllog)
 
-                        write_baseline_mem(basegen_dir, cpllog)
+                        write_baseline_tput(basegen_dir, tput)
+
+                        mem = get_mem_usage(cpllog)
+
+                        write_baseline_mem(basegen_dir, mem)
 
 
 class FakeTest(SystemTestsCommon):

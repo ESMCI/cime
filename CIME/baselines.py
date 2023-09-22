@@ -7,15 +7,14 @@ from CIME.utils import expect
 
 logger = logging.getLogger(__name__)
 
+
 def get_latest_cpl_logs(case):
     """
     find and return the latest cpl log file in the run directory
     """
     coupler_log_path = case.get_value("RUNDIR")
     cpllog_name = "drv" if case.get_value("COMP_INTERFACE") == "nuopc" else "cpl"
-    cpllogs = glob.glob(
-        os.path.join(coupler_log_path, "{}*.log.*".format(cpllog_name))
-    )
+    cpllogs = glob.glob(os.path.join(coupler_log_path, "{}*.log.*".format(cpllog_name)))
     lastcpllogs = []
     if cpllogs:
         lastcpllogs.append(max(cpllogs, key=os.path.getctime))
@@ -30,22 +29,27 @@ def get_latest_cpl_logs(case):
 
     return lastcpllogs
 
-def compare_memory(case):
-    baseline_root = case.get_value("BASELINE_ROOT")
 
-    baseline_name = case.get_value("BASECMP_CASE")
+def compare_memory(case, baseline_dir=None):
+    if baseline_dir is None:
+        baseline_root = case.get_value("BASELINE_ROOT")
 
-    baseline_dir = os.path.join(baseline_root, baseline_name)
+        baseline_name = case.get_value("BASECMP_CASE")
+
+        baseline_dir = os.path.join(baseline_root, baseline_name)
 
     latest_cpl_logs = get_latest_cpl_logs(case)
 
-    diff, baseline, current = [None]*3
+    diff, baseline, current = [None] * 3
+    comment = ""
 
     for cpllog in latest_cpl_logs:
         try:
             baseline = read_baseline_mem(baseline_dir)
         except FileNotFoundError as e:
-            logger.debug("Could not read baseline memory usage: %s", e)
+            comment = f"Could not read baseline memory usage: {e!s}"
+
+            logger.debug(comment)
 
             continue
 
@@ -55,7 +59,9 @@ def compare_memory(case):
         memlist = get_mem_usage(cpllog)
 
         if len(memlist) <= 3:
-            logger.debug(f"Found {len(memlist)} memory usage samples, need atleast 4")
+            comment = f"Found {len(memlist)} memory usage samples, need atleast 4"
+
+            logger.debug(comment)
 
             continue
 
@@ -77,25 +83,39 @@ def compare_memory(case):
     if diff is not None:
         below_tolerance = diff < tolerance
 
-    return below_tolerance, diff, tolerance, baseline, current
+        if below_tolerance:
+            comment = "MEMCOMP: Memory usage highwater has changed by {:.2f}% relative to baseline".format(
+                diff * 100
+            )
+        else:
+            comment = "Error: Memory usage increase >{:d}% from baseline's {:f} to {:f}".format(
+                int(tolerance * 100), baseline, current
+            )
 
-def compare_throughput(case):
-    baseline_root = case.get_value("BASELINE_ROOT")
+    return below_tolerance, comment
 
-    baseline_name = case.get_value("BASECMP_CASE")
 
-    baseline_dir = os.path.join(baseline_root, baseline_name)
+def compare_throughput(case, baseline_dir=None):
+    if baseline_dir is None:
+        baseline_root = case.get_value("BASELINE_ROOT")
+
+        baseline_name = case.get_value("BASECMP_CASE")
+
+        baseline_dir = os.path.join(baseline_root, baseline_name)
 
     latest_cpl_logs = get_latest_cpl_logs(case)
 
-    diff, baseline, current = [None]*3
+    diff, baseline, current = [None] * 3
+    comment = ""
 
     # Do we need this loop, when are there multiple cpl logs?
     for cpllog in latest_cpl_logs:
         try:
             baseline = read_baseline_tput(baseline_dir)
-        except (FileNotFoundError, IndexError, ValueError) as e:
-            logger.debug("Could not read baseline throughput: %s", e)
+        except FileNotFoundError as e:
+            comment = f"Could not read baseline throughput file: {e!s}"
+
+            logger.debug(comment)
 
             continue
 
@@ -106,11 +126,9 @@ def compare_throughput(case):
             diff = (baseline - current) / baseline
         except (ValueError, TypeError):
             # Should we default the diff to 0.0 as with _compare_current_memory?
-            logger.debug(
-                "Could not determine change in throughput between baseline %s and current %s",
-                baseline,
-                current,
-            )
+            comment = f"Could not determine diff with baseline {baseline!r} and current {current!r}"
+
+            logger.debug(comment)
 
             continue
 
@@ -129,9 +147,19 @@ def compare_throughput(case):
     if diff is not None:
         below_tolerance = diff < tolerance
 
-    return below_tolerance, diff, tolerance, baseline, current
+        if below_tolerance:
+            comment = "TPUTCOMP: Computation time changed by {:.2f}% relative to baseline".format(
+                diff * 100
+            )
+        else:
+            comment = "Error: TPUTCOMP: Computation time increase > {:d}% from baseline".format(
+                int(tolerance * 100)
+            )
 
-def write_baseline_tput(baseline_dir, cpllog):
+    return below_tolerance, comment
+
+
+def write_baseline_tput(baseline_dir, tput):
     """
     Writes baseline throughput to file.
 
@@ -146,20 +174,17 @@ def write_baseline_tput(baseline_dir, cpllog):
     """
     tput_file = os.path.join(baseline_dir, "cpl-tput.log")
 
-    tput = get_throughput(cpllog)
-
     with open(tput_file, "w") as fd:
         fd.write("# Throughput in simulated years per compute day\n")
-        fd.write(
-            "# A -1 indicates no throughput data was available from the test\n"
-        )
+        fd.write("# A -1 indicates no throughput data was available from the test\n")
 
         if tput is None:
             fd.write("-1")
         else:
             fd.write(str(tput))
 
-def write_baseline_mem(baseline_dir, cpllog):
+
+def write_baseline_mem(baseline_dir, mem):
     """
     Writes baseline memory usage highwater to file.
 
@@ -174,18 +199,15 @@ def write_baseline_mem(baseline_dir, cpllog):
     """
     mem_file = os.path.join(baseline_dir, "cpl-mem.log")
 
-    mem = get_mem_usage(cpllog)
-
     with open(mem_file, "w") as fd:
         fd.write("# Memory usage highwater\n")
-        fd.write(
-            "# A -1 indicates no memory usage data was available from the test\n"
-        )
+        fd.write("# A -1 indicates no memory usage data was available from the test\n")
 
         try:
             fd.write(str(mem[-1][1]))
         except IndexError:
             fd.write("-1")
+
 
 def read_baseline_tput(baseline_dir):
     """
@@ -220,6 +242,7 @@ def read_baseline_tput(baseline_dir):
 
     return tput
 
+
 def read_baseline_mem(baseline_dir):
     """
     Reads memory usage highwater baseline.
@@ -242,9 +265,7 @@ def read_baseline_mem(baseline_dir):
         If baseline file does not exist.
     """
     try:
-        memory = read_baseline_value(
-            os.path.join(baseline_dir, "cpl-mem.log")
-        )
+        memory = read_baseline_value(os.path.join(baseline_dir, "cpl-mem.log"))
     except (IndexError, ValueError):
         memory = 0
 
@@ -252,6 +273,7 @@ def read_baseline_mem(baseline_dir):
         memory = 0
 
     return memory
+
 
 def read_baseline_value(baseline_file):
     """
@@ -281,15 +303,14 @@ def read_baseline_value(baseline_file):
 
     return float(lines[0])
 
+
 def get_mem_usage(cpllog):
     """
     Examine memory usage as recorded in the cpl log file and look for unexpected
     increases.
     """
     memlist = []
-    meminfo = re.compile(
-        r".*model date =\s+(\w+).*memory =\s+(\d+\.?\d+).*highwater"
-    )
+    meminfo = re.compile(r".*model date =\s+(\w+).*memory =\s+(\d+\.?\d+).*highwater")
     if cpllog is not None and os.path.isfile(cpllog):
         if ".gz" == cpllog[-3:]:
             fopen = gzip.open
@@ -305,6 +326,7 @@ def get_mem_usage(cpllog):
         memlist.pop()
     return memlist
 
+
 def get_throughput(cpllog):
     """
     Examine memory usage as recorded in the cpl log file and look for unexpected
@@ -317,4 +339,3 @@ def get_throughput(cpllog):
             if m:
                 return float(m.group(1))
     return None
-

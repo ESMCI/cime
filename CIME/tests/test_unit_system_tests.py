@@ -69,7 +69,10 @@ class TestCaseSubmit(unittest.TestCase):
     @mock.patch("CIME.SystemTests.system_tests_common.compare_throughput")
     @mock.patch("CIME.SystemTests.system_tests_common.append_testlog")
     def test_compare_throughput(self, append_testlog, compare_throughput):
-        compare_throughput.return_value = (True, 0.02, 0.05, 200, 201)
+        compare_throughput.return_value = (
+            True,
+            "TPUTCOMP: Computation time changed by 2.00% relative to baseline",
+        )
 
         with tempfile.TemporaryDirectory() as tempdir:
             caseroot = Path(tempdir) / "caseroot"
@@ -96,7 +99,7 @@ class TestCaseSubmit(unittest.TestCase):
     @mock.patch("CIME.SystemTests.system_tests_common.compare_throughput")
     @mock.patch("CIME.SystemTests.system_tests_common.append_testlog")
     def test_compare_throughput_error_diff(self, append_testlog, compare_throughput):
-        compare_throughput.return_value = (None, 0.02, 0.05, 200, 201)
+        compare_throughput.return_value = (None, "Error diff value")
 
         with tempfile.TemporaryDirectory() as tempdir:
             caseroot = Path(tempdir) / "caseroot"
@@ -120,7 +123,10 @@ class TestCaseSubmit(unittest.TestCase):
     @mock.patch("CIME.SystemTests.system_tests_common.compare_throughput")
     @mock.patch("CIME.SystemTests.system_tests_common.append_testlog")
     def test_compare_throughput_fail(self, append_testlog, compare_throughput):
-        compare_throughput.return_value = (False, 0.02, 0.05, 200, 201)
+        compare_throughput.return_value = (
+            False,
+            "Error: TPUTCOMP: Computation time increase > 5% from baseline",
+        )
 
         with tempfile.TemporaryDirectory() as tempdir:
             caseroot = Path(tempdir) / "caseroot"
@@ -140,10 +146,6 @@ class TestCaseSubmit(unittest.TestCase):
         assert common._test_status.get_overall_test_status() == ("PASS", None)
 
         append_testlog.assert_any_call(
-            "TPUTCOMP: Computation time changed by 2.00% relative to baseline",
-            str(caseroot),
-        )
-        append_testlog.assert_any_call(
             "Error: TPUTCOMP: Computation time increase > 5% from baseline",
             str(caseroot),
         )
@@ -151,7 +153,10 @@ class TestCaseSubmit(unittest.TestCase):
     @mock.patch("CIME.SystemTests.system_tests_common.compare_memory")
     @mock.patch("CIME.SystemTests.system_tests_common.append_testlog")
     def test_compare_memory(self, append_testlog, compare_memory):
-        compare_memory.return_value = (True, 0.02, 0.05, 1000, 1002)
+        compare_memory.return_value = (
+            True,
+            "MEMCOMP: Memory usage highwater has changed by 2.00% relative to baseline",
+        )
 
         with tempfile.TemporaryDirectory() as tempdir:
             caseroot = Path(tempdir) / "caseroot"
@@ -178,7 +183,7 @@ class TestCaseSubmit(unittest.TestCase):
     @mock.patch("CIME.SystemTests.system_tests_common.compare_memory")
     @mock.patch("CIME.SystemTests.system_tests_common.append_testlog")
     def test_compare_memory_erorr_diff(self, append_testlog, compare_memory):
-        compare_memory.return_value = (None, 0.02, 0.05, 1000, 1002)
+        compare_memory.return_value = (None, "Error diff value")
 
         with tempfile.TemporaryDirectory() as tempdir:
             caseroot = Path(tempdir) / "caseroot"
@@ -202,7 +207,10 @@ class TestCaseSubmit(unittest.TestCase):
     @mock.patch("CIME.SystemTests.system_tests_common.compare_memory")
     @mock.patch("CIME.SystemTests.system_tests_common.append_testlog")
     def test_compare_memory_erorr_fail(self, append_testlog, compare_memory):
-        compare_memory.return_value = (False, 0.02, 0.05, 1000, 1002)
+        compare_memory.return_value = (
+            False,
+            "Error: Memory usage increase >5% from baseline's 1000.000000 to 1002.000000",
+        )
 
         with tempfile.TemporaryDirectory() as tempdir:
             caseroot = Path(tempdir) / "caseroot"
@@ -221,10 +229,6 @@ class TestCaseSubmit(unittest.TestCase):
 
         assert common._test_status.get_overall_test_status() == ("PASS", None)
 
-        append_testlog.assert_any_call(
-            "MEMCOMP: Memory usage highwater has changed by 2.00% relative to baseline",
-            str(caseroot),
-        )
         append_testlog.assert_any_call(
             "Error: Memory usage increase >5% from baseline's 1000.000000 to 1002.000000",
             str(caseroot),
