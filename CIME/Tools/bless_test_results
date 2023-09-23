@@ -60,6 +60,12 @@ OR
     )
 
     parser.add_argument(
+        "--tput-only", action="store_true", help="Only analyze throughput."
+    )
+
+    parser.add_argument("--mem-only", action="store_true", help="Only analyze memory.")
+
+    parser.add_argument(
         "-b",
         "--baseline-name",
         help="Name of baselines to use. Default will use BASELINE_NAME_CMP first if possible, otherwise branch name.",
@@ -140,7 +146,7 @@ OR
         "Makes no sense to use -r and -f simultaneously",
     )
     expect(
-        not (args.namelists_only and args.hist_only),
+        sum([args.namelists_only, args.hist_only, args.tput_only, args.mem_only]) <= 1,
         "Makes no sense to use --namelists-only and --hist-only simultaneously",
     )
 
@@ -152,6 +158,8 @@ OR
         args.test_id,
         args.namelists_only,
         args.hist_only,
+        args.tput_only,
+        args.mem_only,
         args.report_only,
         args.force,
         args.pes_file,
@@ -173,6 +181,8 @@ def _main_func(description):
         test_id,
         namelists_only,
         hist_only,
+        tput_only,
+        mem_only,
         report_only,
         force,
         pes_file,
@@ -190,6 +200,8 @@ def _main_func(description):
         test_id=test_id,
         namelists_only=namelists_only,
         hist_only=hist_only,
+        tput_only=tput_only,
+        mem_only=mem_only,
         report_only=report_only,
         force=force,
         pesfile=pes_file,
