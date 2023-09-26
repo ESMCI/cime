@@ -146,7 +146,7 @@ def _create_macros_cmake(
         os.mkdir(case_cmake_path)
 
     # This impl is coupled to contents of Macros.cmake
-    os_  = mach_obj.get_value("OS")
+    os_ = mach_obj.get_value("OS")
     mach = mach_obj.get_machine_name()
     macros = [
         "universal.cmake",
