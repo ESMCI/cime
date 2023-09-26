@@ -141,12 +141,29 @@ def _create_macros_cmake(
     ###############################################################################
     if not os.path.isfile(os.path.join(caseroot, "Macros.cmake")):
         safe_copy(os.path.join(cmake_macros_dir, "Macros.cmake"), caseroot)
-    if not os.path.exists(os.path.join(caseroot, "cmake_macros")):
-        shutil.copytree(cmake_macros_dir, case_cmake_path)
 
-    copy_depends_files(
-        mach_obj.get_machine_name(), mach_obj.machines_dir, caseroot, compiler
-    )
+    if not os.path.exists(case_cmake_path):
+        os.mkdir(case_cmake_path)
+
+    # This impl is coupled to contents of Macros.cmake
+    os_ = mach_obj.get_value("OS")
+    mach = mach_obj.get_machine_name()
+    macros = [
+        "universal.cmake",
+        os_ + ".cmake",
+        compiler + ".cmake",
+        "{}_{}.cmake".format(compiler, os),
+        mach + ".cmake",
+        "{}_{}.cmake".format(compiler, mach),
+        "CMakeLists.txt",
+    ]
+    for macro in macros:
+        repo_macro = os.path.join(cmake_macros_dir, macro)
+        case_macro = os.path.join(case_cmake_path, macro)
+        if not os.path.exists(case_macro) and os.path.exists(repo_macro):
+            safe_copy(repo_macro, case_cmake_path)
+
+    copy_depends_files(mach, mach_obj.machines_dir, caseroot, compiler)
 
 
 ###############################################################################
