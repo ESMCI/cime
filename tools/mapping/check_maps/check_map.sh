@@ -25,7 +25,7 @@ usage() {
 	echo '  --help, -h        Output this usage information'
 	echo ''
 	echo 'Notes:'
-	echo '  1) For use on cheyenne, caldera, geyser, or pronghorn only!'
+	echo '  1) For use on derecho, cheyenne, caldera, geyser, or pronghorn only!'
 	echo '  2) Need to set ESMFMKFILE (see comments in Makefile)'\
 	          'or compilation will fail'
 	echo '  3) If -rc option is not enabled, -v flag is ignored and verbose /'\

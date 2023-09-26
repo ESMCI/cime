@@ -83,6 +83,6 @@ listed in FILELIST
   --help, -h        Output this usage information
 
 Notes:
-  1) For use on cheyenne, geyser, caldera, or pronghorn only!
+  1) For use on derecho, cheyenne, geyser, caldera, or pronghorn only!
   2) Need to set ESMFMKFILE (see comments in Makefile) or compilation will fail
   3) If -rc option is not enabled, -v flag is ignored and verbose / concise will depend on previous compilation
