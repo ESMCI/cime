@@ -73,11 +73,6 @@ class Config:
             desc="If set to `True` the model is built using using CMake otherwise Make is used.",
         )
         self._set_attribute(
-            "copy_all_cmake_macros",
-            True,
-            desc="If set to `True` copies all cmake_macros to case without trying to filter based on need.",
-        )
-        self._set_attribute(
             "build_cime_component_lib",
             True,
             desc="If set to `True` then `Filepath`, `CIME_cppdefs` and `CCSM_cppdefs` directories are copied from CASEBUILD directory to BUILDROOT in order to build CIME's internal components.",
