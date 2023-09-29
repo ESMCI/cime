@@ -1186,7 +1186,9 @@ def test_env_archive(self, testdir="env_archive_test"):
 
     for comp_archive_spec in comp_archive_specs:
         comp_expected = archive.get(comp_archive_spec, "compname")
-        if comp_expected == "ww3":
+        # Rename ww3 component when case and archive names don't match,
+        # specific to CESM.
+        if comp_expected == "ww3" and "ww" in comps_in_case:
             comp_expected = "ww"
         comp_class = archive.get(comp_archive_spec, "compclass").upper()
         if comp_class in components:
