@@ -8,6 +8,7 @@ import unittest
 from unittest import mock
 from pathlib import Path
 
+from CIME.config import Config
 from CIME.SystemTests.system_tests_common import SystemTestsCommon
 from CIME.SystemTests.system_tests_compare_two import SystemTestsCompareTwo
 from CIME.SystemTests.system_tests_compare_n import SystemTestsCompareN
@@ -240,7 +241,7 @@ class TestCaseSubmit(unittest.TestCase):
                 tempdir, cpllog_data=CPLLOG
             )
 
-            case.get_value.side_effect = (
+            get_value_calls = [
                 str(caseroot),
                 "ERIO.ne30_g16_rx1.A.docker_gnu",
                 "mct",
@@ -253,13 +254,17 @@ class TestCaseSubmit(unittest.TestCase):
                 str(run_dir),
                 "ERIO",
                 "ERIO.ne30_g16_rx1.A.docker_gnu",
-                os.getcwd(),
                 "master/ERIO.ne30_g16_rx1.A.docker_gnu",
                 str(baseline_root),
                 "master/ERIO.ne30_g16_rx1.A.docker_gnu",
                 str(run_dir),
                 "mct",
-            )
+            ]
+
+            if Config.instance().create_bless_log:
+                get_value_calls.insert(12, os.getcwd())
+
+            case.get_value.side_effect = get_value_calls
 
             common = SystemTestsCommon(case)
 
