@@ -796,7 +796,8 @@ class EnvBatch(EnvBase):
         for _ in range(num_submit):
             for job, dependency in jobs:
                 if dependency is not None:
-                    deps = dependency.split()
+                    # Match all words, excluding "and" and "or"
+                    deps = re.findall(r"\b(?!and\b|or\b)\w+(?:\.\w+)?\b", dependency)
                 else:
                     deps = []
                 dep_jobs = []
