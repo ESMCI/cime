@@ -795,21 +795,10 @@ class EnvBatch(EnvBase):
         batch_job_id = None
         for _ in range(num_submit):
             for job, dependency in jobs:
-                if dependency is not None:
-                    # Match all words, excluding "and" and "or"
-                    deps = re.findall(r"\b(?!and\b|or\b)\w+(?:\.\w+)?\b", dependency)
-                else:
-                    deps = []
-                dep_jobs = []
-                if user_prereq is not None:
-                    dep_jobs.append(user_prereq)
-                for dep in deps:
-                    if dep in depid.keys() and depid[dep] is not None:
-                        dep_jobs.append(str(depid[dep]))
-                if prev_job is not None:
-                    dep_jobs.append(prev_job)
+                dep_jobs = get_job_deps(dependency, depid, prev_job, user_prereq)
 
                 logger.debug("job {} depends on {}".format(job, dep_jobs))
+
                 result = self._submit_single_job(
                     case,
                     job,
@@ -1400,3 +1389,41 @@ class EnvBatch(EnvBase):
                         input_batch_script, job
                     )
                 )
+
+
+def get_job_deps(dependency, depid, prev_job=None, user_prereq=None):
+    """
+    Gather list of job batch ids that a job depends on.
+
+    Parameters
+    ----------
+    dependency : str
+        List of dependent job names.
+    depid : dict
+        Lookup where keys are job names and values are the batch id.
+    user_prereq : str
+        User requested dependency.
+
+    Returns
+    -------
+    list
+        List of batch ids that job depends on.
+    """
+    deps = []
+    dep_jobs = []
+
+    if user_prereq is not None:
+        dep_jobs.append(user_prereq)
+
+    if dependency is not None:
+        # Match all words, excluding "and" and "or"
+        deps = re.findall(r"\b(?!and\b|or\b)\w+(?:\.\w+)?\b", dependency)
+
+        for dep in deps:
+            if dep in depid and depid[dep] is not None:
+                dep_jobs.append(str(depid[dep]))
+
+    if prev_job is not None:
+        dep_jobs.append(prev_job)
+
+    return dep_jobs
