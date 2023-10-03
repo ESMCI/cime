@@ -205,6 +205,7 @@ def bless_test_results(
     no_skip_pass=False,
     new_test_root=None,
     new_test_id=None,
+    **_,  # Capture all for extra
 ):
     ###############################################################################
     test_status_files = get_test_status_files(test_root, compiler, test_id=test_id)
