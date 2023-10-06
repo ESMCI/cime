@@ -259,6 +259,11 @@ class TestCaseSubmit(unittest.TestCase):
                 "master/ERIO.ne30_g16_rx1.A.docker_gnu",
                 str(run_dir),
                 "mct",
+                "/tmp/components/cpl",
+                str(run_dir),
+                "mct",
+                str(run_dir),
+                "mct",
             ]
 
             if Config.instance().create_bless_log:
@@ -280,14 +285,14 @@ class TestCaseSubmit(unittest.TestCase):
             with open(baseline_dir / "cpl-tput.log") as fd:
                 lines = fd.readlines()
 
-            assert len(lines) == 3
-            assert lines[-1] == "719.635"
+            assert len(lines) == 1
+            assert lines[0] == "719.635"
 
             with open(baseline_dir / "cpl-mem.log") as fd:
                 lines = fd.readlines()
 
-            assert len(lines) == 3
-            assert lines[-1] == "1673.89"
+            assert len(lines) == 1
+            assert lines[0] == "1673.89"
 
     def test_kwargs(self):
         case = mock.MagicMock()

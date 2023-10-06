@@ -12,13 +12,9 @@ from CIME.hist_utils import generate_baseline, compare_baseline
 from CIME.case import Case
 from CIME.test_utils import get_test_status_files
 from CIME.baselines import (
-    get_latest_cpl_logs,
-    get_mem_usage,
-    get_throughput,
     compare_throughput,
     compare_memory,
-    write_baseline_tput,
-    write_baseline_mem,
+    write_baseline,
 )
 import os, time
 
@@ -51,9 +47,7 @@ def bless_throughput(
             force or input("Update this diff (y/n)? ").upper() in ["Y", "YES"]
         ):
             try:
-                latest_cpl_logs = get_latest_cpl_logs(case)
-                current = get_throughput(latest_cpl_logs[0])
-                write_baseline_tput(baseline_dir, current)
+                write_baseline(case, baseline_dir, memory=False)
             except Exception as e:
                 success = False
 
@@ -88,9 +82,7 @@ def bless_memory(
             force or input("Update this diff (y/n)? ").upper() in ["Y", "YES"]
         ):
             try:
-                latest_cpl_logs = get_latest_cpl_logs(case)
-                current = get_mem_usage(latest_cpl_logs[0])
-                write_baseline_mem(baseline_dir, current)
+                write_baseline(case, baseline_dir, throughput=False)
             except Exception as e:
                 success = False
 

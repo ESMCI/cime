@@ -28,12 +28,10 @@ from CIME.provenance import save_test_time, get_test_success
 from CIME.locked_files import LOCKED_DIR, lock_file, is_locked
 from CIME.baselines import (
     get_latest_cpl_logs,
-    get_throughput,
-    get_mem_usage,
+    default_get_mem_usage,
     compare_memory,
     compare_throughput,
-    write_baseline_mem,
-    write_baseline_tput,
+    write_baseline,
 )
 import CIME.build as build
 
@@ -636,7 +634,7 @@ for some of your components.
         with self._test_status:
             latestcpllogs = get_latest_cpl_logs(self._case)
             for cpllog in latestcpllogs:
-                memlist = get_mem_usage(cpllog)
+                memlist = default_get_mem_usage(self._case, cpllog)
 
                 if len(memlist) < 3:
                     self._test_status.set_status(
@@ -782,23 +780,20 @@ for some of your components.
             # drop the date so that the name is generic
             newestcpllogfiles = get_latest_cpl_logs(self._case)
             with SharedArea():
+                # TODO ever actually more than one cpl log?
                 for cpllog in newestcpllogfiles:
                     m = re.search(r"/({}.*.log).*.gz".format(self._cpllog), cpllog)
+
                     if m is not None:
                         baselog = os.path.join(basegen_dir, m.group(1)) + ".gz"
+
                         safe_copy(
                             cpllog,
                             os.path.join(basegen_dir, baselog),
                             preserve_meta=False,
                         )
 
-                        tput = get_throughput(cpllog)
-
-                        write_baseline_tput(basegen_dir, tput)
-
-                        mem = get_mem_usage(cpllog)
-
-                        write_baseline_mem(basegen_dir, mem)
+                        write_baseline(self._case, basegen_dir, cpllog)
 
 
 class FakeTest(SystemTestsCommon):
