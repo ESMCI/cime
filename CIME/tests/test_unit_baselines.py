@@ -161,7 +161,7 @@ class TestUnitBaseline(unittest.TestCase):
 
             mem = baselines.default_get_mem_usage(case)
 
-            assert mem == None
+            assert mem == [(None, None)]
 
     @mock.patch("CIME.baselines.get_cpl_mem_usage")
     @mock.patch("CIME.baselines.get_latest_cpl_logs")

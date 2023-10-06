@@ -634,44 +634,46 @@ for some of your components.
         with self._test_status:
             latestcpllogs = get_latest_cpl_logs(self._case)
             for cpllog in latestcpllogs:
-                memlist = default_get_mem_usage(self._case, cpllog)
-
-                if len(memlist) < 3:
+                try:
+                    memlist = default_get_mem_usage(self._case, cpllog)
+                except RuntimeError:
                     self._test_status.set_status(
                         MEMLEAK_PHASE,
                         TEST_PASS_STATUS,
                         comments="insuffiencient data for memleak test",
                     )
+
+                    continue
+
+                finaldate = int(memlist[-1][0])
+                originaldate = int(
+                    memlist[1][0]
+                )  # skip first day mem record, it can be too low while initializing
+                finalmem = float(memlist[-1][1])
+                originalmem = float(memlist[1][1])
+                memdiff = -1
+                if originalmem > 0:
+                    memdiff = (finalmem - originalmem) / originalmem
+                tolerance = self._case.get_value("TEST_MEMLEAK_TOLERANCE")
+                if tolerance is None:
+                    tolerance = 0.1
+                expect(tolerance > 0.0, "Bad value for memleak tolerance in test")
+                if memdiff < 0:
+                    self._test_status.set_status(
+                        MEMLEAK_PHASE,
+                        TEST_PASS_STATUS,
+                        comments="data for memleak test is insuffiencient",
+                    )
+                elif memdiff < tolerance:
+                    self._test_status.set_status(MEMLEAK_PHASE, TEST_PASS_STATUS)
                 else:
-                    finaldate = int(memlist[-1][0])
-                    originaldate = int(
-                        memlist[1][0]
-                    )  # skip first day mem record, it can be too low while initializing
-                    finalmem = float(memlist[-1][1])
-                    originalmem = float(memlist[1][1])
-                    memdiff = -1
-                    if originalmem > 0:
-                        memdiff = (finalmem - originalmem) / originalmem
-                    tolerance = self._case.get_value("TEST_MEMLEAK_TOLERANCE")
-                    if tolerance is None:
-                        tolerance = 0.1
-                    expect(tolerance > 0.0, "Bad value for memleak tolerance in test")
-                    if memdiff < 0:
-                        self._test_status.set_status(
-                            MEMLEAK_PHASE,
-                            TEST_PASS_STATUS,
-                            comments="data for memleak test is insuffiencient",
-                        )
-                    elif memdiff < tolerance:
-                        self._test_status.set_status(MEMLEAK_PHASE, TEST_PASS_STATUS)
-                    else:
-                        comment = "memleak detected, memory went from {:f} to {:f} in {:d} days".format(
-                            originalmem, finalmem, finaldate - originaldate
-                        )
-                        append_testlog(comment, self._orig_caseroot)
-                        self._test_status.set_status(
-                            MEMLEAK_PHASE, TEST_FAIL_STATUS, comments=comment
-                        )
+                    comment = "memleak detected, memory went from {:f} to {:f} in {:d} days".format(
+                        originalmem, finalmem, finaldate - originaldate
+                    )
+                    append_testlog(comment, self._orig_caseroot)
+                    self._test_status.set_status(
+                        MEMLEAK_PHASE, TEST_FAIL_STATUS, comments=comment
+                    )
 
     def compare_env_run(self, expected=None):
         """

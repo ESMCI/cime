@@ -66,7 +66,7 @@ def compare_memory(case, baseline_dir=None):
         try:
             current = config.get_mem_usage(case)
         except AttributeError:
-            current = default_get_mem_usage(case)
+            current = default_get_mem_usage(case)[-1][1]
     except RuntimeError as e:
         return None, str(e)
 
@@ -208,19 +208,25 @@ def write_baseline(case, basegen_dir, throughput=True, memory=True):
 
     if throughput:
         try:
-            tput = config.get_throughput(case)
-        except AttributeError:
-            tput = str(default_get_throughput(case))
-
-        write_baseline_tput(basegen_dir, tput)
+            try:
+                tput = config.get_throughput(case)
+            except AttributeError:
+                tput = str(default_get_throughput(case))
+        except RuntimeError:
+            pass
+        else:
+            write_baseline_tput(basegen_dir, tput)
 
     if memory:
         try:
-            mem = config.get_mem_usage(case)
-        except AttributeError:
-            mem = str(default_get_mem_usage(case))
-
-        write_baseline_mem(basegen_dir, mem)
+            try:
+                mem = config.get_mem_usage(case)
+            except AttributeError:
+                mem = str(default_get_mem_usage(case)[-1][1])
+        except RuntimeError:
+            pass
+        else:
+            write_baseline_mem(basegen_dir, mem)
 
 
 def default_get_throughput(case):
@@ -264,6 +270,8 @@ def default_get_mem_usage(case, cpllog=None):
     """
     if cpllog is None:
         cpllog = get_latest_cpl_logs(case)
+    else:
+        cpllog = [cpllog,]
 
     try:
         memlist = get_cpl_mem_usage(cpllog[0])
@@ -275,7 +283,7 @@ def default_get_mem_usage(case, cpllog=None):
                 f"Found {len(memlist)} memory usage samples, need atleast 4"
             )
 
-    return memlist[-1][1]
+    return memlist
 
 
 def write_baseline_tput(baseline_dir, tput):
