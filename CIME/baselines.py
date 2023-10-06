@@ -271,7 +271,9 @@ def default_get_mem_usage(case, cpllog=None):
     if cpllog is None:
         cpllog = get_latest_cpl_logs(case)
     else:
-        cpllog = [cpllog,]
+        cpllog = [
+            cpllog,
+        ]
 
     try:
         memlist = get_cpl_mem_usage(cpllog[0])
