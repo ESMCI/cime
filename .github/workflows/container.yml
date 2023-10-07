@@ -1,0 +1,58 @@
+name: container build/publish
+
+on:
+  # push:
+  #   branches:
+  #     - master
+  #   paths:
+  #     - docker/
+
+  pull_request:
+    branches:
+      - master
+    paths:
+      - docker/
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Only build container if there has been a change.
+  build-containers:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: jasonb87/cime
+          # TODO should publish on tag
+          tags: |
+            type=raw,value=latest
+            type=sha,prefix={{ date 'YYYYMMDD' }}_,format=short
+      - name: Build and push
+        uses: docker/build-push-action@v3
+        with:
+          target: base
+          context: docker/
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          # cache-from: type=registry,ref=jasonb87/cime:buildcache
+          # cache-to: type=registry,ref=jasonb87/cime:buildcache,mode=max
