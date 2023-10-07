@@ -4,16 +4,20 @@ on:
   push:
     branches:
       - master
-    paths-ignore:
-      - 'doc/**'
-      - 'docker/**'
+    paths:
+      - 'CIME/**'
+      - 'scripts/**'
+      - 'tools/**'
+      - 'utils/**'
 
   pull_request:
     branches:
       - master
-    paths-ignore:
-      - 'doc/**'
-      - 'docker/**'
+    paths:
+      - 'CIME/**'
+      - 'scripts/**'
+      - 'tools/**'
+      - 'utils/**'
 
 concurrency:
   group: ${{ github.ref }}
