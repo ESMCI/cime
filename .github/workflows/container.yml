@@ -41,7 +41,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: jasonb87/cime
+          images: ESMCI/cime
           # TODO should publish on tag
           tags: |
             type=raw,value=latest
@@ -54,5 +54,7 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
           # cache-from: type=registry,ref=jasonb87/cime:buildcache
           # cache-to: type=registry,ref=jasonb87/cime:buildcache,mode=max
