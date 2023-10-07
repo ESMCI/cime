@@ -41,7 +41,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: ESMCI/cime
+          images: ghcr.io/ESMCI/cime
           # TODO should publish on tag
           tags: |
             type=raw,value=latest
