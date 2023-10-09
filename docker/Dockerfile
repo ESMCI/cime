@@ -47,6 +47,8 @@ RUN mamba install --yes -c conda-forge \
 # gcc, gxx, gfortran provide symlinks for x86_64-conda-linux-gnu-*
 # ar and ranlib are not symlinked
 RUN mamba install --yes -c conda-forge \
+            lapack \
+            blas \
             libnetcdf=${LIBNETCDF_VERSION}=*openmpi* \
             netcdf-fortran=${NETCDF_FORTRAN_VERSION}=*openmpi* \
             esmf=${ESMF_VERSION}=*openmpi* \
