@@ -53,7 +53,12 @@ jobs:
   unit-testing:
     runs-on: ubuntu-latest
     if: ${{ always() && ! cancelled() }}
-    container: jasonb87/cime:latest
+    container:
+      image: ghcr.io/esmci/cime:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+      options: '--pull=always'
     strategy:
       matrix:
         python-version: ['3.8', '3.9', '3.10']
@@ -88,7 +93,12 @@ jobs:
   system-testing:
     runs-on: ubuntu-latest
     if: ${{ always() && ! cancelled() }}
-    container: jasonb87/cime:latest
+    container:
+      image: ghcr.io/esmci/cime:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+      options: '--pull=always'
     strategy:
       matrix:
         model: ["e3sm", "cesm"]
