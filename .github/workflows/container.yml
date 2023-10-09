@@ -1,11 +1,11 @@
 name: container build/publish
 
 on:
-  # push:
-  #   branches:
-  #     - master
-  #   paths:
-  #     - docker/
+  push:
+    branches:
+      - master
+    paths:
+      - 'docker/**'
 
   pull_request:
     branches:
@@ -51,7 +51,7 @@ jobs:
         with:
           target: base
           context: docker/
-          push: true
+          push: ${{ github.event == 'push' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
