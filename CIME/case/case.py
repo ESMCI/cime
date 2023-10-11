@@ -210,7 +210,7 @@ class Case(object):
     def get_baseline_dir(self):
         baseline_root = self.get_value("BASELINE_ROOT")
 
-        baseline_name = self.get_value("BASECMP_self")
+        baseline_name = self.get_value("BASECMP_CASE")
 
         return os.path.join(baseline_root, baseline_name)
 
