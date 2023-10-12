@@ -67,12 +67,21 @@ def create_mock_case(tempdir, idx=None, cpllog_data=None):
 
 
 class TestUnitSystemTests(unittest.TestCase):
+    @mock.patch("CIME.SystemTests.system_tests_common.load_coupler_customization")
     @mock.patch("CIME.SystemTests.system_tests_common.append_testlog")
     @mock.patch("CIME.SystemTests.system_tests_common.get_default_mem_usage")
     @mock.patch("CIME.SystemTests.system_tests_common.get_latest_cpl_logs")
     def test_check_for_memleak_runtime_error(
-        self, get_latest_cpl_logs, get_default_mem_usage, append_testlog
+        self,
+        get_latest_cpl_logs,
+        get_default_mem_usage,
+        append_testlog,
+        load_coupler_customization,
     ):
+        load_coupler_customization.return_value.detect_memory_leak.side_effect = (
+            AttributeError
+        )
+
         get_default_mem_usage.side_effect = RuntimeError
 
         with tempfile.TemporaryDirectory() as tempdir:
@@ -108,12 +117,21 @@ class TestUnitSystemTests(unittest.TestCase):
 
             append_testlog.assert_not_called()
 
+    @mock.patch("CIME.SystemTests.system_tests_common.load_coupler_customization")
     @mock.patch("CIME.SystemTests.system_tests_common.append_testlog")
     @mock.patch("CIME.SystemTests.system_tests_common.get_default_mem_usage")
     @mock.patch("CIME.SystemTests.system_tests_common.get_latest_cpl_logs")
     def test_check_for_memleak_not_enough_samples(
-        self, get_latest_cpl_logs, get_default_mem_usage, append_testlog
+        self,
+        get_latest_cpl_logs,
+        get_default_mem_usage,
+        append_testlog,
+        load_coupler_customization,
     ):
+        load_coupler_customization.return_value.detect_memory_leak.side_effect = (
+            AttributeError
+        )
+
         get_default_mem_usage.return_value = [
             (1, 1000.0),
             (2, 0),
@@ -152,12 +170,21 @@ class TestUnitSystemTests(unittest.TestCase):
 
             append_testlog.assert_not_called()
 
+    @mock.patch("CIME.SystemTests.system_tests_common.load_coupler_customization")
     @mock.patch("CIME.SystemTests.system_tests_common.append_testlog")
     @mock.patch("CIME.SystemTests.system_tests_common.get_default_mem_usage")
     @mock.patch("CIME.SystemTests.system_tests_common.get_latest_cpl_logs")
     def test_check_for_memleak_found(
-        self, get_latest_cpl_logs, get_default_mem_usage, append_testlog
+        self,
+        get_latest_cpl_logs,
+        get_default_mem_usage,
+        append_testlog,
+        load_coupler_customization,
     ):
+        load_coupler_customization.return_value.detect_memory_leak.side_effect = (
+            AttributeError
+        )
+
         get_default_mem_usage.return_value = [
             (1, 1000.0),
             (2, 2000.0),
@@ -200,12 +227,21 @@ class TestUnitSystemTests(unittest.TestCase):
 
             append_testlog.assert_any_call(expected_comment, str(caseroot))
 
+    @mock.patch("CIME.SystemTests.system_tests_common.load_coupler_customization")
     @mock.patch("CIME.SystemTests.system_tests_common.append_testlog")
     @mock.patch("CIME.SystemTests.system_tests_common.get_default_mem_usage")
     @mock.patch("CIME.SystemTests.system_tests_common.get_latest_cpl_logs")
     def test_check_for_memleak(
-        self, get_latest_cpl_logs, get_default_mem_usage, append_testlog
+        self,
+        get_latest_cpl_logs,
+        get_default_mem_usage,
+        append_testlog,
+        load_coupler_customization,
     ):
+        load_coupler_customization.return_value.detect_memory_leak.side_effect = (
+            AttributeError
+        )
+
         get_default_mem_usage.return_value = [
             (1, 3040.0),
             (2, 3002.0),
@@ -240,9 +276,9 @@ class TestUnitSystemTests(unittest.TestCase):
 
             common._check_for_memleak()
 
-            print(common._test_status.set_status.call_args_list)
-
-            common._test_status.set_status.assert_any_call("MEMLEAK", "PASS")
+            common._test_status.set_status.assert_any_call(
+                "MEMLEAK", "PASS", comments=""
+            )
 
             append_testlog.assert_not_called()
 

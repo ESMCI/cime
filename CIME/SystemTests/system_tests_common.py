@@ -32,6 +32,7 @@ from CIME.baselines import (
     compare_memory,
     compare_throughput,
     write_baseline,
+    load_coupler_customization,
 )
 import CIME.build as build
 
@@ -631,49 +632,22 @@ for some of your components.
         Examine memory usage as recorded in the cpl log file and look for unexpected
         increases.
         """
+        config = load_coupler_customization(self._case)
+
         with self._test_status:
-            latestcpllogs = get_latest_cpl_logs(self._case)
-            for cpllog in latestcpllogs:
-                try:
-                    memlist = get_default_mem_usage(self._case, cpllog)
-                except RuntimeError:
-                    self._test_status.set_status(
-                        MEMLEAK_PHASE,
-                        TEST_PASS_STATUS,
-                        comments="insufficient data for memleak test",
-                    )
+            try:
+                memleak, comment = config.detect_memory_leak(self._case)
+            except AttributeError:
+                memleak, comment = default_detect_memory_leak(self._case)
 
-                    continue
+            if memleak:
+                append_testlog(comment, self._orig_caseroot)
 
-                finaldate = int(memlist[-1][0])
-                originaldate = int(
-                    memlist[1][0]
-                )  # skip first day mem record, it can be too low while initializing
-                finalmem = float(memlist[-1][1])
-                originalmem = float(memlist[1][1])
-                memdiff = -1
-                if originalmem > 0:
-                    memdiff = (finalmem - originalmem) / originalmem
-                tolerance = self._case.get_value("TEST_MEMLEAK_TOLERANCE")
-                if tolerance is None:
-                    tolerance = 0.1
-                expect(tolerance > 0.0, "Bad value for memleak tolerance in test")
-                if memdiff < 0:
-                    self._test_status.set_status(
-                        MEMLEAK_PHASE,
-                        TEST_PASS_STATUS,
-                        comments="data for memleak test is insufficient",
-                    )
-                elif memdiff < tolerance:
-                    self._test_status.set_status(MEMLEAK_PHASE, TEST_PASS_STATUS)
-                else:
-                    comment = "memleak detected, memory went from {:f} to {:f} in {:d} days".format(
-                        originalmem, finalmem, finaldate - originaldate
-                    )
-                    append_testlog(comment, self._orig_caseroot)
-                    self._test_status.set_status(
-                        MEMLEAK_PHASE, TEST_FAIL_STATUS, comments=comment
-                    )
+                status = TEST_FAIL_STATUS
+            else:
+                status = TEST_PASS_STATUS
+
+            self._test_status.set_status(MEMLEAK_PHASE, status, comments=comment)
 
     def compare_env_run(self, expected=None):
         """
@@ -796,6 +770,47 @@ for some of your components.
                         )
 
                         write_baseline(self._case, basegen_dir, cpllog)
+
+
+def default_detect_memory_leak(case):
+    leak = False
+    comment = ""
+
+    latestcpllogs = get_latest_cpl_logs(case)
+
+    for cpllog in latestcpllogs:
+        try:
+            memlist = get_default_mem_usage(case, cpllog)
+        except RuntimeError:
+            return False, "insufficient data for memleak test"
+
+        # last day - second day, skip first day, can be too low while initializing
+        elapsed_days = int(memlist[-1][0]) - int(memlist[1][0])
+
+        finalmem, originalmem = float(memlist[-1][1]), float(memlist[1][1])
+
+        memdiff = -1 if originalmem <= 0 else (finalmem - originalmem) / originalmem
+
+        # default to 0.1
+        tolerance = case.get_value("TEST_MEMLEAK_TOLERANCE") or 0.1
+
+        expect(tolerance > 0.0, "Bad value for memleak tolerance in test")
+
+        if memdiff < 0:
+            leak = False
+            comment = "data for memleak test is insufficient"
+        elif memdiff < tolerance:
+            leak = False
+            comment = ""
+        else:
+            leak = True
+            comment = (
+                "memleak detected, memory went from {:f} to {:f} in {:d} days".format(
+                    originalmem, finalmem, elapsed_days
+                )
+            )
+
+    return leak, comment
 
 
 class FakeTest(SystemTestsCommon):
