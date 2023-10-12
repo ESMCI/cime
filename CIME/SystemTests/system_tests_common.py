@@ -28,7 +28,7 @@ from CIME.provenance import save_test_time, get_test_success
 from CIME.locked_files import LOCKED_DIR, lock_file, is_locked
 from CIME.baselines import (
     get_latest_cpl_logs,
-    default_get_mem_usage,
+    get_default_mem_usage,
     compare_memory,
     compare_throughput,
     write_baseline,
@@ -635,12 +635,12 @@ for some of your components.
             latestcpllogs = get_latest_cpl_logs(self._case)
             for cpllog in latestcpllogs:
                 try:
-                    memlist = default_get_mem_usage(self._case, cpllog)
+                    memlist = get_default_mem_usage(self._case, cpllog)
                 except RuntimeError:
                     self._test_status.set_status(
                         MEMLEAK_PHASE,
                         TEST_PASS_STATUS,
-                        comments="insuffiencient data for memleak test",
+                        comments="insufficient data for memleak test",
                     )
 
                     continue
@@ -662,7 +662,7 @@ for some of your components.
                     self._test_status.set_status(
                         MEMLEAK_PHASE,
                         TEST_PASS_STATUS,
-                        comments="data for memleak test is insuffiencient",
+                        comments="data for memleak test is insufficient",
                     )
                 elif memdiff < tolerance:
                     self._test_status.set_status(MEMLEAK_PHASE, TEST_PASS_STATUS)

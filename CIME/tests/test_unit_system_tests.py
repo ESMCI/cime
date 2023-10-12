@@ -66,7 +66,186 @@ def create_mock_case(tempdir, idx=None, cpllog_data=None):
     return case, caseroot, baseline_root, run_dir
 
 
-class TestCaseSubmit(unittest.TestCase):
+class TestUnitSystemTests(unittest.TestCase):
+    @mock.patch("CIME.SystemTests.system_tests_common.append_testlog")
+    @mock.patch("CIME.SystemTests.system_tests_common.get_default_mem_usage")
+    @mock.patch("CIME.SystemTests.system_tests_common.get_latest_cpl_logs")
+    def test_check_for_memleak_runtime_error(
+        self, get_latest_cpl_logs, get_default_mem_usage, append_testlog
+    ):
+        get_default_mem_usage.side_effect = RuntimeError
+
+        with tempfile.TemporaryDirectory() as tempdir:
+            caseroot = Path(tempdir) / "caseroot"
+            caseroot.mkdir(parents=True, exist_ok=False)
+
+            rundir = caseroot / "run"
+            rundir.mkdir(parents=True, exist_ok=False)
+
+            cpllog = rundir / "cpl.log.gz"
+
+            get_latest_cpl_logs.return_value = [
+                str(cpllog),
+            ]
+
+            case = mock.MagicMock()
+            case.get_value.side_effect = (
+                str(caseroot),
+                "ERIO.ne30_g16_rx1.A.docker_gnu",
+                "mct",
+                0.01,
+            )
+
+            common = SystemTestsCommon(case)
+
+            common._test_status = mock.MagicMock()
+
+            common._check_for_memleak()
+
+            common._test_status.set_status.assert_any_call(
+                "MEMLEAK", "PASS", comments="insufficient data for memleak test"
+            )
+
+            append_testlog.assert_not_called()
+
+    @mock.patch("CIME.SystemTests.system_tests_common.append_testlog")
+    @mock.patch("CIME.SystemTests.system_tests_common.get_default_mem_usage")
+    @mock.patch("CIME.SystemTests.system_tests_common.get_latest_cpl_logs")
+    def test_check_for_memleak_not_enough_samples(
+        self, get_latest_cpl_logs, get_default_mem_usage, append_testlog
+    ):
+        get_default_mem_usage.return_value = [
+            (1, 1000.0),
+            (2, 0),
+        ]
+
+        with tempfile.TemporaryDirectory() as tempdir:
+            caseroot = Path(tempdir) / "caseroot"
+            caseroot.mkdir(parents=True, exist_ok=False)
+
+            rundir = caseroot / "run"
+            rundir.mkdir(parents=True, exist_ok=False)
+
+            cpllog = rundir / "cpl.log.gz"
+
+            get_latest_cpl_logs.return_value = [
+                str(cpllog),
+            ]
+
+            case = mock.MagicMock()
+            case.get_value.side_effect = (
+                str(caseroot),
+                "ERIO.ne30_g16_rx1.A.docker_gnu",
+                "mct",
+                0.01,
+            )
+
+            common = SystemTestsCommon(case)
+
+            common._test_status = mock.MagicMock()
+
+            common._check_for_memleak()
+
+            common._test_status.set_status.assert_any_call(
+                "MEMLEAK", "PASS", comments="data for memleak test is insufficient"
+            )
+
+            append_testlog.assert_not_called()
+
+    @mock.patch("CIME.SystemTests.system_tests_common.append_testlog")
+    @mock.patch("CIME.SystemTests.system_tests_common.get_default_mem_usage")
+    @mock.patch("CIME.SystemTests.system_tests_common.get_latest_cpl_logs")
+    def test_check_for_memleak_found(
+        self, get_latest_cpl_logs, get_default_mem_usage, append_testlog
+    ):
+        get_default_mem_usage.return_value = [
+            (1, 1000.0),
+            (2, 2000.0),
+            (3, 3000.0),
+            (4, 3000.0),
+        ]
+
+        with tempfile.TemporaryDirectory() as tempdir:
+            caseroot = Path(tempdir) / "caseroot"
+            caseroot.mkdir(parents=True, exist_ok=False)
+
+            rundir = caseroot / "run"
+            rundir.mkdir(parents=True, exist_ok=False)
+
+            cpllog = rundir / "cpl.log.gz"
+
+            get_latest_cpl_logs.return_value = [
+                str(cpllog),
+            ]
+
+            case = mock.MagicMock()
+            case.get_value.side_effect = (
+                str(caseroot),
+                "ERIO.ne30_g16_rx1.A.docker_gnu",
+                "mct",
+                0.01,
+            )
+
+            common = SystemTestsCommon(case)
+
+            common._test_status = mock.MagicMock()
+
+            common._check_for_memleak()
+
+            expected_comment = "memleak detected, memory went from 2000.000000 to 3000.000000 in 2 days"
+
+            common._test_status.set_status.assert_any_call(
+                "MEMLEAK", "FAIL", comments=expected_comment
+            )
+
+            append_testlog.assert_any_call(expected_comment, str(caseroot))
+
+    @mock.patch("CIME.SystemTests.system_tests_common.append_testlog")
+    @mock.patch("CIME.SystemTests.system_tests_common.get_default_mem_usage")
+    @mock.patch("CIME.SystemTests.system_tests_common.get_latest_cpl_logs")
+    def test_check_for_memleak(
+        self, get_latest_cpl_logs, get_default_mem_usage, append_testlog
+    ):
+        get_default_mem_usage.return_value = [
+            (1, 3040.0),
+            (2, 3002.0),
+            (3, 3030.0),
+            (4, 3008.0),
+        ]
+
+        with tempfile.TemporaryDirectory() as tempdir:
+            caseroot = Path(tempdir) / "caseroot"
+            caseroot.mkdir(parents=True, exist_ok=False)
+
+            rundir = caseroot / "run"
+            rundir.mkdir(parents=True, exist_ok=False)
+
+            cpllog = rundir / "cpl.log.gz"
+
+            get_latest_cpl_logs.return_value = [
+                str(cpllog),
+            ]
+
+            case = mock.MagicMock()
+            case.get_value.side_effect = (
+                str(caseroot),
+                "ERIO.ne30_g16_rx1.A.docker_gnu",
+                "mct",
+                0.01,
+            )
+
+            common = SystemTestsCommon(case)
+
+            common._test_status = mock.MagicMock()
+
+            common._check_for_memleak()
+
+            print(common._test_status.set_status.call_args_list)
+
+            common._test_status.set_status.assert_any_call("MEMLEAK", "PASS")
+
+            append_testlog.assert_not_called()
+
     @mock.patch("CIME.SystemTests.system_tests_common.compare_throughput")
     @mock.patch("CIME.SystemTests.system_tests_common.append_testlog")
     def test_compare_throughput(self, append_testlog, compare_throughput):

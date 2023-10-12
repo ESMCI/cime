@@ -9,6 +9,302 @@ from CIME.utils import expect
 logger = logging.getLogger(__name__)
 
 
+def compare_throughput(case, baseline_dir=None):
+    """
+    Compares model throughput.
+
+    Parameters
+    ----------
+    case : CIME.case.case.Case
+        Current case object.
+    baseline_dir : str
+        Overrides the baseline directory.
+
+    Returns
+    -------
+    below_tolerance : bool
+        Whether the comparison was below the tolerance.
+    comment : str
+        Provides explanation from comparison.
+    """
+    if baseline_dir is None:
+        baseline_dir = case.get_baseline_dir()
+
+    config = load_coupler_customization(case)
+
+    baseline_file = os.path.join(baseline_dir, "cpl-tput.log")
+
+    try:
+        baseline = read_baseline_file(baseline_file)
+    except FileNotFoundError as e:
+        comment = f"Could not read baseline throughput file: {e!s}"
+
+        logger.debug(comment)
+
+        return None, comment
+
+    tolerance = case.get_value("TEST_TPUT_TOLERANCE")
+
+    if tolerance is None:
+        tolerance = 0.1
+
+    expect(
+        tolerance > 0.0,
+        "Bad value for throughput tolerance in test",
+    )
+
+    try:
+        below_tolerance, comment = config.compare_baseline_throughput(
+            case, baseline, tolerance
+        )
+    except AttributeError:
+        below_tolerance, comment = compare_baseline_throughput(
+            case, baseline, tolerance
+        )
+
+    return below_tolerance, comment
+
+
+def compare_memory(case, baseline_dir=None):
+    """
+    Compares model highwater memory usage.
+
+    Parameters
+    ----------
+    case : CIME.case.case.Case
+        Current case object.
+    baseline_dir : str
+        Overrides the baseline directory.
+
+    Returns
+    -------
+    below_tolerance : bool
+        Whether the comparison was below the tolerance.
+    comment : str
+        Provides explanation from comparison.
+    """
+    if baseline_dir is None:
+        baseline_dir = case.get_baseline_dir()
+
+    config = load_coupler_customization(case)
+
+    baseline_file = os.path.join(baseline_dir, "cpl-mem.log")
+
+    try:
+        baseline = read_baseline_file(baseline_file)
+    except FileNotFoundError as e:
+        comment = f"Could not read baseline memory usage: {e!s}"
+
+        logger.debug(comment)
+
+        return None, comment
+
+    tolerance = case.get_value("TEST_MEMLEAK_TOLERANCE")
+
+    if tolerance is None:
+        tolerance = 0.1
+
+    try:
+        below_tolerance, comments = config.compare_baseline_memory(
+            case, baseline, tolerance
+        )
+    except AttributeError:
+        below_tolerance, comments = compare_baseline_memory(case, baseline, tolerance)
+
+    return below_tolerance, comments
+
+
+def write_baseline(case, basegen_dir, throughput=True, memory=True):
+    """
+    Writes the baseline performance files.
+
+    Parameters
+    ----------
+    case : CIME.case.case.Case
+        Current case object.
+    basegen_dir : str
+        Path to baseline directory.
+    throughput : bool
+        If true, write throughput baseline.
+    memory : bool
+        If true, write memory baseline.
+    """
+    config = load_coupler_customization(case)
+
+    if throughput:
+        tput = get_throughput(case, config)
+
+        baseline_file = os.path.join(basegen_dir, "cpl-tput.log")
+
+        write_baseline_file(baseline_file, tput)
+
+    if memory:
+        mem = get_mem_usage(case, config)
+
+        baseline_file = os.path.join(basegen_dir, "cpl-mem.log")
+
+        write_baseline_file(baseline_file, mem)
+
+
+def load_coupler_customization(case):
+    """
+    Loads customizations from the coupler `cime_config` directory.
+
+    Parameters
+    ----------
+    case : CIME.case.case.Case
+        Current case object.
+
+    Returns
+    -------
+    CIME.config.Config
+        Runtime configuration.
+    """
+    comp_root_dir_cpl = case.get_value("COMP_ROOT_DIR_CPL")
+
+    cpl_customize = os.path.join(comp_root_dir_cpl, "cime_config", "customize")
+
+    return Config.load(cpl_customize)
+
+
+def get_throughput(case, config):
+    """
+    Gets the model throughput.
+
+    First attempts to use a coupler define method to retrieve the
+    models throughput. If this is not defined then the default
+    method of parsing the coupler log is used.
+
+    Parameters
+    ----------
+    case : CIME.case.case.Case
+        Current case object.
+
+    Returns
+    -------
+    str or None
+        Model throughput.
+    """
+    try:
+        tput = config.get_throughput(case)
+    except AttributeError:
+        tput = str(get_default_throughput(case))
+
+    return tput
+
+
+def get_mem_usage(case, config):
+    """
+    Gets the model memory usage.
+
+    First attempts to use a coupler defined method to retrieve the
+    models memory usage. If this is not defined then the default
+    method of parsing the coupler log is used.
+
+    Parameters
+    ----------
+    case : CIME.case.case.Case
+        Current case object.
+
+    Returns
+    -------
+    str or None
+        Model memory usage.
+    """
+    try:
+        mem = config.get_mem_usage(case)
+    except AttributeError:
+        mem = get_default_mem_usage(case)
+
+        mem = str(mem[-1][1])
+
+    return mem
+
+
+def write_baseline_file(baseline_file, value):
+    """
+    Writes value to `baseline_file`.
+
+    Parameters
+    ----------
+    baseline_file : str
+        Path to the baseline file.
+    value : str
+        Value to write.
+    """
+    with open(baseline_file, "w") as fd:
+        fd.write(value)
+
+
+def get_default_mem_usage(case, cpllog=None):
+    """
+    Default function to retrieve memory usage from the coupler log.
+
+    If the usage is not available from the log then `None` is returned.
+
+    Parameters
+    ----------
+    case : CIME.case.case.Case
+        Current case object.
+    cpllog : str
+        Overrides the default coupler log.
+
+    Returns
+    -------
+    str or None
+        Model memory usage or `None`.
+
+    Raises
+    ------
+    RuntimeError
+        If not enough sample were found.
+    """
+    if cpllog is None:
+        cpllog = get_latest_cpl_logs(case)
+    else:
+        cpllog = [
+            cpllog,
+        ]
+
+    try:
+        memlist = get_cpl_mem_usage(cpllog[0])
+    except (FileNotFoundError, IndexError):
+        memlist = None
+    else:
+        if len(memlist) <= 3:
+            raise RuntimeError(
+                f"Found {len(memlist)} memory usage samples, need atleast 4"
+            )
+
+    return memlist
+
+
+def get_default_throughput(case):
+    """
+    Default function to retrieve throughput from the coupler log.
+
+    If the throughput is not available from the log then `None` is returned.
+
+    Parameters
+    ----------
+    case : CIME.case.case.Case
+        Current case object.
+
+    Returns
+    -------
+    str or None
+        Model throughput or `None`.
+    """
+    cpllog = get_latest_cpl_logs(case)
+
+    try:
+        tput = get_cpl_throughput(cpllog[0])
+    except (FileNotFoundError, IndexError):
+        tput = None
+
+    return tput
+
+
 def get_latest_cpl_logs(case):
     """
     find and return the latest cpl log file in the run directory
@@ -36,365 +332,6 @@ def get_latest_cpl_logs(case):
                 lastcpllogs.append(log)
 
     return lastcpllogs
-
-
-def compare_memory(case, baseline_dir=None):
-    """
-    Compare current memory usage to baseline.
-
-    Parameters
-    ----------
-    case : CIME.case.case.Case
-        Case object.
-    baseline_dir : str or None
-        Path to the baseline directory.
-
-    Returns
-    -------
-    below_tolerance : bool
-        Whether the current memory usage is below the baseline.
-    comments : str
-        Comments about baseline comparison.
-    """
-    if baseline_dir is None:
-        baseline_dir = case.get_baseline_dir()
-
-    config = load_coupler_customization(case)
-
-    # TODO need better handling
-    try:
-        try:
-            current = config.get_mem_usage(case)
-        except AttributeError:
-            current = default_get_mem_usage(case)[-1][1]
-    except RuntimeError as e:
-        return None, str(e)
-
-    try:
-        baseline = read_baseline_mem(baseline_dir)
-    except FileNotFoundError as e:
-        comment = f"Could not read baseline memory usage: {e!s}"
-
-        logger.debug(comment)
-
-        return None, comment
-
-    if baseline is None:
-        baseline = 0.0
-
-    tolerance = case.get_value("TEST_MEMLEAK_TOLERANCE")
-
-    if tolerance is None:
-        tolerance = 0.1
-
-    try:
-        below_tolerance, comments = config.compare_memory_baseline(
-            current, baseline, tolerance
-        )
-    except AttributeError:
-        below_tolerance, comments = compare_memory_baseline(
-            current, baseline, tolerance
-        )
-
-    return below_tolerance, comments
-
-
-def compare_memory_baseline(current, baseline, tolerance):
-    try:
-        diff = (current - baseline) / baseline
-    except ZeroDivisionError:
-        diff = 0.0
-
-    # Should we check if tolerance is above 0
-    below_tolerance = None
-    comment = ""
-
-    if diff is not None:
-        below_tolerance = diff < tolerance
-
-        if below_tolerance:
-            comment = "MEMCOMP: Memory usage highwater has changed by {:.2f}% relative to baseline".format(
-                diff * 100
-            )
-        else:
-            comment = "Error: Memory usage increase >{:d}% from baseline's {:f} to {:f}".format(
-                int(tolerance * 100), baseline, current
-            )
-
-    return below_tolerance, comment
-
-
-def compare_throughput(case, baseline_dir=None):
-    if baseline_dir is None:
-        baseline_dir = case.get_baseline_dir()
-
-    config = load_coupler_customization(case)
-
-    try:
-        current = config.get_throughput(case)
-    except AttributeError:
-        current = default_get_throughput(case)
-
-    try:
-        baseline = read_baseline_tput(baseline_dir)
-    except FileNotFoundError as e:
-        comment = f"Could not read baseline throughput file: {e!s}"
-
-        logger.debug(comment)
-
-        return None, comment
-
-    tolerance = case.get_value("TEST_TPUT_TOLERANCE")
-
-    if tolerance is None:
-        tolerance = 0.1
-
-    expect(
-        tolerance > 0.0,
-        "Bad value for throughput tolerance in test",
-    )
-
-    try:
-        below_tolerance, comment = config.compare_baseline_throughput(
-            current, baseline, tolerance
-        )
-    except AttributeError:
-        below_tolerance, comment = compare_baseline_throughput(
-            current, baseline, tolerance
-        )
-
-    return below_tolerance, comment
-
-
-def load_coupler_customization(case):
-    comp_root_dir_cpl = case.get_value("COMP_ROOT_DIR_CPL")
-
-    cpl_customize = os.path.join(comp_root_dir_cpl, "cime_config", "customize")
-
-    return Config.load(cpl_customize)
-
-
-def compare_baseline_throughput(current, baseline, tolerance):
-    try:
-        # comparing ypd so bigger is better
-        diff = (baseline - current) / baseline
-    except (ValueError, TypeError):
-        # Should we default the diff to 0.0 as with _compare_current_memory?
-        comment = f"Could not determine diff with baseline {baseline!r} and current {current!r}"
-
-        logger.debug(comment)
-
-        diff = None
-
-    below_tolerance = None
-
-    if diff is not None:
-        below_tolerance = diff < tolerance
-
-        if below_tolerance:
-            comment = "TPUTCOMP: Computation time changed by {:.2f}% relative to baseline".format(
-                diff * 100
-            )
-        else:
-            comment = "Error: TPUTCOMP: Computation time increase > {:d}% from baseline".format(
-                int(tolerance * 100)
-            )
-
-    return below_tolerance, comment
-
-
-def write_baseline(case, basegen_dir, throughput=True, memory=True):
-    config = load_coupler_customization(case)
-
-    if throughput:
-        try:
-            try:
-                tput = config.get_throughput(case)
-            except AttributeError:
-                tput = str(default_get_throughput(case))
-        except RuntimeError:
-            pass
-        else:
-            write_baseline_tput(basegen_dir, tput)
-
-    if memory:
-        try:
-            try:
-                mem = config.get_mem_usage(case)
-            except AttributeError:
-                mem = str(default_get_mem_usage(case)[-1][1])
-        except RuntimeError:
-            pass
-        else:
-            write_baseline_mem(basegen_dir, mem)
-
-
-def default_get_throughput(case):
-    """
-    Parameters
-    ----------
-    cpllog : str
-        Path to the coupler log.
-
-    Returns
-    -------
-    str
-        Last recorded highwater memory usage.
-    """
-    cpllog = get_latest_cpl_logs(case)
-
-    try:
-        tput = get_cpl_throughput(cpllog[0])
-    except (FileNotFoundError, IndexError):
-        tput = None
-
-    return tput
-
-
-def default_get_mem_usage(case, cpllog=None):
-    """
-    Parameters
-    ----------
-    cpllog : str
-        Path to the coupler log.
-
-    Returns
-    -------
-    str
-        Last recorded highwater memory usage.
-
-    Raises
-    ------
-    RuntimeError
-        If not enough sample were found.
-    """
-    if cpllog is None:
-        cpllog = get_latest_cpl_logs(case)
-    else:
-        cpllog = [
-            cpllog,
-        ]
-
-    try:
-        memlist = get_cpl_mem_usage(cpllog[0])
-    except (FileNotFoundError, IndexError):
-        memlist = [(None, None)]
-    else:
-        if len(memlist) <= 3:
-            raise RuntimeError(
-                f"Found {len(memlist)} memory usage samples, need atleast 4"
-            )
-
-    return memlist
-
-
-def write_baseline_tput(baseline_dir, tput):
-    """
-    Writes throughput to baseline file.
-
-    The format is arbitrary, it's the callers responsibilty
-    to decode the data.
-
-    Parameters
-    ----------
-    baseline_dir : str
-        Path to the baseline directory.
-    tput : str
-        Model throughput.
-    """
-    tput_file = os.path.join(baseline_dir, "cpl-tput.log")
-
-    with open(tput_file, "w") as fd:
-        fd.write(tput)
-
-
-def write_baseline_mem(baseline_dir, mem):
-    """
-    Writes memory usage to baseline file.
-
-    The format is arbitrary, it's the callers responsibilty
-    to decode the data.
-
-    Parameters
-    ----------
-    baseline_dir : str
-        Path to the baseline directory.
-    mem : str
-        Model memory usage.
-    """
-    mem_file = os.path.join(baseline_dir, "cpl-mem.log")
-
-    with open(mem_file, "w") as fd:
-        fd.write(mem)
-
-
-def read_baseline_tput(baseline_dir):
-    """
-    Reads the raw lines of the throughput baseline file.
-
-    Parameters
-    ----------
-    baseline_dir : str
-        Path to the baseline directory.
-
-    Returns
-    -------
-    list
-        Contents of the throughput baseline file.
-
-    Raises
-    ------
-    FileNotFoundError
-        If baseline file does not exist.
-    """
-    return read_baseline_value(os.path.join(baseline_dir, "cpl-tput.log"))
-
-
-def read_baseline_mem(baseline_dir):
-    """
-    Read the raw lines of the memory baseline file.
-
-    Parameters
-    ----------
-    baseline_dir : str
-        Path to the baseline directory.
-
-    Returns
-    -------
-    list
-        Contents of the memory baseline file.
-
-    Raises
-    ------
-    FileNotFoundError
-        If baseline file does not exist.
-    """
-    return read_baseline_value(os.path.join(baseline_dir, "cpl-mem.log"))
-
-
-def read_baseline_value(baseline_file):
-    """
-    Generic read function, ignores lines prepended by `#`.
-
-    Parameters
-    ----------
-    baseline_file : str
-        Path to baseline file.
-
-    Returns
-    -------
-    list
-        Lines contained in the baseline file without comments.
-
-    Raises
-    ------
-    FileNotFoundError
-        If ``baseline_file`` is not found.
-    """
-    with open(baseline_file) as fd:
-        lines = [x for x in fd.readlines() if not x.startswith("#")]
-
-    return lines
 
 
 def get_cpl_mem_usage(cpllog):
@@ -458,3 +395,134 @@ def get_cpl_throughput(cpllog):
             if m:
                 return float(m.group(1))
     return None
+
+
+def read_baseline_file(baseline_file):
+    """
+    Reads value from `baseline_file`.
+
+    Parameters
+    ----------
+    baseline_file : str
+        Path to the baseline file.
+
+    Returns
+    -------
+    str
+        Value stored in baseline file without comments.
+    """
+    with open(baseline_file) as fd:
+        lines = [x for x in fd.readlines() if not x.startswith("#")]
+
+    return lines
+
+
+def compare_baseline_throughput(case, baseline, tolerance):
+    """
+    Default throughput baseline comparison.
+
+    Compares the throughput from the coupler to the baseline value.
+
+    Parameters
+    ----------
+    case : CIME.case.case.Case
+        Current case object.
+    baseline : list
+        Lines contained in the baseline file.
+    tolerance : float
+        Allowed tolerance for comparison.
+
+    Returns
+    -------
+    below_tolerance : bool
+        Whether the comparison was below the tolerance.
+    comment : str
+        provides explanation from comparison.
+    """
+    current = get_default_throughput(case)
+
+    try:
+        # default baseline is stored as single float
+        baseline = float(baseline[0])
+    except IndexError:
+        comment = "Could not compare throughput to baseline, as basline had no value."
+
+        return None, comment
+
+    # comparing ypd so bigger is better
+    diff = (baseline - current) / baseline
+
+    below_tolerance = None
+
+    if diff is not None:
+        below_tolerance = diff < tolerance
+
+        if below_tolerance:
+            comment = "TPUTCOMP: Computation time changed by {:.2f}% relative to baseline".format(
+                diff * 100
+            )
+        else:
+            comment = "Error: TPUTCOMP: Computation time increase > {:d}% from baseline".format(
+                int(tolerance * 100)
+            )
+
+    return below_tolerance, comment
+
+
+def compare_baseline_memory(case, baseline, tolerance):
+    """
+    Default memory usage baseline comparison.
+
+    Compares the highwater memory usage from the coupler to the baseline value.
+
+    Parameters
+    ----------
+    case : CIME.case.case.Case
+        Current case object.
+    baseline : list
+        Lines contained in the baseline file.
+    tolerance : float
+        Allowed tolerance for comparison.
+
+    Returns
+    -------
+    below_tolerance : bool
+        Whether the comparison was below the tolerance.
+    comment : str
+        provides explanation from comparison.
+    """
+    try:
+        current = get_default_mem_usage(case)
+    except RuntimeError as e:
+        return None, str(e)
+    else:
+        current = current[-1][1]
+
+    try:
+        # default baseline is stored as single float
+        baseline = float(baseline[0])
+    except IndexError:
+        baseline = 0.0
+
+    try:
+        diff = (current - baseline) / baseline
+    except ZeroDivisionError:
+        diff = 0.0
+
+    # Should we check if tolerance is above 0
+    below_tolerance = None
+    comment = ""
+
+    if diff is not None:
+        below_tolerance = diff < tolerance
+
+        if below_tolerance:
+            comment = "MEMCOMP: Memory usage highwater has changed by {:.2f}% relative to baseline".format(
+                diff * 100
+            )
+        else:
+            comment = "Error: Memory usage increase >{:d}% from baseline's {:f} to {:f}".format(
+                int(tolerance * 100), baseline, current
+            )
+
+    return below_tolerance, comment
