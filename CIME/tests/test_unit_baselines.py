@@ -10,12 +10,13 @@ from CIME import baselines
 from CIME.tests.test_unit_system_tests import CPLLOG
 
 
-def create_mock_case(tempdir, get_latest_cpl_logs):
+def create_mock_case(tempdir, get_latest_cpl_logs=None):
     caseroot = Path(tempdir, "0", "caseroot")
 
     rundir = caseroot / "run"
 
-    get_latest_cpl_logs.return_value = (str(rundir / "cpl.log.gz"),)
+    if get_latest_cpl_logs is not None:
+        get_latest_cpl_logs.return_value = (str(rundir / "cpl.log.gz"),)
 
     baseline_root = Path(tempdir, "baselines")
 
@@ -27,6 +28,82 @@ def create_mock_case(tempdir, get_latest_cpl_logs):
 
 
 class TestUnitBaseline(unittest.TestCase):
+    @mock.patch("CIME.baselines.get_default_mem_usage")
+    def test_get_mem_usage_default_no_value(self, get_default_mem_usage):
+        get_default_mem_usage.return_value = None
+
+        case = mock.MagicMock()
+
+        config = mock.MagicMock()
+
+        config.get_mem_usage.side_effect = AttributeError
+
+        with self.assertRaises(RuntimeError):
+            baselines.get_mem_usage(case, config)
+
+    @mock.patch("CIME.baselines.get_default_mem_usage")
+    def test_get_mem_usage_default(self, get_default_mem_usage):
+        get_default_mem_usage.return_value = [(1, 1000)]
+
+        case = mock.MagicMock()
+
+        config = mock.MagicMock()
+
+        config.get_mem_usage.side_effect = AttributeError
+
+        mem = baselines.get_mem_usage(case, config)
+
+        assert mem == "1000"
+
+    def test_get_mem_usage(self):
+        case = mock.MagicMock()
+
+        config = mock.MagicMock()
+
+        config.get_mem_usage.return_value = "1000"
+
+        mem = baselines.get_mem_usage(case, config)
+
+        assert mem == "1000"
+
+    @mock.patch("CIME.baselines.get_default_throughput")
+    def test_get_throughput_default_no_value(self, get_default_throughput):
+        get_default_throughput.return_value = None
+
+        case = mock.MagicMock()
+
+        config = mock.MagicMock()
+
+        config.get_throughput.side_effect = AttributeError
+
+        with self.assertRaises(RuntimeError):
+            baselines.get_throughput(case, config)
+
+    @mock.patch("CIME.baselines.get_default_throughput")
+    def test_get_throughput_default(self, get_default_throughput):
+        get_default_throughput.return_value = 100
+
+        case = mock.MagicMock()
+
+        config = mock.MagicMock()
+
+        config.get_throughput.side_effect = AttributeError
+
+        tput = baselines.get_throughput(case, config)
+
+        assert tput == "100"
+
+    def test_get_throughput(self):
+        case = mock.MagicMock()
+
+        config = mock.MagicMock()
+
+        config.get_throughput.return_value = "100"
+
+        tput = baselines.get_throughput(case, config)
+
+        assert tput == "100"
+
     def test_get_cpl_throughput_no_file(self):
         throughput = baselines.get_cpl_throughput("/tmp/cpl.log")
 
@@ -145,22 +222,66 @@ class TestUnitBaseline(unittest.TestCase):
 
             assert mem == None
 
-    @mock.patch("CIME.baselines.get_cpl_mem_usage")
-    @mock.patch("CIME.baselines.get_latest_cpl_logs")
-    def test_write_baseline(self, get_latest_cpl_logs, get_cpl_mem_usage):
-        with tempfile.TemporaryDirectory() as tempdir:
-            case, _, _, baseline_root = create_mock_case(tempdir, get_latest_cpl_logs)
+    @mock.patch("CIME.baselines.write_baseline_file")
+    @mock.patch("CIME.baselines.get_mem_usage")
+    @mock.patch("CIME.baselines.get_throughput")
+    def test_write_baseline_skip(
+        self, get_throughput, get_mem_usage, write_baseline_file
+    ):
+        get_throughput.return_value = "100"
 
-            get_cpl_mem_usage.return_value = [
-                (1, 1000.0),
-                (2, 1001.0),
-                (3, 1002.0),
-                (4, 1003.0),
-            ]
+        get_mem_usage.return_value = "1000"
+
+        with tempfile.TemporaryDirectory() as tempdir:
+            case, _, _, baseline_root = create_mock_case(tempdir)
 
             baselines.write_baseline(
-                case, baseline_root, get_latest_cpl_logs.return_value
+                case,
+                baseline_root,
+                False,
+                False,
             )
+
+        get_throughput.assert_not_called()
+        get_mem_usage.assert_not_called()
+        write_baseline_file.assert_not_called()
+
+    @mock.patch("CIME.baselines.write_baseline_file")
+    @mock.patch("CIME.baselines.get_mem_usage")
+    @mock.patch("CIME.baselines.get_throughput")
+    def test_write_baseline_runtimeerror(
+        self, get_throughput, get_mem_usage, write_baseline_file
+    ):
+        get_throughput.side_effect = RuntimeError
+
+        get_mem_usage.side_effect = RuntimeError
+
+        with tempfile.TemporaryDirectory() as tempdir:
+            case, _, _, baseline_root = create_mock_case(tempdir)
+
+            baselines.write_baseline(case, baseline_root)
+
+        get_throughput.assert_called()
+        get_mem_usage.assert_called()
+        write_baseline_file.assert_not_called()
+
+    @mock.patch("CIME.baselines.write_baseline_file")
+    @mock.patch("CIME.baselines.get_mem_usage")
+    @mock.patch("CIME.baselines.get_throughput")
+    def test_write_baseline(self, get_throughput, get_mem_usage, write_baseline_file):
+        get_throughput.return_value = "100"
+
+        get_mem_usage.return_value = "1000"
+
+        with tempfile.TemporaryDirectory() as tempdir:
+            case, _, _, baseline_root = create_mock_case(tempdir)
+
+            baselines.write_baseline(case, baseline_root)
+
+        get_throughput.assert_called()
+        get_mem_usage.assert_called()
+        write_baseline_file.assert_any_call(str(baseline_root / "cpl-tput.log"), "100")
+        write_baseline_file.assert_any_call(str(baseline_root / "cpl-mem.log"), "1000")
 
     @mock.patch("CIME.baselines.get_default_throughput")
     @mock.patch("CIME.baselines.read_baseline_file")

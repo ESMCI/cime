@@ -132,18 +132,24 @@ def write_baseline(case, basegen_dir, throughput=True, memory=True):
     config = load_coupler_customization(case)
 
     if throughput:
-        tput = get_throughput(case, config)
+        try:
+            tput = get_throughput(case, config)
+        except RuntimeError:
+            pass
+        else:
+            baseline_file = os.path.join(basegen_dir, "cpl-tput.log")
 
-        baseline_file = os.path.join(basegen_dir, "cpl-tput.log")
-
-        write_baseline_file(baseline_file, tput)
+            write_baseline_file(baseline_file, tput)
 
     if memory:
-        mem = get_mem_usage(case, config)
+        try:
+            mem = get_mem_usage(case, config)
+        except RuntimeError:
+            pass
+        else:
+            baseline_file = os.path.join(basegen_dir, "cpl-mem.log")
 
-        baseline_file = os.path.join(basegen_dir, "cpl-mem.log")
-
-        write_baseline_file(baseline_file, mem)
+            write_baseline_file(baseline_file, mem)
 
 
 def load_coupler_customization(case):
@@ -188,7 +194,12 @@ def get_throughput(case, config):
     try:
         tput = config.get_throughput(case)
     except AttributeError:
-        tput = str(get_default_throughput(case))
+        tput = get_default_throughput(case)
+
+        if tput is None:
+            raise RuntimeError("Could not get default throughput") from None
+
+        tput = str(tput)
 
     return tput
 
@@ -215,6 +226,9 @@ def get_mem_usage(case, config):
         mem = config.get_mem_usage(case)
     except AttributeError:
         mem = get_default_mem_usage(case)
+
+        if mem is None:
+            raise RuntimeError("Could not get default memory usage") from None
 
         mem = str(mem[-1][1])
 
