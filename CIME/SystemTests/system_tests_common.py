@@ -634,11 +634,18 @@ for some of your components.
         """
         config = load_coupler_customization(self._case)
 
+        # default to 0.1
+        tolerance = self._case.get_value("TEST_MEMLEAK_TOLERANCE") or 0.1
+
+        expect(tolerance > 0.0, "Bad value for memleak tolerance in test")
+
         with self._test_status:
             try:
-                memleak, comment = config.perf_check_for_memory_leak(self._case)
+                memleak, comment = config.perf_check_for_memory_leak(
+                    self._case, tolerance
+                )
             except AttributeError:
-                memleak, comment = perf_check_for_memory_leak(self._case)
+                memleak, comment = perf_check_for_memory_leak(self._case, tolerance)
 
             if memleak:
                 append_testlog(comment, self._orig_caseroot)
@@ -772,7 +779,7 @@ for some of your components.
                         perf_write_baseline(self._case, basegen_dir, cpllog)
 
 
-def perf_check_for_memory_leak(case):
+def perf_check_for_memory_leak(case, tolerance):
     leak = False
     comment = ""
 
@@ -790,11 +797,6 @@ def perf_check_for_memory_leak(case):
         finalmem, originalmem = float(memlist[-1][1]), float(memlist[1][1])
 
         memdiff = -1 if originalmem <= 0 else (finalmem - originalmem) / originalmem
-
-        # default to 0.1
-        tolerance = case.get_value("TEST_MEMLEAK_TOLERANCE") or 0.1
-
-        expect(tolerance > 0.0, "Bad value for memleak tolerance in test")
 
         if memdiff < 0:
             leak = False
