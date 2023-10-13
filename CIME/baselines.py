@@ -428,7 +428,7 @@ def read_baseline_file(baseline_file):
         Value stored in baseline file without comments.
     """
     with open(baseline_file) as fd:
-        lines = [x for x in fd.readlines() if not x.startswith("#")]
+        lines = [x.strip() for x in fd.readlines() if not x.startswith("#")]
 
     return lines
 

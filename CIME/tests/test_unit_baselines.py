@@ -159,7 +159,7 @@ class TestUnitBaseline(unittest.TestCase):
             baseline = baselines.read_baseline_file("/tmp/cpl-mem.log")
 
         mock_file.assert_called_with("/tmp/cpl-mem.log")
-        assert baseline == ["1000.0\n", "2000.0\n"]
+        assert baseline == ["1000.0", "2000.0"]
 
     def test_read_baseline_file_content(self):
         with mock.patch(
