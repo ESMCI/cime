@@ -11,7 +11,7 @@ from CIME.test_status import *
 from CIME.hist_utils import generate_baseline, compare_baseline
 from CIME.case import Case
 from CIME.test_utils import get_test_status_files
-from CIME.baselines import (
+from CIME.baselines.performance import (
     perf_compare_throughput_baseline,
     perf_compare_memory_baseline,
     perf_write_baseline,

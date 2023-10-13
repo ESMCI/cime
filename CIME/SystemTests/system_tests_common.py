@@ -26,7 +26,7 @@ from CIME.hist_utils import (
 from CIME.config import Config
 from CIME.provenance import save_test_time, get_test_success
 from CIME.locked_files import LOCKED_DIR, lock_file, is_locked
-from CIME.baselines import (
+from CIME.baselines.performance import (
     get_latest_cpl_logs,
     _perf_get_memory,
     perf_compare_memory_baseline,
