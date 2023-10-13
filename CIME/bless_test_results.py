@@ -397,8 +397,8 @@ def bless_test_results(
                         success, reason = bless_throughput(
                             case,
                             test_name,
-                            baseline_root,
-                            baseline_name,
+                            baseline_root_resolved,
+                            baseline_name_resolved,
                             report_only,
                             force,
                         )
@@ -410,8 +410,8 @@ def bless_test_results(
                         success, reason = bless_memory(
                             case,
                             test_name,
-                            baseline_root,
-                            baseline_name,
+                            baseline_root_resolved,
+                            baseline_name_resolved,
                             report_only,
                             force,
                         )
