@@ -9,7 +9,7 @@ from CIME.utils import expect
 logger = logging.getLogger(__name__)
 
 
-def compare_throughput(case, baseline_dir=None):
+def perf_compare_throughput_baseline(case, baseline_dir=None):
     """
     Compares model throughput.
 
@@ -54,18 +54,18 @@ def compare_throughput(case, baseline_dir=None):
     )
 
     try:
-        below_tolerance, comment = config.compare_baseline_throughput(
+        below_tolerance, comment = config.perf_compare_throughput_baseline(
             case, baseline, tolerance
         )
     except AttributeError:
-        below_tolerance, comment = compare_baseline_throughput(
+        below_tolerance, comment = _perf_compare_throughput_baseline(
             case, baseline, tolerance
         )
 
     return below_tolerance, comment
 
 
-def compare_memory(case, baseline_dir=None):
+def perf_compare_memory_baseline(case, baseline_dir=None):
     """
     Compares model highwater memory usage.
 
@@ -105,16 +105,18 @@ def compare_memory(case, baseline_dir=None):
         tolerance = 0.1
 
     try:
-        below_tolerance, comments = config.compare_baseline_memory(
+        below_tolerance, comments = config.perf_compare_memory_baseline(
             case, baseline, tolerance
         )
     except AttributeError:
-        below_tolerance, comments = compare_baseline_memory(case, baseline, tolerance)
+        below_tolerance, comments = _perf_compare_memory_baseline(
+            case, baseline, tolerance
+        )
 
     return below_tolerance, comments
 
 
-def write_baseline(case, basegen_dir, throughput=True, memory=True):
+def perf_write_baseline(case, basegen_dir, throughput=True, memory=True):
     """
     Writes the baseline performance files.
 
@@ -194,7 +196,7 @@ def get_throughput(case, config):
     try:
         tput = config.get_throughput(case)
     except AttributeError:
-        tput = get_default_throughput(case)
+        tput = _get_throughput(case)
 
         if tput is None:
             raise RuntimeError("Could not get default throughput") from None
@@ -225,7 +227,7 @@ def get_mem_usage(case, config):
     try:
         mem = config.get_mem_usage(case)
     except AttributeError:
-        mem = get_default_mem_usage(case)
+        mem = _get_mem_usage(case)
 
         if mem is None:
             raise RuntimeError("Could not get default memory usage") from None
@@ -250,7 +252,7 @@ def write_baseline_file(baseline_file, value):
         fd.write(value)
 
 
-def get_default_mem_usage(case, cpllog=None):
+def _get_mem_usage(case, cpllog=None):
     """
     Default function to retrieve memory usage from the coupler log.
 
@@ -293,7 +295,7 @@ def get_default_mem_usage(case, cpllog=None):
     return memlist
 
 
-def get_default_throughput(case):
+def _get_throughput(case):
     """
     Default function to retrieve throughput from the coupler log.
 
@@ -431,7 +433,7 @@ def read_baseline_file(baseline_file):
     return lines
 
 
-def compare_baseline_throughput(case, baseline, tolerance):
+def _perf_compare_throughput_baseline(case, baseline, tolerance):
     """
     Default throughput baseline comparison.
 
@@ -453,7 +455,7 @@ def compare_baseline_throughput(case, baseline, tolerance):
     comment : str
         provides explanation from comparison.
     """
-    current = get_default_throughput(case)
+    current = _get_throughput(case)
 
     try:
         # default baseline is stored as single float
@@ -483,7 +485,7 @@ def compare_baseline_throughput(case, baseline, tolerance):
     return below_tolerance, comment
 
 
-def compare_baseline_memory(case, baseline, tolerance):
+def _perf_compare_memory_baseline(case, baseline, tolerance):
     """
     Default memory usage baseline comparison.
 
@@ -506,7 +508,7 @@ def compare_baseline_memory(case, baseline, tolerance):
         provides explanation from comparison.
     """
     try:
-        current = get_default_mem_usage(case)
+        current = _get_mem_usage(case)
     except RuntimeError as e:
         return None, str(e)
     else:

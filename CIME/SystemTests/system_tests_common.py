@@ -28,10 +28,10 @@ from CIME.provenance import save_test_time, get_test_success
 from CIME.locked_files import LOCKED_DIR, lock_file, is_locked
 from CIME.baselines import (
     get_latest_cpl_logs,
-    get_default_mem_usage,
-    compare_memory,
-    compare_throughput,
-    write_baseline,
+    _get_mem_usage,
+    perf_compare_memory_baseline,
+    perf_compare_throughput_baseline,
+    perf_write_baseline,
     load_coupler_customization,
 )
 import CIME.build as build
@@ -679,7 +679,7 @@ for some of your components.
         Compares current test memory usage to baseline.
         """
         with self._test_status:
-            below_tolerance, comment = compare_memory(self._case)
+            below_tolerance, comment = perf_compare_memory_baseline(self._case)
 
             if below_tolerance is not None:
                 append_testlog(comment, self._orig_caseroot)
@@ -699,7 +699,7 @@ for some of your components.
         Compares current test throughput to baseline.
         """
         with self._test_status:
-            below_tolerance, comment = compare_throughput(self._case)
+            below_tolerance, comment = perf_compare_throughput_baseline(self._case)
 
             if below_tolerance is not None:
                 append_testlog(comment, self._orig_caseroot)
@@ -769,7 +769,7 @@ for some of your components.
                             preserve_meta=False,
                         )
 
-                        write_baseline(self._case, basegen_dir, cpllog)
+                        perf_write_baseline(self._case, basegen_dir, cpllog)
 
 
 def default_detect_memory_leak(case):
@@ -780,7 +780,7 @@ def default_detect_memory_leak(case):
 
     for cpllog in latestcpllogs:
         try:
-            memlist = get_default_mem_usage(case, cpllog)
+            memlist = _get_mem_usage(case, cpllog)
         except RuntimeError:
             return False, "insufficient data for memleak test"
 

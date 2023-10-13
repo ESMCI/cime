@@ -12,9 +12,9 @@ from CIME.hist_utils import generate_baseline, compare_baseline
 from CIME.case import Case
 from CIME.test_utils import get_test_status_files
 from CIME.baselines import (
-    compare_throughput,
-    compare_memory,
-    write_baseline,
+    perf_compare_throughput_baseline,
+    perf_compare_memory_baseline,
+    perf_write_baseline,
 )
 import os, time
 
@@ -36,7 +36,9 @@ def bless_throughput(
         baseline_root, baseline_name, case.get_value("CASEBASEID")
     )
 
-    below_threshold, comment = compare_throughput(case, baseline_dir=baseline_dir)
+    below_threshold, comment = perf_compare_throughput_baseline(
+        case, baseline_dir=baseline_dir
+    )
 
     if below_threshold:
         logger.info("Diff appears to have been already resolved.")
@@ -47,7 +49,7 @@ def bless_throughput(
             force or input("Update this diff (y/n)? ").upper() in ["Y", "YES"]
         ):
             try:
-                write_baseline(case, baseline_dir, memory=False)
+                perf_write_baseline(case, baseline_dir, memory=False)
             except Exception as e:
                 success = False
 
@@ -71,7 +73,9 @@ def bless_memory(
         baseline_root, baseline_name, case.get_value("CASEBASEID")
     )
 
-    below_threshold, comment = compare_memory(case, baseline_dir=baseline_dir)
+    below_threshold, comment = perf_compare_memory_baseline(
+        case, baseline_dir=baseline_dir
+    )
 
     if below_threshold:
         logger.info("Diff appears to have been already resolved.")
@@ -82,7 +86,7 @@ def bless_memory(
             force or input("Update this diff (y/n)? ").upper() in ["Y", "YES"]
         ):
             try:
-                write_baseline(case, baseline_dir, throughput=False)
+                perf_write_baseline(case, baseline_dir, throughput=False)
             except Exception as e:
                 success = False
 
