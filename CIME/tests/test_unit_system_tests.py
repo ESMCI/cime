@@ -78,7 +78,7 @@ class TestUnitSystemTests(unittest.TestCase):
         append_testlog,
         load_coupler_customization,
     ):
-        load_coupler_customization.return_value.detect_memory_leak.side_effect = (
+        load_coupler_customization.return_value.perf_check_for_memory_leak.side_effect = (
             AttributeError
         )
 
@@ -128,7 +128,7 @@ class TestUnitSystemTests(unittest.TestCase):
         append_testlog,
         load_coupler_customization,
     ):
-        load_coupler_customization.return_value.detect_memory_leak.side_effect = (
+        load_coupler_customization.return_value.perf_check_for_memory_leak.side_effect = (
             AttributeError
         )
 
@@ -181,7 +181,7 @@ class TestUnitSystemTests(unittest.TestCase):
         append_testlog,
         load_coupler_customization,
     ):
-        load_coupler_customization.return_value.detect_memory_leak.side_effect = (
+        load_coupler_customization.return_value.perf_check_for_memory_leak.side_effect = (
             AttributeError
         )
 
@@ -238,7 +238,7 @@ class TestUnitSystemTests(unittest.TestCase):
         append_testlog,
         load_coupler_customization,
     ):
-        load_coupler_customization.return_value.detect_memory_leak.side_effect = (
+        load_coupler_customization.return_value.perf_check_for_memory_leak.side_effect = (
             AttributeError
         )
 

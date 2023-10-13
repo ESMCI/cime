@@ -636,9 +636,9 @@ for some of your components.
 
         with self._test_status:
             try:
-                memleak, comment = config.detect_memory_leak(self._case)
+                memleak, comment = config.perf_check_for_memory_leak(self._case)
             except AttributeError:
-                memleak, comment = default_detect_memory_leak(self._case)
+                memleak, comment = perf_check_for_memory_leak(self._case)
 
             if memleak:
                 append_testlog(comment, self._orig_caseroot)
@@ -772,7 +772,7 @@ for some of your components.
                         perf_write_baseline(self._case, basegen_dir, cpllog)
 
 
-def default_detect_memory_leak(case):
+def perf_check_for_memory_leak(case):
     leak = False
     comment = ""
 
