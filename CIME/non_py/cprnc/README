@@ -17,7 +17,7 @@ On cime supported systems you can generate a cmake Macros file using the followi
 
 export CIMEROOT=../..
 
-../../scripts/configure --macros-format=CMake --mpilib=mpi-serial
+../../scripts/configure --macros-format=CMake --mpilib=mpi-serial --machine=machinename
 MPILIB=mpi-serial source ./.env_mach_specific.sh
 # Flags if you are using the intel compiler:
 CC=icc FC=ifort cmake -DBLDROOT=. -DCASEROOT=. -DCOMPILER=intel -DMACH=cheyenne -DSRC_ROOT=../../../ .
