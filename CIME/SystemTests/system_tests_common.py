@@ -28,7 +28,7 @@ from CIME.provenance import save_test_time, get_test_success
 from CIME.locked_files import LOCKED_DIR, lock_file, is_locked
 from CIME.baselines import (
     get_latest_cpl_logs,
-    _get_mem_usage,
+    _perf_get_memory,
     perf_compare_memory_baseline,
     perf_compare_throughput_baseline,
     perf_write_baseline,
@@ -780,7 +780,7 @@ def default_detect_memory_leak(case):
 
     for cpllog in latestcpllogs:
         try:
-            memlist = _get_mem_usage(case, cpllog)
+            memlist = _perf_get_memory(case, cpllog)
         except RuntimeError:
             return False, "insufficient data for memleak test"
 

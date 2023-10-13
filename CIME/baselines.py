@@ -135,7 +135,7 @@ def perf_write_baseline(case, basegen_dir, throughput=True, memory=True):
 
     if throughput:
         try:
-            tput = get_throughput(case, config)
+            tput = perf_get_throughput(case, config)
         except RuntimeError:
             pass
         else:
@@ -145,7 +145,7 @@ def perf_write_baseline(case, basegen_dir, throughput=True, memory=True):
 
     if memory:
         try:
-            mem = get_mem_usage(case, config)
+            mem = perf_get_memory(case, config)
         except RuntimeError:
             pass
         else:
@@ -175,7 +175,7 @@ def load_coupler_customization(case):
     return Config.load(cpl_customize)
 
 
-def get_throughput(case, config):
+def perf_get_throughput(case, config):
     """
     Gets the model throughput.
 
@@ -194,9 +194,9 @@ def get_throughput(case, config):
         Model throughput.
     """
     try:
-        tput = config.get_throughput(case)
+        tput = config.perf_get_throughput(case)
     except AttributeError:
-        tput = _get_throughput(case)
+        tput = _perf_get_throughput(case)
 
         if tput is None:
             raise RuntimeError("Could not get default throughput") from None
@@ -206,7 +206,7 @@ def get_throughput(case, config):
     return tput
 
 
-def get_mem_usage(case, config):
+def perf_get_memory(case, config):
     """
     Gets the model memory usage.
 
@@ -225,9 +225,9 @@ def get_mem_usage(case, config):
         Model memory usage.
     """
     try:
-        mem = config.get_mem_usage(case)
+        mem = config.perf_get_memory(case)
     except AttributeError:
-        mem = _get_mem_usage(case)
+        mem = _perf_get_memory(case)
 
         if mem is None:
             raise RuntimeError("Could not get default memory usage") from None
@@ -252,7 +252,7 @@ def write_baseline_file(baseline_file, value):
         fd.write(value)
 
 
-def _get_mem_usage(case, cpllog=None):
+def _perf_get_memory(case, cpllog=None):
     """
     Default function to retrieve memory usage from the coupler log.
 
@@ -295,7 +295,7 @@ def _get_mem_usage(case, cpllog=None):
     return memlist
 
 
-def _get_throughput(case):
+def _perf_get_throughput(case):
     """
     Default function to retrieve throughput from the coupler log.
 
@@ -455,7 +455,7 @@ def _perf_compare_throughput_baseline(case, baseline, tolerance):
     comment : str
         provides explanation from comparison.
     """
-    current = _get_throughput(case)
+    current = _perf_get_throughput(case)
 
     try:
         # default baseline is stored as single float
@@ -508,7 +508,7 @@ def _perf_compare_memory_baseline(case, baseline, tolerance):
         provides explanation from comparison.
     """
     try:
-        current = _get_mem_usage(case)
+        current = _perf_get_memory(case)
     except RuntimeError as e:
         return None, str(e)
     else:

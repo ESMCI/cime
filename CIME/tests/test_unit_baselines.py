@@ -28,79 +28,79 @@ def create_mock_case(tempdir, get_latest_cpl_logs=None):
 
 
 class TestUnitBaseline(unittest.TestCase):
-    @mock.patch("CIME.baselines._get_mem_usage")
-    def test_get_mem_usage_default_no_value(self, _get_mem_usage):
-        _get_mem_usage.return_value = None
+    @mock.patch("CIME.baselines._perf_get_memory")
+    def test_perf_get_memory_default_no_value(self, _perf_get_memory):
+        _perf_get_memory.return_value = None
 
         case = mock.MagicMock()
 
         config = mock.MagicMock()
 
-        config.get_mem_usage.side_effect = AttributeError
+        config.perf_get_memory.side_effect = AttributeError
 
         with self.assertRaises(RuntimeError):
-            baselines.get_mem_usage(case, config)
+            baselines.perf_get_memory(case, config)
 
-    @mock.patch("CIME.baselines._get_mem_usage")
-    def test_get_mem_usage_default(self, _get_mem_usage):
-        _get_mem_usage.return_value = [(1, 1000)]
+    @mock.patch("CIME.baselines._perf_get_memory")
+    def test_perf_get_memory_default(self, _perf_get_memory):
+        _perf_get_memory.return_value = [(1, 1000)]
 
         case = mock.MagicMock()
 
         config = mock.MagicMock()
 
-        config.get_mem_usage.side_effect = AttributeError
+        config.perf_get_memory.side_effect = AttributeError
 
-        mem = baselines.get_mem_usage(case, config)
+        mem = baselines.perf_get_memory(case, config)
 
         assert mem == "1000"
 
-    def test_get_mem_usage(self):
+    def test_perf_get_memory(self):
         case = mock.MagicMock()
 
         config = mock.MagicMock()
 
-        config.get_mem_usage.return_value = "1000"
+        config.perf_get_memory.return_value = "1000"
 
-        mem = baselines.get_mem_usage(case, config)
+        mem = baselines.perf_get_memory(case, config)
 
         assert mem == "1000"
 
-    @mock.patch("CIME.baselines._get_throughput")
-    def test_get_throughput_default_no_value(self, _get_throughput):
-        _get_throughput.return_value = None
+    @mock.patch("CIME.baselines._perf_get_throughput")
+    def test_perf_get_throughput_default_no_value(self, _perf_get_throughput):
+        _perf_get_throughput.return_value = None
 
         case = mock.MagicMock()
 
         config = mock.MagicMock()
 
-        config.get_throughput.side_effect = AttributeError
+        config.perf_get_throughput.side_effect = AttributeError
 
         with self.assertRaises(RuntimeError):
-            baselines.get_throughput(case, config)
+            baselines.perf_get_throughput(case, config)
 
-    @mock.patch("CIME.baselines._get_throughput")
-    def test_get_throughput_default(self, _get_throughput):
-        _get_throughput.return_value = 100
+    @mock.patch("CIME.baselines._perf_get_throughput")
+    def test_perf_get_throughput_default(self, _perf_get_throughput):
+        _perf_get_throughput.return_value = 100
 
         case = mock.MagicMock()
 
         config = mock.MagicMock()
 
-        config.get_throughput.side_effect = AttributeError
+        config.perf_get_throughput.side_effect = AttributeError
 
-        tput = baselines.get_throughput(case, config)
+        tput = baselines.perf_get_throughput(case, config)
 
         assert tput == "100"
 
-    def test_get_throughput(self):
+    def test_perf_get_throughput(self):
         case = mock.MagicMock()
 
         config = mock.MagicMock()
 
-        config.get_throughput.return_value = "100"
+        config.perf_get_throughput.return_value = "100"
 
-        tput = baselines.get_throughput(case, config)
+        tput = baselines.perf_get_throughput(case, config)
 
         assert tput == "100"
 
@@ -186,49 +186,49 @@ class TestUnitBaseline(unittest.TestCase):
 
     @mock.patch("CIME.baselines.get_cpl_throughput")
     @mock.patch("CIME.baselines.get_latest_cpl_logs")
-    def test__get_throughput(self, get_latest_cpl_logs, get_cpl_throughput):
+    def test__perf_get_throughput(self, get_latest_cpl_logs, get_cpl_throughput):
         get_cpl_throughput.side_effect = FileNotFoundError()
 
         with tempfile.TemporaryDirectory() as tempdir:
             case, _, _, baseline_root = create_mock_case(tempdir, get_latest_cpl_logs)
 
-            tput = baselines._get_throughput(case)
+            tput = baselines._perf_get_throughput(case)
 
             assert tput == None
 
     @mock.patch("CIME.baselines.get_cpl_mem_usage")
     @mock.patch("CIME.baselines.get_latest_cpl_logs")
-    def test__get_mem_usage_override(self, get_latest_cpl_logs, get_cpl_mem_usage):
+    def test__perf_get_memory_override(self, get_latest_cpl_logs, get_cpl_mem_usage):
         get_cpl_mem_usage.side_effect = FileNotFoundError()
 
         with tempfile.TemporaryDirectory() as tempdir:
             case, _, _, baseline_root = create_mock_case(tempdir, get_latest_cpl_logs)
 
-            mem = baselines._get_mem_usage(case, "/tmp/override")
+            mem = baselines._perf_get_memory(case, "/tmp/override")
 
             assert mem == None
 
     @mock.patch("CIME.baselines.get_cpl_mem_usage")
     @mock.patch("CIME.baselines.get_latest_cpl_logs")
-    def test__get_mem_usage(self, get_latest_cpl_logs, get_cpl_mem_usage):
+    def test__perf_get_memory(self, get_latest_cpl_logs, get_cpl_mem_usage):
         get_cpl_mem_usage.side_effect = FileNotFoundError()
 
         with tempfile.TemporaryDirectory() as tempdir:
             case, _, _, baseline_root = create_mock_case(tempdir, get_latest_cpl_logs)
 
-            mem = baselines._get_mem_usage(case)
+            mem = baselines._perf_get_memory(case)
 
             assert mem == None
 
     @mock.patch("CIME.baselines.write_baseline_file")
-    @mock.patch("CIME.baselines.get_mem_usage")
-    @mock.patch("CIME.baselines.get_throughput")
+    @mock.patch("CIME.baselines.perf_get_memory")
+    @mock.patch("CIME.baselines.perf_get_throughput")
     def test_write_baseline_skip(
-        self, get_throughput, get_mem_usage, write_baseline_file
+        self, perf_get_throughput, perf_get_memory, write_baseline_file
     ):
-        get_throughput.return_value = "100"
+        perf_get_throughput.return_value = "100"
 
-        get_mem_usage.return_value = "1000"
+        perf_get_memory.return_value = "1000"
 
         with tempfile.TemporaryDirectory() as tempdir:
             case, _, _, baseline_root = create_mock_case(tempdir)
@@ -240,58 +240,58 @@ class TestUnitBaseline(unittest.TestCase):
                 False,
             )
 
-        get_throughput.assert_not_called()
-        get_mem_usage.assert_not_called()
+        perf_get_throughput.assert_not_called()
+        perf_get_memory.assert_not_called()
         write_baseline_file.assert_not_called()
 
     @mock.patch("CIME.baselines.write_baseline_file")
-    @mock.patch("CIME.baselines.get_mem_usage")
-    @mock.patch("CIME.baselines.get_throughput")
+    @mock.patch("CIME.baselines.perf_get_memory")
+    @mock.patch("CIME.baselines.perf_get_throughput")
     def test_write_baseline_runtimeerror(
-        self, get_throughput, get_mem_usage, write_baseline_file
+        self, perf_get_throughput, perf_get_memory, write_baseline_file
     ):
-        get_throughput.side_effect = RuntimeError
+        perf_get_throughput.side_effect = RuntimeError
 
-        get_mem_usage.side_effect = RuntimeError
+        perf_get_memory.side_effect = RuntimeError
 
         with tempfile.TemporaryDirectory() as tempdir:
             case, _, _, baseline_root = create_mock_case(tempdir)
 
             baselines.perf_write_baseline(case, baseline_root)
 
-        get_throughput.assert_called()
-        get_mem_usage.assert_called()
+        perf_get_throughput.assert_called()
+        perf_get_memory.assert_called()
         write_baseline_file.assert_not_called()
 
     @mock.patch("CIME.baselines.write_baseline_file")
-    @mock.patch("CIME.baselines.get_mem_usage")
-    @mock.patch("CIME.baselines.get_throughput")
+    @mock.patch("CIME.baselines.perf_get_memory")
+    @mock.patch("CIME.baselines.perf_get_throughput")
     def test_perf_write_baseline(
-        self, get_throughput, get_mem_usage, write_baseline_file
+        self, perf_get_throughput, perf_get_memory, write_baseline_file
     ):
-        get_throughput.return_value = "100"
+        perf_get_throughput.return_value = "100"
 
-        get_mem_usage.return_value = "1000"
+        perf_get_memory.return_value = "1000"
 
         with tempfile.TemporaryDirectory() as tempdir:
             case, _, _, baseline_root = create_mock_case(tempdir)
 
             baselines.perf_write_baseline(case, baseline_root)
 
-        get_throughput.assert_called()
-        get_mem_usage.assert_called()
+        perf_get_throughput.assert_called()
+        perf_get_memory.assert_called()
         write_baseline_file.assert_any_call(str(baseline_root / "cpl-tput.log"), "100")
         write_baseline_file.assert_any_call(str(baseline_root / "cpl-mem.log"), "1000")
 
-    @mock.patch("CIME.baselines._get_throughput")
+    @mock.patch("CIME.baselines._perf_get_throughput")
     @mock.patch("CIME.baselines.read_baseline_file")
     @mock.patch("CIME.baselines.get_latest_cpl_logs")
     def test_perf_compare_throughput_baseline_no_baseline_file(
-        self, get_latest_cpl_logs, read_baseline_file, _get_throughput
+        self, get_latest_cpl_logs, read_baseline_file, _perf_get_throughput
     ):
         read_baseline_file.side_effect = FileNotFoundError
 
-        _get_throughput.return_value = 504
+        _perf_get_throughput.return_value = 504
 
         with tempfile.TemporaryDirectory() as tempdir:
             case, _, _, baseline_root = create_mock_case(tempdir, get_latest_cpl_logs)
@@ -310,15 +310,15 @@ class TestUnitBaseline(unittest.TestCase):
         assert below_tolerance is None
         assert comment == "Could not read baseline throughput file: "
 
-    @mock.patch("CIME.baselines._get_throughput")
+    @mock.patch("CIME.baselines._perf_get_throughput")
     @mock.patch("CIME.baselines.read_baseline_file")
     @mock.patch("CIME.baselines.get_latest_cpl_logs")
     def test_perf_compare_throughput_baseline_no_baseline(
-        self, get_latest_cpl_logs, read_baseline_file, _get_throughput
+        self, get_latest_cpl_logs, read_baseline_file, _perf_get_throughput
     ):
         read_baseline_file.return_value = []
 
-        _get_throughput.return_value = 504
+        _perf_get_throughput.return_value = 504
 
         with tempfile.TemporaryDirectory() as tempdir:
             case, _, _, baseline_root = create_mock_case(tempdir, get_latest_cpl_logs)
@@ -342,17 +342,17 @@ class TestUnitBaseline(unittest.TestCase):
             == "Could not compare throughput to baseline, as basline had no value."
         )
 
-    @mock.patch("CIME.baselines._get_throughput")
+    @mock.patch("CIME.baselines._perf_get_throughput")
     @mock.patch("CIME.baselines.read_baseline_file")
     @mock.patch("CIME.baselines.get_latest_cpl_logs")
     def test_perf_compare_throughput_baseline_no_tolerance(
-        self, get_latest_cpl_logs, read_baseline_file, _get_throughput
+        self, get_latest_cpl_logs, read_baseline_file, _perf_get_throughput
     ):
         read_baseline_file.return_value = [
             "500",
         ]
 
-        _get_throughput.return_value = 504
+        _perf_get_throughput.return_value = 504
 
         with tempfile.TemporaryDirectory() as tempdir:
             case, _, _, baseline_root = create_mock_case(tempdir, get_latest_cpl_logs)
@@ -376,15 +376,15 @@ class TestUnitBaseline(unittest.TestCase):
             == "TPUTCOMP: Computation time changed by -0.80% relative to baseline"
         )
 
-    @mock.patch("CIME.baselines._get_throughput")
+    @mock.patch("CIME.baselines._perf_get_throughput")
     @mock.patch("CIME.baselines.read_baseline_file")
     @mock.patch("CIME.baselines.get_latest_cpl_logs")
     def test_perf_compare_throughput_baseline_above_threshold(
-        self, get_latest_cpl_logs, read_baseline_file, _get_throughput
+        self, get_latest_cpl_logs, read_baseline_file, _perf_get_throughput
     ):
         read_baseline_file.return_value = ["1000"]
 
-        _get_throughput.return_value = 504
+        _perf_get_throughput.return_value = 504
 
         with tempfile.TemporaryDirectory() as tempdir:
             case, _, _, baseline_root = create_mock_case(tempdir, get_latest_cpl_logs)
@@ -407,15 +407,15 @@ class TestUnitBaseline(unittest.TestCase):
             comment == "Error: TPUTCOMP: Computation time increase > 5% from baseline"
         )
 
-    @mock.patch("CIME.baselines._get_throughput")
+    @mock.patch("CIME.baselines._perf_get_throughput")
     @mock.patch("CIME.baselines.read_baseline_file")
     @mock.patch("CIME.baselines.get_latest_cpl_logs")
     def test_perf_compare_throughput_baseline(
-        self, get_latest_cpl_logs, read_baseline_file, _get_throughput
+        self, get_latest_cpl_logs, read_baseline_file, _perf_get_throughput
     ):
         read_baseline_file.return_value = ["500"]
 
-        _get_throughput.return_value = 504
+        _perf_get_throughput.return_value = 504
 
         with tempfile.TemporaryDirectory() as tempdir:
             case, _, _, baseline_root = create_mock_case(tempdir, get_latest_cpl_logs)
