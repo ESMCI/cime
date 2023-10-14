@@ -154,12 +154,13 @@ class TestUnitBaselinesPerformance(unittest.TestCase):
 
     def test_read_baseline_file_multi_line(self):
         with mock.patch(
-            "builtins.open", mock.mock_open(read_data="1000.0\n2000.0\n")
+            "builtins.open",
+            mock.mock_open(read_data="#comment about data\n1000.0\n2000.0\n"),
         ) as mock_file:
             baseline = performance.read_baseline_file("/tmp/cpl-mem.log")
 
         mock_file.assert_called_with("/tmp/cpl-mem.log")
-        assert baseline == ["1000.0", "2000.0"]
+        assert baseline == "1000.0\n2000.0"
 
     def test_read_baseline_file_content(self):
         with mock.patch(
@@ -168,14 +169,14 @@ class TestUnitBaselinesPerformance(unittest.TestCase):
             baseline = performance.read_baseline_file("/tmp/cpl-mem.log")
 
         mock_file.assert_called_with("/tmp/cpl-mem.log")
-        assert baseline == ["1000.0"]
+        assert baseline == "1000.0"
 
     def test_read_baseline_file(self):
         with mock.patch("builtins.open", mock.mock_open(read_data="")) as mock_file:
             baseline = performance.read_baseline_file("/tmp/cpl-mem.log")
 
         mock_file.assert_called_with("/tmp/cpl-mem.log")
-        assert baseline == []
+        assert baseline == ""
 
     def test_write_baseline_file(self):
         with mock.patch("builtins.open", mock.mock_open()) as mock_file:
@@ -316,7 +317,7 @@ class TestUnitBaselinesPerformance(unittest.TestCase):
     def test_perf_compare_throughput_baseline_no_baseline(
         self, get_latest_cpl_logs, read_baseline_file, _perf_get_throughput
     ):
-        read_baseline_file.return_value = []
+        read_baseline_file.return_value = ""
 
         _perf_get_throughput.return_value = 504
 
@@ -348,9 +349,7 @@ class TestUnitBaselinesPerformance(unittest.TestCase):
     def test_perf_compare_throughput_baseline_no_tolerance(
         self, get_latest_cpl_logs, read_baseline_file, _perf_get_throughput
     ):
-        read_baseline_file.return_value = [
-            "500",
-        ]
+        read_baseline_file.return_value = "500"
 
         _perf_get_throughput.return_value = 504
 
@@ -382,7 +381,7 @@ class TestUnitBaselinesPerformance(unittest.TestCase):
     def test_perf_compare_throughput_baseline_above_threshold(
         self, get_latest_cpl_logs, read_baseline_file, _perf_get_throughput
     ):
-        read_baseline_file.return_value = ["1000"]
+        read_baseline_file.return_value = "1000"
 
         _perf_get_throughput.return_value = 504
 
@@ -413,7 +412,7 @@ class TestUnitBaselinesPerformance(unittest.TestCase):
     def test_perf_compare_throughput_baseline(
         self, get_latest_cpl_logs, read_baseline_file, _perf_get_throughput
     ):
-        read_baseline_file.return_value = ["500"]
+        read_baseline_file.return_value = "500"
 
         _perf_get_throughput.return_value = 504
 
@@ -445,7 +444,7 @@ class TestUnitBaselinesPerformance(unittest.TestCase):
     def test_perf_compare_memory_baseline_no_baseline(
         self, get_latest_cpl_logs, read_baseline_file, get_cpl_mem_usage
     ):
-        read_baseline_file.return_value = []
+        read_baseline_file.return_value = ""
 
         get_cpl_mem_usage.return_value = [
             (1, 1000.0),
@@ -538,7 +537,7 @@ class TestUnitBaselinesPerformance(unittest.TestCase):
     def test_perf_compare_memory_baseline_no_tolerance(
         self, get_latest_cpl_logs, read_baseline_file, get_cpl_mem_usage
     ):
-        read_baseline_file.return_value = ["1000.0"]
+        read_baseline_file.return_value = "1000.0"
 
         get_cpl_mem_usage.return_value = [
             (1, 1000.0),
@@ -573,7 +572,7 @@ class TestUnitBaselinesPerformance(unittest.TestCase):
     def test_perf_compare_memory_baseline_above_threshold(
         self, get_latest_cpl_logs, read_baseline_file, get_cpl_mem_usage
     ):
-        read_baseline_file.return_value = ["1000.0"]
+        read_baseline_file.return_value = "1000.0"
 
         get_cpl_mem_usage.return_value = [
             (1, 2000.0),
@@ -608,7 +607,7 @@ class TestUnitBaselinesPerformance(unittest.TestCase):
     def test_perf_compare_memory_baseline(
         self, get_latest_cpl_logs, read_baseline_file, get_cpl_mem_usage
     ):
-        read_baseline_file.return_value = ["1000.0"]
+        read_baseline_file.return_value = "1000.0"
 
         get_cpl_mem_usage.return_value = [
             (1, 1000.0),

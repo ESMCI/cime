@@ -417,6 +417,8 @@ def read_baseline_file(baseline_file):
     """
     Reads value from `baseline_file`.
 
+    Strips comments and returns the raw content to be decoded.
+
     Parameters
     ----------
     baseline_file : str
@@ -430,7 +432,7 @@ def read_baseline_file(baseline_file):
     with open(baseline_file) as fd:
         lines = [x.strip() for x in fd.readlines() if not x.startswith("#")]
 
-    return lines
+    return "\n".join(lines)
 
 
 def _perf_compare_throughput_baseline(case, baseline, tolerance):
@@ -459,8 +461,8 @@ def _perf_compare_throughput_baseline(case, baseline, tolerance):
 
     try:
         # default baseline is stored as single float
-        baseline = float(baseline[0])
-    except IndexError:
+        baseline = float(baseline)
+    except ValueError:
         comment = "Could not compare throughput to baseline, as basline had no value."
 
         return None, comment
@@ -516,8 +518,8 @@ def _perf_compare_memory_baseline(case, baseline, tolerance):
 
     try:
         # default baseline is stored as single float
-        baseline = float(baseline[0])
-    except IndexError:
+        baseline = float(baseline)
+    except ValueError:
         baseline = 0.0
 
     try:
