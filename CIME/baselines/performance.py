@@ -136,8 +136,8 @@ def perf_write_baseline(case, basegen_dir, throughput=True, memory=True):
     if throughput:
         try:
             tput = perf_get_throughput(case, config)
-        except RuntimeError:
-            pass
+        except RuntimeError as e:
+            logger.debug("Could not get throughput: {0!s}".format(e))
         else:
             baseline_file = os.path.join(basegen_dir, "cpl-tput.log")
 
@@ -146,8 +146,8 @@ def perf_write_baseline(case, basegen_dir, throughput=True, memory=True):
     if memory:
         try:
             mem = perf_get_memory(case, config)
-        except RuntimeError:
-            pass
+        except RuntimeError as e:
+            logger.info("Could not get memory usage: {0!s}".format(e))
         else:
             baseline_file = os.path.join(basegen_dir, "cpl-mem.log")
 
@@ -286,6 +286,8 @@ def _perf_get_memory(case, cpllog=None):
         memlist = get_cpl_mem_usage(cpllog[0])
     except (FileNotFoundError, IndexError):
         memlist = None
+
+        logger.debug("Could not parse memory usage from coupler log")
     else:
         if len(memlist) <= 3:
             raise RuntimeError(
@@ -317,6 +319,8 @@ def _perf_get_throughput(case):
         tput = get_cpl_throughput(cpllog[0])
     except (FileNotFoundError, IndexError):
         tput = None
+
+        logger.debug("Could not parse throughput from coupler log")
 
     return tput
 
