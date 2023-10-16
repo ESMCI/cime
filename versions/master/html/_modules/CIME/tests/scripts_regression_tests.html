@@ -11,11 +11,11 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../../_static/pop_ver.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -136,7 +136,9 @@
 <span class="n">TEST_RESULT</span> <span class="o">=</span> <span class="kc">None</span>
 
 
-<div class="viewcode-block" id="write_provenance_info"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.scripts_regression_tests.write_provenance_info">[docs]</a><span class="k">def</span> <span class="nf">write_provenance_info</span><span class="p">(</span><span class="n">machine</span><span class="p">,</span> <span class="n">test_compiler</span><span class="p">,</span> <span class="n">test_mpilib</span><span class="p">,</span> <span class="n">test_root</span><span class="p">):</span>
+<div class="viewcode-block" id="write_provenance_info">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.scripts_regression_tests.write_provenance_info">[docs]</a>
+<span class="k">def</span> <span class="nf">write_provenance_info</span><span class="p">(</span><span class="n">machine</span><span class="p">,</span> <span class="n">test_compiler</span><span class="p">,</span> <span class="n">test_mpilib</span><span class="p">,</span> <span class="n">test_root</span><span class="p">):</span>
     <span class="n">curr_commit</span> <span class="o">=</span> <span class="n">get_current_commit</span><span class="p">(</span><span class="n">repo</span><span class="o">=</span><span class="n">CIMEROOT</span><span class="p">)</span>
     <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Testing commit </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">curr_commit</span><span class="p">)</span>
     <span class="n">cime_model</span> <span class="o">=</span> <span class="n">get_model</span><span class="p">()</span>
@@ -151,7 +153,10 @@
     <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Python version </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">version</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="cleanup"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.scripts_regression_tests.cleanup">[docs]</a><span class="k">def</span> <span class="nf">cleanup</span><span class="p">(</span><span class="n">test_root</span><span class="p">):</span>
+
+<div class="viewcode-block" id="cleanup">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.scripts_regression_tests.cleanup">[docs]</a>
+<span class="k">def</span> <span class="nf">cleanup</span><span class="p">(</span><span class="n">test_root</span><span class="p">):</span>
     <span class="k">if</span> <span class="p">(</span>
         <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">test_root</span><span class="p">)</span>
         <span class="ow">and</span> <span class="n">TEST_RESULT</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
@@ -166,7 +171,10 @@
             <span class="n">os</span><span class="o">.</span><span class="n">rmdir</span><span class="p">(</span><span class="n">test_root</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="setup_arguments"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.scripts_regression_tests.setup_arguments">[docs]</a><span class="k">def</span> <span class="nf">setup_arguments</span><span class="p">(</span><span class="n">parser</span><span class="p">):</span>
+
+<div class="viewcode-block" id="setup_arguments">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.scripts_regression_tests.setup_arguments">[docs]</a>
+<span class="k">def</span> <span class="nf">setup_arguments</span><span class="p">(</span><span class="n">parser</span><span class="p">):</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s2">&quot;--fast&quot;</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
@@ -222,7 +230,10 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="configure_tests"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.scripts_regression_tests.configure_tests">[docs]</a><span class="k">def</span> <span class="nf">configure_tests</span><span class="p">(</span>
+
+<div class="viewcode-block" id="configure_tests">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.scripts_regression_tests.configure_tests">[docs]</a>
+<span class="k">def</span> <span class="nf">configure_tests</span><span class="p">(</span>
     <span class="n">timeout</span><span class="p">,</span>
     <span class="n">no_fortran_run</span><span class="p">,</span>
     <span class="n">fast</span><span class="p">,</span>
@@ -298,6 +309,7 @@
     <span class="n">write_provenance_info</span><span class="p">(</span><span class="n">MACHINE</span><span class="p">,</span> <span class="n">TEST_COMPILER</span><span class="p">,</span> <span class="n">TEST_MPILIB</span><span class="p">,</span> <span class="n">TEST_ROOT</span><span class="p">)</span>
 
     <span class="n">atexit</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="n">cleanup</span><span class="p">,</span> <span class="n">TEST_ROOT</span><span class="p">))</span></div>
+
 
 
 <span class="k">def</span> <span class="nf">_main_func</span><span class="p">(</span><span class="n">description</span><span class="p">):</span>

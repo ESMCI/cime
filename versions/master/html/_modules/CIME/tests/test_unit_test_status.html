@@ -11,11 +11,11 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../../_static/pop_ver.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -93,20 +93,25 @@
 <span class="kn">from</span> <span class="nn">CIME.tests.custom_assertions_test_status</span> <span class="kn">import</span> <span class="n">CustomAssertionsTestStatus</span>
 
 
-<div class="viewcode-block" id="TestTestStatus"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_test_status.TestTestStatus">[docs]</a><span class="k">class</span> <span class="nc">TestTestStatus</span><span class="p">(</span><span class="n">CustomAssertionsTestStatus</span><span class="p">):</span>
+<div class="viewcode-block" id="TestTestStatus">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_test_status.TestTestStatus">[docs]</a>
+<span class="k">class</span> <span class="nc">TestTestStatus</span><span class="p">(</span><span class="n">CustomAssertionsTestStatus</span><span class="p">):</span>
 
     <span class="n">_TESTNAME</span> <span class="o">=</span> <span class="s2">&quot;fake_test&quot;</span>
 
     <span class="c1"># An arbitrary phase we can use when we want to work with a non-core phase</span>
     <span class="n">_NON_CORE_PHASE</span> <span class="o">=</span> <span class="n">test_status</span><span class="o">.</span><span class="n">MEMLEAK_PHASE</span>
 
-<div class="viewcode-block" id="TestTestStatus.setUp"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_test_status.TestTestStatus.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestTestStatus.setUp">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_test_status.TestTestStatus.setUp">[docs]</a>
+    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ts</span> <span class="o">=</span> <span class="n">test_status</span><span class="o">.</span><span class="n">TestStatus</span><span class="p">(</span>
             <span class="n">test_dir</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;nonexistent&quot;</span><span class="p">,</span> <span class="s2">&quot;path&quot;</span><span class="p">),</span>
             <span class="n">test_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_TESTNAME</span><span class="p">,</span>
             <span class="n">no_io</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_core_phases_to_pass</span><span class="p">()</span></div>
+
 
     <span class="k">def</span> <span class="nf">_set_core_phases_to_pass</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Set all core phases of self._ts to pass status&quot;&quot;&quot;</span>
@@ -127,10 +132,15 @@
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ts</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_ts</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span><span class="n">phase</span><span class="p">,</span> <span class="n">status</span><span class="p">)</span>
 
-<div class="viewcode-block" id="TestTestStatus.test_get_latest_phase"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_test_status.TestTestStatus.test_get_latest_phase">[docs]</a>    <span class="k">def</span> <span class="nf">test_get_latest_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestTestStatus.test_get_latest_phase">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_test_status.TestTestStatus.test_get_latest_phase">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_get_latest_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ts</span><span class="o">.</span><span class="n">get_latest_phase</span><span class="p">()</span> <span class="o">==</span> <span class="n">test_status</span><span class="o">.</span><span class="n">RUN_PHASE</span></div>
 
-<div class="viewcode-block" id="TestTestStatus.test_current_is"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_test_status.TestTestStatus.test_current_is">[docs]</a>    <span class="k">def</span> <span class="nf">test_current_is</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestTestStatus.test_current_is">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_test_status.TestTestStatus.test_current_is">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_current_is</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ts</span><span class="o">.</span><span class="n">current_is</span><span class="p">(</span><span class="n">test_status</span><span class="o">.</span><span class="n">RUN_PHASE</span><span class="p">,</span> <span class="n">test_status</span><span class="o">.</span><span class="n">TEST_PASS_STATUS</span><span class="p">)</span>
 
         <span class="k">assert</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ts</span><span class="o">.</span><span class="n">current_is</span><span class="p">(</span>
@@ -141,18 +151,24 @@
             <span class="n">test_status</span><span class="o">.</span><span class="n">SUBMIT_PHASE</span><span class="p">,</span> <span class="n">test_status</span><span class="o">.</span><span class="n">TEST_PASS_STATUS</span>
         <span class="p">)</span></div>
 
+
     <span class="c1"># ------------------------------------------------------------------------</span>
     <span class="c1"># Tests of TestStatus.phase_statuses_dump</span>
     <span class="c1"># ------------------------------------------------------------------------</span>
 
-<div class="viewcode-block" id="TestTestStatus.test_psdump_corePhasesPass"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_test_status.TestTestStatus.test_psdump_corePhasesPass">[docs]</a>    <span class="k">def</span> <span class="nf">test_psdump_corePhasesPass</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestTestStatus.test_psdump_corePhasesPass">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_test_status.TestTestStatus.test_psdump_corePhasesPass">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_psdump_corePhasesPass</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ts</span><span class="o">.</span><span class="n">phase_statuses_dump</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assert_core_phases</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_TESTNAME</span><span class="p">,</span> <span class="n">fails</span><span class="o">=</span><span class="p">[])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assert_num_expected_unexpected_fails</span><span class="p">(</span>
             <span class="n">output</span><span class="p">,</span> <span class="n">num_expected</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_unexpected</span><span class="o">=</span><span class="mi">0</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestTestStatus.test_psdump_oneCorePhaseFails"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_test_status.TestTestStatus.test_psdump_oneCorePhaseFails">[docs]</a>    <span class="k">def</span> <span class="nf">test_psdump_oneCorePhaseFails</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestTestStatus.test_psdump_oneCorePhaseFails">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_test_status.TestTestStatus.test_psdump_oneCorePhaseFails">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_psdump_oneCorePhaseFails</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">fail_phase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_last_core_phase_to_fail</span><span class="p">()</span>
         <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ts</span><span class="o">.</span><span class="n">phase_statuses_dump</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assert_core_phases</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_TESTNAME</span><span class="p">,</span> <span class="n">fails</span><span class="o">=</span><span class="p">[</span><span class="n">fail_phase</span><span class="p">])</span>
@@ -160,7 +176,10 @@
             <span class="n">output</span><span class="p">,</span> <span class="n">num_expected</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_unexpected</span><span class="o">=</span><span class="mi">0</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestTestStatus.test_psdump_oneCorePhaseFailsAbsentFromXFails"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_test_status.TestTestStatus.test_psdump_oneCorePhaseFailsAbsentFromXFails">[docs]</a>    <span class="k">def</span> <span class="nf">test_psdump_oneCorePhaseFailsAbsentFromXFails</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestTestStatus.test_psdump_oneCorePhaseFailsAbsentFromXFails">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_test_status.TestTestStatus.test_psdump_oneCorePhaseFailsAbsentFromXFails">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_psdump_oneCorePhaseFailsAbsentFromXFails</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;One phase fails. There is an expected fails list, but that phase is not in it.&quot;&quot;&quot;</span>
         <span class="n">fail_phase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_last_core_phase_to_fail</span><span class="p">()</span>
         <span class="n">xfails</span> <span class="o">=</span> <span class="n">expected_fails</span><span class="o">.</span><span class="n">ExpectedFails</span><span class="p">()</span>
@@ -175,7 +194,10 @@
             <span class="n">output</span><span class="p">,</span> <span class="n">num_expected</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_unexpected</span><span class="o">=</span><span class="mi">0</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestTestStatus.test_psdump_oneCorePhaseFailsInXFails"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_test_status.TestTestStatus.test_psdump_oneCorePhaseFailsInXFails">[docs]</a>    <span class="k">def</span> <span class="nf">test_psdump_oneCorePhaseFailsInXFails</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestTestStatus.test_psdump_oneCorePhaseFailsInXFails">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_test_status.TestTestStatus.test_psdump_oneCorePhaseFailsInXFails">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_psdump_oneCorePhaseFailsInXFails</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;One phase fails. That phase is in the expected fails list.&quot;&quot;&quot;</span>
         <span class="n">fail_phase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_last_core_phase_to_fail</span><span class="p">()</span>
         <span class="n">xfails</span> <span class="o">=</span> <span class="n">expected_fails</span><span class="o">.</span><span class="n">ExpectedFails</span><span class="p">()</span>
@@ -194,7 +216,10 @@
             <span class="n">output</span><span class="p">,</span> <span class="n">num_expected</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">num_unexpected</span><span class="o">=</span><span class="mi">0</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestTestStatus.test_psdump_oneCorePhasePassesInXFails"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_test_status.TestTestStatus.test_psdump_oneCorePhasePassesInXFails">[docs]</a>    <span class="k">def</span> <span class="nf">test_psdump_oneCorePhasePassesInXFails</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestTestStatus.test_psdump_oneCorePhasePassesInXFails">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_test_status.TestTestStatus.test_psdump_oneCorePhasePassesInXFails">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_psdump_oneCorePhasePassesInXFails</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;One phase passes despite being in the expected fails list.&quot;&quot;&quot;</span>
         <span class="n">xfail_phase</span> <span class="o">=</span> <span class="n">test_status</span><span class="o">.</span><span class="n">CORE_PHASES</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">xfails</span> <span class="o">=</span> <span class="n">expected_fails</span><span class="o">.</span><span class="n">ExpectedFails</span><span class="p">()</span>
@@ -213,7 +238,10 @@
             <span class="n">output</span><span class="p">,</span> <span class="n">num_expected</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_unexpected</span><span class="o">=</span><span class="mi">1</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestTestStatus.test_psdump_skipPasses"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_test_status.TestTestStatus.test_psdump_skipPasses">[docs]</a>    <span class="k">def</span> <span class="nf">test_psdump_skipPasses</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestTestStatus.test_psdump_skipPasses">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_test_status.TestTestStatus.test_psdump_skipPasses">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_psdump_skipPasses</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;With the skip_passes argument, only non-passes should appear&quot;&quot;&quot;</span>
         <span class="n">fail_phase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_last_core_phase_to_fail</span><span class="p">()</span>
         <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ts</span><span class="o">.</span><span class="n">phase_statuses_dump</span><span class="p">(</span><span class="n">skip_passes</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -224,7 +252,10 @@
             <span class="k">if</span> <span class="n">phase</span> <span class="o">!=</span> <span class="n">fail_phase</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">assert_phase_absent</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_TESTNAME</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestTestStatus.test_psdump_unexpectedPass_shouldBePresent"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_test_status.TestTestStatus.test_psdump_unexpectedPass_shouldBePresent">[docs]</a>    <span class="k">def</span> <span class="nf">test_psdump_unexpectedPass_shouldBePresent</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestTestStatus.test_psdump_unexpectedPass_shouldBePresent">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_test_status.TestTestStatus.test_psdump_unexpectedPass_shouldBePresent">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_psdump_unexpectedPass_shouldBePresent</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Even with the skip_passes argument, an unexpected PASS should be present&quot;&quot;&quot;</span>
         <span class="n">xfail_phase</span> <span class="o">=</span> <span class="n">test_status</span><span class="o">.</span><span class="n">CORE_PHASES</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">xfails</span> <span class="o">=</span> <span class="n">expected_fails</span><span class="o">.</span><span class="n">ExpectedFails</span><span class="p">()</span>
@@ -241,7 +272,9 @@
         <span class="p">)</span>
         <span class="k">for</span> <span class="n">phase</span> <span class="ow">in</span> <span class="n">test_status</span><span class="o">.</span><span class="n">CORE_PHASES</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">phase</span> <span class="o">!=</span> <span class="n">xfail_phase</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">assert_phase_absent</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_TESTNAME</span><span class="p">)</span></div></div>
+                <span class="bp">self</span><span class="o">.</span><span class="n">assert_phase_absent</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_TESTNAME</span><span class="p">)</span></div>
+</div>
+
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>

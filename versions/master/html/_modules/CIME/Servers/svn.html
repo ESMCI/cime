@@ -11,11 +11,11 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../../_static/pop_ver.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -94,7 +94,9 @@
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="SVN"><a class="viewcode-back" href="../../../CIME_api/CIME.Servers.html#CIME.Servers.svn.SVN">[docs]</a><span class="k">class</span> <span class="nc">SVN</span><span class="p">(</span><span class="n">GenericServer</span><span class="p">):</span>
+<div class="viewcode-block" id="SVN">
+<a class="viewcode-back" href="../../../CIME_api/CIME.Servers.html#CIME.Servers.svn.SVN">[docs]</a>
+<span class="k">class</span> <span class="nc">SVN</span><span class="p">(</span><span class="n">GenericServer</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">passwd</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_args</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="k">if</span> <span class="n">user</span><span class="p">:</span>
@@ -120,7 +122,9 @@
             <span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span>
 
-<div class="viewcode-block" id="SVN.fileexists"><a class="viewcode-back" href="../../../CIME_api/CIME.Servers.html#CIME.Servers.svn.SVN.fileexists">[docs]</a>    <span class="k">def</span> <span class="nf">fileexists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rel_path</span><span class="p">):</span>
+<div class="viewcode-block" id="SVN.fileexists">
+<a class="viewcode-back" href="../../../CIME_api/CIME.Servers.html#CIME.Servers.svn.SVN.fileexists">[docs]</a>
+    <span class="k">def</span> <span class="nf">fileexists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rel_path</span><span class="p">):</span>
         <span class="n">full_url</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_svn_loc</span><span class="p">,</span> <span class="n">rel_path</span><span class="p">)</span>
         <span class="n">stat</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">run_cmd</span><span class="p">(</span>
             <span class="s2">&quot;svn --non-interactive --trust-server-cert </span><span class="si">{}</span><span class="s2"> ls </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
@@ -136,7 +140,10 @@
             <span class="k">return</span> <span class="kc">False</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="SVN.getfile"><a class="viewcode-back" href="../../../CIME_api/CIME.Servers.html#CIME.Servers.svn.SVN.getfile">[docs]</a>    <span class="k">def</span> <span class="nf">getfile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rel_path</span><span class="p">,</span> <span class="n">full_path</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SVN.getfile">
+<a class="viewcode-back" href="../../../CIME_api/CIME.Servers.html#CIME.Servers.svn.SVN.getfile">[docs]</a>
+    <span class="k">def</span> <span class="nf">getfile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rel_path</span><span class="p">,</span> <span class="n">full_path</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">rel_path</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
         <span class="n">full_url</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_svn_loc</span><span class="p">,</span> <span class="n">rel_path</span><span class="p">)</span>
@@ -156,7 +163,10 @@
             <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;SUCCESS</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="SVN.getdirectory"><a class="viewcode-back" href="../../../CIME_api/CIME.Servers.html#CIME.Servers.svn.SVN.getdirectory">[docs]</a>    <span class="k">def</span> <span class="nf">getdirectory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rel_path</span><span class="p">,</span> <span class="n">full_path</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SVN.getdirectory">
+<a class="viewcode-back" href="../../../CIME_api/CIME.Servers.html#CIME.Servers.svn.SVN.getdirectory">[docs]</a>
+    <span class="k">def</span> <span class="nf">getdirectory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rel_path</span><span class="p">,</span> <span class="n">full_path</span><span class="p">):</span>
         <span class="n">full_url</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_svn_loc</span><span class="p">,</span> <span class="n">rel_path</span><span class="p">)</span>
         <span class="n">stat</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">errput</span> <span class="o">=</span> <span class="n">run_cmd</span><span class="p">(</span>
             <span class="s2">&quot;svn --non-interactive --trust-server-cert </span><span class="si">{}</span><span class="s2"> export --force </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
@@ -172,7 +182,9 @@
             <span class="k">return</span> <span class="kc">False</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;SUCCESS</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="k">return</span> <span class="kc">True</span></div></div>
+            <span class="k">return</span> <span class="kc">True</span></div>
+</div>
+
 </pre></div>
 
            </div>

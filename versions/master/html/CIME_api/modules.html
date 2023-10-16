@@ -12,11 +12,11 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/sphinx_highlight.js"></script>
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../_static/pop_ver.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -90,7 +90,7 @@
            <div itemprop="articleBody">
              
   <section id="cime">
-<h1>CIME<a class="headerlink" href="#cime" title="Permalink to this heading"></a></h1>
+<h1>CIME<a class="headerlink" href="#cime" title="Link to this heading"></a></h1>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="CIME.html">CIME package</a><ul>
@@ -199,6 +199,12 @@
 <li class="toctree-l4"><a class="reference internal" href="CIME.XML.html#module-CIME.XML">Module contents</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.baselines.html">CIME.baselines package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="CIME.baselines.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.baselines.html#module-CIME.baselines.performance">CIME.baselines.performance module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.baselines.html#module-CIME.baselines">Module contents</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.build_scripts.html">CIME.build_scripts package</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="CIME.build_scripts.html#module-CIME.build_scripts">Module contents</a></li>
 </ul>
@@ -258,6 +264,7 @@
 <li class="toctree-l4"><a class="reference internal" href="CIME.tests.html#module-CIME.tests.test_sys_user_concurrent_mods">CIME.tests.test_sys_user_concurrent_mods module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="CIME.tests.html#module-CIME.tests.test_sys_wait_for_tests">CIME.tests.test_sys_wait_for_tests module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="CIME.tests.html#module-CIME.tests.test_unit_aprun">CIME.tests.test_unit_aprun module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.tests.html#module-CIME.tests.test_unit_baselines_performance">CIME.tests.test_unit_baselines_performance module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="CIME.tests.html#module-CIME.tests.test_unit_case">CIME.tests.test_unit_case module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="CIME.tests.html#module-CIME.tests.test_unit_case_fake">CIME.tests.test_unit_case_fake module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="CIME.tests.html#module-CIME.tests.test_unit_case_setup">CIME.tests.test_unit_case_setup module</a></li>
@@ -297,8 +304,10 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.html#module-CIME.bless_test_results">CIME.bless_test_results module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="CIME.html#CIME.bless_test_results.bless_history"><code class="docutils literal notranslate"><span class="pre">bless_history()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#CIME.bless_test_results.bless_memory"><code class="docutils literal notranslate"><span class="pre">bless_memory()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.html#CIME.bless_test_results.bless_namelists"><code class="docutils literal notranslate"><span class="pre">bless_namelists()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.html#CIME.bless_test_results.bless_test_results"><code class="docutils literal notranslate"><span class="pre">bless_test_results()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#CIME.bless_test_results.bless_throughput"><code class="docutils literal notranslate"><span class="pre">bless_throughput()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.html#module-CIME.build">CIME.build module</a><ul>
@@ -348,10 +357,12 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.html#module-CIME.config">CIME.config module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="CIME.html#CIME.config.Config"><code class="docutils literal notranslate"><span class="pre">Config</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="CIME.html#CIME.config.Config.instance"><code class="docutils literal notranslate"><span class="pre">Config.instance()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="CIME.html#CIME.config.Config.load"><code class="docutils literal notranslate"><span class="pre">Config.load()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="CIME.html#CIME.config.Config.print_rst_table"><code class="docutils literal notranslate"><span class="pre">Config.print_rst_table()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#CIME.config.Config"><code class="docutils literal notranslate"><span class="pre">Config</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#CIME.config.ConfigBase"><code class="docutils literal notranslate"><span class="pre">ConfigBase</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="CIME.html#CIME.config.ConfigBase.instance"><code class="docutils literal notranslate"><span class="pre">ConfigBase.instance()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.html#CIME.config.ConfigBase.load"><code class="docutils literal notranslate"><span class="pre">ConfigBase.load()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.html#CIME.config.ConfigBase.loaded"><code class="docutils literal notranslate"><span class="pre">ConfigBase.loaded</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.html#CIME.config.ConfigBase.print_rst_table"><code class="docutils literal notranslate"><span class="pre">ConfigBase.print_rst_table()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -396,6 +407,7 @@
 <li class="toctree-l3"><a class="reference internal" href="CIME.html#CIME.get_tests.get_test_suite"><code class="docutils literal notranslate"><span class="pre">get_test_suite()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.html#CIME.get_tests.get_test_suites"><code class="docutils literal notranslate"><span class="pre">get_test_suites()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.html#CIME.get_tests.infer_arch_from_tests"><code class="docutils literal notranslate"><span class="pre">infer_arch_from_tests()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#CIME.get_tests.is_perf_test"><code class="docutils literal notranslate"><span class="pre">is_perf_test()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.html#CIME.get_tests.key_test_time"><code class="docutils literal notranslate"><span class="pre">key_test_time()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.html#CIME.get_tests.suite_has_test"><code class="docutils literal notranslate"><span class="pre">suite_has_test()</span></code></a></li>
 </ul>
@@ -546,6 +558,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.html#CIME.utils.SharedArea"><code class="docutils literal notranslate"><span class="pre">SharedArea</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.html#CIME.utils.Timeout"><code class="docutils literal notranslate"><span class="pre">Timeout</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#CIME.utils.add_flag_to_cmd"><code class="docutils literal notranslate"><span class="pre">add_flag_to_cmd()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.html#CIME.utils.add_mail_type_args"><code class="docutils literal notranslate"><span class="pre">add_mail_type_args()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.html#CIME.utils.analyze_build_log"><code class="docutils literal notranslate"><span class="pre">analyze_build_log()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.html#CIME.utils.append_case_status"><code class="docutils literal notranslate"><span class="pre">append_case_status()</span></code></a></li>

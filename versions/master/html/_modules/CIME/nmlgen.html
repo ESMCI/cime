@@ -11,11 +11,11 @@
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/sphinx_highlight.js"></script>
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../_static/pop_ver.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -151,7 +151,9 @@
 <span class="s2">&quot;&quot;&quot;</span>
 
 
-<div class="viewcode-block" id="NamelistGenerator"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator">[docs]</a><span class="k">class</span> <span class="nc">NamelistGenerator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="NamelistGenerator">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator">[docs]</a>
+<span class="k">class</span> <span class="nc">NamelistGenerator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Utility class for generating namelists for a given component.&quot;&quot;&quot;</span>
 
@@ -195,7 +197,9 @@
     <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span><span class="p">):</span>
         <span class="k">return</span> <span class="kc">False</span>
 
-<div class="viewcode-block" id="NamelistGenerator.init_defaults"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.init_defaults">[docs]</a>    <span class="k">def</span> <span class="nf">init_defaults</span><span class="p">(</span>
+<div class="viewcode-block" id="NamelistGenerator.init_defaults">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.init_defaults">[docs]</a>
+    <span class="k">def</span> <span class="nf">init_defaults</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">infiles</span><span class="p">,</span>
         <span class="n">config</span><span class="p">,</span>
@@ -255,11 +259,17 @@
 
         <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_definition</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_nodes</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="NamelistGenerator.rename_group"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.rename_group">[docs]</a>    <span class="k">def</span> <span class="nf">rename_group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group</span><span class="p">,</span> <span class="n">newgroup</span><span class="p">):</span>
+
+<div class="viewcode-block" id="NamelistGenerator.rename_group">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.rename_group">[docs]</a>
+    <span class="k">def</span> <span class="nf">rename_group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group</span><span class="p">,</span> <span class="n">newgroup</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Pass through to namelist definition&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_definition</span><span class="o">.</span><span class="n">rename_group</span><span class="p">(</span><span class="n">group</span><span class="p">,</span> <span class="n">newgroup</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="NamelistGenerator.add_defaults_for_group"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.add_defaults_for_group">[docs]</a>    <span class="k">def</span> <span class="nf">add_defaults_for_group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group</span><span class="p">):</span>
+
+<div class="viewcode-block" id="NamelistGenerator.add_defaults_for_group">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.add_defaults_for_group">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_defaults_for_group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Call add_default for namelist variables in the given group</span>
 
 <span class="sd">        This still skips variables that have attributes of skip_default_entry or</span>
@@ -273,7 +283,10 @@
             <span class="k">if</span> <span class="n">group_name</span> <span class="o">==</span> <span class="n">group</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">add_default</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_definition</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="NamelistGenerator.confirm_group_is_empty"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.confirm_group_is_empty">[docs]</a>    <span class="k">def</span> <span class="nf">confirm_group_is_empty</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group_name</span><span class="p">,</span> <span class="n">errmsg</span><span class="p">):</span>
+
+<div class="viewcode-block" id="NamelistGenerator.confirm_group_is_empty">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.confirm_group_is_empty">[docs]</a>
+    <span class="k">def</span> <span class="nf">confirm_group_is_empty</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group_name</span><span class="p">,</span> <span class="n">errmsg</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Confirms that no values have been added to the given group</span>
 
 <span class="sd">        If any values HAVE been added to this group, aborts with the given error message.</span>
@@ -294,7 +307,10 @@
         <span class="n">fullmsg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="se">\n</span><span class="s2">Offending variables: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">errmsg</span><span class="p">,</span> <span class="n">variables_in_group</span><span class="p">)</span>
         <span class="n">expect</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">variables_in_group</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="n">fullmsg</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="NamelistGenerator.quote_string"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.quote_string">[docs]</a>    <span class="nd">@staticmethod</span>
+
+<div class="viewcode-block" id="NamelistGenerator.quote_string">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.quote_string">[docs]</a>
+    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">quote_string</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert a string to a quoted Fortran literal.</span>
 
@@ -303,6 +319,7 @@
         <span class="k">if</span> <span class="n">string</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span> <span class="ow">or</span> <span class="p">(</span><span class="n">string</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">,</span> <span class="s2">&quot;&#39;&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">string</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">string</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]):</span>
             <span class="n">string</span> <span class="o">=</span> <span class="n">string_to_character_literal</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">string</span></div>
+
 
     <span class="k">def</span> <span class="nf">_to_python_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">literals</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Transform a literal list as needed for `get_value`.&quot;&quot;&quot;</span>
@@ -350,7 +367,9 @@
 
         <span class="k">return</span> <span class="n">compress_literal_list</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
 
-<div class="viewcode-block" id="NamelistGenerator.get_value"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.get_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+<div class="viewcode-block" id="NamelistGenerator.get_value">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.get_value">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the current value of a given namelist variable.</span>
 
 <span class="sd">        Note that the return value of this function is always a string or a list</span>
@@ -370,7 +389,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_to_python_value</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_namelist</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">name</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="NamelistGenerator.set_value"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.set_value">[docs]</a>    <span class="k">def</span> <span class="nf">set_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+
+<div class="viewcode-block" id="NamelistGenerator.set_value">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.set_value">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the current value of a given namelist variable.</span>
 
 <span class="sd">        Usually, you should use `add_default` instead of this function.</span>
@@ -397,7 +419,10 @@
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">literals</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">literals</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_namelist</span><span class="o">.</span><span class="n">set_variable_value</span><span class="p">(</span><span class="n">var_group</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">literals</span><span class="p">,</span> <span class="n">var_size</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="NamelistGenerator.get_default"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.get_default">[docs]</a>    <span class="k">def</span> <span class="nf">get_default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="NamelistGenerator.get_default">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.get_default">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the value of a variable from the namelist definition file.</span>
 
 <span class="sd">        The `config` argument is passed through to the underlying</span>
@@ -472,19 +497,29 @@
 
         <span class="k">return</span> <span class="n">default</span></div>
 
-<div class="viewcode-block" id="NamelistGenerator.get_streams"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.get_streams">[docs]</a>    <span class="k">def</span> <span class="nf">get_streams</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="NamelistGenerator.get_streams">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.get_streams">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_streams</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a list of all streams used for the current data model  mode.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_default</span><span class="p">(</span><span class="s2">&quot;streamslist&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="NamelistGenerator.clean_streams"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.clean_streams">[docs]</a>    <span class="k">def</span> <span class="nf">clean_streams</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="NamelistGenerator.clean_streams">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.clean_streams">[docs]</a>
+    <span class="k">def</span> <span class="nf">clean_streams</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">variable</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_streams_variables</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_streams_namelists</span><span class="p">[</span><span class="n">variable</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_streams_namelists</span><span class="p">[</span><span class="s2">&quot;streams&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span></div>
 
-<div class="viewcode-block" id="NamelistGenerator.new_instance"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.new_instance">[docs]</a>    <span class="k">def</span> <span class="nf">new_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="NamelistGenerator.new_instance">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.new_instance">[docs]</a>
+    <span class="k">def</span> <span class="nf">new_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Clean the object just enough to introduce a new instance&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">clean_streams</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_namelist</span><span class="o">.</span><span class="n">clean_groups</span><span class="p">()</span></div>
+
 
     <span class="k">def</span> <span class="nf">_sub_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varnames</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Substitute indicators with given values in a list of fields.</span>
@@ -612,7 +647,9 @@
             <span class="n">list_to_deliminate</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">pred</span> <span class="o">+</span> <span class="n">list_to_deliminate</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">+</span> <span class="n">postd</span>
         <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">      &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">list_to_deliminate</span><span class="p">)</span>
 
-<div class="viewcode-block" id="NamelistGenerator.create_stream_file_and_update_shr_strdata_nml"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.create_stream_file_and_update_shr_strdata_nml">[docs]</a>    <span class="k">def</span> <span class="nf">create_stream_file_and_update_shr_strdata_nml</span><span class="p">(</span>
+<div class="viewcode-block" id="NamelistGenerator.create_stream_file_and_update_shr_strdata_nml">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.create_stream_file_and_update_shr_strdata_nml">[docs]</a>
+    <span class="k">def</span> <span class="nf">create_stream_file_and_update_shr_strdata_nml</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">config</span><span class="p">,</span>
         <span class="n">caseroot</span><span class="p">,</span>  <span class="c1"># pylint:disable=too-many-locals</span>
@@ -712,7 +749,10 @@
                     <span class="n">input_data_list</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_shr_strdata_nml</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">stream</span><span class="p">,</span> <span class="n">stream_path</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="NamelistGenerator.update_shr_strdata_nml"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.update_shr_strdata_nml">[docs]</a>    <span class="k">def</span> <span class="nf">update_shr_strdata_nml</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">stream</span><span class="p">,</span> <span class="n">stream_path</span><span class="p">):</span>
+
+<div class="viewcode-block" id="NamelistGenerator.update_shr_strdata_nml">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.update_shr_strdata_nml">[docs]</a>
+    <span class="k">def</span> <span class="nf">update_shr_strdata_nml</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">stream</span><span class="p">,</span> <span class="n">stream_path</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Updates values for the `shr_strdata_nml` namelist group.</span>
 
 <span class="sd">        This should be done once per stream, and it shouldn&#39;t usually be called</span>
@@ -748,7 +788,10 @@
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_streams_namelists</span><span class="p">[</span><span class="n">variable</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">default</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div>
 
-<div class="viewcode-block" id="NamelistGenerator.set_abs_file_path"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.set_abs_file_path">[docs]</a>    <span class="k">def</span> <span class="nf">set_abs_file_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">):</span>
+
+<div class="viewcode-block" id="NamelistGenerator.set_abs_file_path">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.set_abs_file_path">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_abs_file_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;If `file_path` is relative, make it absolute using `DIN_LOC_ROOT`.</span>
 
 <span class="sd">        If an absolute path is input, it is returned unchanged.</span>
@@ -759,7 +802,10 @@
             <span class="n">fullpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_din_loc_root</span><span class="p">,</span> <span class="n">file_path</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">fullpath</span></div>
 
-<div class="viewcode-block" id="NamelistGenerator.add_default"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.add_default">[docs]</a>    <span class="k">def</span> <span class="nf">add_default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ignore_abs_path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="NamelistGenerator.add_default">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.add_default">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ignore_abs_path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a value for the specified variable to the namelist.</span>
 
 <span class="sd">        If the specified variable is already defined in the object, the existing</span>
@@ -819,6 +865,7 @@
         <span class="c1"># Set the new value.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_namelist</span><span class="o">.</span><span class="n">set_variable_value</span><span class="p">(</span><span class="n">group</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">current_literals</span><span class="p">,</span> <span class="n">var_size</span><span class="p">)</span></div>
 
+
     <span class="k">def</span> <span class="nf">_convert_to_abs_file_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert the given file_path to an abs file path and return the result</span>
 
@@ -855,7 +902,9 @@
 
         <span class="k">return</span> <span class="n">GRID_SEP</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">abs_file_paths</span><span class="p">)</span>
 
-<div class="viewcode-block" id="NamelistGenerator.create_shr_strdata_nml"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.create_shr_strdata_nml">[docs]</a>    <span class="k">def</span> <span class="nf">create_shr_strdata_nml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="NamelistGenerator.create_shr_strdata_nml">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.create_shr_strdata_nml">[docs]</a>
+    <span class="k">def</span> <span class="nf">create_shr_strdata_nml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Set defaults for `shr_strdata_nml` variables other than the variable domainfile&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_default</span><span class="p">(</span><span class="s2">&quot;datamode&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;datamode&quot;</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">&quot;NULL&quot;</span><span class="p">:</span>
@@ -863,8 +912,12 @@
             <span class="k">for</span> <span class="n">variable</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_streams_variables</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">add_default</span><span class="p">(</span><span class="n">variable</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_streams_namelists</span><span class="p">[</span><span class="n">variable</span><span class="p">])</span></div>
 
-<div class="viewcode-block" id="NamelistGenerator.get_group_variables"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.get_group_variables">[docs]</a>    <span class="k">def</span> <span class="nf">get_group_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group_name</span><span class="p">):</span>
+
+<div class="viewcode-block" id="NamelistGenerator.get_group_variables">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.get_group_variables">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_group_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group_name</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_namelist</span><span class="o">.</span><span class="n">get_group_variables</span><span class="p">(</span><span class="n">group_name</span><span class="p">)</span></div>
+
 
     <span class="k">def</span> <span class="nf">_get_input_file_hash</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_list_path</span><span class="p">):</span>
         <span class="n">lines_hash</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
@@ -957,7 +1010,9 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Line already in file </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">string</span><span class="p">))</span>
 
-<div class="viewcode-block" id="NamelistGenerator.write_output_file"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.write_output_file">[docs]</a>    <span class="k">def</span> <span class="nf">write_output_file</span><span class="p">(</span>
+<div class="viewcode-block" id="NamelistGenerator.write_output_file">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.write_output_file">[docs]</a>
+    <span class="k">def</span> <span class="nf">write_output_file</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">namelist_file</span><span class="p">,</span> <span class="n">data_list_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">groups</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sorted_groups</span><span class="o">=</span><span class="kc">True</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Write out the namelists and input data files.</span>
@@ -983,8 +1038,11 @@
         <span class="k">if</span> <span class="n">data_list_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_write_input_files</span><span class="p">(</span><span class="n">data_list_path</span><span class="p">)</span></div>
 
+
     <span class="c1"># For MCT</span>
-<div class="viewcode-block" id="NamelistGenerator.add_nmlcontents"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.add_nmlcontents">[docs]</a>    <span class="k">def</span> <span class="nf">add_nmlcontents</span><span class="p">(</span>
+<div class="viewcode-block" id="NamelistGenerator.add_nmlcontents">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.add_nmlcontents">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_nmlcontents</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">group</span><span class="p">,</span> <span class="n">append</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">format_</span><span class="o">=</span><span class="s2">&quot;nmlcontents&quot;</span><span class="p">,</span> <span class="n">sorted_groups</span><span class="o">=</span><span class="kc">True</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Write only contents of nml group&quot;&quot;&quot;</span>
@@ -996,20 +1054,32 @@
             <span class="n">sorted_groups</span><span class="o">=</span><span class="n">sorted_groups</span><span class="p">,</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="NamelistGenerator.write_seq_maps"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.write_seq_maps">[docs]</a>    <span class="k">def</span> <span class="nf">write_seq_maps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+
+<div class="viewcode-block" id="NamelistGenerator.write_seq_maps">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.write_seq_maps">[docs]</a>
+    <span class="k">def</span> <span class="nf">write_seq_maps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Write mct out seq_maps.rc&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_namelist</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">groups</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;seq_maps&quot;</span><span class="p">],</span> <span class="n">format_</span><span class="o">=</span><span class="s2">&quot;rc&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="NamelistGenerator.write_modelio_file"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.write_modelio_file">[docs]</a>    <span class="k">def</span> <span class="nf">write_modelio_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+
+<div class="viewcode-block" id="NamelistGenerator.write_modelio_file">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.write_modelio_file">[docs]</a>
+    <span class="k">def</span> <span class="nf">write_modelio_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Write mct component modelio files&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_namelist</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">groups</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;modelio&quot;</span><span class="p">,</span> <span class="s2">&quot;pio_inparm&quot;</span><span class="p">],</span> <span class="n">format_</span><span class="o">=</span><span class="s2">&quot;nml&quot;</span><span class="p">)</span></div>
 
+
     <span class="c1"># For NUOPC</span>
-<div class="viewcode-block" id="NamelistGenerator.write_nuopc_modelio_file"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.write_nuopc_modelio_file">[docs]</a>    <span class="k">def</span> <span class="nf">write_nuopc_modelio_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+<div class="viewcode-block" id="NamelistGenerator.write_nuopc_modelio_file">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.write_nuopc_modelio_file">[docs]</a>
+    <span class="k">def</span> <span class="nf">write_nuopc_modelio_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Write nuopc component modelio files&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_namelist</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">groups</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;pio_inparm&quot;</span><span class="p">],</span> <span class="n">format_</span><span class="o">=</span><span class="s2">&quot;nml&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="NamelistGenerator.write_nuopc_config_file"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.write_nuopc_config_file">[docs]</a>    <span class="k">def</span> <span class="nf">write_nuopc_config_file</span><span class="p">(</span>
+
+<div class="viewcode-block" id="NamelistGenerator.write_nuopc_config_file">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.write_nuopc_config_file">[docs]</a>
+    <span class="k">def</span> <span class="nf">write_nuopc_config_file</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">data_list_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sorted_groups</span><span class="o">=</span><span class="kc">False</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Write the nuopc config file&quot;&quot;&quot;</span>
@@ -1019,7 +1089,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_namelist</span><span class="o">.</span><span class="n">write_nuopc</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">groups</span><span class="o">=</span><span class="n">groups</span><span class="p">,</span> <span class="n">sorted_groups</span><span class="o">=</span><span class="n">sorted_groups</span><span class="p">)</span>
         <span class="c1"># append to input_data_list file</span>
         <span class="k">if</span> <span class="n">data_list_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_write_input_files</span><span class="p">(</span><span class="n">data_list_path</span><span class="p">)</span></div></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_write_input_files</span><span class="p">(</span><span class="n">data_list_path</span><span class="p">)</span></div>
+</div>
+
 </pre></div>
 
            </div>

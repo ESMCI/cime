@@ -12,11 +12,11 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/sphinx_highlight.js"></script>
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../_static/pop_ver.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -124,7 +124,7 @@
            <div itemprop="articleBody">
              
   <section id="customizing-your-input-variables">
-<span id="namelist-gen"></span><h1><span class="section-number">7. </span>Customizing your input variables<a class="headerlink" href="#customizing-your-input-variables" title="Permalink to this heading"></a></h1>
+<span id="namelist-gen"></span><h1><span class="section-number">7. </span>Customizing your input variables<a class="headerlink" href="#customizing-your-input-variables" title="Link to this heading"></a></h1>
 <p>CIME and CIME-compliant components primarily use Fortran namelists to control runtime options.  Some components use
 other text-based files for runtime options.</p>
 <p>All CIME-compliant components generate their input variable files using a <strong>buildnml</strong> script typically located in the
@@ -152,7 +152,7 @@ to be coordinated between models in a coupled system (such as how many steps to 
 <p>The namelist files in <code class="docutils literal notranslate"><span class="pre">CaseDocs</span></code> are  there only for user reference and <strong>SHOULD NOT BE EDITED</strong> since they are overwritten every time <a class="reference external" href="../Tools_user/preview_namelists.html">preview_namelists</a> and <a class="reference external" href="../Tools_user/case.submit.html">case.submit</a> are called and the files read at runtime are not the ones in <code class="docutils literal notranslate"><span class="pre">CaseDocs</span></code>.</p>
 </div>
 <section id="customizing-driver-input-variables">
-<span id="use-cases-modifying-driver-namelists"></span><h2><span class="section-number">7.1. </span>Customizing driver input variables<a class="headerlink" href="#customizing-driver-input-variables" title="Permalink to this heading"></a></h2>
+<span id="use-cases-modifying-driver-namelists"></span><h2><span class="section-number">7.1. </span>Customizing driver input variables<a class="headerlink" href="#customizing-driver-input-variables" title="Link to this heading"></a></h2>
 <p>The driver input namelists/variables are contained in the files, <strong>drv_in</strong>, <strong>drv_flds_in</strong> and <strong>seq_maps.rc</strong>. Note that <strong>seq_maps.rc</strong> has a different file format than the other two input files.</p>
 <p>All driver namelist variables are defined in the file <strong>$CIMEROOT/src/drivers/mct/cime_config/namelist_definition_drv.xml</strong>.</p>
 <p>The variables that can be changed only by modifying xml variables appear with the <em>entry</em> attribute <code class="docutils literal notranslate"><span class="pre">modify_via_xml=&quot;xml_variable_name&quot;</span></code>.</p>
@@ -168,7 +168,7 @@ to be coordinated between models in a coupled system (such as how many steps to 
 <p>Note that</p>
 <p>To see the result of change, call <a class="reference external" href="../Tools_user/preview_namelists.html">preview_namelists</a>  and verify that the new value appears in <strong>CaseDocs/drv_in</strong>.</p>
 <section id="setting-up-a-multi-year-run">
-<span id="basic-example"></span><h3><span class="section-number">7.1.1. </span>Setting up a multi-year run<a class="headerlink" href="#setting-up-a-multi-year-run" title="Permalink to this heading"></a></h3>
+<span id="basic-example"></span><h3><span class="section-number">7.1.1. </span>Setting up a multi-year run<a class="headerlink" href="#setting-up-a-multi-year-run" title="Link to this heading"></a></h3>
 <p>This shows all of the steps necessary to do a multi-year simulation starting from a “cold start” for all components.  The
 compset and resolution in this example are for a CESM fully-coupled case but the steps are similar for other models and cases.</p>
 <ol class="arabic">
@@ -222,7 +222,7 @@ To change this behavior, and submit all jobs at once (with batch dependencies su
 </ol>
 </section>
 <section id="setting-up-a-branch-or-hybrid-run">
-<h3><span class="section-number">7.1.2. </span>Setting up a branch or hybrid run<a class="headerlink" href="#setting-up-a-branch-or-hybrid-run" title="Permalink to this heading"></a></h3>
+<h3><span class="section-number">7.1.2. </span>Setting up a branch or hybrid run<a class="headerlink" href="#setting-up-a-branch-or-hybrid-run" title="Link to this heading"></a></h3>
 <p>A branch or hybrid run uses initialization data from a previous run. Here is an example in which a valid load-balanced scenario is assumed.</p>
 <ol class="arabic">
 <li><p>The first step in setting up a branch or hybrid run is to create a new case. A CESM compset and resolution is assumed below.</p>
@@ -284,10 +284,10 @@ then resubmit the case.</p>
 </section>
 </section>
 <section id="customizing-data-model-input-variable-and-stream-files">
-<span id="changing-data-model-namelists"></span><h2><span class="section-number">7.2. </span>Customizing data model input variable and stream files<a class="headerlink" href="#customizing-data-model-input-variable-and-stream-files" title="Permalink to this heading"></a></h2>
+<span id="changing-data-model-namelists"></span><h2><span class="section-number">7.2. </span>Customizing data model input variable and stream files<a class="headerlink" href="#customizing-data-model-input-variable-and-stream-files" title="Link to this heading"></a></h2>
 <p>Each data model can be runtime-configured with its own namelist.</p>
 <section id="data-atmosphere-datm">
-<h3><span class="section-number">7.2.1. </span>Data Atmosphere (DATM)<a class="headerlink" href="#data-atmosphere-datm" title="Permalink to this heading"></a></h3>
+<h3><span class="section-number">7.2.1. </span>Data Atmosphere (DATM)<a class="headerlink" href="#data-atmosphere-datm" title="Link to this heading"></a></h3>
 <p>DATM is discussed in detail in <span class="xref std std-ref">data atmosphere overview</span> (<strong>link currently broken</strong>).
 DATM can be user-customized by changing either its  <em>namelist input files</em> or its <em>stream files</em>.
 The namelist file for DATM is <strong>datm_in</strong> (or <strong>datm_in_NNN</strong> for multiple instances).</p>
@@ -314,7 +314,7 @@ The namelist file for DATM is <strong>datm_in</strong> (or <strong>datm_in_NNN</
 After calling <a class="reference external" href="../Tools_user/preview_namelists.html">preview_namelists</a> again, your edits should appear in <strong>CaseDocs/datm.streams.txt.CORE2_NYF.GISS</strong>.</p>
 </section>
 <section id="data-ocean-docn">
-<h3><span class="section-number">7.2.2. </span>Data Ocean (DOCN)<a class="headerlink" href="#data-ocean-docn" title="Permalink to this heading"></a></h3>
+<h3><span class="section-number">7.2.2. </span>Data Ocean (DOCN)<a class="headerlink" href="#data-ocean-docn" title="Link to this heading"></a></h3>
 <p>DOCN is discussed in detail in <span class="xref std std-ref">data ocean overview</span> (<strong>link currently broken</strong>).
 DOCN can be user-customized by changing either its namelist input or its stream files.
 The namelist file for DOCN is <strong>docn_in</strong> (or <strong>docn_in_NNN</strong> for multiple instances).</p>
@@ -341,7 +341,7 @@ The namelist file for DOCN is <strong>docn_in</strong> (or <strong>docn_in_NNN</
 After changing this file and calling <a class="reference external" href="../Tools_user/preview_namelists.html">preview_namelists</a> again, your edits should appear in <strong>CaseDocs/docn.streams.txt.prescribed</strong>.</p>
 </section>
 <section id="data-sea-ice-dice">
-<h3><span class="section-number">7.2.3. </span>Data Sea-ice (DICE)<a class="headerlink" href="#data-sea-ice-dice" title="Permalink to this heading"></a></h3>
+<h3><span class="section-number">7.2.3. </span>Data Sea-ice (DICE)<a class="headerlink" href="#data-sea-ice-dice" title="Link to this heading"></a></h3>
 <p>DICE is discussed in detail in <span class="xref std std-ref">data sea-ice overview</span> (<strong>link currently broken</strong>).
 DICE can be user-customized by changing either its namelist input or its stream files.
 The namelist file for DICE is <code class="docutils literal notranslate"><span class="pre">dice_in</span></code> (or <code class="docutils literal notranslate"><span class="pre">dice_in_NNN</span></code> for multiple instances) and its values can be changed by editing the <code class="docutils literal notranslate"><span class="pre">$CASEROOT</span></code> file <code class="docutils literal notranslate"><span class="pre">user_nl_dice</span></code> (or <code class="docutils literal notranslate"><span class="pre">user_nl_dice_NNN</span></code> for multiple instances).</p>
@@ -365,7 +365,7 @@ The namelist file for DICE is <code class="docutils literal notranslate"><span c
 </ul>
 </section>
 <section id="data-land-dlnd">
-<h3><span class="section-number">7.2.4. </span>Data Land (DLND)<a class="headerlink" href="#data-land-dlnd" title="Permalink to this heading"></a></h3>
+<h3><span class="section-number">7.2.4. </span>Data Land (DLND)<a class="headerlink" href="#data-land-dlnd" title="Link to this heading"></a></h3>
 <p>DLND is discussed in detail in <span class="xref std std-ref">data land overview</span> (<strong>link currently broken</strong>).
 DLND can be user-customized by changing either its namelist input or its stream files.
 The namelist file for DLND is <code class="docutils literal notranslate"><span class="pre">dlnd_in</span></code> (or <code class="docutils literal notranslate"><span class="pre">dlnd_in_NNN</span></code> for multiple instances) and its values can be changed by editing the <code class="docutils literal notranslate"><span class="pre">$CASEROOT</span></code> file <code class="docutils literal notranslate"><span class="pre">user_nl_dlnd</span></code> (or <code class="docutils literal notranslate"><span class="pre">user_nl_dlnd_NNN</span></code> for multiple instances).</p>
@@ -389,7 +389,7 @@ The namelist file for DLND is <code class="docutils literal notranslate"><span c
 </ul>
 </section>
 <section id="data-river-drof">
-<h3><span class="section-number">7.2.5. </span>Data River (DROF)<a class="headerlink" href="#data-river-drof" title="Permalink to this heading"></a></h3>
+<h3><span class="section-number">7.2.5. </span>Data River (DROF)<a class="headerlink" href="#data-river-drof" title="Link to this heading"></a></h3>
 <p>DROF is discussed in detail in <span class="xref std std-ref">data river overview</span> (<strong>link currently broken</strong>).
 DROF can be user-customized by changing either its namelist input or its stream files.
 The namelist file for DROF is <code class="docutils literal notranslate"><span class="pre">drof_in</span></code> (or <code class="docutils literal notranslate"><span class="pre">drof_in_NNN</span></code> for multiple instances) and its values can be changed by editing the <code class="docutils literal notranslate"><span class="pre">$CASEROOT</span></code> file <code class="docutils literal notranslate"><span class="pre">user_nl_drof</span></code> (or <code class="docutils literal notranslate"><span class="pre">user_nl_drof_NNN</span></code> for multiple instances).</p>
@@ -414,9 +414,9 @@ The namelist file for DROF is <code class="docutils literal notranslate"><span c
 </section>
 </section>
 <section id="customizing-cesm-active-component-specific-namelist-settings">
-<h2><span class="section-number">7.3. </span>Customizing CESM active component-specific namelist settings<a class="headerlink" href="#customizing-cesm-active-component-specific-namelist-settings" title="Permalink to this heading"></a></h2>
+<h2><span class="section-number">7.3. </span>Customizing CESM active component-specific namelist settings<a class="headerlink" href="#customizing-cesm-active-component-specific-namelist-settings" title="Link to this heading"></a></h2>
 <section id="cam">
-<h3><span class="section-number">7.3.1. </span>CAM<a class="headerlink" href="#cam" title="Permalink to this heading"></a></h3>
+<h3><span class="section-number">7.3.1. </span>CAM<a class="headerlink" href="#cam" title="Link to this heading"></a></h3>
 <p>CIME calls <strong>$SRCROOT/components/cam/cime_config/buildnml</strong> to generate the CAM’s namelist variables.</p>
 <p>CAM-specific CIME xml variables are set in <strong>$SRCROOT/components/cam/cime_config/config_component.xml</strong> and are used by CAM’s <strong>buildnml</strong> script to generate the namelist.</p>
 <p>For complete documentation of namelist settings, see <a class="reference external" href="https://www.cesm.ucar.edu/models/cesm2/settings/current/cam_nml.html">CAM namelist variables</a>.</p>
@@ -428,7 +428,7 @@ The namelist file for DROF is <code class="docutils literal notranslate"><span c
 <p>To see the result, call <a class="reference external" href="../Tools_user/preview_namelists.html">preview_namelists</a> and verify that the new value appears in <strong>CaseDocs/atm_in</strong>.</p>
 </section>
 <section id="clm">
-<h3><span class="section-number">7.3.2. </span>CLM<a class="headerlink" href="#clm" title="Permalink to this heading"></a></h3>
+<h3><span class="section-number">7.3.2. </span>CLM<a class="headerlink" href="#clm" title="Link to this heading"></a></h3>
 <p>CIME calls <strong>$SRCROOT/components/clm/cime_config/buildnml</strong> to generate the CLM namelist variables.</p>
 <p>CLM-specific CIME xml variables are set in <strong>$SRCROOT/components/clm/cime_config/config_component.xml</strong> and are used by CLM’s <strong>buildnml</strong> script to generate the namelist.</p>
 <p>For complete documentation of namelist settings, see <a class="reference external" href="https://www.cesm.ucar.edu/models/cesm2/settings/current/clm5_0_nml.html">CLM namelist variables</a>.</p>
@@ -436,13 +436,13 @@ The namelist file for DROF is <code class="docutils literal notranslate"><span c
 <p>To see the result, call <a class="reference external" href="../Tools_user/preview_namelists.html">preview_namelists</a> and verify that the changes appear correctly in <strong>CaseDocs/lnd_in</strong>.</p>
 </section>
 <section id="mosart">
-<h3><span class="section-number">7.3.3. </span>MOSART<a class="headerlink" href="#mosart" title="Permalink to this heading"></a></h3>
+<h3><span class="section-number">7.3.3. </span>MOSART<a class="headerlink" href="#mosart" title="Link to this heading"></a></h3>
 <p>CIME calls <strong>$SRCROOT/components/mosart/cime_config/buildnml</strong> to generate the MOSART namelist variables.</p>
 <p>To modify MOSART namelist settings, add the appropriate keyword/value pair at the end of the <strong>$CASEROOT/user_nl_rtm</strong> file.</p>
 <p>To see the result of your change, call <a class="reference external" href="../Tools_user/preview_namelists.html">preview_namelists</a> and verify that the changes appear correctly in <strong>CaseDocs/rof_in</strong>.</p>
 </section>
 <section id="cice">
-<h3><span class="section-number">7.3.4. </span>CICE<a class="headerlink" href="#cice" title="Permalink to this heading"></a></h3>
+<h3><span class="section-number">7.3.4. </span>CICE<a class="headerlink" href="#cice" title="Link to this heading"></a></h3>
 <p>CIME calls <strong>$SRCROOT/components/cice/cime_config/buildnml</strong> to generate the CICE namelist variables.</p>
 <p>For complete documentation of namelist settings, see <a class="reference external" href="https://www.cesm.ucar.edu/models/cesm2/settings/current/cice_nml.html">CICE namelist variables</a>.</p>
 <p>To modify CICE namelist settings, add the appropriate keyword/value pair at the end of the <strong>$CASEROOT/user_nl_cice</strong> file.
@@ -451,7 +451,7 @@ To see the result of your change, call <a class="reference external" href="../To
 <p>In addition, <a class="reference external" href="../Tools_user/case.setup.html">case.setup</a>  creates CICE’s compile time <a class="reference external" href="https://www.cesm.ucar.edu/models/cesm2/settings/current/cice_input.html">block decomposition variables</a> in <strong>env_build.xml</strong>.</p>
 </section>
 <section id="pop2">
-<h3><span class="section-number">7.3.5. </span>POP2<a class="headerlink" href="#pop2" title="Permalink to this heading"></a></h3>
+<h3><span class="section-number">7.3.5. </span>POP2<a class="headerlink" href="#pop2" title="Link to this heading"></a></h3>
 <p>CIME calls <strong>$SRCROOT/components/pop2/cime_config/buildnml</strong> to generate the POP2 namelist variables.</p>
 <p>For complete documentation of namelist settings, see <a class="reference external" href="https://www.cesm.ucar.edu/models/cesm2/settings/current/pop2_nml.html">POP2 namelist variables</a>.</p>
 <p>To modify POP2 namelist settings, add the appropriate keyword/value pair at the end of the <strong>$CASEROOT/user_nl_pop2</strong> file.
@@ -459,7 +459,7 @@ To see the result of your change, call <a class="reference external" href="../To
 To see the result of your change, call <a class="reference external" href="../Tools_user/preview_namelists.html">preview_namelists</a> and verify that the changes appear correctly in <strong>CaseDocs/ocn_in</strong>.</p>
 </section>
 <section id="cism">
-<h3><span class="section-number">7.3.6. </span>CISM<a class="headerlink" href="#cism" title="Permalink to this heading"></a></h3>
+<h3><span class="section-number">7.3.6. </span>CISM<a class="headerlink" href="#cism" title="Link to this heading"></a></h3>
 <p>See <a class="reference external" href="https://www.cesm.ucar.edu/models/cesm2/settings/current/cism_nml.html">CISM namelist variables</a> for a complete description of the CISM runtime namelist variables. This includes variables that appear both in <strong>cism_in</strong> and in <strong>cism.config</strong>.</p>
 <p>To modify any of these settings, add the appropriate keyword/value pair at the end of the <strong>user_nl_cism</strong> file. (See the documentation for each file at the top of that file.)
 Note that there is no distinction between variables that will appear in <strong>cism_in</strong> and those that will appear in <strong>cism.config</strong>: simply add a new variable setting in <strong>user_nl_cism</strong>, and it will be added to the appropriate place in <strong>cism_in</strong> or <strong>cism.config</strong>.

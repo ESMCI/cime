@@ -11,11 +11,11 @@
     <script src="../../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../../_static/jquery.js"></script>
-        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
-        <script src="../../../../_static/doctools.js"></script>
-        <script src="../../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../../../_static/pop_ver.js"></script>
     <script src="../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
@@ -92,7 +92,9 @@
 <span class="kn">import</span> <span class="nn">glob</span>
 
 
-<div class="viewcode-block" id="append_to_user_nl_files"><a class="viewcode-back" href="../../../../CIME_api/CIME.SystemTests.test_utils.html#CIME.SystemTests.test_utils.user_nl_utils.append_to_user_nl_files">[docs]</a><span class="k">def</span> <span class="nf">append_to_user_nl_files</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="n">component</span><span class="p">,</span> <span class="n">contents</span><span class="p">):</span>
+<div class="viewcode-block" id="append_to_user_nl_files">
+<a class="viewcode-back" href="../../../../CIME_api/CIME.SystemTests.test_utils.html#CIME.SystemTests.test_utils.user_nl_utils.append_to_user_nl_files">[docs]</a>
+<span class="k">def</span> <span class="nf">append_to_user_nl_files</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="n">component</span><span class="p">,</span> <span class="n">contents</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Append the string(s) given by &#39;contents&#39; to the end of each user_nl file for</span>
 <span class="sd">    the given component (there may be multiple such user_nl files in the case of</span>
@@ -128,6 +130,7 @@
             <span class="n">user_nl_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">contents</span><span class="p">:</span>
                 <span class="n">user_nl_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">c</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
 
 
 <span class="k">def</span> <span class="nf">_get_list_of_user_nl_files</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">component</span><span class="p">):</span>

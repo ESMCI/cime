@@ -11,11 +11,11 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../../_static/pop_ver.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -97,7 +97,9 @@
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="Machines"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.machines.Machines">[docs]</a><span class="k">class</span> <span class="nc">Machines</span><span class="p">(</span><span class="n">GenericXML</span><span class="p">):</span>
+<div class="viewcode-block" id="Machines">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.machines.Machines">[docs]</a>
+<span class="k">class</span> <span class="nc">Machines</span><span class="p">(</span><span class="n">GenericXML</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">machine</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">extra_machines_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        initialize an object</span>
@@ -172,27 +174,41 @@
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_machine</span><span class="p">(</span><span class="n">machine</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Machines.get_child"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.machines.Machines.get_child">[docs]</a>    <span class="k">def</span> <span class="nf">get_child</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">err_msg</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Machines.get_child">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.machines.Machines.get_child">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_child</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">err_msg</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">root</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">root</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">machine_node</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">Machines</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">attributes</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">err_msg</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Machines.get_machines_dir"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.machines.Machines.get_machines_dir">[docs]</a>    <span class="k">def</span> <span class="nf">get_machines_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Machines.get_machines_dir">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.machines.Machines.get_machines_dir">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_machines_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the directory of the machines file</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">machines_dir</span></div>
 
-<div class="viewcode-block" id="Machines.get_extra_machines_dir"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.machines.Machines.get_extra_machines_dir">[docs]</a>    <span class="k">def</span> <span class="nf">get_extra_machines_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Machines.get_extra_machines_dir">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.machines.Machines.get_extra_machines_dir">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_extra_machines_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">extra_machines_dir</span></div>
 
-<div class="viewcode-block" id="Machines.get_machine_name"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.machines.Machines.get_machine_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_machine_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Machines.get_machine_name">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.machines.Machines.get_machine_name">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_machine_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the name of the machine</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">machine</span></div>
 
-<div class="viewcode-block" id="Machines.get_node_names"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.machines.Machines.get_node_names">[docs]</a>    <span class="k">def</span> <span class="nf">get_node_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Machines.get_node_names">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.machines.Machines.get_node_names">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_node_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the names of all the child nodes for the target machine</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -202,14 +218,20 @@
             <span class="n">node_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="n">node</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">node_names</span></div>
 
-<div class="viewcode-block" id="Machines.get_first_child_nodes"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.machines.Machines.get_first_child_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">get_first_child_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodename</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Machines.get_first_child_nodes">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.machines.Machines.get_first_child_nodes">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_first_child_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodename</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the names of all the child nodes for the target machine</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="n">nodename</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">machine_node</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">nodes</span></div>
 
-<div class="viewcode-block" id="Machines.list_available_machines"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.machines.Machines.list_available_machines">[docs]</a>    <span class="k">def</span> <span class="nf">list_available_machines</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Machines.list_available_machines">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.machines.Machines.list_available_machines">[docs]</a>
+    <span class="k">def</span> <span class="nf">list_available_machines</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a list of machines defined for a given CIME_MODEL</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -220,7 +242,10 @@
             <span class="n">machines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mach</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">machines</span></div>
 
-<div class="viewcode-block" id="Machines.probe_machine_name"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.machines.Machines.probe_machine_name">[docs]</a>    <span class="k">def</span> <span class="nf">probe_machine_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">warn</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Machines.probe_machine_name">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.machines.Machines.probe_machine_name">[docs]</a>
+    <span class="k">def</span> <span class="nf">probe_machine_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">warn</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Find a matching regular expression for hostname</span>
 <span class="sd">        in the NODENAME_REGEX field in the file.   First match wins.</span>
@@ -250,6 +275,7 @@
                     <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">machine</span></div>
+
 
     <span class="k">def</span> <span class="nf">_probe_machine_name_one_guess</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nametomatch</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -301,7 +327,9 @@
 
         <span class="k">return</span> <span class="n">machine</span>
 
-<div class="viewcode-block" id="Machines.set_machine"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.machines.Machines.set_machine">[docs]</a>    <span class="k">def</span> <span class="nf">set_machine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">machine</span><span class="p">):</span>
+<div class="viewcode-block" id="Machines.set_machine">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.machines.Machines.set_machine">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_machine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">machine</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets the machine block in the Machines object</span>
 
@@ -325,8 +353,11 @@
 
         <span class="k">return</span> <span class="n">machine</span></div>
 
+
     <span class="c1"># pylint: disable=arguments-differ</span>
-<div class="viewcode-block" id="Machines.get_value"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.machines.Machines.get_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">resolved</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Machines.get_value">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.machines.Machines.get_value">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">resolved</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get Value of fields in the config_machines.xml file</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -363,7 +394,10 @@
 
         <span class="k">return</span> <span class="n">value</span></div>
 
-<div class="viewcode-block" id="Machines.get_field_from_list"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.machines.Machines.get_field_from_list">[docs]</a>    <span class="k">def</span> <span class="nf">get_field_from_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">listname</span><span class="p">,</span> <span class="n">reqval</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Machines.get_field_from_list">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.machines.Machines.get_field_from_list">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_field_from_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">listname</span><span class="p">,</span> <span class="n">reqval</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Some of the fields have lists of valid values in the xml, parse these</span>
 <span class="sd">        lists and return the first value if reqval is not provided and reqval</span>
@@ -389,7 +423,10 @@
                 <span class="k">return</span> <span class="n">reqval</span>
         <span class="k">return</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="Machines.get_default_compiler"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.machines.Machines.get_default_compiler">[docs]</a>    <span class="k">def</span> <span class="nf">get_default_compiler</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Machines.get_default_compiler">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.machines.Machines.get_default_compiler">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_default_compiler</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the compiler to use from the list of COMPILERS</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -406,19 +443,28 @@
             <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_field_from_list</span><span class="p">(</span><span class="s2">&quot;COMPILERS&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">value</span></div>
 
-<div class="viewcode-block" id="Machines.get_default_MPIlib"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.machines.Machines.get_default_MPIlib">[docs]</a>    <span class="k">def</span> <span class="nf">get_default_MPIlib</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Machines.get_default_MPIlib">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.machines.Machines.get_default_MPIlib">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_default_MPIlib</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the MPILIB to use from the list of MPILIBS</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_field_from_list</span><span class="p">(</span><span class="s2">&quot;MPILIBS&quot;</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="n">attributes</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Machines.is_valid_compiler"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.machines.Machines.is_valid_compiler">[docs]</a>    <span class="k">def</span> <span class="nf">is_valid_compiler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compiler</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Machines.is_valid_compiler">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.machines.Machines.is_valid_compiler">[docs]</a>
+    <span class="k">def</span> <span class="nf">is_valid_compiler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compiler</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check the compiler is valid for the current machine</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_field_from_list</span><span class="p">(</span><span class="s2">&quot;COMPILERS&quot;</span><span class="p">,</span> <span class="n">reqval</span><span class="o">=</span><span class="n">compiler</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="Machines.is_valid_MPIlib"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.machines.Machines.is_valid_MPIlib">[docs]</a>    <span class="k">def</span> <span class="nf">is_valid_MPIlib</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mpilib</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Machines.is_valid_MPIlib">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.machines.Machines.is_valid_MPIlib">[docs]</a>
+    <span class="k">def</span> <span class="nf">is_valid_MPIlib</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mpilib</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check the MPILIB is valid for the current machine</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -428,7 +474,10 @@
             <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="Machines.has_batch_system"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.machines.Machines.has_batch_system">[docs]</a>    <span class="k">def</span> <span class="nf">has_batch_system</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Machines.has_batch_system">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.machines.Machines.has_batch_system">[docs]</a>
+    <span class="k">def</span> <span class="nf">has_batch_system</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return if this machine has a batch system</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -442,7 +491,10 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Machine </span><span class="si">{}</span><span class="s2"> has batch: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">machine</span><span class="p">,</span> <span class="n">result</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">result</span></div>
 
-<div class="viewcode-block" id="Machines.get_suffix"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.machines.Machines.get_suffix">[docs]</a>    <span class="k">def</span> <span class="nf">get_suffix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">suffix_type</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Machines.get_suffix">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.machines.Machines.get_suffix">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_suffix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">suffix_type</span><span class="p">):</span>
         <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_optional_child</span><span class="p">(</span><span class="s2">&quot;default_run_suffix&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">suffix_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_optional_child</span><span class="p">(</span><span class="n">suffix_type</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">node</span><span class="p">)</span>
@@ -451,11 +503,17 @@
 
         <span class="k">return</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="Machines.set_value"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.machines.Machines.set_value">[docs]</a>    <span class="k">def</span> <span class="nf">set_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ignore_type</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Machines.set_value">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.machines.Machines.set_value">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ignore_type</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="c1"># A temporary cache only</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">custom_settings</span><span class="p">[</span><span class="n">vid</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span></div>
 
-<div class="viewcode-block" id="Machines.print_values"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.machines.Machines.print_values">[docs]</a>    <span class="k">def</span> <span class="nf">print_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Machines.print_values">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.machines.Machines.print_values">[docs]</a>
+    <span class="k">def</span> <span class="nf">print_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># write out machines</span>
         <span class="n">machines</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="s2">&quot;machine&quot;</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Machines&quot;</span><span class="p">)</span>
@@ -480,7 +538,10 @@
             <span class="k">if</span> <span class="n">max_gpus_per_node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;      max_gpus/node &quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">max_gpus_per_node</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="Machines.return_values"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.machines.Machines.return_values">[docs]</a>    <span class="k">def</span> <span class="nf">return_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Machines.return_values">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.machines.Machines.return_values">[docs]</a>
+    <span class="k">def</span> <span class="nf">return_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;return a dictionary of machine info</span>
 <span class="sd">        This routine is used by external tools in https://github.com/NCAR/CESM_xml2html</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -506,7 +567,9 @@
             <span class="n">max_gpus_per_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span><span class="s2">&quot;MAX_GPUS_PER_NODE&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">machine</span><span class="p">)</span>
             <span class="n">mach_dict</span><span class="p">[(</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;max_gpus_per_node&quot;</span><span class="p">)]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">max_gpus_per_node</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">mach_dict</span></div></div>
+        <span class="k">return</span> <span class="n">mach_dict</span></div>
+</div>
+
 </pre></div>
 
            </div>

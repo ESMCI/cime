@@ -11,11 +11,11 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../../_static/pop_ver.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -95,15 +95,25 @@
 <span class="kn">from</span> <span class="nn">CIME.expected_fails</span> <span class="kn">import</span> <span class="n">ExpectedFails</span>
 
 
-<div class="viewcode-block" id="TestExpectedFailsFile"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_expected_fails_file.TestExpectedFailsFile">[docs]</a><span class="k">class</span> <span class="nc">TestExpectedFailsFile</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
-<div class="viewcode-block" id="TestExpectedFailsFile.setUp"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_expected_fails_file.TestExpectedFailsFile.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestExpectedFailsFile">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_expected_fails_file.TestExpectedFailsFile">[docs]</a>
+<span class="k">class</span> <span class="nc">TestExpectedFailsFile</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestExpectedFailsFile.setUp">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_expected_fails_file.TestExpectedFailsFile.setUp">[docs]</a>
+    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_workdir</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_xml_filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_workdir</span><span class="p">,</span> <span class="s2">&quot;expected_fails.xml&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestExpectedFailsFile.tearDown"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_expected_fails_file.TestExpectedFailsFile.tearDown">[docs]</a>    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestExpectedFailsFile.tearDown">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_expected_fails_file.TestExpectedFailsFile.tearDown">[docs]</a>
+    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_workdir</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestExpectedFailsFile.test_basic"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_expected_fails_file.TestExpectedFailsFile.test_basic">[docs]</a>    <span class="k">def</span> <span class="nf">test_basic</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestExpectedFailsFile.test_basic">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_expected_fails_file.TestExpectedFailsFile.test_basic">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_basic</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Basic test of the parsing of an expected fails file&quot;&quot;&quot;</span>
         <span class="n">contents</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;?xml version= &quot;1.0&quot;?&gt;</span>
 <span class="s2">&lt;expectedFails version=&quot;1.1&quot;&gt;</span>
@@ -145,7 +155,10 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">xfails</span><span class="p">,</span> <span class="n">expected</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestExpectedFailsFile.test_same_test_appears_twice"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_expected_fails_file.TestExpectedFailsFile.test_same_test_appears_twice">[docs]</a>    <span class="k">def</span> <span class="nf">test_same_test_appears_twice</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestExpectedFailsFile.test_same_test_appears_twice">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_expected_fails_file.TestExpectedFailsFile.test_same_test_appears_twice">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_same_test_appears_twice</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;If the same test appears twice, its information should be appended.</span>
 
 <span class="sd">        This is not the typical, expected layout of the file, but it should be handled</span>
@@ -180,7 +193,10 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">xfails</span><span class="p">,</span> <span class="n">expected</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestExpectedFailsFile.test_invalid_file"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_expected_fails_file.TestExpectedFailsFile.test_invalid_file">[docs]</a>    <span class="k">def</span> <span class="nf">test_invalid_file</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestExpectedFailsFile.test_invalid_file">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_expected_fails_file.TestExpectedFailsFile.test_invalid_file">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_invalid_file</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Given an invalid file, an exception should be raised in schema validation&quot;&quot;&quot;</span>
 
         <span class="c1"># This file is missing a &lt;status&gt; element in the &lt;phase&gt; block.</span>
@@ -199,7 +215,9 @@
             <span class="n">xml_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">contents</span><span class="p">)</span>
 
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaisesRegex</span><span class="p">(</span><span class="n">CIMEError</span><span class="p">,</span> <span class="s2">&quot;Schemas validity error&quot;</span><span class="p">):</span>
-            <span class="n">_</span> <span class="o">=</span> <span class="n">ExpectedFailsFile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_xml_filepath</span><span class="p">)</span></div></div>
+            <span class="n">_</span> <span class="o">=</span> <span class="n">ExpectedFailsFile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_xml_filepath</span><span class="p">)</span></div>
+</div>
+
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>

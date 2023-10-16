@@ -12,11 +12,11 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/sphinx_highlight.js"></script>
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../_static/pop_ver.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -108,7 +108,7 @@
            <div itemprop="articleBody">
              
   <section id="component-sets">
-<span id="compsets"></span><h1><span class="section-number">2. </span>Component sets<a class="headerlink" href="#component-sets" title="Permalink to this heading"></a></h1>
+<span id="compsets"></span><h1><span class="section-number">2. </span>Component sets<a class="headerlink" href="#component-sets" title="Link to this heading"></a></h1>
 <p>In CIME, multiple components can define compsets that are targeted to their model development needs.</p>
 <p>Each component supports a set of compset longnames that are used in testing and supported in out of the box configurations.</p>
 <p>To determine if the compset name to <a class="reference external" href="../Tools_user/create_newcase.html">create_newcase</a> is a supported component, CIME looks in the <strong>config_files.xml</strong> file and parses the
@@ -140,7 +140,7 @@ land and cice (in prescribed mode) and a data ocean is the atmosphere component 
 is defined, using the above example, in <code class="docutils literal notranslate"><span class="pre">$SRCROOT/components/cam/cime_config/config_compsets.xml</span></code>
 In a compset where all components are prognostic, the primary component will be <strong>allactive</strong>.</p>
 <section id="compset-longname">
-<span id="defining-compsets"></span><h2><span class="section-number">2.1. </span>Compset longname<a class="headerlink" href="#compset-longname" title="Permalink to this heading"></a></h2>
+<span id="defining-compsets"></span><h2><span class="section-number">2.1. </span>Compset longname<a class="headerlink" href="#compset-longname" title="Link to this heading"></a></h2>
 <p>Each config_compsets.xml file has a list of allowed component sets in the form of a longname and an alias.</p>
 <p>A compset longname has this form:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">TIME_ATM</span><span class="p">[</span><span class="o">%</span><span class="n">phys</span><span class="p">]</span><span class="n">_LND</span><span class="p">[</span><span class="o">%</span><span class="n">phys</span><span class="p">]</span><span class="n">_ICE</span><span class="p">[</span><span class="o">%</span><span class="n">phys</span><span class="p">]</span><span class="n">_OCN</span><span class="p">[</span><span class="o">%</span><span class="n">phys</span><span class="p">]</span><span class="n">_ROF</span><span class="p">[</span><span class="o">%</span><span class="n">phys</span><span class="p">]</span><span class="n">_GLC</span><span class="p">[</span><span class="o">%</span><span class="n">phys</span><span class="p">]</span><span class="n">_WAV</span><span class="p">[</span><span class="o">%</span><span class="n">phys</span><span class="p">]</span><span class="n">_ESP</span><span class="p">[</span><span class="n">_BGC</span><span class="o">%</span><span class="n">phys</span><span class="p">]</span>
@@ -167,7 +167,7 @@ For example, DOCN%DOM is the DOCN data ocean (rather than slab-ocean) mode.
 <strong>All</strong> data models have a %phys option that corresponds to the data model mode.</p>
 </section>
 <section id="component-specific-settings-in-a-compset">
-<span id="defining-component-specific-compset-settings"></span><h2><span class="section-number">2.2. </span>Component specific settings in a compset<a class="headerlink" href="#component-specific-settings-in-a-compset" title="Permalink to this heading"></a></h2>
+<span id="defining-component-specific-compset-settings"></span><h2><span class="section-number">2.2. </span>Component specific settings in a compset<a class="headerlink" href="#component-specific-settings-in-a-compset" title="Link to this heading"></a></h2>
 <p>Every model component also contains a <strong>config_component.xml</strong> file that has two functions:</p>
 <ol class="arabic simple">
 <li><p>Specifying the component-specific definitions of what can appear after the <code class="docutils literal notranslate"><span class="pre">%</span></code> in the compset longname, (for example, <code class="docutils literal notranslate"><span class="pre">DOM</span></code> in <code class="docutils literal notranslate"><span class="pre">DOCN%DOM</span></code>).</p></li>
@@ -218,7 +218,7 @@ For example, DOCN%DOM is the DOCN data ocean (rather than slab-ocean) mode.
 <p>To list the possible values, use the <a class="reference external" href="../Tools_user/query_config.html">query_config –component datm</a> command.</p>
 </section>
 <section id="creating-new-compsets">
-<span id="id1"></span><h2><span class="section-number">2.3. </span>Creating New Compsets<a class="headerlink" href="#creating-new-compsets" title="Permalink to this heading"></a></h2>
+<span id="id1"></span><h2><span class="section-number">2.3. </span>Creating New Compsets<a class="headerlink" href="#creating-new-compsets" title="Link to this heading"></a></h2>
 <p>A description of how CIME interprets a compset name is given in the section <a class="reference internal" href="#defining-compsets"><span class="std std-ref">Compset longname</span></a> .</p>
 <p>To create a new compset, you will at a minimum have to:</p>
 <ol class="arabic simple">

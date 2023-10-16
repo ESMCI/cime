@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CIME.baselines package &mdash; CIME master documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/pop_ver.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="CIME.build_scripts package" href="CIME.build_scripts.html" />
+    <link rel="prev" title="CIME.XML package" href="CIME.XML.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            CIME
+          </a>
+              <div class="version">
+                master
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../what_cime/index.html">What is CIME?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users_guide/index.html">Case Control System Part 1: Basic Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users_guide/index.html#case-control-system-part-2-configuration-porting-testing-and-use-cases">Case Control System Part 2: Configuration, Porting, Testing and Use Cases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../build_cpl/index.html">Building a Coupled Model with CIME</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../misc_tools/index.html">Miscellaneous Tools</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../glossary/index.html">Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Tools_user/index.html">User Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../xml_files/index.html">XML Files</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">CIME</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="CIME.html">CIME package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="CIME.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="CIME.BuildTools.html">CIME.BuildTools package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.Servers.html">CIME.Servers package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.html">CIME.SystemTests package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.Tools.html">CIME.Tools package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.html">CIME.XML package</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">CIME.baselines package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.build_scripts.html">CIME.build_scripts package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.case.html">CIME.case package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.data.html">CIME.data package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.scripts.html">CIME.scripts package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.tests.html">CIME.tests package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.aprun">CIME.aprun module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.bless_test_results">CIME.bless_test_results module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.build">CIME.build module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.buildlib">CIME.buildlib module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.buildnml">CIME.buildnml module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.code_checker">CIME.code_checker module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.compare_namelists">CIME.compare_namelists module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.compare_test_results">CIME.compare_test_results module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.config">CIME.config module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.cs_status">CIME.cs_status module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.cs_status_creator">CIME.cs_status_creator module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.date">CIME.date module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.expected_fails">CIME.expected_fails module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.get_tests">CIME.get_tests module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.get_timing">CIME.get_timing module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.hist_utils">CIME.hist_utils module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.jenkins_generic_job">CIME.jenkins_generic_job module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.locked_files">CIME.locked_files module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.namelist">CIME.namelist module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.nmlgen">CIME.nmlgen module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.provenance">CIME.provenance module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.simple_compare">CIME.simple_compare module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.test_scheduler">CIME.test_scheduler module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.test_status">CIME.test_status module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.test_utils">CIME.test_utils module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.user_mod_support">CIME.user_mod_support module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.utils">CIME.utils module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.wait_for_tests">CIME.wait_for_tests module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../Tools_api/modules.html">Tools</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">CIME</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">CIME</a></li>
+          <li class="breadcrumb-item"><a href="CIME.html">CIME package</a></li>
+      <li class="breadcrumb-item active">CIME.baselines package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/CIME_api/CIME.baselines.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="cime-baselines-package">
+<h1>CIME.baselines package<a class="headerlink" href="#cime-baselines-package" title="Link to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-CIME.baselines.performance">
+<span id="cime-baselines-performance-module"></span><h2>CIME.baselines.performance module<a class="headerlink" href="#module-CIME.baselines.performance" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="CIME.baselines.performance.get_cpl_mem_usage">
+<span class="sig-prename descclassname"><span class="pre">CIME.baselines.performance.</span></span><span class="sig-name descname"><span class="pre">get_cpl_mem_usage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cpllog</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/baselines/performance.html#get_cpl_mem_usage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.baselines.performance.get_cpl_mem_usage" title="Link to this definition"></a></dt>
+<dd><p>Read memory usage from coupler log.</p>
+<section id="parameters">
+<h3>Parameters<a class="headerlink" href="#parameters" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>cpllog<span class="classifier">str</span></dt><dd><p>Path to the coupler log.</p>
+</dd>
+</dl>
+</section>
+<section id="returns">
+<h3>Returns<a class="headerlink" href="#returns" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>list</dt><dd><p>Memory usage (data, highwater) as recorded by the coupler or empty list.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="CIME.baselines.performance.get_cpl_throughput">
+<span class="sig-prename descclassname"><span class="pre">CIME.baselines.performance.</span></span><span class="sig-name descname"><span class="pre">get_cpl_throughput</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cpllog</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/baselines/performance.html#get_cpl_throughput"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.baselines.performance.get_cpl_throughput" title="Link to this definition"></a></dt>
+<dd><p>Reads throuhgput from coupler log.</p>
+<section id="id1">
+<h3>Parameters<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>cpllog<span class="classifier">str</span></dt><dd><p>Path to the coupler log.</p>
+</dd>
+</dl>
+</section>
+<section id="id2">
+<h3>Returns<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>int or None</dt><dd><p>Throughput as recorded by the coupler or None</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="CIME.baselines.performance.get_latest_cpl_logs">
+<span class="sig-prename descclassname"><span class="pre">CIME.baselines.performance.</span></span><span class="sig-name descname"><span class="pre">get_latest_cpl_logs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">case</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/baselines/performance.html#get_latest_cpl_logs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.baselines.performance.get_latest_cpl_logs" title="Link to this definition"></a></dt>
+<dd><p>find and return the latest cpl log file in the run directory</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="CIME.baselines.performance.load_coupler_customization">
+<span class="sig-prename descclassname"><span class="pre">CIME.baselines.performance.</span></span><span class="sig-name descname"><span class="pre">load_coupler_customization</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">case</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/baselines/performance.html#load_coupler_customization"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.baselines.performance.load_coupler_customization" title="Link to this definition"></a></dt>
+<dd><p>Loads customizations from the coupler <cite>cime_config</cite> directory.</p>
+<section id="id3">
+<h3>Parameters<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>case<span class="classifier">CIME.case.case.Case</span></dt><dd><p>Current case object.</p>
+</dd>
+</dl>
+</section>
+<section id="id4">
+<h3>Returns<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>CIME.config.Config</dt><dd><p>Runtime configuration.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="CIME.baselines.performance.perf_compare_memory_baseline">
+<span class="sig-prename descclassname"><span class="pre">CIME.baselines.performance.</span></span><span class="sig-name descname"><span class="pre">perf_compare_memory_baseline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">case</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">baseline_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/baselines/performance.html#perf_compare_memory_baseline"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.baselines.performance.perf_compare_memory_baseline" title="Link to this definition"></a></dt>
+<dd><p>Compares model highwater memory usage.</p>
+<section id="id5">
+<h3>Parameters<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>case<span class="classifier">CIME.case.case.Case</span></dt><dd><p>Current case object.</p>
+</dd>
+<dt>baseline_dir<span class="classifier">str</span></dt><dd><p>Overrides the baseline directory.</p>
+</dd>
+</dl>
+</section>
+<section id="id6">
+<h3>Returns<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>below_tolerance<span class="classifier">bool</span></dt><dd><p>Whether the comparison was below the tolerance.</p>
+</dd>
+<dt>comment<span class="classifier">str</span></dt><dd><p>Provides explanation from comparison.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="CIME.baselines.performance.perf_compare_throughput_baseline">
+<span class="sig-prename descclassname"><span class="pre">CIME.baselines.performance.</span></span><span class="sig-name descname"><span class="pre">perf_compare_throughput_baseline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">case</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">baseline_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/baselines/performance.html#perf_compare_throughput_baseline"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.baselines.performance.perf_compare_throughput_baseline" title="Link to this definition"></a></dt>
+<dd><p>Compares model throughput.</p>
+<section id="id7">
+<h3>Parameters<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>case<span class="classifier">CIME.case.case.Case</span></dt><dd><p>Current case object.</p>
+</dd>
+<dt>baseline_dir<span class="classifier">str</span></dt><dd><p>Overrides the baseline directory.</p>
+</dd>
+</dl>
+</section>
+<section id="id8">
+<h3>Returns<a class="headerlink" href="#id8" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>below_tolerance<span class="classifier">bool</span></dt><dd><p>Whether the comparison was below the tolerance.</p>
+</dd>
+<dt>comment<span class="classifier">str</span></dt><dd><p>Provides explanation from comparison.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="CIME.baselines.performance.perf_get_memory">
+<span class="sig-prename descclassname"><span class="pre">CIME.baselines.performance.</span></span><span class="sig-name descname"><span class="pre">perf_get_memory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">case</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/baselines/performance.html#perf_get_memory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.baselines.performance.perf_get_memory" title="Link to this definition"></a></dt>
+<dd><p>Gets the model memory usage.</p>
+<p>First attempts to use a coupler defined method to retrieve the
+models memory usage. If this is not defined then the default
+method of parsing the coupler log is used.</p>
+<section id="id9">
+<h3>Parameters<a class="headerlink" href="#id9" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>case<span class="classifier">CIME.case.case.Case</span></dt><dd><p>Current case object.</p>
+</dd>
+</dl>
+</section>
+<section id="id10">
+<h3>Returns<a class="headerlink" href="#id10" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>str or None</dt><dd><p>Model memory usage.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="CIME.baselines.performance.perf_get_throughput">
+<span class="sig-prename descclassname"><span class="pre">CIME.baselines.performance.</span></span><span class="sig-name descname"><span class="pre">perf_get_throughput</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">case</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/baselines/performance.html#perf_get_throughput"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.baselines.performance.perf_get_throughput" title="Link to this definition"></a></dt>
+<dd><p>Gets the model throughput.</p>
+<p>First attempts to use a coupler define method to retrieve the
+models throughput. If this is not defined then the default
+method of parsing the coupler log is used.</p>
+<section id="id11">
+<h3>Parameters<a class="headerlink" href="#id11" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>case<span class="classifier">CIME.case.case.Case</span></dt><dd><p>Current case object.</p>
+</dd>
+</dl>
+</section>
+<section id="id12">
+<h3>Returns<a class="headerlink" href="#id12" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>str or None</dt><dd><p>Model throughput.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="CIME.baselines.performance.perf_write_baseline">
+<span class="sig-prename descclassname"><span class="pre">CIME.baselines.performance.</span></span><span class="sig-name descname"><span class="pre">perf_write_baseline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">case</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basegen_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throughput</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">memory</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/baselines/performance.html#perf_write_baseline"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.baselines.performance.perf_write_baseline" title="Link to this definition"></a></dt>
+<dd><p>Writes the baseline performance files.</p>
+<section id="id13">
+<h3>Parameters<a class="headerlink" href="#id13" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>case<span class="classifier">CIME.case.case.Case</span></dt><dd><p>Current case object.</p>
+</dd>
+<dt>basegen_dir<span class="classifier">str</span></dt><dd><p>Path to baseline directory.</p>
+</dd>
+<dt>throughput<span class="classifier">bool</span></dt><dd><p>If true, write throughput baseline.</p>
+</dd>
+<dt>memory<span class="classifier">bool</span></dt><dd><p>If true, write memory baseline.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="CIME.baselines.performance.read_baseline_file">
+<span class="sig-prename descclassname"><span class="pre">CIME.baselines.performance.</span></span><span class="sig-name descname"><span class="pre">read_baseline_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">baseline_file</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/baselines/performance.html#read_baseline_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.baselines.performance.read_baseline_file" title="Link to this definition"></a></dt>
+<dd><p>Reads value from <cite>baseline_file</cite>.</p>
+<p>Strips comments and returns the raw content to be decoded.</p>
+<section id="id14">
+<h3>Parameters<a class="headerlink" href="#id14" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>baseline_file<span class="classifier">str</span></dt><dd><p>Path to the baseline file.</p>
+</dd>
+</dl>
+</section>
+<section id="id15">
+<h3>Returns<a class="headerlink" href="#id15" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>str</dt><dd><p>Value stored in baseline file without comments.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="CIME.baselines.performance.write_baseline_file">
+<span class="sig-prename descclassname"><span class="pre">CIME.baselines.performance.</span></span><span class="sig-name descname"><span class="pre">write_baseline_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">baseline_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/baselines/performance.html#write_baseline_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.baselines.performance.write_baseline_file" title="Link to this definition"></a></dt>
+<dd><p>Writes value to <cite>baseline_file</cite>.</p>
+<section id="id16">
+<h3>Parameters<a class="headerlink" href="#id16" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>baseline_file<span class="classifier">str</span></dt><dd><p>Path to the baseline file.</p>
+</dd>
+<dt>value<span class="classifier">str</span></dt><dd><p>Value to write.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+</section>
+<section id="module-CIME.baselines">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-CIME.baselines" title="Link to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="CIME.XML.html" class="btn btn-neutral float-left" title="CIME.XML package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="CIME.build_scripts.html" class="btn btn-neutral float-right" title="CIME.build_scripts package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
+     
+<script>var version_json_loc = "../../../versions.json";</script>
+
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

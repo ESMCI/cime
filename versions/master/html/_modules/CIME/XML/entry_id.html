@@ -11,11 +11,11 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../../_static/pop_ver.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -96,12 +96,16 @@
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="EntryID"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.entry_id.EntryID">[docs]</a><span class="k">class</span> <span class="nc">EntryID</span><span class="p">(</span><span class="n">GenericXML</span><span class="p">):</span>
+<div class="viewcode-block" id="EntryID">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.entry_id.EntryID">[docs]</a>
+<span class="k">class</span> <span class="nc">EntryID</span><span class="p">(</span><span class="n">GenericXML</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="n">GenericXML</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infile</span><span class="p">,</span> <span class="n">schema</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="n">read_only</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">groups</span> <span class="o">=</span> <span class="p">{}</span>
 
-<div class="viewcode-block" id="EntryID.get_default_value"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.entry_id.EntryID.get_default_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_default_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="EntryID.get_default_value">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.entry_id.EntryID.get_default_value">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_default_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set the value of an entry to the default value for that entry</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -118,7 +122,10 @@
 
         <span class="k">return</span> <span class="n">value</span></div>
 
-<div class="viewcode-block" id="EntryID.set_default_value"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.entry_id.EntryID.set_default_value">[docs]</a>    <span class="k">def</span> <span class="nf">set_default_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EntryID.set_default_value">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.entry_id.EntryID.set_default_value">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_default_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
         <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_optional_child</span><span class="p">(</span><span class="s2">&quot;entry&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">vid</span><span class="p">})</span>
         <span class="k">if</span> <span class="n">node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_element_text</span><span class="p">(</span><span class="s2">&quot;default_value&quot;</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">node</span><span class="p">)</span>
@@ -129,7 +136,10 @@
 
         <span class="k">return</span> <span class="n">val</span></div>
 
-<div class="viewcode-block" id="EntryID.get_value_match"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.entry_id.EntryID.get_value_match">[docs]</a>    <span class="k">def</span> <span class="nf">get_value_match</span><span class="p">(</span>
+
+<div class="viewcode-block" id="EntryID.get_value_match">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.entry_id.EntryID.get_value_match">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_value_match</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">vid</span><span class="p">,</span>
         <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -172,6 +182,7 @@
                 <span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;(get_value_match) vid </span><span class="si">{}</span><span class="s2"> value </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">vid</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">value</span></div>
+
 
     <span class="k">def</span> <span class="nf">_get_value_match</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">exact_match</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">replacement_for_none</span><span class="o">=</span><span class="kc">None</span>
@@ -254,12 +265,15 @@
             <span class="n">text</span> <span class="o">=</span> <span class="n">replacement_for_none</span>
         <span class="k">return</span> <span class="n">text</span>
 
-<div class="viewcode-block" id="EntryID.get_node_element_info"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.entry_id.EntryID.get_node_element_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_node_element_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">,</span> <span class="n">element_name</span><span class="p">):</span>
+<div class="viewcode-block" id="EntryID.get_node_element_info">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.entry_id.EntryID.get_node_element_info">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_node_element_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">,</span> <span class="n">element_name</span><span class="p">):</span>
         <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_optional_child</span><span class="p">(</span><span class="s2">&quot;entry&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">vid</span><span class="p">})</span>
         <span class="k">if</span> <span class="n">node</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_node_element_info</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">element_name</span><span class="p">)</span></div>
+
 
     <span class="k">def</span> <span class="nf">_get_node_element_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">element_name</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_element_text</span><span class="p">(</span><span class="n">element_name</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">node</span><span class="p">)</span>
@@ -272,26 +286,37 @@
             <span class="k">return</span> <span class="s2">&quot;char&quot;</span>
         <span class="k">return</span> <span class="n">val</span>
 
-<div class="viewcode-block" id="EntryID.get_type_info"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.entry_id.EntryID.get_type_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_type_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">):</span>
+<div class="viewcode-block" id="EntryID.get_type_info">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.entry_id.EntryID.get_type_info">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_type_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">):</span>
         <span class="n">vid</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_if_comp_var</span><span class="p">(</span><span class="n">vid</span><span class="p">)</span>
         <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scan_optional_child</span><span class="p">(</span><span class="s2">&quot;entry&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">vid</span><span class="p">})</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_type_info</span><span class="p">(</span><span class="n">node</span><span class="p">)</span></div>
 
+
     <span class="c1"># pylint: disable=unused-argument</span>
-<div class="viewcode-block" id="EntryID.check_if_comp_var"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.entry_id.EntryID.check_if_comp_var">[docs]</a>    <span class="k">def</span> <span class="nf">check_if_comp_var</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">node</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="EntryID.check_if_comp_var">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.entry_id.EntryID.check_if_comp_var">[docs]</a>
+    <span class="k">def</span> <span class="nf">check_if_comp_var</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">node</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="c1"># handled in classes</span>
         <span class="k">return</span> <span class="n">vid</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">False</span></div>
+
 
     <span class="k">def</span> <span class="nf">_get_default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_node_element_info</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="s2">&quot;default_value&quot;</span><span class="p">)</span>
 
     <span class="c1"># Get description , expect child with tag &quot;description&quot; for parent node</span>
-<div class="viewcode-block" id="EntryID.get_description"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.entry_id.EntryID.get_description">[docs]</a>    <span class="k">def</span> <span class="nf">get_description</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+<div class="viewcode-block" id="EntryID.get_description">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.entry_id.EntryID.get_description">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_description</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_node_element_info</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="s2">&quot;desc&quot;</span><span class="p">)</span></div>
+
 
     <span class="c1"># Get group , expect node with tag &quot;group&quot;</span>
     <span class="c1"># entry id nodes are children of group nodes</span>
-<div class="viewcode-block" id="EntryID.get_groups"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.entry_id.EntryID.get_groups">[docs]</a>    <span class="k">def</span> <span class="nf">get_groups</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+<div class="viewcode-block" id="EntryID.get_groups">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.entry_id.EntryID.get_groups">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_groups</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
         <span class="n">groups</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="s2">&quot;group&quot;</span><span class="p">)</span>
         <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">nodes</span> <span class="o">=</span> <span class="p">[]</span>
@@ -303,11 +328,15 @@
 
         <span class="k">return</span> <span class="n">result</span></div>
 
-<div class="viewcode-block" id="EntryID.get_valid_values"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.entry_id.EntryID.get_valid_values">[docs]</a>    <span class="k">def</span> <span class="nf">get_valid_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EntryID.get_valid_values">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.entry_id.EntryID.get_valid_values">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_valid_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">):</span>
         <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scan_optional_child</span><span class="p">(</span><span class="s2">&quot;entry&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">vid</span><span class="p">})</span>
         <span class="k">if</span> <span class="n">node</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_valid_values</span><span class="p">(</span><span class="n">node</span><span class="p">)</span></div>
+
 
     <span class="k">def</span> <span class="nf">_get_valid_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
         <span class="n">valid_values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_element_text</span><span class="p">(</span><span class="s2">&quot;valid_values&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">node</span><span class="p">)</span>
@@ -316,14 +345,20 @@
             <span class="n">valid_values_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">lstrip</span><span class="p">()</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">valid_values</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)]</span>
         <span class="k">return</span> <span class="n">valid_values_list</span>
 
-<div class="viewcode-block" id="EntryID.set_valid_values"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.entry_id.EntryID.set_valid_values">[docs]</a>    <span class="k">def</span> <span class="nf">set_valid_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">,</span> <span class="n">new_valid_values</span><span class="p">):</span>
+<div class="viewcode-block" id="EntryID.set_valid_values">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.entry_id.EntryID.set_valid_values">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_valid_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">,</span> <span class="n">new_valid_values</span><span class="p">):</span>
         <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scan_optional_child</span><span class="p">(</span><span class="s2">&quot;entry&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">vid</span><span class="p">})</span>
         <span class="k">if</span> <span class="n">node</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_valid_values</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">new_valid_values</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EntryID.get_nodes_by_id"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.entry_id.EntryID.get_nodes_by_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_nodes_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EntryID.get_nodes_by_id">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.entry_id.EntryID.get_nodes_by_id">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_nodes_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">scan_children</span><span class="p">(</span><span class="s2">&quot;entry&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">vid</span><span class="p">})</span></div>
+
 
     <span class="k">def</span> <span class="nf">_set_valid_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">new_valid_values</span><span class="p">):</span>
         <span class="n">old_vv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_valid_values</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
@@ -364,7 +399,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">,</span> <span class="n">str_value</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">value</span>
 
-<div class="viewcode-block" id="EntryID.get_valid_value_string"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.entry_id.EntryID.get_valid_value_string">[docs]</a>    <span class="k">def</span> <span class="nf">get_valid_value_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">vid</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ignore_type</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="EntryID.get_valid_value_string">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.entry_id.EntryID.get_valid_value_string">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_valid_value_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">vid</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ignore_type</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="n">valid_values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_valid_values</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">ignore_type</span><span class="p">:</span>
             <span class="n">expect</span><span class="p">(</span>
@@ -385,7 +422,10 @@
             <span class="p">)</span>
         <span class="k">return</span> <span class="n">str_value</span></div>
 
-<div class="viewcode-block" id="EntryID.set_value"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.entry_id.EntryID.set_value">[docs]</a>    <span class="k">def</span> <span class="nf">set_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ignore_type</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EntryID.set_value">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.entry_id.EntryID.set_value">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ignore_type</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set the value of an entry-id field to value</span>
 <span class="sd">        Returns the value or None if not found</span>
@@ -402,7 +442,10 @@
             <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_value</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">vid</span><span class="p">,</span> <span class="n">subgroup</span><span class="p">,</span> <span class="n">ignore_type</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">val</span></div>
 
-<div class="viewcode-block" id="EntryID.get_values"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.entry_id.EntryID.get_values">[docs]</a>    <span class="k">def</span> <span class="nf">get_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">resolved</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EntryID.get_values">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.entry_id.EntryID.get_values">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">resolved</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Same functionality as get_value but it returns a list, if the</span>
 <span class="sd">        value in xml contains commas the list have multiple elements split on</span>
@@ -426,8 +469,11 @@
                 <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">convert_to_type</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">type_str</span><span class="p">,</span> <span class="n">vid</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">results</span></div>
 
+
     <span class="c1"># pylint: disable=arguments-differ</span>
-<div class="viewcode-block" id="EntryID.get_value"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.entry_id.EntryID.get_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">resolved</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="EntryID.get_value">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.entry_id.EntryID.get_value">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">resolved</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a value for entry with id attribute vid.</span>
 <span class="sd">        or from the values field if the attribute argument is provided</span>
@@ -454,6 +500,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">type_str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_type_info</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">convert_to_type</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">type_str</span><span class="p">,</span> <span class="n">vid</span><span class="p">)</span></div>
+
 
     <span class="k">def</span> <span class="nf">_get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">resolved</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -484,14 +531,19 @@
 
         <span class="k">return</span> <span class="n">val</span>
 
-<div class="viewcode-block" id="EntryID.get_child_content"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.entry_id.EntryID.get_child_content">[docs]</a>    <span class="k">def</span> <span class="nf">get_child_content</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">,</span> <span class="n">childname</span><span class="p">):</span>
+<div class="viewcode-block" id="EntryID.get_child_content">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.entry_id.EntryID.get_child_content">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_child_content</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">,</span> <span class="n">childname</span><span class="p">):</span>
         <span class="n">val</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_optional_child</span><span class="p">(</span><span class="s2">&quot;entry&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">vid</span><span class="p">})</span>
         <span class="k">if</span> <span class="n">node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_element_text</span><span class="p">(</span><span class="n">childname</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">node</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">val</span></div>
 
-<div class="viewcode-block" id="EntryID.get_elements_from_child_content"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.entry_id.EntryID.get_elements_from_child_content">[docs]</a>    <span class="k">def</span> <span class="nf">get_elements_from_child_content</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">childname</span><span class="p">,</span> <span class="n">childcontent</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EntryID.get_elements_from_child_content">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.entry_id.EntryID.get_elements_from_child_content">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_elements_from_child_content</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">childname</span><span class="p">,</span> <span class="n">childcontent</span><span class="p">):</span>
         <span class="n">nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="s2">&quot;entry&quot;</span><span class="p">)</span>
         <span class="n">elements</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
@@ -505,7 +557,10 @@
 
         <span class="k">return</span> <span class="n">elements</span></div>
 
-<div class="viewcode-block" id="EntryID.add_elements_by_group"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.entry_id.EntryID.add_elements_by_group">[docs]</a>    <span class="k">def</span> <span class="nf">add_elements_by_group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">srcobj</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">infile</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EntryID.add_elements_by_group">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.entry_id.EntryID.add_elements_by_group">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_elements_by_group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">srcobj</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">infile</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add elements from srcobj to self under the appropriate</span>
 <span class="sd">        group element, entries to be added must have a child element</span>
@@ -551,13 +606,19 @@
 
         <span class="k">return</span> <span class="n">nodelist</span></div>
 
-<div class="viewcode-block" id="EntryID.cleanupnode"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.entry_id.EntryID.cleanupnode">[docs]</a>    <span class="k">def</span> <span class="nf">cleanupnode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EntryID.cleanupnode">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.entry_id.EntryID.cleanupnode">[docs]</a>
+    <span class="k">def</span> <span class="nf">cleanupnode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        in env_base.py, not expected to get here</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">expect</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="s2">&quot; Not expected to be here </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">)))</span></div>
 
-<div class="viewcode-block" id="EntryID.compare_xml"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.entry_id.EntryID.compare_xml">[docs]</a>    <span class="k">def</span> <span class="nf">compare_xml</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">otherroot</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EntryID.compare_xml">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.entry_id.EntryID.compare_xml">[docs]</a>
+    <span class="k">def</span> <span class="nf">compare_xml</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">otherroot</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">xmldiffs</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">if</span> <span class="n">root</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">expect</span><span class="p">(</span><span class="n">otherroot</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot; inconsistant request&quot;</span><span class="p">)</span>
@@ -618,7 +679,10 @@
                                                 <span class="p">]</span>
         <span class="k">return</span> <span class="n">xmldiffs</span></div>
 
-<div class="viewcode-block" id="EntryID.overwrite_existing_entries"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.entry_id.EntryID.overwrite_existing_entries">[docs]</a>    <span class="k">def</span> <span class="nf">overwrite_existing_entries</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EntryID.overwrite_existing_entries">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.entry_id.EntryID.overwrite_existing_entries">[docs]</a>
+    <span class="k">def</span> <span class="nf">overwrite_existing_entries</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># if there exist two nodes with the same id delete the first one.</span>
         <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="s2">&quot;entry&quot;</span><span class="p">):</span>
             <span class="n">vid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">)</span>
@@ -635,10 +699,12 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">remove_child</span><span class="p">(</span><span class="n">samenodes</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">read_only</span> <span class="o">=</span> <span class="n">read_only</span></div>
 
+
     <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">scan_children</span><span class="p">(</span><span class="s2">&quot;entry&quot;</span><span class="p">):</span>
             <span class="n">vid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">)</span>
             <span class="k">yield</span> <span class="n">vid</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">vid</span><span class="p">)</span></div>
+
 </pre></div>
 
            </div>

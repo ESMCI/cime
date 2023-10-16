@@ -12,11 +12,11 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/sphinx_highlight.js"></script>
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../_static/pop_ver.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -62,7 +62,13 @@
 <li class="toctree-l3"><a class="reference internal" href="#testname-syntax">8.1. Testname syntax</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#query-testlists">8.2. Query_testlists</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#using-create-test-e3sm">8.3. Using <strong>create_test</strong> (E3SM)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#managing-baselines">8.4. Managing baselines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#baselines">8.4. Baselines</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#creating-a-baseline">8.4.1. Creating a baseline</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#comparing-a-baseline">8.4.2. Comparing a baseline</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#managing-baselines">8.4.3. Managing baselines</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#performance-baselines">8.4.4. Performance baselines</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#adding-tests">8.5. Adding tests</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#cime-developer-s-guide">8.6. CIME Developer’s guide</a></li>
 </ul>
@@ -111,7 +117,7 @@
            <div itemprop="articleBody">
              
   <section id="testing">
-<span id="id1"></span><h1><span class="section-number">8. </span>Testing<a class="headerlink" href="#testing" title="Permalink to this heading"></a></h1>
+<span id="id1"></span><h1><span class="section-number">8. </span>Testing<a class="headerlink" href="#testing" title="Link to this heading"></a></h1>
 <p><a class="reference external" href="../Tools_user/create_test.html">create_test</a>
 is the tool we use to test both CIME and CIME-driven models.
 It can be used as an easy way to run a single basic test or an entire suite of tests.
@@ -157,7 +163,7 @@ you can run <a class="reference internal" href="#id5">query_testlists</a>.</p>
 </pre></div>
 </div>
 <section id="testname-syntax">
-<h2><span class="section-number">8.1. </span>Testname syntax<a class="headerlink" href="#testname-syntax" title="Permalink to this heading"></a></h2>
+<h2><span class="section-number">8.1. </span>Testname syntax<a class="headerlink" href="#testname-syntax" title="Link to this heading"></a></h2>
 <p id="test-naming">Tests must be named with the following forms, [ ]=optional:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">TESTTYPE</span><span class="p">[</span><span class="n">_MODIFIERS</span><span class="p">]</span><span class="o">.</span><span class="n">GRID</span><span class="o">.</span><span class="n">COMPSET</span><span class="p">[</span><span class="o">.</span><span class="n">MACHINE_COMPILER</span><span class="p">][</span><span class="o">.</span><span class="n">GROUP</span><span class="o">-</span><span class="n">TESTMODS</span><span class="p">]</span>
 </pre></div>
@@ -492,7 +498,7 @@ Examples include</p>
 current status of all your tests.</p>
 </section>
 <section id="query-testlists">
-<h2><span class="section-number">8.2. </span>Query_testlists<a class="headerlink" href="#query-testlists" title="Permalink to this heading"></a></h2>
+<h2><span class="section-number">8.2. </span>Query_testlists<a class="headerlink" href="#query-testlists" title="Link to this heading"></a></h2>
 <p id="id5"><strong>$CIMEROOT/scripts/query_testlists</strong> gathers descriptions of the tests and testlists available
 for CESM, the components, and projects.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">--xml-{compiler,machine,category,testlist}</span></code> arguments can be used
@@ -506,7 +512,7 @@ The available categories, with the tests they encompass, can be listed by:</p>
 such as queue, walltime, etc..</p>
 </section>
 <section id="using-create-test-e3sm">
-<h2><span class="section-number">8.3. </span>Using <strong>create_test</strong> (E3SM)<a class="headerlink" href="#using-create-test-e3sm" title="Permalink to this heading"></a></h2>
+<h2><span class="section-number">8.3. </span>Using <strong>create_test</strong> (E3SM)<a class="headerlink" href="#using-create-test-e3sm" title="Link to this heading"></a></h2>
 <p id="id6">Usage will differ slightly depending on if you’re using E3SM or CESM.</p>
 <p>Using examples to illustrate common use cases</p>
 <p>To run a test:</p>
@@ -585,28 +591,138 @@ such as queue, walltime, etc..</p>
 <p>You can see that <a class="reference external" href="../Tools_user/create_test.html">create_test</a>  informs the user of the case directory and of the progress and duration
 of the various test phases.</p>
 </section>
-<section id="managing-baselines">
-<h2><span class="section-number">8.4. </span>Managing baselines<a class="headerlink" href="#managing-baselines" title="Permalink to this heading"></a></h2>
-<p id="id8">A big part of testing is managing your baselines (sometimes called gold results). We have provided
-tools to help the user do this without having to repeat full runs of test cases with <a class="reference external" href="../Tools_user/create_test.html">create_test</a> .</p>
-<p>bless_test_results: Takes a batch of cases of tests that have already been run and copy their
-results to a baseline area.</p>
-<p>compare_test_results: Takes a batch of cases of tests that have already been run and compare their
-results to a baseline area.</p>
-<p>Take a batch of results for the jenkins user for the testid ‘mytest’ and copy the results to
-baselines for ‘master’:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">bless_test_results</span> <span class="o">-</span><span class="n">r</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">jenkins</span><span class="o">/</span><span class="n">e3sm</span><span class="o">/</span><span class="n">scratch</span><span class="o">/</span><span class="n">jenkins</span><span class="o">/</span> <span class="o">-</span><span class="n">t</span> <span class="n">mytest</span> <span class="o">-</span><span class="n">b</span> <span class="n">master</span>
-</pre></div>
-</div>
-<p>Take a batch of results for the jenkins user for the testid ‘mytest’ and compare the results to
-baselines for ‘master’:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">compare_test_results</span> <span class="o">-</span><span class="n">r</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">jenkins</span><span class="o">/</span><span class="n">e3sm</span><span class="o">/</span><span class="n">scratch</span><span class="o">/</span><span class="n">jenkins</span><span class="o">/</span> <span class="o">-</span><span class="n">t</span> <span class="n">mytest</span> <span class="o">-</span><span class="n">b</span> <span class="n">master</span>
+<section id="baselines">
+<h2><span class="section-number">8.4. </span>Baselines<a class="headerlink" href="#baselines" title="Link to this heading"></a></h2>
+<p id="id8">A big part of testing is managing your baselines (sometimes called gold results). We have provided tools to help the user do this without having to repeat full runs of test cases with <a class="reference external" href="../Tools_user/create_test.html">create_test</a> .</p>
+<section id="creating-a-baseline">
+<h3><span class="section-number">8.4.1. </span>Creating a baseline<a class="headerlink" href="#creating-a-baseline" title="Link to this heading"></a></h3>
+<p id="id10">A baseline can be generated by passing <code class="docutils literal notranslate"><span class="pre">-g</span></code> to <a class="reference external" href="../Tools_user/create_test.html">create_test</a>. There are additional options to control generating baselines.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">scripts</span><span class="o">/</span><span class="n">create_test</span> <span class="o">-</span><span class="n">b</span> <span class="n">master</span> <span class="o">-</span><span class="n">g</span> <span class="n">SMS</span><span class="o">.</span><span class="n">ne30_f19_g16_rx1</span><span class="o">.</span><span class="n">A</span>
 </pre></div>
 </div>
 </section>
+<section id="comparing-a-baseline">
+<h3><span class="section-number">8.4.2. </span>Comparing a baseline<a class="headerlink" href="#comparing-a-baseline" title="Link to this heading"></a></h3>
+<p id="id12">Comparing the output of a test to a baseline is achieved by passing <code class="docutils literal notranslate"><span class="pre">-c</span></code> to <a class="reference external" href="../Tools_user/create_test.html">create_test</a>.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">scripts</span><span class="o">/</span><span class="n">create_test</span> <span class="o">-</span><span class="n">b</span> <span class="n">master</span> <span class="o">-</span><span class="n">c</span> <span class="n">SMS</span><span class="o">.</span><span class="n">ne30_f19_g16_rx1</span><span class="o">.</span><span class="n">A</span>
+</pre></div>
+</div>
+</section>
+<section id="managing-baselines">
+<h3><span class="section-number">8.4.3. </span>Managing baselines<a class="headerlink" href="#managing-baselines" title="Link to this heading"></a></h3>
+<p id="id14">Once a baseline has been generated it can be managed using the <a class="reference external" href="../Tools_user/bless_test_results.html">bless_test_results</a> tool. The tool provides the ability to bless different features of the baseline. The currently supported features are namelist files, history files, and performance metrics. The performance metrics are separated into throughput and memory usage.</p>
+<p>The following command can be used to compare a test to a baseline and bless an update to the history file.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">CIME</span><span class="o">/</span><span class="n">Tools</span><span class="o">/</span><span class="n">bless_test_results</span> <span class="o">-</span><span class="n">b</span> <span class="n">master</span> <span class="o">--</span><span class="n">hist</span><span class="o">-</span><span class="n">only</span> <span class="n">SMS</span><span class="o">.</span><span class="n">ne30_f19_g16_rx1</span><span class="o">.</span><span class="n">A</span>
+</pre></div>
+</div>
+<p>The <cite>compare_test_results &lt;../Tools_user/compare_test_results.html&gt;_</cite> tool can be used to quickly compare tests to baselines and report any <cite>diffs</cite>.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">CIME</span><span class="o">/</span><span class="n">Tools</span><span class="o">/</span><span class="n">compare_test_results</span> <span class="o">-</span><span class="n">b</span> <span class="n">master</span> <span class="n">SMS</span><span class="o">.</span><span class="n">ne30_f19_g16_rx1</span><span class="o">.</span><span class="n">A</span>
+</pre></div>
+</div>
+</section>
+<section id="performance-baselines">
+<h3><span class="section-number">8.4.4. </span>Performance baselines<a class="headerlink" href="#performance-baselines" title="Link to this heading"></a></h3>
+<p id="id15">By default performance baselines are generated by parsing the coupler log and comparing the throughput in SYPD (Simulated Years Per Day) and the memory usage high water.</p>
+<p>This can be customized by creating a python module under <code class="docutils literal notranslate"><span class="pre">$DRIVER_ROOT/cime_config/customize</span></code>. There are four hooks that can be used to customize the generation and comparison.</p>
+<ul class="simple">
+<li><p>perf_get_throughput</p></li>
+<li><p>perf_get_memory</p></li>
+<li><p>perf_compare_throughput_baseline</p></li>
+<li><p>perf_compare_memory_baseline</p></li>
+</ul>
+<p>The following pseudo code is an example of this customization.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># $DRIVER/cime_config/customize/perf_baseline.py</span>
+
+<span class="k">def</span> <span class="nf">perf_get_throughput</span><span class="p">(</span><span class="n">case</span><span class="p">):</span>
+<span class="w">  </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  Parameters</span>
+<span class="sd">  ----------</span>
+<span class="sd">  case : CIME.case.case.Case</span>
+<span class="sd">    Current case object.</span>
+
+<span class="sd">  Returns</span>
+<span class="sd">  -------</span>
+<span class="sd">  str</span>
+<span class="sd">    Storing throughput value.</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="n">current</span> <span class="o">=</span> <span class="n">analyze_throughput</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+
+  <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">current</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">perf_get_memory</span><span class="p">(</span><span class="n">case</span><span class="p">):</span>
+<span class="w">  </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  Parameters</span>
+<span class="sd">  ----------</span>
+<span class="sd">  case : CIME.case.case.Case</span>
+<span class="sd">    Current case object.</span>
+
+<span class="sd">  Returns</span>
+<span class="sd">  -------</span>
+<span class="sd">  str</span>
+<span class="sd">    Storing memory value.</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="n">current</span> <span class="o">=</span> <span class="n">analyze_memory</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
+
+  <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">current</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">perf_compare_throughput_baseline</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">baseline</span><span class="p">,</span> <span class="n">tolerance</span><span class="p">):</span>
+<span class="w">  </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  Parameters</span>
+<span class="sd">  ----------</span>
+<span class="sd">  case : CIME.case.case.Case</span>
+<span class="sd">    Current case object.</span>
+<span class="sd">  baseline : str</span>
+<span class="sd">    Baseline throughput value.</span>
+<span class="sd">  tolerance : float</span>
+<span class="sd">    Allowed difference tolerance.</span>
+
+<span class="sd">  Returns</span>
+<span class="sd">  -------</span>
+<span class="sd">  bool</span>
+<span class="sd">    Whether throughput diff is below tolerance.</span>
+<span class="sd">  str</span>
+<span class="sd">    Comments about the results.</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="n">current</span> <span class="o">=</span> <span class="n">analyze_throughput</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
+
+  <span class="n">baseline</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">baseline</span><span class="p">)</span>
+
+  <span class="n">diff</span><span class="p">,</span> <span class="n">comments</span> <span class="o">=</span> <span class="n">generate_diff</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+
+  <span class="k">return</span> <span class="n">diff</span><span class="p">,</span> <span class="n">comments</span>
+
+<span class="k">def</span> <span class="nf">perf_compare_memory_baseline</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">baseline</span><span class="p">,</span> <span class="n">tolerance</span><span class="p">):</span>
+<span class="w">  </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  Parameters</span>
+<span class="sd">  ----------</span>
+<span class="sd">  case : CIME.case.case.Case</span>
+<span class="sd">    Current case object.</span>
+<span class="sd">  baseline : str</span>
+<span class="sd">    Baseline memory value.</span>
+<span class="sd">  tolerance : float</span>
+<span class="sd">    Allowed difference tolerance.</span>
+
+<span class="sd">  Returns</span>
+<span class="sd">  -------</span>
+<span class="sd">  bool</span>
+<span class="sd">    Whether memory diff is below tolerance.</span>
+<span class="sd">  str</span>
+<span class="sd">    Comments about the results.</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="n">current</span> <span class="o">=</span> <span class="n">analyze_memory</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
+
+  <span class="n">baseline</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">baseline</span><span class="p">)</span>
+
+  <span class="n">diff</span><span class="p">,</span> <span class="n">comments</span> <span class="o">=</span> <span class="n">generate_diff</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+
+  <span class="k">return</span> <span class="n">diff</span><span class="p">,</span> <span class="n">comments</span>
+</pre></div>
+</div>
+</section>
+</section>
 <section id="adding-tests">
-<h2><span class="section-number">8.5. </span>Adding tests<a class="headerlink" href="#adding-tests" title="Permalink to this heading"></a></h2>
-<p id="id10">E3SM</p>
+<h2><span class="section-number">8.5. </span>Adding tests<a class="headerlink" href="#adding-tests" title="Link to this heading"></a></h2>
+<p id="id16">E3SM</p>
 <p>Open the config/e3sm/tests.py file, you’ll see a python dict at the top
 of the file called _TESTS, find the test category you want to
 change in this dict and add your testcase to the list.  Note the
@@ -650,8 +766,8 @@ and follow the <a class="reference internal" href="#individual">individual</a> t
 If you want this test to be part of a suite, then it must be described in the relevant testlists_YYY.xml file.</p>
 </section>
 <section id="cime-developer-s-guide">
-<h2><span class="section-number">8.6. </span>CIME Developer’s guide<a class="headerlink" href="#cime-developer-s-guide" title="Permalink to this heading"></a></h2>
-<p id="id11">The CIME Developer’s guide can be found on the project’s GitHub <a class="reference external" href="https://github.com/ESMCI/cime/wiki/CIME-Developers-Guide">wiki</a>.</p>
+<h2><span class="section-number">8.6. </span>CIME Developer’s guide<a class="headerlink" href="#cime-developer-s-guide" title="Link to this heading"></a></h2>
+<p id="id17">The CIME Developer’s guide can be found on the project’s GitHub <a class="reference external" href="https://github.com/ESMCI/cime/wiki/CIME-Developers-Guide">wiki</a>.</p>
 </section>
 </section>
 

@@ -11,11 +11,11 @@
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/sphinx_highlight.js"></script>
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../_static/pop_ver.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -152,7 +152,9 @@
 <span class="p">)</span>
 
 
-<div class="viewcode-block" id="CmakeTmpBuildDir"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.build.CmakeTmpBuildDir">[docs]</a><span class="k">class</span> <span class="nc">CmakeTmpBuildDir</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="CmakeTmpBuildDir">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.build.CmakeTmpBuildDir">[docs]</a>
+<span class="k">class</span> <span class="nc">CmakeTmpBuildDir</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Use to create a temporary cmake build dir for the purposes of querying</span>
 <span class="sd">    Macros.</span>
@@ -170,8 +172,11 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_entered</span> <span class="o">=</span> <span class="kc">False</span>
 
-<div class="viewcode-block" id="CmakeTmpBuildDir.get_full_tmpdir"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.build.CmakeTmpBuildDir.get_full_tmpdir">[docs]</a>    <span class="k">def</span> <span class="nf">get_full_tmpdir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CmakeTmpBuildDir.get_full_tmpdir">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.build.CmakeTmpBuildDir.get_full_tmpdir">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_full_tmpdir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_rootdir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tmpdir</span><span class="p">)</span></div>
+
 
     <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">cmake_macros_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_macroloc</span><span class="p">,</span> <span class="s2">&quot;cmake_macros&quot;</span><span class="p">)</span>
@@ -194,7 +199,9 @@
         <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_full_tmpdir</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_entered</span> <span class="o">=</span> <span class="kc">False</span>
 
-<div class="viewcode-block" id="CmakeTmpBuildDir.get_makefile_vars"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.build.CmakeTmpBuildDir.get_makefile_vars">[docs]</a>    <span class="k">def</span> <span class="nf">get_makefile_vars</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">comp</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cmake_args</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="CmakeTmpBuildDir.get_makefile_vars">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.build.CmakeTmpBuildDir.get_makefile_vars">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_makefile_vars</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">comp</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cmake_args</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Run cmake and process output to a list of variable settings</span>
 
@@ -236,10 +243,14 @@
             <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">output_to_keep</span></div></div>
+        <span class="k">return</span> <span class="n">output_to_keep</span></div>
+</div>
 
 
-<div class="viewcode-block" id="generate_makefile_macro"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.build.generate_makefile_macro">[docs]</a><span class="k">def</span> <span class="nf">generate_makefile_macro</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">caseroot</span><span class="p">):</span>
+
+<div class="viewcode-block" id="generate_makefile_macro">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.build.generate_makefile_macro">[docs]</a>
+<span class="k">def</span> <span class="nf">generate_makefile_macro</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">caseroot</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generates a flat Makefile macro file based on the CMake cache system.</span>
 <span class="sd">    This macro is only used by certain sharedlibs since components use CMake.</span>
@@ -299,7 +310,10 @@
         <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">all_output</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="get_standard_makefile_args"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.build.get_standard_makefile_args">[docs]</a><span class="k">def</span> <span class="nf">get_standard_makefile_args</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">shared_lib</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="get_standard_makefile_args">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.build.get_standard_makefile_args">[docs]</a>
+<span class="k">def</span> <span class="nf">get_standard_makefile_args</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">shared_lib</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="n">make_args</span> <span class="o">=</span> <span class="s2">&quot;CIME_MODEL=</span><span class="si">{}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MODEL&quot;</span><span class="p">))</span>
     <span class="n">make_args</span> <span class="o">+=</span> <span class="s2">&quot; SMP=</span><span class="si">{}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">stringify_bool</span><span class="p">(</span><span class="n">case</span><span class="o">.</span><span class="n">get_build_threaded</span><span class="p">()))</span>
     <span class="n">expect</span><span class="p">(</span>
@@ -310,6 +324,7 @@
         <span class="n">make_args</span> <span class="o">+=</span> <span class="n">xml_to_make_variable</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">var</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">make_args</span></div>
+
 
 
 <span class="k">def</span> <span class="nf">_get_compset_comps</span><span class="p">(</span><span class="n">case</span><span class="p">):</span>
@@ -326,7 +341,9 @@
     <span class="k">return</span> <span class="n">comps</span>
 
 
-<div class="viewcode-block" id="get_standard_cmake_args"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.build.get_standard_cmake_args">[docs]</a><span class="k">def</span> <span class="nf">get_standard_cmake_args</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">sharedpath</span><span class="p">):</span>
+<div class="viewcode-block" id="get_standard_cmake_args">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.build.get_standard_cmake_args">[docs]</a>
+<span class="k">def</span> <span class="nf">get_standard_cmake_args</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">sharedpath</span><span class="p">):</span>
     <span class="n">cmake_args</span> <span class="o">=</span> <span class="s2">&quot;-DCIME_MODEL=</span><span class="si">{}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MODEL&quot;</span><span class="p">))</span>
     <span class="n">cmake_args</span> <span class="o">+=</span> <span class="s2">&quot;-DSRC_ROOT=</span><span class="si">{}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;SRCROOT&quot;</span><span class="p">))</span>
     <span class="n">cmake_args</span> <span class="o">+=</span> <span class="s2">&quot; -Dcompile_threaded=</span><span class="si">{}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
@@ -376,7 +393,10 @@
     <span class="k">return</span> <span class="n">cmake_args</span></div>
 
 
-<div class="viewcode-block" id="xml_to_make_variable"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.build.xml_to_make_variable">[docs]</a><span class="k">def</span> <span class="nf">xml_to_make_variable</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">varname</span><span class="p">,</span> <span class="n">cmake</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="xml_to_make_variable">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.build.xml_to_make_variable">[docs]</a>
+<span class="k">def</span> <span class="nf">xml_to_make_variable</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">varname</span><span class="p">,</span> <span class="n">cmake</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="n">varvalue</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">varname</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">varvalue</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="s2">&quot;&quot;</span>
@@ -393,8 +413,11 @@
         <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">=</span><span class="si">{}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">varname</span><span class="p">,</span> <span class="n">varvalue</span><span class="p">)</span></div>
 
 
+
 <span class="c1">###############################################################################</span>
-<div class="viewcode-block" id="uses_kokkos"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.build.uses_kokkos">[docs]</a><span class="k">def</span> <span class="nf">uses_kokkos</span><span class="p">(</span><span class="n">case</span><span class="p">):</span>
+<div class="viewcode-block" id="uses_kokkos">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.build.uses_kokkos">[docs]</a>
+<span class="k">def</span> <span class="nf">uses_kokkos</span><span class="p">(</span><span class="n">case</span><span class="p">):</span>
     <span class="c1">###############################################################################</span>
     <span class="n">cam_target</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CAM_TARGET&quot;</span><span class="p">)</span>
     <span class="c1"># atm_comp   = case.get_value(&quot;COMP_ATM&quot;) # scream does not use the shared kokkoslib for now</span>
@@ -404,6 +427,7 @@
         <span class="s2">&quot;theta-l&quot;</span><span class="p">,</span>
         <span class="s2">&quot;theta-l_kokkos&quot;</span><span class="p">,</span>
     <span class="p">)</span></div>
+
 
 
 <span class="c1">###############################################################################</span>
@@ -1355,7 +1379,9 @@
 
 
 <span class="c1">###############################################################################</span>
-<div class="viewcode-block" id="post_build"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.build.post_build">[docs]</a><span class="k">def</span> <span class="nf">post_build</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">logs</span><span class="p">,</span> <span class="n">build_complete</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">save_build_provenance</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="post_build">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.build.post_build">[docs]</a>
+<span class="k">def</span> <span class="nf">post_build</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">logs</span><span class="p">,</span> <span class="n">build_complete</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">save_build_provenance</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="c1">###############################################################################</span>
     <span class="k">for</span> <span class="n">log</span> <span class="ow">in</span> <span class="n">logs</span><span class="p">:</span>
         <span class="n">gzip_existing_file</span><span class="p">(</span><span class="n">log</span><span class="p">)</span>
@@ -1381,8 +1407,11 @@
         <span class="n">lock_file</span><span class="p">(</span><span class="s2">&quot;env_build.xml&quot;</span><span class="p">,</span> <span class="n">caseroot</span><span class="o">=</span><span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">))</span></div>
 
 
+
 <span class="c1">###############################################################################</span>
-<div class="viewcode-block" id="case_build"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.build.case_build">[docs]</a><span class="k">def</span> <span class="nf">case_build</span><span class="p">(</span>
+<div class="viewcode-block" id="case_build">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.build.case_build">[docs]</a>
+<span class="k">def</span> <span class="nf">case_build</span><span class="p">(</span>
     <span class="n">caseroot</span><span class="p">,</span>
     <span class="n">case</span><span class="p">,</span>
     <span class="n">sharedlib_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -1413,13 +1442,17 @@
     <span class="k">return</span> <span class="n">run_and_log_case_status</span><span class="p">(</span><span class="n">functor</span><span class="p">,</span> <span class="n">cb</span><span class="p">,</span> <span class="n">caseroot</span><span class="o">=</span><span class="n">caseroot</span><span class="p">)</span></div>
 
 
+
 <span class="c1">###############################################################################</span>
-<div class="viewcode-block" id="clean"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.build.clean">[docs]</a><span class="k">def</span> <span class="nf">clean</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">cleanlist</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">clean_all</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">clean_depends</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="clean">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.build.clean">[docs]</a>
+<span class="k">def</span> <span class="nf">clean</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">cleanlist</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">clean_all</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">clean_depends</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="c1">###############################################################################</span>
     <span class="n">functor</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">_clean_impl</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">cleanlist</span><span class="p">,</span> <span class="n">clean_all</span><span class="p">,</span> <span class="n">clean_depends</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">run_and_log_case_status</span><span class="p">(</span>
         <span class="n">functor</span><span class="p">,</span> <span class="s2">&quot;build.clean&quot;</span><span class="p">,</span> <span class="n">caseroot</span><span class="o">=</span><span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">)</span>
     <span class="p">)</span></div>
+
 </pre></div>
 
            </div>

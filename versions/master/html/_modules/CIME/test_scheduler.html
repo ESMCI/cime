@@ -11,11 +11,11 @@
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/sphinx_highlight.js"></script>
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../_static/pop_ver.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -99,7 +99,7 @@
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
 
 <span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">CIME.get_tests</span> <span class="kn">import</span> <span class="n">get_recommended_test_time</span><span class="p">,</span> <span class="n">get_build_groups</span>
+<span class="kn">from</span> <span class="nn">CIME.get_tests</span> <span class="kn">import</span> <span class="n">get_recommended_test_time</span><span class="p">,</span> <span class="n">get_build_groups</span><span class="p">,</span> <span class="n">is_perf_test</span>
 <span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">append_status</span><span class="p">,</span>
     <span class="n">append_testlog</span><span class="p">,</span>
@@ -252,7 +252,9 @@
 
 
 <span class="c1">###############################################################################</span>
-<div class="viewcode-block" id="TestScheduler"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.test_scheduler.TestScheduler">[docs]</a><span class="k">class</span> <span class="nc">TestScheduler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="TestScheduler">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.test_scheduler.TestScheduler">[docs]</a>
+<span class="k">class</span> <span class="nc">TestScheduler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="c1">###############################################################################</span>
 
     <span class="c1">###########################################################################</span>
@@ -559,9 +561,12 @@
         <span class="c1"># tests cases</span>
 
     <span class="c1">###########################################################################</span>
-<div class="viewcode-block" id="TestScheduler.get_testnames"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.test_scheduler.TestScheduler.get_testnames">[docs]</a>    <span class="k">def</span> <span class="nf">get_testnames</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestScheduler.get_testnames">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.test_scheduler.TestScheduler.get_testnames">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_testnames</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1">###########################################################################</span>
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tests</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span></div>
+
 
     <span class="c1">###########################################################################</span>
     <span class="k">def</span> <span class="nf">_log_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test</span><span class="p">,</span> <span class="n">output</span><span class="p">):</span>
@@ -1053,7 +1058,10 @@
                 <span class="p">)</span>
             <span class="n">envtest</span><span class="o">.</span><span class="n">set_initial_values</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
             <span class="k">case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;TEST&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
-            <span class="k">case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;SAVE_TIMING&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_timing</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">is_perf_test</span><span class="p">(</span><span class="n">test</span><span class="p">):</span>
+                <span class="k">case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;SAVE_TIMING&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;SAVE_TIMING&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_timing</span><span class="p">)</span>
 
             <span class="c1"># handle single-exe here, all cases will use the EXEROOT from</span>
             <span class="c1"># the first case in the build group</span>
@@ -1506,7 +1514,9 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;FAILED to set up cs files: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)))</span>
 
     <span class="c1">###########################################################################</span>
-<div class="viewcode-block" id="TestScheduler.run_tests"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.test_scheduler.TestScheduler.run_tests">[docs]</a>    <span class="k">def</span> <span class="nf">run_tests</span><span class="p">(</span>
+<div class="viewcode-block" id="TestScheduler.run_tests">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.test_scheduler.TestScheduler.run_tests">[docs]</a>
+    <span class="k">def</span> <span class="nf">run_tests</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">wait</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">check_throughput</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -1580,7 +1590,9 @@
 
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;test-scheduler took </span><span class="si">{}</span><span class="s2"> seconds&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">))</span>
 
-        <span class="k">return</span> <span class="n">rv</span></div></div>
+        <span class="k">return</span> <span class="n">rv</span></div>
+</div>
+
 </pre></div>
 
            </div>

@@ -11,11 +11,11 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../../_static/pop_ver.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -98,14 +98,24 @@
 <span class="kn">from</span> <span class="nn">CIME.tests.case_fake</span> <span class="kn">import</span> <span class="n">CaseFake</span>
 
 
-<div class="viewcode-block" id="TestCaseFake"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_case_fake.TestCaseFake">[docs]</a><span class="k">class</span> <span class="nc">TestCaseFake</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
-<div class="viewcode-block" id="TestCaseFake.setUp"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_case_fake.TestCaseFake.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestCaseFake">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_case_fake.TestCaseFake">[docs]</a>
+<span class="k">class</span> <span class="nc">TestCaseFake</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestCaseFake.setUp">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_case_fake.TestCaseFake.setUp">[docs]</a>
+    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tempdir</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="TestCaseFake.tearDown"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_case_fake.TestCaseFake.tearDown">[docs]</a>    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestCaseFake.tearDown">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_case_fake.TestCaseFake.tearDown">[docs]</a>
+    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tempdir</span><span class="p">,</span> <span class="n">ignore_errors</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestCaseFake.test_create_clone"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_case_fake.TestCaseFake.test_create_clone">[docs]</a>    <span class="k">def</span> <span class="nf">test_create_clone</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestCaseFake.test_create_clone">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_case_fake.TestCaseFake.test_create_clone">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_create_clone</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Setup</span>
         <span class="n">old_caseroot</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tempdir</span><span class="p">,</span> <span class="s2">&quot;oldcase&quot;</span><span class="p">)</span>
         <span class="n">oldcase</span> <span class="o">=</span> <span class="n">CaseFake</span><span class="p">(</span><span class="n">old_caseroot</span><span class="p">)</span>
@@ -120,7 +130,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="s2">&quot;newcase&quot;</span><span class="p">,</span> <span class="n">clone</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASE&quot;</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="s2">&quot;newcase&quot;</span><span class="p">,</span> <span class="n">clone</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEBASEID&quot;</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">new_caseroot</span><span class="p">,</span> <span class="n">clone</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">new_caseroot</span><span class="p">,</span> <span class="s2">&quot;run&quot;</span><span class="p">),</span> <span class="n">clone</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">))</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">new_caseroot</span><span class="p">,</span> <span class="s2">&quot;run&quot;</span><span class="p">),</span> <span class="n">clone</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">))</span></div>
+</div>
+
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>

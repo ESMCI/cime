@@ -11,11 +11,11 @@
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/sphinx_highlight.js"></script>
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../_static/pop_ver.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -94,7 +94,9 @@
 <span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">logging</span>
 
 <span class="c1">###############################################################################</span>
-<div class="viewcode-block" id="append_status_cprnc_log"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.compare_test_results.append_status_cprnc_log">[docs]</a><span class="k">def</span> <span class="nf">append_status_cprnc_log</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">logfile_name</span><span class="p">,</span> <span class="n">test_dir</span><span class="p">):</span>
+<div class="viewcode-block" id="append_status_cprnc_log">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.compare_test_results.append_status_cprnc_log">[docs]</a>
+<span class="k">def</span> <span class="nf">append_status_cprnc_log</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">logfile_name</span><span class="p">,</span> <span class="n">test_dir</span><span class="p">):</span>
     <span class="c1">###############################################################################</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">append_status</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">logfile_name</span><span class="p">,</span> <span class="n">caseroot</span><span class="o">=</span><span class="n">test_dir</span><span class="p">)</span>
@@ -102,8 +104,11 @@
         <span class="k">pass</span></div>
 
 
+
 <span class="c1">###############################################################################</span>
-<div class="viewcode-block" id="compare_namelists"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.compare_test_results.compare_namelists">[docs]</a><span class="k">def</span> <span class="nf">compare_namelists</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">baseline_name</span><span class="p">,</span> <span class="n">baseline_root</span><span class="p">,</span> <span class="n">logfile_name</span><span class="p">):</span>
+<div class="viewcode-block" id="compare_namelists">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.compare_test_results.compare_namelists">[docs]</a>
+<span class="k">def</span> <span class="nf">compare_namelists</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">baseline_name</span><span class="p">,</span> <span class="n">baseline_root</span><span class="p">,</span> <span class="n">logfile_name</span><span class="p">):</span>
     <span class="c1">###############################################################################</span>
     <span class="n">log_lvl</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">getEffectiveLevel</span><span class="p">()</span>
     <span class="n">logging</span><span class="o">.</span><span class="n">disable</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">CRITICAL</span><span class="p">)</span>
@@ -117,8 +122,11 @@
     <span class="k">return</span> <span class="n">success</span></div>
 
 
+
 <span class="c1">###############################################################################</span>
-<div class="viewcode-block" id="compare_history"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.compare_test_results.compare_history">[docs]</a><span class="k">def</span> <span class="nf">compare_history</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">baseline_name</span><span class="p">,</span> <span class="n">baseline_root</span><span class="p">,</span> <span class="n">log_id</span><span class="p">):</span>
+<div class="viewcode-block" id="compare_history">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.compare_test_results.compare_history">[docs]</a>
+<span class="k">def</span> <span class="nf">compare_history</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">baseline_name</span><span class="p">,</span> <span class="n">baseline_root</span><span class="p">,</span> <span class="n">log_id</span><span class="p">):</span>
     <span class="c1">###############################################################################</span>
     <span class="n">real_user</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;REALUSER&quot;</span><span class="p">)</span>
     <span class="k">with</span> <span class="n">EnvironmentContext</span><span class="p">(</span><span class="n">USER</span><span class="o">=</span><span class="n">real_user</span><span class="p">):</span>
@@ -139,8 +147,11 @@
         <span class="k">return</span> <span class="n">result</span><span class="p">,</span> <span class="n">comments</span></div>
 
 
+
 <span class="c1">###############################################################################</span>
-<div class="viewcode-block" id="compare_test_results"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.compare_test_results.compare_test_results">[docs]</a><span class="k">def</span> <span class="nf">compare_test_results</span><span class="p">(</span>
+<div class="viewcode-block" id="compare_test_results">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.compare_test_results.compare_test_results">[docs]</a>
+<span class="k">def</span> <span class="nf">compare_test_results</span><span class="p">(</span>
     <span class="n">baseline_name</span><span class="p">,</span>
     <span class="n">baseline_root</span><span class="p">,</span>
     <span class="n">test_root</span><span class="p">,</span>
@@ -307,6 +318,7 @@
                 <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">all_pass_or_skip</span></div>
+
 </pre></div>
 
            </div>

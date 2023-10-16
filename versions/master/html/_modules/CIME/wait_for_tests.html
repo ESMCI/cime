@@ -11,11 +11,11 @@
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/sphinx_highlight.js"></script>
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../_static/pop_ver.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -106,21 +106,29 @@
 <span class="n">SLEEP_INTERVAL_SEC</span> <span class="o">=</span> <span class="mf">0.1</span>
 
 <span class="c1">###############################################################################</span>
-<div class="viewcode-block" id="signal_handler"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.wait_for_tests.signal_handler">[docs]</a><span class="k">def</span> <span class="nf">signal_handler</span><span class="p">(</span><span class="o">*</span><span class="n">_</span><span class="p">):</span>
+<div class="viewcode-block" id="signal_handler">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.wait_for_tests.signal_handler">[docs]</a>
+<span class="k">def</span> <span class="nf">signal_handler</span><span class="p">(</span><span class="o">*</span><span class="n">_</span><span class="p">):</span>
     <span class="c1">###############################################################################</span>
     <span class="k">global</span> <span class="n">SIGNAL_RECEIVED</span>
     <span class="n">SIGNAL_RECEIVED</span> <span class="o">=</span> <span class="kc">True</span></div>
 
 
+
 <span class="c1">###############################################################################</span>
-<div class="viewcode-block" id="set_up_signal_handlers"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.wait_for_tests.set_up_signal_handlers">[docs]</a><span class="k">def</span> <span class="nf">set_up_signal_handlers</span><span class="p">():</span>
+<div class="viewcode-block" id="set_up_signal_handlers">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.wait_for_tests.set_up_signal_handlers">[docs]</a>
+<span class="k">def</span> <span class="nf">set_up_signal_handlers</span><span class="p">():</span>
     <span class="c1">###############################################################################</span>
     <span class="n">signal</span><span class="o">.</span><span class="n">signal</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">SIGTERM</span><span class="p">,</span> <span class="n">signal_handler</span><span class="p">)</span>
     <span class="n">signal</span><span class="o">.</span><span class="n">signal</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">SIGINT</span><span class="p">,</span> <span class="n">signal_handler</span><span class="p">)</span></div>
 
 
+
 <span class="c1">###############################################################################</span>
-<div class="viewcode-block" id="get_test_time"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.wait_for_tests.get_test_time">[docs]</a><span class="k">def</span> <span class="nf">get_test_time</span><span class="p">(</span><span class="n">test_path</span><span class="p">):</span>
+<div class="viewcode-block" id="get_test_time">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.wait_for_tests.get_test_time">[docs]</a>
+<span class="k">def</span> <span class="nf">get_test_time</span><span class="p">(</span><span class="n">test_path</span><span class="p">):</span>
     <span class="c1">###############################################################################</span>
     <span class="n">ts</span> <span class="o">=</span> <span class="n">TestStatus</span><span class="p">(</span><span class="n">test_dir</span><span class="o">=</span><span class="n">test_path</span><span class="p">)</span>
     <span class="n">comment</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">get_comment</span><span class="p">(</span><span class="n">RUN_PHASE</span><span class="p">)</span>
@@ -132,15 +140,21 @@
         <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">time_data</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span></div>
 
 
+
 <span class="c1">###############################################################################</span>
-<div class="viewcode-block" id="get_test_phase"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.wait_for_tests.get_test_phase">[docs]</a><span class="k">def</span> <span class="nf">get_test_phase</span><span class="p">(</span><span class="n">test_path</span><span class="p">,</span> <span class="n">phase</span><span class="p">):</span>
+<div class="viewcode-block" id="get_test_phase">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.wait_for_tests.get_test_phase">[docs]</a>
+<span class="k">def</span> <span class="nf">get_test_phase</span><span class="p">(</span><span class="n">test_path</span><span class="p">,</span> <span class="n">phase</span><span class="p">):</span>
     <span class="c1">###############################################################################</span>
     <span class="n">ts</span> <span class="o">=</span> <span class="n">TestStatus</span><span class="p">(</span><span class="n">test_dir</span><span class="o">=</span><span class="n">test_path</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">ts</span><span class="o">.</span><span class="n">get_status</span><span class="p">(</span><span class="n">phase</span><span class="p">)</span></div>
 
 
+
 <span class="c1">###############################################################################</span>
-<div class="viewcode-block" id="get_nml_diff"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.wait_for_tests.get_nml_diff">[docs]</a><span class="k">def</span> <span class="nf">get_nml_diff</span><span class="p">(</span><span class="n">test_path</span><span class="p">):</span>
+<div class="viewcode-block" id="get_nml_diff">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.wait_for_tests.get_nml_diff">[docs]</a>
+<span class="k">def</span> <span class="nf">get_nml_diff</span><span class="p">(</span><span class="n">test_path</span><span class="p">):</span>
     <span class="c1">###############################################################################</span>
     <span class="n">test_log</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">test_path</span><span class="p">,</span> <span class="s2">&quot;TestStatus.log&quot;</span><span class="p">)</span>
 
@@ -159,8 +173,11 @@
     <span class="k">return</span> <span class="n">diffs</span></div>
 
 
+
 <span class="c1">###############################################################################</span>
-<div class="viewcode-block" id="get_test_output"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.wait_for_tests.get_test_output">[docs]</a><span class="k">def</span> <span class="nf">get_test_output</span><span class="p">(</span><span class="n">test_path</span><span class="p">):</span>
+<div class="viewcode-block" id="get_test_output">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.wait_for_tests.get_test_output">[docs]</a>
+<span class="k">def</span> <span class="nf">get_test_output</span><span class="p">(</span><span class="n">test_path</span><span class="p">):</span>
     <span class="c1">###############################################################################</span>
     <span class="n">output_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">test_path</span><span class="p">,</span> <span class="s2">&quot;TestStatus.log&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">output_file</span><span class="p">):</span>
@@ -170,8 +187,11 @@
         <span class="k">return</span> <span class="s2">&quot;&quot;</span></div>
 
 
+
 <span class="c1">###############################################################################</span>
-<div class="viewcode-block" id="create_cdash_xml_boiler"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.wait_for_tests.create_cdash_xml_boiler">[docs]</a><span class="k">def</span> <span class="nf">create_cdash_xml_boiler</span><span class="p">(</span>
+<div class="viewcode-block" id="create_cdash_xml_boiler">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.wait_for_tests.create_cdash_xml_boiler">[docs]</a>
+<span class="k">def</span> <span class="nf">create_cdash_xml_boiler</span><span class="p">(</span>
     <span class="n">phase</span><span class="p">,</span>
     <span class="n">cdash_build_name</span><span class="p">,</span>
     <span class="n">cdash_build_group</span><span class="p">,</span>
@@ -207,8 +227,11 @@
     <span class="k">return</span> <span class="n">site_elem</span><span class="p">,</span> <span class="n">phase_elem</span></div>
 
 
+
 <span class="c1">###############################################################################</span>
-<div class="viewcode-block" id="create_cdash_config_xml"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.wait_for_tests.create_cdash_config_xml">[docs]</a><span class="k">def</span> <span class="nf">create_cdash_config_xml</span><span class="p">(</span>
+<div class="viewcode-block" id="create_cdash_config_xml">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.wait_for_tests.create_cdash_config_xml">[docs]</a>
+<span class="k">def</span> <span class="nf">create_cdash_config_xml</span><span class="p">(</span>
     <span class="n">results</span><span class="p">,</span>
     <span class="n">cdash_build_name</span><span class="p">,</span>
     <span class="n">cdash_build_group</span><span class="p">,</span>
@@ -254,8 +277,11 @@
     <span class="n">etree</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_rel_path</span><span class="p">,</span> <span class="s2">&quot;Configure.xml&quot;</span><span class="p">))</span></div>
 
 
+
 <span class="c1">###############################################################################</span>
-<div class="viewcode-block" id="create_cdash_build_xml"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.wait_for_tests.create_cdash_build_xml">[docs]</a><span class="k">def</span> <span class="nf">create_cdash_build_xml</span><span class="p">(</span>
+<div class="viewcode-block" id="create_cdash_build_xml">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.wait_for_tests.create_cdash_build_xml">[docs]</a>
+<span class="k">def</span> <span class="nf">create_cdash_build_xml</span><span class="p">(</span>
     <span class="n">results</span><span class="p">,</span>
     <span class="n">cdash_build_name</span><span class="p">,</span>
     <span class="n">cdash_build_group</span><span class="p">,</span>
@@ -303,8 +329,11 @@
     <span class="n">etree</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_rel_path</span><span class="p">,</span> <span class="s2">&quot;Build.xml&quot;</span><span class="p">))</span></div>
 
 
+
 <span class="c1">###############################################################################</span>
-<div class="viewcode-block" id="create_cdash_test_xml"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.wait_for_tests.create_cdash_test_xml">[docs]</a><span class="k">def</span> <span class="nf">create_cdash_test_xml</span><span class="p">(</span>
+<div class="viewcode-block" id="create_cdash_test_xml">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.wait_for_tests.create_cdash_test_xml">[docs]</a>
+<span class="k">def</span> <span class="nf">create_cdash_test_xml</span><span class="p">(</span>
     <span class="n">results</span><span class="p">,</span>
     <span class="n">cdash_build_name</span><span class="p">,</span>
     <span class="n">cdash_build_group</span><span class="p">,</span>
@@ -388,8 +417,11 @@
     <span class="n">etree</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_rel_path</span><span class="p">,</span> <span class="s2">&quot;Test.xml&quot;</span><span class="p">))</span></div>
 
 
+
 <span class="c1">###############################################################################</span>
-<div class="viewcode-block" id="create_cdash_xml_fakes"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.wait_for_tests.create_cdash_xml_fakes">[docs]</a><span class="k">def</span> <span class="nf">create_cdash_xml_fakes</span><span class="p">(</span>
+<div class="viewcode-block" id="create_cdash_xml_fakes">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.wait_for_tests.create_cdash_xml_fakes">[docs]</a>
+<span class="k">def</span> <span class="nf">create_cdash_xml_fakes</span><span class="p">(</span>
     <span class="n">results</span><span class="p">,</span> <span class="n">cdash_build_name</span><span class="p">,</span> <span class="n">cdash_build_group</span><span class="p">,</span> <span class="n">utc_time</span><span class="p">,</span> <span class="n">current_time</span><span class="p">,</span> <span class="n">hostname</span>
 <span class="p">):</span>
     <span class="c1">###############################################################################</span>
@@ -441,8 +473,11 @@
     <span class="p">)</span></div>
 
 
+
 <span class="c1">###############################################################################</span>
-<div class="viewcode-block" id="create_cdash_upload_xml"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.wait_for_tests.create_cdash_upload_xml">[docs]</a><span class="k">def</span> <span class="nf">create_cdash_upload_xml</span><span class="p">(</span>
+<div class="viewcode-block" id="create_cdash_upload_xml">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.wait_for_tests.create_cdash_upload_xml">[docs]</a>
+<span class="k">def</span> <span class="nf">create_cdash_upload_xml</span><span class="p">(</span>
     <span class="n">results</span><span class="p">,</span> <span class="n">cdash_build_name</span><span class="p">,</span> <span class="n">cdash_build_group</span><span class="p">,</span> <span class="n">utc_time</span><span class="p">,</span> <span class="n">hostname</span><span class="p">,</span> <span class="n">force_log_upload</span>
 <span class="p">):</span>
     <span class="c1">###############################################################################</span>
@@ -546,8 +581,11 @@
             <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">log_dir</span><span class="p">)</span></div>
 
 
+
 <span class="c1">###############################################################################</span>
-<div class="viewcode-block" id="create_cdash_xml"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.wait_for_tests.create_cdash_xml">[docs]</a><span class="k">def</span> <span class="nf">create_cdash_xml</span><span class="p">(</span>
+<div class="viewcode-block" id="create_cdash_xml">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.wait_for_tests.create_cdash_xml">[docs]</a>
+<span class="k">def</span> <span class="nf">create_cdash_xml</span><span class="p">(</span>
     <span class="n">results</span><span class="p">,</span> <span class="n">cdash_build_name</span><span class="p">,</span> <span class="n">cdash_project</span><span class="p">,</span> <span class="n">cdash_build_group</span><span class="p">,</span> <span class="n">force_log_upload</span><span class="o">=</span><span class="kc">False</span>
 <span class="p">):</span>
     <span class="c1">###############################################################################</span>
@@ -651,8 +689,11 @@
     <span class="n">expect</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;All cdash upload attempts failed&quot;</span><span class="p">)</span></div>
 
 
+
 <span class="c1">###############################################################################</span>
-<div class="viewcode-block" id="wait_for_test"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.wait_for_tests.wait_for_test">[docs]</a><span class="k">def</span> <span class="nf">wait_for_test</span><span class="p">(</span>
+<div class="viewcode-block" id="wait_for_test">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.wait_for_tests.wait_for_test">[docs]</a>
+<span class="k">def</span> <span class="nf">wait_for_test</span><span class="p">(</span>
     <span class="n">test_path</span><span class="p">,</span>
     <span class="n">results</span><span class="p">,</span>
     <span class="n">wait</span><span class="p">,</span>
@@ -728,8 +769,11 @@
                     <span class="k">break</span></div>
 
 
+
 <span class="c1">###############################################################################</span>
-<div class="viewcode-block" id="wait_for_tests_impl"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.wait_for_tests.wait_for_tests_impl">[docs]</a><span class="k">def</span> <span class="nf">wait_for_tests_impl</span><span class="p">(</span>
+<div class="viewcode-block" id="wait_for_tests_impl">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.wait_for_tests.wait_for_tests_impl">[docs]</a>
+<span class="k">def</span> <span class="nf">wait_for_tests_impl</span><span class="p">(</span>
     <span class="n">test_paths</span><span class="p">,</span>
     <span class="n">no_wait</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">check_throughput</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -796,8 +840,11 @@
     <span class="k">return</span> <span class="n">test_results</span></div>
 
 
+
 <span class="c1">###############################################################################</span>
-<div class="viewcode-block" id="wait_for_tests"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.wait_for_tests.wait_for_tests">[docs]</a><span class="k">def</span> <span class="nf">wait_for_tests</span><span class="p">(</span>
+<div class="viewcode-block" id="wait_for_tests">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.wait_for_tests.wait_for_tests">[docs]</a>
+<span class="k">def</span> <span class="nf">wait_for_tests</span><span class="p">(</span>
     <span class="n">test_paths</span><span class="p">,</span>
     <span class="n">no_wait</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">check_throughput</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -914,6 +961,7 @@
         <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">all_pass</span></div>
+
 </pre></div>
 
            </div>

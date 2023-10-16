@@ -11,11 +11,11 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../../_static/pop_ver.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -99,7 +99,9 @@
 
 <span class="c1"># Is not of type EntryID but can use functions from EntryID (e.g</span>
 <span class="c1"># get_type) otherwise need to implement own functions and make GenericXML parent class</span>
-<div class="viewcode-block" id="EnvMachSpecific"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_specific.EnvMachSpecific">[docs]</a><span class="k">class</span> <span class="nc">EnvMachSpecific</span><span class="p">(</span><span class="n">EnvBase</span><span class="p">):</span>
+<div class="viewcode-block" id="EnvMachSpecific">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_specific.EnvMachSpecific">[docs]</a>
+<span class="k">class</span> <span class="nc">EnvMachSpecific</span><span class="p">(</span><span class="n">EnvBase</span><span class="p">):</span>
     <span class="c1"># pylint: disable=unused-argument</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -132,7 +134,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_unit_testing</span> <span class="o">=</span> <span class="n">unit_testing</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_standalone_configure</span> <span class="o">=</span> <span class="n">standalone_configure</span>
 
-<div class="viewcode-block" id="EnvMachSpecific.populate"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_specific.EnvMachSpecific.populate">[docs]</a>    <span class="k">def</span> <span class="nf">populate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">machobj</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="EnvMachSpecific.populate">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_specific.EnvMachSpecific.populate">[docs]</a>
+    <span class="k">def</span> <span class="nf">populate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">machobj</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Add entries to the file using information from a Machines object.</span>
 <span class="sd">        mpilib must match attributes if set</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -195,6 +199,7 @@
                 <span class="p">),</span>
             <span class="p">)</span></div>
 
+
     <span class="k">def</span> <span class="nf">_get_modules_for_case</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">job</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">module_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span>
             <span class="s2">&quot;modules&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span><span class="s2">&quot;module_system&quot;</span><span class="p">)</span>
@@ -214,7 +219,9 @@
 
         <span class="k">return</span> <span class="n">envs_to_set</span>
 
-<div class="viewcode-block" id="EnvMachSpecific.load_env"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_specific.EnvMachSpecific.load_env">[docs]</a>    <span class="k">def</span> <span class="nf">load_env</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">force_method</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">job</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="EnvMachSpecific.load_env">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_specific.EnvMachSpecific.load_env">[docs]</a>
+    <span class="k">def</span> <span class="nf">load_env</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">force_method</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">job</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Should only be called by case.load_env</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -233,6 +240,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_get_resources_for_case</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="p">[]</span> <span class="k">if</span> <span class="n">envs_to_set</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">envs_to_set</span></div>
+
 
     <span class="k">def</span> <span class="nf">_get_resources_for_case</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">):</span>
         <span class="n">resource_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="s2">&quot;resource_limits&quot;</span><span class="p">)</span>
@@ -262,7 +270,9 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">expect</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;Unhandled module system &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">module_system</span><span class="p">))</span>
 
-<div class="viewcode-block" id="EnvMachSpecific.list_modules"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_specific.EnvMachSpecific.list_modules">[docs]</a>    <span class="k">def</span> <span class="nf">list_modules</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EnvMachSpecific.list_modules">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_specific.EnvMachSpecific.list_modules">[docs]</a>
+    <span class="k">def</span> <span class="nf">list_modules</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">module_system</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_module_system_type</span><span class="p">()</span>
 
         <span class="c1"># If the user&#39;s login shell is not sh, it&#39;s possible that modules</span>
@@ -288,7 +298,10 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">expect</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;Unhandled module system &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">module_system</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="EnvMachSpecific.save_all_env_info"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_specific.EnvMachSpecific.save_all_env_info">[docs]</a>    <span class="k">def</span> <span class="nf">save_all_env_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EnvMachSpecific.save_all_env_info">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_specific.EnvMachSpecific.save_all_env_info">[docs]</a>
+    <span class="k">def</span> <span class="nf">save_all_env_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a string representation of all current environment info and</span>
 <span class="sd">        save it to file.</span>
@@ -297,7 +310,10 @@
             <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">list_modules</span><span class="p">())</span>
         <span class="n">run_cmd_no_fail</span><span class="p">(</span><span class="s2">&quot;echo -e &#39;</span><span class="se">\n</span><span class="s2">&#39; &amp;&amp; env&quot;</span><span class="p">,</span> <span class="n">arg_stdout</span><span class="o">=</span><span class="n">filename</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EnvMachSpecific.get_overrides_nodes"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_specific.EnvMachSpecific.get_overrides_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">get_overrides_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EnvMachSpecific.get_overrides_nodes">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_specific.EnvMachSpecific.get_overrides_nodes">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_overrides_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">):</span>
         <span class="n">overrides</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">overrides</span><span class="p">[</span><span class="s2">&quot;num_nodes&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">num_nodes</span>
         <span class="n">fnm</span> <span class="o">=</span> <span class="s2">&quot;env_mach_specific.xml&quot;</span>
@@ -309,7 +325,10 @@
             <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">output_text</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">overrides</span></div>
 
-<div class="viewcode-block" id="EnvMachSpecific.make_env_mach_specific_file"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_specific.EnvMachSpecific.make_env_mach_specific_file">[docs]</a>    <span class="k">def</span> <span class="nf">make_env_mach_specific_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EnvMachSpecific.make_env_mach_specific_file">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_specific.EnvMachSpecific.make_env_mach_specific_file">[docs]</a>
+    <span class="k">def</span> <span class="nf">make_env_mach_specific_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Writes .env_mach_specific.sh or .env_mach_specific.csh</span>
 
 <span class="sd">        Args:</span>
@@ -376,6 +395,7 @@
 
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">filename</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
             <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">))</span></div>
+
 
     <span class="c1"># Private API</span>
 
@@ -630,14 +650,19 @@
         <span class="n">header</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">source_cmd</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_module_system_init_path</span><span class="p">(</span><span class="n">shell</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">header</span>
 
-<div class="viewcode-block" id="EnvMachSpecific.get_module_system_type"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_specific.EnvMachSpecific.get_module_system_type">[docs]</a>    <span class="k">def</span> <span class="nf">get_module_system_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EnvMachSpecific.get_module_system_type">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_specific.EnvMachSpecific.get_module_system_type">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_module_system_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the module system used on this machine</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">module_system</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span><span class="s2">&quot;module_system&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">module_system</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EnvMachSpecific.allow_error"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_specific.EnvMachSpecific.allow_error">[docs]</a>    <span class="k">def</span> <span class="nf">allow_error</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EnvMachSpecific.allow_error">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_specific.EnvMachSpecific.allow_error">[docs]</a>
+    <span class="k">def</span> <span class="nf">allow_error</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return True if stderr output from module commands should be assumed</span>
 <span class="sd">        to be an error. Default False. This is necessary since implementations</span>
@@ -648,7 +673,10 @@
         <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">module_system</span><span class="p">,</span> <span class="s2">&quot;allow_error&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">value</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;TRUE&quot;</span> <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">False</span></div>
 
-<div class="viewcode-block" id="EnvMachSpecific.get_module_system_init_path"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_specific.EnvMachSpecific.get_module_system_init_path">[docs]</a>    <span class="k">def</span> <span class="nf">get_module_system_init_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lang</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EnvMachSpecific.get_module_system_init_path">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_specific.EnvMachSpecific.get_module_system_init_path">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_module_system_init_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lang</span><span class="p">):</span>
         <span class="n">init_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_optional_child</span><span class="p">(</span>
             <span class="s2">&quot;init_path&quot;</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;lang&quot;</span><span class="p">:</span> <span class="n">lang</span><span class="p">},</span> <span class="n">root</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span><span class="s2">&quot;module_system&quot;</span><span class="p">)</span>
         <span class="p">)</span>
@@ -658,7 +686,10 @@
             <span class="k">else</span> <span class="kc">None</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="EnvMachSpecific.get_module_system_cmd_path"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_specific.EnvMachSpecific.get_module_system_cmd_path">[docs]</a>    <span class="k">def</span> <span class="nf">get_module_system_cmd_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lang</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EnvMachSpecific.get_module_system_cmd_path">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_specific.EnvMachSpecific.get_module_system_cmd_path">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_module_system_cmd_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lang</span><span class="p">):</span>
         <span class="n">cmd_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_optional_child</span><span class="p">(</span>
             <span class="s2">&quot;cmd_path&quot;</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;lang&quot;</span><span class="p">:</span> <span class="n">lang</span><span class="p">},</span> <span class="n">root</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span><span class="s2">&quot;module_system&quot;</span><span class="p">)</span>
         <span class="p">)</span>
@@ -667,6 +698,7 @@
             <span class="k">if</span> <span class="n">cmd_nodes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
             <span class="k">else</span> <span class="kc">None</span>
         <span class="p">)</span></div>
+
 
     <span class="k">def</span> <span class="nf">_find_best_mpirun_match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribs</span><span class="p">):</span>
         <span class="n">mpirun_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="s2">&quot;mpirun&quot;</span><span class="p">)</span>
@@ -730,7 +762,9 @@
 
         <span class="k">return</span> <span class="n">best_match</span> <span class="k">if</span> <span class="n">best_match</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">default_match</span>
 
-<div class="viewcode-block" id="EnvMachSpecific.get_aprun_mode"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_specific.EnvMachSpecific.get_aprun_mode">[docs]</a>    <span class="k">def</span> <span class="nf">get_aprun_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribs</span><span class="p">):</span>
+<div class="viewcode-block" id="EnvMachSpecific.get_aprun_mode">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_specific.EnvMachSpecific.get_aprun_mode">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_aprun_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribs</span><span class="p">):</span>
         <span class="n">default_mode</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span>
         <span class="n">valid_modes</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="s2">&quot;default&quot;</span><span class="p">,</span> <span class="s2">&quot;override&quot;</span><span class="p">)</span>
 
@@ -756,7 +790,10 @@
 
         <span class="k">return</span> <span class="n">mode</span></div>
 
-<div class="viewcode-block" id="EnvMachSpecific.get_aprun_args"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_specific.EnvMachSpecific.get_aprun_args">[docs]</a>    <span class="k">def</span> <span class="nf">get_aprun_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">attribs</span><span class="p">,</span> <span class="n">job</span><span class="p">,</span> <span class="n">overrides</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EnvMachSpecific.get_aprun_args">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_specific.EnvMachSpecific.get_aprun_args">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_aprun_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">attribs</span><span class="p">,</span> <span class="n">job</span><span class="p">,</span> <span class="n">overrides</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">args</span> <span class="o">=</span> <span class="p">{}</span>
 
         <span class="k">try</span><span class="p">:</span>
@@ -787,7 +824,10 @@
 
         <span class="k">return</span> <span class="n">args</span></div>
 
-<div class="viewcode-block" id="EnvMachSpecific.get_mpirun"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_specific.EnvMachSpecific.get_mpirun">[docs]</a>    <span class="k">def</span> <span class="nf">get_mpirun</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">attribs</span><span class="p">,</span> <span class="n">job</span><span class="p">,</span> <span class="n">exe_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">overrides</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EnvMachSpecific.get_mpirun">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_specific.EnvMachSpecific.get_mpirun">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_mpirun</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">attribs</span><span class="p">,</span> <span class="n">job</span><span class="p">,</span> <span class="n">exe_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">overrides</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Find best match, return (executable, {arg_name : text})</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -831,8 +871,13 @@
 
         <span class="k">return</span> <span class="n">executable</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">run_exe</span><span class="p">,</span> <span class="n">run_misc_suffix</span></div>
 
-<div class="viewcode-block" id="EnvMachSpecific.get_type_info"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_specific.EnvMachSpecific.get_type_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_type_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s2">&quot;char&quot;</span></div></div>
+
+<div class="viewcode-block" id="EnvMachSpecific.get_type_info">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_specific.EnvMachSpecific.get_type_info">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_type_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;char&quot;</span></div>
+</div>
+
 </pre></div>
 
            </div>

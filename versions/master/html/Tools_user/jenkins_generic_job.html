@@ -12,11 +12,11 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/sphinx_highlight.js"></script>
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../_static/pop_ver.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -142,7 +142,7 @@
            <div itemprop="articleBody">
              
   <section id="jenkins-generic-job">
-<span id="id1"></span><h1>jenkins_generic_job<a class="headerlink" href="#jenkins-generic-job" title="Permalink to this heading"></a></h1>
+<span id="id1"></span><h1>jenkins_generic_job<a class="headerlink" href="#jenkins-generic-job" title="Link to this heading"></a></h1>
 <p><strong>jenkins_generic_job</strong> is a script in CIMEROOT/CIME/Tools.</p>
 <div class="toctree-wrapper compound">
 </div>
@@ -166,13 +166,6 @@ test results and ensures that the batch system is left in a clean state.
 
 options:
   -h, --help            show this help message and exit
-  -d, --debug           Print debug information (very verbose) to file /home/r
-                        unner/work/cime/cime/CIME/Tools/jenkins_generic_job.lo
-                        g (default: False)
-  -v, --verbose         Add additional context (time and file) to log messages
-                        (default: False)
-  -s, --silent          Print only warnings and error messages (default:
-                        False)
   -g, --generate-baselines
                         Generate baselines (default: False)
   --baseline-compare    Do baseline comparisons. Off by default. (default:
@@ -242,6 +235,15 @@ options:
                         env_mach_pes.xml format. (default: None)
   --jenkins-id JENKINS_ID
                         Specify an &#39;id&#39; for the Jenkins jobs. (default: None)
+
+Logging options:
+  -d, --debug           Print debug information (very verbose) to file /home/r
+                        unner/work/cime/cime/CIME/Tools/jenkins_generic_job.lo
+                        g (default: False)
+  -v, --verbose         Add additional context (time and file) to log messages
+                        (default: False)
+  -s, --silent          Print only warnings and error messages (default:
+                        False)
 </pre></div>
 </div>
 </section>

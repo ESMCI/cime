@@ -11,11 +11,11 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../../_static/pop_ver.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -95,7 +95,9 @@
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="EnvTest"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_test.EnvTest">[docs]</a><span class="k">class</span> <span class="nc">EnvTest</span><span class="p">(</span><span class="n">EnvBase</span><span class="p">):</span>
+<div class="viewcode-block" id="EnvTest">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_test.EnvTest">[docs]</a>
+<span class="k">class</span> <span class="nc">EnvTest</span><span class="p">(</span><span class="n">EnvBase</span><span class="p">):</span>
     <span class="c1"># pylint: disable=unused-argument</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">case_root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">infile</span><span class="o">=</span><span class="s2">&quot;env_test.xml&quot;</span><span class="p">,</span> <span class="n">components</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">False</span>
@@ -105,11 +107,16 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">EnvBase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case_root</span><span class="p">,</span> <span class="n">infile</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="n">read_only</span><span class="p">)</span>
 
-<div class="viewcode-block" id="EnvTest.add_test"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_test.EnvTest.add_test">[docs]</a>    <span class="k">def</span> <span class="nf">add_test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">testnode</span><span class="p">):</span>
+<div class="viewcode-block" id="EnvTest.add_test">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_test.EnvTest.add_test">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">testnode</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_child</span><span class="p">(</span><span class="n">testnode</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="EnvTest.set_initial_values"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_test.EnvTest.set_initial_values">[docs]</a>    <span class="k">def</span> <span class="nf">set_initial_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EnvTest.set_initial_values">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_test.EnvTest.set_initial_values">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_initial_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The values to initialize a test are defined in env_test.xml</span>
 <span class="sd">        copy them to the appropriate case env files to initialize a test</span>
@@ -136,7 +143,10 @@
         <span class="k">case</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
         <span class="k">return</span></div>
 
-<div class="viewcode-block" id="EnvTest.set_test_parameter"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_test.EnvTest.set_test_parameter">[docs]</a>    <span class="k">def</span> <span class="nf">set_test_parameter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EnvTest.set_test_parameter">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_test.EnvTest.set_test_parameter">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_test_parameter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        If a node already exists update the value</span>
 <span class="sd">        otherwise create a node and initialize it to value</span>
@@ -150,7 +160,10 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">set_text</span><span class="p">(</span><span class="n">idnode</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EnvTest.get_test_parameter"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_test.EnvTest.get_test_parameter">[docs]</a>    <span class="k">def</span> <span class="nf">get_test_parameter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EnvTest.get_test_parameter">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_test.EnvTest.get_test_parameter">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_test_parameter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="n">case</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;TESTCASE&quot;</span><span class="p">)</span>
         <span class="n">tnode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;NAME&quot;</span><span class="p">:</span> <span class="n">case</span><span class="p">})</span>
         <span class="n">value</span> <span class="o">=</span> <span class="kc">None</span>
@@ -159,14 +172,20 @@
             <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">idnode</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">value</span></div>
 
-<div class="viewcode-block" id="EnvTest.get_step_phase_cnt"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_test.EnvTest.get_step_phase_cnt">[docs]</a>    <span class="k">def</span> <span class="nf">get_step_phase_cnt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EnvTest.get_step_phase_cnt">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_test.EnvTest.get_step_phase_cnt">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_step_phase_cnt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
         <span class="n">bldnodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="n">step</span><span class="p">)</span>
         <span class="n">cnt</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">bldnodes</span><span class="p">:</span>
             <span class="n">cnt</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">cnt</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="s2">&quot;phase&quot;</span><span class="p">)))</span>
         <span class="k">return</span> <span class="n">cnt</span></div>
 
-<div class="viewcode-block" id="EnvTest.get_settings_for_phase"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_test.EnvTest.get_settings_for_phase">[docs]</a>    <span class="k">def</span> <span class="nf">get_settings_for_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">cnt</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EnvTest.get_settings_for_phase">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_test.EnvTest.get_settings_for_phase">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_settings_for_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">cnt</span><span class="p">):</span>
         <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_optional_child</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;phase&quot;</span><span class="p">:</span> <span class="n">cnt</span><span class="p">})</span>
         <span class="n">settings</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="n">node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -180,13 +199,19 @@
 
         <span class="k">return</span> <span class="n">settings</span></div>
 
-<div class="viewcode-block" id="EnvTest.run_phase_get_clone_name"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_test.EnvTest.run_phase_get_clone_name">[docs]</a>    <span class="k">def</span> <span class="nf">run_phase_get_clone_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phase</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EnvTest.run_phase_get_clone_name">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_test.EnvTest.run_phase_get_clone_name">[docs]</a>
+    <span class="k">def</span> <span class="nf">run_phase_get_clone_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phase</span><span class="p">):</span>
         <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span><span class="s2">&quot;RUN&quot;</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;phase&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">phase</span><span class="p">)})</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="s2">&quot;clone&quot;</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="s2">&quot;clone&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="EnvTest.cleanupnode"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_test.EnvTest.cleanupnode">[docs]</a>    <span class="k">def</span> <span class="nf">cleanupnode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EnvTest.cleanupnode">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_test.EnvTest.cleanupnode">[docs]</a>
+    <span class="k">def</span> <span class="nf">cleanupnode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        keep the values component set</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -199,7 +224,10 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">remove_child</span><span class="p">(</span><span class="n">dnode</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">node</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">node</span></div>
 
-<div class="viewcode-block" id="EnvTest.set_value"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_test.EnvTest.set_value">[docs]</a>    <span class="k">def</span> <span class="nf">set_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ignore_type</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EnvTest.set_value">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_test.EnvTest.set_value">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ignore_type</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        check if vid is in test section of file</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -210,13 +238,18 @@
                 <span class="n">newval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_element_text</span><span class="p">(</span><span class="n">vid</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">tnode</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">newval</span></div>
 
-<div class="viewcode-block" id="EnvTest.get_value"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_test.EnvTest.get_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">resolved</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EnvTest.get_value">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_test.EnvTest.get_value">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">resolved</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">value</span> <span class="o">=</span> <span class="n">EnvBase</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">,</span> <span class="n">attribute</span><span class="p">,</span> <span class="n">resolved</span><span class="p">,</span> <span class="n">subgroup</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">tnode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_optional_child</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">tnode</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_element_text</span><span class="p">(</span><span class="n">vid</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">tnode</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">value</span></div></div>
+        <span class="k">return</span> <span class="n">value</span></div>
+</div>
+
 </pre></div>
 
            </div>

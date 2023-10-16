@@ -11,11 +11,11 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../../_static/pop_ver.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -87,18 +87,563 @@
 <span></span><span class="ch">#!/usr/bin/env python3</span>
 
 <span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">tempfile</span>
+<span class="kn">import</span> <span class="nn">gzip</span>
 <span class="kn">from</span> <span class="nn">re</span> <span class="kn">import</span> <span class="n">A</span>
 <span class="kn">import</span> <span class="nn">unittest</span>
 <span class="kn">from</span> <span class="nn">unittest</span> <span class="kn">import</span> <span class="n">mock</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 
+<span class="kn">from</span> <span class="nn">CIME.config</span> <span class="kn">import</span> <span class="n">Config</span>
 <span class="kn">from</span> <span class="nn">CIME.SystemTests.system_tests_common</span> <span class="kn">import</span> <span class="n">SystemTestsCommon</span>
 <span class="kn">from</span> <span class="nn">CIME.SystemTests.system_tests_compare_two</span> <span class="kn">import</span> <span class="n">SystemTestsCompareTwo</span>
 <span class="kn">from</span> <span class="nn">CIME.SystemTests.system_tests_compare_n</span> <span class="kn">import</span> <span class="n">SystemTestsCompareN</span>
 
+<span class="n">CPLLOG</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2"> tStamp_write: model date =   00010102       0 wall clock = 2023-09-19 19:39:42 avg dt =     0.33 dt =     0.33</span>
+<span class="s2"> memory_write: model date =   00010102       0 memory =    1673.89 MB (highwater)        387.77 MB (usage)  (pe=    0 comps= cpl ATM LND ICE OCN GLC ROF WAV IAC ESP)</span>
+<span class="s2"> tStamp_write: model date =   00010103       0 wall clock = 2023-09-19 19:39:42 avg dt =     0.33 dt =     0.33</span>
+<span class="s2"> memory_write: model date =   00010103       0 memory =    1673.89 MB (highwater)        390.09 MB (usage)  (pe=    0 comps= cpl ATM LND ICE OCN GLC ROF WAV IAC ESP)</span>
+<span class="s2"> tStamp_write: model date =   00010104       0 wall clock = 2023-09-19 19:39:42 avg dt =     0.33 dt =     0.33</span>
+<span class="s2"> memory_write: model date =   00010104       0 memory =    1673.89 MB (highwater)        391.64 MB (usage)  (pe=    0 comps= cpl ATM LND ICE OCN GLC ROF WAV IAC ESP)</span>
+<span class="s2"> tStamp_write: model date =   00010105       0 wall clock = 2023-09-19 19:39:43 avg dt =     0.33 dt =     0.33</span>
+<span class="s2"> memory_write: model date =   00010105       0 memory =    1673.89 MB (highwater)        392.67 MB (usage)  (pe=    0 comps= cpl ATM LND ICE OCN GLC ROF WAV IAC ESP)</span>
+<span class="s2"> tStamp_write: model date =   00010106       0 wall clock = 2023-09-19 19:39:43 avg dt =     0.33 dt =     0.33</span>
+<span class="s2"> memory_write: model date =   00010106       0 memory =    1673.89 MB (highwater)        393.44 MB (usage)  (pe=    0 comps= cpl ATM LND ICE OCN GLC ROF WAV IAC ESP)</span>
 
-<div class="viewcode-block" id="TestCaseSubmit"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_system_tests.TestCaseSubmit">[docs]</a><span class="k">class</span> <span class="nc">TestCaseSubmit</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
-<div class="viewcode-block" id="TestCaseSubmit.test_kwargs"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_system_tests.TestCaseSubmit.test_kwargs">[docs]</a>    <span class="k">def</span> <span class="nf">test_kwargs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="s2">(seq_mct_drv): ===============          SUCCESSFUL TERMINATION OF CPL7-e3sm ===============</span>
+<span class="s2">(seq_mct_drv): ===============        at YMD,TOD =   00010106       0       ===============</span>
+<span class="s2">(seq_mct_drv): ===============  # simulated days (this run) =        5.000  ===============</span>
+<span class="s2">(seq_mct_drv): ===============  compute time (hrs)          =        0.000  ===============</span>
+<span class="s2">(seq_mct_drv): ===============  # simulated years / cmp-day =      719.635  ===============</span>
+<span class="s2">(seq_mct_drv): ===============  pes min memory highwater  (MB)     851.957  ===============</span>
+<span class="s2">(seq_mct_drv): ===============  pes max memory highwater  (MB)    1673.891  ===============</span>
+<span class="s2">(seq_mct_drv): ===============  pes min memory last usage (MB)     182.742  ===============</span>
+<span class="s2">(seq_mct_drv): ===============  pes max memory last usage (MB)     393.441  ===============</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="create_mock_case">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_system_tests.create_mock_case">[docs]</a>
+<span class="k">def</span> <span class="nf">create_mock_case</span><span class="p">(</span><span class="n">tempdir</span><span class="p">,</span> <span class="n">idx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cpllog_data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">idx</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="n">case</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
+
+    <span class="n">caseroot</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">tempdir</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">idx</span><span class="p">),</span> <span class="s2">&quot;caseroot&quot;</span><span class="p">)</span>
+    <span class="n">baseline_root</span> <span class="o">=</span> <span class="n">caseroot</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">&quot;baselines&quot;</span>
+    <span class="n">run_dir</span> <span class="o">=</span> <span class="n">caseroot</span> <span class="o">/</span> <span class="s2">&quot;run&quot;</span>
+    <span class="n">run_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">cpllog_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">cpllog</span> <span class="o">=</span> <span class="n">run_dir</span> <span class="o">/</span> <span class="s2">&quot;cpl.log.gz&quot;</span>
+
+        <span class="k">with</span> <span class="n">gzip</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">cpllog</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
+            <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">cpllog_data</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span>
+
+        <span class="k">case</span><span class="o">.</span><span class="n">get_latest_cpl_log</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">cpllog</span><span class="p">)</span>
+
+    <span class="n">hist_file</span> <span class="o">=</span> <span class="n">run_dir</span> <span class="o">/</span> <span class="s2">&quot;cpl.hi.2023-01-01.nc&quot;</span>
+    <span class="n">hist_file</span><span class="o">.</span><span class="n">touch</span><span class="p">()</span>
+
+    <span class="k">case</span><span class="o">.</span><span class="n">get_env</span><span class="o">.</span><span class="n">return_value</span><span class="o">.</span><span class="n">get_latest_hist_files</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">hist_file</span><span class="p">)]</span>
+
+    <span class="k">case</span><span class="o">.</span><span class="n">get_compset_components</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">return</span> <span class="n">case</span><span class="p">,</span> <span class="n">caseroot</span><span class="p">,</span> <span class="n">baseline_root</span><span class="p">,</span> <span class="n">run_dir</span></div>
+
+
+
+<div class="viewcode-block" id="TestUnitSystemTests">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_system_tests.TestUnitSystemTests">[docs]</a>
+<span class="k">class</span> <span class="nc">TestUnitSystemTests</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestUnitSystemTests.test_check_for_memleak_runtime_error">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_system_tests.TestUnitSystemTests.test_check_for_memleak_runtime_error">[docs]</a>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.system_tests_common.load_coupler_customization&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.system_tests_common.append_testlog&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.system_tests_common._perf_get_memory&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.system_tests_common.get_latest_cpl_logs&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_check_for_memleak_runtime_error</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">get_latest_cpl_logs</span><span class="p">,</span>
+        <span class="n">_perf_get_memory</span><span class="p">,</span>
+        <span class="n">append_testlog</span><span class="p">,</span>
+        <span class="n">load_coupler_customization</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="n">load_coupler_customization</span><span class="o">.</span><span class="n">return_value</span><span class="o">.</span><span class="n">perf_check_for_memory_leak</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="ne">AttributeError</span>
+        <span class="p">)</span>
+
+        <span class="n">_perf_get_memory</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="ne">RuntimeError</span>
+
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tempdir</span><span class="p">:</span>
+            <span class="n">caseroot</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">tempdir</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;caseroot&quot;</span>
+            <span class="n">caseroot</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+            <span class="n">rundir</span> <span class="o">=</span> <span class="n">caseroot</span> <span class="o">/</span> <span class="s2">&quot;run&quot;</span>
+            <span class="n">rundir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+            <span class="n">cpllog</span> <span class="o">=</span> <span class="n">rundir</span> <span class="o">/</span> <span class="s2">&quot;cpl.log.gz&quot;</span>
+
+            <span class="n">get_latest_cpl_logs</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">cpllog</span><span class="p">),</span>
+            <span class="p">]</span>
+
+            <span class="n">case</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
+            <span class="k">case</span><span class="o">.</span><span class="n">get_value</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">caseroot</span><span class="p">),</span>
+                <span class="s2">&quot;ERIO.ne30_g16_rx1.A.docker_gnu&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;mct&quot;</span><span class="p">,</span>
+                <span class="mf">0.01</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="n">common</span> <span class="o">=</span> <span class="n">SystemTestsCommon</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
+
+            <span class="n">common</span><span class="o">.</span><span class="n">_test_status</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
+
+            <span class="n">common</span><span class="o">.</span><span class="n">_check_for_memleak</span><span class="p">()</span>
+
+            <span class="n">common</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">set_status</span><span class="o">.</span><span class="n">assert_any_call</span><span class="p">(</span>
+                <span class="s2">&quot;MEMLEAK&quot;</span><span class="p">,</span> <span class="s2">&quot;PASS&quot;</span><span class="p">,</span> <span class="n">comments</span><span class="o">=</span><span class="s2">&quot;insufficient data for memleak test&quot;</span>
+            <span class="p">)</span>
+
+            <span class="n">append_testlog</span><span class="o">.</span><span class="n">assert_not_called</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="TestUnitSystemTests.test_check_for_memleak_not_enough_samples">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_system_tests.TestUnitSystemTests.test_check_for_memleak_not_enough_samples">[docs]</a>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.system_tests_common.load_coupler_customization&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.system_tests_common.append_testlog&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.system_tests_common._perf_get_memory&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.system_tests_common.get_latest_cpl_logs&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_check_for_memleak_not_enough_samples</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">get_latest_cpl_logs</span><span class="p">,</span>
+        <span class="n">_perf_get_memory</span><span class="p">,</span>
+        <span class="n">append_testlog</span><span class="p">,</span>
+        <span class="n">load_coupler_customization</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="n">load_coupler_customization</span><span class="o">.</span><span class="n">return_value</span><span class="o">.</span><span class="n">perf_check_for_memory_leak</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="ne">AttributeError</span>
+        <span class="p">)</span>
+
+        <span class="n">_perf_get_memory</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">),</span>
+            <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+        <span class="p">]</span>
+
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tempdir</span><span class="p">:</span>
+            <span class="n">caseroot</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">tempdir</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;caseroot&quot;</span>
+            <span class="n">caseroot</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+            <span class="n">rundir</span> <span class="o">=</span> <span class="n">caseroot</span> <span class="o">/</span> <span class="s2">&quot;run&quot;</span>
+            <span class="n">rundir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+            <span class="n">cpllog</span> <span class="o">=</span> <span class="n">rundir</span> <span class="o">/</span> <span class="s2">&quot;cpl.log.gz&quot;</span>
+
+            <span class="n">get_latest_cpl_logs</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">cpllog</span><span class="p">),</span>
+            <span class="p">]</span>
+
+            <span class="n">case</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
+            <span class="k">case</span><span class="o">.</span><span class="n">get_value</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">caseroot</span><span class="p">),</span>
+                <span class="s2">&quot;ERIO.ne30_g16_rx1.A.docker_gnu&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;mct&quot;</span><span class="p">,</span>
+                <span class="mf">0.01</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="n">common</span> <span class="o">=</span> <span class="n">SystemTestsCommon</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
+
+            <span class="n">common</span><span class="o">.</span><span class="n">_test_status</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
+
+            <span class="n">common</span><span class="o">.</span><span class="n">_check_for_memleak</span><span class="p">()</span>
+
+            <span class="n">common</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">set_status</span><span class="o">.</span><span class="n">assert_any_call</span><span class="p">(</span>
+                <span class="s2">&quot;MEMLEAK&quot;</span><span class="p">,</span> <span class="s2">&quot;PASS&quot;</span><span class="p">,</span> <span class="n">comments</span><span class="o">=</span><span class="s2">&quot;data for memleak test is insufficient&quot;</span>
+            <span class="p">)</span>
+
+            <span class="n">append_testlog</span><span class="o">.</span><span class="n">assert_not_called</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="TestUnitSystemTests.test_check_for_memleak_found">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_system_tests.TestUnitSystemTests.test_check_for_memleak_found">[docs]</a>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.system_tests_common.load_coupler_customization&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.system_tests_common.append_testlog&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.system_tests_common._perf_get_memory&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.system_tests_common.get_latest_cpl_logs&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_check_for_memleak_found</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">get_latest_cpl_logs</span><span class="p">,</span>
+        <span class="n">_perf_get_memory</span><span class="p">,</span>
+        <span class="n">append_testlog</span><span class="p">,</span>
+        <span class="n">load_coupler_customization</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="n">load_coupler_customization</span><span class="o">.</span><span class="n">return_value</span><span class="o">.</span><span class="n">perf_check_for_memory_leak</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="ne">AttributeError</span>
+        <span class="p">)</span>
+
+        <span class="n">_perf_get_memory</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">),</span>
+            <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mf">2000.0</span><span class="p">),</span>
+            <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mf">3000.0</span><span class="p">),</span>
+            <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mf">3000.0</span><span class="p">),</span>
+        <span class="p">]</span>
+
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tempdir</span><span class="p">:</span>
+            <span class="n">caseroot</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">tempdir</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;caseroot&quot;</span>
+            <span class="n">caseroot</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+            <span class="n">rundir</span> <span class="o">=</span> <span class="n">caseroot</span> <span class="o">/</span> <span class="s2">&quot;run&quot;</span>
+            <span class="n">rundir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+            <span class="n">cpllog</span> <span class="o">=</span> <span class="n">rundir</span> <span class="o">/</span> <span class="s2">&quot;cpl.log.gz&quot;</span>
+
+            <span class="n">get_latest_cpl_logs</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">cpllog</span><span class="p">),</span>
+            <span class="p">]</span>
+
+            <span class="n">case</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
+            <span class="k">case</span><span class="o">.</span><span class="n">get_value</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">caseroot</span><span class="p">),</span>
+                <span class="s2">&quot;ERIO.ne30_g16_rx1.A.docker_gnu&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;mct&quot;</span><span class="p">,</span>
+                <span class="mf">0.01</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="n">common</span> <span class="o">=</span> <span class="n">SystemTestsCommon</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
+
+            <span class="n">common</span><span class="o">.</span><span class="n">_test_status</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
+
+            <span class="n">common</span><span class="o">.</span><span class="n">_check_for_memleak</span><span class="p">()</span>
+
+            <span class="n">expected_comment</span> <span class="o">=</span> <span class="s2">&quot;memleak detected, memory went from 2000.000000 to 3000.000000 in 2 days&quot;</span>
+
+            <span class="n">common</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">set_status</span><span class="o">.</span><span class="n">assert_any_call</span><span class="p">(</span>
+                <span class="s2">&quot;MEMLEAK&quot;</span><span class="p">,</span> <span class="s2">&quot;FAIL&quot;</span><span class="p">,</span> <span class="n">comments</span><span class="o">=</span><span class="n">expected_comment</span>
+            <span class="p">)</span>
+
+            <span class="n">append_testlog</span><span class="o">.</span><span class="n">assert_any_call</span><span class="p">(</span><span class="n">expected_comment</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">caseroot</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="TestUnitSystemTests.test_check_for_memleak">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_system_tests.TestUnitSystemTests.test_check_for_memleak">[docs]</a>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.system_tests_common.load_coupler_customization&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.system_tests_common.append_testlog&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.system_tests_common._perf_get_memory&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.system_tests_common.get_latest_cpl_logs&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_check_for_memleak</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">get_latest_cpl_logs</span><span class="p">,</span>
+        <span class="n">_perf_get_memory</span><span class="p">,</span>
+        <span class="n">append_testlog</span><span class="p">,</span>
+        <span class="n">load_coupler_customization</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="n">load_coupler_customization</span><span class="o">.</span><span class="n">return_value</span><span class="o">.</span><span class="n">perf_check_for_memory_leak</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="ne">AttributeError</span>
+        <span class="p">)</span>
+
+        <span class="n">_perf_get_memory</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mf">3040.0</span><span class="p">),</span>
+            <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mf">3002.0</span><span class="p">),</span>
+            <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mf">3030.0</span><span class="p">),</span>
+            <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mf">3008.0</span><span class="p">),</span>
+        <span class="p">]</span>
+
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tempdir</span><span class="p">:</span>
+            <span class="n">caseroot</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">tempdir</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;caseroot&quot;</span>
+            <span class="n">caseroot</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+            <span class="n">rundir</span> <span class="o">=</span> <span class="n">caseroot</span> <span class="o">/</span> <span class="s2">&quot;run&quot;</span>
+            <span class="n">rundir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+            <span class="n">cpllog</span> <span class="o">=</span> <span class="n">rundir</span> <span class="o">/</span> <span class="s2">&quot;cpl.log.gz&quot;</span>
+
+            <span class="n">get_latest_cpl_logs</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">cpllog</span><span class="p">),</span>
+            <span class="p">]</span>
+
+            <span class="n">case</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
+            <span class="k">case</span><span class="o">.</span><span class="n">get_value</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">caseroot</span><span class="p">),</span>
+                <span class="s2">&quot;ERIO.ne30_g16_rx1.A.docker_gnu&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;mct&quot;</span><span class="p">,</span>
+                <span class="mf">0.01</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="n">common</span> <span class="o">=</span> <span class="n">SystemTestsCommon</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
+
+            <span class="n">common</span><span class="o">.</span><span class="n">_test_status</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
+
+            <span class="n">common</span><span class="o">.</span><span class="n">_check_for_memleak</span><span class="p">()</span>
+
+            <span class="n">common</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">set_status</span><span class="o">.</span><span class="n">assert_any_call</span><span class="p">(</span>
+                <span class="s2">&quot;MEMLEAK&quot;</span><span class="p">,</span> <span class="s2">&quot;PASS&quot;</span><span class="p">,</span> <span class="n">comments</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+            <span class="p">)</span>
+
+            <span class="n">append_testlog</span><span class="o">.</span><span class="n">assert_not_called</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="TestUnitSystemTests.test_compare_throughput">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_system_tests.TestUnitSystemTests.test_compare_throughput">[docs]</a>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.system_tests_common.perf_compare_throughput_baseline&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.system_tests_common.append_testlog&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_compare_throughput</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">append_testlog</span><span class="p">,</span> <span class="n">perf_compare_throughput_baseline</span><span class="p">):</span>
+        <span class="n">perf_compare_throughput_baseline</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="kc">True</span><span class="p">,</span>
+            <span class="s2">&quot;TPUTCOMP: Computation time changed by 2.00</span><span class="si">% r</span><span class="s2">elative to baseline&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tempdir</span><span class="p">:</span>
+            <span class="n">caseroot</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">tempdir</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;caseroot&quot;</span>
+            <span class="n">caseroot</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+            <span class="n">case</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
+            <span class="k">case</span><span class="o">.</span><span class="n">get_value</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">tempdir</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;caseroot&quot;</span><span class="p">),</span>
+                <span class="s2">&quot;ERIO.ne30_g16_rx1.A.docker_gnu&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;mct&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="n">common</span> <span class="o">=</span> <span class="n">SystemTestsCommon</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
+
+            <span class="n">common</span><span class="o">.</span><span class="n">_compare_throughput</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">common</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">get_overall_test_status</span><span class="p">()</span> <span class="o">==</span> <span class="p">(</span><span class="s2">&quot;PASS&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="n">append_testlog</span><span class="o">.</span><span class="n">assert_any_call</span><span class="p">(</span>
+            <span class="s2">&quot;TPUTCOMP: Computation time changed by 2.00</span><span class="si">% r</span><span class="s2">elative to baseline&quot;</span><span class="p">,</span>
+            <span class="nb">str</span><span class="p">(</span><span class="n">caseroot</span><span class="p">),</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestUnitSystemTests.test_compare_throughput_error_diff">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_system_tests.TestUnitSystemTests.test_compare_throughput_error_diff">[docs]</a>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.system_tests_common.perf_compare_throughput_baseline&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.system_tests_common.append_testlog&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_compare_throughput_error_diff</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">append_testlog</span><span class="p">,</span> <span class="n">perf_compare_throughput_baseline</span>
+    <span class="p">):</span>
+        <span class="n">perf_compare_throughput_baseline</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Error diff value&quot;</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tempdir</span><span class="p">:</span>
+            <span class="n">caseroot</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">tempdir</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;caseroot&quot;</span>
+            <span class="n">caseroot</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+            <span class="n">case</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
+            <span class="k">case</span><span class="o">.</span><span class="n">get_value</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">tempdir</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;caseroot&quot;</span><span class="p">),</span>
+                <span class="s2">&quot;ERIO.ne30_g16_rx1.A.docker_gnu&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;mct&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="n">common</span> <span class="o">=</span> <span class="n">SystemTestsCommon</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
+
+            <span class="n">common</span><span class="o">.</span><span class="n">_compare_throughput</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">common</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">get_overall_test_status</span><span class="p">()</span> <span class="o">==</span> <span class="p">(</span><span class="s2">&quot;PASS&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="n">append_testlog</span><span class="o">.</span><span class="n">assert_not_called</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="TestUnitSystemTests.test_compare_throughput_fail">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_system_tests.TestUnitSystemTests.test_compare_throughput_fail">[docs]</a>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.system_tests_common.perf_compare_throughput_baseline&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.system_tests_common.append_testlog&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_compare_throughput_fail</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">append_testlog</span><span class="p">,</span> <span class="n">perf_compare_throughput_baseline</span>
+    <span class="p">):</span>
+        <span class="n">perf_compare_throughput_baseline</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="kc">False</span><span class="p">,</span>
+            <span class="s2">&quot;Error: TPUTCOMP: Computation time increase &gt; 5</span><span class="si">% f</span><span class="s2">rom baseline&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tempdir</span><span class="p">:</span>
+            <span class="n">caseroot</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">tempdir</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;caseroot&quot;</span>
+            <span class="n">caseroot</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+            <span class="n">case</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
+            <span class="k">case</span><span class="o">.</span><span class="n">get_value</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">tempdir</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;caseroot&quot;</span><span class="p">),</span>
+                <span class="s2">&quot;ERIO.ne30_g16_rx1.A.docker_gnu&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;mct&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="n">common</span> <span class="o">=</span> <span class="n">SystemTestsCommon</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
+
+            <span class="n">common</span><span class="o">.</span><span class="n">_compare_throughput</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">common</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">get_overall_test_status</span><span class="p">()</span> <span class="o">==</span> <span class="p">(</span><span class="s2">&quot;PASS&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="n">append_testlog</span><span class="o">.</span><span class="n">assert_any_call</span><span class="p">(</span>
+            <span class="s2">&quot;Error: TPUTCOMP: Computation time increase &gt; 5</span><span class="si">% f</span><span class="s2">rom baseline&quot;</span><span class="p">,</span>
+            <span class="nb">str</span><span class="p">(</span><span class="n">caseroot</span><span class="p">),</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestUnitSystemTests.test_compare_memory">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_system_tests.TestUnitSystemTests.test_compare_memory">[docs]</a>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.system_tests_common.perf_compare_memory_baseline&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.system_tests_common.append_testlog&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_compare_memory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">append_testlog</span><span class="p">,</span> <span class="n">perf_compare_memory_baseline</span><span class="p">):</span>
+        <span class="n">perf_compare_memory_baseline</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="kc">True</span><span class="p">,</span>
+            <span class="s2">&quot;MEMCOMP: Memory usage highwater has changed by 2.00</span><span class="si">% r</span><span class="s2">elative to baseline&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tempdir</span><span class="p">:</span>
+            <span class="n">caseroot</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">tempdir</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;caseroot&quot;</span>
+            <span class="n">caseroot</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+            <span class="n">case</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
+            <span class="k">case</span><span class="o">.</span><span class="n">get_value</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">caseroot</span><span class="p">),</span>
+                <span class="s2">&quot;ERIO.ne30_g16_rx1.A.docker_gnu&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;mct&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="n">common</span> <span class="o">=</span> <span class="n">SystemTestsCommon</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
+
+            <span class="n">common</span><span class="o">.</span><span class="n">_compare_memory</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">common</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">get_overall_test_status</span><span class="p">()</span> <span class="o">==</span> <span class="p">(</span><span class="s2">&quot;PASS&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="n">append_testlog</span><span class="o">.</span><span class="n">assert_any_call</span><span class="p">(</span>
+            <span class="s2">&quot;MEMCOMP: Memory usage highwater has changed by 2.00</span><span class="si">% r</span><span class="s2">elative to baseline&quot;</span><span class="p">,</span>
+            <span class="nb">str</span><span class="p">(</span><span class="n">caseroot</span><span class="p">),</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestUnitSystemTests.test_compare_memory_erorr_diff">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_system_tests.TestUnitSystemTests.test_compare_memory_erorr_diff">[docs]</a>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.system_tests_common.perf_compare_memory_baseline&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.system_tests_common.append_testlog&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_compare_memory_erorr_diff</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">append_testlog</span><span class="p">,</span> <span class="n">perf_compare_memory_baseline</span>
+    <span class="p">):</span>
+        <span class="n">perf_compare_memory_baseline</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Error diff value&quot;</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tempdir</span><span class="p">:</span>
+            <span class="n">caseroot</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">tempdir</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;caseroot&quot;</span>
+            <span class="n">caseroot</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+            <span class="n">case</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
+            <span class="k">case</span><span class="o">.</span><span class="n">get_value</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">caseroot</span><span class="p">),</span>
+                <span class="s2">&quot;ERIO.ne30_g16_rx1.A.docker_gnu&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;mct&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="n">common</span> <span class="o">=</span> <span class="n">SystemTestsCommon</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
+
+            <span class="n">common</span><span class="o">.</span><span class="n">_compare_memory</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">common</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">get_overall_test_status</span><span class="p">()</span> <span class="o">==</span> <span class="p">(</span><span class="s2">&quot;PASS&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="n">append_testlog</span><span class="o">.</span><span class="n">assert_not_called</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="TestUnitSystemTests.test_compare_memory_erorr_fail">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_system_tests.TestUnitSystemTests.test_compare_memory_erorr_fail">[docs]</a>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.system_tests_common.perf_compare_memory_baseline&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.system_tests_common.append_testlog&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_compare_memory_erorr_fail</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">append_testlog</span><span class="p">,</span> <span class="n">perf_compare_memory_baseline</span>
+    <span class="p">):</span>
+        <span class="n">perf_compare_memory_baseline</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="kc">False</span><span class="p">,</span>
+            <span class="s2">&quot;Error: Memory usage increase &gt;5</span><span class="si">% f</span><span class="s2">rom baseline&#39;s 1000.000000 to 1002.000000&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tempdir</span><span class="p">:</span>
+            <span class="n">caseroot</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">tempdir</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;caseroot&quot;</span>
+            <span class="n">caseroot</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+            <span class="n">case</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
+            <span class="k">case</span><span class="o">.</span><span class="n">get_value</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">caseroot</span><span class="p">),</span>
+                <span class="s2">&quot;ERIO.ne30_g16_rx1.A.docker_gnu&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;mct&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="n">common</span> <span class="o">=</span> <span class="n">SystemTestsCommon</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
+
+            <span class="n">common</span><span class="o">.</span><span class="n">_compare_memory</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">common</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">get_overall_test_status</span><span class="p">()</span> <span class="o">==</span> <span class="p">(</span><span class="s2">&quot;PASS&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="n">append_testlog</span><span class="o">.</span><span class="n">assert_any_call</span><span class="p">(</span>
+            <span class="s2">&quot;Error: Memory usage increase &gt;5</span><span class="si">% f</span><span class="s2">rom baseline&#39;s 1000.000000 to 1002.000000&quot;</span><span class="p">,</span>
+            <span class="nb">str</span><span class="p">(</span><span class="n">caseroot</span><span class="p">),</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestUnitSystemTests.test_generate_baseline">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_system_tests.TestUnitSystemTests.test_generate_baseline">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_generate_baseline</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tempdir</span><span class="p">:</span>
+            <span class="n">case</span><span class="p">,</span> <span class="n">caseroot</span><span class="p">,</span> <span class="n">baseline_root</span><span class="p">,</span> <span class="n">run_dir</span> <span class="o">=</span> <span class="n">create_mock_case</span><span class="p">(</span>
+                <span class="n">tempdir</span><span class="p">,</span> <span class="n">cpllog_data</span><span class="o">=</span><span class="n">CPLLOG</span>
+            <span class="p">)</span>
+
+            <span class="n">get_value_calls</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">caseroot</span><span class="p">),</span>
+                <span class="s2">&quot;ERIO.ne30_g16_rx1.A.docker_gnu&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;mct&quot;</span><span class="p">,</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">run_dir</span><span class="p">),</span>
+                <span class="s2">&quot;case.std&quot;</span><span class="p">,</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">baseline_root</span><span class="p">),</span>
+                <span class="s2">&quot;master/ERIO.ne30_g16_rx1.A.docker_gnu&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;ERIO.ne30_g16_rx1.A.docker_gnu.G.20230919_193255_z9hg2w&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;mct&quot;</span><span class="p">,</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">run_dir</span><span class="p">),</span>
+                <span class="s2">&quot;ERIO&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;ERIO.ne30_g16_rx1.A.docker_gnu&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;master/ERIO.ne30_g16_rx1.A.docker_gnu&quot;</span><span class="p">,</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">baseline_root</span><span class="p">),</span>
+                <span class="s2">&quot;master/ERIO.ne30_g16_rx1.A.docker_gnu&quot;</span><span class="p">,</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">run_dir</span><span class="p">),</span>
+                <span class="s2">&quot;mct&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;/tmp/components/cpl&quot;</span><span class="p">,</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">run_dir</span><span class="p">),</span>
+                <span class="s2">&quot;mct&quot;</span><span class="p">,</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">run_dir</span><span class="p">),</span>
+                <span class="s2">&quot;mct&quot;</span><span class="p">,</span>
+            <span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">Config</span><span class="o">.</span><span class="n">instance</span><span class="p">()</span><span class="o">.</span><span class="n">create_bless_log</span><span class="p">:</span>
+                <span class="n">get_value_calls</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span>
+
+            <span class="k">case</span><span class="o">.</span><span class="n">get_value</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">get_value_calls</span>
+
+            <span class="n">common</span> <span class="o">=</span> <span class="n">SystemTestsCommon</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
+
+            <span class="n">common</span><span class="o">.</span><span class="n">_generate_baseline</span><span class="p">()</span>
+
+            <span class="n">baseline_dir</span> <span class="o">=</span> <span class="n">baseline_root</span> <span class="o">/</span> <span class="s2">&quot;master&quot;</span> <span class="o">/</span> <span class="s2">&quot;ERIO.ne30_g16_rx1.A.docker_gnu&quot;</span>
+
+            <span class="k">assert</span> <span class="p">(</span><span class="n">baseline_dir</span> <span class="o">/</span> <span class="s2">&quot;cpl.log.gz&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+            <span class="k">assert</span> <span class="p">(</span><span class="n">baseline_dir</span> <span class="o">/</span> <span class="s2">&quot;cpl-tput.log&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+            <span class="k">assert</span> <span class="p">(</span><span class="n">baseline_dir</span> <span class="o">/</span> <span class="s2">&quot;cpl-mem.log&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+            <span class="k">assert</span> <span class="p">(</span><span class="n">baseline_dir</span> <span class="o">/</span> <span class="s2">&quot;cpl.hi.2023-01-01.nc&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">baseline_dir</span> <span class="o">/</span> <span class="s2">&quot;cpl-tput.log&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
+                <span class="n">lines</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+
+            <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+            <span class="k">assert</span> <span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;719.635&quot;</span>
+
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">baseline_dir</span> <span class="o">/</span> <span class="s2">&quot;cpl-mem.log&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
+                <span class="n">lines</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+
+            <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+            <span class="k">assert</span> <span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;1673.89&quot;</span></div>
+
+
+<div class="viewcode-block" id="TestUnitSystemTests.test_kwargs">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_system_tests.TestUnitSystemTests.test_kwargs">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_kwargs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">case</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
 
         <span class="k">case</span><span class="o">.</span><span class="n">get_value</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="p">(</span>
@@ -150,7 +695,10 @@
 
         <span class="n">SystemTestsCompareN</span><span class="o">.</span><span class="n">_get_caseroots</span> <span class="o">=</span> <span class="n">orig</span></div>
 
-<div class="viewcode-block" id="TestCaseSubmit.test_dry_run"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_system_tests.TestCaseSubmit.test_dry_run">[docs]</a>    <span class="k">def</span> <span class="nf">test_dry_run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestUnitSystemTests.test_dry_run">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_system_tests.TestUnitSystemTests.test_dry_run">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_dry_run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">case</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
 
         <span class="k">case</span><span class="o">.</span><span class="n">get_value</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="p">(</span>
@@ -217,7 +765,9 @@
 
         <span class="n">system_test</span><span class="o">.</span><span class="n">_setup_cases_if_not_yet_done</span><span class="o">.</span><span class="n">assert_called</span><span class="p">()</span>
 
-        <span class="n">SystemTestsCompareN</span><span class="o">.</span><span class="n">_setup_cases_if_not_yet_done</span> <span class="o">=</span> <span class="n">orig</span></div></div>
+        <span class="n">SystemTestsCompareN</span><span class="o">.</span><span class="n">_setup_cases_if_not_yet_done</span> <span class="o">=</span> <span class="n">orig</span></div>
+</div>
+
 </pre></div>
 
            </div>

@@ -11,11 +11,11 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../../_static/pop_ver.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -93,7 +93,9 @@
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
 
 
-<div class="viewcode-block" id="CaseFake"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.case_fake.CaseFake">[docs]</a><span class="k">class</span> <span class="nc">CaseFake</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="CaseFake">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.case_fake.CaseFake">[docs]</a>
+<span class="k">class</span> <span class="nc">CaseFake</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case_root</span><span class="p">,</span> <span class="n">create_case_root</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize a new case object for the given case_root directory.</span>
@@ -118,10 +120,15 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">set_exeroot</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_rundir</span><span class="p">()</span>
 
-<div class="viewcode-block" id="CaseFake.set_initial_test_values"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.case_fake.CaseFake.set_initial_test_values">[docs]</a>    <span class="k">def</span> <span class="nf">set_initial_test_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CaseFake.set_initial_test_values">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.case_fake.CaseFake.set_initial_test_values">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_initial_test_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="CaseFake.get_value"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.case_fake.CaseFake.get_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+
+<div class="viewcode-block" id="CaseFake.get_value">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.case_fake.CaseFake.get_value">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the value of the given item</span>
 
@@ -132,7 +139,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">item</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="CaseFake.set_value"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.case_fake.CaseFake.set_value">[docs]</a>    <span class="k">def</span> <span class="nf">set_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+
+<div class="viewcode-block" id="CaseFake.set_value">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.case_fake.CaseFake.set_value">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set the value of the given item to the given value</span>
 
@@ -142,7 +152,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="p">[</span><span class="n">item</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span></div>
 
-<div class="viewcode-block" id="CaseFake.copy"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.case_fake.CaseFake.copy">[docs]</a>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">newcasename</span><span class="p">,</span> <span class="n">newcaseroot</span><span class="p">):</span>
+
+<div class="viewcode-block" id="CaseFake.copy">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.case_fake.CaseFake.copy">[docs]</a>
+    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">newcasename</span><span class="p">,</span> <span class="n">newcaseroot</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create and return a copy of self, but with CASE and CASEBASEID set to newcasename,</span>
 <span class="sd">        CASEROOT set to newcaseroot, and RUNDIR set appropriately.</span>
@@ -160,7 +173,10 @@
 
         <span class="k">return</span> <span class="n">newcase</span></div>
 
-<div class="viewcode-block" id="CaseFake.create_clone"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.case_fake.CaseFake.create_clone">[docs]</a>    <span class="k">def</span> <span class="nf">create_clone</span><span class="p">(</span>
+
+<div class="viewcode-block" id="CaseFake.create_clone">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.case_fake.CaseFake.create_clone">[docs]</a>
+    <span class="k">def</span> <span class="nf">create_clone</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">newcase</span><span class="p">,</span>
         <span class="n">keepexe</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -203,40 +219,60 @@
 
         <span class="k">return</span> <span class="n">clone</span></div>
 
-<div class="viewcode-block" id="CaseFake.flush"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.case_fake.CaseFake.flush">[docs]</a>    <span class="k">def</span> <span class="nf">flush</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="CaseFake.flush">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.case_fake.CaseFake.flush">[docs]</a>
+    <span class="k">def</span> <span class="nf">flush</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="CaseFake.make_rundir"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.case_fake.CaseFake.make_rundir">[docs]</a>    <span class="k">def</span> <span class="nf">make_rundir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="CaseFake.make_rundir">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.case_fake.CaseFake.make_rundir">[docs]</a>
+    <span class="k">def</span> <span class="nf">make_rundir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Make directory given by RUNDIR</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="CaseFake.set_exeroot"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.case_fake.CaseFake.set_exeroot">[docs]</a>    <span class="k">def</span> <span class="nf">set_exeroot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="CaseFake.set_exeroot">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.case_fake.CaseFake.set_exeroot">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_exeroot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Assumes CASEROOT is already set; sets an appropriate EXEROOT</span>
 <span class="sd">        (nested inside CASEROOT)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;EXEROOT&quot;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">),</span> <span class="s2">&quot;bld&quot;</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="CaseFake.set_rundir"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.case_fake.CaseFake.set_rundir">[docs]</a>    <span class="k">def</span> <span class="nf">set_rundir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="CaseFake.set_rundir">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.case_fake.CaseFake.set_rundir">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_rundir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Assumes CASEROOT is already set; sets an appropriate RUNDIR (nested</span>
 <span class="sd">        inside CASEROOT)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">),</span> <span class="s2">&quot;run&quot;</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="CaseFake.case_setup"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.case_fake.CaseFake.case_setup">[docs]</a>    <span class="k">def</span> <span class="nf">case_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">clean</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">test_mode</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="CaseFake.case_setup">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.case_fake.CaseFake.case_setup">[docs]</a>
+    <span class="k">def</span> <span class="nf">case_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">clean</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">test_mode</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="CaseFake.load_env"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.case_fake.CaseFake.load_env">[docs]</a>    <span class="k">def</span> <span class="nf">load_env</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="CaseFake.load_env">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.case_fake.CaseFake.load_env">[docs]</a>
+    <span class="k">def</span> <span class="nf">load_env</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="k">pass</span></div>
+
 
     <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">pass</span>
 
     <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span><span class="p">):</span>
         <span class="k">pass</span></div>
+
 </pre></div>
 
            </div>

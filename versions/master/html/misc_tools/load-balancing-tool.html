@@ -12,11 +12,11 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/sphinx_highlight.js"></script>
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../_static/pop_ver.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -100,7 +100,7 @@
            <div itemprop="articleBody">
              
   <section id="cime-load-balancing-tool">
-<span id="load-balancing-tool"></span><h1><span class="section-number">2. </span>CIME Load Balancing Tool<a class="headerlink" href="#cime-load-balancing-tool" title="Permalink to this heading"></a></h1>
+<span id="load-balancing-tool"></span><h1><span class="section-number">2. </span>CIME Load Balancing Tool<a class="headerlink" href="#cime-load-balancing-tool" title="Link to this heading"></a></h1>
 <blockquote>
 <div><p>Originally Developed by Sheri Mickelson <a class="reference external" href="mailto:mickelso&#37;&#52;&#48;ucar&#46;edu">mickelso<span>&#64;</span>ucar<span>&#46;</span>edu</a>
 and Yuri Alekseev (ALCF/Argonne National Laboratory</p>
@@ -135,7 +135,7 @@ steps:</p>
 <li><p>$ ./load_balancing_solve.py –total-tasks &lt;N&gt; –blocksize 8</p></li>
 </ol>
 <section id="running-simulations-using-load-balancing-submit-py">
-<h2><span class="section-number">2.1. </span>Running simulations using load_balancing_submit.py<a class="headerlink" href="#running-simulations-using-load-balancing-submit-py" title="Permalink to this heading"></a></h2>
+<h2><span class="section-number">2.1. </span>Running simulations using load_balancing_submit.py<a class="headerlink" href="#running-simulations-using-load-balancing-submit-py" title="Link to this heading"></a></h2>
 <p>Simulations can be run on a given system by executing the load_balancing_tool.py
 script, located in cime/tools/load_balancing_tool/load_balancing_tool_submit.py.
 This creates timing files in the case directory which will be used to solve
@@ -193,7 +193,7 @@ directly forwarded to the passed:</p>
 </div>
 </section>
 <section id="optimizing-the-layout-using-load-balacing-solve-py">
-<h2><span class="section-number">2.2. </span>Optimizing the layout using load_balacing_solve.py<a class="headerlink" href="#optimizing-the-layout-using-load-balacing-solve-py" title="Permalink to this heading"></a></h2>
+<h2><span class="section-number">2.2. </span>Optimizing the layout using load_balacing_solve.py<a class="headerlink" href="#optimizing-the-layout-using-load-balacing-solve-py" title="Link to this heading"></a></h2>
 <p>Reads timing data created with load_balancing_submit.py (or otherwise,
 see –timing-files option) and solves an mixed integer optimization problem
 using these timings. The default layout (IceLndAtmOcn) minimizes the cost per
@@ -256,7 +256,7 @@ all timing data have the same threading structure (i.e. all ATM runs use two thr
 </div>
 </section>
 <section id="more-about-the-algorithm">
-<h2><span class="section-number">2.3. </span>More about the algorithm<a class="headerlink" href="#more-about-the-algorithm" title="Permalink to this heading"></a></h2>
+<h2><span class="section-number">2.3. </span>More about the algorithm<a class="headerlink" href="#more-about-the-algorithm" title="Link to this heading"></a></h2>
 <p>Before solving the mixed-integer linear program, a model of the cost vs ntasks
 function is constructed for each component.</p>
 <p>Given a component data set of costs (C1,C2,..,Cn) and nblocks (N1,N2,..,Nn),
@@ -341,7 +341,7 @@ follows from the layout:</p>
 <a class="reference external" href="https://www.coin-or.org/Cbc/">https://www.coin-or.org/Cbc/</a></p>
 </section>
 <section id="extending-the-load-balancing-tool">
-<h2><span class="section-number">2.4. </span>Extending the Load Balancing Tool<a class="headerlink" href="#extending-the-load-balancing-tool" title="Permalink to this heading"></a></h2>
+<h2><span class="section-number">2.4. </span>Extending the Load Balancing Tool<a class="headerlink" href="#extending-the-load-balancing-tool" title="Link to this heading"></a></h2>
 <p>The file $CIME_DIR/tools/load_balancing_tool/optimize_model.py
 contains a base class OptimizeModel as well as an implementation class
 IceLndAtmOcn. Any layout solver will look similar to IceLndAtmOcn
@@ -411,7 +411,7 @@ line argument (see test for atm_lnd)</p></li>
 </div></blockquote>
 </section>
 <section id="testing">
-<h2><span class="section-number">2.5. </span>Testing<a class="headerlink" href="#testing" title="Permalink to this heading"></a></h2>
+<h2><span class="section-number">2.5. </span>Testing<a class="headerlink" href="#testing" title="Link to this heading"></a></h2>
 <p>To run the provided test suite:</p>
 <blockquote>
 <div><ol class="arabic">

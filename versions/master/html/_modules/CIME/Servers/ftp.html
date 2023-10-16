@@ -11,11 +11,11 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../../_static/pop_ver.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -98,7 +98,9 @@
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 <span class="c1"># I think that multiple inheritence would be useful here, but I couldnt make it work</span>
 <span class="c1"># in a py2/3 compatible way.</span>
-<div class="viewcode-block" id="FTP"><a class="viewcode-back" href="../../../CIME_api/CIME.Servers.html#CIME.Servers.ftp.FTP">[docs]</a><span class="k">class</span> <span class="nc">FTP</span><span class="p">(</span><span class="n">GenericServer</span><span class="p">):</span>
+<div class="viewcode-block" id="FTP">
+<a class="viewcode-back" href="../../../CIME_api/CIME.Servers.html#CIME.Servers.ftp.FTP">[docs]</a>
+<span class="k">class</span> <span class="nc">FTP</span><span class="p">(</span><span class="n">GenericServer</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">passwd</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">server</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">user</span><span class="p">:</span>
             <span class="n">user</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
@@ -132,7 +134,9 @@
             <span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span>
 
-<div class="viewcode-block" id="FTP.ftp_login"><a class="viewcode-back" href="../../../CIME_api/CIME.Servers.html#CIME.Servers.ftp.FTP.ftp_login">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="FTP.ftp_login">
+<a class="viewcode-back" href="../../../CIME_api/CIME.Servers.html#CIME.Servers.ftp.FTP.ftp_login">[docs]</a>
+    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">ftp_login</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">passwd</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
         <span class="n">ftp_server</span><span class="p">,</span> <span class="n">root_address</span> <span class="o">=</span> <span class="n">address</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;server address </span><span class="si">{}</span><span class="s2"> root path </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ftp_server</span><span class="p">,</span> <span class="n">root_address</span><span class="p">))</span>
@@ -154,7 +158,10 @@
 
         <span class="k">return</span> <span class="n">result</span></div>
 
-<div class="viewcode-block" id="FTP.fileexists"><a class="viewcode-back" href="../../../CIME_api/CIME.Servers.html#CIME.Servers.ftp.FTP.fileexists">[docs]</a>    <span class="k">def</span> <span class="nf">fileexists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rel_path</span><span class="p">):</span>
+
+<div class="viewcode-block" id="FTP.fileexists">
+<a class="viewcode-back" href="../../../CIME_api/CIME.Servers.html#CIME.Servers.ftp.FTP.fileexists">[docs]</a>
+    <span class="k">def</span> <span class="nf">fileexists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rel_path</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">stat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ftp</span><span class="o">.</span><span class="n">nlst</span><span class="p">(</span><span class="n">rel_path</span><span class="p">)</span>
         <span class="k">except</span> <span class="n">all_ftp_errors</span><span class="p">:</span>
@@ -169,7 +176,10 @@
                 <span class="k">return</span> <span class="kc">False</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="FTP.getfile"><a class="viewcode-back" href="../../../CIME_api/CIME.Servers.html#CIME.Servers.ftp.FTP.getfile">[docs]</a>    <span class="k">def</span> <span class="nf">getfile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rel_path</span><span class="p">,</span> <span class="n">full_path</span><span class="p">):</span>
+
+<div class="viewcode-block" id="FTP.getfile">
+<a class="viewcode-back" href="../../../CIME_api/CIME.Servers.html#CIME.Servers.ftp.FTP.getfile">[docs]</a>
+    <span class="k">def</span> <span class="nf">getfile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rel_path</span><span class="p">,</span> <span class="n">full_path</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">stat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ftp</span><span class="o">.</span><span class="n">retrbinary</span><span class="p">(</span>
                 <span class="s2">&quot;RETR </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rel_path</span><span class="p">),</span> <span class="nb">open</span><span class="p">(</span><span class="n">full_path</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">write</span>
@@ -189,7 +199,10 @@
             <span class="k">return</span> <span class="kc">False</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="FTP.getdirectory"><a class="viewcode-back" href="../../../CIME_api/CIME.Servers.html#CIME.Servers.ftp.FTP.getdirectory">[docs]</a>    <span class="k">def</span> <span class="nf">getdirectory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rel_path</span><span class="p">,</span> <span class="n">full_path</span><span class="p">):</span>
+
+<div class="viewcode-block" id="FTP.getdirectory">
+<a class="viewcode-back" href="../../../CIME_api/CIME.Servers.html#CIME.Servers.ftp.FTP.getdirectory">[docs]</a>
+    <span class="k">def</span> <span class="nf">getdirectory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rel_path</span><span class="p">,</span> <span class="n">full_path</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">stat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ftp</span><span class="o">.</span><span class="n">nlst</span><span class="p">(</span><span class="n">rel_path</span><span class="p">)</span>
         <span class="k">except</span> <span class="n">all_ftp_errors</span><span class="p">:</span>
@@ -197,7 +210,9 @@
             <span class="k">return</span> <span class="kc">False</span>
 
         <span class="k">for</span> <span class="n">_file</span> <span class="ow">in</span> <span class="n">stat</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">getfile</span><span class="p">(</span><span class="n">_file</span><span class="p">,</span> <span class="n">full_path</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">sep</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">_file</span><span class="p">))</span></div></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">getfile</span><span class="p">(</span><span class="n">_file</span><span class="p">,</span> <span class="n">full_path</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">sep</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">_file</span><span class="p">))</span></div>
+</div>
+
 </pre></div>
 
            </div>

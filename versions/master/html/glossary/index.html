@@ -12,11 +12,11 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/sphinx_highlight.js"></script>
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../_static/pop_ver.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -95,126 +95,126 @@
            <div itemprop="articleBody">
              
   <section id="glossary">
-<span id="id1"></span><h1>Glossary<a class="headerlink" href="#glossary" title="Permalink to this heading"></a></h1>
+<span id="id1"></span><h1>Glossary<a class="headerlink" href="#glossary" title="Link to this heading"></a></h1>
 <div class="toctree-wrapper compound">
 </div>
 <section id="general">
-<h2>General<a class="headerlink" href="#general" title="Permalink to this heading"></a></h2>
+<h2>General<a class="headerlink" href="#general" title="Link to this heading"></a></h2>
 <dl class="simple glossary">
-<dt id="term-active-or-prognostic-component">active or prognostic component<a class="headerlink" href="#term-active-or-prognostic-component" title="Permalink to this term"></a></dt><dd><p>Solves a complex set of equations to describe a sub-model’s behavior.</p>
+<dt id="term-active-or-prognostic-component">active or prognostic component<a class="headerlink" href="#term-active-or-prognostic-component" title="Link to this term"></a></dt><dd><p>Solves a complex set of equations to describe a sub-model’s behavior.</p>
 </dd>
-<dt id="term-case-CASE">case (CASE)<a class="headerlink" href="#term-case-CASE" title="Permalink to this term"></a></dt><dd><p>An instance of a global climate model simulation. A case is defined by a component set, a model grid,
+<dt id="term-case-CASE">case (CASE)<a class="headerlink" href="#term-case-CASE" title="Link to this term"></a></dt><dd><p>An instance of a global climate model simulation. A case is defined by a component set, a model grid,
 a machine, a compiler, and any other additional customizations.</p>
 </dd>
-<dt id="term-component">component<a class="headerlink" href="#term-component" title="Permalink to this term"></a></dt><dd><p>A sub-model coupled with other components to constitute a global climate modeling system.
+<dt id="term-component">component<a class="headerlink" href="#term-component" title="Link to this term"></a></dt><dd><p>A sub-model coupled with other components to constitute a global climate modeling system.
 Example components: atmosphere, ocean, land, etc.</p>
 </dd>
-<dt id="term-component-set-COMPSET">component set (COMPSET)<a class="headerlink" href="#term-component-set-COMPSET" title="Permalink to this term"></a></dt><dd><p>A complete set of components to be linked together into a climate model to
+<dt id="term-component-set-COMPSET">component set (COMPSET)<a class="headerlink" href="#term-component-set-COMPSET" title="Link to this term"></a></dt><dd><p>A complete set of components to be linked together into a climate model to
 run a specific case.</p>
 </dd>
-<dt id="term-data-component">data component<a class="headerlink" href="#term-data-component" title="Permalink to this term"></a></dt><dd><p>Replacement for an active component. Sends and receives the same variables to and from other
+<dt id="term-data-component">data component<a class="headerlink" href="#term-data-component" title="Link to this term"></a></dt><dd><p>Replacement for an active component. Sends and receives the same variables to and from other
 models (but ignores the variables received).</p>
 </dd>
-<dt id="term-grid-GRID">grid (GRID)<a class="headerlink" href="#term-grid-GRID" title="Permalink to this term"></a></dt><dd><p>A set of numerical grids of a case. Each active component operates on its own numerical grid.</p>
+<dt id="term-grid-GRID">grid (GRID)<a class="headerlink" href="#term-grid-GRID" title="Link to this term"></a></dt><dd><p>A set of numerical grids of a case. Each active component operates on its own numerical grid.</p>
 </dd>
-<dt id="term-resolution">resolution<a class="headerlink" href="#term-resolution" title="Permalink to this term"></a></dt><dd><p>Used to refer to a set of grids. Each grid within a set may have different resolution.</p>
+<dt id="term-resolution">resolution<a class="headerlink" href="#term-resolution" title="Link to this term"></a></dt><dd><p>Used to refer to a set of grids. Each grid within a set may have different resolution.</p>
 </dd>
-<dt id="term-stub-component">stub component<a class="headerlink" href="#term-stub-component" title="Permalink to this term"></a></dt><dd><p>Simply occupies the required place in the climate execution sequence and does send or receive
+<dt id="term-stub-component">stub component<a class="headerlink" href="#term-stub-component" title="Link to this term"></a></dt><dd><p>Simply occupies the required place in the climate execution sequence and does send or receive
 any data.</p>
 </dd>
 </dl>
 </section>
 <section id="coupling">
-<h2>Coupling<a class="headerlink" href="#coupling" title="Permalink to this heading"></a></h2>
+<h2>Coupling<a class="headerlink" href="#coupling" title="Link to this heading"></a></h2>
 <dl class="simple glossary">
-<dt id="term-coupler">coupler<a class="headerlink" href="#term-coupler" title="Permalink to this term"></a></dt><dd><p>A component of the CIME infrastructure that is run from within the driver. It can be run on a
+<dt id="term-coupler">coupler<a class="headerlink" href="#term-coupler" title="Link to this term"></a></dt><dd><p>A component of the CIME infrastructure that is run from within the driver. It can be run on a
 subset of the total processors, and carries out mapping (interpolation), merging, diagnostics, and other
 calculations.</p>
 </dd>
-<dt id="term-driver">driver<a class="headerlink" href="#term-driver" title="Permalink to this term"></a></dt><dd><p>The hub that connects all components. CIME driver runs on all hardware processors, runs the top
+<dt id="term-driver">driver<a class="headerlink" href="#term-driver" title="Link to this term"></a></dt><dd><p>The hub that connects all components. CIME driver runs on all hardware processors, runs the top
 level instructions, and, executes the driver time loop.</p>
 </dd>
-<dt id="term-forcing">forcing<a class="headerlink" href="#term-forcing" title="Permalink to this term"></a></dt><dd><p>An imposed perturbation of Earth’s energy balance</p>
+<dt id="term-forcing">forcing<a class="headerlink" href="#term-forcing" title="Link to this term"></a></dt><dd><p>An imposed perturbation of Earth’s energy balance</p>
 </dd>
-<dt id="term-Model-Coupling-Toolkit-or-MCT">Model Coupling Toolkit or MCT<a class="headerlink" href="#term-Model-Coupling-Toolkit-or-MCT" title="Permalink to this term"></a></dt><dd><p>A library used by CIME for all data rearranging and mapping (interpolation)</p>
+<dt id="term-Model-Coupling-Toolkit-or-MCT">Model Coupling Toolkit or MCT<a class="headerlink" href="#term-Model-Coupling-Toolkit-or-MCT" title="Link to this term"></a></dt><dd><p>A library used by CIME for all data rearranging and mapping (interpolation)</p>
 </dd>
-<dt id="term-mask">mask<a class="headerlink" href="#term-mask" title="Permalink to this term"></a></dt><dd><p>Determines land/ocean boundaries in the model</p>
+<dt id="term-mask">mask<a class="headerlink" href="#term-mask" title="Link to this term"></a></dt><dd><p>Determines land/ocean boundaries in the model</p>
 </dd>
-<dt id="term-mapping">mapping<a class="headerlink" href="#term-mapping" title="Permalink to this term"></a></dt><dd><p>Interpolation of fields between components.</p>
+<dt id="term-mapping">mapping<a class="headerlink" href="#term-mapping" title="Link to this term"></a></dt><dd><p>Interpolation of fields between components.</p>
 </dd>
 </dl>
 </section>
 <section id="files-and-directories">
-<h2>Files and Directories<a class="headerlink" href="#files-and-directories" title="Permalink to this heading"></a></h2>
+<h2>Files and Directories<a class="headerlink" href="#files-and-directories" title="Link to this heading"></a></h2>
 <dl class="simple glossary">
-<dt id="term-archive-directory-DOUT_S_ROOT">archive directory (DOUT_S_ROOT)<a class="headerlink" href="#term-archive-directory-DOUT_S_ROOT" title="Permalink to this term"></a></dt><dd><p>If short term archiving is activated (DOUT_S = TRUE), the restart files and run output files
+<dt id="term-archive-directory-DOUT_S_ROOT">archive directory (DOUT_S_ROOT)<a class="headerlink" href="#term-archive-directory-DOUT_S_ROOT" title="Link to this term"></a></dt><dd><p>If short term archiving is activated (DOUT_S = TRUE), the restart files and run output files
 are copied to archive directory location (DOUT_S_ROOT).</p>
 </dd>
-<dt id="term-build-directory-EXEROOT">build directory (EXEROOT)<a class="headerlink" href="#term-build-directory-EXEROOT" title="Permalink to this term"></a></dt><dd><p>Location where the case is built.</p>
+<dt id="term-build-directory-EXEROOT">build directory (EXEROOT)<a class="headerlink" href="#term-build-directory-EXEROOT" title="Link to this term"></a></dt><dd><p>Location where the case is built.</p>
 </dd>
-<dt id="term-case-root-CASEROOT">case root (CASEROOT)<a class="headerlink" href="#term-case-root-CASEROOT" title="Permalink to this term"></a></dt><dd><p>The directory where the case is created. Includes namelist files, xml files, and scripts to setup,
+<dt id="term-case-root-CASEROOT">case root (CASEROOT)<a class="headerlink" href="#term-case-root-CASEROOT" title="Link to this term"></a></dt><dd><p>The directory where the case is created. Includes namelist files, xml files, and scripts to setup,
 build, and run the case. Also, includes logs and timing output files.</p>
 </dd>
-<dt id="term-CIME-root-CIMEROOT">CIME root (CIMEROOT)<a class="headerlink" href="#term-CIME-root-CIMEROOT" title="Permalink to this term"></a></dt><dd><p>The directory where the CIME source code resides</p>
+<dt id="term-CIME-root-CIMEROOT">CIME root (CIMEROOT)<a class="headerlink" href="#term-CIME-root-CIMEROOT" title="Link to this term"></a></dt><dd><p>The directory where the CIME source code resides</p>
 </dd>
-<dt id="term-history-files">history files<a class="headerlink" href="#term-history-files" title="Permalink to this term"></a></dt><dd><p>NetCDF files that contain fields associated with the state of the model at a given time slice.</p>
+<dt id="term-history-files">history files<a class="headerlink" href="#term-history-files" title="Link to this term"></a></dt><dd><p>NetCDF files that contain fields associated with the state of the model at a given time slice.</p>
 </dd>
-<dt id="term-initial-files">initial files<a class="headerlink" href="#term-initial-files" title="Permalink to this term"></a></dt><dd><p>Files required to start a file</p>
+<dt id="term-initial-files">initial files<a class="headerlink" href="#term-initial-files" title="Link to this term"></a></dt><dd><p>Files required to start a file</p>
 </dd>
-<dt id="term-input-data-stream-DIN_LOC_ROOT">input data stream (DIN_LOC_ROOT)<a class="headerlink" href="#term-input-data-stream-DIN_LOC_ROOT" title="Permalink to this term"></a></dt><dd><p>A time-series of input data files where all the fields in the stream are located in the
+<dt id="term-input-data-stream-DIN_LOC_ROOT">input data stream (DIN_LOC_ROOT)<a class="headerlink" href="#term-input-data-stream-DIN_LOC_ROOT" title="Link to this term"></a></dt><dd><p>A time-series of input data files where all the fields in the stream are located in the
 same data file and all share the same spatial and temporal coordinates.</p>
 </dd>
-<dt id="term-namelist-files">namelist files<a class="headerlink" href="#term-namelist-files" title="Permalink to this term"></a></dt><dd><p>Each namelist file includes input parameters for a specific component.</p>
+<dt id="term-namelist-files">namelist files<a class="headerlink" href="#term-namelist-files" title="Link to this term"></a></dt><dd><p>Each namelist file includes input parameters for a specific component.</p>
 </dd>
-<dt id="term-run-directory-RUNDIR">run directory (RUNDIR)<a class="headerlink" href="#term-run-directory-RUNDIR" title="Permalink to this term"></a></dt><dd><p>Where the case is run.</p>
+<dt id="term-run-directory-RUNDIR">run directory (RUNDIR)<a class="headerlink" href="#term-run-directory-RUNDIR" title="Link to this term"></a></dt><dd><p>Where the case is run.</p>
 </dd>
-<dt id="term-restart-files">restart files<a class="headerlink" href="#term-restart-files" title="Permalink to this term"></a></dt><dd><p>Written and read by each component in the RUNDIR to stop and subsequently restart in a bit-for-bit fashion.</p>
+<dt id="term-restart-files">restart files<a class="headerlink" href="#term-restart-files" title="Link to this term"></a></dt><dd><p>Written and read by each component in the RUNDIR to stop and subsequently restart in a bit-for-bit fashion.</p>
 </dd>
-<dt id="term-rpointer-files">rpointer files<a class="headerlink" href="#term-rpointer-files" title="Permalink to this term"></a></dt><dd><p>Text file written by the coupler in the RUNDIR with a list of necessary files required for model restart.</p>
+<dt id="term-rpointer-files">rpointer files<a class="headerlink" href="#term-rpointer-files" title="Link to this term"></a></dt><dd><p>Text file written by the coupler in the RUNDIR with a list of necessary files required for model restart.</p>
 </dd>
-<dt id="term-XML-files">XML files<a class="headerlink" href="#term-XML-files" title="Permalink to this term"></a></dt><dd><p>Elements and attributes in these files configure a case. (building, running, batch, etc.) These files
+<dt id="term-XML-files">XML files<a class="headerlink" href="#term-XML-files" title="Link to this term"></a></dt><dd><p>Elements and attributes in these files configure a case. (building, running, batch, etc.) These files
 include env_archive.xml, env_batch.xml, env_build.xml, env_case.xml, env_mach_pes.xml, env_mach_specific.xml, env_run.xml
 in CASEROOT and can be queried and modifed using the xmlquery and xmlchange tools.</p>
 </dd>
 </dl>
 </section>
 <section id="development">
-<h2>Development<a class="headerlink" href="#development" title="Permalink to this heading"></a></h2>
+<h2>Development<a class="headerlink" href="#development" title="Link to this heading"></a></h2>
 <dl class="simple glossary">
-<dt id="term-sandbox-SRCROOT">sandbox (SRCROOT)<a class="headerlink" href="#term-sandbox-SRCROOT" title="Permalink to this term"></a></dt><dd><p>A checked out tag on a local or a remote machine. may be edited to create a new tag. or, may
+<dt id="term-sandbox-SRCROOT">sandbox (SRCROOT)<a class="headerlink" href="#term-sandbox-SRCROOT" title="Link to this term"></a></dt><dd><p>A checked out tag on a local or a remote machine. may be edited to create a new tag. or, may
 just be used for running cases.</p>
 </dd>
-<dt id="term-source-modifications-CASEROOT-SourceMods">source modifications (CASEROOT/SourceMods)<a class="headerlink" href="#term-source-modifications-CASEROOT-SourceMods" title="Permalink to this term"></a></dt><dd><p>one or more source files that are modified by the user. Before building a case, CIME replaces
+<dt id="term-source-modifications-CASEROOT-SourceMods">source modifications (CASEROOT/SourceMods)<a class="headerlink" href="#term-source-modifications-CASEROOT-SourceMods" title="Link to this term"></a></dt><dd><p>one or more source files that are modified by the user. Before building a case, CIME replaces
 the original source files with these files.</p>
 </dd>
-<dt id="term-tag">tag<a class="headerlink" href="#term-tag" title="Permalink to this term"></a></dt><dd><p>A snapshot of the source code. With each consecutive tag (one or more) answer-changing modifications
+<dt id="term-tag">tag<a class="headerlink" href="#term-tag" title="Link to this term"></a></dt><dd><p>A snapshot of the source code. With each consecutive tag (one or more) answer-changing modifications
 to the source code of a component are introduced.</p>
 </dd>
-<dt id="term-user-namelist-files-CASEROOT-user_nl_">user namelist files (CASEROOT/user_nl_*)<a class="headerlink" href="#term-user-namelist-files-CASEROOT-user_nl_" title="Permalink to this term"></a></dt><dd><p>User modifications for a given case can be specified in these files.</p>
+<dt id="term-user-namelist-files-CASEROOT-user_nl_">user namelist files (CASEROOT/user_nl_*)<a class="headerlink" href="#term-user-namelist-files-CASEROOT-user_nl_" title="Link to this term"></a></dt><dd><p>User modifications for a given case can be specified in these files.</p>
 </dd>
 </dl>
 </section>
 <section id="testing">
-<h2>Testing<a class="headerlink" href="#testing" title="Permalink to this heading"></a></h2>
+<h2>Testing<a class="headerlink" href="#testing" title="Link to this heading"></a></h2>
 <dl class="simple glossary">
-<dt id="term-baseline">baseline<a class="headerlink" href="#term-baseline" title="Permalink to this term"></a></dt><dd><p>A set of test cases that is run using a tag which is complete, tested, and has no modifications
+<dt id="term-baseline">baseline<a class="headerlink" href="#term-baseline" title="Link to this term"></a></dt><dd><p>A set of test cases that is run using a tag which is complete, tested, and has no modifications
 in the source code. Used to assess the performance/accuracy of a case that is run using a sandbox.</p>
 </dd>
-<dt id="term-baseline-failure">baseline failure<a class="headerlink" href="#term-baseline-failure" title="Permalink to this term"></a></dt><dd><p>A test that fails in its comparison with a baseline.</p>
+<dt id="term-baseline-failure">baseline failure<a class="headerlink" href="#term-baseline-failure" title="Link to this term"></a></dt><dd><p>A test that fails in its comparison with a baseline.</p>
 </dd>
-<dt id="term-blessing">blessing<a class="headerlink" href="#term-blessing" title="Permalink to this term"></a></dt><dd><p>Part of the unit testing framework used by CIME scripts regression tests.</p>
+<dt id="term-blessing">blessing<a class="headerlink" href="#term-blessing" title="Link to this term"></a></dt><dd><p>Part of the unit testing framework used by CIME scripts regression tests.</p>
 </dd>
-<dt id="term-regression-test">regression test<a class="headerlink" href="#term-regression-test" title="Permalink to this term"></a></dt><dd><p>A test that compares with baseline results to determine if any new errors have been introduced
+<dt id="term-regression-test">regression test<a class="headerlink" href="#term-regression-test" title="Link to this term"></a></dt><dd><p>A test that compares with baseline results to determine if any new errors have been introduced
 into the code base.</p>
 </dd>
-<dt id="term-unit-testing">unit testing<a class="headerlink" href="#term-unit-testing" title="Permalink to this term"></a></dt><dd><p>A fast, self-verifying test of a small piece of code.</p>
+<dt id="term-unit-testing">unit testing<a class="headerlink" href="#term-unit-testing" title="Link to this term"></a></dt><dd><p>A fast, self-verifying test of a small piece of code.</p>
 </dd>
 </dl>
 </section>
 <section id="miscellaneous">
-<h2>Miscellaneous<a class="headerlink" href="#miscellaneous" title="Permalink to this heading"></a></h2>
+<h2>Miscellaneous<a class="headerlink" href="#miscellaneous" title="Link to this heading"></a></h2>
 <dl class="simple glossary">
-<dt id="term-ESP">ESP<a class="headerlink" href="#term-ESP" title="Permalink to this term"></a></dt><dd><p>External System Processing: handles data assimilation</p>
+<dt id="term-ESP">ESP<a class="headerlink" href="#term-ESP" title="Link to this term"></a></dt><dd><p>External System Processing: handles data assimilation</p>
 </dd>
 </dl>
 </section>

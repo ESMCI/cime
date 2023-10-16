@@ -11,11 +11,11 @@
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/sphinx_highlight.js"></script>
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../_static/pop_ver.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -91,7 +91,9 @@
 <span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">shutil</span><span class="o">,</span> <span class="nn">glob</span><span class="o">,</span> <span class="nn">signal</span><span class="o">,</span> <span class="nn">logging</span><span class="o">,</span> <span class="nn">threading</span><span class="o">,</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">re</span><span class="o">,</span> <span class="nn">tarfile</span><span class="o">,</span> <span class="nn">time</span>
 
 <span class="c1">##############################################################################</span>
-<div class="viewcode-block" id="cleanup_queue"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.jenkins_generic_job.cleanup_queue">[docs]</a><span class="k">def</span> <span class="nf">cleanup_queue</span><span class="p">(</span><span class="n">test_root</span><span class="p">,</span> <span class="n">test_id</span><span class="p">):</span>
+<div class="viewcode-block" id="cleanup_queue">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.jenkins_generic_job.cleanup_queue">[docs]</a>
+<span class="k">def</span> <span class="nf">cleanup_queue</span><span class="p">(</span><span class="n">test_root</span><span class="p">,</span> <span class="n">test_id</span><span class="p">):</span>
     <span class="c1">###############################################################################</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Delete all jobs left in the queue</span>
@@ -112,8 +114,11 @@
             <span class="k">case</span><span class="o">.</span><span class="n">cancel_batch_jobs</span><span class="p">(</span><span class="n">jobkills</span><span class="p">)</span></div>
 
 
+
 <span class="c1">###############################################################################</span>
-<div class="viewcode-block" id="delete_old_test_data"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.jenkins_generic_job.delete_old_test_data">[docs]</a><span class="k">def</span> <span class="nf">delete_old_test_data</span><span class="p">(</span>
+<div class="viewcode-block" id="delete_old_test_data">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.jenkins_generic_job.delete_old_test_data">[docs]</a>
+<span class="k">def</span> <span class="nf">delete_old_test_data</span><span class="p">(</span>
     <span class="n">mach_comp</span><span class="p">,</span>
     <span class="n">test_id_root</span><span class="p">,</span>
     <span class="n">scratch_root</span><span class="p">,</span>
@@ -144,8 +149,11 @@
                 <span class="p">)</span></div>
 
 
+
 <span class="c1">###############################################################################</span>
-<div class="viewcode-block" id="scan_for_test_ids"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.jenkins_generic_job.scan_for_test_ids">[docs]</a><span class="k">def</span> <span class="nf">scan_for_test_ids</span><span class="p">(</span><span class="n">old_test_archive</span><span class="p">,</span> <span class="n">mach_comp</span><span class="p">,</span> <span class="n">test_id_root</span><span class="p">):</span>
+<div class="viewcode-block" id="scan_for_test_ids">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.jenkins_generic_job.scan_for_test_ids">[docs]</a>
+<span class="k">def</span> <span class="nf">scan_for_test_ids</span><span class="p">(</span><span class="n">old_test_archive</span><span class="p">,</span> <span class="n">mach_comp</span><span class="p">,</span> <span class="n">test_id_root</span><span class="p">):</span>
     <span class="c1">###############################################################################</span>
     <span class="n">results</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([])</span>
     <span class="n">test_id_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s2">&quot;.+[.]([^.]+)&quot;</span><span class="p">)</span>
@@ -161,8 +169,11 @@
     <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">results</span><span class="p">)</span></div>
 
 
+
 <span class="c1">###############################################################################</span>
-<div class="viewcode-block" id="archive_old_test_data"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.jenkins_generic_job.archive_old_test_data">[docs]</a><span class="k">def</span> <span class="nf">archive_old_test_data</span><span class="p">(</span>
+<div class="viewcode-block" id="archive_old_test_data">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.jenkins_generic_job.archive_old_test_data">[docs]</a>
+<span class="k">def</span> <span class="nf">archive_old_test_data</span><span class="p">(</span>
     <span class="n">machine</span><span class="p">,</span>
     <span class="n">mach_comp</span><span class="p">,</span>
     <span class="n">test_id_root</span><span class="p">,</span>
@@ -298,8 +309,11 @@
         <span class="p">)</span></div>
 
 
+
 <span class="c1">###############################################################################</span>
-<div class="viewcode-block" id="handle_old_test_data"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.jenkins_generic_job.handle_old_test_data">[docs]</a><span class="k">def</span> <span class="nf">handle_old_test_data</span><span class="p">(</span>
+<div class="viewcode-block" id="handle_old_test_data">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.jenkins_generic_job.handle_old_test_data">[docs]</a>
+<span class="k">def</span> <span class="nf">handle_old_test_data</span><span class="p">(</span>
     <span class="n">machine</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">test_id_root</span><span class="p">,</span> <span class="n">scratch_root</span><span class="p">,</span> <span class="n">test_root</span><span class="p">,</span> <span class="n">avoid_test_id</span>
 <span class="p">):</span>
     <span class="c1">###############################################################################</span>
@@ -343,8 +357,11 @@
         <span class="p">)</span></div>
 
 
+
 <span class="c1">###############################################################################</span>
-<div class="viewcode-block" id="jenkins_generic_job"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.jenkins_generic_job.jenkins_generic_job">[docs]</a><span class="k">def</span> <span class="nf">jenkins_generic_job</span><span class="p">(</span>
+<div class="viewcode-block" id="jenkins_generic_job">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.jenkins_generic_job.jenkins_generic_job">[docs]</a>
+<span class="k">def</span> <span class="nf">jenkins_generic_job</span><span class="p">(</span>
     <span class="n">generate_baselines</span><span class="p">,</span>
     <span class="n">submit_to_cdash</span><span class="p">,</span>
     <span class="n">no_batch</span><span class="p">,</span>
@@ -520,6 +537,7 @@
         <span class="n">cleanup_queue</span><span class="p">(</span><span class="n">test_root</span><span class="p">,</span> <span class="n">test_id</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">tests_passed</span></div>
+
 </pre></div>
 
            </div>

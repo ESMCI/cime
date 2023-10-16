@@ -11,11 +11,11 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../../_static/pop_ver.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -96,7 +96,9 @@
 <span class="kn">from</span> <span class="nn">CIME</span> <span class="kn">import</span> <span class="n">utils</span> <span class="k">as</span> <span class="n">cime_utils</span>
 
 
-<div class="viewcode-block" id="make_valid_case"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_case.make_valid_case">[docs]</a><span class="k">def</span> <span class="nf">make_valid_case</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+<div class="viewcode-block" id="make_valid_case">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_case.make_valid_case">[docs]</a>
+<span class="k">def</span> <span class="nf">make_valid_case</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Make the given path look like a valid case to avoid errors&quot;&quot;&quot;</span>
     <span class="c1"># Case validity is determined by checking for an env_case.xml file. So put one there</span>
     <span class="c1"># to suggest that this directory is a valid case directory. Open in append mode in</span>
@@ -105,14 +107,35 @@
         <span class="k">pass</span></div>
 
 
-<div class="viewcode-block" id="TestCaseSubmit"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_case.TestCaseSubmit">[docs]</a><span class="k">class</span> <span class="nc">TestCaseSubmit</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
-<div class="viewcode-block" id="TestCaseSubmit.test_check_case"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_case.TestCaseSubmit.test_check_case">[docs]</a>    <span class="k">def</span> <span class="nf">test_check_case</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestCaseSubmit">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_case.TestCaseSubmit">[docs]</a>
+<span class="k">class</span> <span class="nc">TestCaseSubmit</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestCaseSubmit.test_check_case">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_case.TestCaseSubmit.test_check_case">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_check_case</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">case</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
+        <span class="c1"># get_value arguments TEST, COMP_WAV, COMP_INTERFACE, BUILD_COMPLETE</span>
+        <span class="k">case</span><span class="o">.</span><span class="n">get_value</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="p">[</span><span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">]</span>
         <span class="n">case_submit</span><span class="o">.</span><span class="n">check_case</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">chksum</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="k">case</span><span class="o">.</span><span class="n">check_all_input_data</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="n">chksum</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestCaseSubmit.test__submit"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_case.TestCaseSubmit.test__submit">[docs]</a>    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.case.case_submit.lock_file&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TestCaseSubmit.test_check_case_test">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_case.TestCaseSubmit.test_check_case_test">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_check_case_test</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">case</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
+        <span class="c1"># get_value arguments TEST, COMP_WAV, COMP_INTERFACE, BUILD_COMPLETE</span>
+        <span class="k">case</span><span class="o">.</span><span class="n">get_value</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">]</span>
+        <span class="n">case_submit</span><span class="o">.</span><span class="n">check_case</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">chksum</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">case</span><span class="o">.</span><span class="n">check_all_input_data</span><span class="o">.</span><span class="n">assert_not_called</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="TestCaseSubmit.test__submit">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_case.TestCaseSubmit.test__submit">[docs]</a>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.case.case_submit.lock_file&quot;</span><span class="p">)</span>
     <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.case.case_submit.unlock_file&quot;</span><span class="p">)</span>
     <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;os.path.basename&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">test__submit</span><span class="p">(</span>
@@ -124,7 +147,10 @@
 
         <span class="k">case</span><span class="o">.</span><span class="n">check_case</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="n">skip_pnl</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">chksum</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestCaseSubmit.test_submit"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_case.TestCaseSubmit.test_submit">[docs]</a>    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.case.case_submit._submit&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TestCaseSubmit.test_submit">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_case.TestCaseSubmit.test_submit">[docs]</a>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.case.case_submit._submit&quot;</span><span class="p">)</span>
     <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.case.case.Case.initialize_derived_attributes&quot;</span><span class="p">)</span>
     <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.case.case.Case.get_value&quot;</span><span class="p">)</span>
     <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.case.case.Case.read_xml&quot;</span><span class="p">)</span>
@@ -162,15 +188,24 @@
                 <span class="n">batch_args</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                 <span class="n">workflow</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                 <span class="n">chksum</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-            <span class="p">)</span></div></div>
+            <span class="p">)</span></div>
+</div>
 
 
-<div class="viewcode-block" id="TestCase"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_case.TestCase">[docs]</a><span class="k">class</span> <span class="nc">TestCase</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
-<div class="viewcode-block" id="TestCase.setUp"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_case.TestCase.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestCase">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_case.TestCase">[docs]</a>
+<span class="k">class</span> <span class="nc">TestCase</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestCase.setUp">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_case.TestCase.setUp">[docs]</a>
+    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">srcroot</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">cime_utils</span><span class="o">.</span><span class="n">get_src_root</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tempdir</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="TestCase.test_fix_sys_argv_quotes"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_case.TestCase.test_fix_sys_argv_quotes">[docs]</a>    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.case.case.Case.read_xml&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TestCase.test_fix_sys_argv_quotes">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_case.TestCase.test_fix_sys_argv_quotes">[docs]</a>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.case.case.Case.read_xml&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">test_fix_sys_argv_quotes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">read_xml</span><span class="p">):</span>
         <span class="n">input_data</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;./xmlquery&quot;</span><span class="p">,</span> <span class="s2">&quot;--val&quot;</span><span class="p">,</span> <span class="s2">&quot;PIO&quot;</span><span class="p">]</span>
         <span class="n">expected_data</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;./xmlquery&quot;</span><span class="p">,</span> <span class="s2">&quot;--val&quot;</span><span class="p">,</span> <span class="s2">&quot;PIO&quot;</span><span class="p">]</span>
@@ -183,7 +218,10 @@
 
         <span class="k">assert</span> <span class="n">output_data</span> <span class="o">==</span> <span class="n">expected_data</span></div>
 
-<div class="viewcode-block" id="TestCase.test_fix_sys_argv_quotes_incomplete"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_case.TestCase.test_fix_sys_argv_quotes_incomplete">[docs]</a>    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.case.case.Case.read_xml&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TestCase.test_fix_sys_argv_quotes_incomplete">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_case.TestCase.test_fix_sys_argv_quotes_incomplete">[docs]</a>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.case.case.Case.read_xml&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">test_fix_sys_argv_quotes_incomplete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">read_xml</span><span class="p">):</span>
         <span class="n">input_data</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;./xmlquery&quot;</span><span class="p">,</span> <span class="s2">&quot;--val&quot;</span><span class="p">]</span>
         <span class="n">expected_data</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;./xmlquery&quot;</span><span class="p">,</span> <span class="s2">&quot;--val&quot;</span><span class="p">]</span>
@@ -196,7 +234,10 @@
 
         <span class="k">assert</span> <span class="n">output_data</span> <span class="o">==</span> <span class="n">expected_data</span></div>
 
-<div class="viewcode-block" id="TestCase.test_fix_sys_argv_quotes_val"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_case.TestCase.test_fix_sys_argv_quotes_val">[docs]</a>    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.case.case.Case.read_xml&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TestCase.test_fix_sys_argv_quotes_val">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_case.TestCase.test_fix_sys_argv_quotes_val">[docs]</a>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.case.case.Case.read_xml&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">test_fix_sys_argv_quotes_val</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">read_xml</span><span class="p">):</span>
         <span class="n">input_data</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;./xmlquery&quot;</span><span class="p">,</span> <span class="s2">&quot;--val&quot;</span><span class="p">,</span> <span class="s2">&quot;-test&quot;</span><span class="p">]</span>
         <span class="n">expected_data</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;./xmlquery&quot;</span><span class="p">,</span> <span class="s2">&quot;--val&quot;</span><span class="p">,</span> <span class="s2">&quot;-test&quot;</span><span class="p">]</span>
@@ -209,7 +250,10 @@
 
         <span class="k">assert</span> <span class="n">output_data</span> <span class="o">==</span> <span class="n">expected_data</span></div>
 
-<div class="viewcode-block" id="TestCase.test_fix_sys_argv_quotes_val_quoted"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_case.TestCase.test_fix_sys_argv_quotes_val_quoted">[docs]</a>    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.case.case.Case.read_xml&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TestCase.test_fix_sys_argv_quotes_val_quoted">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_case.TestCase.test_fix_sys_argv_quotes_val_quoted">[docs]</a>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.case.case.Case.read_xml&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">test_fix_sys_argv_quotes_val_quoted</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">read_xml</span><span class="p">):</span>
         <span class="n">input_data</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;./xmlquery&quot;</span><span class="p">,</span> <span class="s2">&quot;--val&quot;</span><span class="p">,</span> <span class="s2">&quot; -nlev 267 &quot;</span><span class="p">]</span>
         <span class="n">expected_data</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;./xmlquery&quot;</span><span class="p">,</span> <span class="s2">&quot;--val&quot;</span><span class="p">,</span> <span class="s1">&#39;&quot; -nlev 267 &quot;&#39;</span><span class="p">]</span>
@@ -222,7 +266,10 @@
 
         <span class="k">assert</span> <span class="n">output_data</span> <span class="o">==</span> <span class="n">expected_data</span></div>
 
-<div class="viewcode-block" id="TestCase.test_fix_sys_argv_quotes_kv"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_case.TestCase.test_fix_sys_argv_quotes_kv">[docs]</a>    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.case.case.Case.read_xml&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TestCase.test_fix_sys_argv_quotes_kv">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_case.TestCase.test_fix_sys_argv_quotes_kv">[docs]</a>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.case.case.Case.read_xml&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">test_fix_sys_argv_quotes_kv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">read_xml</span><span class="p">):</span>
         <span class="n">input_data</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;./xmlquery&quot;</span><span class="p">,</span> <span class="s2">&quot;CAM_CONFIG_OPTS= -nlev 267&quot;</span><span class="p">,</span> <span class="s2">&quot;OTHER_OPTS=-test&quot;</span><span class="p">]</span>
         <span class="n">expected_data</span> <span class="o">=</span> <span class="p">[</span>
@@ -239,7 +286,10 @@
 
         <span class="k">assert</span> <span class="n">output_data</span> <span class="o">==</span> <span class="n">expected_data</span></div>
 
-<div class="viewcode-block" id="TestCase.test_new_hash"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_case.TestCase.test_new_hash">[docs]</a>    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.case.case.Case.read_xml&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TestCase.test_new_hash">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_case.TestCase.test_new_hash">[docs]</a>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.case.case.Case.read_xml&quot;</span><span class="p">)</span>
     <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;sys.argv&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;/src/create_newcase&quot;</span><span class="p">,</span> <span class="s2">&quot;--machine&quot;</span><span class="p">,</span> <span class="s2">&quot;docker&quot;</span><span class="p">])</span>
     <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;time.strftime&quot;</span><span class="p">,</span> <span class="n">return_value</span><span class="o">=</span><span class="s2">&quot;00:00:00&quot;</span><span class="p">)</span>
     <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;socket.getfqdn&quot;</span><span class="p">,</span> <span class="n">return_value</span><span class="o">=</span><span class="s2">&quot;host1&quot;</span><span class="p">)</span>
@@ -270,7 +320,10 @@
 
                 <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">value</span> <span class="o">==</span> <span class="n">expected</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> != </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">expected</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="TestCase.test_copy"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_case.TestCase.test_copy">[docs]</a>    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.case.case.Case.read_xml&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TestCase.test_copy">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_case.TestCase.test_copy">[docs]</a>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.case.case.Case.read_xml&quot;</span><span class="p">)</span>
     <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;sys.argv&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;/src/create_newcase&quot;</span><span class="p">,</span> <span class="s2">&quot;--machine&quot;</span><span class="p">,</span> <span class="s2">&quot;docker&quot;</span><span class="p">])</span>
     <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;time.strftime&quot;</span><span class="p">,</span> <span class="n">return_value</span><span class="o">=</span><span class="s2">&quot;00:00:00&quot;</span><span class="p">)</span>
     <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.case.case.lock_file&quot;</span><span class="p">)</span>
@@ -354,7 +407,10 @@
 
                     <span class="n">set_value</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="s2">&quot;CASE_HASH&quot;</span><span class="p">,</span> <span class="n">expected_second_hash</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestCase.test_create"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_case.TestCase.test_create">[docs]</a>    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.case.case.Case.read_xml&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TestCase.test_create">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_case.TestCase.test_create">[docs]</a>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.case.case.Case.read_xml&quot;</span><span class="p">)</span>
     <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;sys.argv&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;/src/create_newcase&quot;</span><span class="p">,</span> <span class="s2">&quot;--machine&quot;</span><span class="p">,</span> <span class="s2">&quot;docker&quot;</span><span class="p">])</span>
     <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;time.strftime&quot;</span><span class="p">,</span> <span class="n">return_value</span><span class="o">=</span><span class="s2">&quot;00:00:00&quot;</span><span class="p">)</span>
     <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.case.case.lock_file&quot;</span><span class="p">)</span>
@@ -424,20 +480,32 @@
                 <span class="n">set_lookup_value</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span>
                     <span class="s2">&quot;CASE_HASH&quot;</span><span class="p">,</span>
                     <span class="s2">&quot;134a939f62115fb44bf08a46bfb2bd13426833b5c8848cf7c4884af7af05b91a&quot;</span><span class="p">,</span>
-                <span class="p">)</span></div></div>
+                <span class="p">)</span></div>
+</div>
 
 
-<div class="viewcode-block" id="TestCase_RecordCmd"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_case.TestCase_RecordCmd">[docs]</a><span class="k">class</span> <span class="nc">TestCase_RecordCmd</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
-<div class="viewcode-block" id="TestCase_RecordCmd.setUp"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_case.TestCase_RecordCmd.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestCase_RecordCmd">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_case.TestCase_RecordCmd">[docs]</a>
+<span class="k">class</span> <span class="nc">TestCase_RecordCmd</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestCase_RecordCmd.setUp">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_case.TestCase_RecordCmd.setUp">[docs]</a>
+    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tempdir</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="TestCase_RecordCmd.assert_calls_match"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_case.TestCase_RecordCmd.assert_calls_match">[docs]</a>    <span class="k">def</span> <span class="nf">assert_calls_match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">calls</span><span class="p">,</span> <span class="n">expected</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestCase_RecordCmd.assert_calls_match">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_case.TestCase_RecordCmd.assert_calls_match">[docs]</a>
+    <span class="k">def</span> <span class="nf">assert_calls_match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">calls</span><span class="p">,</span> <span class="n">expected</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">calls</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">expected</span><span class="p">),</span> <span class="n">calls</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">calls</span><span class="p">,</span> <span class="n">expected</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">x</span> <span class="o">==</span> <span class="n">y</span><span class="p">,</span> <span class="n">calls</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestCase_RecordCmd.test_error"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_case.TestCase_RecordCmd.test_error">[docs]</a>    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.case.case.Case.__init__&quot;</span><span class="p">,</span> <span class="n">return_value</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TestCase_RecordCmd.test_error">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_case.TestCase_RecordCmd.test_error">[docs]</a>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.case.case.Case.__init__&quot;</span><span class="p">,</span> <span class="n">return_value</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
     <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.case.case.Case.flush&quot;</span><span class="p">)</span>
     <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.case.case.Case.get_value&quot;</span><span class="p">)</span>
     <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.case.case.open&quot;</span><span class="p">,</span> <span class="n">mock</span><span class="o">.</span><span class="n">mock_open</span><span class="p">())</span>
@@ -462,7 +530,10 @@
                 <span class="n">make_valid_case</span><span class="p">(</span><span class="n">tempdir</span><span class="p">)</span>
                 <span class="k">case</span><span class="o">.</span><span class="n">record_cmd</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="TestCase_RecordCmd.test_init"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_case.TestCase_RecordCmd.test_init">[docs]</a>    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.case.case.Case.__init__&quot;</span><span class="p">,</span> <span class="n">return_value</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TestCase_RecordCmd.test_init">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_case.TestCase_RecordCmd.test_init">[docs]</a>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.case.case.Case.__init__&quot;</span><span class="p">,</span> <span class="n">return_value</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
     <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.case.case.Case.flush&quot;</span><span class="p">)</span>
     <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.case.case.Case.get_value&quot;</span><span class="p">)</span>
     <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.case.case.open&quot;</span><span class="p">,</span> <span class="n">mock</span><span class="o">.</span><span class="n">mock_open</span><span class="p">())</span>
@@ -496,7 +567,10 @@
             <span class="p">]</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestCase_RecordCmd.test_sub_relative"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_case.TestCase_RecordCmd.test_sub_relative">[docs]</a>    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.case.case.Case.__init__&quot;</span><span class="p">,</span> <span class="n">return_value</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TestCase_RecordCmd.test_sub_relative">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_case.TestCase_RecordCmd.test_sub_relative">[docs]</a>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.case.case.Case.__init__&quot;</span><span class="p">,</span> <span class="n">return_value</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
     <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.case.case.Case.flush&quot;</span><span class="p">)</span>
     <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.case.case.Case.get_value&quot;</span><span class="p">)</span>
     <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.case.case.open&quot;</span><span class="p">,</span> <span class="n">mock</span><span class="o">.</span><span class="n">mock_open</span><span class="p">())</span>
@@ -527,7 +601,10 @@
         <span class="n">handle</span> <span class="o">=</span> <span class="n">mocked_open</span><span class="p">()</span>
         <span class="n">handle</span><span class="o">.</span><span class="n">writelines</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="n">expected</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestCase_RecordCmd.test_cmd_arg"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_case.TestCase_RecordCmd.test_cmd_arg">[docs]</a>    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.case.case.Case.__init__&quot;</span><span class="p">,</span> <span class="n">return_value</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TestCase_RecordCmd.test_cmd_arg">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_case.TestCase_RecordCmd.test_cmd_arg">[docs]</a>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.case.case.Case.__init__&quot;</span><span class="p">,</span> <span class="n">return_value</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
     <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.case.case.Case.flush&quot;</span><span class="p">)</span>
     <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.case.case.Case.get_value&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">test_cmd_arg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">get_value</span><span class="p">,</span> <span class="n">flush</span><span class="p">,</span> <span class="n">init</span><span class="p">):</span>  <span class="c1"># pylint: disable=unused-argument</span>
@@ -553,7 +630,9 @@
         <span class="p">]</span>
 
         <span class="n">handle</span> <span class="o">=</span> <span class="n">mocked_open</span><span class="p">()</span>
-        <span class="n">handle</span><span class="o">.</span><span class="n">writelines</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="n">expected</span><span class="p">)</span></div></div>
+        <span class="n">handle</span><span class="o">.</span><span class="n">writelines</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="n">expected</span><span class="p">)</span></div>
+</div>
+
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>

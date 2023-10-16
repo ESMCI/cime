@@ -11,11 +11,11 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../../_static/pop_ver.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -100,23 +100,33 @@
 <span class="n">_SOURCEMODS</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;SourceMods&quot;</span><span class="p">,</span> <span class="s2">&quot;src.drv&quot;</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="TestUserModSupport"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_user_mod_support.TestUserModSupport">[docs]</a><span class="k">class</span> <span class="nc">TestUserModSupport</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestUserModSupport">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_user_mod_support.TestUserModSupport">[docs]</a>
+<span class="k">class</span> <span class="nc">TestUserModSupport</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
 
     <span class="c1"># ========================================================================</span>
     <span class="c1"># Test helper functions</span>
     <span class="c1"># ========================================================================</span>
 
-<div class="viewcode-block" id="TestUserModSupport.setUp"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_user_mod_support.TestUserModSupport.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestUserModSupport.setUp">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_user_mod_support.TestUserModSupport.setUp">[docs]</a>
+    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_caseroot</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_caseroot_sourcemods</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_caseroot</span><span class="p">,</span> <span class="n">_SOURCEMODS</span><span class="p">)</span>
         <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_caseroot_sourcemods</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_user_mods_parent_dir</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="TestUserModSupport.tearDown"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_user_mod_support.TestUserModSupport.tearDown">[docs]</a>    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestUserModSupport.tearDown">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_user_mod_support.TestUserModSupport.tearDown">[docs]</a>
+    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_caseroot</span><span class="p">,</span> <span class="n">ignore_errors</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_user_mods_parent_dir</span><span class="p">,</span> <span class="n">ignore_errors</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestUserModSupport.createUserMod"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_user_mod_support.TestUserModSupport.createUserMod">[docs]</a>    <span class="k">def</span> <span class="nf">createUserMod</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">include_dirs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestUserModSupport.createUserMod">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_user_mod_support.TestUserModSupport.createUserMod">[docs]</a>
+    <span class="k">def</span> <span class="nf">createUserMod</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">include_dirs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a user_mods directory with the given name.</span>
 
 <span class="sd">        This directory is created within self._user_mods_parent_dir</span>
@@ -163,7 +173,10 @@
                         <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_user_mods_parent_dir</span><span class="p">,</span> <span class="n">one_include</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
                     <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestUserModSupport.assertResults"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_user_mod_support.TestUserModSupport.assertResults">[docs]</a>    <span class="k">def</span> <span class="nf">assertResults</span><span class="p">(</span>
+
+<div class="viewcode-block" id="TestUserModSupport.assertResults">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_user_mod_support.TestUserModSupport.assertResults">[docs]</a>
+    <span class="k">def</span> <span class="nf">assertResults</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">expected_user_nl_cpl</span><span class="p">,</span>
         <span class="n">expected_shell_commands_result</span><span class="p">,</span>
@@ -204,11 +217,14 @@
             <span class="n">contents</span> <span class="o">=</span> <span class="n">sourcemod</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">expected_sourcemod</span><span class="p">,</span> <span class="n">contents</span><span class="p">)</span></div>
 
+
     <span class="c1"># ========================================================================</span>
     <span class="c1"># Begin actual tests</span>
     <span class="c1"># ========================================================================</span>
 
-<div class="viewcode-block" id="TestUserModSupport.test_basic"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_user_mod_support.TestUserModSupport.test_basic">[docs]</a>    <span class="k">def</span> <span class="nf">test_basic</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestUserModSupport.test_basic">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_user_mod_support.TestUserModSupport.test_basic">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_basic</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">createUserMod</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">)</span>
         <span class="n">apply_user_mods</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_caseroot</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_user_mods_parent_dir</span><span class="p">,</span> <span class="s2">&quot;foo&quot;</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertResults</span><span class="p">(</span>
@@ -218,7 +234,10 @@
             <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;test_basic&quot;</span><span class="p">,</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestUserModSupport.test_keepexe"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_user_mod_support.TestUserModSupport.test_keepexe">[docs]</a>    <span class="k">def</span> <span class="nf">test_keepexe</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestUserModSupport.test_keepexe">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_user_mod_support.TestUserModSupport.test_keepexe">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_keepexe</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">createUserMod</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">)</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaisesRegex</span><span class="p">(</span><span class="n">CIMEError</span><span class="p">,</span> <span class="s2">&quot;cannot have any source mods&quot;</span><span class="p">):</span>
             <span class="n">apply_user_mods</span><span class="p">(</span>
@@ -227,7 +246,10 @@
                 <span class="n">keepexe</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestUserModSupport.test_two_applications"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_user_mod_support.TestUserModSupport.test_two_applications">[docs]</a>    <span class="k">def</span> <span class="nf">test_two_applications</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestUserModSupport.test_two_applications">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_user_mod_support.TestUserModSupport.test_two_applications">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_two_applications</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;If apply_user_mods is called twice, the second should appear after the first so that it takes precedence.&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">createUserMod</span><span class="p">(</span><span class="s2">&quot;foo1&quot;</span><span class="p">)</span>
@@ -245,7 +267,10 @@
             <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;test_two_applications&quot;</span><span class="p">,</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestUserModSupport.test_include"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_user_mod_support.TestUserModSupport.test_include">[docs]</a>    <span class="k">def</span> <span class="nf">test_include</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestUserModSupport.test_include">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_user_mod_support.TestUserModSupport.test_include">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_include</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;If there is an included mod, the main one should appear after the included one so that it takes precedence.&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">createUserMod</span><span class="p">(</span><span class="s2">&quot;base&quot;</span><span class="p">)</span>
@@ -262,7 +287,10 @@
             <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;test_include&quot;</span><span class="p">,</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestUserModSupport.test_duplicate_includes"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_user_mod_support.TestUserModSupport.test_duplicate_includes">[docs]</a>    <span class="k">def</span> <span class="nf">test_duplicate_includes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestUserModSupport.test_duplicate_includes">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_user_mod_support.TestUserModSupport.test_duplicate_includes">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_duplicate_includes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Test multiple includes, where both include the same base mod.</span>
 
 <span class="sd">        The base mod should only be included once.</span>
@@ -291,7 +319,9 @@
             <span class="n">expected_shell_commands_result</span><span class="o">=</span><span class="n">expected_contents</span><span class="p">,</span>
             <span class="n">expected_sourcemod</span><span class="o">=</span><span class="s2">&quot;derived_combo</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
             <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;test_duplicate_includes&quot;</span><span class="p">,</span>
-        <span class="p">)</span></div></div>
+        <span class="p">)</span></div>
+</div>
+
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>

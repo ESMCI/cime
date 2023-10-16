@@ -11,11 +11,11 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../../_static/pop_ver.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -140,8 +140,12 @@
 <span class="p">]</span>
 
 
-<div class="viewcode-block" id="TestUnitAprun"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_aprun.TestUnitAprun">[docs]</a><span class="k">class</span> <span class="nc">TestUnitAprun</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
-<div class="viewcode-block" id="TestUnitAprun.test_aprun_extra_args"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_aprun.TestUnitAprun.test_aprun_extra_args">[docs]</a>    <span class="k">def</span> <span class="nf">test_aprun_extra_args</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestUnitAprun">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_aprun.TestUnitAprun">[docs]</a>
+<span class="k">class</span> <span class="nc">TestUnitAprun</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestUnitAprun.test_aprun_extra_args">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_aprun.TestUnitAprun.test_aprun_extra_args">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_aprun_extra_args</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">case</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
 
         <span class="k">case</span><span class="o">.</span><span class="n">get_values</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">[</span>
@@ -180,7 +184,10 @@
         <span class="k">assert</span> <span class="n">min_tasks_per_node</span> <span class="o">==</span> <span class="mi">4</span>
         <span class="k">assert</span> <span class="n">max_thread_count</span> <span class="o">==</span> <span class="mi">4</span></div>
 
-<div class="viewcode-block" id="TestUnitAprun.test_aprun"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_aprun.TestUnitAprun.test_aprun">[docs]</a>    <span class="k">def</span> <span class="nf">test_aprun</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestUnitAprun.test_aprun">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_aprun.TestUnitAprun.test_aprun">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_aprun</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">case</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
 
         <span class="k">case</span><span class="o">.</span><span class="n">get_values</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">[</span>
@@ -211,7 +218,9 @@
         <span class="k">assert</span> <span class="n">total_node_count</span> <span class="o">==</span> <span class="mi">117</span>
         <span class="k">assert</span> <span class="n">total_task_count</span> <span class="o">==</span> <span class="mi">808</span>
         <span class="k">assert</span> <span class="n">min_tasks_per_node</span> <span class="o">==</span> <span class="mi">4</span>
-        <span class="k">assert</span> <span class="n">max_thread_count</span> <span class="o">==</span> <span class="mi">4</span></div></div>
+        <span class="k">assert</span> <span class="n">max_thread_count</span> <span class="o">==</span> <span class="mi">4</span></div>
+</div>
+
 </pre></div>
 
            </div>

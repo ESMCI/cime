@@ -11,11 +11,11 @@
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/sphinx_highlight.js"></script>
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../_static/pop_ver.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -109,6 +109,7 @@
 <span class="c1">#     &quot;inherit&quot; : (suite1, suite2, ...), # Optional. Suites to inherit tests from. Default is None. Tuple, list, or str.</span>
 <span class="c1">#     &quot;time&quot;    : &quot;HH:MM:SS&quot;,            # Optional. Recommended upper-limit on test time.</span>
 <span class="c1">#     &quot;share&quot;   : True|False,            # Optional. If True, all tests in this suite share a build. Default is False.</span>
+<span class="c1">#     &quot;perf&quot;    : True|False,            # Optional. If True, all tests in this suite will do performance tracking. Default is False.</span>
 <span class="c1">#     &quot;tests&quot;   : (test1, test2, ...)    # Optional. The list of tests for this suite. See above for format. Tuple, list, or str. This is the ONLY inheritable attribute.</span>
 <span class="c1"># }</span>
 
@@ -175,6 +176,16 @@
             <span class="s2">&quot;SMS_P16.f19_g16_rx1.X&quot;</span><span class="p">,</span>
         <span class="p">),</span>
     <span class="p">},</span>
+    <span class="s2">&quot;cime_test_perf&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;time&quot;</span><span class="p">:</span> <span class="s2">&quot;0:10:00&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;perf&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s2">&quot;tests&quot;</span><span class="p">:</span> <span class="p">(</span>
+            <span class="s2">&quot;SMS_P2.T42_T42.S&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;SMS_P4.T42_T42.S&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;SMS_P8.T42_T42.S&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;SMS_P16.T42_T42.S&quot;</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">},</span>
     <span class="s2">&quot;cime_test_repeat&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="s2">&quot;tests&quot;</span><span class="p">:</span> <span class="p">(</span>
             <span class="s2">&quot;TESTRUNPASS_P1.f19_g16_rx1.A&quot;</span><span class="p">,</span>
@@ -201,7 +212,6 @@
             <span class="s2">&quot;ERR_Ln9.f45_g37_rx1.A&quot;</span><span class="p">,</span>
             <span class="s2">&quot;ERP_Ln9.f45_g37_rx1.A&quot;</span><span class="p">,</span>
             <span class="s2">&quot;SMS_D_Ln9_Mmpi-serial.f19_g16_rx1.A&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DAE.ww3a.ADWAV&quot;</span><span class="p">,</span>
             <span class="s2">&quot;PET_Ln9_P4.f19_f19.A&quot;</span><span class="p">,</span>
             <span class="s2">&quot;PEM_Ln9_P4.f19_f19.A&quot;</span><span class="p">,</span>
             <span class="s2">&quot;SMS_Ln3.T42_T42.S&quot;</span><span class="p">,</span>
@@ -243,15 +253,17 @@
 
 
 <span class="c1">###############################################################################</span>
-<div class="viewcode-block" id="get_test_data"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.get_tests.get_test_data">[docs]</a><span class="k">def</span> <span class="nf">get_test_data</span><span class="p">(</span><span class="n">suite</span><span class="p">):</span>
+<div class="viewcode-block" id="get_test_data">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.get_tests.get_test_data">[docs]</a>
+<span class="k">def</span> <span class="nf">get_test_data</span><span class="p">(</span><span class="n">suite</span><span class="p">):</span>
     <span class="c1">###############################################################################</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    For a given suite, returns (inherit, time, share, tests)</span>
+<span class="sd">    For a given suite, returns (inherit, time, share, perf, tests)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">raw_dict</span> <span class="o">=</span> <span class="n">_ALL_TESTS</span><span class="p">[</span><span class="n">suite</span><span class="p">]</span>
     <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">raw_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
         <span class="n">expect</span><span class="p">(</span>
-            <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;inherit&quot;</span><span class="p">,</span> <span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="s2">&quot;share&quot;</span><span class="p">,</span> <span class="s2">&quot;tests&quot;</span><span class="p">],</span>
+            <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;inherit&quot;</span><span class="p">,</span> <span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="s2">&quot;share&quot;</span><span class="p">,</span> <span class="s2">&quot;perf&quot;</span><span class="p">,</span> <span class="s2">&quot;tests&quot;</span><span class="p">],</span>
             <span class="s2">&quot;Unexpected test key &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">),</span>
         <span class="p">)</span>
 
@@ -259,18 +271,25 @@
         <span class="n">_get_key_data</span><span class="p">(</span><span class="n">raw_dict</span><span class="p">,</span> <span class="s2">&quot;inherit&quot;</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">),</span>
         <span class="n">_get_key_data</span><span class="p">(</span><span class="n">raw_dict</span><span class="p">,</span> <span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span>
         <span class="n">_get_key_data</span><span class="p">(</span><span class="n">raw_dict</span><span class="p">,</span> <span class="s2">&quot;share&quot;</span><span class="p">,</span> <span class="nb">bool</span><span class="p">),</span>
+        <span class="n">_get_key_data</span><span class="p">(</span><span class="n">raw_dict</span><span class="p">,</span> <span class="s2">&quot;perf&quot;</span><span class="p">,</span> <span class="nb">bool</span><span class="p">),</span>
         <span class="n">_get_key_data</span><span class="p">(</span><span class="n">raw_dict</span><span class="p">,</span> <span class="s2">&quot;tests&quot;</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">),</span>
     <span class="p">)</span></div>
 
 
+
 <span class="c1">###############################################################################</span>
-<div class="viewcode-block" id="get_test_suites"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.get_tests.get_test_suites">[docs]</a><span class="k">def</span> <span class="nf">get_test_suites</span><span class="p">():</span>
+<div class="viewcode-block" id="get_test_suites">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.get_tests.get_test_suites">[docs]</a>
+<span class="k">def</span> <span class="nf">get_test_suites</span><span class="p">():</span>
     <span class="c1">###############################################################################</span>
     <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">_ALL_TESTS</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span></div>
 
 
+
 <span class="c1">###############################################################################</span>
-<div class="viewcode-block" id="get_test_suite"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.get_tests.get_test_suite">[docs]</a><span class="k">def</span> <span class="nf">get_test_suite</span><span class="p">(</span>
+<div class="viewcode-block" id="get_test_suite">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.get_tests.get_test_suite">[docs]</a>
+<span class="k">def</span> <span class="nf">get_test_suite</span><span class="p">(</span>
     <span class="n">suite</span><span class="p">,</span> <span class="n">machine</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">compiler</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">skip_inherit</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">skip_tests</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">):</span>
     <span class="c1">###############################################################################</span>
@@ -288,7 +307,7 @@
         <span class="s2">&quot;Compiler </span><span class="si">{}</span><span class="s2"> not valid for machine </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">compiler</span><span class="p">,</span> <span class="n">machine</span><span class="p">),</span>
     <span class="p">)</span>
 
-    <span class="n">inherits_from</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">tests_raw</span> <span class="o">=</span> <span class="n">get_test_data</span><span class="p">(</span><span class="n">suite</span><span class="p">)</span>
+    <span class="n">inherits_from</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">tests_raw</span> <span class="o">=</span> <span class="n">get_test_data</span><span class="p">(</span><span class="n">suite</span><span class="p">)</span>
     <span class="n">tests</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">tests_raw</span><span class="p">:</span>
         <span class="n">expect</span><span class="p">(</span>
@@ -326,8 +345,11 @@
     <span class="k">return</span> <span class="n">tests</span></div>
 
 
+
 <span class="c1">###############################################################################</span>
-<div class="viewcode-block" id="suite_has_test"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.get_tests.suite_has_test">[docs]</a><span class="k">def</span> <span class="nf">suite_has_test</span><span class="p">(</span><span class="n">suite</span><span class="p">,</span> <span class="n">test_full_name</span><span class="p">,</span> <span class="n">skip_inherit</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="suite_has_test">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.get_tests.suite_has_test">[docs]</a>
+<span class="k">def</span> <span class="nf">suite_has_test</span><span class="p">(</span><span class="n">suite</span><span class="p">,</span> <span class="n">test_full_name</span><span class="p">,</span> <span class="n">skip_inherit</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="c1">###############################################################################</span>
     <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">machine</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">CIME</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">parse_test_name</span><span class="p">(</span><span class="n">test_full_name</span><span class="p">)</span>
     <span class="n">expect</span><span class="p">(</span><span class="n">machine</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> is not a full test name&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">test_full_name</span><span class="p">))</span>
@@ -338,8 +360,11 @@
     <span class="k">return</span> <span class="n">test_full_name</span> <span class="ow">in</span> <span class="n">tests</span></div>
 
 
+
 <span class="c1">###############################################################################</span>
-<div class="viewcode-block" id="get_build_groups"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.get_tests.get_build_groups">[docs]</a><span class="k">def</span> <span class="nf">get_build_groups</span><span class="p">(</span><span class="n">tests</span><span class="p">):</span>
+<div class="viewcode-block" id="get_build_groups">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.get_tests.get_build_groups">[docs]</a>
+<span class="k">def</span> <span class="nf">get_build_groups</span><span class="p">(</span><span class="n">tests</span><span class="p">):</span>
     <span class="c1">###############################################################################</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Given a list of tests, return a list of lists, with each list representing</span>
@@ -385,8 +410,40 @@
     <span class="k">return</span> <span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">build_groups</span><span class="p">]</span></div>
 
 
+
 <span class="c1">###############################################################################</span>
-<div class="viewcode-block" id="infer_arch_from_tests"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.get_tests.infer_arch_from_tests">[docs]</a><span class="k">def</span> <span class="nf">infer_arch_from_tests</span><span class="p">(</span><span class="n">testargs</span><span class="p">):</span>
+<div class="viewcode-block" id="is_perf_test">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.get_tests.is_perf_test">[docs]</a>
+<span class="k">def</span> <span class="nf">is_perf_test</span><span class="p">(</span><span class="n">test</span><span class="p">):</span>
+    <span class="c1">###############################################################################</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Is the provided test in a suite with perf=True?</span>
+
+<span class="sd">    &gt;&gt;&gt; is_perf_test(&quot;SMS_P2.T42_T42.S.melvin_gnu&quot;)</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; is_perf_test(&quot;SMS_P2.f19_g16_rx1.X.melvin_gnu&quot;)</span>
+<span class="sd">    False</span>
+<span class="sd">    &gt;&gt;&gt; is_perf_test(&quot;PFS_P2.f19_g16_rx1.X.melvin_gnu&quot;)</span>
+<span class="sd">    True</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Get a list of performance suites</span>
+    <span class="k">if</span> <span class="n">test</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;PFS&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">suites</span> <span class="o">=</span> <span class="n">get_test_suites</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">suite</span> <span class="ow">in</span> <span class="n">suites</span><span class="p">:</span>
+            <span class="n">perf</span> <span class="o">=</span> <span class="n">get_test_data</span><span class="p">(</span><span class="n">suite</span><span class="p">)[</span><span class="mi">3</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">perf</span> <span class="ow">and</span> <span class="n">suite_has_test</span><span class="p">(</span><span class="n">suite</span><span class="p">,</span> <span class="n">test</span><span class="p">,</span> <span class="n">skip_inherit</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+                <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">return</span> <span class="kc">False</span></div>
+
+
+
+<span class="c1">###############################################################################</span>
+<div class="viewcode-block" id="infer_arch_from_tests">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.get_tests.infer_arch_from_tests">[docs]</a>
+<span class="k">def</span> <span class="nf">infer_arch_from_tests</span><span class="p">(</span><span class="n">testargs</span><span class="p">):</span>
     <span class="c1">###############################################################################</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return a tuple (machine, [compilers]) that can be inferred from the test args</span>
@@ -438,8 +495,11 @@
     <span class="k">return</span> <span class="n">machine</span><span class="p">,</span> <span class="n">compilers</span></div>
 
 
+
 <span class="c1">###############################################################################</span>
-<div class="viewcode-block" id="get_full_test_names"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.get_tests.get_full_test_names">[docs]</a><span class="k">def</span> <span class="nf">get_full_test_names</span><span class="p">(</span><span class="n">testargs</span><span class="p">,</span> <span class="n">machine</span><span class="p">,</span> <span class="n">compiler</span><span class="p">):</span>
+<div class="viewcode-block" id="get_full_test_names">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.get_tests.get_full_test_names">[docs]</a>
+<span class="k">def</span> <span class="nf">get_full_test_names</span><span class="p">(</span><span class="n">testargs</span><span class="p">,</span> <span class="n">machine</span><span class="p">,</span> <span class="n">compiler</span><span class="p">):</span>
     <span class="c1">###############################################################################</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return full test names in the form:</span>
@@ -503,8 +563,11 @@
     <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">tests_to_run</span><span class="p">))</span></div>
 
 
+
 <span class="c1">###############################################################################</span>
-<div class="viewcode-block" id="get_recommended_test_time"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.get_tests.get_recommended_test_time">[docs]</a><span class="k">def</span> <span class="nf">get_recommended_test_time</span><span class="p">(</span><span class="n">test_full_name</span><span class="p">):</span>
+<div class="viewcode-block" id="get_recommended_test_time">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.get_tests.get_recommended_test_time">[docs]</a>
+<span class="k">def</span> <span class="nf">get_recommended_test_time</span><span class="p">(</span><span class="n">test_full_name</span><span class="p">):</span>
     <span class="c1">###############################################################################</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    &gt;&gt;&gt; get_recommended_test_time(&quot;ERS.f19_g16_rx1.A.melvin_gnu&quot;)</span>
@@ -533,11 +596,15 @@
     <span class="k">return</span> <span class="n">best_time</span></div>
 
 
+
 <span class="c1">###############################################################################</span>
-<div class="viewcode-block" id="key_test_time"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.get_tests.key_test_time">[docs]</a><span class="k">def</span> <span class="nf">key_test_time</span><span class="p">(</span><span class="n">test_full_name</span><span class="p">):</span>
+<div class="viewcode-block" id="key_test_time">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.get_tests.key_test_time">[docs]</a>
+<span class="k">def</span> <span class="nf">key_test_time</span><span class="p">(</span><span class="n">test_full_name</span><span class="p">):</span>
     <span class="c1">###############################################################################</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">get_recommended_test_time</span><span class="p">(</span><span class="n">test_full_name</span><span class="p">)</span>
     <span class="k">return</span> <span class="mi">99999999</span> <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">convert_to_seconds</span><span class="p">(</span><span class="n">result</span><span class="p">)</span></div>
+
 </pre></div>
 
            </div>

@@ -11,11 +11,11 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../../_static/pop_ver.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -98,7 +98,9 @@
 <span class="c1"># pragma pylint: disable=attribute-defined-outside-init</span>
 
 
-<div class="viewcode-block" id="EnvWorkflow"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_workflow.EnvWorkflow">[docs]</a><span class="k">class</span> <span class="nc">EnvWorkflow</span><span class="p">(</span><span class="n">EnvBase</span><span class="p">):</span>
+<div class="viewcode-block" id="EnvWorkflow">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_workflow.EnvWorkflow">[docs]</a>
+<span class="k">class</span> <span class="nc">EnvWorkflow</span><span class="p">(</span><span class="n">EnvBase</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case_root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">infile</span><span class="o">=</span><span class="s2">&quot;env_workflow.xml&quot;</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        initialize an object interface to file env_workflow.xml in the case directory</span>
@@ -111,7 +113,9 @@
             <span class="n">case_root</span><span class="p">,</span> <span class="n">infile</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="n">read_only</span>
         <span class="p">)</span>
 
-<div class="viewcode-block" id="EnvWorkflow.create_job_groups"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_workflow.EnvWorkflow.create_job_groups">[docs]</a>    <span class="k">def</span> <span class="nf">create_job_groups</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch_jobs</span><span class="p">,</span> <span class="n">is_test</span><span class="p">):</span>
+<div class="viewcode-block" id="EnvWorkflow.create_job_groups">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_workflow.EnvWorkflow.create_job_groups">[docs]</a>
+    <span class="k">def</span> <span class="nf">create_job_groups</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch_jobs</span><span class="p">,</span> <span class="n">is_test</span><span class="p">):</span>
         <span class="c1"># Subtle: in order to support dynamic batch jobs, we need to remove the</span>
         <span class="c1"># job_submission group and replace with job-based groups</span>
         <span class="n">orig_group</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_optional_child</span><span class="p">(</span>
@@ -149,14 +153,20 @@
                 <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">childnodes</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">add_child</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">child</span><span class="p">),</span> <span class="n">root</span><span class="o">=</span><span class="n">new_job_group</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EnvWorkflow.get_jobs"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_workflow.EnvWorkflow.get_jobs">[docs]</a>    <span class="k">def</span> <span class="nf">get_jobs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EnvWorkflow.get_jobs">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_workflow.EnvWorkflow.get_jobs">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_jobs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">groups</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="s2">&quot;group&quot;</span><span class="p">)</span>
         <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">groups</span><span class="p">:</span>
             <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">group</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">results</span></div>
 
-<div class="viewcode-block" id="EnvWorkflow.get_type_info"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_workflow.EnvWorkflow.get_type_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_type_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EnvWorkflow.get_type_info">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_workflow.EnvWorkflow.get_type_info">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_type_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">):</span>
         <span class="n">gnodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="s2">&quot;group&quot;</span><span class="p">)</span>
         <span class="n">type_info</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">for</span> <span class="n">gnode</span> <span class="ow">in</span> <span class="n">gnodes</span><span class="p">:</span>
@@ -175,7 +185,10 @@
                     <span class="p">)</span>
         <span class="k">return</span> <span class="n">type_info</span></div>
 
-<div class="viewcode-block" id="EnvWorkflow.get_job_specs"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_workflow.EnvWorkflow.get_job_specs">[docs]</a>    <span class="k">def</span> <span class="nf">get_job_specs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">job</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EnvWorkflow.get_job_specs">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_workflow.EnvWorkflow.get_job_specs">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_job_specs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">job</span><span class="p">):</span>
         <span class="n">task_count</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_resolved_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;task_count&quot;</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="n">job</span><span class="p">))</span>
         <span class="n">tasks_per_node</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_resolved_value</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;tasks_per_node&quot;</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="n">job</span><span class="p">)</span>
@@ -200,8 +213,11 @@
 
         <span class="k">return</span> <span class="n">task_count</span><span class="p">,</span> <span class="n">num_nodes</span><span class="p">,</span> <span class="n">tasks_per_node</span><span class="p">,</span> <span class="n">thread_count</span><span class="p">,</span> <span class="n">ngpus_per_node</span></div>
 
+
     <span class="c1"># pylint: disable=arguments-differ</span>
-<div class="viewcode-block" id="EnvWorkflow.get_value"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_workflow.EnvWorkflow.get_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">resolved</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="s2">&quot;PRIMARY&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="EnvWorkflow.get_value">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_workflow.EnvWorkflow.get_value">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">resolved</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="s2">&quot;PRIMARY&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Must default subgroup to something in order to provide single return value</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -217,8 +233,11 @@
 
         <span class="k">return</span> <span class="n">value</span></div>
 
+
     <span class="c1"># pylint: disable=arguments-differ</span>
-<div class="viewcode-block" id="EnvWorkflow.set_value"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_workflow.EnvWorkflow.set_value">[docs]</a>    <span class="k">def</span> <span class="nf">set_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ignore_type</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="EnvWorkflow.set_value">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_workflow.EnvWorkflow.set_value">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ignore_type</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Override the entry_id set_value function with some special cases for this class</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -243,7 +262,10 @@
 
         <span class="k">return</span> <span class="n">val</span></div>
 
-<div class="viewcode-block" id="EnvWorkflow.get_children"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_workflow.EnvWorkflow.get_children">[docs]</a>    <span class="k">def</span> <span class="nf">get_children</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EnvWorkflow.get_children">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_workflow.EnvWorkflow.get_children">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_children</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">(</span>
             <span class="s2">&quot;JOB_WALLCLOCK_TIME&quot;</span><span class="p">,</span>
             <span class="s2">&quot;PROJECT&quot;</span><span class="p">,</span>
@@ -259,7 +281,9 @@
                 <span class="n">name</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="n">attributes</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">root</span>
             <span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">nodes</span></div></div>
+        <span class="k">return</span> <span class="n">nodes</span></div>
+</div>
+
 </pre></div>
 
            </div>

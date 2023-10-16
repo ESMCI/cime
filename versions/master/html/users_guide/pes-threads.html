@@ -12,11 +12,11 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/sphinx_highlight.js"></script>
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../_static/pop_ver.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -109,7 +109,7 @@
            <div itemprop="articleBody">
              
   <section id="controlling-processors-and-threads">
-<span id="pesthreads"></span><h1><span class="section-number">5. </span>Controlling processors and threads<a class="headerlink" href="#controlling-processors-and-threads" title="Permalink to this heading"></a></h1>
+<span id="pesthreads"></span><h1><span class="section-number">5. </span>Controlling processors and threads<a class="headerlink" href="#controlling-processors-and-threads" title="Link to this heading"></a></h1>
 <p>Once a compset and resolution for a case has been defined, CIME
 provides ways to define the processor layout the case will use.</p>
 <p>CIME cases have significant flexibility with respect to the layout of
@@ -119,7 +119,7 @@ managed independently by the CIME driver, each with a unique MPI
 communicator.  In addition, the driver runs on the union of all
 processors and controls the sequencing and hardware partitioning.</p>
 <section id="pe-settings-for-a-case">
-<span id="defining-pes"></span><h2><span class="section-number">5.1. </span>pe-settings for a case<a class="headerlink" href="#pe-settings-for-a-case" title="Permalink to this heading"></a></h2>
+<span id="defining-pes"></span><h2><span class="section-number">5.1. </span>pe-settings for a case<a class="headerlink" href="#pe-settings-for-a-case" title="Link to this heading"></a></h2>
 <p>CIME looks at the xml element <code class="docutils literal notranslate"><span class="pre">PES_SPEC_FILE</span></code> in the <strong>$CIMEROOT/config/$model/config_files.xml</strong> file to determine where
 to find the supported out-of-the-box model pe-settings for the primary component (See <a class="reference internal" href="compsets.html#compsets"><span class="std std-ref">Compsets</span></a> for definition of primary component.)</p>
 <p>When your run <a class="reference external" href="../Tools_user/create_newcase.html">create_newcase</a>, CIME identifies the primary component and the setting of the <code class="docutils literal notranslate"><span class="pre">PES_SPEC_FILE</span></code> in the standard output.</p>
@@ -168,7 +168,7 @@ processor setting.</p>
 <p>When <a class="reference external" href="../Tools_user/create_newcase.html">create_newcase</a>  is called, it outputs the matches that are found in determining the best out-of-the-box pe-layout.</p>
 </section>
 <section id="setting-the-pe-layout">
-<h2><span class="section-number">5.2. </span>Setting the PE layout<a class="headerlink" href="#setting-the-pe-layout" title="Permalink to this heading"></a></h2>
+<h2><span class="section-number">5.2. </span>Setting the PE layout<a class="headerlink" href="#setting-the-pe-layout" title="Link to this heading"></a></h2>
 <p>Optimizing the throughput and efficiency of a CIME experiment often
 involves customizing the processor (PE) layout. (See <a class="reference internal" href="#optimizing-processor-layout"><span class="std std-ref">load
 balancing</span></a>.)  CIME provides significant
@@ -185,7 +185,7 @@ instances of each component and the layout of the components across
 the hardware processors. The entries in <strong>env_mach_pes.xml</strong> have the
 following meanings:</p>
 <table class="docutils align-default" id="id3">
-<caption><span class="caption-text">Entries in <strong>env_mach_pes.xml</strong></span><a class="headerlink" href="#id3" title="Permalink to this table"></a></caption>
+<caption><span class="caption-text">Entries in <strong>env_mach_pes.xml</strong></span><a class="headerlink" href="#id3" title="Link to this table"></a></caption>
 <colgroup>
 <col style="width: 20%" />
 <col style="width: 80%" />
@@ -250,7 +250,7 @@ model can also run concurrently with the atmosphere model.</p>
 </div>
 </section>
 <section id="case-resource-allocation">
-<h2><span class="section-number">5.3. </span>Case Resource Allocation<a class="headerlink" href="#case-resource-allocation" title="Permalink to this heading"></a></h2>
+<h2><span class="section-number">5.3. </span>Case Resource Allocation<a class="headerlink" href="#case-resource-allocation" title="Link to this heading"></a></h2>
 <p>Resources for your case will be allocated according to the following logic.</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">NTASKS</span></code> * <code class="docutils literal notranslate"><span class="pre">NTHRDS</span></code> is the total number of hardware processors allocated to a component.</p></li>
@@ -282,7 +282,7 @@ be allocated but completely idle.</p>
 and job submit commands for your case.</p>
 </section>
 <section id="optimizing-processor-layout">
-<span id="id2"></span><h2><span class="section-number">5.4. </span>Optimizing processor layout<a class="headerlink" href="#optimizing-processor-layout" title="Permalink to this heading"></a></h2>
+<span id="id2"></span><h2><span class="section-number">5.4. </span>Optimizing processor layout<a class="headerlink" href="#optimizing-processor-layout" title="Link to this heading"></a></h2>
 <p>Load balancing is the practice of specifying a processor layout for a given model configuration
 (compset, grid, and so on) to maximize simulation speed while minimizing processor idle time.
 For a fixed total number of processors, the goal of this optimization is to achieve maximum throughput.

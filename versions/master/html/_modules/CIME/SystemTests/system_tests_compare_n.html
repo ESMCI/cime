@@ -11,11 +11,11 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../../_static/pop_ver.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -136,7 +136,9 @@
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="SystemTestsCompareN"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.system_tests_compare_n.SystemTestsCompareN">[docs]</a><span class="k">class</span> <span class="nc">SystemTestsCompareN</span><span class="p">(</span><span class="n">SystemTestsCommon</span><span class="p">):</span>
+<div class="viewcode-block" id="SystemTestsCompareN">
+<a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.system_tests_compare_n.SystemTestsCompareN">[docs]</a>
+<span class="k">class</span> <span class="nc">SystemTestsCompareN</span><span class="p">(</span><span class="n">SystemTestsCommon</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">case</span><span class="p">,</span>
@@ -266,7 +268,9 @@
     <span class="c1"># Main public methods</span>
     <span class="c1"># ========================================================================</span>
 
-<div class="viewcode-block" id="SystemTestsCompareN.build_phase"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.system_tests_compare_n.SystemTestsCompareN.build_phase">[docs]</a>    <span class="k">def</span> <span class="nf">build_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sharedlib_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">model_only</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="SystemTestsCompareN.build_phase">
+<a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.system_tests_compare_n.SystemTestsCompareN.build_phase">[docs]</a>
+    <span class="k">def</span> <span class="nf">build_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sharedlib_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">model_only</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="c1"># Subtle issue: base case is already in a writeable state since it tends to be opened</span>
         <span class="c1"># with a with statement in all the API entrances in CIME. subsequent cases were</span>
         <span class="c1"># created via clone, not a with statement, so it&#39;s not in a writeable state,</span>
@@ -314,7 +318,10 @@
                     <span class="c1"># despite sharing the build (e.g., to change NTHRDS)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_cases</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;BUILD_COMPLETE&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SystemTestsCompareN.run_phase"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.system_tests_compare_n.SystemTestsCompareN.run_phase">[docs]</a>    <span class="k">def</span> <span class="nf">run_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">success_change</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>  <span class="c1"># pylint: disable=arguments-differ</span>
+
+<div class="viewcode-block" id="SystemTestsCompareN.run_phase">
+<a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.system_tests_compare_n.SystemTestsCompareN.run_phase">[docs]</a>
+    <span class="k">def</span> <span class="nf">run_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">success_change</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>  <span class="c1"># pylint: disable=arguments-differ</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Runs all phases of the N-phase test and compares base results with subsequent ones</span>
 <span class="sd">        If success_change is True, success requires some files to be different</span>
@@ -390,6 +397,7 @@
                     <span class="n">success_change</span><span class="o">=</span><span class="n">success_change</span><span class="p">,</span>
                     <span class="n">ignore_fieldlist_diffs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_ignore_fieldlist_diffs</span><span class="p">,</span>
                 <span class="p">)</span></div>
+
 
     <span class="c1"># ========================================================================</span>
     <span class="c1"># Private methods</span>
@@ -652,6 +660,7 @@
                 <span class="k">pass</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">os</span><span class="o">.</span><span class="n">symlink</span><span class="p">(</span><span class="n">one_file</span><span class="p">,</span> <span class="n">one_link</span><span class="p">)</span></div>
+
 </pre></div>
 
            </div>

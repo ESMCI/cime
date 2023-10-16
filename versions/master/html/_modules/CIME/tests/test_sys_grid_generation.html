@@ -11,11 +11,11 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../../_static/pop_ver.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -94,14 +94,21 @@
 <span class="kn">from</span> <span class="nn">CIME.tests</span> <span class="kn">import</span> <span class="n">base</span>
 
 
-<div class="viewcode-block" id="TestGridGeneration"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_grid_generation.TestGridGeneration">[docs]</a><span class="k">class</span> <span class="nc">TestGridGeneration</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">BaseTestCase</span><span class="p">):</span>
-<div class="viewcode-block" id="TestGridGeneration.setUpClass"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_grid_generation.TestGridGeneration.setUpClass">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="TestGridGeneration">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_grid_generation.TestGridGeneration">[docs]</a>
+<span class="k">class</span> <span class="nc">TestGridGeneration</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">BaseTestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestGridGeneration.setUpClass">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_grid_generation.TestGridGeneration.setUpClass">[docs]</a>
+    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">setUpClass</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
         <span class="bp">cls</span><span class="o">.</span><span class="n">_do_teardown</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">cls</span><span class="o">.</span><span class="n">_testroot</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">TEST_ROOT</span><span class="p">,</span> <span class="s2">&quot;TestGridGeneration&quot;</span><span class="p">)</span>
         <span class="bp">cls</span><span class="o">.</span><span class="n">_testdirs</span> <span class="o">=</span> <span class="p">[]</span></div>
 
-<div class="viewcode-block" id="TestGridGeneration.test_gen_domain"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_grid_generation.TestGridGeneration.test_gen_domain">[docs]</a>    <span class="k">def</span> <span class="nf">test_gen_domain</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestGridGeneration.test_gen_domain">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_grid_generation.TestGridGeneration.test_gen_domain">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_gen_domain</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">test_mode</span> <span class="o">==</span> <span class="s2">&quot;cesm&quot;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">skipTest</span><span class="p">(</span><span class="s2">&quot;Skipping gen_domain test. Depends on E3SM tools&quot;</span><span class="p">)</span>
         <span class="n">cime_root</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_cime_root</span><span class="p">()</span>
@@ -122,7 +129,10 @@
         <span class="p">)</span>
         <span class="bp">cls</span><span class="o">.</span><span class="n">_do_teardown</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">test_dir</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestGridGeneration.tearDownClass"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_grid_generation.TestGridGeneration.tearDownClass">[docs]</a>    <span class="nd">@classmethod</span>
+
+<div class="viewcode-block" id="TestGridGeneration.tearDownClass">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_grid_generation.TestGridGeneration.tearDownClass">[docs]</a>
+    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">tearDownClass</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
         <span class="n">do_teardown</span> <span class="o">=</span> <span class="p">(</span>
             <span class="nb">len</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_do_teardown</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
@@ -139,7 +149,9 @@
                 <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">tfile</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">teardown_root</span> <span class="ow">and</span> <span class="n">do_teardown</span><span class="p">:</span>
-            <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_testroot</span><span class="p">)</span></div></div>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_testroot</span><span class="p">)</span></div>
+</div>
+
 </pre></div>
 
            </div>

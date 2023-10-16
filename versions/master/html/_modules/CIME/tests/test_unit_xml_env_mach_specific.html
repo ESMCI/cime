@@ -11,11 +11,11 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../../_static/pop_ver.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -96,8 +96,12 @@
 <span class="c1"># pylint: disable=unused-argument</span>
 
 
-<div class="viewcode-block" id="TestXMLEnvMachSpecific"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_xml_env_mach_specific.TestXMLEnvMachSpecific">[docs]</a><span class="k">class</span> <span class="nc">TestXMLEnvMachSpecific</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
-<div class="viewcode-block" id="TestXMLEnvMachSpecific.test_aprun_get_args"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_xml_env_mach_specific.TestXMLEnvMachSpecific.test_aprun_get_args">[docs]</a>    <span class="k">def</span> <span class="nf">test_aprun_get_args</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestXMLEnvMachSpecific">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_xml_env_mach_specific.TestXMLEnvMachSpecific">[docs]</a>
+<span class="k">class</span> <span class="nc">TestXMLEnvMachSpecific</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestXMLEnvMachSpecific.test_aprun_get_args">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_xml_env_mach_specific.TestXMLEnvMachSpecific.test_aprun_get_args">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_aprun_get_args</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">()</span> <span class="k">as</span> <span class="n">temp</span><span class="p">:</span>
             <span class="n">temp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
 <span class="w">                </span><span class="sa">b</span><span class="sd">&quot;&quot;&quot;&lt;?xml version=&quot;1.0&quot;?&gt;</span>
@@ -154,7 +158,10 @@
 
             <span class="k">assert</span> <span class="n">extra_args</span> <span class="o">==</span> <span class="n">expected_args</span></div>
 
-<div class="viewcode-block" id="TestXMLEnvMachSpecific.test_get_aprun_mode_not_valid"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_xml_env_mach_specific.TestXMLEnvMachSpecific.test_get_aprun_mode_not_valid">[docs]</a>    <span class="k">def</span> <span class="nf">test_get_aprun_mode_not_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestXMLEnvMachSpecific.test_get_aprun_mode_not_valid">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_xml_env_mach_specific.TestXMLEnvMachSpecific.test_get_aprun_mode_not_valid">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_get_aprun_mode_not_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">()</span> <span class="k">as</span> <span class="n">temp</span><span class="p">:</span>
             <span class="n">temp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
 <span class="w">                </span><span class="sa">b</span><span class="sd">&quot;&quot;&quot;&lt;?xml version=&quot;1.0&quot;?&gt;</span>
@@ -204,7 +211,10 @@
                 <span class="o">==</span> <span class="s2">&quot;ERROR: Value &#39;custom&#39; for </span><span class="se">\&quot;</span><span class="s2">aprun_mode</span><span class="se">\&quot;</span><span class="s2"> is not valid, options are &#39;ignore, default, override&#39;&quot;</span>
             <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestXMLEnvMachSpecific.test_get_aprun_mode_user_defined"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_xml_env_mach_specific.TestXMLEnvMachSpecific.test_get_aprun_mode_user_defined">[docs]</a>    <span class="k">def</span> <span class="nf">test_get_aprun_mode_user_defined</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestXMLEnvMachSpecific.test_get_aprun_mode_user_defined">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_xml_env_mach_specific.TestXMLEnvMachSpecific.test_get_aprun_mode_user_defined">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_get_aprun_mode_user_defined</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">()</span> <span class="k">as</span> <span class="n">temp</span><span class="p">:</span>
             <span class="n">temp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
 <span class="w">                </span><span class="sa">b</span><span class="sd">&quot;&quot;&quot;&lt;?xml version=&quot;1.0&quot;?&gt;</span>
@@ -250,7 +260,10 @@
 
             <span class="k">assert</span> <span class="n">aprun_mode</span> <span class="o">==</span> <span class="s2">&quot;default&quot;</span></div>
 
-<div class="viewcode-block" id="TestXMLEnvMachSpecific.test_get_aprun_mode_default"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_xml_env_mach_specific.TestXMLEnvMachSpecific.test_get_aprun_mode_default">[docs]</a>    <span class="k">def</span> <span class="nf">test_get_aprun_mode_default</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestXMLEnvMachSpecific.test_get_aprun_mode_default">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_xml_env_mach_specific.TestXMLEnvMachSpecific.test_get_aprun_mode_default">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_get_aprun_mode_default</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">()</span> <span class="k">as</span> <span class="n">temp</span><span class="p">:</span>
             <span class="n">temp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
 <span class="w">                </span><span class="sa">b</span><span class="sd">&quot;&quot;&quot;&lt;?xml version=&quot;1.0&quot;?&gt;</span>
@@ -295,7 +308,10 @@
 
             <span class="k">assert</span> <span class="n">aprun_mode</span> <span class="o">==</span> <span class="s2">&quot;default&quot;</span></div>
 
-<div class="viewcode-block" id="TestXMLEnvMachSpecific.test_find_best_mpirun_match"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_xml_env_mach_specific.TestXMLEnvMachSpecific.test_find_best_mpirun_match">[docs]</a>    <span class="k">def</span> <span class="nf">test_find_best_mpirun_match</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestXMLEnvMachSpecific.test_find_best_mpirun_match">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_xml_env_mach_specific.TestXMLEnvMachSpecific.test_find_best_mpirun_match">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_find_best_mpirun_match</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">()</span> <span class="k">as</span> <span class="n">temp</span><span class="p">:</span>
             <span class="n">temp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
 <span class="w">                </span><span class="sa">b</span><span class="sd">&quot;&quot;&quot;&lt;?xml version=&quot;1.0&quot;?&gt;</span>
@@ -352,7 +368,10 @@
             <span class="k">assert</span> <span class="n">run_exe</span> <span class="ow">is</span> <span class="kc">None</span>
             <span class="k">assert</span> <span class="n">run_misc_suffix</span> <span class="ow">is</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="TestXMLEnvMachSpecific.test_get_mpirun"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_xml_env_mach_specific.TestXMLEnvMachSpecific.test_get_mpirun">[docs]</a>    <span class="k">def</span> <span class="nf">test_get_mpirun</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestXMLEnvMachSpecific.test_get_mpirun">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_xml_env_mach_specific.TestXMLEnvMachSpecific.test_get_mpirun">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_get_mpirun</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">()</span> <span class="k">as</span> <span class="n">temp</span><span class="p">:</span>
             <span class="n">temp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
 <span class="w">                </span><span class="sa">b</span><span class="sd">&quot;&quot;&quot;&lt;?xml version=&quot;1.0&quot;?&gt;</span>
@@ -406,7 +425,10 @@
             <span class="k">assert</span> <span class="n">run_exe</span> <span class="ow">is</span> <span class="kc">None</span>
             <span class="k">assert</span> <span class="n">run_misc_suffix</span> <span class="ow">is</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="TestXMLEnvMachSpecific.test_init_path"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_xml_env_mach_specific.TestXMLEnvMachSpecific.test_init_path">[docs]</a>    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.XML.env_mach_specific.EnvMachSpecific.get_optional_child&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TestXMLEnvMachSpecific.test_init_path">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_xml_env_mach_specific.TestXMLEnvMachSpecific.test_init_path">[docs]</a>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.XML.env_mach_specific.EnvMachSpecific.get_optional_child&quot;</span><span class="p">)</span>
     <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.XML.env_mach_specific.EnvMachSpecific.text&quot;</span><span class="p">)</span>
     <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="o">.</span><span class="n">dict</span><span class="p">(</span><span class="s2">&quot;os.environ&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;TEST_VALUE&quot;</span><span class="p">:</span> <span class="s2">&quot;/testexec&quot;</span><span class="p">})</span>
     <span class="k">def</span> <span class="nf">test_init_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">get_optional_child</span><span class="p">):</span>
@@ -418,7 +440,10 @@
 
         <span class="k">assert</span> <span class="n">value</span> <span class="o">==</span> <span class="s2">&quot;/testexec/init/python&quot;</span></div>
 
-<div class="viewcode-block" id="TestXMLEnvMachSpecific.test_cmd_path"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_xml_env_mach_specific.TestXMLEnvMachSpecific.test_cmd_path">[docs]</a>    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.XML.env_mach_specific.EnvMachSpecific.get_optional_child&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TestXMLEnvMachSpecific.test_cmd_path">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_xml_env_mach_specific.TestXMLEnvMachSpecific.test_cmd_path">[docs]</a>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.XML.env_mach_specific.EnvMachSpecific.get_optional_child&quot;</span><span class="p">)</span>
     <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.XML.env_mach_specific.EnvMachSpecific.text&quot;</span><span class="p">)</span>
     <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="o">.</span><span class="n">dict</span><span class="p">(</span><span class="s2">&quot;os.environ&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;TEST_VALUE&quot;</span><span class="p">:</span> <span class="s2">&quot;/testexec&quot;</span><span class="p">})</span>
     <span class="k">def</span> <span class="nf">test_cmd_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">get_optional_child</span><span class="p">):</span>
@@ -428,7 +453,9 @@
 
         <span class="n">value</span> <span class="o">=</span> <span class="n">mach_specific</span><span class="o">.</span><span class="n">get_module_system_cmd_path</span><span class="p">(</span><span class="s2">&quot;python&quot;</span><span class="p">)</span>
 
-        <span class="k">assert</span> <span class="n">value</span> <span class="o">==</span> <span class="s2">&quot;/testexec/python&quot;</span></div></div>
+        <span class="k">assert</span> <span class="n">value</span> <span class="o">==</span> <span class="s2">&quot;/testexec/python&quot;</span></div>
+</div>
+
 </pre></div>
 
            </div>

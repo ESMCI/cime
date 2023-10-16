@@ -12,11 +12,11 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/sphinx_highlight.js"></script>
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../_static/pop_ver.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -142,7 +142,7 @@
            <div itemprop="articleBody">
              
   <section id="check-input-data">
-<span id="id1"></span><h1>check_input_data<a class="headerlink" href="#check-input-data" title="Permalink to this heading"></a></h1>
+<span id="id1"></span><h1>check_input_data<a class="headerlink" href="#check-input-data" title="Link to this heading"></a></h1>
 <p><strong>check_input_data</strong> is a script in CIMEROOT/CIME/Tools.</p>
 <div class="toctree-wrapper compound">
 </div>
@@ -171,9 +171,6 @@ So manual usage of this script is optional.
 
 options:
   -h, --help            show this help message and exit
-  -d, --debug           Print debug information (very verbose) to file /home/runner/work/cime/cime/CIME/Tools/check_input_data.log
-  -v, --verbose         Add additional context (time and file) to log messages
-  -s, --silent          Print only warnings and error messages
   --protocol PROTOCOL   The input data protocol to download data.
   --server SERVER       The input data repository from which to download data.
   -i INPUT_DATA_ROOT, --input-data-root INPUT_DATA_ROOT
@@ -183,6 +180,11 @@ options:
                         Where to find list of input files
   --download            Attempt to download missing input files
   --chksum              chksum inputfiles against inputdata_chksum.dat (if available)
+
+Logging options:
+  -d, --debug           Print debug information (very verbose) to file /home/runner/work/cime/cime/CIME/Tools/check_input_data.log
+  -v, --verbose         Add additional context (time and file) to log messages
+  -s, --silent          Print only warnings and error messages
 </pre></div>
 </div>
 </section>

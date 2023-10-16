@@ -11,11 +11,11 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../../_static/pop_ver.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -98,7 +98,9 @@
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="Batch"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.batch.Batch">[docs]</a><span class="k">class</span> <span class="nc">Batch</span><span class="p">(</span><span class="n">GenericXML</span><span class="p">):</span>
+<div class="viewcode-block" id="Batch">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.batch.Batch">[docs]</a>
+<span class="k">class</span> <span class="nc">Batch</span><span class="p">(</span><span class="n">GenericXML</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">batch_system</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -146,13 +148,18 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_system</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">set_batch_system</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_system</span><span class="p">,</span> <span class="n">machine</span><span class="o">=</span><span class="n">machine</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Batch.get_batch_system"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.batch.Batch.get_batch_system">[docs]</a>    <span class="k">def</span> <span class="nf">get_batch_system</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Batch.get_batch_system">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.batch.Batch.get_batch_system">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_batch_system</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the name of the batch system</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_system</span></div>
 
-<div class="viewcode-block" id="Batch.get_optional_batch_node"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.batch.Batch.get_optional_batch_node">[docs]</a>    <span class="k">def</span> <span class="nf">get_optional_batch_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodename</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Batch.get_optional_batch_node">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.batch.Batch.get_optional_batch_node">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_optional_batch_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodename</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return data on a node for a batch system</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -176,7 +183,10 @@
                 <span class="n">nodename</span><span class="p">,</span> <span class="n">attributes</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_system_node</span>
             <span class="p">)</span></div>
 
-<div class="viewcode-block" id="Batch.set_batch_system"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.batch.Batch.set_batch_system">[docs]</a>    <span class="k">def</span> <span class="nf">set_batch_system</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch_system</span><span class="p">,</span> <span class="n">machine</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Batch.set_batch_system">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.batch.Batch.set_batch_system">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_batch_system</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch_system</span><span class="p">,</span> <span class="n">machine</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets the batch system block in the Batch object</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -198,8 +208,11 @@
 
         <span class="k">return</span> <span class="n">batch_system</span></div>
 
+
     <span class="c1"># pylint: disable=arguments-differ</span>
-<div class="viewcode-block" id="Batch.get_value"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.batch.Batch.get_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">resolved</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Batch.get_value">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.batch.Batch.get_value">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">resolved</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get Value of fields in the config_batch.xml file</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -222,7 +235,10 @@
 
         <span class="k">return</span> <span class="n">value</span></div>
 
-<div class="viewcode-block" id="Batch.get_batch_jobs"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.batch.Batch.get_batch_jobs">[docs]</a>    <span class="k">def</span> <span class="nf">get_batch_jobs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Batch.get_batch_jobs">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.batch.Batch.get_batch_jobs">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_batch_jobs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a list of jobs with the first element the name of the case script</span>
 <span class="sd">        and the second a dict of qualifiers for the job</span>
@@ -239,7 +255,9 @@
 
                     <span class="n">jobs</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">name</span><span class="p">,</span> <span class="n">jdict</span><span class="p">))</span>
 
-        <span class="k">return</span> <span class="n">jobs</span></div></div>
+        <span class="k">return</span> <span class="n">jobs</span></div>
+</div>
+
 </pre></div>
 
            </div>

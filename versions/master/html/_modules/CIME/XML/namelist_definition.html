@@ -11,11 +11,11 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../../_static/pop_ver.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -117,7 +117,9 @@
 <span class="n">_array_size_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^(?P&lt;type&gt;[^(]+)\((?P&lt;size&gt;[^)]+)\)$&quot;</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="CaseInsensitiveDict"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.namelist_definition.CaseInsensitiveDict">[docs]</a><span class="k">class</span> <span class="nc">CaseInsensitiveDict</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
+<div class="viewcode-block" id="CaseInsensitiveDict">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.namelist_definition.CaseInsensitiveDict">[docs]</a>
+<span class="k">class</span> <span class="nc">CaseInsensitiveDict</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
 
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Basic case insensitive dict with strings only keys.</span>
 <span class="sd">    From https://stackoverflow.com/a/27890005&quot;&quot;&quot;</span>
@@ -142,15 +144,21 @@
         <span class="n">key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">proxy</span><span class="p">[</span><span class="n">k</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">CaseInsensitiveDict</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
 
-<div class="viewcode-block" id="CaseInsensitiveDict.get"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.namelist_definition.CaseInsensitiveDict.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="CaseInsensitiveDict.get">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.namelist_definition.CaseInsensitiveDict.get">[docs]</a>
+    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span> <span class="k">else</span> <span class="n">default</span></div>
+
 
     <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">CaseInsensitiveDict</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__setitem__</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">proxy</span><span class="p">[</span><span class="n">k</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span> <span class="o">=</span> <span class="n">k</span></div>
 
 
-<div class="viewcode-block" id="NamelistDefinition"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.namelist_definition.NamelistDefinition">[docs]</a><span class="k">class</span> <span class="nc">NamelistDefinition</span><span class="p">(</span><span class="n">EntryID</span><span class="p">):</span>
+
+<div class="viewcode-block" id="NamelistDefinition">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.namelist_definition.NamelistDefinition">[docs]</a>
+<span class="k">class</span> <span class="nc">NamelistDefinition</span><span class="p">(</span><span class="n">EntryID</span><span class="p">):</span>
 
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Class representing variable definitions for a namelist.</span>
 <span class="sd">    This class inherits from `EntryID`, and supports most inherited methods;</span>
@@ -182,7 +190,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_group_names</span> <span class="o">=</span> <span class="n">CaseInsensitiveDict</span><span class="p">({})</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_nodes</span> <span class="o">=</span> <span class="p">{}</span>
 
-<div class="viewcode-block" id="NamelistDefinition.set_node_values"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.namelist_definition.NamelistDefinition.set_node_values">[docs]</a>    <span class="k">def</span> <span class="nf">set_node_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+<div class="viewcode-block" id="NamelistDefinition.set_node_values">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.namelist_definition.NamelistDefinition.set_node_values">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_node_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_entry_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_entry_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_nodes</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">node</span>
@@ -190,7 +200,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_valid_values</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_valid_values</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_group_names</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_group_name</span><span class="p">(</span><span class="n">node</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="NamelistDefinition.set_nodes"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.namelist_definition.NamelistDefinition.set_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">set_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip_groups</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="NamelistDefinition.set_nodes">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.namelist_definition.NamelistDefinition.set_nodes">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip_groups</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        populates the object data types for all nodes that are not part of the skip_groups array</span>
 <span class="sd">        returns nodes that do not have attributes of `skip_default_entry` or `per_stream_entry`</span>
@@ -217,12 +230,16 @@
 
         <span class="k">return</span> <span class="n">default_nodes</span></div>
 
-<div class="viewcode-block" id="NamelistDefinition.get_group_name"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.namelist_definition.NamelistDefinition.get_group_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_group_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="NamelistDefinition.get_group_name">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.namelist_definition.NamelistDefinition.get_group_name">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_group_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_version</span><span class="p">()</span> <span class="o">==</span> <span class="mf">1.0</span><span class="p">:</span>
             <span class="n">group</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="s2">&quot;group&quot;</span><span class="p">)</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_version</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="mf">2.0</span><span class="p">:</span>
             <span class="n">group</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_element_text</span><span class="p">(</span><span class="s2">&quot;group&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">node</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">group</span></div>
+
 
     <span class="k">def</span> <span class="nf">_get_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_version</span><span class="p">()</span> <span class="o">==</span> <span class="mf">1.0</span><span class="p">:</span>
@@ -246,25 +263,42 @@
             <span class="n">valid_values</span> <span class="o">=</span> <span class="n">valid_values</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">valid_values</span>
 
-<div class="viewcode-block" id="NamelistDefinition.get_group"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.namelist_definition.NamelistDefinition.get_group">[docs]</a>    <span class="k">def</span> <span class="nf">get_group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+<div class="viewcode-block" id="NamelistDefinition.get_group">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.namelist_definition.NamelistDefinition.get_group">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_group_names</span><span class="p">[</span><span class="n">name</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="NamelistDefinition.rename_group"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.namelist_definition.NamelistDefinition.rename_group">[docs]</a>    <span class="k">def</span> <span class="nf">rename_group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">oldgroup</span><span class="p">,</span> <span class="n">newgroup</span><span class="p">):</span>
+
+<div class="viewcode-block" id="NamelistDefinition.rename_group">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.namelist_definition.NamelistDefinition.rename_group">[docs]</a>
+    <span class="k">def</span> <span class="nf">rename_group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">oldgroup</span><span class="p">,</span> <span class="n">newgroup</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_group_names</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_group_names</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">==</span> <span class="n">oldgroup</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_group_names</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="n">newgroup</span></div>
 
-<div class="viewcode-block" id="NamelistDefinition.add_attributes"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.namelist_definition.NamelistDefinition.add_attributes">[docs]</a>    <span class="k">def</span> <span class="nf">add_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attributes</span><span class="p">):</span>
+
+<div class="viewcode-block" id="NamelistDefinition.add_attributes">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.namelist_definition.NamelistDefinition.add_attributes">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attributes</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span> <span class="o">=</span> <span class="n">attributes</span></div>
 
-<div class="viewcode-block" id="NamelistDefinition.get_attributes"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.namelist_definition.NamelistDefinition.get_attributes">[docs]</a>    <span class="k">def</span> <span class="nf">get_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="NamelistDefinition.get_attributes">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.namelist_definition.NamelistDefinition.get_attributes">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return this object&#39;s attributes dictionary&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span></div>
 
-<div class="viewcode-block" id="NamelistDefinition.get_entry_nodes"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.namelist_definition.NamelistDefinition.get_entry_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">get_entry_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="NamelistDefinition.get_entry_nodes">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.namelist_definition.NamelistDefinition.get_entry_nodes">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_entry_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_entry_nodes</span></div>
 
-<div class="viewcode-block" id="NamelistDefinition.get_per_stream_entries"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.namelist_definition.NamelistDefinition.get_per_stream_entries">[docs]</a>    <span class="k">def</span> <span class="nf">get_per_stream_entries</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="NamelistDefinition.get_per_stream_entries">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.namelist_definition.NamelistDefinition.get_per_stream_entries">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_per_stream_entries</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">entries</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="s2">&quot;entry&quot;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
@@ -273,16 +307,22 @@
                 <span class="n">entries</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">entries</span></div>
 
+
     <span class="c1"># Currently we don&#39;t use this object to construct new files, and it&#39;s no</span>
     <span class="c1"># good for that purpose anyway, so stop this function from being called.</span>
-<div class="viewcode-block" id="NamelistDefinition.set_value"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.namelist_definition.NamelistDefinition.set_value">[docs]</a>    <span class="k">def</span> <span class="nf">set_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ignore_type</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="NamelistDefinition.set_value">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.namelist_definition.NamelistDefinition.set_value">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ignore_type</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;This function is not implemented.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;NamelistDefinition does not support `set_value`.&quot;</span><span class="p">)</span></div>
+
 
     <span class="c1"># In contrast to the entry_id version of this method, this version doesn&#39;t support the</span>
     <span class="c1"># replacement_for_none argument, because it is hard-coded to &#39;&#39;.</span>
     <span class="c1"># pylint: disable=arguments-differ</span>
-<div class="viewcode-block" id="NamelistDefinition.get_value_match"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.namelist_definition.NamelistDefinition.get_value_match">[docs]</a>    <span class="k">def</span> <span class="nf">get_value_match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">exact_match</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">entry_node</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="NamelistDefinition.get_value_match">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.namelist_definition.NamelistDefinition.get_value_match">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_value_match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">exact_match</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">entry_node</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the default value for the variable named `vid`.</span>
 
 <span class="sd">        The return value is a list of strings corresponding to the</span>
@@ -312,6 +352,7 @@
 
         <span class="k">return</span> <span class="n">value</span></div>
 
+
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_split_defaults_text</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Take a comma-separated list in a string, and split it into a list.&quot;&quot;&quot;</span>
@@ -339,7 +380,9 @@
             <span class="n">value</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">string</span><span class="p">[</span><span class="n">pos</span><span class="p">:]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
         <span class="k">return</span> <span class="n">value</span>
 
-<div class="viewcode-block" id="NamelistDefinition.split_type_string"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.namelist_definition.NamelistDefinition.split_type_string">[docs]</a>    <span class="k">def</span> <span class="nf">split_type_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+<div class="viewcode-block" id="NamelistDefinition.split_type_string">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.namelist_definition.NamelistDefinition.split_type_string">[docs]</a>
+    <span class="k">def</span> <span class="nf">split_type_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Split a &#39;type&#39; attribute string into its component parts.</span>
 
 <span class="sd">        The `name` argument is the variable name.</span>
@@ -395,6 +438,7 @@
             <span class="n">max_len</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">return</span> <span class="n">type_</span><span class="p">,</span> <span class="n">max_len</span><span class="p">,</span> <span class="n">size</span></div>
 
+
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_canonicalize_value</span><span class="p">(</span><span class="n">type_</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create &#39;canonical&#39; version of a value for comparison purposes.&quot;&quot;&quot;</span>
@@ -408,7 +452,9 @@
             <span class="n">canonical_value</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">scalar</span><span class="p">)</span> <span class="k">for</span> <span class="n">scalar</span> <span class="ow">in</span> <span class="n">canonical_value</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">canonical_value</span>
 
-<div class="viewcode-block" id="NamelistDefinition.is_valid_value"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.namelist_definition.NamelistDefinition.is_valid_value">[docs]</a>    <span class="k">def</span> <span class="nf">is_valid_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<div class="viewcode-block" id="NamelistDefinition.is_valid_value">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.namelist_definition.NamelistDefinition.is_valid_value">[docs]</a>
+    <span class="k">def</span> <span class="nf">is_valid_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Determine whether a value is valid for the named variable.</span>
 
 <span class="sd">        The `value` argument must be a list of strings formatted as they would</span>
@@ -467,6 +513,7 @@
             <span class="p">)</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
+
     <span class="k">def</span> <span class="nf">_expect_variable_in_definition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">variable_template</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Used to get a better error message for an unexpected variable.</span>
 <span class="sd">        case insensitve match&quot;&quot;&quot;</span>
@@ -510,7 +557,9 @@
             <span class="n">variable_template</span> <span class="o">=</span> <span class="s2">&quot;Variable </span><span class="si">{!r}</span><span class="s2"> from file &quot;</span> <span class="o">+</span> <span class="nb">repr</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">msgfn</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">variable_template</span>
 
-<div class="viewcode-block" id="NamelistDefinition.validate"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.namelist_definition.NamelistDefinition.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">namelist</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="NamelistDefinition.validate">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.namelist_definition.NamelistDefinition.validate">[docs]</a>
+    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">namelist</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate a namelist object against this definition.</span>
 
 <span class="sd">        The optional `filename` argument can be used to assist in error</span>
@@ -552,7 +601,10 @@
                     <span class="p">),</span>
                 <span class="p">)</span></div>
 
-<div class="viewcode-block" id="NamelistDefinition.dict_to_namelist"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.namelist_definition.NamelistDefinition.dict_to_namelist">[docs]</a>    <span class="k">def</span> <span class="nf">dict_to_namelist</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dict_</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="NamelistDefinition.dict_to_namelist">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.namelist_definition.NamelistDefinition.dict_to_namelist">[docs]</a>
+    <span class="k">def</span> <span class="nf">dict_to_namelist</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dict_</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Converts a dictionary of name-value pairs to a `Namelist`.</span>
 
 <span class="sd">        The input is assumed to be similar to the output of `parse` when</span>
@@ -579,7 +631,10 @@
             <span class="n">groups</span><span class="p">[</span><span class="n">group_name</span><span class="p">][</span><span class="n">variable_lc</span><span class="p">]</span> <span class="o">=</span> <span class="n">dict_</span><span class="p">[</span><span class="n">variable_name</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">Namelist</span><span class="p">(</span><span class="n">groups</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="NamelistDefinition.get_input_pathname"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.namelist_definition.NamelistDefinition.get_input_pathname">[docs]</a>    <span class="k">def</span> <span class="nf">get_input_pathname</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+
+<div class="viewcode-block" id="NamelistDefinition.get_input_pathname">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.namelist_definition.NamelistDefinition.get_input_pathname">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_input_pathname</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nodes</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_version</span><span class="p">()</span> <span class="o">==</span> <span class="mf">1.0</span><span class="p">:</span>
             <span class="n">input_pathname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="s2">&quot;input_pathname&quot;</span><span class="p">)</span>
@@ -587,8 +642,11 @@
             <span class="n">input_pathname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_node_element_info</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="s2">&quot;input_pathname&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">input_pathname</span></div>
 
+
     <span class="c1"># pylint: disable=arguments-differ</span>
-<div class="viewcode-block" id="NamelistDefinition.get_default_value"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.namelist_definition.NamelistDefinition.get_default_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_default_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="NamelistDefinition.get_default_value">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.namelist_definition.NamelistDefinition.get_default_value">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_default_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the default value for the variable named `item`.</span>
 
 <span class="sd">        The return value is a list of strings corresponding to the</span>
@@ -603,7 +661,9 @@
             <span class="n">all_attributes</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">attribute</span><span class="p">)</span>
 
         <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value_match</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="n">all_attributes</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">value</span></div></div>
+        <span class="k">return</span> <span class="n">value</span></div>
+</div>
+
 </pre></div>
 
            </div>

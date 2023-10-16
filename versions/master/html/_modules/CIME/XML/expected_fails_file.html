@@ -11,11 +11,11 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../../_static/pop_ver.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -137,12 +137,16 @@
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="ExpectedFailsFile"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.expected_fails_file.ExpectedFailsFile">[docs]</a><span class="k">class</span> <span class="nc">ExpectedFailsFile</span><span class="p">(</span><span class="n">GenericXML</span><span class="p">):</span>
+<div class="viewcode-block" id="ExpectedFailsFile">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.expected_fails_file.ExpectedFailsFile">[docs]</a>
+<span class="k">class</span> <span class="nc">ExpectedFailsFile</span><span class="p">(</span><span class="n">GenericXML</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infile</span><span class="p">):</span>
         <span class="n">schema</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">get_schema_path</span><span class="p">(),</span> <span class="s2">&quot;expected_fails_file.xsd&quot;</span><span class="p">)</span>
         <span class="n">GenericXML</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infile</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">)</span>
 
-<div class="viewcode-block" id="ExpectedFailsFile.get_expected_fails"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.expected_fails_file.ExpectedFailsFile.get_expected_fails">[docs]</a>    <span class="k">def</span> <span class="nf">get_expected_fails</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ExpectedFailsFile.get_expected_fails">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.expected_fails_file.ExpectedFailsFile.get_expected_fails">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_expected_fails</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a dictionary of ExpectedFails objects, where the keys are test names&quot;&quot;&quot;</span>
         <span class="n">xfails</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">test_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
@@ -158,7 +162,9 @@
                     <span class="n">xfails</span><span class="p">[</span><span class="n">test_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">ExpectedFails</span><span class="p">()</span>
                 <span class="n">xfails</span><span class="p">[</span><span class="n">test_name</span><span class="p">]</span><span class="o">.</span><span class="n">add_failure</span><span class="p">(</span><span class="n">phase_name</span><span class="p">,</span> <span class="n">status</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">xfails</span></div></div>
+        <span class="k">return</span> <span class="n">xfails</span></div>
+</div>
+
 </pre></div>
 
            </div>

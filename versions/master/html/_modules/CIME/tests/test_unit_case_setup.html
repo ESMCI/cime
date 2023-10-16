@@ -11,11 +11,11 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../../_static/pop_ver.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -96,7 +96,9 @@
 <span class="kn">from</span> <span class="nn">CIME.case</span> <span class="kn">import</span> <span class="n">case_setup</span>
 
 
-<div class="viewcode-block" id="create_machines_dir"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_case_setup.create_machines_dir">[docs]</a><span class="nd">@contextlib</span><span class="o">.</span><span class="n">contextmanager</span>
+<div class="viewcode-block" id="create_machines_dir">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_case_setup.create_machines_dir">[docs]</a>
+<span class="nd">@contextlib</span><span class="o">.</span><span class="n">contextmanager</span>
 <span class="k">def</span> <span class="nf">create_machines_dir</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Creates temp machines directory with fake content&quot;&quot;&quot;</span>
     <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">temp_path</span><span class="p">:</span>
@@ -109,7 +111,10 @@
         <span class="k">yield</span> <span class="n">temp_path</span></div>
 
 
-<div class="viewcode-block" id="chdir"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_case_setup.chdir">[docs]</a><span class="nd">@contextlib</span><span class="o">.</span><span class="n">contextmanager</span>
+
+<div class="viewcode-block" id="chdir">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_case_setup.chdir">[docs]</a>
+<span class="nd">@contextlib</span><span class="o">.</span><span class="n">contextmanager</span>
 <span class="k">def</span> <span class="nf">chdir</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
     <span class="n">old_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
     <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
@@ -120,9 +125,14 @@
         <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">old_path</span><span class="p">)</span></div>
 
 
+
 <span class="c1"># pylint: disable=protected-access</span>
-<div class="viewcode-block" id="TestCaseSetup"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_case_setup.TestCaseSetup">[docs]</a><span class="k">class</span> <span class="nc">TestCaseSetup</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
-<div class="viewcode-block" id="TestCaseSetup.test_create_macros_cmake"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_case_setup.TestCaseSetup.test_create_macros_cmake">[docs]</a>    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.case.case_setup.copy_depends_files&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="TestCaseSetup">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_case_setup.TestCaseSetup">[docs]</a>
+<span class="k">class</span> <span class="nc">TestCaseSetup</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestCaseSetup.test_create_macros_cmake">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_case_setup.TestCaseSetup.test_create_macros_cmake">[docs]</a>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.case.case_setup.copy_depends_files&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">test_create_macros_cmake</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">copy_depends_files</span><span class="p">):</span>
         <span class="n">machine_mock</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
         <span class="n">machine_mock</span><span class="o">.</span><span class="n">get_machine_name</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="s2">&quot;test&quot;</span>
@@ -155,7 +165,10 @@
                 <span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="n">machines_path</span><span class="p">,</span> <span class="n">case_path</span><span class="p">,</span> <span class="s2">&quot;gnu-test&quot;</span>
             <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestCaseSetup.test_create_macros"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_case_setup.TestCaseSetup.test_create_macros">[docs]</a>    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.case.case_setup._create_macros_cmake&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TestCaseSetup.test_create_macros">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_case_setup.TestCaseSetup.test_create_macros">[docs]</a>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.case.case_setup._create_macros_cmake&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">test_create_macros</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_create_macros_cmake</span><span class="p">):</span>
         <span class="n">case_mock</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
 
@@ -202,7 +215,10 @@
                 <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">case_path</span><span class="p">,</span> <span class="s2">&quot;cmake_macros&quot;</span><span class="p">),</span>
             <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestCaseSetup.test_create_macros_copy_user"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_case_setup.TestCaseSetup.test_create_macros_copy_user">[docs]</a>    <span class="k">def</span> <span class="nf">test_create_macros_copy_user</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestCaseSetup.test_create_macros_copy_user">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_case_setup.TestCaseSetup.test_create_macros_copy_user">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_create_macros_copy_user</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">case_mock</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
 
         <span class="n">machine_mock</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
@@ -250,7 +266,10 @@
 
             <span class="k">assert</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">case_path</span><span class="p">,</span> <span class="s2">&quot;cmake_macros&quot;</span><span class="p">,</span> <span class="s2">&quot;user.cmake&quot;</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="TestCaseSetup.test_create_macros_copy_extra"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_case_setup.TestCaseSetup.test_create_macros_copy_extra">[docs]</a>    <span class="k">def</span> <span class="nf">test_create_macros_copy_extra</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestCaseSetup.test_create_macros_copy_extra">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_case_setup.TestCaseSetup.test_create_macros_copy_extra">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_create_macros_copy_extra</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">case_mock</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
 
         <span class="n">machine_mock</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
@@ -297,7 +316,9 @@
 
             <span class="k">assert</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span>
                 <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">case_path</span><span class="p">,</span> <span class="s2">&quot;cmake_macros&quot;</span><span class="p">,</span> <span class="s2">&quot;extra.cmake&quot;</span><span class="p">)</span>
-            <span class="p">)</span></div></div>
+            <span class="p">)</span></div>
+</div>
+
 </pre></div>
 
            </div>

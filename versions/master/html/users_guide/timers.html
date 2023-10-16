@@ -12,11 +12,11 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/sphinx_highlight.js"></script>
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../_static/pop_ver.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -108,11 +108,11 @@
            <div itemprop="articleBody">
              
   <section id="timers-and-timing">
-<span id="timers"></span><h1><span class="section-number">7. </span>Timers and timing<a class="headerlink" href="#timers-and-timing" title="Permalink to this heading"></a></h1>
+<span id="timers"></span><h1><span class="section-number">7. </span>Timers and timing<a class="headerlink" href="#timers-and-timing" title="Link to this heading"></a></h1>
 <p>CIME includes a copy of the General Purpose Timing Library (GPTL) and timers are placed throughout the CIME driver.  CIME-driven models typically
 also have GPTL timers in their code and very detailed timing information can be obtained.</p>
 <section id="model-timing-data">
-<span id="id1"></span><h2><span class="section-number">7.1. </span>Model timing data<a class="headerlink" href="#model-timing-data" title="Permalink to this heading"></a></h2>
+<span id="id1"></span><h2><span class="section-number">7.1. </span>Model timing data<a class="headerlink" href="#model-timing-data" title="Link to this heading"></a></h2>
 <p>Every model run produces three types of timing output that you can examine:</p>
 <ol class="arabic">
 <li><p><strong>$CASEROOT/timing/$model_timing.$CASE.$datestamp</strong></p>
@@ -213,7 +213,7 @@ month. This file will appear either in <strong>$RUNDIR</strong> or in
 <p>The xml variable <code class="docutils literal notranslate"><span class="pre">CHECK_TIMING</span></code>, if set to <code class="docutils literal notranslate"><span class="pre">TRUE</span></code> (the default) will produce the timing files in the <strong>$CASEROOT/timing</strong> directory.</p>
 </section>
 <section id="controlling-timers">
-<h2><span class="section-number">7.2. </span>Controlling timers<a class="headerlink" href="#controlling-timers" title="Permalink to this heading"></a></h2>
+<h2><span class="section-number">7.2. </span>Controlling timers<a class="headerlink" href="#controlling-timers" title="Link to this heading"></a></h2>
 <p>User customization of timers is done via the xml variables <code class="docutils literal notranslate"><span class="pre">TIMER_LEVEL</span></code> and <code class="docutils literal notranslate"><span class="pre">TIMER_DETAIL</span></code>.</p>
 <ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">TIMER_LEVEL</span></code>:</p>
@@ -239,7 +239,7 @@ add the following line in your <strong>$CASEROOT/user_nl_cpl</strong>:</p>
 </div>
 </section>
 <section id="advice-on-setting-your-wallclock-time">
-<h2><span class="section-number">7.3. </span>Advice on setting your wallclock time<a class="headerlink" href="#advice-on-setting-your-wallclock-time" title="Permalink to this heading"></a></h2>
+<h2><span class="section-number">7.3. </span>Advice on setting your wallclock time<a class="headerlink" href="#advice-on-setting-your-wallclock-time" title="Link to this heading"></a></h2>
 <dl>
 <dt>When you look at the <strong>$model_timing.$CASE.$datestamp</strong> file for “Model Throughput”, you will find output like this:</dt><dd><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Overall</span> <span class="n">Metrics</span><span class="p">:</span>
 <span class="n">Model</span> <span class="n">Cost</span><span class="p">:</span> <span class="mf">327.14</span> <span class="n">pe</span><span class="o">-</span><span class="n">hrs</span><span class="o">/</span><span class="n">simulated_year</span> <span class="p">(</span><span class="n">scale</span><span class="o">=</span> <span class="mf">0.50</span><span class="p">)</span>

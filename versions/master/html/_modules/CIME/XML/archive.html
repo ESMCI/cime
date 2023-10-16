@@ -11,11 +11,11 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../../_static/pop_ver.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -97,7 +97,9 @@
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="Archive"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.archive.Archive">[docs]</a><span class="k">class</span> <span class="nc">Archive</span><span class="p">(</span><span class="n">ArchiveBase</span><span class="p">):</span>
+<div class="viewcode-block" id="Archive">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.archive.Archive">[docs]</a>
+<span class="k">class</span> <span class="nc">Archive</span><span class="p">(</span><span class="n">ArchiveBase</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        initialize an object</span>
@@ -107,7 +109,9 @@
         <span class="n">schema</span> <span class="o">=</span> <span class="n">files</span><span class="o">.</span><span class="n">get_schema</span><span class="p">(</span><span class="s2">&quot;ARCHIVE_SPEC_FILE&quot;</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Archive</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">infile</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Archive.setup"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.archive.Archive.setup">[docs]</a>    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">env_archive</span><span class="p">,</span> <span class="n">components</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Archive.setup">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.archive.Archive.setup">[docs]</a>
+    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">env_archive</span><span class="p">,</span> <span class="n">components</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">files</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">files</span> <span class="o">=</span> <span class="n">Files</span><span class="p">()</span>
 
@@ -153,7 +157,10 @@
                 <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;adding archive spec for </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">))</span>
                 <span class="n">env_archive</span><span class="o">.</span><span class="n">add_child</span><span class="p">(</span><span class="n">specs</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">components_node</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Archive.get_all_config_archive_files"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.archive.Archive.get_all_config_archive_files">[docs]</a>    <span class="k">def</span> <span class="nf">get_all_config_archive_files</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Archive.get_all_config_archive_files">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.archive.Archive.get_all_config_archive_files">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_all_config_archive_files</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the list of ARCHIVE_SPEC_FILES that exist on disk as defined in config_files.xml</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -175,7 +182,9 @@
                 <span class="n">config_archive_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">compval</span><span class="p">)</span>
 
         <span class="n">config_archive_files</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">config_archive_files</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">config_archive_files</span></div></div>
+        <span class="k">return</span> <span class="n">config_archive_files</span></div>
+</div>
+
 </pre></div>
 
            </div>

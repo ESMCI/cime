@@ -11,11 +11,11 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../../_static/pop_ver.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -108,7 +108,9 @@
 <span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="n">CIMEError</span>
 
 
-<div class="viewcode-block" id="TestGrids"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_grids.TestGrids">[docs]</a><span class="k">class</span> <span class="nc">TestGrids</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestGrids">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_grids.TestGrids">[docs]</a>
+<span class="k">class</span> <span class="nc">TestGrids</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Tests some functionality of CIME.XML.grids</span>
 
 <span class="sd">    Note that much of the functionality of CIME.XML.grids is NOT covered here</span>
@@ -264,12 +266,18 @@
 <span class="s2">    &lt;/gridmap&gt;</span>
 <span class="s2">&quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="TestGrids.setUp"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_grids.TestGrids.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestGrids.setUp">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_grids.TestGrids.setUp">[docs]</a>
+    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_workdir</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_xml_filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_workdir</span><span class="p">,</span> <span class="s2">&quot;config_grids.xml&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestGrids.tearDown"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_grids.TestGrids.tearDown">[docs]</a>    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestGrids.tearDown">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_grids.TestGrids.tearDown">[docs]</a>
+    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_workdir</span><span class="p">)</span></div>
+
 
     <span class="k">def</span> <span class="nf">_create_grids_xml</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -289,7 +297,9 @@
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_xml_filepath</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;UTF-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">xml_file</span><span class="p">:</span>
             <span class="n">xml_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">grids_xml</span><span class="p">)</span>
 
-<div class="viewcode-block" id="TestGrids.assert_grid_info_f09_g17"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_grids.TestGrids.assert_grid_info_f09_g17">[docs]</a>    <span class="k">def</span> <span class="nf">assert_grid_info_f09_g17</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grid_info</span><span class="p">):</span>
+<div class="viewcode-block" id="TestGrids.assert_grid_info_f09_g17">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_grids.TestGrids.assert_grid_info_f09_g17">[docs]</a>
+    <span class="k">def</span> <span class="nf">assert_grid_info_f09_g17</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grid_info</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Asserts that expected grid info is present and correct when using _MODEL_GRID_F09_G17&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">grid_info</span><span class="p">[</span><span class="s2">&quot;ATM_NX&quot;</span><span class="p">],</span> <span class="mi">288</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">grid_info</span><span class="p">[</span><span class="s2">&quot;ATM_NY&quot;</span><span class="p">],</span> <span class="mi">192</span><span class="p">)</span>
@@ -319,7 +329,10 @@
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="s2">&quot;OCN2ATM_SHOULDBEABSENT&quot;</span> <span class="ow">in</span> <span class="n">grid_info</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestGrids.assert_grid_info_f09_g17_3glc"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_grids.TestGrids.assert_grid_info_f09_g17_3glc">[docs]</a>    <span class="k">def</span> <span class="nf">assert_grid_info_f09_g17_3glc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grid_info</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestGrids.assert_grid_info_f09_g17_3glc">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_grids.TestGrids.assert_grid_info_f09_g17_3glc">[docs]</a>
+    <span class="k">def</span> <span class="nf">assert_grid_info_f09_g17_3glc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grid_info</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Asserts that all domain info is present &amp; correct for _MODEL_GRID_F09_G17_3GLC&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assert_grid_info_f09_g17</span><span class="p">(</span><span class="n">grid_info</span><span class="p">)</span>
 
@@ -339,7 +352,10 @@
             <span class="s2">&quot;map_ais8_to_gx1v7_ice.nc:map_gris4_to_gx1v7_ice.nc:map_lis12_to_gx1v7_ice.nc&quot;</span><span class="p">,</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestGrids.test_get_grid_info_basic"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_grids.TestGrids.test_get_grid_info_basic">[docs]</a>    <span class="k">def</span> <span class="nf">test_get_grid_info_basic</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestGrids.test_get_grid_info_basic">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_grids.TestGrids.test_get_grid_info_basic">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_get_grid_info_basic</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Basic test of get_grid_info&quot;&quot;&quot;</span>
         <span class="n">model_grid_entries</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MODEL_GRID_F09_G17</span>
         <span class="n">domain_entries</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_DOMAIN_F09</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_DOMAIN_G17</span>
@@ -359,7 +375,10 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">assert_grid_info_f09_g17</span><span class="p">(</span><span class="n">grid_info</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestGrids.test_get_grid_info_extra_required_gridmaps"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_grids.TestGrids.test_get_grid_info_extra_required_gridmaps">[docs]</a>    <span class="k">def</span> <span class="nf">test_get_grid_info_extra_required_gridmaps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestGrids.test_get_grid_info_extra_required_gridmaps">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_grids.TestGrids.test_get_grid_info_extra_required_gridmaps">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_get_grid_info_extra_required_gridmaps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Test of get_grid_info with some extra required gridmaps&quot;&quot;&quot;</span>
         <span class="n">model_grid_entries</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MODEL_GRID_F09_G17</span>
         <span class="n">domain_entries</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_DOMAIN_F09</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_DOMAIN_G17</span>
@@ -387,7 +406,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">grid_info</span><span class="p">[</span><span class="s2">&quot;ATM2OCN_EXTRA&quot;</span><span class="p">],</span> <span class="s2">&quot;unset&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">grid_info</span><span class="p">[</span><span class="s2">&quot;OCN2ATM_EXTRA&quot;</span><span class="p">],</span> <span class="s2">&quot;unset&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestGrids.test_get_grid_info_extra_gridmaps"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_grids.TestGrids.test_get_grid_info_extra_gridmaps">[docs]</a>    <span class="k">def</span> <span class="nf">test_get_grid_info_extra_gridmaps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestGrids.test_get_grid_info_extra_gridmaps">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_grids.TestGrids.test_get_grid_info_extra_gridmaps">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_get_grid_info_extra_gridmaps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Test of get_grid_info with some extra gridmaps&quot;&quot;&quot;</span>
         <span class="n">model_grid_entries</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MODEL_GRID_F09_G17</span>
         <span class="n">domain_entries</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_DOMAIN_F09</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_DOMAIN_G17</span>
@@ -416,7 +438,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">grid_info</span><span class="p">[</span><span class="s2">&quot;ATM2OCN_EXTRA&quot;</span><span class="p">],</span> <span class="s2">&quot;map_fv0.9x1.25_TO_gx1v7_extra.nc&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">grid_info</span><span class="p">[</span><span class="s2">&quot;OCN2ATM_EXTRA&quot;</span><span class="p">],</span> <span class="s2">&quot;map_gx1v7_TO_fv0.9x1.25_extra.nc&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestGrids.test_get_grid_info_3glc"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_grids.TestGrids.test_get_grid_info_3glc">[docs]</a>    <span class="k">def</span> <span class="nf">test_get_grid_info_3glc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestGrids.test_get_grid_info_3glc">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_grids.TestGrids.test_get_grid_info_3glc">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_get_grid_info_3glc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Test of get_grid_info with 3 glc grids&quot;&quot;&quot;</span>
         <span class="n">model_grid_entries</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MODEL_GRID_F09_G17_3GLC</span>
         <span class="n">domain_entries</span> <span class="o">=</span> <span class="p">(</span>
@@ -452,10 +477,14 @@
         <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">assert_grid_info_f09_g17_3glc</span><span class="p">(</span><span class="n">grid_info</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">grid_info</span><span class="p">[</span><span class="s2">&quot;GLC2ATM_EXTRA&quot;</span><span class="p">],</span> <span class="s2">&quot;unset&quot;</span><span class="p">)</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">grid_info</span><span class="p">[</span><span class="s2">&quot;GLC2ATM_EXTRA&quot;</span><span class="p">],</span> <span class="s2">&quot;unset&quot;</span><span class="p">)</span></div>
+</div>
 
 
-<div class="viewcode-block" id="TestComponentGrids"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_grids.TestComponentGrids">[docs]</a><span class="k">class</span> <span class="nc">TestComponentGrids</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestComponentGrids">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_grids.TestComponentGrids">[docs]</a>
+<span class="k">class</span> <span class="nc">TestComponentGrids</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Tests the _ComponentGrids helper class defined in CIME.XML.grids&quot;&quot;&quot;</span>
 
     <span class="c1"># A valid grid long name used in a lot of these tests; there are two rof grids and</span>
@@ -472,7 +501,9 @@
     <span class="c1"># TestGrids class.</span>
     <span class="c1"># ------------------------------------------------------------------------</span>
 
-<div class="viewcode-block" id="TestComponentGrids.test_check_num_elements_right_ndomains"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_grids.TestComponentGrids.test_check_num_elements_right_ndomains">[docs]</a>    <span class="k">def</span> <span class="nf">test_check_num_elements_right_ndomains</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestComponentGrids.test_check_num_elements_right_ndomains">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_grids.TestComponentGrids.test_check_num_elements_right_ndomains">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_check_num_elements_right_ndomains</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;With the right number of domains for a component, check_num_elements should pass&quot;&quot;&quot;</span>
         <span class="n">component_grids</span> <span class="o">=</span> <span class="n">_ComponentGrids</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_GRID_LONGNAME</span><span class="p">)</span>
         <span class="n">gridinfo</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;GLC_DOMAIN_MESH&quot;</span><span class="p">:</span> <span class="s2">&quot;foo:bar:baz&quot;</span><span class="p">}</span>
@@ -480,7 +511,10 @@
         <span class="c1"># The test passes as long as the following call doesn&#39;t generate any errors</span>
         <span class="n">component_grids</span><span class="o">.</span><span class="n">check_num_elements</span><span class="p">(</span><span class="n">gridinfo</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestComponentGrids.test_check_num_elements_wrong_ndomains"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_grids.TestComponentGrids.test_check_num_elements_wrong_ndomains">[docs]</a>    <span class="k">def</span> <span class="nf">test_check_num_elements_wrong_ndomains</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestComponentGrids.test_check_num_elements_wrong_ndomains">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_grids.TestComponentGrids.test_check_num_elements_wrong_ndomains">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_check_num_elements_wrong_ndomains</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;With the wrong number of domains for a component, check_num_elements should fail&quot;&quot;&quot;</span>
         <span class="n">component_grids</span> <span class="o">=</span> <span class="n">_ComponentGrids</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_GRID_LONGNAME</span><span class="p">)</span>
         <span class="c1"># In the following, there should be 3 elements, but we only specify 2</span>
@@ -493,7 +527,10 @@
             <span class="n">gridinfo</span><span class="p">,</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestComponentGrids.test_check_num_elements_right_nmaps"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_grids.TestComponentGrids.test_check_num_elements_right_nmaps">[docs]</a>    <span class="k">def</span> <span class="nf">test_check_num_elements_right_nmaps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestComponentGrids.test_check_num_elements_right_nmaps">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_grids.TestComponentGrids.test_check_num_elements_right_nmaps">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_check_num_elements_right_nmaps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;With the right number of maps between two components, check_num_elements should pass&quot;&quot;&quot;</span>
         <span class="n">component_grids</span> <span class="o">=</span> <span class="n">_ComponentGrids</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_GRID_LONGNAME</span><span class="p">)</span>
         <span class="n">gridinfo</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;GLC2ROF_RMAPNAME&quot;</span><span class="p">:</span> <span class="s2">&quot;map1:map2:map3:map4:map5:map6&quot;</span><span class="p">}</span>
@@ -501,7 +538,10 @@
         <span class="c1"># The test passes as long as the following call doesn&#39;t generate any errors</span>
         <span class="n">component_grids</span><span class="o">.</span><span class="n">check_num_elements</span><span class="p">(</span><span class="n">gridinfo</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestComponentGrids.test_check_num_elements_wrong_nmaps"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_grids.TestComponentGrids.test_check_num_elements_wrong_nmaps">[docs]</a>    <span class="k">def</span> <span class="nf">test_check_num_elements_wrong_nmaps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestComponentGrids.test_check_num_elements_wrong_nmaps">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_grids.TestComponentGrids.test_check_num_elements_wrong_nmaps">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_check_num_elements_wrong_nmaps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;With the wrong number of maps between two components, check_num_elements should fail&quot;&quot;&quot;</span>
         <span class="n">component_grids</span> <span class="o">=</span> <span class="n">_ComponentGrids</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_GRID_LONGNAME</span><span class="p">)</span>
         <span class="c1"># In the following, there should be 6 elements, but we only specify 5</span>
@@ -512,10 +552,14 @@
             <span class="s2">&quot;Unexpected number of colon-delimited elements&quot;</span><span class="p">,</span>
             <span class="n">component_grids</span><span class="o">.</span><span class="n">check_num_elements</span><span class="p">,</span>
             <span class="n">gridinfo</span><span class="p">,</span>
-        <span class="p">)</span></div></div>
+        <span class="p">)</span></div>
+</div>
 
 
-<div class="viewcode-block" id="TestGridsFunctions"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_grids.TestGridsFunctions">[docs]</a><span class="k">class</span> <span class="nc">TestGridsFunctions</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestGridsFunctions">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_grids.TestGridsFunctions">[docs]</a>
+<span class="k">class</span> <span class="nc">TestGridsFunctions</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Tests helper functions defined in CIME.XML.grids</span>
 
 <span class="sd">    These tests are in a separate class to avoid the unnecessary setUp and tearDown</span>
@@ -527,38 +571,54 @@
     <span class="c1"># Tests of _add_grid_info</span>
     <span class="c1"># ------------------------------------------------------------------------</span>
 
-<div class="viewcode-block" id="TestGridsFunctions.test_add_grid_info_initial"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_grids.TestGridsFunctions.test_add_grid_info_initial">[docs]</a>    <span class="k">def</span> <span class="nf">test_add_grid_info_initial</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestGridsFunctions.test_add_grid_info_initial">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_grids.TestGridsFunctions.test_add_grid_info_initial">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_add_grid_info_initial</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Test of _add_grid_info for the initial add of a given key&quot;&quot;&quot;</span>
         <span class="n">grid_info</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;foo&quot;</span><span class="p">:</span> <span class="s2">&quot;a&quot;</span><span class="p">}</span>
         <span class="n">_add_grid_info</span><span class="p">(</span><span class="n">grid_info</span><span class="p">,</span> <span class="s2">&quot;bar&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">grid_info</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;foo&quot;</span><span class="p">:</span> <span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;bar&quot;</span><span class="p">:</span> <span class="s2">&quot;b&quot;</span><span class="p">})</span></div>
 
-<div class="viewcode-block" id="TestGridsFunctions.test_add_grid_info_existing"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_grids.TestGridsFunctions.test_add_grid_info_existing">[docs]</a>    <span class="k">def</span> <span class="nf">test_add_grid_info_existing</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestGridsFunctions.test_add_grid_info_existing">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_grids.TestGridsFunctions.test_add_grid_info_existing">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_add_grid_info_existing</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Test of _add_grid_info when the given key already exists&quot;&quot;&quot;</span>
         <span class="n">grid_info</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;foo&quot;</span><span class="p">:</span> <span class="s2">&quot;bar&quot;</span><span class="p">}</span>
         <span class="n">_add_grid_info</span><span class="p">(</span><span class="n">grid_info</span><span class="p">,</span> <span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="s2">&quot;baz&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">grid_info</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;foo&quot;</span><span class="p">:</span> <span class="s2">&quot;bar:baz&quot;</span><span class="p">})</span></div>
 
-<div class="viewcode-block" id="TestGridsFunctions.test_add_grid_info_existing_with_value_for_multiple"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_grids.TestGridsFunctions.test_add_grid_info_existing_with_value_for_multiple">[docs]</a>    <span class="k">def</span> <span class="nf">test_add_grid_info_existing_with_value_for_multiple</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestGridsFunctions.test_add_grid_info_existing_with_value_for_multiple">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_grids.TestGridsFunctions.test_add_grid_info_existing_with_value_for_multiple">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_add_grid_info_existing_with_value_for_multiple</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Test of _add_grid_info when the given key already exists and value_for_multiple is provided&quot;&quot;&quot;</span>
         <span class="n">grid_info</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;foo&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
         <span class="n">_add_grid_info</span><span class="p">(</span><span class="n">grid_info</span><span class="p">,</span> <span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">value_for_multiple</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">grid_info</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;foo&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">})</span></div>
 
+
     <span class="c1"># ------------------------------------------------------------------------</span>
     <span class="c1"># Tests of strip_grid_from_name</span>
     <span class="c1"># ------------------------------------------------------------------------</span>
 
-<div class="viewcode-block" id="TestGridsFunctions.test_strip_grid_from_name_basic"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_grids.TestGridsFunctions.test_strip_grid_from_name_basic">[docs]</a>    <span class="k">def</span> <span class="nf">test_strip_grid_from_name_basic</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestGridsFunctions.test_strip_grid_from_name_basic">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_grids.TestGridsFunctions.test_strip_grid_from_name_basic">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_strip_grid_from_name_basic</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Basic test of _strip_grid_from_name&quot;&quot;&quot;</span>
         <span class="n">result</span> <span class="o">=</span> <span class="n">_strip_grid_from_name</span><span class="p">(</span><span class="s2">&quot;atm_grid&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="s2">&quot;atm&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestGridsFunctions.test_strip_grid_from_name_badname"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_grids.TestGridsFunctions.test_strip_grid_from_name_badname">[docs]</a>    <span class="k">def</span> <span class="nf">test_strip_grid_from_name_badname</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestGridsFunctions.test_strip_grid_from_name_badname">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_grids.TestGridsFunctions.test_strip_grid_from_name_badname">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_strip_grid_from_name_badname</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;_strip_grid_from_name should raise an exception for a name not ending with _grid&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertRaisesRegex</span><span class="p">(</span>
             <span class="n">CIMEError</span><span class="p">,</span> <span class="s2">&quot;does not end with _grid&quot;</span><span class="p">,</span> <span class="n">_strip_grid_from_name</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;atm&quot;</span>
-        <span class="p">)</span></div></div>
+        <span class="p">)</span></div>
+</div>
+
 
     <span class="c1"># ------------------------------------------------------------------------</span>
     <span class="c1"># Tests of _check_grid_info_component_counts</span>

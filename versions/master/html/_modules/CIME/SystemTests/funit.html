@@ -11,11 +11,11 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../../_static/pop_ver.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -97,7 +97,9 @@
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="FUNIT"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.funit.FUNIT">[docs]</a><span class="k">class</span> <span class="nc">FUNIT</span><span class="p">(</span><span class="n">SystemTestsCommon</span><span class="p">):</span>
+<div class="viewcode-block" id="FUNIT">
+<a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.funit.FUNIT">[docs]</a>
+<span class="k">class</span> <span class="nc">FUNIT</span><span class="p">(</span><span class="n">SystemTestsCommon</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        initialize an object interface to the FUNIT system test</span>
@@ -105,7 +107,9 @@
         <span class="n">SystemTestsCommon</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">case</span><span class="o">.</span><span class="n">load_env</span><span class="p">()</span>
 
-<div class="viewcode-block" id="FUNIT.build_phase"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.funit.FUNIT.build_phase">[docs]</a>    <span class="k">def</span> <span class="nf">build_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sharedlib_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">model_only</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="FUNIT.build_phase">
+<a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.funit.FUNIT.build_phase">[docs]</a>
+    <span class="k">def</span> <span class="nf">build_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sharedlib_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">model_only</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">sharedlib_only</span><span class="p">:</span>
             <span class="n">exeroot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;EXEROOT&quot;</span><span class="p">)</span>
             <span class="n">logfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">exeroot</span><span class="p">,</span> <span class="s2">&quot;funit.bldlog&quot;</span><span class="p">)</span>
@@ -114,13 +118,19 @@
 
             <span class="n">post_build</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="p">,</span> <span class="p">[</span><span class="n">logfile</span><span class="p">],</span> <span class="n">build_complete</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="FUNIT.get_test_spec_dir"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.funit.FUNIT.get_test_spec_dir">[docs]</a>    <span class="k">def</span> <span class="nf">get_test_spec_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="FUNIT.get_test_spec_dir">
+<a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.funit.FUNIT.get_test_spec_dir">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_test_spec_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Override this to change what gets tested.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">get_cime_root</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="FUNIT.run_phase"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.funit.FUNIT.run_phase">[docs]</a>    <span class="k">def</span> <span class="nf">run_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="FUNIT.run_phase">
+<a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.funit.FUNIT.run_phase">[docs]</a>
+    <span class="k">def</span> <span class="nf">run_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="n">rundir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">)</span>
         <span class="n">exeroot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;EXEROOT&quot;</span><span class="p">)</span>
@@ -148,6 +158,7 @@
 
         <span class="n">expect</span><span class="p">(</span><span class="n">stat</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;RUN FAIL for FUNIT&quot;</span><span class="p">)</span></div>
 
+
     <span class="c1"># Funit is a bit of an oddball test since it&#39;s not really running the E3SM model</span>
     <span class="c1"># We need to override some methods to make the core infrastructure work.</span>
 
@@ -158,6 +169,7 @@
     <span class="k">def</span> <span class="nf">_compare_baseline</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span><span class="n">BASELINE_PHASE</span><span class="p">,</span> <span class="n">TEST_PASS_STATUS</span><span class="p">)</span></div>
+
 </pre></div>
 
            </div>

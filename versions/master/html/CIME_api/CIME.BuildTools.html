@@ -12,11 +12,11 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/sphinx_highlight.js"></script>
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../_static/pop_ver.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -66,6 +66,7 @@
 <li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.html">CIME.SystemTests package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="CIME.Tools.html">CIME.Tools package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="CIME.XML.html">CIME.XML package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.baselines.html">CIME.baselines package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="CIME.build_scripts.html">CIME.build_scripts package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="CIME.case.html">CIME.case package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="CIME.data.html">CIME.data package</a></li>
@@ -137,12 +138,12 @@
            <div itemprop="articleBody">
              
   <section id="cime-buildtools-package">
-<h1>CIME.BuildTools package<a class="headerlink" href="#cime-buildtools-package" title="Permalink to this heading"></a></h1>
+<h1>CIME.BuildTools package<a class="headerlink" href="#cime-buildtools-package" title="Link to this heading"></a></h1>
 <section id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
 </section>
 <section id="module-CIME.BuildTools.configure">
-<span id="cime-buildtools-configure-module"></span><h2>CIME.BuildTools.configure module<a class="headerlink" href="#module-CIME.BuildTools.configure" title="Permalink to this heading"></a></h2>
+<span id="cime-buildtools-configure-module"></span><h2>CIME.BuildTools.configure module<a class="headerlink" href="#module-CIME.BuildTools.configure" title="Link to this heading"></a></h2>
 <p>This script writes CIME build information to a directory.</p>
 <p>The pieces of information that will be written include:</p>
 <ol class="arabic simple">
@@ -157,27 +158,27 @@ respectively. These can be changed by setting the environment variables
 COMPILER, MPILIB, and DEBUG, respectively.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="CIME.BuildTools.configure.FakeCase">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">CIME.BuildTools.configure.</span></span><span class="sig-name descname"><span class="pre">FakeCase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">compiler</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mpilib</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comp_interface</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threading</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/BuildTools/configure.html#FakeCase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.BuildTools.configure.FakeCase" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">CIME.BuildTools.configure.</span></span><span class="sig-name descname"><span class="pre">FakeCase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">compiler</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mpilib</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comp_interface</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threading</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/BuildTools/configure.html#FakeCase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.BuildTools.configure.FakeCase" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="CIME.BuildTools.configure.FakeCase.get_build_threaded">
-<span class="sig-name descname"><span class="pre">get_build_threaded</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/BuildTools/configure.html#FakeCase.get_build_threaded"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.BuildTools.configure.FakeCase.get_build_threaded" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_build_threaded</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/BuildTools/configure.html#FakeCase.get_build_threaded"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.BuildTools.configure.FakeCase.get_build_threaded" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="CIME.BuildTools.configure.FakeCase.get_case_root">
-<span class="sig-name descname"><span class="pre">get_case_root</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/BuildTools/configure.html#FakeCase.get_case_root"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.BuildTools.configure.FakeCase.get_case_root" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_case_root</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/BuildTools/configure.html#FakeCase.get_case_root"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.BuildTools.configure.FakeCase.get_case_root" title="Link to this definition"></a></dt>
 <dd><p>Returns the root directory for this case.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="CIME.BuildTools.configure.FakeCase.get_value">
-<span class="sig-name descname"><span class="pre">get_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attrib</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/BuildTools/configure.html#FakeCase.get_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.BuildTools.configure.FakeCase.get_value" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attrib</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/BuildTools/configure.html#FakeCase.get_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.BuildTools.configure.FakeCase.get_value" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="CIME.BuildTools.configure.FakeCase.set_value">
-<span class="sig-name descname"><span class="pre">set_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attrib</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/BuildTools/configure.html#FakeCase.set_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.BuildTools.configure.FakeCase.set_value" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">set_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attrib</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/BuildTools/configure.html#FakeCase.set_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.BuildTools.configure.FakeCase.set_value" title="Link to this definition"></a></dt>
 <dd><p>Sets a given variable value for the case</p>
 </dd></dl>
 
@@ -185,7 +186,7 @@ COMPILER, MPILIB, and DEBUG, respectively.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="CIME.BuildTools.configure.configure">
-<span class="sig-prename descclassname"><span class="pre">CIME.BuildTools.configure.</span></span><span class="sig-name descname"><span class="pre">configure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">machobj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">macros_format</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compiler</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mpilib</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comp_interface</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sysos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit_testing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noenv</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threaded</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extra_machines_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/BuildTools/configure.html#configure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.BuildTools.configure.configure" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">CIME.BuildTools.configure.</span></span><span class="sig-name descname"><span class="pre">configure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">machobj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">macros_format</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compiler</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mpilib</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comp_interface</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sysos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit_testing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noenv</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threaded</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extra_machines_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/BuildTools/configure.html#configure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.BuildTools.configure.configure" title="Link to this definition"></a></dt>
 <dd><p>Add Macros, Depends, and env_mach_specific files to a directory.</p>
 <p>Arguments:
 machobj - Machines argument for this machine.
@@ -209,20 +210,20 @@ unit_testing - Boolean specifying whether we’re running unit tests (as</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="CIME.BuildTools.configure.copy_depends_files">
-<span class="sig-prename descclassname"><span class="pre">CIME.BuildTools.configure.</span></span><span class="sig-name descname"><span class="pre">copy_depends_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">machine_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">machines_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compiler</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/BuildTools/configure.html#copy_depends_files"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.BuildTools.configure.copy_depends_files" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">CIME.BuildTools.configure.</span></span><span class="sig-name descname"><span class="pre">copy_depends_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">machine_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">machines_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compiler</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/BuildTools/configure.html#copy_depends_files"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.BuildTools.configure.copy_depends_files" title="Link to this definition"></a></dt>
 <dd><p>Copy any system or compiler Depends files if they do not exist in the output directory
 If there is a match for Depends.machine_name.compiler copy that and ignore the others</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="CIME.BuildTools.configure.generate_env_mach_specific">
-<span class="sig-prename descclassname"><span class="pre">CIME.BuildTools.configure.</span></span><span class="sig-name descname"><span class="pre">generate_env_mach_specific</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">machobj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compiler</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mpilib</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comp_interface</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sysos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit_testing</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threaded</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noenv</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/BuildTools/configure.html#generate_env_mach_specific"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.BuildTools.configure.generate_env_mach_specific" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">CIME.BuildTools.configure.</span></span><span class="sig-name descname"><span class="pre">generate_env_mach_specific</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">machobj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compiler</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mpilib</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comp_interface</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sysos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit_testing</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threaded</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noenv</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/BuildTools/configure.html#generate_env_mach_specific"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.BuildTools.configure.generate_env_mach_specific" title="Link to this definition"></a></dt>
 <dd><p>env_mach_specific generation.</p>
 </dd></dl>
 
 </section>
 <section id="module-CIME.BuildTools">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-CIME.BuildTools" title="Permalink to this heading"></a></h2>
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-CIME.BuildTools" title="Link to this heading"></a></h2>
 </section>
 </section>
 

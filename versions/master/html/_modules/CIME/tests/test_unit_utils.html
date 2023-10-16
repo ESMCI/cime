@@ -11,11 +11,11 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../../_static/pop_ver.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -105,17 +105,24 @@
 <span class="p">)</span>
 
 
-<div class="viewcode-block" id="TestIndentStr"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestIndentStr">[docs]</a><span class="k">class</span> <span class="nc">TestIndentStr</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestIndentStr">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestIndentStr">[docs]</a>
+<span class="k">class</span> <span class="nc">TestIndentStr</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Test the indent_string function.&quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="TestIndentStr.test_indent_string_singleline"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestIndentStr.test_indent_string_singleline">[docs]</a>    <span class="k">def</span> <span class="nf">test_indent_string_singleline</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestIndentStr.test_indent_string_singleline">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestIndentStr.test_indent_string_singleline">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_indent_string_singleline</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Test the indent_string function with a single-line string&quot;&quot;&quot;</span>
         <span class="n">mystr</span> <span class="o">=</span> <span class="s2">&quot;foo&quot;</span>
         <span class="n">result</span> <span class="o">=</span> <span class="n">indent_string</span><span class="p">(</span><span class="n">mystr</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
         <span class="n">expected</span> <span class="o">=</span> <span class="s2">&quot;    foo&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">expected</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestIndentStr.test_indent_string_multiline"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestIndentStr.test_indent_string_multiline">[docs]</a>    <span class="k">def</span> <span class="nf">test_indent_string_multiline</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestIndentStr.test_indent_string_multiline">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestIndentStr.test_indent_string_multiline">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_indent_string_multiline</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Test the indent_string function with a multi-line string&quot;&quot;&quot;</span>
         <span class="n">mystr</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;hello</span>
 <span class="s2">hi</span>
@@ -126,96 +133,150 @@
 <span class="s2">  hi</span>
 <span class="s2">  goodbye</span>
 <span class="s2">&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">expected</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">expected</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span></div>
+</div>
 
 
-<div class="viewcode-block" id="TestLineDefinesPythonFunction"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestLineDefinesPythonFunction">[docs]</a><span class="k">class</span> <span class="nc">TestLineDefinesPythonFunction</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestLineDefinesPythonFunction">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestLineDefinesPythonFunction">[docs]</a>
+<span class="k">class</span> <span class="nc">TestLineDefinesPythonFunction</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Tests of _line_defines_python_function&quot;&quot;&quot;</span>
 
     <span class="c1"># ------------------------------------------------------------------------</span>
     <span class="c1"># Tests of _line_defines_python_function that should return True</span>
     <span class="c1"># ------------------------------------------------------------------------</span>
 
-<div class="viewcode-block" id="TestLineDefinesPythonFunction.test_def_foo"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestLineDefinesPythonFunction.test_def_foo">[docs]</a>    <span class="k">def</span> <span class="nf">test_def_foo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestLineDefinesPythonFunction.test_def_foo">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestLineDefinesPythonFunction.test_def_foo">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_def_foo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Test of a def of the function of interest&quot;&quot;&quot;</span>
         <span class="n">line</span> <span class="o">=</span> <span class="s2">&quot;def foo():&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">_line_defines_python_function</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="s2">&quot;foo&quot;</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="TestLineDefinesPythonFunction.test_def_foo_space"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestLineDefinesPythonFunction.test_def_foo_space">[docs]</a>    <span class="k">def</span> <span class="nf">test_def_foo_space</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestLineDefinesPythonFunction.test_def_foo_space">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestLineDefinesPythonFunction.test_def_foo_space">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_def_foo_space</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Test of a def of the function of interest, with an extra space before the parentheses&quot;&quot;&quot;</span>
         <span class="n">line</span> <span class="o">=</span> <span class="s2">&quot;def foo ():&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">_line_defines_python_function</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="s2">&quot;foo&quot;</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="TestLineDefinesPythonFunction.test_import_foo"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestLineDefinesPythonFunction.test_import_foo">[docs]</a>    <span class="k">def</span> <span class="nf">test_import_foo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestLineDefinesPythonFunction.test_import_foo">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestLineDefinesPythonFunction.test_import_foo">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_import_foo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Test of an import of the function of interest&quot;&quot;&quot;</span>
         <span class="n">line</span> <span class="o">=</span> <span class="s2">&quot;from bar.baz import foo&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">_line_defines_python_function</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="s2">&quot;foo&quot;</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="TestLineDefinesPythonFunction.test_import_foo_space"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestLineDefinesPythonFunction.test_import_foo_space">[docs]</a>    <span class="k">def</span> <span class="nf">test_import_foo_space</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestLineDefinesPythonFunction.test_import_foo_space">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestLineDefinesPythonFunction.test_import_foo_space">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_import_foo_space</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Test of an import of the function of interest, with trailing spaces&quot;&quot;&quot;</span>
         <span class="n">line</span> <span class="o">=</span> <span class="s2">&quot;from bar.baz import foo  &quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">_line_defines_python_function</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="s2">&quot;foo&quot;</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="TestLineDefinesPythonFunction.test_import_foo_then_others"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestLineDefinesPythonFunction.test_import_foo_then_others">[docs]</a>    <span class="k">def</span> <span class="nf">test_import_foo_then_others</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestLineDefinesPythonFunction.test_import_foo_then_others">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestLineDefinesPythonFunction.test_import_foo_then_others">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_import_foo_then_others</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Test of an import of the function of interest, along with others&quot;&quot;&quot;</span>
         <span class="n">line</span> <span class="o">=</span> <span class="s2">&quot;from bar.baz import foo, bar&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">_line_defines_python_function</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="s2">&quot;foo&quot;</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="TestLineDefinesPythonFunction.test_import_others_then_foo"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestLineDefinesPythonFunction.test_import_others_then_foo">[docs]</a>    <span class="k">def</span> <span class="nf">test_import_others_then_foo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestLineDefinesPythonFunction.test_import_others_then_foo">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestLineDefinesPythonFunction.test_import_others_then_foo">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_import_others_then_foo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Test of an import of the function of interest, after others&quot;&quot;&quot;</span>
         <span class="n">line</span> <span class="o">=</span> <span class="s2">&quot;from bar.baz import bar, foo&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">_line_defines_python_function</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="s2">&quot;foo&quot;</span><span class="p">))</span></div>
+
 
     <span class="c1"># ------------------------------------------------------------------------</span>
     <span class="c1"># Tests of _line_defines_python_function that should return False</span>
     <span class="c1"># ------------------------------------------------------------------------</span>
 
-<div class="viewcode-block" id="TestLineDefinesPythonFunction.test_def_barfoo"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestLineDefinesPythonFunction.test_def_barfoo">[docs]</a>    <span class="k">def</span> <span class="nf">test_def_barfoo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestLineDefinesPythonFunction.test_def_barfoo">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestLineDefinesPythonFunction.test_def_barfoo">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_def_barfoo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Test of a def of a different function&quot;&quot;&quot;</span>
         <span class="n">line</span> <span class="o">=</span> <span class="s2">&quot;def barfoo():&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">_line_defines_python_function</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="s2">&quot;foo&quot;</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="TestLineDefinesPythonFunction.test_def_foobar"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestLineDefinesPythonFunction.test_def_foobar">[docs]</a>    <span class="k">def</span> <span class="nf">test_def_foobar</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestLineDefinesPythonFunction.test_def_foobar">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestLineDefinesPythonFunction.test_def_foobar">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_def_foobar</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Test of a def of a different function&quot;&quot;&quot;</span>
         <span class="n">line</span> <span class="o">=</span> <span class="s2">&quot;def foobar():&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">_line_defines_python_function</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="s2">&quot;foo&quot;</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="TestLineDefinesPythonFunction.test_def_foo_indented"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestLineDefinesPythonFunction.test_def_foo_indented">[docs]</a>    <span class="k">def</span> <span class="nf">test_def_foo_indented</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestLineDefinesPythonFunction.test_def_foo_indented">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestLineDefinesPythonFunction.test_def_foo_indented">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_def_foo_indented</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Test of a def of the function of interest, but indented&quot;&quot;&quot;</span>
         <span class="n">line</span> <span class="o">=</span> <span class="s2">&quot;    def foo():&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">_line_defines_python_function</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="s2">&quot;foo&quot;</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="TestLineDefinesPythonFunction.test_def_foo_no_parens"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestLineDefinesPythonFunction.test_def_foo_no_parens">[docs]</a>    <span class="k">def</span> <span class="nf">test_def_foo_no_parens</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestLineDefinesPythonFunction.test_def_foo_no_parens">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestLineDefinesPythonFunction.test_def_foo_no_parens">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_def_foo_no_parens</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Test of a def of the function of interest, but without parentheses&quot;&quot;&quot;</span>
         <span class="n">line</span> <span class="o">=</span> <span class="s2">&quot;def foo:&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">_line_defines_python_function</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="s2">&quot;foo&quot;</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="TestLineDefinesPythonFunction.test_import_foo_indented"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestLineDefinesPythonFunction.test_import_foo_indented">[docs]</a>    <span class="k">def</span> <span class="nf">test_import_foo_indented</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestLineDefinesPythonFunction.test_import_foo_indented">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestLineDefinesPythonFunction.test_import_foo_indented">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_import_foo_indented</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Test of an import of the function of interest, but indented&quot;&quot;&quot;</span>
         <span class="n">line</span> <span class="o">=</span> <span class="s2">&quot;    from bar.baz import foo&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">_line_defines_python_function</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="s2">&quot;foo&quot;</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="TestLineDefinesPythonFunction.test_import_barfoo"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestLineDefinesPythonFunction.test_import_barfoo">[docs]</a>    <span class="k">def</span> <span class="nf">test_import_barfoo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestLineDefinesPythonFunction.test_import_barfoo">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestLineDefinesPythonFunction.test_import_barfoo">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_import_barfoo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Test of an import of a different function&quot;&quot;&quot;</span>
         <span class="n">line</span> <span class="o">=</span> <span class="s2">&quot;from bar.baz import barfoo&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">_line_defines_python_function</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="s2">&quot;foo&quot;</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="TestLineDefinesPythonFunction.test_import_foobar"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestLineDefinesPythonFunction.test_import_foobar">[docs]</a>    <span class="k">def</span> <span class="nf">test_import_foobar</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestLineDefinesPythonFunction.test_import_foobar">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestLineDefinesPythonFunction.test_import_foobar">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_import_foobar</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Test of an import of a different function&quot;&quot;&quot;</span>
         <span class="n">line</span> <span class="o">=</span> <span class="s2">&quot;from bar.baz import foobar&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">_line_defines_python_function</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="s2">&quot;foo&quot;</span><span class="p">))</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">_line_defines_python_function</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="s2">&quot;foo&quot;</span><span class="p">))</span></div>
+</div>
 
 
-<div class="viewcode-block" id="TestFileContainsPythonFunction"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestFileContainsPythonFunction">[docs]</a><span class="k">class</span> <span class="nc">TestFileContainsPythonFunction</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestFileContainsPythonFunction">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestFileContainsPythonFunction">[docs]</a>
+<span class="k">class</span> <span class="nc">TestFileContainsPythonFunction</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Tests of file_contains_python_function&quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="TestFileContainsPythonFunction.setUp"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestFileContainsPythonFunction.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestFileContainsPythonFunction.setUp">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestFileContainsPythonFunction.setUp">[docs]</a>
+    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_workdir</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="TestFileContainsPythonFunction.tearDown"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestFileContainsPythonFunction.tearDown">[docs]</a>    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestFileContainsPythonFunction.tearDown">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestFileContainsPythonFunction.tearDown">[docs]</a>
+    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_workdir</span><span class="p">,</span> <span class="n">ignore_errors</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestFileContainsPythonFunction.create_test_file"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestFileContainsPythonFunction.create_test_file">[docs]</a>    <span class="k">def</span> <span class="nf">create_test_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">contents</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestFileContainsPythonFunction.create_test_file">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestFileContainsPythonFunction.create_test_file">[docs]</a>
+    <span class="k">def</span> <span class="nf">create_test_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">contents</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a test file with the given contents, and returns the path to that file&quot;&quot;&quot;</span>
 
         <span class="n">filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_workdir</span><span class="p">,</span> <span class="s2">&quot;testfile&quot;</span><span class="p">)</span>
@@ -224,7 +285,10 @@
 
         <span class="k">return</span> <span class="n">filepath</span></div>
 
-<div class="viewcode-block" id="TestFileContainsPythonFunction.test_contains_correct_def_and_others"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestFileContainsPythonFunction.test_contains_correct_def_and_others">[docs]</a>    <span class="k">def</span> <span class="nf">test_contains_correct_def_and_others</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestFileContainsPythonFunction.test_contains_correct_def_and_others">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestFileContainsPythonFunction.test_contains_correct_def_and_others">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_contains_correct_def_and_others</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Test file_contains_python_function with a correct def mixed with other defs&quot;&quot;&quot;</span>
         <span class="n">contents</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">def bar():</span>
@@ -234,7 +298,10 @@
         <span class="n">filepath</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_test_file</span><span class="p">(</span><span class="n">contents</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">file_contains_python_function</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s2">&quot;foo&quot;</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="TestFileContainsPythonFunction.test_does_not_contain_correct_def"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestFileContainsPythonFunction.test_does_not_contain_correct_def">[docs]</a>    <span class="k">def</span> <span class="nf">test_does_not_contain_correct_def</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestFileContainsPythonFunction.test_does_not_contain_correct_def">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestFileContainsPythonFunction.test_does_not_contain_correct_def">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_does_not_contain_correct_def</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Test file_contains_python_function without the correct def&quot;&quot;&quot;</span>
         <span class="n">contents</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">def bar():</span>
@@ -242,10 +309,14 @@
 <span class="s2">def baz():</span>
 <span class="s2">&quot;&quot;&quot;</span>
         <span class="n">filepath</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_test_file</span><span class="p">(</span><span class="n">contents</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">file_contains_python_function</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s2">&quot;foo&quot;</span><span class="p">))</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">file_contains_python_function</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s2">&quot;foo&quot;</span><span class="p">))</span></div>
+</div>
 
 
-<div class="viewcode-block" id="MockTime"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.MockTime">[docs]</a><span class="k">class</span> <span class="nc">MockTime</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+<div class="viewcode-block" id="MockTime">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.MockTime">[docs]</a>
+<span class="k">class</span> <span class="nc">MockTime</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_old</span> <span class="o">=</span> <span class="kc">None</span>
 
@@ -257,7 +328,10 @@
         <span class="nb">setattr</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">],</span> <span class="s2">&quot;strftime&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_old</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="match_all_lines"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.match_all_lines">[docs]</a><span class="k">def</span> <span class="nf">match_all_lines</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">lines</span><span class="p">):</span>
+
+<div class="viewcode-block" id="match_all_lines">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.match_all_lines">[docs]</a>
+<span class="k">def</span> <span class="nf">match_all_lines</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">lines</span><span class="p">):</span>
     <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">lines</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="n">line</span><span class="p">:</span>
@@ -271,8 +345,13 @@
     <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="n">lines</span></div>
 
 
-<div class="viewcode-block" id="TestUtils"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestUtils">[docs]</a><span class="k">class</span> <span class="nc">TestUtils</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
-<div class="viewcode-block" id="TestUtils.setUp"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestUtils.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestUtils">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestUtils">[docs]</a>
+<span class="k">class</span> <span class="nc">TestUtils</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestUtils.setUp">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestUtils.setUp">[docs]</a>
+    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">base_func</span> <span class="o">=</span> <span class="k">lambda</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="kc">None</span>
 
         <span class="c1"># pylint: disable=unused-argument</span>
@@ -281,7 +360,10 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">error_func</span> <span class="o">=</span> <span class="n">_error_func</span></div>
 
-<div class="viewcode-block" id="TestUtils.test_import_and_run_sub_or_cmd"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestUtils.test_import_and_run_sub_or_cmd">[docs]</a>    <span class="k">def</span> <span class="nf">test_import_and_run_sub_or_cmd</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestUtils.test_import_and_run_sub_or_cmd">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestUtils.test_import_and_run_sub_or_cmd">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_import_and_run_sub_or_cmd</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaisesRegex</span><span class="p">(</span>
             <span class="ne">Exception</span><span class="p">,</span> <span class="s2">&quot;ERROR: Could not find buildnml file for component test&quot;</span>
         <span class="p">):</span>
@@ -294,7 +376,10 @@
                 <span class="s2">&quot;test&quot;</span><span class="p">,</span>
             <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestUtils.test_import_and_run_sub_or_cmd_cime_py"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestUtils.test_import_and_run_sub_or_cmd_cime_py">[docs]</a>    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;importlib.import_module&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TestUtils.test_import_and_run_sub_or_cmd_cime_py">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestUtils.test_import_and_run_sub_or_cmd_cime_py">[docs]</a>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;importlib.import_module&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">test_import_and_run_sub_or_cmd_cime_py</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">importmodule</span><span class="p">):</span>
         <span class="n">importmodule</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Module has a problem&quot;</span><span class="p">)</span>
 
@@ -311,7 +396,10 @@
         <span class="c1"># check that we avoid exception chaining</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">exception</span><span class="o">.</span><span class="n">__context__</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestUtils.test_import_and_run_sub_or_cmd_import"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestUtils.test_import_and_run_sub_or_cmd_import">[docs]</a>    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;importlib.import_module&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TestUtils.test_import_and_run_sub_or_cmd_import">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestUtils.test_import_and_run_sub_or_cmd_import">[docs]</a>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;importlib.import_module&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">test_import_and_run_sub_or_cmd_import</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">importmodule</span><span class="p">):</span>
         <span class="n">importmodule</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;I am being imported&quot;</span><span class="p">)</span>
 
@@ -328,7 +416,10 @@
         <span class="c1"># check that we avoid exception chaining</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">exception</span><span class="o">.</span><span class="n">__context__</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestUtils.test_import_and_run_sub_or_cmd_run"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestUtils.test_import_and_run_sub_or_cmd_run">[docs]</a>    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;os.path.isfile&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TestUtils.test_import_and_run_sub_or_cmd_run">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestUtils.test_import_and_run_sub_or_cmd_run">[docs]</a>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;os.path.isfile&quot;</span><span class="p">)</span>
     <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.utils.run_sub_or_cmd&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">test_import_and_run_sub_or_cmd_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">isfile</span><span class="p">):</span>
         <span class="n">isfile</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="kc">True</span>
@@ -349,7 +440,10 @@
                 <span class="s2">&quot;test&quot;</span><span class="p">,</span>
             <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestUtils.test_copy_globs"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestUtils.test_copy_globs">[docs]</a>    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;glob.glob&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TestUtils.test_copy_globs">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestUtils.test_copy_globs">[docs]</a>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;glob.glob&quot;</span><span class="p">)</span>
     <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.utils.safe_copy&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">test_copy_globs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">safe_copy</span><span class="p">,</span> <span class="n">glob</span><span class="p">):</span>
         <span class="n">glob</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="p">[</span>
@@ -372,7 +466,10 @@
             <span class="s2">&quot;/src/bld/test.nc&quot;</span><span class="p">,</span> <span class="s2">&quot;/storage/output/test.nc.uid&quot;</span><span class="p">,</span> <span class="n">preserve_meta</span><span class="o">=</span><span class="kc">False</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestUtils.assertMatchAllLines"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestUtils.assertMatchAllLines">[docs]</a>    <span class="k">def</span> <span class="nf">assertMatchAllLines</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tempdir</span><span class="p">,</span> <span class="n">test_lines</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestUtils.assertMatchAllLines">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestUtils.assertMatchAllLines">[docs]</a>
+    <span class="k">def</span> <span class="nf">assertMatchAllLines</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tempdir</span><span class="p">,</span> <span class="n">test_lines</span><span class="p">):</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tempdir</span><span class="p">,</span> <span class="s2">&quot;CaseStatus&quot;</span><span class="p">))</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
             <span class="n">data</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
 
@@ -388,7 +485,10 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">error</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="TestUtils.test_import_from_file"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestUtils.test_import_from_file">[docs]</a>    <span class="k">def</span> <span class="nf">test_import_from_file</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestUtils.test_import_from_file">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestUtils.test_import_from_file">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_import_from_file</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">()</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
             <span class="n">fd</span><span class="o">.</span><span class="n">writelines</span><span class="p">(</span>
                 <span class="p">[</span>
@@ -403,7 +503,10 @@
 
             <span class="k">assert</span> <span class="n">module</span><span class="o">.</span><span class="n">test</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;value&quot;</span></div>
 
-<div class="viewcode-block" id="TestUtils.test_run_and_log_case_status"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestUtils.test_run_and_log_case_status">[docs]</a>    <span class="k">def</span> <span class="nf">test_run_and_log_case_status</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestUtils.test_run_and_log_case_status">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestUtils.test_run_and_log_case_status">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_run_and_log_case_status</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">test_lines</span> <span class="o">=</span> <span class="p">[</span>
             <span class="s2">&quot;00:00:00 default starting </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
             <span class="s2">&quot;00:00:00 default success </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
@@ -414,7 +517,10 @@
 
             <span class="bp">self</span><span class="o">.</span><span class="n">assertMatchAllLines</span><span class="p">(</span><span class="n">tempdir</span><span class="p">,</span> <span class="n">test_lines</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestUtils.test_run_and_log_case_status_case_submit_on_batch"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestUtils.test_run_and_log_case_status_case_submit_on_batch">[docs]</a>    <span class="k">def</span> <span class="nf">test_run_and_log_case_status_case_submit_on_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestUtils.test_run_and_log_case_status_case_submit_on_batch">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestUtils.test_run_and_log_case_status_case_submit_on_batch">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_run_and_log_case_status_case_submit_on_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">test_lines</span> <span class="o">=</span> <span class="p">[</span>
             <span class="s2">&quot;00:00:00 case.submit starting </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
             <span class="s2">&quot;00:00:00 case.submit success </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
@@ -427,7 +533,10 @@
 
             <span class="bp">self</span><span class="o">.</span><span class="n">assertMatchAllLines</span><span class="p">(</span><span class="n">tempdir</span><span class="p">,</span> <span class="n">test_lines</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestUtils.test_run_and_log_case_status_case_submit_no_batch"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestUtils.test_run_and_log_case_status_case_submit_no_batch">[docs]</a>    <span class="k">def</span> <span class="nf">test_run_and_log_case_status_case_submit_no_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestUtils.test_run_and_log_case_status_case_submit_no_batch">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestUtils.test_run_and_log_case_status_case_submit_no_batch">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_run_and_log_case_status_case_submit_no_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">test_lines</span> <span class="o">=</span> <span class="p">[</span>
             <span class="s2">&quot;00:00:00 case.submit starting </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
             <span class="s2">&quot;00:00:00 case.submit success </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
@@ -440,7 +549,10 @@
 
             <span class="bp">self</span><span class="o">.</span><span class="n">assertMatchAllLines</span><span class="p">(</span><span class="n">tempdir</span><span class="p">,</span> <span class="n">test_lines</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestUtils.test_run_and_log_case_status_case_submit_error_on_batch"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestUtils.test_run_and_log_case_status_case_submit_error_on_batch">[docs]</a>    <span class="k">def</span> <span class="nf">test_run_and_log_case_status_case_submit_error_on_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestUtils.test_run_and_log_case_status_case_submit_error_on_batch">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestUtils.test_run_and_log_case_status_case_submit_error_on_batch">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_run_and_log_case_status_case_submit_error_on_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">test_lines</span> <span class="o">=</span> <span class="p">[</span>
             <span class="s2">&quot;00:00:00 case.submit starting </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
             <span class="s2">&quot;00:00:00 case.submit error </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
@@ -455,7 +567,10 @@
 
             <span class="bp">self</span><span class="o">.</span><span class="n">assertMatchAllLines</span><span class="p">(</span><span class="n">tempdir</span><span class="p">,</span> <span class="n">test_lines</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestUtils.test_run_and_log_case_status_custom_msg"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestUtils.test_run_and_log_case_status_custom_msg">[docs]</a>    <span class="k">def</span> <span class="nf">test_run_and_log_case_status_custom_msg</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestUtils.test_run_and_log_case_status_custom_msg">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestUtils.test_run_and_log_case_status_custom_msg">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_run_and_log_case_status_custom_msg</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">test_lines</span> <span class="o">=</span> <span class="p">[</span>
             <span class="s2">&quot;00:00:00 default starting starting extra</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
             <span class="s2">&quot;00:00:00 default success success extra</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
@@ -481,7 +596,10 @@
         <span class="n">starting_func</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">()</span>
         <span class="n">success_func</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestUtils.test_run_and_log_case_status_custom_msg_error_on_batch"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestUtils.test_run_and_log_case_status_custom_msg_error_on_batch">[docs]</a>    <span class="k">def</span> <span class="nf">test_run_and_log_case_status_custom_msg_error_on_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestUtils.test_run_and_log_case_status_custom_msg_error_on_batch">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestUtils.test_run_and_log_case_status_custom_msg_error_on_batch">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_run_and_log_case_status_custom_msg_error_on_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">test_lines</span> <span class="o">=</span> <span class="p">[</span>
             <span class="s2">&quot;00:00:00 default starting starting extra</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
             <span class="s2">&quot;00:00:00 default success success extra</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
@@ -509,7 +627,10 @@
         <span class="n">starting_func</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">()</span>
         <span class="n">success_func</span><span class="o">.</span><span class="n">assert_not_called</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="TestUtils.test_run_and_log_case_status_error"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestUtils.test_run_and_log_case_status_error">[docs]</a>    <span class="k">def</span> <span class="nf">test_run_and_log_case_status_error</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestUtils.test_run_and_log_case_status_error">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_utils.TestUtils.test_run_and_log_case_status_error">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_run_and_log_case_status_error</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">test_lines</span> <span class="o">=</span> <span class="p">[</span>
             <span class="s2">&quot;00:00:00 default starting </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
             <span class="s2">&quot;00:00:00 default error </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
@@ -520,7 +641,9 @@
             <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
                 <span class="n">run_and_log_case_status</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">error_func</span><span class="p">,</span> <span class="s2">&quot;default&quot;</span><span class="p">,</span> <span class="n">caseroot</span><span class="o">=</span><span class="n">tempdir</span><span class="p">)</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">assertMatchAllLines</span><span class="p">(</span><span class="n">tempdir</span><span class="p">,</span> <span class="n">test_lines</span><span class="p">)</span></div></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertMatchAllLines</span><span class="p">(</span><span class="n">tempdir</span><span class="p">,</span> <span class="n">test_lines</span><span class="p">)</span></div>
+</div>
+
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>

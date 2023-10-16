@@ -11,11 +11,11 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../../_static/pop_ver.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -94,8 +94,12 @@
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="ArchiveBase"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.archive_base.ArchiveBase">[docs]</a><span class="k">class</span> <span class="nc">ArchiveBase</span><span class="p">(</span><span class="n">GenericXML</span><span class="p">):</span>
-<div class="viewcode-block" id="ArchiveBase.exclude_testing"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.archive_base.ArchiveBase.exclude_testing">[docs]</a>    <span class="k">def</span> <span class="nf">exclude_testing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compname</span><span class="p">):</span>
+<div class="viewcode-block" id="ArchiveBase">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.archive_base.ArchiveBase">[docs]</a>
+<span class="k">class</span> <span class="nc">ArchiveBase</span><span class="p">(</span><span class="n">GenericXML</span><span class="p">):</span>
+<div class="viewcode-block" id="ArchiveBase.exclude_testing">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.archive_base.ArchiveBase.exclude_testing">[docs]</a>
+    <span class="k">def</span> <span class="nf">exclude_testing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compname</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Checks if component should be excluded from testing.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -106,6 +110,7 @@
 
         <span class="k">return</span> <span class="n">convert_to_type</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s2">&quot;logical&quot;</span><span class="p">)</span></div>
 
+
     <span class="k">def</span> <span class="nf">_get_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compname</span><span class="p">,</span> <span class="n">attr_name</span><span class="p">):</span>
         <span class="n">attrib</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_entry_attributes</span><span class="p">(</span><span class="n">compname</span><span class="p">)</span>
 
@@ -114,7 +119,9 @@
 
         <span class="k">return</span> <span class="n">attrib</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">attr_name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
-<div class="viewcode-block" id="ArchiveBase.get_entry_attributes"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.archive_base.ArchiveBase.get_entry_attributes">[docs]</a>    <span class="k">def</span> <span class="nf">get_entry_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compname</span><span class="p">):</span>
+<div class="viewcode-block" id="ArchiveBase.get_entry_attributes">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.archive_base.ArchiveBase.get_entry_attributes">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_entry_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compname</span><span class="p">):</span>
         <span class="n">entry</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_entry</span><span class="p">(</span><span class="n">compname</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">entry</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -122,13 +129,17 @@
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">attrib</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ArchiveBase.get_entry"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.archive_base.ArchiveBase.get_entry">[docs]</a>    <span class="k">def</span> <span class="nf">get_entry</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compname</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ArchiveBase.get_entry">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.archive_base.ArchiveBase.get_entry">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_entry</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compname</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns an xml node corresponding to compname in comp_archive_spec</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">scan_optional_child</span><span class="p">(</span>
             <span class="s2">&quot;comp_archive_spec&quot;</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;compname&quot;</span><span class="p">:</span> <span class="n">compname</span><span class="p">}</span>
         <span class="p">)</span></div>
+
 
     <span class="k">def</span> <span class="nf">_get_file_node_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attnames</span><span class="p">,</span> <span class="n">archive_entry</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -145,7 +156,9 @@
             <span class="n">textvals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">node</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">textvals</span>
 
-<div class="viewcode-block" id="ArchiveBase.get_rest_file_extensions"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.archive_base.ArchiveBase.get_rest_file_extensions">[docs]</a>    <span class="k">def</span> <span class="nf">get_rest_file_extensions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">archive_entry</span><span class="p">):</span>
+<div class="viewcode-block" id="ArchiveBase.get_rest_file_extensions">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.archive_base.ArchiveBase.get_rest_file_extensions">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_rest_file_extensions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">archive_entry</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        get the xml text associated with each of the rest_file_extensions</span>
 <span class="sd">        based at root archive_entry (root is based on component name)</span>
@@ -154,7 +167,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_file_node_text</span><span class="p">([</span><span class="s2">&quot;rest_file_extension&quot;</span><span class="p">],</span> <span class="n">archive_entry</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ArchiveBase.get_hist_file_extensions"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.archive_base.ArchiveBase.get_hist_file_extensions">[docs]</a>    <span class="k">def</span> <span class="nf">get_hist_file_extensions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">archive_entry</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ArchiveBase.get_hist_file_extensions">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.archive_base.ArchiveBase.get_hist_file_extensions">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_hist_file_extensions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">archive_entry</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        get the xml text associated with each of the hist_file_extensions</span>
 <span class="sd">        based at root archive_entry (root is based on component name)</span>
@@ -163,7 +179,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_file_node_text</span><span class="p">([</span><span class="s2">&quot;hist_file_extension&quot;</span><span class="p">],</span> <span class="n">archive_entry</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ArchiveBase.get_hist_file_ext_regexes"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.archive_base.ArchiveBase.get_hist_file_ext_regexes">[docs]</a>    <span class="k">def</span> <span class="nf">get_hist_file_ext_regexes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">archive_entry</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ArchiveBase.get_hist_file_ext_regexes">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.archive_base.ArchiveBase.get_hist_file_ext_regexes">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_hist_file_ext_regexes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">archive_entry</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        get the xml text associated with each of the hist_file_ext_regex entries</span>
 <span class="sd">        based at root archive_entry (root is based on component name)</span>
@@ -172,7 +191,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_file_node_text</span><span class="p">([</span><span class="s2">&quot;hist_file_ext_regex&quot;</span><span class="p">],</span> <span class="n">archive_entry</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ArchiveBase.get_entry_value"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.archive_base.ArchiveBase.get_entry_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_entry_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">archive_entry</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ArchiveBase.get_entry_value">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.archive_base.ArchiveBase.get_entry_value">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_entry_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">archive_entry</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        get the xml text associated with name under root archive_entry</span>
 <span class="sd">        returns None if no entry is found, expects only one entry</span>
@@ -182,7 +204,10 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="ArchiveBase.get_latest_hist_files"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.archive_base.ArchiveBase.get_latest_hist_files">[docs]</a>    <span class="k">def</span> <span class="nf">get_latest_hist_files</span><span class="p">(</span>
+
+<div class="viewcode-block" id="ArchiveBase.get_latest_hist_files">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.archive_base.ArchiveBase.get_latest_hist_files">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_latest_hist_files</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">casename</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">from_dir</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">ref_case</span><span class="o">=</span><span class="kc">None</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -204,7 +229,10 @@
             <span class="n">histlist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">latest_files</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">histlist</span></div>
 
-<div class="viewcode-block" id="ArchiveBase.get_all_hist_files"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.archive_base.ArchiveBase.get_all_hist_files">[docs]</a>    <span class="k">def</span> <span class="nf">get_all_hist_files</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">casename</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">from_dir</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">ref_case</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ArchiveBase.get_all_hist_files">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.archive_base.ArchiveBase.get_all_hist_files">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_all_hist_files</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">casename</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">from_dir</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">ref_case</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        gets all history files in directory from_dir with suffix (if provided)</span>
 <span class="sd">        ignores files with ref_case in the name if ref_case is provided</span>
@@ -232,7 +260,7 @@
             <span class="n">string</span> <span class="o">=</span> <span class="n">model</span> <span class="o">+</span> <span class="sa">r</span><span class="s2">&quot;\d?_?(\d</span><span class="si">{4}</span><span class="s2">)?\.&quot;</span> <span class="o">+</span> <span class="n">ext</span>
             <span class="k">if</span> <span class="n">has_suffix</span><span class="p">:</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">suffix</span> <span class="ow">in</span> <span class="n">string</span><span class="p">:</span>
-                    <span class="n">string</span> <span class="o">+=</span> <span class="sa">r</span><span class="s2">&quot;.*\.&quot;</span> <span class="o">+</span> <span class="n">suffix</span> <span class="o">+</span> <span class="s2">&quot;$&quot;</span>
+                    <span class="n">string</span> <span class="o">+=</span> <span class="sa">r</span><span class="s2">&quot;\.&quot;</span> <span class="o">+</span> <span class="n">suffix</span> <span class="o">+</span> <span class="s2">&quot;$&quot;</span>
 
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">string</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;$&quot;</span><span class="p">):</span>
                     <span class="n">string</span> <span class="o">+=</span> <span class="s2">&quot;$&quot;</span>
@@ -270,6 +298,7 @@
 
         <span class="k">return</span> <span class="n">hist_files</span></div>
 
+
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_get_compname</span><span class="p">(</span><span class="n">model</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -279,6 +308,7 @@
         <span class="k">if</span> <span class="n">model</span> <span class="o">==</span> <span class="s2">&quot;cpl&quot;</span><span class="p">:</span>
             <span class="k">return</span> <span class="s2">&quot;drv&quot;</span>
         <span class="k">return</span> <span class="n">model</span></div>
+
 
 
 <span class="k">def</span> <span class="nf">_get_extension</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">ext_regexes</span><span class="p">):</span>

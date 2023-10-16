@@ -11,11 +11,11 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../../_static/pop_ver.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -95,7 +95,9 @@
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="EnvMachPes"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_pes.EnvMachPes">[docs]</a><span class="k">class</span> <span class="nc">EnvMachPes</span><span class="p">(</span><span class="n">EnvBase</span><span class="p">):</span>
+<div class="viewcode-block" id="EnvMachPes">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_pes.EnvMachPes">[docs]</a>
+<span class="k">class</span> <span class="nc">EnvMachPes</span><span class="p">(</span><span class="n">EnvBase</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">case_root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -113,7 +115,9 @@
         <span class="n">schema</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">get_schema_path</span><span class="p">(),</span> <span class="s2">&quot;env_mach_pes.xsd&quot;</span><span class="p">)</span>
         <span class="n">EnvBase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case_root</span><span class="p">,</span> <span class="n">infile</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="n">read_only</span><span class="p">)</span>
 
-<div class="viewcode-block" id="EnvMachPes.add_comment"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_pes.EnvMachPes.add_comment">[docs]</a>    <span class="k">def</span> <span class="nf">add_comment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">comment</span><span class="p">):</span>
+<div class="viewcode-block" id="EnvMachPes.add_comment">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_pes.EnvMachPes.add_comment">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_comment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">comment</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">comment</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_child</span><span class="p">(</span><span class="s2">&quot;comment&quot;</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="n">comment</span><span class="p">)</span>
             <span class="c1"># make_child adds to the end of the file but we want it to follow the header</span>
@@ -121,7 +125,10 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">remove_child</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add_child</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EnvMachPes.get_value"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_pes.EnvMachPes.get_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span>
+
+<div class="viewcode-block" id="EnvMachPes.get_value">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_pes.EnvMachPes.get_value">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">vid</span><span class="p">,</span>
         <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -160,7 +167,10 @@
             <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;NINST&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">value</span></div>
 
-<div class="viewcode-block" id="EnvMachPes.set_value"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_pes.EnvMachPes.set_value">[docs]</a>    <span class="k">def</span> <span class="nf">set_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ignore_type</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EnvMachPes.set_value">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_pes.EnvMachPes.set_value">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ignore_type</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set the value of an entry-id field to value</span>
 <span class="sd">        Returns the value or None if not found</span>
@@ -186,7 +196,10 @@
             <span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="n">subgroup</span><span class="p">,</span> <span class="n">ignore_type</span><span class="o">=</span><span class="n">ignore_type</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="EnvMachPes.get_max_thread_count"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_pes.EnvMachPes.get_max_thread_count">[docs]</a>    <span class="k">def</span> <span class="nf">get_max_thread_count</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">comp_classes</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EnvMachPes.get_max_thread_count">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_pes.EnvMachPes.get_max_thread_count">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_max_thread_count</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">comp_classes</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Find the maximum number of openmp threads for any component in the case&quot;&quot;&quot;</span>
         <span class="n">max_threads</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="k">for</span> <span class="n">comp</span> <span class="ow">in</span> <span class="n">comp_classes</span><span class="p">:</span>
@@ -199,7 +212,10 @@
                 <span class="n">max_threads</span> <span class="o">=</span> <span class="n">threads</span>
         <span class="k">return</span> <span class="n">max_threads</span></div>
 
-<div class="viewcode-block" id="EnvMachPes.get_total_tasks"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_pes.EnvMachPes.get_total_tasks">[docs]</a>    <span class="k">def</span> <span class="nf">get_total_tasks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">comp_classes</span><span class="p">,</span> <span class="n">async_interface</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EnvMachPes.get_total_tasks">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_pes.EnvMachPes.get_total_tasks">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_total_tasks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">comp_classes</span><span class="p">,</span> <span class="n">async_interface</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="n">total_tasks</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">maxinst</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;NINST&quot;</span><span class="p">)</span>
         <span class="n">asyncio_ntasks</span> <span class="o">=</span> <span class="mi">0</span>
@@ -256,7 +272,10 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;asyncio_tasks </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">asyncio_tasks</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">total_tasks</span></div>
 
-<div class="viewcode-block" id="EnvMachPes.get_tasks_per_node"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_pes.EnvMachPes.get_tasks_per_node">[docs]</a>    <span class="k">def</span> <span class="nf">get_tasks_per_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">total_tasks</span><span class="p">,</span> <span class="n">max_thread_count</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EnvMachPes.get_tasks_per_node">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_pes.EnvMachPes.get_tasks_per_node">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_tasks_per_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">total_tasks</span><span class="p">,</span> <span class="n">max_thread_count</span><span class="p">):</span>
         <span class="n">expect</span><span class="p">(</span>
             <span class="n">total_tasks</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span>
             <span class="s2">&quot;totaltasks &gt; 0 expected, totaltasks = </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">total_tasks</span><span class="p">),</span>
@@ -282,7 +301,10 @@
                 <span class="p">)</span>
         <span class="k">return</span> <span class="n">tasks_per_node</span> <span class="k">if</span> <span class="n">tasks_per_node</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">1</span></div>
 
-<div class="viewcode-block" id="EnvMachPes.get_total_nodes"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_pes.EnvMachPes.get_total_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">get_total_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">total_tasks</span><span class="p">,</span> <span class="n">max_thread_count</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EnvMachPes.get_total_nodes">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_pes.EnvMachPes.get_total_nodes">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_total_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">total_tasks</span><span class="p">,</span> <span class="n">max_thread_count</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return (num_active_nodes, num_spare_nodes)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -293,7 +315,10 @@
         <span class="n">num_nodes</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">total_tasks</span><span class="p">)</span> <span class="o">/</span> <span class="n">tasks_per_node</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">num_nodes</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_spare_nodes</span><span class="p">(</span><span class="n">num_nodes</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EnvMachPes.get_spare_nodes"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_pes.EnvMachPes.get_spare_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">get_spare_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_nodes</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EnvMachPes.get_spare_nodes">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_pes.EnvMachPes.get_spare_nodes">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_spare_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_nodes</span><span class="p">):</span>
         <span class="n">force_spare_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;FORCE_SPARE_NODES&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">force_spare_nodes</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">999</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">force_spare_nodes</span>
@@ -307,7 +332,9 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">ten_pct</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="mi">0</span></div></div>
+            <span class="k">return</span> <span class="mi">0</span></div>
+</div>
+
 </pre></div>
 
            </div>

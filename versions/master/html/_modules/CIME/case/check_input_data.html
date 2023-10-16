@@ -11,11 +11,11 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../../_static/pop_ver.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -310,7 +310,9 @@
     <span class="k">return</span> <span class="n">success</span>
 
 
-<div class="viewcode-block" id="check_all_input_data"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.check_all_input_data">[docs]</a><span class="k">def</span> <span class="nf">check_all_input_data</span><span class="p">(</span>
+<div class="viewcode-block" id="check_all_input_data">
+<a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.check_all_input_data">[docs]</a>
+<span class="k">def</span> <span class="nf">check_all_input_data</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">protocol</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">address</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -330,6 +332,7 @@
         <span class="k">return</span> <span class="n">_check_all_input_data_impl</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span> <span class="n">protocol</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">input_data_root</span><span class="p">,</span> <span class="n">data_list_dir</span><span class="p">,</span> <span class="n">download</span><span class="p">,</span> <span class="n">chksum</span>
         <span class="p">)</span></div>
+
 
 
 <span class="k">def</span> <span class="nf">_downloadfromserver</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">input_data_root</span><span class="p">,</span> <span class="n">data_list_dir</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -360,7 +363,9 @@
     <span class="k">return</span> <span class="n">success</span>
 
 
-<div class="viewcode-block" id="stage_refcase"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.stage_refcase">[docs]</a><span class="k">def</span> <span class="nf">stage_refcase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data_root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">data_list_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="stage_refcase">
+<a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.stage_refcase">[docs]</a>
+<span class="k">def</span> <span class="nf">stage_refcase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data_root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">data_list_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get a REFCASE for a hybrid or branch run</span>
 <span class="sd">    This is the only case in which we are downloading an entire directory instead of</span>
@@ -451,6 +456,7 @@
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;Buildconf&quot;</span><span class="p">,</span> <span class="s2">&quot;refcase.input_data_list&quot;</span><span class="p">)):</span>
             <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;Buildconf&quot;</span><span class="p">,</span> <span class="s2">&quot;refcase.input_data_list&quot;</span><span class="p">))</span>
     <span class="k">return</span> <span class="kc">True</span></div>
+
 
 
 <span class="k">def</span> <span class="nf">_check_input_data_impl</span><span class="p">(</span>
@@ -669,7 +675,9 @@
     <span class="k">return</span> <span class="n">no_files_missing</span>
 
 
-<div class="viewcode-block" id="check_input_data"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.check_input_data">[docs]</a><span class="k">def</span> <span class="nf">check_input_data</span><span class="p">(</span>
+<div class="viewcode-block" id="check_input_data">
+<a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.check_input_data">[docs]</a>
+<span class="k">def</span> <span class="nf">check_input_data</span><span class="p">(</span>
     <span class="n">case</span><span class="p">,</span>
     <span class="n">protocol</span><span class="o">=</span><span class="s2">&quot;svn&quot;</span><span class="p">,</span>
     <span class="n">address</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -704,7 +712,10 @@
         <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="verify_chksum"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.verify_chksum">[docs]</a><span class="k">def</span> <span class="nf">verify_chksum</span><span class="p">(</span><span class="n">input_data_root</span><span class="p">,</span> <span class="n">rundir</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">isdirectory</span><span class="p">):</span>
+
+<div class="viewcode-block" id="verify_chksum">
+<a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.verify_chksum">[docs]</a>
+<span class="k">def</span> <span class="nf">verify_chksum</span><span class="p">(</span><span class="n">input_data_root</span><span class="p">,</span> <span class="n">rundir</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">isdirectory</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    For file in filename perform a chksum and compare the result to that stored in</span>
 <span class="sd">    the local checksumfile, if isdirectory chksum all files in the directory of form *.*</span>
@@ -751,7 +762,10 @@
                 <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="md5"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.md5">[docs]</a><span class="k">def</span> <span class="nf">md5</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
+
+<div class="viewcode-block" id="md5">
+<a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.md5">[docs]</a>
+<span class="k">def</span> <span class="nf">md5</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    performs an md5 sum one chunk at a time to avoid memory issues with large files.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -760,6 +774,7 @@
         <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="nb">iter</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">4096</span><span class="p">),</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
             <span class="n">hash_md5</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">hash_md5</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span></div>
+
 </pre></div>
 
            </div>

@@ -11,11 +11,11 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../../_static/pop_ver.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -91,14 +91,19 @@
 <span class="kn">from</span> <span class="nn">CIME.XML.files</span> <span class="kn">import</span> <span class="n">Files</span>
 
 
-<div class="viewcode-block" id="TestManageAndQuery"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_manage_and_query.TestManageAndQuery">[docs]</a><span class="k">class</span> <span class="nc">TestManageAndQuery</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">BaseTestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestManageAndQuery">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_manage_and_query.TestManageAndQuery">[docs]</a>
+<span class="k">class</span> <span class="nc">TestManageAndQuery</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">BaseTestCase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Tests various scripts to manage and query xml files&quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="TestManageAndQuery.setUp"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_manage_and_query.TestManageAndQuery.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestManageAndQuery.setUp">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_manage_and_query.TestManageAndQuery.setUp">[docs]</a>
+    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">test_mode</span> <span class="o">==</span> <span class="s2">&quot;e3sm&quot;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">skipTest</span><span class="p">(</span><span class="s2">&quot;Skipping XML test management tests. E3SM does not use this.&quot;</span><span class="p">)</span></div>
+
 
     <span class="k">def</span> <span class="nf">_run_and_assert_query_testlist</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">extra_args</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Ensure that query_testlist runs successfully with the given extra arguments&quot;&quot;&quot;</span>
@@ -111,7 +116,9 @@
             <span class="p">)</span>
         <span class="p">)</span>
 
-<div class="viewcode-block" id="TestManageAndQuery.test_query_testlists_runs"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_manage_and_query.TestManageAndQuery.test_query_testlists_runs">[docs]</a>    <span class="k">def</span> <span class="nf">test_query_testlists_runs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestManageAndQuery.test_query_testlists_runs">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_manage_and_query.TestManageAndQuery.test_query_testlists_runs">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_query_testlists_runs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Make sure that query_testlists runs successfully</span>
 
 <span class="sd">        This simply makes sure that query_testlists doesn&#39;t generate any errors</span>
@@ -120,17 +127,28 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_run_and_assert_query_testlist</span><span class="p">(</span><span class="n">extra_args</span><span class="o">=</span><span class="s2">&quot;--show-options&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestManageAndQuery.test_query_testlists_define_testtypes_runs"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_manage_and_query.TestManageAndQuery.test_query_testlists_define_testtypes_runs">[docs]</a>    <span class="k">def</span> <span class="nf">test_query_testlists_define_testtypes_runs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestManageAndQuery.test_query_testlists_define_testtypes_runs">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_manage_and_query.TestManageAndQuery.test_query_testlists_define_testtypes_runs">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_query_testlists_define_testtypes_runs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Make sure that query_testlists runs successfully with the --define-testtypes argument&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_run_and_assert_query_testlist</span><span class="p">(</span><span class="n">extra_args</span><span class="o">=</span><span class="s2">&quot;--define-testtypes&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestManageAndQuery.test_query_testlists_count_runs"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_manage_and_query.TestManageAndQuery.test_query_testlists_count_runs">[docs]</a>    <span class="k">def</span> <span class="nf">test_query_testlists_count_runs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestManageAndQuery.test_query_testlists_count_runs">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_manage_and_query.TestManageAndQuery.test_query_testlists_count_runs">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_query_testlists_count_runs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Make sure that query_testlists runs successfully with the --count argument&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_run_and_assert_query_testlist</span><span class="p">(</span><span class="n">extra_args</span><span class="o">=</span><span class="s2">&quot;--count&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestManageAndQuery.test_query_testlists_list_runs"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_manage_and_query.TestManageAndQuery.test_query_testlists_list_runs">[docs]</a>    <span class="k">def</span> <span class="nf">test_query_testlists_list_runs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestManageAndQuery.test_query_testlists_list_runs">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_manage_and_query.TestManageAndQuery.test_query_testlists_list_runs">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_query_testlists_list_runs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Make sure that query_testlists runs successfully with the --list argument&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_run_and_assert_query_testlist</span><span class="p">(</span><span class="n">extra_args</span><span class="o">=</span><span class="s2">&quot;--list categories&quot;</span><span class="p">)</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_run_and_assert_query_testlist</span><span class="p">(</span><span class="n">extra_args</span><span class="o">=</span><span class="s2">&quot;--list categories&quot;</span><span class="p">)</span></div>
+</div>
+
 </pre></div>
 
            </div>

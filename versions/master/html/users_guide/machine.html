@@ -12,11 +12,11 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/sphinx_highlight.js"></script>
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../_static/pop_ver.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -110,7 +110,7 @@
            <div itemprop="articleBody">
              
   <section id="defining-the-machine">
-<span id="machine"></span><h1><span class="section-number">4. </span>Defining the machine<a class="headerlink" href="#defining-the-machine" title="Permalink to this heading"></a></h1>
+<span id="machine"></span><h1><span class="section-number">4. </span>Defining the machine<a class="headerlink" href="#defining-the-machine" title="Link to this heading"></a></h1>
 <p>CIME looks at the xml node <code class="docutils literal notranslate"><span class="pre">MACHINE_SPEC_FILE</span></code> in the <strong>config_files.xml</strong> file to identify supported out-of-the-box machines for the target model. The node has the following contents:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;entry id=&quot;MACHINES_SPEC_FILE&quot;&gt;
   &lt;type&gt;char&lt;/type&gt;
@@ -124,7 +124,7 @@
 </div>
 <p>You can supplement what is in the MACHINES_SPEC_FILE by adding a config_machines.xml file to your CIME config directory.</p>
 <section id="config-machines-xml-machine-specific-file">
-<span id="machinefile"></span><h2><span class="section-number">4.1. </span>config_machines.xml - machine specific file<a class="headerlink" href="#config-machines-xml-machine-specific-file" title="Permalink to this heading"></a></h2>
+<span id="machinefile"></span><h2><span class="section-number">4.1. </span>config_machines.xml - machine specific file<a class="headerlink" href="#config-machines-xml-machine-specific-file" title="Link to this heading"></a></h2>
 <p>Each <code class="docutils literal notranslate"><span class="pre">&lt;machine&gt;</span></code> tag requires the following input:</p>
 <ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">DESC</span></code>: a text description of the machine</p></li>
@@ -209,7 +209,7 @@ These specify the arguments to the mpi executable and are dependent on your mpi 
 </ul>
 </section>
 <section id="batch-system-definition">
-<h2><span class="section-number">4.2. </span>Batch system definition<a class="headerlink" href="#batch-system-definition" title="Permalink to this heading"></a></h2>
+<h2><span class="section-number">4.2. </span>Batch system definition<a class="headerlink" href="#batch-system-definition" title="Link to this heading"></a></h2>
 <p>CIME looks at the xml node <code class="docutils literal notranslate"><span class="pre">BATCH_SPEC_FILE</span></code> in the <strong>config_files.xml</strong> file to identify supported out-of-the-box batch system details for the target model. The node has the following contents:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;entry id=&quot;BATCH_SPEC_FILE&quot;&gt;
   &lt;type&gt;char&lt;/type&gt;
@@ -223,7 +223,7 @@ These specify the arguments to the mpi executable and are dependent on your mpi 
 </div>
 </section>
 <section id="config-batch-xml-batch-directives">
-<span id="batchfile"></span><h2><span class="section-number">4.3. </span>config_batch.xml - batch directives<a class="headerlink" href="#config-batch-xml-batch-directives" title="Permalink to this heading"></a></h2>
+<span id="batchfile"></span><h2><span class="section-number">4.3. </span>config_batch.xml - batch directives<a class="headerlink" href="#config-batch-xml-batch-directives" title="Link to this heading"></a></h2>
 <p>The <strong>config_batch.xml</strong> schema is defined in <strong>$CIMEROOT/config/xml_schemas/config_batch.xsd</strong>.</p>
 <p>CIME supports these batch systems: pbs, cobalt, lsf and slurm.</p>
 <p>The entries in <strong>config_batch.xml</strong> are hierarchical.</p>
@@ -244,7 +244,7 @@ These specify the arguments to the mpi executable and are dependent on your mpi 
 <p>In addition, there is <strong>case.test</strong> job that is used by the CIME system test workflow.</p>
 </section>
 <section id="compiler-settings">
-<span id="defining-compiler-settings"></span><h2><span class="section-number">4.4. </span>Compiler settings<a class="headerlink" href="#compiler-settings" title="Permalink to this heading"></a></h2>
+<span id="defining-compiler-settings"></span><h2><span class="section-number">4.4. </span>Compiler settings<a class="headerlink" href="#compiler-settings" title="Link to this heading"></a></h2>
 <p>CIME looks at the xml element <code class="docutils literal notranslate"><span class="pre">CMAKE_MACROS_DIR</span></code> in the <strong>config_files.xml</strong> file to identify supported out-of-the-box compiler details for the target model. The node has the following contents:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;entry id=&quot;CMAKE_MACROS_DIR&quot;&gt;
   &lt;type&gt;char&lt;/type&gt;
@@ -258,7 +258,7 @@ These specify the arguments to the mpi executable and are dependent on your mpi 
 <p>Additional compilers are made avilable by adding cmake macros files to the directory pointed to by CMAKE_MACROS_DIR or to your $HOME/.cime directory.</p>
 </section>
 <section id="config-compilers-xml-compiler-paths-and-options-deprecated-use-cmake-macros">
-<span id="compilerfile"></span><h2><span class="section-number">4.5. </span>config_compilers.xml - compiler paths and options <strong>DEPRECATED use cmake_macros</strong><a class="headerlink" href="#config-compilers-xml-compiler-paths-and-options-deprecated-use-cmake-macros" title="Permalink to this heading"></a></h2>
+<span id="compilerfile"></span><h2><span class="section-number">4.5. </span>config_compilers.xml - compiler paths and options <strong>DEPRECATED use cmake_macros</strong><a class="headerlink" href="#config-compilers-xml-compiler-paths-and-options-deprecated-use-cmake-macros" title="Link to this heading"></a></h2>
 <p>The <strong>config_compilers.xml</strong> file defines compiler flags for building CIME (and also CESM and E3SM prognostic CIME-driven components).</p>
 <ol class="arabic simple">
 <li><p>General compiler flags (e.g., for the gnu compiler) that are machine- and componen-independent are listed first.</p></li>

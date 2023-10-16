@@ -11,11 +11,11 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../../_static/pop_ver.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -96,7 +96,9 @@
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="Component"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.component.Component">[docs]</a><span class="k">class</span> <span class="nc">Component</span><span class="p">(</span><span class="n">EntryID</span><span class="p">):</span>
+<div class="viewcode-block" id="Component">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.component.Component">[docs]</a>
+<span class="k">class</span> <span class="nc">Component</span><span class="p">(</span><span class="n">EntryID</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infile</span><span class="p">,</span> <span class="n">comp_class</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        initialize a Component obect from the component xml file in infile</span>
@@ -118,11 +120,16 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">validate_xml_file</span><span class="p">(</span><span class="n">infile</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span>
 
     <span class="c1"># pylint: disable=arguments-differ</span>
-<div class="viewcode-block" id="Component.get_value"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.component.Component.get_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">resolved</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Component.get_value">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.component.Component.get_value">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">resolved</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">expect</span><span class="p">(</span><span class="n">subgroup</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;This class does not support subgroups&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">EntryID</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">attribute</span><span class="p">,</span> <span class="n">resolved</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Component.get_valid_model_components"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.component.Component.get_valid_model_components">[docs]</a>    <span class="k">def</span> <span class="nf">get_valid_model_components</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Component.get_valid_model_components">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.component.Component.get_valid_model_components">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_valid_model_components</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        return a list of all possible valid generic (e.g. atm, clm, ...) model components</span>
 <span class="sd">        from the entries in the model CONFIG_CPL_FILE</span>
@@ -132,6 +139,7 @@
         <span class="n">comps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_default_value</span><span class="p">(</span><span class="n">comps_node</span><span class="p">)</span>
         <span class="n">components</span> <span class="o">=</span> <span class="n">comps</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">components</span></div>
+
 
     <span class="k">def</span> <span class="nf">_get_value_match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">exact_match</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -217,17 +225,23 @@
         <span class="k">return</span> <span class="n">match_value</span>
 
     <span class="c1"># pylint: disable=arguments-differ</span>
-<div class="viewcode-block" id="Component.get_description"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.component.Component.get_description">[docs]</a>    <span class="k">def</span> <span class="nf">get_description</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compsetname</span><span class="p">):</span>
+<div class="viewcode-block" id="Component.get_description">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.component.Component.get_description">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_description</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compsetname</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_version</span><span class="p">()</span> <span class="o">==</span> <span class="mf">3.0</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_description_v3</span><span class="p">(</span><span class="n">compsetname</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_comp_class</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_description_v2</span><span class="p">(</span><span class="n">compsetname</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Component.get_forcing_description"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.component.Component.get_forcing_description">[docs]</a>    <span class="k">def</span> <span class="nf">get_forcing_description</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compsetname</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Component.get_forcing_description">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.component.Component.get_forcing_description">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_forcing_description</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compsetname</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_version</span><span class="p">()</span> <span class="o">==</span> <span class="mf">3.0</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_description_v3</span><span class="p">(</span><span class="n">compsetname</span><span class="p">,</span> <span class="s2">&quot;forcing&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="s2">&quot;&quot;</span></div>
+
 
     <span class="k">def</span> <span class="nf">_get_description_v3</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compsetname</span><span class="p">,</span> <span class="n">comp_class</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -402,7 +416,9 @@
 
         <span class="k">return</span> <span class="n">desc</span>
 
-<div class="viewcode-block" id="Component.print_values"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.component.Component.print_values">[docs]</a>    <span class="k">def</span> <span class="nf">print_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Component.print_values">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.component.Component.print_values">[docs]</a>
+    <span class="k">def</span> <span class="nf">print_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        print values for help and description in target config_component.xml file</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -415,7 +431,10 @@
             <span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span><span class="s2">&quot;desc&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">entry</span><span class="p">))</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;   </span><span class="si">{:20s}</span><span class="s2"> : </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">text</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)))</span></div>
 
-<div class="viewcode-block" id="Component.return_values"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.component.Component.return_values">[docs]</a>    <span class="k">def</span> <span class="nf">return_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Component.return_values">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.component.Component.return_values">[docs]</a>
+    <span class="k">def</span> <span class="nf">return_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        return a list of hashes from target config_component.xml file</span>
 <span class="sd">        This routine is used by external tools in https://github.com/NCAR/CESM_xml2html</span>
@@ -449,7 +468,9 @@
             <span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
         <span class="n">entry_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;items&quot;</span><span class="p">:</span> <span class="n">items</span><span class="p">}</span>
 
-        <span class="k">return</span> <span class="n">helptext</span><span class="p">,</span> <span class="n">entry_dict</span></div></div>
+        <span class="k">return</span> <span class="n">helptext</span><span class="p">,</span> <span class="n">entry_dict</span></div>
+</div>
+
 </pre></div>
 
            </div>

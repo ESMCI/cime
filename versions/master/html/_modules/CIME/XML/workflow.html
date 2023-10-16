@@ -11,11 +11,11 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../../_static/pop_ver.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -96,7 +96,9 @@
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="Workflow"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.workflow.Workflow">[docs]</a><span class="k">class</span> <span class="nc">Workflow</span><span class="p">(</span><span class="n">GenericXML</span><span class="p">):</span>
+<div class="viewcode-block" id="Workflow">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.workflow.Workflow">[docs]</a>
+<span class="k">class</span> <span class="nc">Workflow</span><span class="p">(</span><span class="n">GenericXML</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        initialize an object</span>
@@ -117,7 +119,9 @@
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">infile</span><span class="p">):</span>
             <span class="n">GenericXML</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infile</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Workflow.get_workflow_jobs"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.workflow.Workflow.get_workflow_jobs">[docs]</a>    <span class="k">def</span> <span class="nf">get_workflow_jobs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">machine</span><span class="p">,</span> <span class="n">workflowid</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="Workflow.get_workflow_jobs">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.workflow.Workflow.get_workflow_jobs">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_workflow_jobs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">machine</span><span class="p">,</span> <span class="n">workflowid</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a list of jobs with the first element the name of the script</span>
 <span class="sd">        and the second a dict of qualifiers for the job</span>
@@ -168,7 +172,9 @@
 
                 <span class="n">jobs</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">name</span><span class="p">,</span> <span class="n">jdict</span><span class="p">))</span>
 
-        <span class="k">return</span> <span class="n">jobs</span></div></div>
+        <span class="k">return</span> <span class="n">jobs</span></div>
+</div>
+
 </pre></div>
 
            </div>

@@ -11,11 +11,11 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../../_static/pop_ver.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -436,7 +436,9 @@
 
 
 <span class="c1">###############################################################################</span>
-<div class="viewcode-block" id="get_histfiles_for_restarts"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.get_histfiles_for_restarts">[docs]</a><span class="k">def</span> <span class="nf">get_histfiles_for_restarts</span><span class="p">(</span>
+<div class="viewcode-block" id="get_histfiles_for_restarts">
+<a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.get_histfiles_for_restarts">[docs]</a>
+<span class="k">def</span> <span class="nf">get_histfiles_for_restarts</span><span class="p">(</span>
     <span class="n">rundir</span><span class="p">,</span> <span class="n">archive</span><span class="p">,</span> <span class="n">archive_entry</span><span class="p">,</span> <span class="n">restfile</span><span class="p">,</span> <span class="n">testonly</span><span class="o">=</span><span class="kc">False</span>
 <span class="p">):</span>
     <span class="c1">###############################################################################</span>
@@ -492,6 +494,7 @@
                             <span class="p">)</span>
                         <span class="p">)</span>
     <span class="k">return</span> <span class="n">histfiles</span></div>
+
 
 
 <span class="c1">###############################################################################</span>
@@ -996,7 +999,9 @@
 
 
 <span class="c1">###############################################################################</span>
-<div class="viewcode-block" id="restore_from_archive"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.restore_from_archive">[docs]</a><span class="k">def</span> <span class="nf">restore_from_archive</span><span class="p">(</span>
+<div class="viewcode-block" id="restore_from_archive">
+<a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.restore_from_archive">[docs]</a>
+<span class="k">def</span> <span class="nf">restore_from_archive</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span> <span class="n">rest_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dout_s_root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rundir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="kc">False</span>
 <span class="p">):</span>
     <span class="c1">###############################################################################</span>
@@ -1039,8 +1044,11 @@
         <span class="n">safe_copy</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">rundir</span><span class="p">)</span></div>
 
 
+
 <span class="c1">###############################################################################</span>
-<div class="viewcode-block" id="archive_last_restarts"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.archive_last_restarts">[docs]</a><span class="k">def</span> <span class="nf">archive_last_restarts</span><span class="p">(</span>
+<div class="viewcode-block" id="archive_last_restarts">
+<a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.archive_last_restarts">[docs]</a>
+<span class="k">def</span> <span class="nf">archive_last_restarts</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span> <span class="n">archive_restdir</span><span class="p">,</span> <span class="n">rundir</span><span class="p">,</span> <span class="n">last_date</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">link_to_restart_files</span><span class="o">=</span><span class="kc">False</span>
 <span class="p">):</span>
     <span class="c1">###############################################################################</span>
@@ -1081,8 +1089,11 @@
     <span class="p">)</span></div>
 
 
+
 <span class="c1">###############################################################################</span>
-<div class="viewcode-block" id="case_st_archive"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.case_st_archive">[docs]</a><span class="k">def</span> <span class="nf">case_st_archive</span><span class="p">(</span>
+<div class="viewcode-block" id="case_st_archive">
+<a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.case_st_archive">[docs]</a>
+<span class="k">def</span> <span class="nf">case_st_archive</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">last_date_str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">archive_incomplete_logs</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -1170,7 +1181,10 @@
     <span class="k">return</span> <span class="kc">True</span></div>
 
 
-<div class="viewcode-block" id="test_st_archive"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.test_st_archive">[docs]</a><span class="k">def</span> <span class="nf">test_st_archive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">testdir</span><span class="o">=</span><span class="s2">&quot;st_archive_test&quot;</span><span class="p">):</span>
+
+<div class="viewcode-block" id="test_st_archive">
+<a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.test_st_archive">[docs]</a>
+<span class="k">def</span> <span class="nf">test_st_archive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">testdir</span><span class="o">=</span><span class="s2">&quot;st_archive_test&quot;</span><span class="p">):</span>
     <span class="n">files</span> <span class="o">=</span> <span class="n">Files</span><span class="p">()</span>
     <span class="n">archive</span> <span class="o">=</span> <span class="n">Archive</span><span class="p">(</span><span class="n">files</span><span class="o">=</span><span class="n">files</span><span class="p">)</span>
     <span class="n">components</span> <span class="o">=</span> <span class="p">[]</span>
@@ -1243,7 +1257,10 @@
     <span class="k">return</span> <span class="kc">True</span></div>
 
 
-<div class="viewcode-block" id="test_env_archive"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.test_env_archive">[docs]</a><span class="k">def</span> <span class="nf">test_env_archive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">testdir</span><span class="o">=</span><span class="s2">&quot;env_archive_test&quot;</span><span class="p">):</span>
+
+<div class="viewcode-block" id="test_env_archive">
+<a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.test_env_archive">[docs]</a>
+<span class="k">def</span> <span class="nf">test_env_archive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">testdir</span><span class="o">=</span><span class="s2">&quot;env_archive_test&quot;</span><span class="p">):</span>
     <span class="n">components</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_values</span><span class="p">(</span><span class="s2">&quot;COMP_CLASSES&quot;</span><span class="p">)</span>
     <span class="n">comps_in_case</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="c1"># create the run directory testdir and populate it with rest_file and hist_file from</span>
@@ -1272,7 +1289,9 @@
 
     <span class="k">for</span> <span class="n">comp_archive_spec</span> <span class="ow">in</span> <span class="n">comp_archive_specs</span><span class="p">:</span>
         <span class="n">comp_expected</span> <span class="o">=</span> <span class="n">archive</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">comp_archive_spec</span><span class="p">,</span> <span class="s2">&quot;compname&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">comp_expected</span> <span class="o">==</span> <span class="s2">&quot;ww3&quot;</span><span class="p">:</span>
+        <span class="c1"># Rename ww3 component when case and archive names don&#39;t match,</span>
+        <span class="c1"># specific to CESM.</span>
+        <span class="k">if</span> <span class="n">comp_expected</span> <span class="o">==</span> <span class="s2">&quot;ww3&quot;</span> <span class="ow">and</span> <span class="s2">&quot;ww&quot;</span> <span class="ow">in</span> <span class="n">comps_in_case</span><span class="p">:</span>
             <span class="n">comp_expected</span> <span class="o">=</span> <span class="s2">&quot;ww&quot;</span>
         <span class="n">comp_class</span> <span class="o">=</span> <span class="n">archive</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">comp_archive_spec</span><span class="p">,</span> <span class="s2">&quot;compclass&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">comp_class</span> <span class="ow">in</span> <span class="n">components</span><span class="p">:</span>
@@ -1347,6 +1366,7 @@
         <span class="p">)</span>
 
     <span class="k">return</span> <span class="kc">True</span></div>
+
 
 
 <span class="k">def</span> <span class="nf">_check_disposition</span><span class="p">(</span><span class="n">testdir</span><span class="p">):</span>

@@ -11,11 +11,11 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../../_static/pop_ver.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -99,8 +99,12 @@
 <span class="kn">from</span> <span class="nn">CIME.tests</span> <span class="kn">import</span> <span class="n">base</span>
 
 
-<div class="viewcode-block" id="TestTestScheduler"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_test_scheduler.TestTestScheduler">[docs]</a><span class="k">class</span> <span class="nc">TestTestScheduler</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">BaseTestCase</span><span class="p">):</span>
-<div class="viewcode-block" id="TestTestScheduler.test_chksum"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_test_scheduler.TestTestScheduler.test_chksum">[docs]</a>    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;time.strftime&quot;</span><span class="p">,</span> <span class="n">return_value</span><span class="o">=</span><span class="s2">&quot;00:00:00&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="TestTestScheduler">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_test_scheduler.TestTestScheduler">[docs]</a>
+<span class="k">class</span> <span class="nc">TestTestScheduler</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">BaseTestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestTestScheduler.test_chksum">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_test_scheduler.TestTestScheduler.test_chksum">[docs]</a>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;time.strftime&quot;</span><span class="p">,</span> <span class="n">return_value</span><span class="o">=</span><span class="s2">&quot;00:00:00&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">test_chksum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">strftime</span><span class="p">):</span>  <span class="c1"># pylint: disable=unused-argument</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">test_mode</span> <span class="o">==</span> <span class="s2">&quot;e3sm&quot;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">skipTest</span><span class="p">(</span><span class="s2">&quot;Skipping chksum test. Depends on CESM settings&quot;</span><span class="p">)</span>
@@ -124,7 +128,10 @@
                 <span class="n">from_dir</span><span class="o">=</span><span class="s2">&quot;/tests/SEQ_Ln9.f19_g16_rx1.A.cori-haswell_gnu.00:00:00&quot;</span><span class="p">,</span>
             <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestTestScheduler.test_a_phases"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_test_scheduler.TestTestScheduler.test_a_phases">[docs]</a>    <span class="k">def</span> <span class="nf">test_a_phases</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestTestScheduler.test_a_phases">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_test_scheduler.TestTestScheduler.test_a_phases">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_a_phases</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># exclude the MEMLEAK tests here.</span>
         <span class="n">tests</span> <span class="o">=</span> <span class="n">get_tests</span><span class="o">.</span><span class="n">get_full_test_names</span><span class="p">(</span>
             <span class="p">[</span>
@@ -236,7 +243,10 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">ct</span><span class="o">.</span><span class="n">_is_broken</span><span class="p">(</span><span class="n">test</span><span class="p">))</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">ct</span><span class="o">.</span><span class="n">_work_remains</span><span class="p">(</span><span class="n">test</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="TestTestScheduler.test_b_full"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_test_scheduler.TestTestScheduler.test_b_full">[docs]</a>    <span class="k">def</span> <span class="nf">test_b_full</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestTestScheduler.test_b_full">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_test_scheduler.TestTestScheduler.test_b_full">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_b_full</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">tests</span> <span class="o">=</span> <span class="n">get_tests</span><span class="o">.</span><span class="n">get_full_test_names</span><span class="p">(</span>
             <span class="p">[</span><span class="s2">&quot;cime_test_only&quot;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_machine</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compiler</span>
         <span class="p">)</span>
@@ -365,7 +375,10 @@
                         <span class="n">test_status</span><span class="o">.</span><span class="n">TEST_PASS_STATUS</span><span class="p">,</span>
                     <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestTestScheduler.test_force_rebuild"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_test_scheduler.TestTestScheduler.test_force_rebuild">[docs]</a>    <span class="k">def</span> <span class="nf">test_force_rebuild</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestTestScheduler.test_force_rebuild">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_test_scheduler.TestTestScheduler.test_force_rebuild">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_force_rebuild</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">tests</span> <span class="o">=</span> <span class="n">get_tests</span><span class="o">.</span><span class="n">get_full_test_names</span><span class="p">(</span>
             <span class="p">[</span>
                 <span class="s2">&quot;TESTBUILDFAIL_P1.f19_g16_rx1.A&quot;</span><span class="p">,</span>
@@ -419,7 +432,10 @@
                 <span class="o">==</span> <span class="n">test_status</span><span class="o">.</span><span class="n">TEST_PEND_STATUS</span>
             <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestTestScheduler.test_c_use_existing"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_test_scheduler.TestTestScheduler.test_c_use_existing">[docs]</a>    <span class="k">def</span> <span class="nf">test_c_use_existing</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestTestScheduler.test_c_use_existing">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_test_scheduler.TestTestScheduler.test_c_use_existing">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_c_use_existing</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">tests</span> <span class="o">=</span> <span class="n">get_tests</span><span class="o">.</span><span class="n">get_full_test_names</span><span class="p">(</span>
             <span class="p">[</span>
                 <span class="s2">&quot;TESTBUILDFAIL_P1.f19_g16_rx1.A&quot;</span><span class="p">,</span>
@@ -579,7 +595,10 @@
                 <span class="n">test_name</span><span class="p">,</span> <span class="n">ts</span><span class="p">,</span> <span class="n">test_status</span><span class="o">.</span><span class="n">RUN_PHASE</span><span class="p">,</span> <span class="n">test_status</span><span class="o">.</span><span class="n">TEST_PASS_STATUS</span>
             <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestTestScheduler.test_d_retry"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_test_scheduler.TestTestScheduler.test_d_retry">[docs]</a>    <span class="k">def</span> <span class="nf">test_d_retry</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestTestScheduler.test_d_retry">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_test_scheduler.TestTestScheduler.test_d_retry">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_d_retry</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">args</span> <span class="o">=</span> <span class="p">[</span>
             <span class="s2">&quot;TESTBUILDFAIL_P1.f19_g16_rx1.A&quot;</span><span class="p">,</span>
             <span class="s2">&quot;TESTRUNFAILRESET_P1.f19_g16_rx1.A&quot;</span><span class="p">,</span>
@@ -589,7 +608,10 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_create_test</span><span class="p">(</span><span class="n">args</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestTestScheduler.test_e_test_inferred_compiler"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_test_scheduler.TestTestScheduler.test_e_test_inferred_compiler">[docs]</a>    <span class="k">def</span> <span class="nf">test_e_test_inferred_compiler</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestTestScheduler.test_e_test_inferred_compiler">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_test_scheduler.TestTestScheduler.test_e_test_inferred_compiler">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_e_test_inferred_compiler</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">test_mode</span> <span class="o">!=</span> <span class="s2">&quot;e3sm&quot;</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_machine</span> <span class="o">!=</span> <span class="s2">&quot;docker&quot;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">skipTest</span><span class="p">(</span><span class="s2">&quot;Skipping create_test test. Depends on E3SM settings&quot;</span><span class="p">)</span>
 
@@ -599,7 +621,9 @@
         <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_cmd_assert_result</span><span class="p">(</span>
             <span class="s2">&quot;./xmlquery --value BASELINE_ROOT&quot;</span><span class="p">,</span> <span class="n">from_dir</span><span class="o">=</span><span class="n">case</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">result</span><span class="p">)[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;gnuX&quot;</span><span class="p">)</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">result</span><span class="p">)[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;gnuX&quot;</span><span class="p">)</span></div>
+</div>
+
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>

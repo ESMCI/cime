@@ -11,11 +11,11 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../../_static/pop_ver.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -99,7 +99,9 @@
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="HommeBase"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.hommebaseclass.HommeBase">[docs]</a><span class="k">class</span> <span class="nc">HommeBase</span><span class="p">(</span><span class="n">SystemTestsCommon</span><span class="p">):</span>
+<div class="viewcode-block" id="HommeBase">
+<a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.hommebaseclass.HommeBase">[docs]</a>
+<span class="k">class</span> <span class="nc">HommeBase</span><span class="p">(</span><span class="n">SystemTestsCommon</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        initialize an object interface to the SMS system test</span>
@@ -109,7 +111,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">csnd</span> <span class="o">=</span> <span class="s2">&quot;not defined&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cmakesuffix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">csnd</span>
 
-<div class="viewcode-block" id="HommeBase.build_phase"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.hommebaseclass.HommeBase.build_phase">[docs]</a>    <span class="k">def</span> <span class="nf">build_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sharedlib_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">model_only</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="HommeBase.build_phase">
+<a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.hommebaseclass.HommeBase.build_phase">[docs]</a>
+    <span class="k">def</span> <span class="nf">build_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sharedlib_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">model_only</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">sharedlib_only</span><span class="p">:</span>
             <span class="c1"># Build HOMME</span>
             <span class="n">srcroot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;SRCROOT&quot;</span><span class="p">)</span>
@@ -156,7 +160,10 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="p">,</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">exeroot</span><span class="p">,</span> <span class="s2">&quot;homme.bldlog&quot;</span><span class="p">)],</span> <span class="n">build_complete</span><span class="o">=</span><span class="kc">True</span>
             <span class="p">)</span></div>
 
-<div class="viewcode-block" id="HommeBase.run_phase"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.hommebaseclass.HommeBase.run_phase">[docs]</a>    <span class="k">def</span> <span class="nf">run_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="HommeBase.run_phase">
+<a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.hommebaseclass.HommeBase.run_phase">[docs]</a>
+    <span class="k">def</span> <span class="nf">run_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="n">rundir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">)</span>
         <span class="n">exeroot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;EXEROOT&quot;</span><span class="p">)</span>
@@ -219,6 +226,7 @@
 
         <span class="n">expect</span><span class="p">(</span><span class="n">stat</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;RUN FAIL for HOMME&quot;</span><span class="p">)</span></div>
 
+
     <span class="c1"># Homme is a bit of an oddball test since it&#39;s not really running the E3SM model</span>
     <span class="c1"># We need to override some methods to make the core infrastructure work.</span>
 
@@ -229,6 +237,7 @@
     <span class="k">def</span> <span class="nf">_compare_baseline</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span><span class="n">BASELINE_PHASE</span><span class="p">,</span> <span class="n">TEST_PASS_STATUS</span><span class="p">)</span></div>
+
 </pre></div>
 
            </div>

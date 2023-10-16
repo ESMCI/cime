@@ -11,11 +11,11 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../../_static/pop_ver.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -101,7 +101,9 @@
 <span class="kn">from</span> <span class="nn">CIME.XML.machines</span> <span class="kn">import</span> <span class="n">Machines</span>
 
 
-<div class="viewcode-block" id="typed_os_environ"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.base.typed_os_environ">[docs]</a><span class="k">def</span> <span class="nf">typed_os_environ</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">default_value</span><span class="p">,</span> <span class="n">expected_type</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="typed_os_environ">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.base.typed_os_environ">[docs]</a>
+<span class="k">def</span> <span class="nf">typed_os_environ</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">default_value</span><span class="p">,</span> <span class="n">expected_type</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="c1"># Infer type if not explicitly set</span>
     <span class="n">dst_type</span> <span class="o">=</span> <span class="n">expected_type</span> <span class="ow">or</span> <span class="nb">type</span><span class="p">(</span><span class="n">default_value</span><span class="p">)</span>
 
@@ -117,7 +119,10 @@
     <span class="k">return</span> <span class="n">dst_type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="BaseTestCase"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.base.BaseTestCase">[docs]</a><span class="k">class</span> <span class="nc">BaseTestCase</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+
+<div class="viewcode-block" id="BaseTestCase">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.base.BaseTestCase">[docs]</a>
+<span class="k">class</span> <span class="nc">BaseTestCase</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
     <span class="c1"># These static values are set when scripts/lib/CIME/tests/scripts_regression_tests.py is called.</span>
     <span class="n">MACHINE</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">SCRIPT_DIR</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_scripts_root</span><span class="p">()</span>
@@ -132,7 +137,9 @@
     <span class="n">NO_TEARDOWN</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">GLOBAL_TIMEOUT</span> <span class="o">=</span> <span class="kc">None</span>
 
-<div class="viewcode-block" id="BaseTestCase.setUp"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.base.BaseTestCase.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="BaseTestCase.setUp">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.base.BaseTestCase.setUp">[docs]</a>
+    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_thread_error</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_unset_proxy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">setup_proxy</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_machine</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">MACHINE</span><span class="o">.</span><span class="n">get_machine_name</span><span class="p">()</span>
@@ -151,7 +158,10 @@
         <span class="n">customize_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">get_src_root</span><span class="p">(),</span> <span class="s2">&quot;cime_config&quot;</span><span class="p">,</span> <span class="s2">&quot;customize&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_config</span> <span class="o">=</span> <span class="n">Config</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">customize_path</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="BaseTestCase.tearDown"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.base.BaseTestCase.tearDown">[docs]</a>    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="BaseTestCase.tearDown">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.base.BaseTestCase.tearDown">[docs]</a>
+    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">kill_subprocesses</span><span class="p">()</span>
 
         <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root_dir</span><span class="p">)</span>
@@ -187,7 +197,10 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">file_to_clean</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="BaseTestCase.assert_test_status"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.base.BaseTestCase.assert_test_status">[docs]</a>    <span class="k">def</span> <span class="nf">assert_test_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test_name</span><span class="p">,</span> <span class="n">test_status_obj</span><span class="p">,</span> <span class="n">test_phase</span><span class="p">,</span> <span class="n">expected_stat</span><span class="p">):</span>
+
+<div class="viewcode-block" id="BaseTestCase.assert_test_status">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.base.BaseTestCase.assert_test_status">[docs]</a>
+    <span class="k">def</span> <span class="nf">assert_test_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test_name</span><span class="p">,</span> <span class="n">test_status_obj</span><span class="p">,</span> <span class="n">test_phase</span><span class="p">,</span> <span class="n">expected_stat</span><span class="p">):</span>
         <span class="n">test_status</span> <span class="o">=</span> <span class="n">test_status_obj</span><span class="o">.</span><span class="n">get_status</span><span class="p">(</span><span class="n">test_phase</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
             <span class="n">test_status</span><span class="p">,</span>
@@ -197,7 +210,10 @@
             <span class="p">),</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="BaseTestCase.run_cmd_assert_result"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.base.BaseTestCase.run_cmd_assert_result">[docs]</a>    <span class="k">def</span> <span class="nf">run_cmd_assert_result</span><span class="p">(</span>
+
+<div class="viewcode-block" id="BaseTestCase.run_cmd_assert_result">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.base.BaseTestCase.run_cmd_assert_result">[docs]</a>
+    <span class="k">def</span> <span class="nf">run_cmd_assert_result</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="n">from_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">expected_stat</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">env</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span>
     <span class="p">):</span>
         <span class="n">from_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span> <span class="k">if</span> <span class="n">from_dir</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">from_dir</span>
@@ -228,7 +244,10 @@
 
         <span class="k">return</span> <span class="n">output</span></div>
 
-<div class="viewcode-block" id="BaseTestCase.setup_proxy"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.base.BaseTestCase.setup_proxy">[docs]</a>    <span class="k">def</span> <span class="nf">setup_proxy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="BaseTestCase.setup_proxy">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.base.BaseTestCase.setup_proxy">[docs]</a>
+    <span class="k">def</span> <span class="nf">setup_proxy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="s2">&quot;http_proxy&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
             <span class="n">proxy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">MACHINE</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;PROXY&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">proxy</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -237,7 +256,10 @@
 
         <span class="k">return</span> <span class="kc">False</span></div>
 
-<div class="viewcode-block" id="BaseTestCase.assert_dashboard_has_build"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.base.BaseTestCase.assert_dashboard_has_build">[docs]</a>    <span class="k">def</span> <span class="nf">assert_dashboard_has_build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">build_name</span><span class="p">,</span> <span class="n">expected_count</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+
+<div class="viewcode-block" id="BaseTestCase.assert_dashboard_has_build">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.base.BaseTestCase.assert_dashboard_has_build">[docs]</a>
+    <span class="k">def</span> <span class="nf">assert_dashboard_has_build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">build_name</span><span class="p">,</span> <span class="n">expected_count</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
         <span class="c1"># Do not test E3SM dashboard if model is CESM</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">test_mode</span> <span class="o">==</span> <span class="s2">&quot;e3sm&quot;</span><span class="p">:</span>
             <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>  <span class="c1"># Give chance for cdash to update</span>
@@ -260,7 +282,10 @@
                 <span class="o">%</span> <span class="p">(</span><span class="n">build_name</span><span class="p">,</span> <span class="n">expected_count</span><span class="p">,</span> <span class="n">num_found</span><span class="p">),</span>
             <span class="p">)</span></div>
 
-<div class="viewcode-block" id="BaseTestCase.kill_subprocesses"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.base.BaseTestCase.kill_subprocesses">[docs]</a>    <span class="k">def</span> <span class="nf">kill_subprocesses</span><span class="p">(</span>
+
+<div class="viewcode-block" id="BaseTestCase.kill_subprocesses">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.base.BaseTestCase.kill_subprocesses">[docs]</a>
+    <span class="k">def</span> <span class="nf">kill_subprocesses</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sig</span><span class="o">=</span><span class="n">signal</span><span class="o">.</span><span class="n">SIGKILL</span><span class="p">,</span> <span class="n">expected_num_killed</span><span class="o">=</span><span class="kc">None</span>
     <span class="p">):</span>
         <span class="c1"># Kill all subprocesses</span>
@@ -278,8 +303,12 @@
             <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
                 <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="BaseTestCase.kill_python_subprocesses"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.base.BaseTestCase.kill_python_subprocesses">[docs]</a>    <span class="k">def</span> <span class="nf">kill_python_subprocesses</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sig</span><span class="o">=</span><span class="n">signal</span><span class="o">.</span><span class="n">SIGKILL</span><span class="p">,</span> <span class="n">expected_num_killed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="BaseTestCase.kill_python_subprocesses">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.base.BaseTestCase.kill_python_subprocesses">[docs]</a>
+    <span class="k">def</span> <span class="nf">kill_python_subprocesses</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sig</span><span class="o">=</span><span class="n">signal</span><span class="o">.</span><span class="n">SIGKILL</span><span class="p">,</span> <span class="n">expected_num_killed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">kill_subprocesses</span><span class="p">(</span><span class="s2">&quot;[Pp]ython&quot;</span><span class="p">,</span> <span class="n">sig</span><span class="p">,</span> <span class="n">expected_num_killed</span><span class="p">)</span></div>
+
 
     <span class="k">def</span> <span class="nf">_create_test</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -366,7 +395,9 @@
                 <span class="n">expected_stat</span><span class="o">=</span><span class="n">expected_stat</span><span class="p">,</span>
             <span class="p">)</span>
 
-<div class="viewcode-block" id="BaseTestCase.get_casedir"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.base.BaseTestCase.get_casedir">[docs]</a>    <span class="k">def</span> <span class="nf">get_casedir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case_fragment</span><span class="p">,</span> <span class="n">all_cases</span><span class="p">):</span>
+<div class="viewcode-block" id="BaseTestCase.get_casedir">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.base.BaseTestCase.get_casedir">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_casedir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case_fragment</span><span class="p">,</span> <span class="n">all_cases</span><span class="p">):</span>
         <span class="n">potential_matches</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">all_cases</span> <span class="k">if</span> <span class="n">case_fragment</span> <span class="ow">in</span> <span class="n">item</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span>
             <span class="nb">len</span><span class="p">(</span><span class="n">potential_matches</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span>
@@ -376,7 +407,10 @@
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">potential_matches</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="BaseTestCase.verify_perms"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.base.BaseTestCase.verify_perms">[docs]</a>    <span class="k">def</span> <span class="nf">verify_perms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root_dir</span><span class="p">):</span>
+
+<div class="viewcode-block" id="BaseTestCase.verify_perms">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.base.BaseTestCase.verify_perms">[docs]</a>
+    <span class="k">def</span> <span class="nf">verify_perms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root_dir</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">dirs</span><span class="p">,</span> <span class="n">files</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">root_dir</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
                 <span class="n">full_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
@@ -417,7 +451,9 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span>
                     <span class="n">st</span><span class="o">.</span><span class="n">st_mode</span> <span class="o">&amp;</span> <span class="n">stat</span><span class="o">.</span><span class="n">S_IXOTH</span><span class="p">,</span>
                     <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;dir </span><span class="si">{}</span><span class="s2"> is not world executable&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">full_path</span><span class="p">),</span>
-                <span class="p">)</span></div></div>
+                <span class="p">)</span></div>
+</div>
+
 </pre></div>
 
            </div>

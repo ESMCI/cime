@@ -12,11 +12,11 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/sphinx_highlight.js"></script>
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../_static/pop_ver.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -106,9 +106,9 @@
            <div itemprop="articleBody">
              
   <section id="troubleshooting">
-<span id="id1"></span><h1><span class="section-number">10. </span>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permalink to this heading"></a></h1>
+<span id="id1"></span><h1><span class="section-number">10. </span>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Link to this heading"></a></h1>
 <section id="troubleshooting-case-creation">
-<h2><span class="section-number">10.1. </span>Troubleshooting case creation<a class="headerlink" href="#troubleshooting-case-creation" title="Permalink to this heading"></a></h2>
+<h2><span class="section-number">10.1. </span>Troubleshooting case creation<a class="headerlink" href="#troubleshooting-case-creation" title="Link to this heading"></a></h2>
 <p>Generally, <a class="reference external" href="../Tools_user/create_newcase.html">create_newcase</a> errors are reported to the terminal and should provide some guidance about what caused them.</p>
 <p>If <a class="reference external" href="../Tools_user/create_newcase.html">create_newcase</a> fails on a relatively generic error, first check to make sure the command-line arguments match the interface’s specification. See the help text to review usage.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">create_newcase</span> <span class="o">--</span><span class="n">help</span>
@@ -116,11 +116,11 @@
 </div>
 </section>
 <section id="troubleshooting-problems-in-cime-scripts">
-<h2><span class="section-number">10.2. </span>Troubleshooting problems in cime scripts<a class="headerlink" href="#troubleshooting-problems-in-cime-scripts" title="Permalink to this heading"></a></h2>
+<h2><span class="section-number">10.2. </span>Troubleshooting problems in cime scripts<a class="headerlink" href="#troubleshooting-problems-in-cime-scripts" title="Link to this heading"></a></h2>
 <p>If any of the python-based cime scripts are dying in a mysterious way, more information can be obtained by rerunning the script with the <code class="docutils literal notranslate"><span class="pre">--debug</span></code> option.</p>
 </section>
 <section id="troubleshooting-job-submission">
-<h2><span class="section-number">10.3. </span>Troubleshooting job submission<a class="headerlink" href="#troubleshooting-job-submission" title="Permalink to this heading"></a></h2>
+<h2><span class="section-number">10.3. </span>Troubleshooting job submission<a class="headerlink" href="#troubleshooting-job-submission" title="Link to this heading"></a></h2>
 <p>Most problems associated with submission or launch are site-specific.
 The batch and run aspects of the <a class="reference external" href="../Tools_user/case.submit.html">case.submit</a> script are created by parsing the variables in <strong>$CASEROOT/env_batch.xml</strong> file.</p>
 <p>Take these steps to check for problems:</p>
@@ -130,7 +130,7 @@ The batch and run aspects of the <a class="reference external" href="../Tools_us
 </ol>
 </section>
 <section id="troubleshooting-runtime-problems">
-<h2><span class="section-number">10.4. </span>Troubleshooting runtime problems<a class="headerlink" href="#troubleshooting-runtime-problems" title="Permalink to this heading"></a></h2>
+<h2><span class="section-number">10.4. </span>Troubleshooting runtime problems<a class="headerlink" href="#troubleshooting-runtime-problems" title="Link to this heading"></a></h2>
 <p>To see if a run completed successfully, check the last several lines of the <strong>cpl.log</strong> file for a string like <code class="docutils literal notranslate"><span class="pre">SUCCESSFUL</span> <span class="pre">TERMINATION</span></code>. A successful job also usually copies the log files to the <strong>$CASEROOT/logs</strong> directory.</p>
 <p>Check these things first when a job fails:</p>
 <ul class="simple">

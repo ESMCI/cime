@@ -12,6 +12,7 @@ Subpackages
    CIME.SystemTests
    CIME.Tools
    CIME.XML
+   CIME.baselines
    CIME.build_scripts
    CIME.case
    CIME.data

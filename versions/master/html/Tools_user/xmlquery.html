@@ -12,11 +12,11 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/sphinx_highlight.js"></script>
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../_static/pop_ver.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -142,7 +142,7 @@
            <div itemprop="articleBody">
              
   <section id="xmlquery">
-<span id="id1"></span><h1>xmlquery<a class="headerlink" href="#xmlquery" title="Permalink to this heading"></a></h1>
+<span id="id1"></span><h1>xmlquery<a class="headerlink" href="#xmlquery" title="Link to this heading"></a></h1>
 <p><strong>xmlquery</strong> is a script in CIMEROOT/CIME/Tools.</p>
 <div class="toctree-wrapper compound">
 </div>
@@ -254,9 +254,6 @@ positional arguments:
 
 options:
   -h, --help            show this help message and exit
-  -d, --debug           Print debug information (very verbose) to file /home/runner/work/cime/cime/CIME/Tools/xmlquery.log
-  -v, --verbose         Add additional context (time and file) to log messages
-  -s, --silent          Print only warnings and error messages
   --caseroot CASEROOT, -caseroot CASEROOT
                         Case directory to reference.
                         Default is current directory.
@@ -281,6 +278,11 @@ options:
   --get-group           Print the group associated with each variable.
   --type                Print the data type associated with each variable.
   --valid-values        Print the valid values associated with each variable, if defined.
+
+Logging options:
+  -d, --debug           Print debug information (very verbose) to file /home/runner/work/cime/cime/CIME/Tools/xmlquery.log
+  -v, --verbose         Add additional context (time and file) to log messages
+  -s, --silent          Print only warnings and error messages
 </pre></div>
 </div>
 </section>

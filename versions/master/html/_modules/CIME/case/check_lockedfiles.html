@@ -11,11 +11,11 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../../_static/pop_ver.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -103,7 +103,9 @@
 <span class="kn">import</span> <span class="nn">glob</span>
 
 
-<div class="viewcode-block" id="check_pelayouts_require_rebuild"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.check_pelayouts_require_rebuild">[docs]</a><span class="k">def</span> <span class="nf">check_pelayouts_require_rebuild</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">models</span><span class="p">):</span>
+<div class="viewcode-block" id="check_pelayouts_require_rebuild">
+<a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.check_pelayouts_require_rebuild">[docs]</a>
+<span class="k">def</span> <span class="nf">check_pelayouts_require_rebuild</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">models</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create if we require a rebuild, expects cwd is caseroot</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -142,7 +144,10 @@
         <span class="n">unlock_file</span><span class="p">(</span><span class="s2">&quot;env_mach_pes.xml&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="check_lockedfile"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.check_lockedfile">[docs]</a><span class="k">def</span> <span class="nf">check_lockedfile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filebase</span><span class="p">):</span>
+
+<div class="viewcode-block" id="check_lockedfile">
+<a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.check_lockedfile">[docs]</a>
+<span class="k">def</span> <span class="nf">check_lockedfile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filebase</span><span class="p">):</span>
     <span class="n">caseroot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">)</span>
 
     <span class="n">cfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="n">filebase</span><span class="p">)</span>
@@ -211,7 +216,10 @@
                 <span class="n">expect</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;&#39;</span><span class="si">{}</span><span class="s2">&#39; diff was not handled&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">objname</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="check_lockedfiles"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.check_lockedfiles">[docs]</a><span class="k">def</span> <span class="nf">check_lockedfiles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="check_lockedfiles">
+<a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.check_lockedfiles">[docs]</a>
+<span class="k">def</span> <span class="nf">check_lockedfiles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check that all lockedfiles match what&#39;s in case</span>
 
@@ -235,6 +243,7 @@
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">do_skip</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">check_lockedfile</span><span class="p">(</span><span class="n">fpart</span><span class="p">)</span></div>
+
 </pre></div>
 
            </div>

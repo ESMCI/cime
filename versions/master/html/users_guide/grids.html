@@ -12,11 +12,11 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/sphinx_highlight.js"></script>
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../_static/pop_ver.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -107,7 +107,7 @@
            <div itemprop="articleBody">
              
   <section id="model-grids">
-<span id="grids"></span><h1><span class="section-number">3. </span>Model grids<a class="headerlink" href="#model-grids" title="Permalink to this heading"></a></h1>
+<span id="grids"></span><h1><span class="section-number">3. </span>Model grids<a class="headerlink" href="#model-grids" title="Link to this heading"></a></h1>
 <p>CIME looks at the xml node <code class="docutils literal notranslate"><span class="pre">GRIDS_SPEC_FILE</span></code> in  <strong>$CIMEROOT/config/$models/config_files.xml</strong> file to identify supported out-of-the-box model grids for the target model.</p>
 <p>The node has the following contents:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;entry id=&quot;GRIDS_SPEC_FILE&quot;&gt;
@@ -121,7 +121,7 @@
 </pre></div>
 </div>
 <section id="grid-longname">
-<h2><span class="section-number">3.1. </span>Grid longname<a class="headerlink" href="#grid-longname" title="Permalink to this heading"></a></h2>
+<h2><span class="section-number">3.1. </span>Grid longname<a class="headerlink" href="#grid-longname" title="Link to this heading"></a></h2>
 <p>CIME model grids generally are associated with a specific combination of atmosphere, land, land-ice, river-runoff and ocean/ice grids. The naming convention for these grids uses only atmosphere, land, and ocean/ice grid specifications.</p>
 <p>A model grid longname has the form:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">a</span><span class="o">%</span><span class="n">name_l</span><span class="o">%</span><span class="n">name_oi</span><span class="o">%</span><span class="n">name_r</span><span class="o">%</span><span class="n">name_m</span><span class="o">%</span><span class="n">mask_g</span><span class="o">%</span><span class="n">name_w</span><span class="o">%</span><span class="n">name</span>
@@ -164,7 +164,7 @@ The alias for this grid is ne30_g16.</p>
 </ul>
 </section>
 <section id="adding-grids">
-<span id="adding-cases"></span><h2><span class="section-number">3.2. </span>Adding grids<a class="headerlink" href="#adding-grids" title="Permalink to this heading"></a></h2>
+<span id="adding-cases"></span><h2><span class="section-number">3.2. </span>Adding grids<a class="headerlink" href="#adding-grids" title="Link to this heading"></a></h2>
 <dl id="adding-a-grid">
 <dt>CIME supports numerous out-of-the box model resolutions. To see the grids that are supported, call <a class="reference external" href="../Tools_user/query_config.html">query_config</a> as shown below.</dt><dd><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">query_config</span> <span class="o">--</span><span class="n">grids</span>
 </pre></div>

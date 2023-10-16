@@ -11,11 +11,11 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../../_static/pop_ver.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -96,7 +96,9 @@
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="create_dirs"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.create_dirs">[docs]</a><span class="k">def</span> <span class="nf">create_dirs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="create_dirs">
+<a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.create_dirs">[docs]</a>
+<span class="k">def</span> <span class="nf">create_dirs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Make necessary directories for case</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -137,7 +139,10 @@
             <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">caseroot</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="create_namelists"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.create_namelists">[docs]</a><span class="k">def</span> <span class="nf">create_namelists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="create_namelists">
+<a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.create_namelists">[docs]</a>
+<span class="k">def</span> <span class="nf">create_namelists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create component namelists</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -221,6 +226,7 @@
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">casebuild</span><span class="p">,</span> <span class="n">atmconf</span><span class="p">)):</span>
         <span class="k">for</span> <span class="n">file_to_copy</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">casebuild</span><span class="p">,</span> <span class="n">atmconf</span><span class="p">,</span> <span class="s2">&quot;*chem_mech*&quot;</span><span class="p">)):</span>
             <span class="n">safe_copy</span><span class="p">(</span><span class="n">file_to_copy</span><span class="p">,</span> <span class="n">docdir</span><span class="p">)</span></div>
+
 </pre></div>
 
            </div>

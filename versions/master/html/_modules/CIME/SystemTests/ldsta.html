@@ -11,11 +11,11 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../../_static/pop_ver.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -115,14 +115,18 @@
     <span class="p">)</span>
 
 
-<div class="viewcode-block" id="LDSTA"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.ldsta.LDSTA">[docs]</a><span class="k">class</span> <span class="nc">LDSTA</span><span class="p">(</span><span class="n">SystemTestsCommon</span><span class="p">):</span>
+<div class="viewcode-block" id="LDSTA">
+<a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.ldsta.LDSTA">[docs]</a>
+<span class="k">class</span> <span class="nc">LDSTA</span><span class="p">(</span><span class="n">SystemTestsCommon</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        initialize an object interface to the SMS system test</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">SystemTestsCommon</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-<div class="viewcode-block" id="LDSTA.run_phase"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.ldsta.LDSTA.run_phase">[docs]</a>    <span class="k">def</span> <span class="nf">run_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="LDSTA.run_phase">
+<a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.ldsta.LDSTA.run_phase">[docs]</a>
+    <span class="k">def</span> <span class="nf">run_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">archive_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;DOUT_S_ROOT&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">archive_dir</span><span class="p">):</span>
             <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">archive_dir</span><span class="p">)</span>
@@ -162,7 +166,9 @@
                 <span class="p">)</span>
             <span class="n">num_days</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">days_left</span><span class="p">))</span>
             <span class="n">days_left</span> <span class="o">-=</span> <span class="n">num_days</span>
-            <span class="n">current_date</span> <span class="o">+=</span> <span class="n">num_days</span> <span class="o">*</span> <span class="n">delta_day</span></div></div>
+            <span class="n">current_date</span> <span class="o">+=</span> <span class="n">num_days</span> <span class="o">*</span> <span class="n">delta_day</span></div>
+</div>
+
 </pre></div>
 
            </div>

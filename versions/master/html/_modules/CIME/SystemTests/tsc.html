@@ -11,11 +11,11 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../../_static/pop_ver.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -134,7 +134,9 @@
 <span class="n">P_THRESHOLD</span> <span class="o">=</span> <span class="mf">0.005</span>
 
 
-<div class="viewcode-block" id="TSC"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.tsc.TSC">[docs]</a><span class="k">class</span> <span class="nc">TSC</span><span class="p">(</span><span class="n">SystemTestsCommon</span><span class="p">):</span>
+<div class="viewcode-block" id="TSC">
+<a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.tsc.TSC">[docs]</a>
+<span class="k">class</span> <span class="nc">TSC</span><span class="p">(</span><span class="n">SystemTestsCommon</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        initialize an object interface to the TSC test</span>
@@ -151,7 +153,9 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">atmmodIC</span> <span class="o">=</span> <span class="s2">&quot;cam&quot;</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">lndmodIC</span> <span class="o">=</span> <span class="s2">&quot;clm2&quot;</span>
 
-<div class="viewcode-block" id="TSC.build_phase"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.tsc.TSC.build_phase">[docs]</a>    <span class="k">def</span> <span class="nf">build_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sharedlib_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">model_only</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="TSC.build_phase">
+<a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.tsc.TSC.build_phase">[docs]</a>
+    <span class="k">def</span> <span class="nf">build_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sharedlib_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">model_only</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="c1"># Only want this to happen once. It will impact the sharedlib build</span>
         <span class="c1"># so it has to happen there.</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">model_only</span><span class="p">:</span>
@@ -169,6 +173,7 @@
             <span class="n">case_setup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="p">,</span> <span class="n">test_mode</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">build_indv</span><span class="p">(</span><span class="n">sharedlib_only</span><span class="o">=</span><span class="n">sharedlib_only</span><span class="p">,</span> <span class="n">model_only</span><span class="o">=</span><span class="n">model_only</span><span class="p">)</span></div>
+
 
     <span class="k">def</span> <span class="nf">_run_with_specified_dtime</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dtime</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -231,11 +236,14 @@
 
         <span class="n">rename_all_hist_files</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;DT</span><span class="si">{:04d}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dtime</span><span class="p">))</span>
 
-<div class="viewcode-block" id="TSC.run_phase"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.tsc.TSC.run_phase">[docs]</a>    <span class="k">def</span> <span class="nf">run_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TSC.run_phase">
+<a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.tsc.TSC.run_phase">[docs]</a>
+    <span class="k">def</span> <span class="nf">run_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_run_with_specified_dtime</span><span class="p">(</span><span class="n">dtime</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;GENERATE_BASELINE&quot;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_run_with_specified_dtime</span><span class="p">(</span><span class="n">dtime</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
+
 
     <span class="k">def</span> <span class="nf">_compare_baseline</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span> <span class="k">as</span> <span class="n">ts</span><span class="p">:</span>
@@ -358,6 +366,7 @@
                     <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">baseline</span><span class="p">)</span>
 
                 <span class="n">CIME</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">safe_copy</span><span class="p">(</span><span class="n">hist</span><span class="p">,</span> <span class="n">baseline</span><span class="p">,</span> <span class="n">preserve_meta</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+
 </pre></div>
 
            </div>

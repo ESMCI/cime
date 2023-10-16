@@ -11,11 +11,11 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../../_static/pop_ver.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -123,16 +123,21 @@
         <span class="k">return</span> <span class="n">_Element</span><span class="p">(</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xml_element</span><span class="p">))</span>
 
 
-<div class="viewcode-block" id="GenericXML"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML">[docs]</a><span class="k">class</span> <span class="nc">GenericXML</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="GenericXML">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML">[docs]</a>
+<span class="k">class</span> <span class="nc">GenericXML</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
     <span class="n">_FILEMAP</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">DISABLE_CACHING</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">CacheEntry</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;CacheEntry&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;tree&quot;</span><span class="p">,</span> <span class="s2">&quot;root&quot;</span><span class="p">,</span> <span class="s2">&quot;modtime&quot;</span><span class="p">])</span>
 
-<div class="viewcode-block" id="GenericXML.invalidate"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.invalidate">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="GenericXML.invalidate">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.invalidate">[docs]</a>
+    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">invalidate</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">filename</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_FILEMAP</span><span class="p">:</span>
             <span class="k">del</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_FILEMAP</span><span class="p">[</span><span class="n">filename</span><span class="p">]</span></div>
+
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -189,7 +194,9 @@
 
             <span class="bp">self</span><span class="o">.</span><span class="n">_FILEMAP</span><span class="p">[</span><span class="n">infile</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">CacheEntry</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
 
-<div class="viewcode-block" id="GenericXML.read"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.read">[docs]</a>    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infile</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="GenericXML.read">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.read">[docs]</a>
+    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infile</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Read and parse an xml file into the object</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -222,7 +229,10 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getmtime</span><span class="p">(</span><span class="n">infile</span><span class="p">)</span>
             <span class="p">)</span></div>
 
-<div class="viewcode-block" id="GenericXML.read_fd"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.read_fd">[docs]</a>    <span class="k">def</span> <span class="nf">read_fd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fd</span><span class="p">):</span>
+
+<div class="viewcode-block" id="GenericXML.read_fd">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.read_fd">[docs]</a>
+    <span class="k">def</span> <span class="nf">read_fd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fd</span><span class="p">):</span>
         <span class="n">expect</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">read_only</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">needsrewrite</span><span class="p">,</span>
             <span class="s2">&quot;Reading into object marked for rewrite, file </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">),</span>
@@ -257,17 +267,26 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Include file </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="GenericXML.lock"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.lock">[docs]</a>    <span class="k">def</span> <span class="nf">lock</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="GenericXML.lock">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.lock">[docs]</a>
+    <span class="k">def</span> <span class="nf">lock</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        A subclass is doing caching, we need to lock the tree structure</span>
 <span class="sd">        in order to avoid invalidating cache.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">locked</span> <span class="o">=</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="GenericXML.unlock"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.unlock">[docs]</a>    <span class="k">def</span> <span class="nf">unlock</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="GenericXML.unlock">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.unlock">[docs]</a>
+    <span class="k">def</span> <span class="nf">unlock</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">locked</span> <span class="o">=</span> <span class="kc">False</span></div>
 
-<div class="viewcode-block" id="GenericXML.change_file"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.change_file">[docs]</a>    <span class="k">def</span> <span class="nf">change_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">newfile</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="GenericXML.change_file">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.change_file">[docs]</a>
+    <span class="k">def</span> <span class="nf">change_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">newfile</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">copy</span><span class="p">:</span>
             <span class="n">new_case</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">newfile</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">new_case</span><span class="p">):</span>
@@ -278,17 +297,26 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">newfile</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">newfile</span><span class="p">)</span></div>
 
+
     <span class="c1">#</span>
     <span class="c1"># API for individual node operations</span>
     <span class="c1">#</span>
 
-<div class="viewcode-block" id="GenericXML.get"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">attrib_name</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="GenericXML.get">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.get">[docs]</a>
+    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">attrib_name</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">node</span><span class="o">.</span><span class="n">xml_element</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">attrib_name</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">default</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="GenericXML.has"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.has">[docs]</a>    <span class="k">def</span> <span class="nf">has</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">attrib_name</span><span class="p">):</span>
+
+<div class="viewcode-block" id="GenericXML.has">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.has">[docs]</a>
+    <span class="k">def</span> <span class="nf">has</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">attrib_name</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">attrib_name</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">xml_element</span><span class="o">.</span><span class="n">attrib</span></div>
 
-<div class="viewcode-block" id="GenericXML.set"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.set">[docs]</a>    <span class="k">def</span> <span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">attrib_name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+
+<div class="viewcode-block" id="GenericXML.set">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.set">[docs]</a>
+    <span class="k">def</span> <span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">attrib_name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">attrib_name</span><span class="p">)</span> <span class="o">!=</span> <span class="n">value</span><span class="p">:</span>
             <span class="n">expect</span><span class="p">(</span>
                 <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_only</span><span class="p">,</span>
@@ -306,7 +334,10 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">needsrewrite</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="k">return</span> <span class="n">node</span><span class="o">.</span><span class="n">xml_element</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">attrib_name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="GenericXML.pop"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.pop">[docs]</a>    <span class="k">def</span> <span class="nf">pop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">attrib_name</span><span class="p">):</span>
+
+<div class="viewcode-block" id="GenericXML.pop">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.pop">[docs]</a>
+    <span class="k">def</span> <span class="nf">pop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">attrib_name</span><span class="p">):</span>
         <span class="n">expect</span><span class="p">(</span>
             <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_only</span><span class="p">,</span>
             <span class="s2">&quot;read_only: cannot pop attrib[</span><span class="si">{}</span><span class="s2">] for node </span><span class="si">{}</span><span class="s2"> in file </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
@@ -323,13 +354,19 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">needsrewrite</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">return</span> <span class="n">node</span><span class="o">.</span><span class="n">xml_element</span><span class="o">.</span><span class="n">attrib</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">attrib_name</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="GenericXML.attrib"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.attrib">[docs]</a>    <span class="k">def</span> <span class="nf">attrib</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+
+<div class="viewcode-block" id="GenericXML.attrib">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.attrib">[docs]</a>
+    <span class="k">def</span> <span class="nf">attrib</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
         <span class="c1"># Return a COPY. We do not want clients making changes directly</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="kc">None</span> <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">xml_element</span><span class="o">.</span><span class="n">attrib</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">dict</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">xml_element</span><span class="o">.</span><span class="n">attrib</span><span class="p">)</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="GenericXML.set_name"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.set_name">[docs]</a>    <span class="k">def</span> <span class="nf">set_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+
+<div class="viewcode-block" id="GenericXML.set_name">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.set_name">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="n">expect</span><span class="p">(</span>
             <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_only</span><span class="p">,</span>
             <span class="s2">&quot;read_only: set node name </span><span class="si">{}</span><span class="s2"> in file </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">),</span>
@@ -338,7 +375,10 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">needsrewrite</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="n">node</span><span class="o">.</span><span class="n">xml_element</span><span class="o">.</span><span class="n">tag</span> <span class="o">=</span> <span class="n">name</span></div>
 
-<div class="viewcode-block" id="GenericXML.set_text"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.set_text">[docs]</a>    <span class="k">def</span> <span class="nf">set_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+
+<div class="viewcode-block" id="GenericXML.set_text">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.set_text">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
         <span class="n">expect</span><span class="p">(</span>
             <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_only</span><span class="p">,</span>
             <span class="s2">&quot;read_only: set node text </span><span class="si">{}</span><span class="s2"> for node </span><span class="si">{}</span><span class="s2"> in file </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
@@ -349,13 +389,22 @@
             <span class="n">node</span><span class="o">.</span><span class="n">xml_element</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">text</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">needsrewrite</span> <span class="o">=</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="GenericXML.name"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.name">[docs]</a>    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+
+<div class="viewcode-block" id="GenericXML.name">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.name">[docs]</a>
+    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">node</span><span class="o">.</span><span class="n">xml_element</span><span class="o">.</span><span class="n">tag</span></div>
 
-<div class="viewcode-block" id="GenericXML.text"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.text">[docs]</a>    <span class="k">def</span> <span class="nf">text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+
+<div class="viewcode-block" id="GenericXML.text">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.text">[docs]</a>
+    <span class="k">def</span> <span class="nf">text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">node</span><span class="o">.</span><span class="n">xml_element</span><span class="o">.</span><span class="n">text</span></div>
 
-<div class="viewcode-block" id="GenericXML.add_child"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.add_child">[docs]</a>    <span class="k">def</span> <span class="nf">add_child</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="GenericXML.add_child">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.add_child">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_child</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add element node to self at root</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -374,10 +423,16 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">root</span><span class="o">.</span><span class="n">xml_element</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">xml_element</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="GenericXML.copy"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.copy">[docs]</a>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+
+<div class="viewcode-block" id="GenericXML.copy">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.copy">[docs]</a>
+    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">node</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="GenericXML.remove_child"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.remove_child">[docs]</a>    <span class="k">def</span> <span class="nf">remove_child</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="GenericXML.remove_child">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.remove_child">[docs]</a>
+    <span class="k">def</span> <span class="nf">remove_child</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">expect</span><span class="p">(</span>
             <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">locked</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_only</span><span class="p">,</span>
             <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">: cannot remove child </span><span class="si">{}</span><span class="s2"> in file </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
@@ -390,7 +445,10 @@
         <span class="n">root</span> <span class="o">=</span> <span class="n">root</span> <span class="k">if</span> <span class="n">root</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span>
         <span class="n">root</span><span class="o">.</span><span class="n">xml_element</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">xml_element</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="GenericXML.make_child"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.make_child">[docs]</a>    <span class="k">def</span> <span class="nf">make_child</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="GenericXML.make_child">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.make_child">[docs]</a>
+    <span class="k">def</span> <span class="nf">make_child</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">expect</span><span class="p">(</span>
             <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">locked</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_only</span><span class="p">,</span>
             <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">: cannot make child </span><span class="si">{}</span><span class="s2"> in file </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
@@ -409,7 +467,10 @@
 
         <span class="k">return</span> <span class="n">node</span></div>
 
-<div class="viewcode-block" id="GenericXML.make_child_comment"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.make_child_comment">[docs]</a>    <span class="k">def</span> <span class="nf">make_child_comment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="GenericXML.make_child_comment">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.make_child_comment">[docs]</a>
+    <span class="k">def</span> <span class="nf">make_child_comment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">expect</span><span class="p">(</span>
             <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">locked</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_only</span><span class="p">,</span>
             <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">: cannot make child </span><span class="si">{}</span><span class="s2"> in file </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
@@ -423,7 +484,10 @@
         <span class="n">root</span><span class="o">.</span><span class="n">xml_element</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">xml_element</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">node</span></div>
 
-<div class="viewcode-block" id="GenericXML.get_children"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.get_children">[docs]</a>    <span class="k">def</span> <span class="nf">get_children</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="GenericXML.get_children">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.get_children">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_children</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is the critical function, its interface and performance are crucial.</span>
 
@@ -458,7 +522,10 @@
 
         <span class="k">return</span> <span class="n">children</span></div>
 
-<div class="viewcode-block" id="GenericXML.get_child"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.get_child">[docs]</a>    <span class="k">def</span> <span class="nf">get_child</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">err_msg</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="GenericXML.get_child">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.get_child">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_child</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">err_msg</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">child</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_optional_child</span><span class="p">(</span>
             <span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="n">attributes</span><span class="p">,</span> <span class="n">err_msg</span><span class="o">=</span><span class="n">err_msg</span>
         <span class="p">)</span>
@@ -472,7 +539,10 @@
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">child</span></div>
 
-<div class="viewcode-block" id="GenericXML.get_optional_child"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.get_optional_child">[docs]</a>    <span class="k">def</span> <span class="nf">get_optional_child</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">err_msg</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="GenericXML.get_optional_child">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.get_optional_child">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_optional_child</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">err_msg</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">children</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="n">attributes</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">children</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="c1"># see if we can reduce to 1 based on attribute counts</span>
@@ -492,7 +562,10 @@
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">children</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">children</span> <span class="k">else</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="GenericXML.get_element_text"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.get_element_text">[docs]</a>    <span class="k">def</span> <span class="nf">get_element_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element_name</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="GenericXML.get_element_text">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.get_element_text">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_element_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element_name</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">element_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_optional_child</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="n">element_name</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="n">attributes</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">root</span>
         <span class="p">)</span>
@@ -500,7 +573,10 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">element_node</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="GenericXML.set_element_text"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.set_element_text">[docs]</a>    <span class="k">def</span> <span class="nf">set_element_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element_name</span><span class="p">,</span> <span class="n">new_text</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="GenericXML.set_element_text">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.set_element_text">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_element_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element_name</span><span class="p">,</span> <span class="n">new_text</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">element_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_optional_child</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="n">element_name</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="n">attributes</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">root</span>
         <span class="p">)</span>
@@ -509,19 +585,28 @@
             <span class="k">return</span> <span class="n">new_text</span>
         <span class="k">return</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="GenericXML.to_string"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.to_string">[docs]</a>    <span class="k">def</span> <span class="nf">to_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;xml&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;us-ascii&quot;</span><span class="p">):</span>
+
+<div class="viewcode-block" id="GenericXML.to_string">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.to_string">[docs]</a>
+    <span class="k">def</span> <span class="nf">to_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;xml&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;us-ascii&quot;</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">ET</span><span class="o">.</span><span class="n">tostring</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">xml_element</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">)</span></div>
+
 
     <span class="c1">#</span>
     <span class="c1"># API for operations over the entire file</span>
     <span class="c1">#</span>
 
-<div class="viewcode-block" id="GenericXML.get_version"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.get_version">[docs]</a>    <span class="k">def</span> <span class="nf">get_version</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="GenericXML.get_version">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.get_version">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_version</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">version</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="s2">&quot;version&quot;</span><span class="p">)</span>
         <span class="n">version</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="k">if</span> <span class="n">version</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="n">version</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">version</span></div>
 
-<div class="viewcode-block" id="GenericXML.check_timestamp"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.check_timestamp">[docs]</a>    <span class="k">def</span> <span class="nf">check_timestamp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="GenericXML.check_timestamp">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.check_timestamp">[docs]</a>
+    <span class="k">def</span> <span class="nf">check_timestamp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns True if timestamp matches what is expected</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -532,7 +617,10 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="GenericXML.validate_timestamp"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.validate_timestamp">[docs]</a>    <span class="k">def</span> <span class="nf">validate_timestamp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="GenericXML.validate_timestamp">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.validate_timestamp">[docs]</a>
+    <span class="k">def</span> <span class="nf">validate_timestamp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">timestamp_ok</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_timestamp</span><span class="p">()</span>
         <span class="n">expect</span><span class="p">(</span>
             <span class="n">timestamp_ok</span><span class="p">,</span>
@@ -541,7 +629,10 @@
             <span class="p">),</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="GenericXML.write"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outfile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">force_write</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="GenericXML.write">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.write">[docs]</a>
+    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outfile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">force_write</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Write an xml file from data in self</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -581,7 +672,10 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">needsrewrite</span> <span class="o">=</span> <span class="kc">False</span></div>
 
-<div class="viewcode-block" id="GenericXML.scan_child"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.scan_child">[docs]</a>    <span class="k">def</span> <span class="nf">scan_child</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodename</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="GenericXML.scan_child">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.scan_child">[docs]</a>
+    <span class="k">def</span> <span class="nf">scan_child</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodename</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get an xml element matching nodename with optional attributes.</span>
 
@@ -598,7 +692,10 @@
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="GenericXML.scan_optional_child"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.scan_optional_child">[docs]</a>    <span class="k">def</span> <span class="nf">scan_optional_child</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodename</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="GenericXML.scan_optional_child">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.scan_optional_child">[docs]</a>
+    <span class="k">def</span> <span class="nf">scan_optional_child</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodename</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get an xml element matching nodename with optional attributes.</span>
 
@@ -614,7 +711,10 @@
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">nodes</span> <span class="k">else</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="GenericXML.scan_children"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.scan_children">[docs]</a>    <span class="k">def</span> <span class="nf">scan_children</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodename</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="GenericXML.scan_children">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.scan_children">[docs]</a>
+    <span class="k">def</span> <span class="nf">scan_children</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodename</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
             <span class="s2">&quot;(get_nodes) Input values: </span><span class="si">{}</span><span class="s2">, </span><span class="si">{}</span><span class="s2">, </span><span class="si">{}</span><span class="s2">, </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
@@ -667,7 +767,10 @@
 
         <span class="k">return</span> <span class="p">[</span><span class="n">_Element</span><span class="p">(</span><span class="n">node</span><span class="p">)</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="GenericXML.get_value"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.get_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span>
+
+<div class="viewcode-block" id="GenericXML.get_value">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.get_value">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">resolved</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="kc">None</span>
     <span class="p">):</span>  <span class="c1"># pylint: disable=unused-argument</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -677,13 +780,19 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Get Value for &quot;</span> <span class="o">+</span> <span class="n">item</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="GenericXML.get_values"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.get_values">[docs]</a>    <span class="k">def</span> <span class="nf">get_values</span><span class="p">(</span>
+
+<div class="viewcode-block" id="GenericXML.get_values">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.get_values">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_values</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">resolved</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="kc">None</span>
     <span class="p">):</span>  <span class="c1"># pylint: disable=unused-argument</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Get Values for &quot;</span> <span class="o">+</span> <span class="n">vid</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">[]</span></div>
 
-<div class="viewcode-block" id="GenericXML.set_value"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.set_value">[docs]</a>    <span class="k">def</span> <span class="nf">set_value</span><span class="p">(</span>
+
+<div class="viewcode-block" id="GenericXML.set_value">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.set_value">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_value</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ignore_type</span><span class="o">=</span><span class="kc">True</span>
     <span class="p">):</span>  <span class="c1"># pylint: disable=unused-argument</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -695,7 +804,10 @@
 
         <span class="k">return</span> <span class="n">value</span> <span class="k">if</span> <span class="n">valnodes</span> <span class="k">else</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="GenericXML.get_resolved_value"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.get_resolved_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_resolved_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">raw_value</span><span class="p">,</span> <span class="n">allow_unresolved_envvars</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="GenericXML.get_resolved_value">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.get_resolved_value">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_resolved_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">raw_value</span><span class="p">,</span> <span class="n">allow_unresolved_envvars</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        A value in the xml file may contain references to other xml</span>
 <span class="sd">        variables or to environment variables. These are refered to in</span>
@@ -770,7 +882,10 @@
 
         <span class="k">return</span> <span class="n">item_data</span></div>
 
-<div class="viewcode-block" id="GenericXML.validate_xml_file"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.validate_xml_file">[docs]</a>    <span class="k">def</span> <span class="nf">validate_xml_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">schema</span><span class="p">):</span>
+
+<div class="viewcode-block" id="GenericXML.validate_xml_file">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.validate_xml_file">[docs]</a>
+    <span class="k">def</span> <span class="nf">validate_xml_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">schema</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        validate an XML file against a provided schema file using pylint</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -790,7 +905,10 @@
             <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> --xinclude --noout --schema </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">xmllint</span><span class="p">,</span> <span class="n">schema</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="GenericXML.get_raw_record"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.get_raw_record">[docs]</a>    <span class="k">def</span> <span class="nf">get_raw_record</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="GenericXML.get_raw_record">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.get_raw_record">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_raw_record</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;writing file </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">root</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">root</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span>
@@ -806,11 +924,16 @@
             <span class="p">)</span>
         <span class="k">return</span> <span class="n">xmlstr</span></div>
 
-<div class="viewcode-block" id="GenericXML.get_id"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.get_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="GenericXML.get_id">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.get_id">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">xmlid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">xmlid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">xmlid</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">)</span></div>
+</div>
+
 </pre></div>
 
            </div>

@@ -11,11 +11,11 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../../_static/pop_ver.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -99,7 +99,9 @@
 <span class="n">ssl</span><span class="o">.</span><span class="n">_create_default_https_context</span> <span class="o">=</span> <span class="n">ssl</span><span class="o">.</span><span class="n">_create_unverified_context</span>
 
 
-<div class="viewcode-block" id="TestReporter"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.test_reporter.TestReporter">[docs]</a><span class="k">class</span> <span class="nc">TestReporter</span><span class="p">(</span><span class="n">GenericXML</span><span class="p">):</span>
+<div class="viewcode-block" id="TestReporter">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.test_reporter.TestReporter">[docs]</a>
+<span class="k">class</span> <span class="nc">TestReporter</span><span class="p">(</span><span class="n">GenericXML</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        initialize an object</span>
@@ -113,7 +115,9 @@
             <span class="n">infile</span><span class="o">=</span><span class="s2">&quot;TestRecord.xml&quot;</span><span class="p">,</span>
         <span class="p">)</span>
 
-<div class="viewcode-block" id="TestReporter.setup_header"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.test_reporter.TestReporter.setup_header">[docs]</a>    <span class="k">def</span> <span class="nf">setup_header</span><span class="p">(</span>
+<div class="viewcode-block" id="TestReporter.setup_header">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.test_reporter.TestReporter.setup_header">[docs]</a>
+    <span class="k">def</span> <span class="nf">setup_header</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">tagname</span><span class="p">,</span> <span class="n">machine</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">mpilib</span><span class="p">,</span> <span class="n">testroot</span><span class="p">,</span> <span class="n">testtype</span><span class="p">,</span> <span class="n">baseline</span>
     <span class="p">):</span>
         <span class="c1">#</span>
@@ -130,7 +134,10 @@
         <span class="p">]:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">make_child</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="n">attribs</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestReporter.add_result"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.test_reporter.TestReporter.add_result">[docs]</a>    <span class="k">def</span> <span class="nf">add_result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test_name</span><span class="p">,</span> <span class="n">test_status</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestReporter.add_result">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.test_reporter.TestReporter.add_result">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test_name</span><span class="p">,</span> <span class="n">test_status</span><span class="p">):</span>
         <span class="c1">#</span>
         <span class="c1"># Add a test result to the XML structure.</span>
         <span class="c1">#</span>
@@ -151,7 +158,10 @@
                 <span class="s2">&quot;category&quot;</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">attrib_name</span><span class="p">},</span> <span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">tlelem</span>
             <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestReporter.push2testdb"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.test_reporter.TestReporter.push2testdb">[docs]</a>    <span class="k">def</span> <span class="nf">push2testdb</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestReporter.push2testdb">
+<a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.test_reporter.TestReporter.push2testdb">[docs]</a>
+    <span class="k">def</span> <span class="nf">push2testdb</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1">#</span>
         <span class="c1"># Post test result XML to CESM test database</span>
         <span class="c1">#</span>
@@ -167,7 +177,9 @@
         <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;ascii&quot;</span><span class="p">)</span>
         <span class="n">req</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">Request</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
         <span class="n">result</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">read</span><span class="p">())</span></div></div>
+        <span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">read</span><span class="p">())</span></div>
+</div>
+
 </pre></div>
 
            </div>

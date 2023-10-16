@@ -11,11 +11,11 @@
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/sphinx_highlight.js"></script>
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../_static/pop_ver.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -104,7 +104,9 @@
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <span class="c1">###############################################################################</span>
-<div class="viewcode-block" id="parse_command_line"><a class="viewcode-back" href="../../Tools_api/Tools.html#Tools.generate_cylc_workflow.parse_command_line">[docs]</a><span class="k">def</span> <span class="nf">parse_command_line</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">description</span><span class="p">):</span>
+<div class="viewcode-block" id="parse_command_line">
+<a class="viewcode-back" href="../../Tools_api/Tools.html#Tools.generate_cylc_workflow.parse_command_line">[docs]</a>
+<span class="k">def</span> <span class="nf">parse_command_line</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">description</span><span class="p">):</span>
     <span class="c1">###############################################################################</span>
     <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
         <span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">,</span> <span class="n">formatter_class</span><span class="o">=</span><span class="n">argparse</span><span class="o">.</span><span class="n">RawTextHelpFormatter</span>
@@ -138,7 +140,10 @@
     <span class="k">return</span> <span class="n">args</span><span class="o">.</span><span class="n">caseroot</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">cycles</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">ensemble</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="cylc_get_ensemble_first_and_last"><a class="viewcode-back" href="../../Tools_api/Tools.html#Tools.generate_cylc_workflow.cylc_get_ensemble_first_and_last">[docs]</a><span class="k">def</span> <span class="nf">cylc_get_ensemble_first_and_last</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">ensemble</span><span class="p">):</span>
+
+<div class="viewcode-block" id="cylc_get_ensemble_first_and_last">
+<a class="viewcode-back" href="../../Tools_api/Tools.html#Tools.generate_cylc_workflow.cylc_get_ensemble_first_and_last">[docs]</a>
+<span class="k">def</span> <span class="nf">cylc_get_ensemble_first_and_last</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">ensemble</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">ensemble</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">return</span> <span class="mi">1</span><span class="p">,</span> <span class="kc">None</span>
     <span class="n">casename</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASE&quot;</span><span class="p">)</span>
@@ -148,7 +153,10 @@
     <span class="k">return</span> <span class="n">minval</span><span class="p">,</span> <span class="n">maxval</span></div>
 
 
-<div class="viewcode-block" id="cylc_get_case_path_string"><a class="viewcode-back" href="../../Tools_api/Tools.html#Tools.generate_cylc_workflow.cylc_get_case_path_string">[docs]</a><span class="k">def</span> <span class="nf">cylc_get_case_path_string</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">ensemble</span><span class="p">):</span>
+
+<div class="viewcode-block" id="cylc_get_case_path_string">
+<a class="viewcode-back" href="../../Tools_api/Tools.html#Tools.generate_cylc_workflow.cylc_get_case_path_string">[docs]</a>
+<span class="k">def</span> <span class="nf">cylc_get_case_path_string</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">ensemble</span><span class="p">):</span>
     <span class="n">caseroot</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">)</span>
     <span class="n">casename</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASE&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">ensemble</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
@@ -166,7 +174,10 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="cylc_batch_job_template"><a class="viewcode-back" href="../../Tools_api/Tools.html#Tools.generate_cylc_workflow.cylc_batch_job_template">[docs]</a><span class="k">def</span> <span class="nf">cylc_batch_job_template</span><span class="p">(</span><span class="n">job</span><span class="p">,</span> <span class="n">jobname</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">ensemble</span><span class="p">):</span>
+
+<div class="viewcode-block" id="cylc_batch_job_template">
+<a class="viewcode-back" href="../../Tools_api/Tools.html#Tools.generate_cylc_workflow.cylc_batch_job_template">[docs]</a>
+<span class="k">def</span> <span class="nf">cylc_batch_job_template</span><span class="p">(</span><span class="n">job</span><span class="p">,</span> <span class="n">jobname</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">ensemble</span><span class="p">):</span>
 
     <span class="n">env_batch</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_env</span><span class="p">(</span><span class="s2">&quot;batch&quot;</span><span class="p">)</span>
     <span class="n">batch_system_type</span> <span class="o">=</span> <span class="n">env_batch</span><span class="o">.</span><span class="n">get_batch_system_type</span><span class="p">()</span>
@@ -194,7 +205,10 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="cylc_script_job_template"><a class="viewcode-back" href="../../Tools_api/Tools.html#Tools.generate_cylc_workflow.cylc_script_job_template">[docs]</a><span class="k">def</span> <span class="nf">cylc_script_job_template</span><span class="p">(</span><span class="n">job</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">ensemble</span><span class="p">):</span>
+
+<div class="viewcode-block" id="cylc_script_job_template">
+<a class="viewcode-back" href="../../Tools_api/Tools.html#Tools.generate_cylc_workflow.cylc_script_job_template">[docs]</a>
+<span class="k">def</span> <span class="nf">cylc_script_job_template</span><span class="p">(</span><span class="n">job</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">ensemble</span><span class="p">):</span>
     <span class="n">case_path_string</span> <span class="o">=</span> <span class="n">cylc_get_case_path_string</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">ensemble</span><span class="p">)</span>
     <span class="k">return</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">    [[</span><span class="si">{job}</span><span class="s2">&lt;member&gt;]]</span>
@@ -202,6 +216,7 @@
 <span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
         <span class="n">job</span><span class="o">=</span><span class="n">job</span><span class="p">,</span> <span class="n">case_path_string</span><span class="o">=</span><span class="n">case_path_string</span>
     <span class="p">)</span></div>
+
 
 
 <span class="c1">###############################################################################</span>

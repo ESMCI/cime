@@ -11,11 +11,11 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../../_static/pop_ver.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -156,7 +156,9 @@
 <span class="c1"># is a list of Call objects (see above for their definition).</span>
 
 
-<div class="viewcode-block" id="SystemTestsCompareTwoFake"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_compare_two.SystemTestsCompareTwoFake">[docs]</a><span class="k">class</span> <span class="nc">SystemTestsCompareTwoFake</span><span class="p">(</span><span class="n">SystemTestsCompareTwo</span><span class="p">):</span>
+<div class="viewcode-block" id="SystemTestsCompareTwoFake">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_compare_two.SystemTestsCompareTwoFake">[docs]</a>
+<span class="k">class</span> <span class="nc">SystemTestsCompareTwoFake</span><span class="p">(</span><span class="n">SystemTestsCompareTwo</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">case1</span><span class="p">,</span>
@@ -248,7 +250,9 @@
     <span class="c1"># SystemTestsCommon</span>
     <span class="c1"># ------------------------------------------------------------------------</span>
 
-<div class="viewcode-block" id="SystemTestsCompareTwoFake.run_indv"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_compare_two.SystemTestsCompareTwoFake.run_indv">[docs]</a>    <span class="k">def</span> <span class="nf">run_indv</span><span class="p">(</span>
+<div class="viewcode-block" id="SystemTestsCompareTwoFake.run_indv">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_compare_two.SystemTestsCompareTwoFake.run_indv">[docs]</a>
+    <span class="k">def</span> <span class="nf">run_indv</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;base&quot;</span><span class="p">,</span>
         <span class="n">st_archive</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -275,6 +279,7 @@
         <span class="c1"># case2 before the second call to run_indv).</span>
         <span class="k">if</span> <span class="n">caseroot</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_pass_caseroot</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;caseroot not in run_pass_caseroot&quot;</span><span class="p">)</span></div>
+
 
     <span class="k">def</span> <span class="nf">_do_compare_test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">suffix1</span><span class="p">,</span> <span class="n">suffix2</span><span class="p">,</span> <span class="n">ignore_fieldlist_diffs</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -337,25 +342,36 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Call</span><span class="p">(</span><span class="n">METHOD_case_two_custom_postrun_action</span><span class="p">,</span> <span class="p">{}))</span></div>
 
 
+
 <span class="c1"># ========================================================================</span>
 <span class="c1"># Test class itself</span>
 <span class="c1"># ========================================================================</span>
 
 
-<div class="viewcode-block" id="TestSystemTestsCompareTwo"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_compare_two.TestSystemTestsCompareTwo">[docs]</a><span class="k">class</span> <span class="nc">TestSystemTestsCompareTwo</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
-<div class="viewcode-block" id="TestSystemTestsCompareTwo.setUp"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_compare_two.TestSystemTestsCompareTwo.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestSystemTestsCompareTwo">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_compare_two.TestSystemTestsCompareTwo">[docs]</a>
+<span class="k">class</span> <span class="nc">TestSystemTestsCompareTwo</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestSystemTestsCompareTwo.setUp">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_compare_two.TestSystemTestsCompareTwo.setUp">[docs]</a>
+    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">original_wd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
         <span class="c1"># create a sandbox in which case directories can be created</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tempdir</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="TestSystemTestsCompareTwo.tearDown"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_compare_two.TestSystemTestsCompareTwo.tearDown">[docs]</a>    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestSystemTestsCompareTwo.tearDown">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_compare_two.TestSystemTestsCompareTwo.tearDown">[docs]</a>
+    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Some tests trigger a chdir call in the SUT; make sure we return to the</span>
         <span class="c1"># original directory at the end of the test</span>
         <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">original_wd</span><span class="p">)</span>
 
         <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tempdir</span><span class="p">,</span> <span class="n">ignore_errors</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestSystemTestsCompareTwo.get_caseroots"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_compare_two.TestSystemTestsCompareTwo.get_caseroots">[docs]</a>    <span class="k">def</span> <span class="nf">get_caseroots</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">casename</span><span class="o">=</span><span class="s2">&quot;mytest&quot;</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestSystemTestsCompareTwo.get_caseroots">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_compare_two.TestSystemTestsCompareTwo.get_caseroots">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_caseroots</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">casename</span><span class="o">=</span><span class="s2">&quot;mytest&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a tuple (case1root, case2root)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -363,7 +379,10 @@
         <span class="n">case2root</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">case1root</span><span class="p">,</span> <span class="s2">&quot;case2&quot;</span><span class="p">,</span> <span class="n">casename</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">case1root</span><span class="p">,</span> <span class="n">case2root</span></div>
 
-<div class="viewcode-block" id="TestSystemTestsCompareTwo.get_compare_phase_name"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_compare_two.TestSystemTestsCompareTwo.get_compare_phase_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_compare_phase_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mytest</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestSystemTestsCompareTwo.get_compare_phase_name">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_compare_two.TestSystemTestsCompareTwo.get_compare_phase_name">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_compare_phase_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mytest</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a string giving the compare phase name for this test</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -374,7 +393,10 @@
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">compare_phase_name</span></div>
 
-<div class="viewcode-block" id="TestSystemTestsCompareTwo.test_resetup_case_single_exe"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_compare_two.TestSystemTestsCompareTwo.test_resetup_case_single_exe">[docs]</a>    <span class="k">def</span> <span class="nf">test_resetup_case_single_exe</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestSystemTestsCompareTwo.test_resetup_case_single_exe">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_compare_two.TestSystemTestsCompareTwo.test_resetup_case_single_exe">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_resetup_case_single_exe</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Setup</span>
         <span class="n">case1root</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tempdir</span><span class="p">,</span> <span class="s2">&quot;case1&quot;</span><span class="p">)</span>
         <span class="n">case1</span> <span class="o">=</span> <span class="n">CaseFake</span><span class="p">(</span><span class="n">case1root</span><span class="p">)</span>
@@ -408,7 +430,10 @@
 
         <span class="n">case1</span><span class="o">.</span><span class="n">set_value</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="s2">&quot;BUILD_COMPLETE&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestSystemTestsCompareTwo.test_setup"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_compare_two.TestSystemTestsCompareTwo.test_setup">[docs]</a>    <span class="k">def</span> <span class="nf">test_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestSystemTestsCompareTwo.test_setup">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_compare_two.TestSystemTestsCompareTwo.test_setup">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Ensure that test setup properly sets up case 1 and case 2</span>
 
         <span class="c1"># Setup</span>
@@ -437,7 +462,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="s2">&quot;case1val&quot;</span><span class="p">,</span> <span class="n">mytest</span><span class="o">.</span><span class="n">_case1</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;var_set_in_setup&quot;</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="s2">&quot;case2val&quot;</span><span class="p">,</span> <span class="n">mytest</span><span class="o">.</span><span class="n">_case2</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;var_set_in_setup&quot;</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="TestSystemTestsCompareTwo.test_setup_separate_builds_sharedlibroot"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_compare_two.TestSystemTestsCompareTwo.test_setup_separate_builds_sharedlibroot">[docs]</a>    <span class="k">def</span> <span class="nf">test_setup_separate_builds_sharedlibroot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestSystemTestsCompareTwo.test_setup_separate_builds_sharedlibroot">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_compare_two.TestSystemTestsCompareTwo.test_setup_separate_builds_sharedlibroot">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_setup_separate_builds_sharedlibroot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># If we&#39;re using separate_builds, the two cases should still use</span>
         <span class="c1"># the same sharedlibroot</span>
 
@@ -454,7 +482,10 @@
             <span class="n">case1</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;SHAREDLIBROOT&quot;</span><span class="p">),</span> <span class="n">mytest</span><span class="o">.</span><span class="n">_case2</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;SHAREDLIBROOT&quot;</span><span class="p">)</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestSystemTestsCompareTwo.test_setup_case2_exists"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_compare_two.TestSystemTestsCompareTwo.test_setup_case2_exists">[docs]</a>    <span class="k">def</span> <span class="nf">test_setup_case2_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestSystemTestsCompareTwo.test_setup_case2_exists">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_compare_two.TestSystemTestsCompareTwo.test_setup_case2_exists">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_setup_case2_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># If case2 already exists, then setup code should not be called</span>
 
         <span class="c1"># Setup</span>
@@ -478,7 +509,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNone</span><span class="p">(</span><span class="n">mytest</span><span class="o">.</span><span class="n">_case1</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;var_set_in_setup&quot;</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNone</span><span class="p">(</span><span class="n">mytest</span><span class="o">.</span><span class="n">_case2</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;var_set_in_setup&quot;</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="TestSystemTestsCompareTwo.test_setup_error"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_compare_two.TestSystemTestsCompareTwo.test_setup_error">[docs]</a>    <span class="k">def</span> <span class="nf">test_setup_error</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestSystemTestsCompareTwo.test_setup_error">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_compare_two.TestSystemTestsCompareTwo.test_setup_error">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_setup_error</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># If there is an error in setup, an exception should be raised and the</span>
         <span class="c1"># case2 directory should be removed</span>
 
@@ -495,7 +529,10 @@
         <span class="c1"># Verify</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">case1root</span><span class="p">,</span> <span class="s2">&quot;case1.test&quot;</span><span class="p">)))</span></div>
 
-<div class="viewcode-block" id="TestSystemTestsCompareTwo.test_run_phase_passes"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_compare_two.TestSystemTestsCompareTwo.test_run_phase_passes">[docs]</a>    <span class="k">def</span> <span class="nf">test_run_phase_passes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestSystemTestsCompareTwo.test_run_phase_passes">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_compare_two.TestSystemTestsCompareTwo.test_run_phase_passes">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_run_phase_passes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Make sure the run phase behaves properly when all runs succeed.</span>
 
         <span class="c1"># Setup</span>
@@ -512,7 +549,10 @@
             <span class="n">mytest</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">get_status</span><span class="p">(</span><span class="n">test_status</span><span class="o">.</span><span class="n">RUN_PHASE</span><span class="p">),</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestSystemTestsCompareTwo.test_run_phase_internal_calls"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_compare_two.TestSystemTestsCompareTwo.test_run_phase_internal_calls">[docs]</a>    <span class="k">def</span> <span class="nf">test_run_phase_internal_calls</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestSystemTestsCompareTwo.test_run_phase_internal_calls">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_compare_two.TestSystemTestsCompareTwo.test_run_phase_internal_calls">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_run_phase_internal_calls</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Make sure that the correct calls are made to methods stubbed out by</span>
         <span class="c1"># SystemTestsCompareTwoFake (when runs succeed)</span>
         <span class="c1">#</span>
@@ -545,7 +585,10 @@
         <span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">expected_calls</span><span class="p">,</span> <span class="n">mytest</span><span class="o">.</span><span class="n">log</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestSystemTestsCompareTwo.test_run_phase_internal_calls_multisubmit_phase1"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_compare_two.TestSystemTestsCompareTwo.test_run_phase_internal_calls_multisubmit_phase1">[docs]</a>    <span class="k">def</span> <span class="nf">test_run_phase_internal_calls_multisubmit_phase1</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestSystemTestsCompareTwo.test_run_phase_internal_calls_multisubmit_phase1">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_compare_two.TestSystemTestsCompareTwo.test_run_phase_internal_calls_multisubmit_phase1">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_run_phase_internal_calls_multisubmit_phase1</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Make sure that the correct calls are made to methods stubbed out by</span>
         <span class="c1"># SystemTestsCompareTwoFake (when runs succeed), when we have a</span>
         <span class="c1"># multi-submit test, in the first phase</span>
@@ -582,7 +625,10 @@
             <span class="n">mytest</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">get_status</span><span class="p">(</span><span class="n">compare_phase_name</span><span class="p">),</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestSystemTestsCompareTwo.test_run_phase_internal_calls_multisubmit_phase2"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_compare_two.TestSystemTestsCompareTwo.test_run_phase_internal_calls_multisubmit_phase2">[docs]</a>    <span class="k">def</span> <span class="nf">test_run_phase_internal_calls_multisubmit_phase2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestSystemTestsCompareTwo.test_run_phase_internal_calls_multisubmit_phase2">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_compare_two.TestSystemTestsCompareTwo.test_run_phase_internal_calls_multisubmit_phase2">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_run_phase_internal_calls_multisubmit_phase2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Make sure that the correct calls are made to methods stubbed out by</span>
         <span class="c1"># SystemTestsCompareTwoFake (when runs succeed), when we have a</span>
         <span class="c1"># multi-submit test, in the second phase</span>
@@ -621,7 +667,10 @@
             <span class="n">mytest</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">get_status</span><span class="p">(</span><span class="n">compare_phase_name</span><span class="p">),</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestSystemTestsCompareTwo.test_internal_calls_multisubmit_failed_state"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_compare_two.TestSystemTestsCompareTwo.test_internal_calls_multisubmit_failed_state">[docs]</a>    <span class="k">def</span> <span class="nf">test_internal_calls_multisubmit_failed_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestSystemTestsCompareTwo.test_internal_calls_multisubmit_failed_state">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_compare_two.TestSystemTestsCompareTwo.test_internal_calls_multisubmit_failed_state">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_internal_calls_multisubmit_failed_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">run_one_suffix</span> <span class="o">=</span> <span class="s2">&quot;base&quot;</span>
         <span class="n">run_two_suffix</span> <span class="o">=</span> <span class="s2">&quot;run2&quot;</span>
         <span class="n">case1root</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_caseroots</span><span class="p">()</span>
@@ -672,7 +721,10 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">expected_calls</span><span class="p">,</span> <span class="n">mytest</span><span class="o">.</span><span class="n">log</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestSystemTestsCompareTwo.test_run1_fails"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_compare_two.TestSystemTestsCompareTwo.test_run1_fails">[docs]</a>    <span class="k">def</span> <span class="nf">test_run1_fails</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestSystemTestsCompareTwo.test_run1_fails">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_compare_two.TestSystemTestsCompareTwo.test_run1_fails">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_run1_fails</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Make sure that a failure in run1 is reported correctly</span>
 
         <span class="c1"># Setup</span>
@@ -692,7 +744,10 @@
             <span class="n">mytest</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">get_status</span><span class="p">(</span><span class="n">test_status</span><span class="o">.</span><span class="n">RUN_PHASE</span><span class="p">),</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestSystemTestsCompareTwo.test_run2_fails"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_compare_two.TestSystemTestsCompareTwo.test_run2_fails">[docs]</a>    <span class="k">def</span> <span class="nf">test_run2_fails</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestSystemTestsCompareTwo.test_run2_fails">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_compare_two.TestSystemTestsCompareTwo.test_run2_fails">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_run2_fails</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Make sure that a failure in run2 is reported correctly</span>
 
         <span class="c1"># Setup</span>
@@ -712,7 +767,10 @@
             <span class="n">mytest</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">get_status</span><span class="p">(</span><span class="n">test_status</span><span class="o">.</span><span class="n">RUN_PHASE</span><span class="p">),</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestSystemTestsCompareTwo.test_compare_passes"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_compare_two.TestSystemTestsCompareTwo.test_compare_passes">[docs]</a>    <span class="k">def</span> <span class="nf">test_compare_passes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestSystemTestsCompareTwo.test_compare_passes">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_compare_two.TestSystemTestsCompareTwo.test_compare_passes">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_compare_passes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Make sure that a pass in the comparison is reported correctly</span>
 
         <span class="c1"># Setup</span>
@@ -730,7 +788,10 @@
             <span class="n">mytest</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">get_status</span><span class="p">(</span><span class="n">compare_phase_name</span><span class="p">),</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestSystemTestsCompareTwo.test_compare_fails"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_compare_two.TestSystemTestsCompareTwo.test_compare_fails">[docs]</a>    <span class="k">def</span> <span class="nf">test_compare_fails</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestSystemTestsCompareTwo.test_compare_fails">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_compare_two.TestSystemTestsCompareTwo.test_compare_fails">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_compare_fails</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Make sure that a failure in the comparison is reported correctly</span>
 
         <span class="c1"># Setup</span>
@@ -746,7 +807,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
             <span class="n">test_status</span><span class="o">.</span><span class="n">TEST_FAIL_STATUS</span><span class="p">,</span>
             <span class="n">mytest</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">get_status</span><span class="p">(</span><span class="n">compare_phase_name</span><span class="p">),</span>
-        <span class="p">)</span></div></div>
+        <span class="p">)</span></div>
+</div>
+
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>

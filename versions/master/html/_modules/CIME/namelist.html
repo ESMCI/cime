@@ -11,11 +11,11 @@
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/sphinx_highlight.js"></script>
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../_static/pop_ver.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -242,7 +242,9 @@
 <span class="n">FORTRAN_REPEAT_PREFIX_REGEX</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^[0-9]*[1-9]+[0-9]*\*&quot;</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="is_valid_fortran_name"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.namelist.is_valid_fortran_name">[docs]</a><span class="k">def</span> <span class="nf">is_valid_fortran_name</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
+<div class="viewcode-block" id="is_valid_fortran_name">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.namelist.is_valid_fortran_name">[docs]</a>
+<span class="k">def</span> <span class="nf">is_valid_fortran_name</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Check that a variable name is allowed in Fortran.</span>
 
 <span class="sd">    The rules are:</span>
@@ -287,7 +289,10 @@
     <span class="k">return</span> <span class="n">FORTRAN_NAME_REGEX</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">string</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span></div>
 
 
-<div class="viewcode-block" id="get_fortran_name_only"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.namelist.get_fortran_name_only">[docs]</a><span class="k">def</span> <span class="nf">get_fortran_name_only</span><span class="p">(</span><span class="n">full_var</span><span class="p">):</span>
+
+<div class="viewcode-block" id="get_fortran_name_only">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.namelist.get_fortran_name_only">[docs]</a>
+<span class="k">def</span> <span class="nf">get_fortran_name_only</span><span class="p">(</span><span class="n">full_var</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;remove array section if any and return only the variable name</span>
 <span class="sd">    &gt;&gt;&gt; get_fortran_name_only(&#39;foo&#39;)</span>
 <span class="sd">    &#39;foo&#39;</span>
@@ -308,7 +313,10 @@
     <span class="k">return</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="get_fortran_variable_indices"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.namelist.get_fortran_variable_indices">[docs]</a><span class="k">def</span> <span class="nf">get_fortran_variable_indices</span><span class="p">(</span><span class="n">varname</span><span class="p">,</span> <span class="n">varlen</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">allow_any_len</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="get_fortran_variable_indices">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.namelist.get_fortran_variable_indices">[docs]</a>
+<span class="k">def</span> <span class="nf">get_fortran_variable_indices</span><span class="p">(</span><span class="n">varname</span><span class="p">,</span> <span class="n">varlen</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">allow_any_len</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;get indices from a fortran namelist variable as a triplet of minindex, maxindex and step</span>
 
 <span class="sd">    &gt;&gt;&gt; get_fortran_variable_indices(&#39;foo(3)&#39;)</span>
@@ -346,7 +354,10 @@
     <span class="k">return</span> <span class="p">(</span><span class="n">minindex</span><span class="p">,</span> <span class="n">maxindex</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="fortran_namelist_base_value"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.namelist.fortran_namelist_base_value">[docs]</a><span class="k">def</span> <span class="nf">fortran_namelist_base_value</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
+
+<div class="viewcode-block" id="fortran_namelist_base_value">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.namelist.fortran_namelist_base_value">[docs]</a>
+<span class="k">def</span> <span class="nf">fortran_namelist_base_value</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Strip off whitespace and repetition syntax from a namelist value.</span>
 
 <span class="sd">    &gt;&gt;&gt; fortran_namelist_base_value(&quot;&quot;)</span>
@@ -370,7 +381,10 @@
     <span class="k">return</span> <span class="n">string</span></div>
 
 
-<div class="viewcode-block" id="character_literal_to_string"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.namelist.character_literal_to_string">[docs]</a><span class="k">def</span> <span class="nf">character_literal_to_string</span><span class="p">(</span><span class="n">literal</span><span class="p">):</span>
+
+<div class="viewcode-block" id="character_literal_to_string">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.namelist.character_literal_to_string">[docs]</a>
+<span class="k">def</span> <span class="nf">character_literal_to_string</span><span class="p">(</span><span class="n">literal</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a Fortran character literal to a Python string.</span>
 
 <span class="sd">    This function assumes (without checking) that `literal` is a valid literal.</span>
@@ -397,7 +411,10 @@
     <span class="k">return</span> <span class="n">new_literal</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">delimiter</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="n">delimiter</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="string_to_character_literal"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.namelist.string_to_character_literal">[docs]</a><span class="k">def</span> <span class="nf">string_to_character_literal</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
+
+<div class="viewcode-block" id="string_to_character_literal">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.namelist.string_to_character_literal">[docs]</a>
+<span class="k">def</span> <span class="nf">string_to_character_literal</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Convert a Python string to a Fortran character literal.</span>
 
 <span class="sd">    This function always uses double quotes (&quot;) as the delimiter.</span>
@@ -413,7 +430,10 @@
     <span class="k">return</span> <span class="s1">&#39;&quot;&#39;</span> <span class="o">+</span> <span class="n">string</span> <span class="o">+</span> <span class="s1">&#39;&quot;&#39;</span></div>
 
 
-<div class="viewcode-block" id="is_valid_fortran_namelist_literal"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.namelist.is_valid_fortran_namelist_literal">[docs]</a><span class="k">def</span> <span class="nf">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="n">type_</span><span class="p">,</span> <span class="n">string</span><span class="p">):</span>
+
+<div class="viewcode-block" id="is_valid_fortran_namelist_literal">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.namelist.is_valid_fortran_namelist_literal">[docs]</a>
+<span class="k">def</span> <span class="nf">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="n">type_</span><span class="p">,</span> <span class="n">string</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Determine whether a literal is valid in a Fortran namelist.</span>
 
 <span class="sd">    Note that kind parameters are *not* allowed in namelists, which simplifies</span>
@@ -680,7 +700,10 @@
     <span class="k">return</span> <span class="n">FORTRAN_LITERAL_REGEXES</span><span class="p">[</span><span class="n">type_</span><span class="p">]</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">string</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span></div>
 
 
-<div class="viewcode-block" id="literal_to_python_value"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.namelist.literal_to_python_value">[docs]</a><span class="k">def</span> <span class="nf">literal_to_python_value</span><span class="p">(</span><span class="n">literal</span><span class="p">,</span> <span class="n">type_</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="literal_to_python_value">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.namelist.literal_to_python_value">[docs]</a>
+<span class="k">def</span> <span class="nf">literal_to_python_value</span><span class="p">(</span><span class="n">literal</span><span class="p">,</span> <span class="n">type_</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Convert a Fortran literal string to a Python value.</span>
 
 <span class="sd">    This function assumes that the input contains a single value, i.e.</span>
@@ -782,7 +805,10 @@
         <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">literal</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="expand_literal_list"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.namelist.expand_literal_list">[docs]</a><span class="k">def</span> <span class="nf">expand_literal_list</span><span class="p">(</span><span class="n">literals</span><span class="p">):</span>
+
+<div class="viewcode-block" id="expand_literal_list">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.namelist.expand_literal_list">[docs]</a>
+<span class="k">def</span> <span class="nf">expand_literal_list</span><span class="p">(</span><span class="n">literals</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Expands a list of literal values to get rid of repetition syntax.</span>
 
 <span class="sd">    &gt;&gt;&gt; expand_literal_list([])</span>
@@ -805,7 +831,10 @@
     <span class="k">return</span> <span class="n">expanded</span></div>
 
 
-<div class="viewcode-block" id="compress_literal_list"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.namelist.compress_literal_list">[docs]</a><span class="k">def</span> <span class="nf">compress_literal_list</span><span class="p">(</span><span class="n">literals</span><span class="p">):</span>
+
+<div class="viewcode-block" id="compress_literal_list">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.namelist.compress_literal_list">[docs]</a>
+<span class="k">def</span> <span class="nf">compress_literal_list</span><span class="p">(</span><span class="n">literals</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Uses repetition syntax to shorten a literal list.</span>
 
 <span class="sd">    &gt;&gt;&gt; compress_literal_list([])</span>
@@ -856,7 +885,10 @@
         <span class="k">return</span> <span class="n">compressed</span></div>
 
 
-<div class="viewcode-block" id="merge_literal_lists"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.namelist.merge_literal_lists">[docs]</a><span class="k">def</span> <span class="nf">merge_literal_lists</span><span class="p">(</span><span class="n">default</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">):</span>
+
+<div class="viewcode-block" id="merge_literal_lists">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.namelist.merge_literal_lists">[docs]</a>
+<span class="k">def</span> <span class="nf">merge_literal_lists</span><span class="p">(</span><span class="n">default</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Merge two lists of literal value strings.</span>
 
 <span class="sd">    The `overwrite` values have higher precedence, so will overwrite the</span>
@@ -899,7 +931,10 @@
     <span class="k">return</span> <span class="n">compress_literal_list</span><span class="p">(</span><span class="n">merged</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="parse"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.namelist.parse">[docs]</a><span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="n">in_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">groupless</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">convert_tab_to_space</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+
+<div class="viewcode-block" id="parse">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.namelist.parse">[docs]</a>
+<span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="n">in_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">groupless</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">convert_tab_to_space</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse a Fortran namelist.</span>
 
 <span class="sd">    The `in_file` argument must be either a `str` or `unicode` object containing</span>
@@ -961,7 +996,10 @@
         <span class="k">return</span> <span class="n">Namelist</span><span class="p">(</span><span class="n">namelist_dict</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="shouldRaise"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.namelist.shouldRaise">[docs]</a><span class="k">def</span> <span class="nf">shouldRaise</span><span class="p">(</span><span class="n">eclass</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+
+<div class="viewcode-block" id="shouldRaise">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.namelist.shouldRaise">[docs]</a>
+<span class="k">def</span> <span class="nf">shouldRaise</span><span class="p">(</span><span class="n">eclass</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A helper function to make doctests py3 compatible</span>
 <span class="sd">    http://python3porting.com/problems.html#running-doctests</span>
@@ -976,7 +1014,10 @@
     <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Expected exception </span><span class="si">%s</span><span class="s2"> not raised&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">eclass</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="Namelist"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.namelist.Namelist">[docs]</a><span class="k">class</span> <span class="nc">Namelist</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Namelist">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.namelist.Namelist">[docs]</a>
+<span class="k">class</span> <span class="nc">Namelist</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Class representing a Fortran namelist.</span>
 
@@ -1012,10 +1053,15 @@
                         <span class="n">variable_name</span>
                     <span class="p">]</span>
 
-<div class="viewcode-block" id="Namelist.clean_groups"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.namelist.Namelist.clean_groups">[docs]</a>    <span class="k">def</span> <span class="nf">clean_groups</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Namelist.clean_groups">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.namelist.Namelist.clean_groups">[docs]</a>
+    <span class="k">def</span> <span class="nf">clean_groups</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Namelist.get_group_names"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.namelist.Namelist.get_group_names">[docs]</a>    <span class="k">def</span> <span class="nf">get_group_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Namelist.get_group_names">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.namelist.Namelist.get_group_names">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_group_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a list of all groups in the namelist.</span>
 
 <span class="sd">        &gt;&gt;&gt; Namelist().get_group_names()</span>
@@ -1025,7 +1071,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span></div>
 
-<div class="viewcode-block" id="Namelist.get_variable_names"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.namelist.Namelist.get_variable_names">[docs]</a>    <span class="k">def</span> <span class="nf">get_variable_names</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group_name</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Namelist.get_variable_names">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.namelist.Namelist.get_variable_names">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_variable_names</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group_name</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a list of all variables in the given namelist group.</span>
 
 <span class="sd">        If the specified group is not in the namelist, returns an empty list.</span>
@@ -1047,7 +1096,10 @@
             <span class="k">return</span> <span class="p">[]</span>
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="p">[</span><span class="n">gn</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span></div>
 
-<div class="viewcode-block" id="Namelist.get_variable_value"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.namelist.Namelist.get_variable_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_variable_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group_name</span><span class="p">,</span> <span class="n">variable_name</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Namelist.get_variable_value">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.namelist.Namelist.get_variable_value">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_variable_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group_name</span><span class="p">,</span> <span class="n">variable_name</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the value of the specified variable.</span>
 
 <span class="sd">        This function always returns a non-empty list containing strings. If the</span>
@@ -1070,7 +1122,10 @@
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="p">[</span><span class="n">gn</span><span class="p">][</span><span class="n">vn</span><span class="p">][:]</span>
         <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="Namelist.get_value"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.namelist.Namelist.get_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable_name</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Namelist.get_value">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.namelist.Namelist.get_value">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable_name</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the value of a uniquely-named variable.</span>
 
 <span class="sd">        This function is similar to `get_variable_value`, except that it does</span>
@@ -1105,7 +1160,10 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="Namelist.set_variable_value"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.namelist.Namelist.set_variable_value">[docs]</a>    <span class="k">def</span> <span class="nf">set_variable_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group_name</span><span class="p">,</span> <span class="n">variable_name</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">var_size</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Namelist.set_variable_value">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.namelist.Namelist.set_variable_value">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_variable_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group_name</span><span class="p">,</span> <span class="n">variable_name</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">var_size</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the value of the specified variable.</span>
 
 <span class="sd">        &gt;&gt;&gt; x = parse(text=&#39;&amp;foo bar=1 /&#39;)</span>
@@ -1163,7 +1221,10 @@
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">break</span></div>
 
-<div class="viewcode-block" id="Namelist.delete_variable"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.namelist.Namelist.delete_variable">[docs]</a>    <span class="k">def</span> <span class="nf">delete_variable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group_name</span><span class="p">,</span> <span class="n">variable_name</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Namelist.delete_variable">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.namelist.Namelist.delete_variable">[docs]</a>
+    <span class="k">def</span> <span class="nf">delete_variable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group_name</span><span class="p">,</span> <span class="n">variable_name</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Delete a variable from a specified group.</span>
 
 <span class="sd">        If the specified group or variable does not exist, this is a no-op.</span>
@@ -1183,7 +1244,10 @@
             <span class="k">if</span> <span class="n">vn</span><span class="p">:</span>
                 <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="p">[</span><span class="n">gn</span><span class="p">][</span><span class="n">vn</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="Namelist.merge_nl"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.namelist.Namelist.merge_nl">[docs]</a>    <span class="k">def</span> <span class="nf">merge_nl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Namelist.merge_nl">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.namelist.Namelist.merge_nl">[docs]</a>
+    <span class="k">def</span> <span class="nf">merge_nl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Merge this namelist object with another.</span>
 
 <span class="sd">        Values in the invoking (`self`) `Namelist` will take precedence over</span>
@@ -1245,7 +1309,10 @@
                     <span class="n">group_name</span><span class="p">,</span> <span class="n">variable_name</span><span class="p">,</span> <span class="n">merged_val</span><span class="p">,</span> <span class="n">var_size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">merged_val</span><span class="p">)</span>
                 <span class="p">)</span></div>
 
-<div class="viewcode-block" id="Namelist.get_group_variables"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.namelist.Namelist.get_group_variables">[docs]</a>    <span class="k">def</span> <span class="nf">get_group_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group_name</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Namelist.get_group_variables">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.namelist.Namelist.get_group_variables">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_group_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group_name</span><span class="p">):</span>
         <span class="n">group_variables</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">group</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="p">[</span><span class="n">group_name</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">group</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
@@ -1253,7 +1320,10 @@
             <span class="n">group_variables</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
         <span class="k">return</span> <span class="n">group_variables</span></div>
 
-<div class="viewcode-block" id="Namelist.write"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.namelist.Namelist.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span>
+
+<div class="viewcode-block" id="Namelist.write">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.namelist.Namelist.write">[docs]</a>
+    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">out_file</span><span class="p">,</span> <span class="n">groups</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">append</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">format_</span><span class="o">=</span><span class="s2">&quot;nml&quot;</span><span class="p">,</span> <span class="n">sorted_groups</span><span class="o">=</span><span class="kc">True</span>
     <span class="p">):</span>
 
@@ -1283,6 +1353,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Writing namelist to file object&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_write</span><span class="p">(</span><span class="n">out_file</span><span class="p">,</span> <span class="n">groups</span><span class="p">,</span> <span class="n">format_</span><span class="p">,</span> <span class="n">sorted_groups</span><span class="o">=</span><span class="n">sorted_groups</span><span class="p">)</span></div>
+
 
     <span class="k">def</span> <span class="nf">_write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">out_file</span><span class="p">,</span> <span class="n">groups</span><span class="p">,</span> <span class="n">format_</span><span class="p">,</span> <span class="n">sorted_groups</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Unwrapped version of `write` assuming that a file object is input.&quot;&quot;&quot;</span>
@@ -1338,7 +1409,9 @@
             <span class="k">if</span> <span class="n">format_</span> <span class="o">==</span> <span class="s2">&quot;nmlcontents&quot;</span><span class="p">:</span>
                 <span class="n">out_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Namelist.write_nuopc"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.namelist.Namelist.write_nuopc">[docs]</a>    <span class="k">def</span> <span class="nf">write_nuopc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">out_file</span><span class="p">,</span> <span class="n">groups</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sorted_groups</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="Namelist.write_nuopc">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.namelist.Namelist.write_nuopc">[docs]</a>
+    <span class="k">def</span> <span class="nf">write_nuopc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">out_file</span><span class="p">,</span> <span class="n">groups</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sorted_groups</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Write a nuopc config file out_file</span>
 
 <span class="sd">        As with `parse`, the `out_file` argument can be either a file name, or a</span>
@@ -1353,6 +1426,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Writing nuopc config data to file object&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_write_nuopc</span><span class="p">(</span><span class="n">out_file</span><span class="p">,</span> <span class="n">groups</span><span class="p">,</span> <span class="n">sorted_groups</span><span class="o">=</span><span class="n">sorted_groups</span><span class="p">)</span></div>
+
 
     <span class="k">def</span> <span class="nf">_write_nuopc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">out_file</span><span class="p">,</span> <span class="n">groups</span><span class="p">,</span> <span class="n">sorted_groups</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Unwrapped version of `write` assuming that a file object is input.&quot;&quot;&quot;</span>
@@ -1420,6 +1494,7 @@
             <span class="k">if</span> <span class="n">indent</span><span class="p">:</span>
                 <span class="n">out_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;::</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="n">indent</span> <span class="o">=</span> <span class="kc">False</span></div>
+
 
 
 <span class="k">class</span> <span class="nc">_NamelistEOF</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>

@@ -11,11 +11,11 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../../_static/pop_ver.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -96,8 +96,12 @@
 <span class="kn">from</span> <span class="nn">CIME.case.case</span> <span class="kn">import</span> <span class="n">Case</span>
 
 
-<div class="viewcode-block" id="TestSaveTimings"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_save_timings.TestSaveTimings">[docs]</a><span class="k">class</span> <span class="nc">TestSaveTimings</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">BaseTestCase</span><span class="p">):</span>
-<div class="viewcode-block" id="TestSaveTimings.simple_test"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_save_timings.TestSaveTimings.simple_test">[docs]</a>    <span class="k">def</span> <span class="nf">simple_test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">manual_timing</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="TestSaveTimings">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_save_timings.TestSaveTimings">[docs]</a>
+<span class="k">class</span> <span class="nc">TestSaveTimings</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">BaseTestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestSaveTimings.simple_test">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_save_timings.TestSaveTimings.simple_test">[docs]</a>
+    <span class="k">def</span> <span class="nf">simple_test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">manual_timing</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">NO_FORTRAN_RUN</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">skipTest</span><span class="p">(</span><span class="s2">&quot;Skipping fortran test&quot;</span><span class="p">)</span>
         <span class="n">timing_flag</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="n">manual_timing</span> <span class="k">else</span> <span class="s2">&quot;--save-timing&quot;</span>
@@ -150,11 +154,18 @@
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">verify_perms</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">provenance_dirs</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="TestSaveTimings.test_save_timings"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_save_timings.TestSaveTimings.test_save_timings">[docs]</a>    <span class="k">def</span> <span class="nf">test_save_timings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestSaveTimings.test_save_timings">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_save_timings.TestSaveTimings.test_save_timings">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_save_timings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">simple_test</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="TestSaveTimings.test_save_timings_manual"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_save_timings.TestSaveTimings.test_save_timings_manual">[docs]</a>    <span class="k">def</span> <span class="nf">test_save_timings_manual</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestSaveTimings.test_save_timings_manual">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_save_timings.TestSaveTimings.test_save_timings_manual">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_save_timings_manual</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">simple_test</span><span class="p">(</span><span class="n">manual_timing</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
 
     <span class="k">def</span> <span class="nf">_record_success</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -189,7 +200,9 @@
         <span class="k">if</span> <span class="n">test_success</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">exp_last_pass</span><span class="p">,</span> <span class="n">commit</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Should never&quot;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="TestSaveTimings.test_success_recording"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_save_timings.TestSaveTimings.test_success_recording">[docs]</a>    <span class="k">def</span> <span class="nf">test_success_recording</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestSaveTimings.test_success_recording">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_save_timings.TestSaveTimings.test_success_recording">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_success_recording</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">test_mode</span> <span class="o">==</span> <span class="s2">&quot;e3sm&quot;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">skipTest</span><span class="p">(</span><span class="s2">&quot;Skipping success recording tests. E3SM feature&quot;</span><span class="p">)</span>
 
@@ -233,7 +246,9 @@
         <span class="c1"># Test final transition (test1 passes, test2 fails)</span>
         <span class="c1">#                    test_name , success, commit , expP , expTF, baseline)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_record_success</span><span class="p">(</span><span class="n">fake_test1</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;FFF&quot;</span><span class="p">,</span> <span class="s2">&quot;FFF&quot;</span><span class="p">,</span> <span class="s2">&quot;DDD&quot;</span><span class="p">,</span> <span class="n">baseline_dir</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_record_success</span><span class="p">(</span><span class="n">fake_test2</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;FFF&quot;</span><span class="p">,</span> <span class="s2">&quot;EEE&quot;</span><span class="p">,</span> <span class="s2">&quot;FFF&quot;</span><span class="p">,</span> <span class="n">baseline_dir</span><span class="p">)</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_record_success</span><span class="p">(</span><span class="n">fake_test2</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;FFF&quot;</span><span class="p">,</span> <span class="s2">&quot;EEE&quot;</span><span class="p">,</span> <span class="s2">&quot;FFF&quot;</span><span class="p">,</span> <span class="n">baseline_dir</span><span class="p">)</span></div>
+</div>
+
 </pre></div>
 
            </div>

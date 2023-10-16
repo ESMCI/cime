@@ -11,11 +11,11 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../../_static/pop_ver.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -97,20 +97,29 @@
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="GenericServer"><a class="viewcode-back" href="../../../CIME_api/CIME.Servers.html#CIME.Servers.generic_server.GenericServer">[docs]</a><span class="k">class</span> <span class="nc">GenericServer</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="GenericServer">
+<a class="viewcode-back" href="../../../CIME_api/CIME.Servers.html#CIME.Servers.generic_server.GenericServer">[docs]</a>
+<span class="k">class</span> <span class="nc">GenericServer</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">passwd</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">acct</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">_GLOBAL_DEFAULT_TIMEOUT</span>
     <span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
-<div class="viewcode-block" id="GenericServer.fileexists"><a class="viewcode-back" href="../../../CIME_api/CIME.Servers.html#CIME.Servers.generic_server.GenericServer.fileexists">[docs]</a>    <span class="k">def</span> <span class="nf">fileexists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rel_path</span><span class="p">):</span>
+<div class="viewcode-block" id="GenericServer.fileexists">
+<a class="viewcode-back" href="../../../CIME_api/CIME.Servers.html#CIME.Servers.generic_server.GenericServer.fileexists">[docs]</a>
+    <span class="k">def</span> <span class="nf">fileexists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rel_path</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns True if rel_path exists on server&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="GenericServer.getfile"><a class="viewcode-back" href="../../../CIME_api/CIME.Servers.html#CIME.Servers.generic_server.GenericServer.getfile">[docs]</a>    <span class="k">def</span> <span class="nf">getfile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rel_path</span><span class="p">,</span> <span class="n">full_path</span><span class="p">):</span>
+
+<div class="viewcode-block" id="GenericServer.getfile">
+<a class="viewcode-back" href="../../../CIME_api/CIME.Servers.html#CIME.Servers.generic_server.GenericServer.getfile">[docs]</a>
+    <span class="k">def</span> <span class="nf">getfile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rel_path</span><span class="p">,</span> <span class="n">full_path</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get file from rel_path on server and place in location full_path on client</span>
 <span class="sd">        fail if full_path already exists on client, return True if successful&quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+</div>
+
 </pre></div>
 
            </div>

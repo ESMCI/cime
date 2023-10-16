@@ -11,11 +11,11 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../../_static/pop_ver.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -133,7 +133,9 @@
 <span class="n">config</span> <span class="o">=</span> <span class="n">Config</span><span class="o">.</span><span class="n">instance</span><span class="p">()</span>
 
 
-<div class="viewcode-block" id="Case"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case">[docs]</a><span class="k">class</span> <span class="nc">Case</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Case">
+<a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case">[docs]</a>
+<span class="k">class</span> <span class="nc">Case</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    https://github.com/ESMCI/cime/wiki/Developers-Introduction</span>
 <span class="sd">    The Case class is the heart of the CIME Case Control system.  All</span>
@@ -293,7 +295,19 @@
 
             <span class="bp">self</span><span class="o">.</span><span class="n">initialize_derived_attributes</span><span class="p">()</span>
 
-<div class="viewcode-block" id="Case.check_if_comp_var"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.check_if_comp_var">[docs]</a>    <span class="k">def</span> <span class="nf">check_if_comp_var</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">):</span>
+<div class="viewcode-block" id="Case.get_baseline_dir">
+<a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.get_baseline_dir">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_baseline_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">baseline_root</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;BASELINE_ROOT&quot;</span><span class="p">)</span>
+
+        <span class="n">baseline_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;BASECMP_CASE&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">baseline_root</span><span class="p">,</span> <span class="n">baseline_name</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Case.check_if_comp_var">
+<a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.check_if_comp_var">[docs]</a>
+    <span class="k">def</span> <span class="nf">check_if_comp_var</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">env_file</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_env_entryid_files</span><span class="p">:</span>
             <span class="n">new_vid</span><span class="p">,</span> <span class="n">new_comp</span><span class="p">,</span> <span class="n">iscompvar</span> <span class="o">=</span> <span class="n">env_file</span><span class="o">.</span><span class="n">check_if_comp_var</span><span class="p">(</span><span class="n">vid</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">iscompvar</span><span class="p">:</span>
@@ -301,7 +315,10 @@
 
         <span class="k">return</span> <span class="n">vid</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">False</span></div>
 
-<div class="viewcode-block" id="Case.initialize_derived_attributes"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.initialize_derived_attributes">[docs]</a>    <span class="k">def</span> <span class="nf">initialize_derived_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Case.initialize_derived_attributes">
+<a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.initialize_derived_attributes">[docs]</a>
+    <span class="k">def</span> <span class="nf">initialize_derived_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        These are derived variables which can be used in the config_* files</span>
 <span class="sd">        for variable substitution using the {{ var }} syntax</span>
@@ -385,6 +402,7 @@
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">srun_binding</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">srun_binding</span><span class="p">))</span></div>
 
+
     <span class="c1"># Define __enter__ and __exit__ so that we can use this as a context manager</span>
     <span class="c1"># and force a flush on exit.</span>
     <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -397,7 +415,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_read_only_mode</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">return</span> <span class="kc">False</span>
 
-<div class="viewcode-block" id="Case.read_xml"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.read_xml">[docs]</a>    <span class="k">def</span> <span class="nf">read_xml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Case.read_xml">
+<a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.read_xml">[docs]</a>
+    <span class="k">def</span> <span class="nf">read_xml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">env_file</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_files</span><span class="p">:</span>
             <span class="n">expect</span><span class="p">(</span>
                 <span class="ow">not</span> <span class="n">env_file</span><span class="o">.</span><span class="n">needsrewrite</span><span class="p">,</span>
@@ -457,11 +477,17 @@
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_files</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_env_entryid_files</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_env_generic_files</span></div>
 
-<div class="viewcode-block" id="Case.get_case_root"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.get_case_root">[docs]</a>    <span class="k">def</span> <span class="nf">get_case_root</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Case.get_case_root">
+<a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.get_case_root">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_case_root</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the root directory for this case.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_caseroot</span></div>
 
-<div class="viewcode-block" id="Case.get_env"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.get_env">[docs]</a>    <span class="k">def</span> <span class="nf">get_env</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">short_name</span><span class="p">,</span> <span class="n">allow_missing</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Case.get_env">
+<a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.get_env">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_env</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">short_name</span><span class="p">,</span> <span class="n">allow_missing</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="n">full_name</span> <span class="o">=</span> <span class="s2">&quot;env_</span><span class="si">{}</span><span class="s2">.xml&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">short_name</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">env_file</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_files</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">env_file</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span> <span class="o">==</span> <span class="n">full_name</span><span class="p">:</span>
@@ -470,7 +496,10 @@
             <span class="k">return</span> <span class="kc">None</span>
         <span class="n">expect</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;Could not find object for </span><span class="si">{}</span><span class="s2"> in case&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">full_name</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="Case.check_timestamps"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.check_timestamps">[docs]</a>    <span class="k">def</span> <span class="nf">check_timestamps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">short_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Case.check_timestamps">
+<a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.check_timestamps">[docs]</a>
+    <span class="k">def</span> <span class="nf">check_timestamps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">short_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">short_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">env_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_env</span><span class="p">(</span><span class="n">short_name</span><span class="p">)</span>
             <span class="n">env_file</span><span class="o">.</span><span class="n">check_timestamp</span><span class="p">()</span>
@@ -478,7 +507,10 @@
             <span class="k">for</span> <span class="n">env_file</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_files</span><span class="p">:</span>
                 <span class="n">env_file</span><span class="o">.</span><span class="n">check_timestamp</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Case.copy"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.copy">[docs]</a>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">newcasename</span><span class="p">,</span> <span class="n">newcaseroot</span><span class="p">,</span> <span class="n">newcimeroot</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">newsrcroot</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Case.copy">
+<a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.copy">[docs]</a>
+    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">newcasename</span><span class="p">,</span> <span class="n">newcaseroot</span><span class="p">,</span> <span class="n">newcimeroot</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">newsrcroot</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">newcase</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">env_file</span> <span class="ow">in</span> <span class="n">newcase</span><span class="o">.</span><span class="n">_files</span><span class="p">:</span>  <span class="c1"># pylint: disable=protected-access</span>
             <span class="n">basename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">env_file</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span>
@@ -504,7 +536,10 @@
 
         <span class="k">return</span> <span class="n">newcase</span></div>
 
-<div class="viewcode-block" id="Case.flush"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.flush">[docs]</a>    <span class="k">def</span> <span class="nf">flush</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">flushall</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Case.flush">
+<a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.flush">[docs]</a>
+    <span class="k">def</span> <span class="nf">flush</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">flushall</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_caseroot</span><span class="p">):</span>
             <span class="c1"># do not flush if caseroot wasnt created</span>
             <span class="k">return</span>
@@ -512,7 +547,10 @@
         <span class="k">for</span> <span class="n">env_file</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_files</span><span class="p">:</span>
             <span class="n">env_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">force_write</span><span class="o">=</span><span class="n">flushall</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Case.get_values"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.get_values">[docs]</a>    <span class="k">def</span> <span class="nf">get_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">resolved</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Case.get_values">
+<a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.get_values">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">resolved</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">env_file</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_files</span><span class="p">:</span>
             <span class="c1"># Wait and resolve in self rather than in env_file</span>
             <span class="n">results</span> <span class="o">=</span> <span class="n">env_file</span><span class="o">.</span><span class="n">get_values</span><span class="p">(</span>
@@ -541,10 +579,16 @@
         <span class="c1"># Return empty result</span>
         <span class="k">return</span> <span class="p">[]</span></div>
 
-<div class="viewcode-block" id="Case.get_value"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.get_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">resolved</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Case.get_value">
+<a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.get_value">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">resolved</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">item</span> <span class="o">==</span> <span class="s2">&quot;GPU_ENABLED&quot;</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">gpu_enabled</span><span class="p">:</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;GPU_TYPE&quot;</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">&quot;none&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;GPU_TYPE&quot;</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">&quot;none&quot;</span>
+                    <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;NGPUS_PER_NODE&quot;</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+                <span class="p">):</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">gpu_enabled</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="k">return</span> <span class="s2">&quot;true&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gpu_enabled</span> <span class="k">else</span> <span class="s2">&quot;false&quot;</span>
 
@@ -567,7 +611,10 @@
         <span class="c1"># Return empty result</span>
         <span class="k">return</span> <span class="n">result</span></div>
 
-<div class="viewcode-block" id="Case.get_record_fields"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.get_record_fields">[docs]</a>    <span class="k">def</span> <span class="nf">get_record_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Case.get_record_fields">
+<a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.get_record_fields">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_record_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;get_record_fields gets individual requested field from an entry_id file</span>
 <span class="sd">        this routine is used only by xmlquery&quot;&quot;&quot;</span>
         <span class="c1"># Empty result</span>
@@ -615,7 +662,10 @@
 
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">result</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="Case.get_type_info"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.get_type_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_type_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Case.get_type_info">
+<a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.get_type_info">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_type_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
         <span class="n">result</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">for</span> <span class="n">env_file</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_env_entryid_files</span><span class="p">:</span>
             <span class="n">result</span> <span class="o">=</span> <span class="n">env_file</span><span class="o">.</span><span class="n">get_type_info</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
@@ -624,7 +674,10 @@
 
         <span class="k">return</span> <span class="n">result</span></div>
 
-<div class="viewcode-block" id="Case.get_resolved_value"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.get_resolved_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_resolved_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">recurse</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">allow_unresolved_envvars</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Case.get_resolved_value">
+<a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.get_resolved_value">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_resolved_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">recurse</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">allow_unresolved_envvars</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="n">num_unresolved</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;$&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">item</span> <span class="k">else</span> <span class="mi">0</span>
         <span class="n">recurse_limit</span> <span class="o">=</span> <span class="mi">10</span>
         <span class="k">if</span> <span class="n">num_unresolved</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">recurse</span> <span class="o">&lt;</span> <span class="n">recurse_limit</span><span class="p">:</span>
@@ -643,7 +696,10 @@
 
         <span class="k">return</span> <span class="n">item</span></div>
 
-<div class="viewcode-block" id="Case.set_value"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.set_value">[docs]</a>    <span class="k">def</span> <span class="nf">set_value</span><span class="p">(</span>
+
+<div class="viewcode-block" id="Case.set_value">
+<a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.set_value">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_value</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">item</span><span class="p">,</span>
         <span class="n">value</span><span class="p">,</span>
@@ -685,7 +741,10 @@
                 <span class="s2">&quot;No variable </span><span class="si">{}</span><span class="s2"> found in case&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">item</span><span class="p">),</span>
             <span class="p">)</span></div>
 
-<div class="viewcode-block" id="Case.set_valid_values"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.set_valid_values">[docs]</a>    <span class="k">def</span> <span class="nf">set_valid_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">valid_values</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Case.set_valid_values">
+<a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.set_valid_values">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_valid_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">valid_values</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Update or create a valid_values entry for item and populate it</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -702,7 +761,10 @@
                 <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Will rewrite file </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">env_file</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="n">item</span><span class="p">))</span>
                 <span class="k">return</span> <span class="n">result</span></div>
 
-<div class="viewcode-block" id="Case.set_lookup_value"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.set_lookup_value">[docs]</a>    <span class="k">def</span> <span class="nf">set_lookup_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Case.set_lookup_value">
+<a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.set_lookup_value">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_lookup_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">lookups</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">lookups</span><span class="p">[</span><span class="n">item</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                 <span class="s2">&quot;Item </span><span class="si">{}</span><span class="s2"> already in lookups with value </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
@@ -713,13 +775,17 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Setting in lookups: item </span><span class="si">{}</span><span class="s2">, value </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">lookups</span><span class="p">[</span><span class="n">item</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span></div>
 
-<div class="viewcode-block" id="Case.clean_up_lookups"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.clean_up_lookups">[docs]</a>    <span class="k">def</span> <span class="nf">clean_up_lookups</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">allow_undefined</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Case.clean_up_lookups">
+<a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.clean_up_lookups">[docs]</a>
+    <span class="k">def</span> <span class="nf">clean_up_lookups</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">allow_undefined</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="c1"># put anything in the lookups table into existing env objects</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lookups</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;lookup key </span><span class="si">{}</span><span class="s2"> value </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
             <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">allow_undefined</span><span class="o">=</span><span class="n">allow_undefined</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">lookups</span><span class="p">[</span><span class="n">key</span><span class="p">]</span></div>
+
 
     <span class="k">def</span> <span class="nf">_set_compset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compset_name</span><span class="p">,</span> <span class="n">files</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -802,10 +868,13 @@
 
         <span class="k">return</span> <span class="n">compset_alias</span><span class="p">,</span> <span class="n">science_support</span>
 
-<div class="viewcode-block" id="Case.get_primary_component"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.get_primary_component">[docs]</a>    <span class="k">def</span> <span class="nf">get_primary_component</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Case.get_primary_component">
+<a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.get_primary_component">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_primary_component</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_primary_component</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_primary_component</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_primary_component</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_primary_component</span></div>
+
 
     <span class="k">def</span> <span class="nf">_find_primary_component</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -973,7 +1042,9 @@
     <span class="c1"># Note: interstitial digits are included (e.g., in FV3GFS).</span>
     <span class="n">__mod_match_re__</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;([^%]*[^0-9%]+)&quot;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Case.valid_compset"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.valid_compset">[docs]</a>    <span class="k">def</span> <span class="nf">valid_compset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compset_name</span><span class="p">,</span> <span class="n">compset_alias</span><span class="p">,</span> <span class="n">files</span><span class="p">):</span>
+<div class="viewcode-block" id="Case.valid_compset">
+<a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.valid_compset">[docs]</a>
+    <span class="k">def</span> <span class="nf">valid_compset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compset_name</span><span class="p">,</span> <span class="n">compset_alias</span><span class="p">,</span> <span class="n">files</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Add stub models missing in &lt;compset_name&gt;, return full compset name.</span>
 <span class="sd">        &lt;files&gt; is used to collect set of all supported components.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1009,6 +1080,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_valid_compset_impl</span><span class="p">(</span>
             <span class="n">compset_name</span><span class="p">,</span> <span class="n">compset_alias</span><span class="p">,</span> <span class="n">comp_classes</span><span class="p">,</span> <span class="n">comp_hash</span>
         <span class="p">)</span></div>
+
 
     <span class="k">def</span> <span class="nf">_set_info_from_primary_component</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="n">pesfile</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1053,7 +1125,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">set_lookup_value</span><span class="p">(</span><span class="s2">&quot;TESTS_MODS_DIR&quot;</span><span class="p">,</span> <span class="n">tests_mods_dir</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_lookup_value</span><span class="p">(</span><span class="s2">&quot;USER_MODS_DIR&quot;</span><span class="p">,</span> <span class="n">user_mods_dir</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Case.get_compset_components"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.get_compset_components">[docs]</a>    <span class="k">def</span> <span class="nf">get_compset_components</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Case.get_compset_components">
+<a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.get_compset_components">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_compset_components</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># If are doing a create_clone then, self._compsetname is not set yet</span>
         <span class="n">components</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">compset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;COMPSET&quot;</span><span class="p">)</span>
@@ -1079,6 +1153,7 @@
                 <span class="n">components</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">element_component</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">components</span></div>
 
+
     <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">entryid_file</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_env_entryid_files</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">entryid_file</span><span class="p">:</span>
@@ -1087,10 +1162,13 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">yield</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span>
 
-<div class="viewcode-block" id="Case.set_comp_classes"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.set_comp_classes">[docs]</a>    <span class="k">def</span> <span class="nf">set_comp_classes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">comp_classes</span><span class="p">):</span>
+<div class="viewcode-block" id="Case.set_comp_classes">
+<a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.set_comp_classes">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_comp_classes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">comp_classes</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_component_classes</span> <span class="o">=</span> <span class="n">comp_classes</span>
         <span class="k">for</span> <span class="n">env_file</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_env_entryid_files</span><span class="p">:</span>
             <span class="n">env_file</span><span class="o">.</span><span class="n">set_components</span><span class="p">(</span><span class="n">comp_classes</span><span class="p">)</span></div>
+
 
     <span class="k">def</span> <span class="nf">_get_component_config_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">):</span>
         <span class="c1"># attributes used for multi valued defaults</span>
@@ -1331,7 +1409,9 @@
         <span class="k">if</span> <span class="n">multi_driver</span><span class="p">:</span>
             <span class="n">mach_pes_obj</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;MULTI_DRIVER&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Case.configure"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.configure">[docs]</a>    <span class="k">def</span> <span class="nf">configure</span><span class="p">(</span>
+<div class="viewcode-block" id="Case.configure">
+<a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.configure">[docs]</a>
+    <span class="k">def</span> <span class="nf">configure</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">compset_name</span><span class="p">,</span>
         <span class="n">grid_name</span><span class="p">,</span>
@@ -1670,9 +1750,9 @@
             <span class="p">)</span>
 
         <span class="c1"># Set these two GPU XML variables here to overwrite the default values</span>
-        <span class="k">if</span> <span class="n">gpu_type</span><span class="p">:</span>
+        <span class="c1"># Only set them for &quot;cesm&quot; model</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cime_model</span> <span class="o">==</span> <span class="s2">&quot;cesm&quot;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;GPU_TYPE&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">gpu_type</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
-        <span class="k">if</span> <span class="n">gpu_offload</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;GPU_OFFLOAD&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">gpu_offload</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">initialize_derived_attributes</span><span class="p">()</span>
@@ -1729,7 +1809,10 @@
         <span class="k">if</span> <span class="n">input_dir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;DIN_LOC_ROOT&quot;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">input_dir</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="Case.get_compset_var_settings"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.get_compset_var_settings">[docs]</a>    <span class="k">def</span> <span class="nf">get_compset_var_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Case.get_compset_var_settings">
+<a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.get_compset_var_settings">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_compset_var_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">):</span>
         <span class="n">infile</span> <span class="o">=</span> <span class="n">files</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span>
             <span class="s2">&quot;COMPSETS_SPEC_FILE&quot;</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;component&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_primary_component</span><span class="p">}</span>
         <span class="p">)</span>
@@ -1746,13 +1829,20 @@
                 <span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">set_lookup_value</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Case.set_initial_test_values"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.set_initial_test_values">[docs]</a>    <span class="k">def</span> <span class="nf">set_initial_test_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Case.set_initial_test_values">
+<a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.set_initial_test_values">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_initial_test_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">testobj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_env</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
         <span class="n">testobj</span><span class="o">.</span><span class="n">set_initial_values</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Case.get_batch_jobs"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.get_batch_jobs">[docs]</a>    <span class="k">def</span> <span class="nf">get_batch_jobs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Case.get_batch_jobs">
+<a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.get_batch_jobs">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_batch_jobs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">batchobj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_env</span><span class="p">(</span><span class="s2">&quot;batch&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">batchobj</span><span class="o">.</span><span class="n">get_jobs</span><span class="p">()</span></div>
+
 
     <span class="k">def</span> <span class="nf">_set_pio_xml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">pioobj</span> <span class="o">=</span> <span class="n">PIO</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_component_classes</span><span class="p">)</span>
@@ -1921,7 +2011,9 @@
                     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">readme_file</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
                         <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">str_to_write</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Case.create_caseroot"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.create_caseroot">[docs]</a>    <span class="k">def</span> <span class="nf">create_caseroot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">clone</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="Case.create_caseroot">
+<a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.create_caseroot">[docs]</a>
+    <span class="k">def</span> <span class="nf">create_caseroot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">clone</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_caseroot</span><span class="p">):</span>
             <span class="c1"># Make the case directory</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot; Creating Case directory </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_caseroot</span><span class="p">))</span>
@@ -1994,7 +2086,10 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_create_caseroot_sourcemods</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_create_caseroot_tools</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Case.apply_user_mods"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.apply_user_mods">[docs]</a>    <span class="k">def</span> <span class="nf">apply_user_mods</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_mods_dirs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Case.apply_user_mods">
+<a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.apply_user_mods">[docs]</a>
+    <span class="k">def</span> <span class="nf">apply_user_mods</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_mods_dirs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        User mods can be specified on the create_newcase command line (usually when called from create test)</span>
 <span class="sd">        or they can be in the compset definition, or both.</span>
@@ -2031,6 +2126,7 @@
         <span class="k">if</span> <span class="n">all_user_mods</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">read_xml</span><span class="p">()</span></div>
 
+
     <span class="k">def</span> <span class="nf">_get_comp_user_mods</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        For a component &#39;foo&#39;, gets the value of FOO_USER_MODS.</span>
@@ -2044,7 +2140,9 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">comp_user_mods</span>
 
-<div class="viewcode-block" id="Case.submit_jobs"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.submit_jobs">[docs]</a>    <span class="k">def</span> <span class="nf">submit_jobs</span><span class="p">(</span>
+<div class="viewcode-block" id="Case.submit_jobs">
+<a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.submit_jobs">[docs]</a>
+    <span class="k">def</span> <span class="nf">submit_jobs</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">no_batch</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">job</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -2075,7 +2173,10 @@
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">result</span></div>
 
-<div class="viewcode-block" id="Case.get_job_info"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.get_job_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_job_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Case.get_job_info">
+<a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.get_job_info">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_job_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get information on batch jobs associated with this case</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -2091,11 +2192,17 @@
 
             <span class="k">return</span> <span class="n">result</span></div>
 
-<div class="viewcode-block" id="Case.get_job_id"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.get_job_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_job_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Case.get_job_id">
+<a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.get_job_id">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_job_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">):</span>
         <span class="n">env_batch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_env</span><span class="p">(</span><span class="s2">&quot;batch&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">env_batch</span><span class="o">.</span><span class="n">get_job_id</span><span class="p">(</span><span class="n">output</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Case.report_job_status"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.report_job_status">[docs]</a>    <span class="k">def</span> <span class="nf">report_job_status</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Case.report_job_status">
+<a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.report_job_status">[docs]</a>
+    <span class="k">def</span> <span class="nf">report_job_status</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">jobmap</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_job_info</span><span class="p">()</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">jobmap</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
@@ -2113,14 +2220,20 @@
                         <span class="p">)</span>
                     <span class="p">)</span></div>
 
-<div class="viewcode-block" id="Case.cancel_batch_jobs"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.cancel_batch_jobs">[docs]</a>    <span class="k">def</span> <span class="nf">cancel_batch_jobs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">jobids</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Case.cancel_batch_jobs">
+<a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.cancel_batch_jobs">[docs]</a>
+    <span class="k">def</span> <span class="nf">cancel_batch_jobs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">jobids</span><span class="p">):</span>
         <span class="n">env_batch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_env</span><span class="p">(</span><span class="s2">&quot;batch&quot;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">jobid</span> <span class="ow">in</span> <span class="n">jobids</span><span class="p">:</span>
             <span class="n">success</span> <span class="o">=</span> <span class="n">env_batch</span><span class="o">.</span><span class="n">cancel_job</span><span class="p">(</span><span class="n">jobid</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">success</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Failed to kill </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">jobid</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="Case.get_mpirun_cmd"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.get_mpirun_cmd">[docs]</a>    <span class="k">def</span> <span class="nf">get_mpirun_cmd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">allow_unresolved_envvars</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">overrides</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Case.get_mpirun_cmd">
+<a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.get_mpirun_cmd">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_mpirun_cmd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">allow_unresolved_envvars</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">overrides</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">job</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">job</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_primary_job</span><span class="p">()</span>
 
@@ -2212,7 +2325,10 @@
             <span class="n">allow_unresolved_envvars</span><span class="o">=</span><span class="n">allow_unresolved_envvars</span><span class="p">,</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="Case.set_model_version"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.set_model_version">[docs]</a>    <span class="k">def</span> <span class="nf">set_model_version</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Case.set_model_version">
+<a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.set_model_version">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_model_version</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
         <span class="n">version</span> <span class="o">=</span> <span class="s2">&quot;unknown&quot;</span>
         <span class="n">srcroot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;SRCROOT&quot;</span><span class="p">)</span>
         <span class="n">version</span> <span class="o">=</span> <span class="n">get_current_commit</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">srcroot</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="p">(</span><span class="n">model</span> <span class="o">==</span> <span class="s2">&quot;cesm&quot;</span><span class="p">))</span>
@@ -2224,7 +2340,10 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;WARNING: No </span><span class="si">{}</span><span class="s2"> Model version found.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">model</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="Case.load_env"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.load_env">[docs]</a>    <span class="k">def</span> <span class="nf">load_env</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">job</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Case.load_env">
+<a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.load_env">[docs]</a>
+    <span class="k">def</span> <span class="nf">load_env</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">job</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_env_loaded</span> <span class="ow">or</span> <span class="n">reset</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">job</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">job</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_primary_job</span><span class="p">()</span>
@@ -2236,7 +2355,10 @@
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_loaded_envs</span></div>
 
-<div class="viewcode-block" id="Case.get_build_threaded"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.get_build_threaded">[docs]</a>    <span class="k">def</span> <span class="nf">get_build_threaded</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Case.get_build_threaded">
+<a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.get_build_threaded">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_build_threaded</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns True if current settings require a threaded build/run.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -2245,6 +2367,7 @@
             <span class="k">return</span> <span class="kc">False</span>
         <span class="n">smp_present</span> <span class="o">=</span> <span class="n">force_threaded</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">thread_count</span> <span class="o">&gt;</span> <span class="mi">1</span>
         <span class="k">return</span> <span class="n">smp_present</span></div>
+
 
     <span class="k">def</span> <span class="nf">_check_testlists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compset_alias</span><span class="p">,</span> <span class="n">grid_name</span><span class="p">,</span> <span class="n">files</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -2297,7 +2420,9 @@
                 <span class="n">error_prefix</span><span class="o">=</span><span class="s2">&quot;STOP: &quot;</span><span class="p">,</span>
             <span class="p">)</span>
 
-<div class="viewcode-block" id="Case.set_file"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.set_file">[docs]</a>    <span class="k">def</span> <span class="nf">set_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xmlfile</span><span class="p">):</span>
+<div class="viewcode-block" id="Case.set_file">
+<a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.set_file">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xmlfile</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        force the case object to consider only xmlfile</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -2356,7 +2481,10 @@
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">new_env_file</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="Case.update_env"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.update_env">[docs]</a>    <span class="k">def</span> <span class="nf">update_env</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_object</span><span class="p">,</span> <span class="n">env_file</span><span class="p">,</span> <span class="n">blow_away</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Case.update_env">
+<a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.update_env">[docs]</a>
+    <span class="k">def</span> <span class="nf">update_env</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_object</span><span class="p">,</span> <span class="n">env_file</span><span class="p">,</span> <span class="n">blow_away</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Replace a case env object file</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -2377,7 +2505,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_files</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">old_object</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_object</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Case.get_latest_cpl_log"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.get_latest_cpl_log">[docs]</a>    <span class="k">def</span> <span class="nf">get_latest_cpl_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coupler_log_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cplname</span><span class="o">=</span><span class="s2">&quot;cpl&quot;</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Case.get_latest_cpl_log">
+<a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.get_latest_cpl_log">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_latest_cpl_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coupler_log_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cplname</span><span class="o">=</span><span class="s2">&quot;cpl&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        find and return the latest cpl log file in the</span>
 <span class="sd">        coupler_log_path directory</span>
@@ -2392,7 +2523,10 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="Case.record_cmd"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.record_cmd">[docs]</a>    <span class="k">def</span> <span class="nf">record_cmd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Case.record_cmd">
+<a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.record_cmd">[docs]</a>
+    <span class="k">def</span> <span class="nf">record_cmd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="n">lines</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">caseroot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">)</span>
         <span class="n">cimeroot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CIMEROOT&quot;</span><span class="p">)</span>
@@ -2437,7 +2571,10 @@
         <span class="k">except</span> <span class="ne">PermissionError</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Could not write to &#39;replay.sh&#39; script&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Case.fix_sys_argv_quotes"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.fix_sys_argv_quotes">[docs]</a>    <span class="k">def</span> <span class="nf">fix_sys_argv_quotes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Case.fix_sys_argv_quotes">
+<a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.fix_sys_argv_quotes">[docs]</a>
+    <span class="k">def</span> <span class="nf">fix_sys_argv_quotes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Fixes removed quotes from argument list.</span>
 
 <span class="sd">        Restores quotes to `--val` and `KEY=VALUE` from sys.argv.</span>
@@ -2468,7 +2605,10 @@
 
         <span class="k">return</span> <span class="n">cmd</span></div>
 
-<div class="viewcode-block" id="Case.create"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.create">[docs]</a>    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span>
+
+<div class="viewcode-block" id="Case.create">
+<a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.create">[docs]</a>
+    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">casename</span><span class="p">,</span>
         <span class="n">srcroot</span><span class="p">,</span>
@@ -2598,7 +2738,10 @@
 
             <span class="k">raise</span></div>
 
-<div class="viewcode-block" id="Case.new_hash"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.new_hash">[docs]</a>    <span class="k">def</span> <span class="nf">new_hash</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Case.new_hash">
+<a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.new_hash">[docs]</a>
+    <span class="k">def</span> <span class="nf">new_hash</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a hash&quot;&quot;&quot;</span>
         <span class="n">args</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span>
         <span class="n">ctime</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">)</span>
@@ -2609,7 +2752,10 @@
 
         <span class="k">return</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Case.is_save_timing_dir_project"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.is_save_timing_dir_project">[docs]</a>    <span class="k">def</span> <span class="nf">is_save_timing_dir_project</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Case.is_save_timing_dir_project">
+<a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.is_save_timing_dir_project">[docs]</a>
+    <span class="k">def</span> <span class="nf">is_save_timing_dir_project</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check whether the project is permitted to archive performance data in the location</span>
 <span class="sd">        specified for the current machine</span>
@@ -2628,15 +2774,24 @@
 
             <span class="k">return</span> <span class="kc">False</span></div>
 
-<div class="viewcode-block" id="Case.get_primary_job"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.get_primary_job">[docs]</a>    <span class="k">def</span> <span class="nf">get_primary_job</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Case.get_primary_job">
+<a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.get_primary_job">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_primary_job</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot;case.test&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;TEST&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;case.run&quot;</span></div>
 
-<div class="viewcode-block" id="Case.get_first_job"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.get_first_job">[docs]</a>    <span class="k">def</span> <span class="nf">get_first_job</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Case.get_first_job">
+<a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.get_first_job">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_first_job</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">env_workflow</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_env</span><span class="p">(</span><span class="s2">&quot;workflow&quot;</span><span class="p">)</span>
         <span class="n">jobs</span> <span class="o">=</span> <span class="n">env_workflow</span><span class="o">.</span><span class="n">get_jobs</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="Case.preview_run"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.preview_run">[docs]</a>    <span class="k">def</span> <span class="nf">preview_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">write</span><span class="p">,</span> <span class="n">job</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Case.preview_run">
+<a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.preview_run">[docs]</a>
+    <span class="k">def</span> <span class="nf">preview_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">write</span><span class="p">,</span> <span class="n">job</span><span class="p">):</span>
         <span class="n">write</span><span class="p">(</span><span class="s2">&quot;CASE INFO:&quot;</span><span class="p">)</span>
         <span class="n">write</span><span class="p">(</span><span class="s2">&quot;  nodes: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">))</span>
         <span class="n">write</span><span class="p">(</span><span class="s2">&quot;  total tasks: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">total_tasks</span><span class="p">))</span>
@@ -2670,7 +2825,9 @@
                 <span class="n">overrides</span> <span class="o">=</span> <span class="n">env_batch</span><span class="o">.</span><span class="n">get_job_overrides</span><span class="p">(</span><span class="n">job_id</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
                 <span class="n">write</span><span class="p">(</span><span class="s2">&quot;    MPIRUN (job=</span><span class="si">{}</span><span class="s2">):&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">job_id</span><span class="p">))</span>
                 <span class="n">write</span><span class="p">(</span><span class="s2">&quot;      </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_resolved_value</span><span class="p">(</span><span class="n">overrides</span><span class="p">[</span><span class="s2">&quot;mpirun&quot;</span><span class="p">])))</span>
-                <span class="n">write</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span></div></div>
+                <span class="n">write</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span></div>
+</div>
+
 </pre></div>
 
            </div>

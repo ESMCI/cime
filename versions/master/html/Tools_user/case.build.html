@@ -12,11 +12,11 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/sphinx_highlight.js"></script>
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../_static/pop_ver.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -142,7 +142,7 @@
            <div itemprop="articleBody">
              
   <section id="case-build">
-<span id="id1"></span><h1>case.build<a class="headerlink" href="#case-build" title="Permalink to this heading"></a></h1>
+<span id="id1"></span><h1>case.build<a class="headerlink" href="#case-build" title="Link to this heading"></a></h1>
 <p><strong>case.build</strong> is a script in CIMEROOT/CIME/Tools.</p>
 <div class="toctree-wrapper compound">
 </div>
@@ -202,9 +202,6 @@ positional arguments:
 
 options:
   -h, --help            show this help message and exit
-  -d, --debug           Print debug information (very verbose) to file /home/runner/work/cime/cime/CIME/Tools/case.build.log
-  -v, --verbose         Add additional context (time and file) to log messages
-  -s, --silent          Print only warnings and error messages
   --ninja               Use ninja backed for CMake (instead of gmake). The ninja backend is better at scanning fortran dependencies but seems to be less reliable across different platforms and compilers.
   --separate-builds     Build each component one at a time, separately, with output going to separate logs
   --skip-submit         Sets the current test phase to RUN, skipping the SUBMIT phase. This may be useful if rebuilding the model while this test is in the batch queue. ONLY USE IF A TEST CASE, OTHERWISE IGNORED.
@@ -225,6 +222,11 @@ options:
                         Clean Depends and Srcfiles only.
                         This allows you to rebuild after adding new
                         files in the source tree or in SourceMods.
+
+Logging options:
+  -d, --debug           Print debug information (very verbose) to file /home/runner/work/cime/cime/CIME/Tools/case.build.log
+  -v, --verbose         Add additional context (time and file) to log messages
+  -s, --silent          Print only warnings and error messages
 </pre></div>
 </div>
 </section>

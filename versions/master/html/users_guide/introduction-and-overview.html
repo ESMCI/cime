@@ -12,11 +12,11 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/sphinx_highlight.js"></script>
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=30d551ce"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../_static/pop_ver.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -107,11 +107,11 @@
            <div itemprop="articleBody">
              
   <section id="introduction">
-<span id="introduction-and-overview"></span><h1><span class="section-number">1. </span>Introduction<a class="headerlink" href="#introduction" title="Permalink to this heading"></a></h1>
+<span id="introduction-and-overview"></span><h1><span class="section-number">1. </span>Introduction<a class="headerlink" href="#introduction" title="Link to this heading"></a></h1>
 <p>Part 1 of this guide explains the basic commands in the CIME Case Control System
 that are needed to get a model running.</p>
 <section id="prerequisites">
-<h2><span class="section-number">1.1. </span>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this heading"></a></h2>
+<h2><span class="section-number">1.1. </span>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading"></a></h2>
 <p>Part 1 of this guide assumes that CIME or a CIME-driven model and the necessary input files
 have been installed on the computer you are using. If that is not the case, see <a class="reference internal" href="porting-cime.html#porting"><span class="std std-ref">Porting CIME</span></a>.</p>
 <p>Other prerequisites:</p>
@@ -130,7 +130,7 @@ like this:</p>
 <p>Consult your local documentation if you need to update your python version.</p>
 </section>
 <section id="key-terms-and-concepts">
-<h2><span class="section-number">1.2. </span>Key Terms and concepts<a class="headerlink" href="#key-terms-and-concepts" title="Permalink to this heading"></a></h2>
+<h2><span class="section-number">1.2. </span>Key Terms and concepts<a class="headerlink" href="#key-terms-and-concepts" title="Link to this heading"></a></h2>
 <p>The following key terms and concepts are ingrained in CIME and used frequently in this documentation.
 See the <a class="reference internal" href="../glossary/index.html#glossary"><span class="std std-ref">Glossary</span></a> for a more complete list of terms.</p>
 <p><strong>components</strong></p>
@@ -182,7 +182,7 @@ versions of the model source code, promoting reproducibility and provenance.  An
 </dl>
 </section>
 <section id="cime-and-your-environment">
-<h2><span class="section-number">1.3. </span>CIME and your environment<a class="headerlink" href="#cime-and-your-environment" title="Permalink to this heading"></a></h2>
+<h2><span class="section-number">1.3. </span>CIME and your environment<a class="headerlink" href="#cime-and-your-environment" title="Link to this heading"></a></h2>
 <p>Before using any CIME commands, set the <code class="docutils literal notranslate"><span class="pre">CIME_MODEL</span></code> environment variable. In bash, use <strong>export</strong> as shown and replace
 <strong>&lt;model&gt;</strong> with the appropriate text. Current possibilities are “e3sm” or “cesm.”</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">export</span> <span class="n">CIME_MODEL</span><span class="o">=&lt;</span><span class="n">model</span><span class="o">&gt;</span>
@@ -198,7 +198,7 @@ For variables that can be set in more than one way, the order of precedence is:<
 </ul>
 </section>
 <section id="quick-start">
-<h2><span class="section-number">1.4. </span>Quick start<a class="headerlink" href="#quick-start" title="Permalink to this heading"></a></h2>
+<h2><span class="section-number">1.4. </span>Quick start<a class="headerlink" href="#quick-start" title="Link to this heading"></a></h2>
 <p>To see an example of how a case is created, configured, built and run with CIME, execute the following commands. (This assumes that CIME has been ported to your current machine).</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">cd</span> <span class="n">cime</span><span class="o">/</span><span class="n">scripts</span>
 <span class="o">&gt;</span> <span class="o">./</span><span class="n">create_newcase</span> <span class="o">--</span><span class="n">case</span> <span class="n">mycase</span> <span class="o">--</span><span class="n">compset</span> <span class="n">X</span> <span class="o">--</span><span class="n">res</span> <span class="n">f19_g16</span>
@@ -216,7 +216,7 @@ For variables that can be set in more than one way, the order of precedence is:<
 <p>Repeat the command until you see the message <code class="docutils literal notranslate"><span class="pre">case.run</span> <span class="pre">success</span></code>.</p>
 </section>
 <section id="discovering-available-cases-with-query-config">
-<h2><span class="section-number">1.5. </span>Discovering available cases with <strong>query_config</strong><a class="headerlink" href="#discovering-available-cases-with-query-config" title="Permalink to this heading"></a></h2>
+<h2><span class="section-number">1.5. </span>Discovering available cases with <strong>query_config</strong><a class="headerlink" href="#discovering-available-cases-with-query-config" title="Link to this heading"></a></h2>
 <p>Your CIME-driven model has many more possible cases besides the simple one in the above Quick Start.</p>
 <p>Use the utility <a class="reference external" href="../Tools_user/query_config.html">query_config</a>  to see which out-of-the-box compsets, components, grids and machines are available for your model.</p>
 <p>If CIME is downloaded in standalone mode, only standalone CIME compsets can be queried.</p>
