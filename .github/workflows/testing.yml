@@ -89,7 +89,7 @@ jobs:
 
           init_cime
 
-          pytest -vvv --machine docker --no-fortran-run CIME/tests/test_unit*
+          pytest -vvv --cov=CIME --machine docker --no-fortran-run CIME/tests/test_unit*
 
   # Run system tests
   system-testing:
@@ -145,7 +145,7 @@ jobs:
 
           conda activate base
 
-          pytest -vvv --machine docker --no-fortran-run --no-teardown CIME/tests/test_sys*
+          pytest -vvv --cov=CIME --machine docker --no-fortran-run --no-teardown CIME/tests/test_sys*
       - name: Create testing log archive
         if: ${{ failure() }}
         shell: bash

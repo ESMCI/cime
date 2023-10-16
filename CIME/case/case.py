@@ -207,6 +207,13 @@ class Case(object):
 
             self.initialize_derived_attributes()
 
+    def get_baseline_dir(self):
+        baseline_root = self.get_value("BASELINE_ROOT")
+
+        baseline_name = self.get_value("BASECMP_CASE")
+
+        return os.path.join(baseline_root, baseline_name)
+
     def check_if_comp_var(self, vid):
         for env_file in self._env_entryid_files:
             new_vid, new_comp, iscompvar = env_file.check_if_comp_var(vid)

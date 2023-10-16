@@ -11,9 +11,89 @@ from CIME.test_status import *
 from CIME.hist_utils import generate_baseline, compare_baseline
 from CIME.case import Case
 from CIME.test_utils import get_test_status_files
+from CIME.baselines.performance import (
+    perf_compare_throughput_baseline,
+    perf_compare_memory_baseline,
+    perf_write_baseline,
+)
 import os, time
 
 logger = logging.getLogger(__name__)
+
+
+def bless_throughput(
+    case,
+    test_name,
+    baseline_root,
+    baseline_name,
+    report_only,
+    force,
+):
+    success = True
+    reason = None
+
+    baseline_dir = os.path.join(
+        baseline_root, baseline_name, case.get_value("CASEBASEID")
+    )
+
+    below_threshold, comment = perf_compare_throughput_baseline(
+        case, baseline_dir=baseline_dir
+    )
+
+    if below_threshold:
+        logger.info("Diff appears to have been already resolved.")
+    else:
+        logger.info(comment)
+
+        if not report_only and (
+            force or input("Update this diff (y/n)? ").upper() in ["Y", "YES"]
+        ):
+            try:
+                perf_write_baseline(case, baseline_dir, memory=False)
+            except Exception as e:
+                success = False
+
+                reason = f"Failed to write baseline throughput for {test_name!r}: {e!s}"
+
+    return success, reason
+
+
+def bless_memory(
+    case,
+    test_name,
+    baseline_root,
+    baseline_name,
+    report_only,
+    force,
+):
+    success = True
+    reason = None
+
+    baseline_dir = os.path.join(
+        baseline_root, baseline_name, case.get_value("CASEBASEID")
+    )
+
+    below_threshold, comment = perf_compare_memory_baseline(
+        case, baseline_dir=baseline_dir
+    )
+
+    if below_threshold:
+        logger.info("Diff appears to have been already resolved.")
+    else:
+        logger.info(comment)
+
+        if not report_only and (
+            force or input("Update this diff (y/n)? ").upper() in ["Y", "YES"]
+        ):
+            try:
+                perf_write_baseline(case, baseline_dir, throughput=False)
+            except Exception as e:
+                success = False
+
+                reason = f"Failed to write baseline memory usage for test {test_name!r}: {e!s}"
+
+    return success, reason
+
 
 ###############################################################################
 def bless_namelists(
@@ -112,6 +192,8 @@ def bless_test_results(
     test_id=None,
     namelists_only=False,
     hist_only=False,
+    tput_only=False,
+    mem_only=False,
     report_only=False,
     force=False,
     pesfile=None,
@@ -119,6 +201,7 @@ def bless_test_results(
     no_skip_pass=False,
     new_test_root=None,
     new_test_id=None,
+    **_,  # Capture all for extra
 ):
     ###############################################################################
     test_status_files = get_test_status_files(test_root, compiler, test_id=test_id)
@@ -172,9 +255,15 @@ def bless_test_results(
         if bless_tests in [[], None] or CIME.utils.match_any(
             test_name, bless_tests_counts
         ):
-            overall_result, phase = ts.get_overall_test_status(
-                ignore_namelists=True, ignore_memleak=True
-            )
+            ts_kwargs = dict(ignore_namelists=True, ignore_memleak=True)
+
+            if tput_only:
+                ts_kwargs["check_throughput"] = True
+
+            if mem_only:
+                ts_kwargs["check_memory"] = True
+
+            overall_result, phase = ts.get_overall_test_status(**ts_kwargs)
 
             # See if we need to bless namelist
             if not hist_only:
@@ -219,14 +308,13 @@ def bless_test_results(
                 hist_bless = False
 
             # Now, do the bless
-            if not nl_bless and not hist_bless:
+            if not nl_bless and not hist_bless and not tput_only and not mem_only:
                 logger.info(
                     "Nothing to bless for test: {}, overall status: {}".format(
                         test_name, overall_result
                     )
                 )
             else:
-
                 logger.info(
                     "###############################################################################"
                 )
@@ -301,6 +389,32 @@ def bless_test_results(
                                 report_only,
                                 force,
                             )
+
+                        if not success:
+                            broken_blesses.append((test_name, reason))
+
+                    if tput_only:
+                        success, reason = bless_throughput(
+                            case,
+                            test_name,
+                            baseline_root_resolved,
+                            baseline_name_resolved,
+                            report_only,
+                            force,
+                        )
+
+                        if not success:
+                            broken_blesses.append((test_name, reason))
+
+                    if mem_only:
+                        success, reason = bless_memory(
+                            case,
+                            test_name,
+                            baseline_root_resolved,
+                            baseline_name_resolved,
+                            report_only,
+                            force,
+                        )
 
                         if not success:
                             broken_blesses.append((test_name, reason))
