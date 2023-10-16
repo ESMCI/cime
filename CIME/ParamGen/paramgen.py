@@ -4,6 +4,7 @@ import re
 from copy import deepcopy
 import logging
 import subprocess
+import shutil
 
 try:
     from paramgen_utils import is_logical_expr, is_formula, has_unexpanded_var
@@ -136,9 +137,7 @@ class ParamGen:
         """
 
         # First check whether the given xml file conforms to the entry_id_pg.xsd schema
-        from distutils.spawn import find_executable
-
-        xmllint = find_executable("xmllint")
+        xmllint = shutil.which("xmllint")
         if xmllint is None:
             logger.warning("Couldn't find xmllint. Skipping schema check")
         else:
