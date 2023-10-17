@@ -181,6 +181,12 @@ OR
     )
 
     parser.add_argument(
+        "--save-timing",
+        action="store_true",
+        help="Tell create_test to save timings of tests",
+    )
+
+    parser.add_argument(
         "--pes-file",
         help="Full pathname of an optional pes specification file. The file"
         "\ncan follow either the config_pes.xml or the env_mach_pes.xml format.",
@@ -259,6 +265,7 @@ OR
         args.check_throughput,
         args.check_memory,
         args.ignore_memleak,
+        args.save_timing,
         args.pes_file,
         args.jenkins_id,
         args.queue,
@@ -289,6 +296,7 @@ def _main_func(description):
         check_throughput,
         check_memory,
         ignore_memleak,
+        save_timing,
         pes_file,
         jenkins_id,
         queue,
@@ -317,6 +325,7 @@ def _main_func(description):
             check_throughput,
             check_memory,
             ignore_memleak,
+            save_timing,
             pes_file,
             jenkins_id,
             queue,

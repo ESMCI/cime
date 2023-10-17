@@ -279,6 +279,7 @@ def jenkins_generic_job(
     check_throughput,
     check_memory,
     ignore_memleak,
+    save_timing,
     pes_file,
     jenkins_id,
     queue,
@@ -361,16 +362,19 @@ def jenkins_generic_job(
         create_test_args.append("-j {:d}".format(parallel_jobs))
 
     if walltime is not None:
-        create_test_args.append(" --walltime " + walltime)
+        create_test_args.append("--walltime " + walltime)
 
     if baseline_root is not None:
-        create_test_args.append(" --baseline-root " + baseline_root)
+        create_test_args.append("--baseline-root " + baseline_root)
 
     if pes_file is not None:
-        create_test_args.append(" --pesfile " + pes_file)
+        create_test_args.append("--pesfile " + pes_file)
 
     if queue is not None:
-        create_test_args.append(" --queue " + queue)
+        create_test_args.append("--queue " + queue)
+
+    if save_timing:
+        create_test_args.append("--save-timing")
 
     create_test_cmd = "./create_test " + " ".join(create_test_args)
 
