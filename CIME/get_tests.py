@@ -100,6 +100,10 @@ _CIME_TESTS = {
             "SMS_P16.T42_T42.S",
         ),
     },
+    "cime_test_timing": {
+        "time": "0:10:00",
+        "tests": ("SMS_P1.T42_T42.S",),
+    },
     "cime_test_repeat": {
         "tests": (
             "TESTRUNPASS_P1.f19_g16_rx1.A",
