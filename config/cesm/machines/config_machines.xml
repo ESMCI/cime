@@ -2296,7 +2296,7 @@ This allows using a different mpirun command to launch unit tests
       <modules>
         <command name="purge">--force</command>
         <command name="load">StdEnv</command>
-        <!-- djlo Deactivated THT settings -->  
+        <!-- djlo Deactivated THT settings -->
         <!--command name="load">intel/2016a</command-->
         <!--command name="load">netCDF-Fortran/4.4.3-intel-2016a</command-->
         <!--command name="load">PnetCDF/1.8.1-intel-2016a</command-->
@@ -2320,6 +2320,7 @@ This allows using a different mpirun command to launch unit tests
 
   <machine MACH="betzy">
     <DESC> BullSequana XH2000 AMD® Epyc™ "Rome" 2.2GHz, 128-way nodes, os is Linux, batch system is SLURM</DESC>
+    <NODENAME_REGEX>.*.?betzy\d?.sigma2.no</NODENAME_REGEX>
     <OS>LINUX</OS>
     <COMPILERS>intel</COMPILERS>
     <MPILIBS compiler="intel" >openmpi</MPILIBS>
