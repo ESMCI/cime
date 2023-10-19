@@ -104,7 +104,7 @@ OR
 def create_bless_options(parser):
     bless_group = parser.add_argument_group("Bless options")
 
-    mutual_bless_group = bless_group.add_mutually_exclusive_group(required=True)
+    mutual_bless_group = bless_group.add_mutually_exclusive_group()
 
     mutual_bless_group.add_argument(
         "-n", "--namelists-only", action="store_true", help="Only analyze namelists."
