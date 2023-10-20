@@ -183,7 +183,6 @@ def bless_history(test_name, case, baseline_name, baseline_root, report_only, fo
                 return True, None
 
 
-###############################################################################
 def bless_test_results(
     baseline_name,
     baseline_root,
@@ -203,7 +202,8 @@ def bless_test_results(
     new_test_id=None,
     **_,  # Capture all for extra
 ):
-    ###############################################################################
+    bless_all = not (namelists_only | hist_only | tput_only | mem_only)
+
     test_status_files = get_test_status_files(test_root, compiler, test_id=test_id)
 
     # auto-adjust test-id if multiple rounds of tests were matched
@@ -255,18 +255,15 @@ def bless_test_results(
         if bless_tests in [[], None] or CIME.utils.match_any(
             test_name, bless_tests_counts
         ):
-            ts_kwargs = dict(ignore_namelists=True, ignore_memleak=True)
-
-            if tput_only:
-                ts_kwargs["check_throughput"] = True
-
-            if mem_only:
-                ts_kwargs["check_memory"] = True
-
-            overall_result, phase = ts.get_overall_test_status(**ts_kwargs)
+            overall_result, phase = ts.get_overall_test_status(
+                ignore_namelists=True,
+                ignore_memleak=True,
+                check_throughput=True,
+                check_memory=True,
+            )
 
             # See if we need to bless namelist
-            if not hist_only:
+            if namelists_only or bless_all:
                 if no_skip_pass:
                     nl_bless = True
                 else:
@@ -274,41 +271,26 @@ def bless_test_results(
             else:
                 nl_bless = False
 
-            # See if we need to bless baselines
-            if not namelists_only and not build_only:
-                run_result = ts.get_status(RUN_PHASE)
-                if run_result is None:
-                    broken_blesses.append((test_name, "no run phase"))
-                    logger.warning(
-                        "Test '{}' did not make it to run phase".format(test_name)
-                    )
-                    hist_bless = False
-                elif run_result != TEST_PASS_STATUS:
-                    broken_blesses.append((test_name, "run phase did not pass"))
-                    logger.warning(
-                        "Test '{}' run phase did not pass, not safe to bless, test status = {}".format(
-                            test_name, ts.phase_statuses_dump()
-                        )
-                    )
-                    hist_bless = False
-                elif overall_result == TEST_FAIL_STATUS:
-                    broken_blesses.append((test_name, "test did not pass"))
-                    logger.warning(
-                        "Test '{}' did not pass due to phase {}, not safe to bless, test status = {}".format(
-                            test_name, phase, ts.phase_statuses_dump()
-                        )
-                    )
-                    hist_bless = False
+            hist_bless, tput_bless, mem_bless = [False] * 3
 
-                elif no_skip_pass:
-                    hist_bless = True
-                else:
-                    hist_bless = ts.get_status(BASELINE_PHASE) != TEST_PASS_STATUS
-            else:
-                hist_bless = False
+            # Skip if test is build only i.e. testopts contains "B"
+            if not build_only:
+                allowed = bless_allowed(
+                    test_name, ts, broken_blesses, overall_result, no_skip_pass, phase
+                )
+
+                # See if we need to bless baselines
+                if hist_only or bless_all:
+                    hist_bless = allowed
+
+                if tput_only or bless_all:
+                    tput_bless = allowed
+
+                if mem_only or bless_all:
+                    mem_bless = allowed
 
             # Now, do the bless
-            if not nl_bless and not hist_bless and not tput_only and not mem_only:
+            if not nl_bless and not hist_bless and not tput_bless and not mem_bless:
                 logger.info(
                     "Nothing to bless for test: {}, overall status: {}".format(
                         test_name, overall_result
@@ -441,3 +423,37 @@ had a mistake (likely compiler or testid).""".format(
         success = False
 
     return success
+
+
+def bless_allowed(test_name, ts, broken_blesses, overall_result, no_skip_pass, phase):
+    allow_bless = False
+
+    run_result = ts.get_status(RUN_PHASE)
+
+    if run_result is None:
+        broken_blesses.append((test_name, "no run phase"))
+        logger.warning("Test '{}' did not make it to run phase".format(test_name))
+        allow_bless = False
+    elif run_result != TEST_PASS_STATUS:
+        broken_blesses.append((test_name, "run phase did not pass"))
+        logger.warning(
+            "Test '{}' run phase did not pass, not safe to bless, test status = {}".format(
+                test_name, ts.phase_statuses_dump()
+            )
+        )
+        allow_bless = False
+    elif overall_result == TEST_FAIL_STATUS:
+        broken_blesses.append((test_name, "test did not pass"))
+        logger.warning(
+            "Test '{}' did not pass due to phase {}, not safe to bless, test status = {}".format(
+                test_name, phase, ts.phase_statuses_dump()
+            )
+        )
+        allow_bless = False
+
+    elif no_skip_pass:
+        allow_bless = True
+    else:
+        allow_bless = ts.get_status(BASELINE_PHASE) != TEST_PASS_STATUS
+
+    return allow_bless
