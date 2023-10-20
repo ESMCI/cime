@@ -90,6 +90,8 @@ OR
         "\ncan follow either the config_pes.xml or the env_mach_pes.xml format.",
     )
 
+    parser.add_argument("--exclude", nargs="*", help="Exclude tests")
+
     parser.add_argument(
         "bless_tests",
         nargs="*",
