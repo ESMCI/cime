@@ -261,7 +261,7 @@ def bless_test_results(
         # Must pass tests to continue
         has_no_tests = bless_tests in [[], None]
         match_test_name = match_any(test_name, bless_tests_counts)
-        excluded = exclude.match(test_name)
+        excluded = exclude.match(test_name) if exclude else False
 
         if (not has_no_tests and not match_test_name) or excluded:
             logger.info("Skipping {!r}".format(test_name))
