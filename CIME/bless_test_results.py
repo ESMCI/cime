@@ -288,19 +288,19 @@ def bless_test_results(
 
         # Skip if test is build only i.e. testopts contains "B"
         if not build_only:
-            allowed = bless_allowed(
+            bless_needed = is_bless_needed(
                 test_name, ts, broken_blesses, overall_result, no_skip_pass, phase
             )
 
             # See if we need to bless baselines
             if hist_only or bless_all:
-                hist_bless = allowed
+                hist_bless = bless_needed
 
             if tput_only or bless_all:
-                tput_bless = allowed
+                tput_bless = bless_needed
 
             if mem_only or bless_all:
-                mem_bless = allowed
+                mem_bless = bless_needed
 
         # Now, do the bless
         if not nl_bless and not hist_bless and not tput_bless and not mem_bless:
@@ -436,15 +436,15 @@ had a mistake (likely compiler or testid).""".format(
     return success
 
 
-def bless_allowed(test_name, ts, broken_blesses, overall_result, no_skip_pass, phase):
-    allow_bless = False
+def is_bless_needed(test_name, ts, broken_blesses, overall_result, no_skip_pass, phase):
+    needed = False
 
     run_result = ts.get_status(RUN_PHASE)
 
     if run_result is None:
         broken_blesses.append((test_name, "no run phase"))
         logger.warning("Test '{}' did not make it to run phase".format(test_name))
-        allow_bless = False
+        needed = False
     elif run_result != TEST_PASS_STATUS:
         broken_blesses.append((test_name, "run phase did not pass"))
         logger.warning(
@@ -452,7 +452,7 @@ def bless_allowed(test_name, ts, broken_blesses, overall_result, no_skip_pass, p
                 test_name, ts.phase_statuses_dump()
             )
         )
-        allow_bless = False
+        needed = False
     elif overall_result == TEST_FAIL_STATUS:
         broken_blesses.append((test_name, "test did not pass"))
         logger.warning(
@@ -460,11 +460,11 @@ def bless_allowed(test_name, ts, broken_blesses, overall_result, no_skip_pass, p
                 test_name, phase, ts.phase_statuses_dump()
             )
         )
-        allow_bless = False
+        needed = False
 
     elif no_skip_pass:
-        allow_bless = True
+        needed = True
     else:
-        allow_bless = ts.get_status(BASELINE_PHASE) != TEST_PASS_STATUS
+        needed = ts.get_status(BASELINE_PHASE) != TEST_PASS_STATUS
 
-    return allow_bless
+    return needed
