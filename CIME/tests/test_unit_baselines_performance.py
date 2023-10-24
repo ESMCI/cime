@@ -304,12 +304,8 @@ class TestUnitBaselinesPerformance(unittest.TestCase):
                 0.05,
             )
 
-            (below_tolerance, comment) = performance.perf_compare_throughput_baseline(
-                case
-            )
-
-        assert below_tolerance is None
-        assert comment == "Could not read baseline throughput file: "
+            with self.assertRaises(FileNotFoundError):
+                performance.perf_compare_throughput_baseline(case)
 
     @mock.patch("CIME.baselines.performance._perf_get_throughput")
     @mock.patch("CIME.baselines.performance.read_baseline_file")
@@ -526,10 +522,8 @@ class TestUnitBaselinesPerformance(unittest.TestCase):
                 0.05,
             )
 
-            (below_tolerance, comment) = performance.perf_compare_memory_baseline(case)
-
-        assert below_tolerance is None
-        assert comment == "Could not read baseline memory usage: "
+            with self.assertRaises(FileNotFoundError):
+                performance.perf_compare_memory_baseline(case)
 
     @mock.patch("CIME.baselines.performance.get_cpl_mem_usage")
     @mock.patch("CIME.baselines.performance.read_baseline_file")

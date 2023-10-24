@@ -37,12 +37,27 @@ def bless_throughput(
         baseline_root, baseline_name, case.get_value("CASEBASEID")
     )
 
-    below_threshold, comment = perf_compare_throughput_baseline(
-        case, baseline_dir=baseline_dir
-    )
+    try:
+        below_threshold, comment = perf_compare_throughput_baseline(
+            case, baseline_dir=baseline_dir
+        )
+    except FileNotFoundError as e:
+        success = False
+
+        comment = f"Could not read throughput file: {e!s}"
+    except Exception as e:
+        success = False
+
+        comment = f"Error comparing throughput baseline: {e!s}"
+
+    # fail early
+    if not success:
+        logger.info(comment)
+
+        return success, comment
 
     if below_threshold:
-        logger.info("Diff appears to have been already resolved.")
+        logger.info("Throughput diff appears to have been already resolved.")
     else:
         logger.info(comment)
 
@@ -74,12 +89,27 @@ def bless_memory(
         baseline_root, baseline_name, case.get_value("CASEBASEID")
     )
 
-    below_threshold, comment = perf_compare_memory_baseline(
-        case, baseline_dir=baseline_dir
-    )
+    try:
+        below_threshold, comment = perf_compare_memory_baseline(
+            case, baseline_dir=baseline_dir
+        )
+    except FileNotFoundError as e:
+        success = False
+
+        comment = f"Could not read memory usage file: {e!s}"
+    except Exception as e:
+        success = False
+
+        comment = f"Error comparing memory baseline: {e!s}"
+
+    # fail early
+    if not success:
+        logger.info(comment)
+
+        return success, comment
 
     if below_threshold:
-        logger.info("Diff appears to have been already resolved.")
+        logger.info("Memory usage diff appears to have been already resolved.")
     else:
         logger.info(comment)
 
@@ -393,7 +423,7 @@ def bless_test_results(
                     if not success:
                         broken_blesses.append((test_name, reason))
 
-                if tput_only:
+                if tput_bless:
                     success, reason = bless_throughput(
                         case,
                         test_name,
@@ -406,7 +436,7 @@ def bless_test_results(
                     if not success:
                         broken_blesses.append((test_name, reason))
 
-                if mem_only:
+                if mem_bless:
                     success, reason = bless_memory(
                         case,
                         test_name,
