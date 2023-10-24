@@ -119,11 +119,12 @@ def bless_namelists(
     ):
         config = Config.instance()
 
-        create_test_gen_args = " -g {} ".format(
-            baseline_name
+        create_test_gen_args = (
+            " -g {} ".format(baseline_name)
             if config.create_test_flag_mode == "cesm"
             else " -g -b {} ".format(baseline_name)
         )
+
         if new_test_root is not None:
             create_test_gen_args += " --test-root={0} --output-root={0} ".format(
                 new_test_root
