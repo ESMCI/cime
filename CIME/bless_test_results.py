@@ -5,6 +5,7 @@ from CIME.utils import (
     get_scripts_root,
     EnvironmentContext,
     parse_test_name,
+    match_any,
 )
 from CIME.config import Config
 from CIME.test_status import *
@@ -183,7 +184,6 @@ def bless_history(test_name, case, baseline_name, baseline_root, report_only, fo
                 return True, None
 
 
-###############################################################################
 def bless_test_results(
     baseline_name,
     baseline_root,
@@ -201,9 +201,11 @@ def bless_test_results(
     no_skip_pass=False,
     new_test_root=None,
     new_test_id=None,
+    exclude=None,
     **_,  # Capture all for extra
 ):
-    ###############################################################################
+    bless_all = not (namelists_only | hist_only | tput_only | mem_only)
+
     test_status_files = get_test_status_files(test_root, compiler, test_id=test_id)
 
     # auto-adjust test-id if multiple rounds of tests were matched
@@ -220,9 +222,13 @@ def bless_test_results(
     most_recent = sorted(timestamps)[-1]
     logger.info("Matched test batch is {}".format(most_recent))
 
-    bless_tests_counts = None
+    bless_tests_counts = []
     if bless_tests:
         bless_tests_counts = dict([(bless_test, 0) for bless_test in bless_tests])
+
+    # compile excludes into single regex
+    if exclude is not None:
+        exclude = re.compile("|".join([f"({x})" for x in exclude]))
 
     broken_blesses = []
     for test_status_file in test_status_files:
@@ -239,7 +245,7 @@ def bless_test_results(
         if test_name is None:
             case_dir = os.path.basename(test_dir)
             test_name = CIME.utils.normalize_case_id(case_dir)
-            if not bless_tests or CIME.utils.match_any(test_name, bless_tests_counts):
+            if not bless_tests or match_any(test_name, bless_tests_counts):
                 broken_blesses.append(
                     (
                         "unknown",
@@ -252,172 +258,159 @@ def bless_test_results(
             else:
                 continue
 
-        if bless_tests in [[], None] or CIME.utils.match_any(
-            test_name, bless_tests_counts
-        ):
-            ts_kwargs = dict(ignore_namelists=True, ignore_memleak=True)
+        # Must pass tests to continue
+        has_no_tests = bless_tests in [[], None]
+        match_test_name = match_any(test_name, bless_tests_counts)
+        excluded = exclude.match(test_name) if exclude else False
 
-            if tput_only:
-                ts_kwargs["check_throughput"] = True
+        if (not has_no_tests and not match_test_name) or excluded:
+            logger.info("Skipping {!r}".format(test_name))
 
-            if mem_only:
-                ts_kwargs["check_memory"] = True
+            continue
 
-            overall_result, phase = ts.get_overall_test_status(**ts_kwargs)
+        overall_result, phase = ts.get_overall_test_status(
+            ignore_namelists=True,
+            ignore_memleak=True,
+            check_throughput=True,
+            check_memory=True,
+        )
 
-            # See if we need to bless namelist
-            if not hist_only:
-                if no_skip_pass:
-                    nl_bless = True
-                else:
-                    nl_bless = ts.get_status(NAMELIST_PHASE) != TEST_PASS_STATUS
+        # See if we need to bless namelist
+        if namelists_only or bless_all:
+            if no_skip_pass:
+                nl_bless = True
             else:
-                nl_bless = False
+                nl_bless = ts.get_status(NAMELIST_PHASE) != TEST_PASS_STATUS
+        else:
+            nl_bless = False
+
+        hist_bless, tput_bless, mem_bless = [False] * 3
+
+        # Skip if test is build only i.e. testopts contains "B"
+        if not build_only:
+            bless_needed = is_bless_needed(
+                test_name, ts, broken_blesses, overall_result, no_skip_pass, phase
+            )
 
             # See if we need to bless baselines
-            if not namelists_only and not build_only:
-                run_result = ts.get_status(RUN_PHASE)
-                if run_result is None:
-                    broken_blesses.append((test_name, "no run phase"))
-                    logger.warning(
-                        "Test '{}' did not make it to run phase".format(test_name)
-                    )
-                    hist_bless = False
-                elif run_result != TEST_PASS_STATUS:
-                    broken_blesses.append((test_name, "run phase did not pass"))
-                    logger.warning(
-                        "Test '{}' run phase did not pass, not safe to bless, test status = {}".format(
-                            test_name, ts.phase_statuses_dump()
-                        )
-                    )
-                    hist_bless = False
-                elif overall_result == TEST_FAIL_STATUS:
-                    broken_blesses.append((test_name, "test did not pass"))
-                    logger.warning(
-                        "Test '{}' did not pass due to phase {}, not safe to bless, test status = {}".format(
-                            test_name, phase, ts.phase_statuses_dump()
-                        )
-                    )
-                    hist_bless = False
+            if hist_only or bless_all:
+                hist_bless = bless_needed
 
-                elif no_skip_pass:
-                    hist_bless = True
+            if tput_only or bless_all:
+                tput_bless = bless_needed
+
+            if mem_only or bless_all:
+                mem_bless = bless_needed
+
+        # Now, do the bless
+        if not nl_bless and not hist_bless and not tput_bless and not mem_bless:
+            logger.info(
+                "Nothing to bless for test: {}, overall status: {}".format(
+                    test_name, overall_result
+                )
+            )
+        else:
+            logger.info(
+                "###############################################################################"
+            )
+            logger.info(
+                "Blessing results for test: {}, most recent result: {}".format(
+                    test_name, overall_result
+                )
+            )
+            logger.info("Case dir: {}".format(test_dir))
+            logger.info(
+                "###############################################################################"
+            )
+            if not force:
+                time.sleep(2)
+
+            with Case(test_dir) as case:
+                # Resolve baseline_name and baseline_root
+                if baseline_name is None:
+                    baseline_name_resolved = case.get_value("BASELINE_NAME_CMP")
+                    if not baseline_name_resolved:
+                        baseline_name_resolved = CIME.utils.get_current_branch(
+                            repo=CIME.utils.get_cime_root()
+                        )
                 else:
-                    hist_bless = ts.get_status(BASELINE_PHASE) != TEST_PASS_STATUS
-            else:
-                hist_bless = False
+                    baseline_name_resolved = baseline_name
 
-            # Now, do the bless
-            if not nl_bless and not hist_bless and not tput_only and not mem_only:
-                logger.info(
-                    "Nothing to bless for test: {}, overall status: {}".format(
-                        test_name, overall_result
+                if baseline_root is None:
+                    baseline_root_resolved = case.get_value("BASELINE_ROOT")
+                else:
+                    baseline_root_resolved = baseline_root
+
+                if baseline_name_resolved is None:
+                    broken_blesses.append(
+                        (test_name, "Could not determine baseline name")
                     )
-                )
-            else:
-                logger.info(
-                    "###############################################################################"
-                )
-                logger.info(
-                    "Blessing results for test: {}, most recent result: {}".format(
-                        test_name, overall_result
+                    continue
+
+                if baseline_root_resolved is None:
+                    broken_blesses.append(
+                        (test_name, "Could not determine baseline root")
                     )
-                )
-                logger.info("Case dir: {}".format(test_dir))
-                logger.info(
-                    "###############################################################################"
-                )
-                if not force:
-                    time.sleep(2)
+                    continue
 
-                with Case(test_dir) as case:
-                    # Resolve baseline_name and baseline_root
-                    if baseline_name is None:
-                        baseline_name_resolved = case.get_value("BASELINE_NAME_CMP")
-                        if not baseline_name_resolved:
-                            baseline_name_resolved = CIME.utils.get_current_branch(
-                                repo=CIME.utils.get_cime_root()
-                            )
+                # Bless namelists
+                if nl_bless:
+                    success, reason = bless_namelists(
+                        test_name,
+                        report_only,
+                        force,
+                        pesfile,
+                        baseline_name_resolved,
+                        baseline_root_resolved,
+                        new_test_root=new_test_root,
+                        new_test_id=new_test_id,
+                    )
+                    if not success:
+                        broken_blesses.append((test_name, reason))
+
+                # Bless hist files
+                if hist_bless:
+                    if "HOMME" in test_name:
+                        success = False
+                        reason = "HOMME tests cannot be blessed with bless_for_tests"
                     else:
-                        baseline_name_resolved = baseline_name
-
-                    if baseline_root is None:
-                        baseline_root_resolved = case.get_value("BASELINE_ROOT")
-                    else:
-                        baseline_root_resolved = baseline_root
-
-                    if baseline_name_resolved is None:
-                        broken_blesses.append(
-                            (test_name, "Could not determine baseline name")
-                        )
-                        continue
-
-                    if baseline_root_resolved is None:
-                        broken_blesses.append(
-                            (test_name, "Could not determine baseline root")
-                        )
-                        continue
-
-                    # Bless namelists
-                    if nl_bless:
-                        success, reason = bless_namelists(
+                        success, reason = bless_history(
                             test_name,
-                            report_only,
-                            force,
-                            pesfile,
-                            baseline_name_resolved,
-                            baseline_root_resolved,
-                            new_test_root=new_test_root,
-                            new_test_id=new_test_id,
-                        )
-                        if not success:
-                            broken_blesses.append((test_name, reason))
-
-                    # Bless hist files
-                    if hist_bless:
-                        if "HOMME" in test_name:
-                            success = False
-                            reason = (
-                                "HOMME tests cannot be blessed with bless_for_tests"
-                            )
-                        else:
-                            success, reason = bless_history(
-                                test_name,
-                                case,
-                                baseline_name_resolved,
-                                baseline_root_resolved,
-                                report_only,
-                                force,
-                            )
-
-                        if not success:
-                            broken_blesses.append((test_name, reason))
-
-                    if tput_only:
-                        success, reason = bless_throughput(
                             case,
-                            test_name,
-                            baseline_root_resolved,
                             baseline_name_resolved,
+                            baseline_root_resolved,
                             report_only,
                             force,
                         )
 
-                        if not success:
-                            broken_blesses.append((test_name, reason))
+                    if not success:
+                        broken_blesses.append((test_name, reason))
 
-                    if mem_only:
-                        success, reason = bless_memory(
-                            case,
-                            test_name,
-                            baseline_root_resolved,
-                            baseline_name_resolved,
-                            report_only,
-                            force,
-                        )
+                if tput_only:
+                    success, reason = bless_throughput(
+                        case,
+                        test_name,
+                        baseline_root_resolved,
+                        baseline_name_resolved,
+                        report_only,
+                        force,
+                    )
 
-                        if not success:
-                            broken_blesses.append((test_name, reason))
+                    if not success:
+                        broken_blesses.append((test_name, reason))
+
+                if mem_only:
+                    success, reason = bless_memory(
+                        case,
+                        test_name,
+                        baseline_root_resolved,
+                        baseline_name_resolved,
+                        report_only,
+                        force,
+                    )
+
+                    if not success:
+                        broken_blesses.append((test_name, reason))
 
     # Emit a warning if items in bless_tests did not match anything
     if bless_tests:
@@ -441,3 +434,37 @@ had a mistake (likely compiler or testid).""".format(
         success = False
 
     return success
+
+
+def is_bless_needed(test_name, ts, broken_blesses, overall_result, no_skip_pass, phase):
+    needed = False
+
+    run_result = ts.get_status(RUN_PHASE)
+
+    if run_result is None:
+        broken_blesses.append((test_name, "no run phase"))
+        logger.warning("Test '{}' did not make it to run phase".format(test_name))
+        needed = False
+    elif run_result != TEST_PASS_STATUS:
+        broken_blesses.append((test_name, "run phase did not pass"))
+        logger.warning(
+            "Test '{}' run phase did not pass, not safe to bless, test status = {}".format(
+                test_name, ts.phase_statuses_dump()
+            )
+        )
+        needed = False
+    elif overall_result == TEST_FAIL_STATUS:
+        broken_blesses.append((test_name, "test did not pass"))
+        logger.warning(
+            "Test '{}' did not pass due to phase {}, not safe to bless, test status = {}".format(
+                test_name, phase, ts.phase_statuses_dump()
+            )
+        )
+        needed = False
+
+    elif no_skip_pass:
+        needed = True
+    else:
+        needed = ts.get_status(BASELINE_PHASE) != TEST_PASS_STATUS
+
+    return needed

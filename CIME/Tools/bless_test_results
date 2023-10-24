@@ -90,6 +90,8 @@ OR
         "\ncan follow either the config_pes.xml or the env_mach_pes.xml format.",
     )
 
+    parser.add_argument("--exclude", nargs="*", help="Exclude tests")
+
     parser.add_argument(
         "bless_tests",
         nargs="*",
@@ -104,7 +106,7 @@ OR
 def create_bless_options(parser):
     bless_group = parser.add_argument_group("Bless options")
 
-    mutual_bless_group = bless_group.add_mutually_exclusive_group(required=True)
+    mutual_bless_group = bless_group.add_mutually_exclusive_group()
 
     mutual_bless_group.add_argument(
         "-n", "--namelists-only", action="store_true", help="Only analyze namelists."
