@@ -132,7 +132,7 @@ def bless_namelists(
             create_test_gen_args += " -t {}".format(new_test_id)
 
         if pes_file is not None:
-            create_test_gen_args += " --pes_file {}".format(pes_file)
+            create_test_gen_args += " --pesfile {}".format(pes_file)
 
         stat, out, _ = run_cmd(
             "{}/create_test {} --namelists-only {} --baseline-root {} -o".format(
