@@ -300,8 +300,14 @@ def bless_test_results(
             if tput_only or bless_all:
                 tput_bless = bless_needed
 
+                if not tput_bless:
+                    tput_bless = ts.get_status(THROUGHPUT_PHASE) != TEST_PASS_STATUS
+
             if mem_only or bless_all:
                 mem_bless = bless_needed
+
+                if not mem_bless:
+                    mem_bless = ts.get_status(MEMCOMP_PHASE) != TEST_PASS_STATUS
 
         # Now, do the bless
         if not nl_bless and not hist_bless and not tput_bless and not mem_bless:
