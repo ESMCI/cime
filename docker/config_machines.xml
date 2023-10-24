@@ -37,8 +37,8 @@
     <environment_variables>
       <env name="OMPI_ALLOW_RUN_AS_ROOT">1</env>
       <env name="OMPI_ALLOW_RUN_AS_ROOT_CONFIRM">1</env>
-      <env name="NETCDF_PATH">/opt/conda</env>
-      <env name="PNETCDF_PATH">/opt/conda</env>
+      <env name="NETCDF_C_PATH">/opt/conda</env>
+      <env name="NETCDF_FORTRAN_PATH">/opt/conda</env>
     </environment_variables>
   </machine>
 </config_machines>
