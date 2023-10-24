@@ -30,8 +30,6 @@ evv_lib_dir = os.path.abspath(os.path.dirname(evv4esm.__file__))
 logger = logging.getLogger(__name__)
 NINST = 30
 
-# INIT_FILE_ROOT = "/global/cscratch1/sd/salil/initial_conditions"
-
 PERT_FILE_TEMPLATE = "mpaso_oQ240_perturbed_inic_{ens:04d}.nc"
 
 # No output is on by default for mpas-ocean
