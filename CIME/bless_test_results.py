@@ -101,7 +101,7 @@ def bless_namelists(
     test_name,
     report_only,
     force,
-    pesfile,
+    pes_file,
     baseline_name,
     baseline_root,
     new_test_root=None,
@@ -131,8 +131,8 @@ def bless_namelists(
         if new_test_id is not None:
             create_test_gen_args += " -t {}".format(new_test_id)
 
-        if pesfile is not None:
-            create_test_gen_args += " --pesfile {}".format(pesfile)
+        if pes_file is not None:
+            create_test_gen_args += " --pes_file {}".format(pes_file)
 
         stat, out, _ = run_cmd(
             "{}/create_test {} --namelists-only {} --baseline-root {} -o".format(
@@ -196,7 +196,7 @@ def bless_test_results(
     mem_only=False,
     report_only=False,
     force=False,
-    pesfile=None,
+    pes_file=None,
     bless_tests=None,
     no_skip_pass=False,
     new_test_root=None,
@@ -359,7 +359,7 @@ def bless_test_results(
                         test_name,
                         report_only,
                         force,
-                        pesfile,
+                        pes_file,
                         baseline_name_resolved,
                         baseline_root_resolved,
                         new_test_root=new_test_root,
