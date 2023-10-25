@@ -179,9 +179,7 @@ def bless_namelists(
         return True, None
 
 
-###############################################################################
 def bless_history(test_name, case, baseline_name, baseline_root, report_only, force):
-    ###############################################################################
     real_user = case.get_value("REALUSER")
     with EnvironmentContext(USER=real_user):
 
@@ -273,6 +271,7 @@ def bless_test_results(
         testopts = parse_test_name(test_name)[1]
         testopts = [] if testopts is None else testopts
         build_only = "B" in testopts
+        # TODO test_name will never be None otherwise `parse_test_name` would raise an error
         if test_name is None:
             case_dir = os.path.basename(test_dir)
             test_name = CIME.utils.normalize_case_id(case_dir)
