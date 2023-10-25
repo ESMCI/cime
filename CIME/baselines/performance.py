@@ -34,14 +34,7 @@ def perf_compare_throughput_baseline(case, baseline_dir=None):
 
     baseline_file = os.path.join(baseline_dir, "cpl-tput.log")
 
-    try:
-        baseline = read_baseline_file(baseline_file)
-    except FileNotFoundError as e:
-        comment = f"Could not read baseline throughput file: {e!s}"
-
-        logger.debug(comment)
-
-        return None, comment
+    baseline = read_baseline_file(baseline_file)
 
     tolerance = case.get_value("TEST_TPUT_TOLERANCE")
 
@@ -90,14 +83,7 @@ def perf_compare_memory_baseline(case, baseline_dir=None):
 
     baseline_file = os.path.join(baseline_dir, "cpl-mem.log")
 
-    try:
-        baseline = read_baseline_file(baseline_file)
-    except FileNotFoundError as e:
-        comment = f"Could not read baseline memory usage: {e!s}"
-
-        logger.debug(comment)
-
-        return None, comment
+    baseline = read_baseline_file(baseline_file)
 
     tolerance = case.get_value("TEST_MEMLEAK_TOLERANCE")
 

@@ -37,12 +37,27 @@ def bless_throughput(
         baseline_root, baseline_name, case.get_value("CASEBASEID")
     )
 
-    below_threshold, comment = perf_compare_throughput_baseline(
-        case, baseline_dir=baseline_dir
-    )
+    try:
+        below_threshold, comment = perf_compare_throughput_baseline(
+            case, baseline_dir=baseline_dir
+        )
+    except FileNotFoundError as e:
+        success = False
+
+        comment = f"Could not read throughput file: {e!s}"
+    except Exception as e:
+        success = False
+
+        comment = f"Error comparing throughput baseline: {e!s}"
+
+    # fail early
+    if not success:
+        logger.info(comment)
+
+        return success, comment
 
     if below_threshold:
-        logger.info("Diff appears to have been already resolved.")
+        logger.info("Throughput diff appears to have been already resolved.")
     else:
         logger.info(comment)
 
@@ -74,12 +89,27 @@ def bless_memory(
         baseline_root, baseline_name, case.get_value("CASEBASEID")
     )
 
-    below_threshold, comment = perf_compare_memory_baseline(
-        case, baseline_dir=baseline_dir
-    )
+    try:
+        below_threshold, comment = perf_compare_memory_baseline(
+            case, baseline_dir=baseline_dir
+        )
+    except FileNotFoundError as e:
+        success = False
+
+        comment = f"Could not read memory usage file: {e!s}"
+    except Exception as e:
+        success = False
+
+        comment = f"Error comparing memory baseline: {e!s}"
+
+    # fail early
+    if not success:
+        logger.info(comment)
+
+        return success, comment
 
     if below_threshold:
-        logger.info("Diff appears to have been already resolved.")
+        logger.info("Memory usage diff appears to have been already resolved.")
     else:
         logger.info(comment)
 
@@ -101,7 +131,7 @@ def bless_namelists(
     test_name,
     report_only,
     force,
-    pesfile,
+    pes_file,
     baseline_name,
     baseline_root,
     new_test_root=None,
@@ -119,11 +149,12 @@ def bless_namelists(
     ):
         config = Config.instance()
 
-        create_test_gen_args = " -g {} ".format(
-            baseline_name
+        create_test_gen_args = (
+            " -g {} ".format(baseline_name)
             if config.create_test_flag_mode == "cesm"
             else " -g -b {} ".format(baseline_name)
         )
+
         if new_test_root is not None:
             create_test_gen_args += " --test-root={0} --output-root={0} ".format(
                 new_test_root
@@ -131,8 +162,8 @@ def bless_namelists(
         if new_test_id is not None:
             create_test_gen_args += " -t {}".format(new_test_id)
 
-        if pesfile is not None:
-            create_test_gen_args += " --pesfile {}".format(pesfile)
+        if pes_file is not None:
+            create_test_gen_args += " --pesfile {}".format(pes_file)
 
         stat, out, _ = run_cmd(
             "{}/create_test {} --namelists-only {} --baseline-root {} -o".format(
@@ -148,9 +179,7 @@ def bless_namelists(
         return True, None
 
 
-###############################################################################
 def bless_history(test_name, case, baseline_name, baseline_root, report_only, force):
-    ###############################################################################
     real_user = case.get_value("REALUSER")
     with EnvironmentContext(USER=real_user):
 
@@ -196,7 +225,7 @@ def bless_test_results(
     mem_only=False,
     report_only=False,
     force=False,
-    pesfile=None,
+    pes_file=None,
     bless_tests=None,
     no_skip_pass=False,
     new_test_root=None,
@@ -242,6 +271,7 @@ def bless_test_results(
         testopts = parse_test_name(test_name)[1]
         testopts = [] if testopts is None else testopts
         build_only = "B" in testopts
+        # TODO test_name will never be None otherwise `parse_test_name` would raise an error
         if test_name is None:
             case_dir = os.path.basename(test_dir)
             test_name = CIME.utils.normalize_case_id(case_dir)
@@ -299,8 +329,14 @@ def bless_test_results(
             if tput_only or bless_all:
                 tput_bless = bless_needed
 
+                if not tput_bless:
+                    tput_bless = ts.get_status(THROUGHPUT_PHASE) != TEST_PASS_STATUS
+
             if mem_only or bless_all:
                 mem_bless = bless_needed
+
+                if not mem_bless:
+                    mem_bless = ts.get_status(MEMCOMP_PHASE) != TEST_PASS_STATUS
 
         # Now, do the bless
         if not nl_bless and not hist_bless and not tput_bless and not mem_bless:
@@ -359,7 +395,7 @@ def bless_test_results(
                         test_name,
                         report_only,
                         force,
-                        pesfile,
+                        pes_file,
                         baseline_name_resolved,
                         baseline_root_resolved,
                         new_test_root=new_test_root,
@@ -386,7 +422,7 @@ def bless_test_results(
                     if not success:
                         broken_blesses.append((test_name, reason))
 
-                if tput_only:
+                if tput_bless:
                     success, reason = bless_throughput(
                         case,
                         test_name,
@@ -399,7 +435,7 @@ def bless_test_results(
                     if not success:
                         broken_blesses.append((test_name, reason))
 
-                if mem_only:
+                if mem_bless:
                     success, reason = bless_memory(
                         case,
                         test_name,
