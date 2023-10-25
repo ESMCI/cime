@@ -742,13 +742,17 @@ class TestUnitBlessTestResults(unittest.TestCase):
 
         assert not success
 
+    @mock.patch("CIME.bless_test_results.bless_namelists")
     @mock.patch("CIME.bless_test_results.Case")
     @mock.patch("CIME.bless_test_results.TestStatus")
     @mock.patch("CIME.bless_test_results.get_test_status_files")
-    def test_baseline_name_none(self, get_test_status_files, TestStatus, Case):
+    def test_baseline_name_none(
+        self, get_test_status_files, TestStatus, Case, bless_namelists
+    ):
+        bless_namelists.return_value = (True, "")
+
         get_test_status_files.return_value = [
             "/tmp/cases/SMS.f19_g16.S.docker_gnu.12345/TestStatus",
-            "/tmp/cases/PET.f19_g16.S.docker-gnu.12345/TestStatus",
         ]
 
         ts = TestStatus.return_value
@@ -767,7 +771,7 @@ class TestUnitBlessTestResults(unittest.TestCase):
             force=True,
         )
 
-        assert not success
+        assert success
 
     @mock.patch("CIME.bless_test_results.Case")
     @mock.patch("CIME.bless_test_results.TestStatus")
