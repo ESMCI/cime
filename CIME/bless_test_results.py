@@ -22,7 +22,7 @@ import os, time
 logger = logging.getLogger(__name__)
 
 
-def bless_throughput(
+def _bless_throughput(
     case,
     test_name,
     baseline_root,
@@ -32,6 +32,7 @@ def bless_throughput(
 ):
     success = True
     reason = None
+    below_threshold = False
 
     baseline_dir = os.path.join(
         baseline_root, baseline_name, case.get_value("CASEBASEID")
@@ -42,19 +43,9 @@ def bless_throughput(
             case, baseline_dir=baseline_dir
         )
     except FileNotFoundError as e:
-        success = False
-
         comment = f"Could not read throughput file: {e!s}"
     except Exception as e:
-        success = False
-
         comment = f"Error comparing throughput baseline: {e!s}"
-
-    # fail early
-    if not success:
-        logger.info(comment)
-
-        return success, comment
 
     if below_threshold:
         logger.info("Throughput diff appears to have been already resolved.")
@@ -74,7 +65,7 @@ def bless_throughput(
     return success, reason
 
 
-def bless_memory(
+def _bless_memory(
     case,
     test_name,
     baseline_root,
@@ -84,6 +75,7 @@ def bless_memory(
 ):
     success = True
     reason = None
+    below_threshold = False
 
     baseline_dir = os.path.join(
         baseline_root, baseline_name, case.get_value("CASEBASEID")
@@ -94,19 +86,9 @@ def bless_memory(
             case, baseline_dir=baseline_dir
         )
     except FileNotFoundError as e:
-        success = False
-
         comment = f"Could not read memory usage file: {e!s}"
     except Exception as e:
-        success = False
-
         comment = f"Error comparing memory baseline: {e!s}"
-
-    # fail early
-    if not success:
-        logger.info(comment)
-
-        return success, comment
 
     if below_threshold:
         logger.info("Memory usage diff appears to have been already resolved.")
@@ -221,8 +203,6 @@ def bless_test_results(
     test_id=None,
     namelists_only=False,
     hist_only=False,
-    tput_only=False,
-    mem_only=False,
     report_only=False,
     force=False,
     pes_file=None,
@@ -231,9 +211,11 @@ def bless_test_results(
     new_test_root=None,
     new_test_id=None,
     exclude=None,
+    bless_throughput=False,
+    bless_memory=False,
     **_,  # Capture all for extra
 ):
-    bless_all = not (namelists_only | hist_only | tput_only | mem_only)
+    bless_all = not ((namelists_only | hist_only) or (bless_throughput | bless_memory))
 
     test_status_files = get_test_status_files(test_root, compiler, test_id=test_id)
 
@@ -301,8 +283,8 @@ def bless_test_results(
         overall_result, phase = ts.get_overall_test_status(
             ignore_namelists=True,
             ignore_memleak=True,
-            check_throughput=True,
-            check_memory=True,
+            check_throughput=False,
+            check_memory=False,
         )
 
         # See if we need to bless namelist
@@ -326,13 +308,13 @@ def bless_test_results(
             if hist_only or bless_all:
                 hist_bless = bless_needed
 
-            if tput_only or bless_all:
+            if bless_throughput:
                 tput_bless = bless_needed
 
                 if not tput_bless:
                     tput_bless = ts.get_status(THROUGHPUT_PHASE) != TEST_PASS_STATUS
 
-            if mem_only or bless_all:
+            if bless_memory:
                 mem_bless = bless_needed
 
                 if not mem_bless:
@@ -366,8 +348,9 @@ def bless_test_results(
                 if baseline_name is None:
                     baseline_name_resolved = case.get_value("BASELINE_NAME_CMP")
                     if not baseline_name_resolved:
+                        cime_root = CIME.utils.get_cime_root()
                         baseline_name_resolved = CIME.utils.get_current_branch(
-                            repo=CIME.utils.get_cime_root()
+                            repo=cime_root
                         )
                 else:
                     baseline_name_resolved = baseline_name
@@ -423,7 +406,7 @@ def bless_test_results(
                         broken_blesses.append((test_name, reason))
 
                 if tput_bless:
-                    success, reason = bless_throughput(
+                    success, reason = _bless_throughput(
                         case,
                         test_name,
                         baseline_root_resolved,
@@ -436,7 +419,7 @@ def bless_test_results(
                         broken_blesses.append((test_name, reason))
 
                 if mem_bless:
-                    success, reason = bless_memory(
+                    success, reason = _bless_memory(
                         case,
                         test_name,
                         baseline_root_resolved,

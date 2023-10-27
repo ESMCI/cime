@@ -6,8 +6,8 @@ from pathlib import Path
 
 from CIME.bless_test_results import (
     bless_test_results,
-    bless_throughput,
-    bless_memory,
+    _bless_throughput,
+    _bless_memory,
     bless_history,
     bless_namelists,
     is_bless_needed,
@@ -232,7 +232,7 @@ class TestUnitBlessTestResults(unittest.TestCase):
 
         case = mock.MagicMock()
 
-        success, comment = bless_memory(
+        success, comment = _bless_memory(
             case, "SMS.f19_g16.S", "/tmp/baselines", "master", False, True
         )
 
@@ -252,7 +252,7 @@ class TestUnitBlessTestResults(unittest.TestCase):
 
         case = mock.MagicMock()
 
-        success, comment = bless_memory(
+        success, comment = _bless_memory(
             case, "SMS.f19_g16.S", "/tmp/baselines", "master", False, True
         )
 
@@ -266,38 +266,44 @@ class TestUnitBlessTestResults(unittest.TestCase):
 
         case = mock.MagicMock()
 
-        success, comment = bless_memory(
+        success, comment = _bless_memory(
             case, "SMS.f19_g16.S", "/tmp/baselines", "master", True, False
         )
 
         assert success
         assert comment is None
 
+    @mock.patch("CIME.bless_test_results.perf_write_baseline")
     @mock.patch("CIME.bless_test_results.perf_compare_memory_baseline")
-    def test_bless_memory_general_error(self, perf_compare_memory_baseline):
+    def test_bless_memory_general_error(
+        self, perf_compare_memory_baseline, perf_write_baseline
+    ):
         perf_compare_memory_baseline.side_effect = Exception
 
         case = mock.MagicMock()
 
-        success, comment = bless_memory(
-            case, "SMS.f19_g16.S", "/tmp/baselines", "master", False, False
+        success, comment = _bless_memory(
+            case, "SMS.f19_g16.S", "/tmp/baselines", "master", False, True
         )
 
-        assert not success
-        assert comment == "Error comparing memory baseline: "
+        assert success
+        assert comment is None
 
+    @mock.patch("CIME.bless_test_results.perf_write_baseline")
     @mock.patch("CIME.bless_test_results.perf_compare_memory_baseline")
-    def test_bless_memory_file_not_found_error(self, perf_compare_memory_baseline):
+    def test_bless_memory_file_not_found_error(
+        self, perf_compare_memory_baseline, perf_write_baseline
+    ):
         perf_compare_memory_baseline.side_effect = FileNotFoundError
 
         case = mock.MagicMock()
 
-        success, comment = bless_memory(
-            case, "SMS.f19_g16.S", "/tmp/baselines", "master", False, False
+        success, comment = _bless_memory(
+            case, "SMS.f19_g16.S", "/tmp/baselines", "master", False, True
         )
 
-        assert not success
-        assert comment == "Could not read memory usage file: "
+        assert success
+        assert comment is None
 
     @mock.patch("CIME.bless_test_results.perf_compare_memory_baseline")
     def test_bless_memory(self, perf_compare_memory_baseline):
@@ -305,7 +311,7 @@ class TestUnitBlessTestResults(unittest.TestCase):
 
         case = mock.MagicMock()
 
-        success, comment = bless_memory(
+        success, comment = _bless_memory(
             case, "SMS.f19_g16.S", "/tmp/baselines", "master", False, False
         )
 
@@ -322,7 +328,7 @@ class TestUnitBlessTestResults(unittest.TestCase):
 
         case = mock.MagicMock()
 
-        success, comment = bless_throughput(
+        success, comment = _bless_throughput(
             case, "SMS.f19_g16.S", "/tmp/baselines", "master", False, True
         )
 
@@ -339,7 +345,7 @@ class TestUnitBlessTestResults(unittest.TestCase):
 
         case = mock.MagicMock()
 
-        success, comment = bless_throughput(
+        success, comment = _bless_throughput(
             case, "SMS.f19_g16.S", "/tmp/baselines", "master", False, True
         )
 
@@ -353,7 +359,7 @@ class TestUnitBlessTestResults(unittest.TestCase):
 
         case = mock.MagicMock()
 
-        success, comment = bless_throughput(
+        success, comment = _bless_throughput(
             case, "SMS.f19_g16.S", "/tmp/baselines", "master", True, False
         )
 
@@ -366,27 +372,30 @@ class TestUnitBlessTestResults(unittest.TestCase):
 
         case = mock.MagicMock()
 
-        success, comment = bless_throughput(
-            case, "SMS.f19_g16.S", "/tmp/baselines", "master", False, False
+        success, comment = _bless_throughput(
+            case, "SMS.f19_g16.S", "/tmp/baselines", "master", False, True
         )
 
-        assert not success
-        assert comment == "Error comparing throughput baseline: "
+        assert success
+        assert comment is None
 
+    @mock.patch("CIME.bless_test_results.perf_write_baseline")
     @mock.patch("CIME.bless_test_results.perf_compare_throughput_baseline")
     def test_bless_throughput_file_not_found_error(
-        self, perf_compare_throughput_baseline
+        self,
+        perf_compare_throughput_baseline,
+        perf_write_baseline,
     ):
         perf_compare_throughput_baseline.side_effect = FileNotFoundError
 
         case = mock.MagicMock()
 
-        success, comment = bless_throughput(
-            case, "SMS.f19_g16.S", "/tmp/baselines", "master", False, False
+        success, comment = _bless_throughput(
+            case, "SMS.f19_g16.S", "/tmp/baselines", "master", False, True
         )
 
-        assert not success
-        assert comment == "Could not read throughput file: "
+        assert success
+        assert comment is None
 
     @mock.patch("CIME.bless_test_results.perf_compare_throughput_baseline")
     def test_bless_throughput(self, perf_compare_throughput_baseline):
@@ -394,13 +403,13 @@ class TestUnitBlessTestResults(unittest.TestCase):
 
         case = mock.MagicMock()
 
-        success, comment = bless_throughput(
+        success, comment = _bless_throughput(
             case, "SMS.f19_g16.S", "/tmp/baselines", "master", False, False
         )
 
         assert success
 
-    @mock.patch("CIME.bless_test_results.bless_memory")
+    @mock.patch("CIME.bless_test_results._bless_memory")
     @mock.patch("CIME.bless_test_results.Case")
     @mock.patch("CIME.bless_test_results.TestStatus")
     @mock.patch("CIME.bless_test_results.get_test_status_files")
@@ -409,7 +418,7 @@ class TestUnitBlessTestResults(unittest.TestCase):
         get_test_status_files,
         TestStatus,
         Case,
-        bless_memory,
+        _bless_memory,
     ):
         get_test_status_files.return_value = [
             "/tmp/cases/SMS.f19_g16.S.docker_gnu/TestStatus",
@@ -422,7 +431,7 @@ class TestUnitBlessTestResults(unittest.TestCase):
 
         case = Case.return_value.__enter__.return_value
 
-        bless_memory.return_value = (True, "")
+        _bless_memory.return_value = (True, "")
 
         success = bless_test_results(
             "master",
@@ -430,13 +439,13 @@ class TestUnitBlessTestResults(unittest.TestCase):
             "/tmp/cases",
             "gnu",
             force=True,
-            mem_only=True,
+            bless_memory=True,
         )
 
         assert success
-        bless_memory.assert_called()
+        _bless_memory.assert_called()
 
-    @mock.patch("CIME.bless_test_results.bless_throughput")
+    @mock.patch("CIME.bless_test_results._bless_throughput")
     @mock.patch("CIME.bless_test_results.Case")
     @mock.patch("CIME.bless_test_results.TestStatus")
     @mock.patch("CIME.bless_test_results.get_test_status_files")
@@ -445,7 +454,7 @@ class TestUnitBlessTestResults(unittest.TestCase):
         get_test_status_files,
         TestStatus,
         Case,
-        bless_throughput,
+        _bless_throughput,
     ):
         get_test_status_files.return_value = [
             "/tmp/cases/SMS.f19_g16.S.docker_gnu/TestStatus",
@@ -454,11 +463,11 @@ class TestUnitBlessTestResults(unittest.TestCase):
         ts = TestStatus.return_value
         ts.get_name.return_value = "SMS.f19_g16.S.docker_gnu"
         ts.get_overall_test_status.return_value = ("PASS", "RUN")
-        ts.get_status.side_effect = ["PASS", "FAIL"]
+        ts.get_status.side_effect = ["PASS", "PASS", "FAIL"]
 
         case = Case.return_value.__enter__.return_value
 
-        bless_throughput.return_value = (True, "")
+        _bless_throughput.return_value = (True, "")
 
         success = bless_test_results(
             "master",
@@ -466,11 +475,11 @@ class TestUnitBlessTestResults(unittest.TestCase):
             "/tmp/cases",
             "gnu",
             force=True,
-            tput_only=True,
+            bless_throughput=True,
         )
 
         assert success
-        bless_throughput.assert_called()
+        _bless_throughput.assert_called()
 
     @mock.patch("CIME.bless_test_results.bless_namelists")
     @mock.patch("CIME.bless_test_results.Case")
@@ -571,8 +580,8 @@ class TestUnitBlessTestResults(unittest.TestCase):
 
         assert success
 
-    @mock.patch("CIME.bless_test_results.bless_memory")
-    @mock.patch("CIME.bless_test_results.bless_throughput")
+    @mock.patch("CIME.bless_test_results._bless_memory")
+    @mock.patch("CIME.bless_test_results._bless_throughput")
     @mock.patch("CIME.bless_test_results.bless_history")
     @mock.patch("CIME.bless_test_results.bless_namelists")
     @mock.patch("CIME.bless_test_results.Case")
@@ -585,12 +594,12 @@ class TestUnitBlessTestResults(unittest.TestCase):
         Case,
         bless_namelists,
         bless_history,
-        bless_throughput,
-        bless_memory,
+        _bless_throughput,
+        _bless_memory,
     ):
-        bless_memory.return_value = (False, "")
+        _bless_memory.return_value = (False, "")
 
-        bless_throughput.return_value = (False, "")
+        _bless_throughput.return_value = (False, "")
 
         bless_history.return_value = (False, "")
 
@@ -619,8 +628,8 @@ class TestUnitBlessTestResults(unittest.TestCase):
 
         assert not success
 
-    @mock.patch("CIME.bless_test_results.bless_memory")
-    @mock.patch("CIME.bless_test_results.bless_throughput")
+    @mock.patch("CIME.bless_test_results._bless_memory")
+    @mock.patch("CIME.bless_test_results._bless_throughput")
     @mock.patch("CIME.bless_test_results.bless_history")
     @mock.patch("CIME.bless_test_results.bless_namelists")
     @mock.patch("CIME.bless_test_results.Case")
@@ -633,12 +642,12 @@ class TestUnitBlessTestResults(unittest.TestCase):
         Case,
         bless_namelists,
         bless_history,
-        bless_throughput,
-        bless_memory,
+        _bless_throughput,
+        _bless_memory,
     ):
-        bless_memory.return_value = (False, "")
+        _bless_memory.return_value = (False, "")
 
-        bless_throughput.return_value = (False, "")
+        _bless_throughput.return_value = (False, "")
 
         bless_history.return_value = (False, "")
 
@@ -667,8 +676,8 @@ class TestUnitBlessTestResults(unittest.TestCase):
 
         assert not success
 
-    @mock.patch("CIME.bless_test_results.bless_memory")
-    @mock.patch("CIME.bless_test_results.bless_throughput")
+    @mock.patch("CIME.bless_test_results._bless_memory")
+    @mock.patch("CIME.bless_test_results._bless_throughput")
     @mock.patch("CIME.bless_test_results.bless_history")
     @mock.patch("CIME.bless_test_results.bless_namelists")
     @mock.patch("CIME.bless_test_results.Case")
@@ -681,12 +690,12 @@ class TestUnitBlessTestResults(unittest.TestCase):
         Case,
         bless_namelists,
         bless_history,
-        bless_throughput,
-        bless_memory,
+        _bless_throughput,
+        _bless_memory,
     ):
-        bless_memory.return_value = (True, "")
+        _bless_memory.return_value = (True, "")
 
-        bless_throughput.return_value = (True, "")
+        _bless_throughput.return_value = (True, "")
 
         bless_history.return_value = (True, "")
 

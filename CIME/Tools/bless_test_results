@@ -108,6 +108,8 @@ def create_bless_options(parser):
 
     mutual_bless_group = bless_group.add_mutually_exclusive_group()
 
+    mutual_std_group = mutual_bless_group.add_mutually_exclusive_group()
+
     mutual_bless_group.add_argument(
         "-n", "--namelists-only", action="store_true", help="Only analyze namelists."
     )
@@ -116,12 +118,14 @@ def create_bless_options(parser):
         "--hist-only", action="store_true", help="Only analyze history files."
     )
 
-    mutual_bless_group.add_argument(
-        "--tput-only", action="store_true", help="Only analyze throughput."
+    mutual_perf_group = mutual_bless_group.add_mutually_exclusive_group()
+
+    mutual_perf_group.add_argument(
+        "--bless-throughput", action="store_true", help="Bless throughput"
     )
 
-    mutual_bless_group.add_argument(
-        "--mem-only", action="store_true", help="Only analyze memory."
+    mutual_perf_group.add_argument(
+        "--bless-memory", action="store_true", help="Bless memory"
     )
 
 
