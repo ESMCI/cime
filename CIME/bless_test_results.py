@@ -294,7 +294,7 @@ def bless_test_results(
         excluded = exclude.match(test_name) if exclude else False
 
         if (not has_no_tests and not match_test_name) or excluded:
-            logger.info("Skipping {!r}".format(test_name))
+            logger.debug("Skipping {!r}".format(test_name))
 
             continue
 
