@@ -116,12 +116,22 @@ def create_bless_options(parser):
         "--hist-only", action="store_true", help="Only analyze history files."
     )
 
-    mutual_bless_group.add_argument(
-        "--tput-only", action="store_true", help="Only analyze throughput."
+    mutual_perf_group = bless_group.add_mutually_exclusive_group()
+
+    mutual_perf_group.add_argument(
+        "--bless-tput",
+        action="store_true",
+        help="Bless throughput, use `--bless-perf` to bless throughput and memory",
     )
 
-    mutual_bless_group.add_argument(
-        "--mem-only", action="store_true", help="Only analyze memory."
+    mutual_perf_group.add_argument(
+        "--bless-mem",
+        action="store_true",
+        help="Bless memory, use `--bless-perf` to bless throughput and memory",
+    )
+
+    bless_group.add_argument(
+        "--bless-perf", action="store_true", help="Bless both throughput and memory"
     )
 
 

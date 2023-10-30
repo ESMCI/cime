@@ -129,6 +129,8 @@ def perf_write_baseline(case, basegen_dir, throughput=True, memory=True):
 
             write_baseline_file(baseline_file, tput)
 
+            logger.info("Updated throughput baseline to {!s}".format(tput))
+
     if memory:
         try:
             mem = perf_get_memory(case, config)
@@ -138,6 +140,8 @@ def perf_write_baseline(case, basegen_dir, throughput=True, memory=True):
             baseline_file = os.path.join(basegen_dir, "cpl-mem.log")
 
             write_baseline_file(baseline_file, mem)
+
+            logger.info("Updated memory usage baseline to {!s}".format(mem))
 
 
 def load_coupler_customization(case):
