@@ -409,6 +409,48 @@ class TestUnitBlessTestResults(unittest.TestCase):
 
         assert success
 
+    @mock.patch("CIME.bless_test_results._bless_throughput")
+    @mock.patch("CIME.bless_test_results._bless_memory")
+    @mock.patch("CIME.bless_test_results.Case")
+    @mock.patch("CIME.bless_test_results.TestStatus")
+    @mock.patch("CIME.bless_test_results.get_test_status_files")
+    def test_bless_perf(
+        self,
+        get_test_status_files,
+        TestStatus,
+        Case,
+        _bless_memory,
+        _bless_throughput,
+    ):
+        get_test_status_files.return_value = [
+            "/tmp/cases/SMS.f19_g16.S.docker_gnu/TestStatus",
+        ]
+
+        ts = TestStatus.return_value
+        ts.get_name.return_value = "SMS.f19_g16.S.docker_gnu"
+        ts.get_overall_test_status.return_value = ("PASS", "RUN")
+        ts.get_status.side_effect = ["PASS", "PASS", "PASS", "FAIL", "FAIL"]
+
+        case = Case.return_value.__enter__.return_value
+
+        _bless_memory.return_value = (True, "")
+
+        _bless_throughput.return_value = (True, "")
+
+        success = bless_test_results(
+            "master",
+            "/tmp/baseline",
+            "/tmp/cases",
+            "gnu",
+            force=True,
+            bless_perf=True,
+        )
+
+        assert success
+        _bless_memory.assert_called()
+        _bless_throughput.assert_called()
+
+    @mock.patch("CIME.bless_test_results._bless_throughput")
     @mock.patch("CIME.bless_test_results._bless_memory")
     @mock.patch("CIME.bless_test_results.Case")
     @mock.patch("CIME.bless_test_results.TestStatus")
@@ -419,6 +461,7 @@ class TestUnitBlessTestResults(unittest.TestCase):
         TestStatus,
         Case,
         _bless_memory,
+        _bless_throughput,
     ):
         get_test_status_files.return_value = [
             "/tmp/cases/SMS.f19_g16.S.docker_gnu/TestStatus",
@@ -427,7 +470,7 @@ class TestUnitBlessTestResults(unittest.TestCase):
         ts = TestStatus.return_value
         ts.get_name.return_value = "SMS.f19_g16.S.docker_gnu"
         ts.get_overall_test_status.return_value = ("PASS", "RUN")
-        ts.get_status.side_effect = ["PASS", "FAIL"]
+        ts.get_status.side_effect = ["PASS", "PASS", "PASS", "FAIL"]
 
         case = Case.return_value.__enter__.return_value
 
@@ -439,13 +482,15 @@ class TestUnitBlessTestResults(unittest.TestCase):
             "/tmp/cases",
             "gnu",
             force=True,
-            bless_memory=True,
+            bless_mem=True,
         )
 
         assert success
         _bless_memory.assert_called()
+        _bless_throughput.assert_not_called()
 
     @mock.patch("CIME.bless_test_results._bless_throughput")
+    @mock.patch("CIME.bless_test_results._bless_memory")
     @mock.patch("CIME.bless_test_results.Case")
     @mock.patch("CIME.bless_test_results.TestStatus")
     @mock.patch("CIME.bless_test_results.get_test_status_files")
@@ -454,6 +499,7 @@ class TestUnitBlessTestResults(unittest.TestCase):
         get_test_status_files,
         TestStatus,
         Case,
+        _bless_memory,
         _bless_throughput,
     ):
         get_test_status_files.return_value = [
@@ -463,7 +509,7 @@ class TestUnitBlessTestResults(unittest.TestCase):
         ts = TestStatus.return_value
         ts.get_name.return_value = "SMS.f19_g16.S.docker_gnu"
         ts.get_overall_test_status.return_value = ("PASS", "RUN")
-        ts.get_status.side_effect = ["PASS", "PASS", "FAIL"]
+        ts.get_status.side_effect = ["PASS", "PASS", "PASS", "FAIL"]
 
         case = Case.return_value.__enter__.return_value
 
@@ -475,10 +521,11 @@ class TestUnitBlessTestResults(unittest.TestCase):
             "/tmp/cases",
             "gnu",
             force=True,
-            bless_throughput=True,
+            bless_tput=True,
         )
 
         assert success
+        _bless_memory.assert_not_called()
         _bless_throughput.assert_called()
 
     @mock.patch("CIME.bless_test_results.bless_namelists")

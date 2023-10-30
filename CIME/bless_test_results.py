@@ -211,11 +211,12 @@ def bless_test_results(
     new_test_root=None,
     new_test_id=None,
     exclude=None,
-    bless_throughput=False,
-    bless_memory=False,
+    bless_tput=False,
+    bless_mem=False,
+    bless_perf=False,
     **_,  # Capture all for extra
 ):
-    bless_all = not ((namelists_only | hist_only) or (bless_throughput | bless_memory))
+    bless_all = not (namelists_only | hist_only)
 
     test_status_files = get_test_status_files(test_root, compiler, test_id=test_id)
 
@@ -308,13 +309,13 @@ def bless_test_results(
             if hist_only or bless_all:
                 hist_bless = bless_needed
 
-            if bless_throughput:
+            if bless_tput or bless_perf:
                 tput_bless = bless_needed
 
                 if not tput_bless:
                     tput_bless = ts.get_status(THROUGHPUT_PHASE) != TEST_PASS_STATUS
 
-            if bless_memory:
+            if bless_mem or bless_perf:
                 mem_bless = bless_needed
 
                 if not mem_bless:
@@ -328,6 +329,12 @@ def bless_test_results(
                 )
             )
         else:
+            logger.debug("Determined blesses for {!r}".format(test_name))
+            logger.debug("nl_bless     = {}".format(nl_bless))
+            logger.debug("hist_bless   = {}".format(hist_bless))
+            logger.debug("tput_bless   = {}".format(tput_bless))
+            logger.debug("mem_bless    = {}".format(mem_bless))
+
             logger.info(
                 "###############################################################################"
             )
