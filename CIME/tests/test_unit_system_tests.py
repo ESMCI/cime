@@ -3,6 +3,7 @@
 import os
 import tempfile
 import gzip
+import re
 from re import A
 import unittest
 from unittest import mock
@@ -508,14 +509,16 @@ class TestUnitSystemTests(unittest.TestCase):
             with open(baseline_dir / "cpl-tput.log") as fd:
                 lines = fd.readlines()
 
-            assert len(lines) == 1
-            assert lines[0] == "719.635"
+            assert len(lines) == 2
+            assert re.match("# sha:.* date:.*", lines[0])
+            assert lines[1] == "719.635"
 
             with open(baseline_dir / "cpl-mem.log") as fd:
                 lines = fd.readlines()
 
-            assert len(lines) == 1
-            assert lines[0] == "1673.89"
+            assert len(lines) == 2
+            assert re.match("# sha:.* date:.*", lines[0])
+            assert lines[1] == "1673.89"
 
     def test_kwargs(self):
         case = mock.MagicMock()
