@@ -409,7 +409,7 @@ def _case_setup_impl(
                 camoptions = case.get_value("CAM_CONFIG_OPTS")
                 logger.debug("Running cam.case_setup.py")
                 run_cmd_no_fail(
-                    "python {cam}/cime_config/cam.case_setup.py {case} {cam} \"{opt}\"".format(cam=camroot, case=caseroot, opt=camoptions)
+                    "python {cam}/cime_config/cam.case_setup.py {cam} {case}".format(cam=camroot, case=caseroot)
                 )
 
         _build_usernl_files(case, "drv", "cpl")
