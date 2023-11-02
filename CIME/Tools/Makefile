@@ -562,8 +562,10 @@ ifdef MPAS_LIBDIR
 # is named libmpas.a), but adding the PHONY declaration provides an extra bit of safety
 .PHONY: libmpas
 libmpas: cam_abortutils.o physconst.o
-	$(MAKE) -C $(MPAS_LIBDIR) CC="$(CC)" FC="$(FC)" PIODEF="$(PIODEF)" FFLAGS='$(FREEFLAGS) $(FFLAGS)' \
-	FCINCLUDES='$(INCLDIR) $(INCS) -I$(ABS_INSTALL_SHAREDPATH)/include -I$(ABS_ESMF_PATH)/include'
+	$(MAKE) -C $(MPAS_LIBDIR) CC="$(CC)" FC="$(FC)" PIODEF="$(PIODEF)" \
+        FFLAGS='$(FREEFLAGS) $(FFLAGS)' GPUFLAGS='$(GPUFLAGS)' \
+        CASEROOT='$(CASEROOT)' COMPILER='$(COMPILER)' MACH='$(MACH)' \
+        FCINCLUDES='$(INCLDIR) $(INCS) -I$(ABS_INSTALL_SHAREDPATH)/include -I$(ABS_ESMF_PATH)/include'
 
 dyn_comp.o: libmpas
 dyn_grid.o: libmpas
