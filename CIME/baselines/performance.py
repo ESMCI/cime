@@ -4,7 +4,7 @@ import re
 import gzip
 import logging
 from CIME.config import Config
-from CIME.utils import expect
+from CIME.utils import expect, get_src_root, get_current_commit, get_timestamp
 
 logger = logging.getLogger(__name__)
 
@@ -238,7 +238,12 @@ def write_baseline_file(baseline_file, value):
     value : str
         Value to write.
     """
+    commit_hash = get_current_commit(repo=get_src_root())
+
+    timestamp = get_timestamp(timestamp_format="%Y-%m-%d_%H:%M:%S")
+
     with open(baseline_file, "w") as fd:
+        fd.write(f"# sha:{commit_hash} date: {timestamp}\n")
         fd.write(value)
 
 
