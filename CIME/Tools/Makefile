@@ -561,6 +561,10 @@ ifdef MPAS_LIBDIR
 # this isn't necessary, since libmpas should never be an actual file (the library that is created
 # is named libmpas.a), but adding the PHONY declaration provides an extra bit of safety
 .PHONY: libmpas
+# The CASEROOT, COMPILER and MACH are added so that the Depends file could be visible to
+# the MPAS dycore.
+# The GPUFLAGS is added so that the GPU flags defined in ccs_config_cesm could also be
+# used to build the MPAS dycore if needed.
 libmpas: cam_abortutils.o physconst.o
 	$(MAKE) -C $(MPAS_LIBDIR) CC="$(CC)" FC="$(FC)" PIODEF="$(PIODEF)" \
         FFLAGS='$(FREEFLAGS) $(FFLAGS)' GPUFLAGS='$(GPUFLAGS)' \
