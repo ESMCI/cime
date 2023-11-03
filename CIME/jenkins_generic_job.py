@@ -279,6 +279,7 @@ def jenkins_generic_job(
     check_throughput,
     check_memory,
     ignore_memleak,
+    ignore_namelists,
     save_timing,
     pes_file,
     jenkins_id,
@@ -421,7 +422,7 @@ def jenkins_generic_job(
         no_wait=not use_batch,  # wait if using queue
         check_throughput=check_throughput,
         check_memory=check_memory,
-        ignore_namelists=False,  # don't ignore namelist diffs
+        ignore_namelists=ignore_namelists,
         ignore_memleak=ignore_memleak,
         cdash_build_name=cdash_build_name,
         cdash_project=cdash_project,
