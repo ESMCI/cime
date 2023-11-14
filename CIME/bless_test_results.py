@@ -216,7 +216,7 @@ def bless_test_results(
     bless_perf=False,
     **_,  # Capture all for extra
 ):
-    bless_all = not (namelists_only | hist_only)
+    bless_all = not (namelists_only | hist_only | bless_tput | bless_mem | bless_perf)
 
     test_status_files = get_test_status_files(test_root, compiler, test_id=test_id)
 

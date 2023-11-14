@@ -429,7 +429,7 @@ class TestUnitBlessTestResults(unittest.TestCase):
         ts = TestStatus.return_value
         ts.get_name.return_value = "SMS.f19_g16.S.docker_gnu"
         ts.get_overall_test_status.return_value = ("PASS", "RUN")
-        ts.get_status.side_effect = ["PASS", "PASS", "PASS", "FAIL", "FAIL"]
+        ts.get_status.side_effect = ["PASS", "PASS", "FAIL", "FAIL", "FAIL"]
 
         case = Case.return_value.__enter__.return_value
 
@@ -470,7 +470,7 @@ class TestUnitBlessTestResults(unittest.TestCase):
         ts = TestStatus.return_value
         ts.get_name.return_value = "SMS.f19_g16.S.docker_gnu"
         ts.get_overall_test_status.return_value = ("PASS", "RUN")
-        ts.get_status.side_effect = ["PASS", "PASS", "PASS", "FAIL"]
+        ts.get_status.side_effect = ["PASS", "PASS", "FAIL", "FAIL"]
 
         case = Case.return_value.__enter__.return_value
 
@@ -509,7 +509,7 @@ class TestUnitBlessTestResults(unittest.TestCase):
         ts = TestStatus.return_value
         ts.get_name.return_value = "SMS.f19_g16.S.docker_gnu"
         ts.get_overall_test_status.return_value = ("PASS", "RUN")
-        ts.get_status.side_effect = ["PASS", "PASS", "PASS", "FAIL"]
+        ts.get_status.side_effect = ["PASS", "PASS", "FAIL", "FAIL"]
 
         case = Case.return_value.__enter__.return_value
 
