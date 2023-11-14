@@ -1126,20 +1126,20 @@ This allows using a different mpirun command to launch unit tests
       <cmd_path lang="csh">module</cmd_path>
       <modules>
 	<command name="load">cesmdev/1.0</command>
-	<command name="load">ncarenv/23.06</command>
+	<command name="load">ncarenv/23.09</command>
         <command name="purge"/>
 	<command name="load">craype</command>
       </modules>
       <modules compiler="intel">
-        <command name="load">intel/2023.0.0</command>
+        <command name="load">intel/2023.2.1</command>
 	<command name="load">mkl</command>
       </modules>
       <modules compiler="intel-oneapi">
-        <command name="load">intel-oneapi/2023.0.0</command>
+        <command name="load">intel-oneapi/2023.2.1</command>
 	<command name="load">mkl</command>
       </modules>
       <modules compiler="intel-classic">
-        <command name="load">intel-classic/2023.0.0</command>
+        <command name="load">intel-classic/2023.2.1</command>
 	<command name="load">mkl</command>
       </modules>
       <modules compiler="cray">
@@ -1151,14 +1151,14 @@ This allows using a different mpirun command to launch unit tests
         <command name="load">cray-libsci/23.02.1.1</command>
       </modules>
       <modules compiler="nvhpc">
-        <command name="load">nvhpc/23.1</command>
+        <command name="load">nvhpc/23.7</command>
       </modules>
       <modules>
 	<command name="load">ncarcompilers/1.0.0</command>
         <command name="load">cmake</command>
       </modules>
       <modules mpilib="mpich">
-	<command name="load">cray-mpich/8.1.25</command>
+	<command name="load">cray-mpich/8.1.27</command>
       </modules>
       <modules mpilib="mpi-serial">
         <command name="load">mpi-serial/2.3.0</command>
@@ -1178,10 +1178,9 @@ This allows using a different mpirun command to launch unit tests
     <environment_variables>
       <env name="OMP_STACKSIZE">64M</env>
       <env name="FI_CXI_RX_MATCH_MODE">hybrid</env>
+      <env name="FI_MR_CACHE_MONITOR">memhooks</env>
     </environment_variables>
-    <environment_variables mpilib="mpich">
-      <env name="MPICH_MPIIO_HINTS">*:romio_cb_read=enable:romio_cb_write=enable:striping_factor=2</env>
-    </environment_variables>
+
   </machine>
 
   <machine MACH="eastwind">
