@@ -340,6 +340,9 @@
 
   <batch_system MACH="derecho" type="pbs" >
     <batch_submit>qsub</batch_submit>
+    <submit_args>
+      <argument> -l job_priority=$JOB_PRIORITY </argument>
+    </submit_args>
     <directives>
       <directive default="/bin/bash" > -S {{ shell }}  </directive>
       <directive> -l select={{ num_nodes }}:ncpus={{ max_tasks_per_node }}:mpiprocs={{ tasks_per_node }}:ompthreads={{ thread_count }}</directive>
