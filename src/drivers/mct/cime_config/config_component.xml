@@ -493,6 +493,16 @@
    <desc>List of job ids for most recent case.submit</desc>
  </entry>
 
+ <entry id="JOB_PRIORITY">
+   <type>char</type>
+   <default_value>regular</default_value>
+   <valid_values>regular,premium,economy</valid_values>
+   <group>run_begin_stop_restart</group>
+   <file>env_run.xml</file>
+   <desc>job priority for systems supporting this option</desc>
+ </entry>
+
+
   <!-- ===================================================================== -->
   <!-- definitions archive -->
   <!-- ===================================================================== -->
