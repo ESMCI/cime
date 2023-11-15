@@ -127,12 +127,21 @@
 
   <xs:element name="submit_args">
     <xs:complexType>
-      <xs:sequence>
-        <xs:element maxOccurs="unbounded" ref="arg"/>
-      </xs:sequence>
+      <xs:choice>
+        <xs:element name="arg" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:attribute name="flag" use="required"/>
+            <xs:attribute name="name"/>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="argument" maxOccurs="unbounded">
+          <xs:complexType mixed="true">
+            <xs:attribute name="job_queue"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
     </xs:complexType>
   </xs:element>
-
 
   <xs:element name="arg">
     <xs:complexType>
@@ -147,9 +156,6 @@
         <xs:element maxOccurs="unbounded" ref="directive"/>
       </xs:sequence>
       <xs:attribute ref="queue"/>
-      <xs:attribute name="compiler"/>
-      <xs:attribute name="mpilib"/>
-      <xs:attribute name="threaded" type="xs:boolean"/>
     </xs:complexType>
   </xs:element>
 
@@ -157,6 +163,10 @@
     <xs:complexType mixed="true">
       <xs:attribute name="default"/>
       <xs:attribute name="prefix"/>
+      <xs:attribute name="compiler"/>
+      <xs:attribute name="mpilib"/>
+      <xs:attribute name="threaded" type="xs:boolean"/>
+      <xs:attribute name="queue"/>
     </xs:complexType>
   </xs:element>
 
