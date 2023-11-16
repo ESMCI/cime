@@ -295,9 +295,6 @@ using a fortran linker.
     <!-- http://software.intel.com/en-us/articles/intel-composer-xe/ -->
     <append> -DFORTRANUNDERSCORE -DCPRINTEL</append>
   </CPPDEFS>
-  <CXX_LDFLAGS>
-    <base> -cxxlib </base>
-  </CXX_LDFLAGS>
   <CXX_LINKER>FORTRAN</CXX_LINKER>
   <FC_AUTO_R8>
     <base> -r8 </base>
