@@ -1,6 +1,44 @@
 ======================================================================
 
 Originator: Chris Fischer 
+Date: 11-16-2023
+Tag: cime5.6.45
+Answer Changes: None
+Tests: 
+Dependencies:
+
+Brief Summary:
+    New JRA forcing.
+    Support job priority on derecho.
+    Add support for derecho. 
+
+User interface changes: 
+
+PR summary: git log --oneline --first-parent [previous_tag]..master 
+f889756   Merge pull request #4515 from jedwards4b/new_jra_forcing
+52d2a3d38 Merge pull request #4516 from jedwards4b/job_priority
+81c91da80 updates for derecho
+
+
+Modified files: git diff --name-status [previous_tag]
+M       config/cesm/machines/config_batch.xml
+M       config/cesm/machines/config_machines.xml
+M       config/xml_schemas/config_batch.xsd
+M       scripts/Tools/Makefile
+M       src/components/data_comps/datm/cime_config/config_component.xml
+M       src/components/data_comps/datm/cime_config/namelist_definition_datm.xml
+M       src/components/data_comps/datm/datm_comp_mod.F90
+M       src/components/data_comps/datm/datm_shr_mod.F90
+M       src/components/data_comps/drof/cime_config/config_component.xml
+M       src/components/data_comps/drof/cime_config/namelist_definition_drof.xml
+M       src/drivers/mct/cime_config/config_component.xml
+
+
+======================================================================
+    
+======================================================================
+
+Originator: Chris Fischer 
 Date: 6-1-2023
 Tag: cime5.6.44
 Answer Changes: None
