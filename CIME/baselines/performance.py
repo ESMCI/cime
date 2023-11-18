@@ -242,9 +242,8 @@ def write_baseline_file(baseline_file, value):
 
     timestamp = get_timestamp(timestamp_format="%Y-%m-%d_%H:%M:%S")
 
-    with open(baseline_file, "w") as fd:
-        fd.write(f"# sha:{commit_hash} date: {timestamp}\n")
-        fd.write(value)
+    with open(baseline_file, "a") as fd:
+        fd.write(f"sha:{commit_hash} date:{timestamp} {value}\n")
 
 
 def _perf_get_memory(case, cpllog=None):
@@ -429,7 +428,7 @@ def read_baseline_file(baseline_file):
         Value stored in baseline file without comments.
     """
     with open(baseline_file) as fd:
-        lines = [x.strip() for x in fd.readlines() if not x.startswith("#")]
+        lines = [x.strip().split(" ")[-1] for x in fd.readlines() if not x.startswith("#")]
 
     return "\n".join(lines)
 
@@ -474,14 +473,13 @@ def _perf_compare_throughput_baseline(case, baseline, tolerance):
     if diff is not None:
         below_tolerance = diff < tolerance
 
+        info = "Throughput changed by {:.2f}%: baseline={:.3f} sypd, tolerance={:d}%, current={:.3f} sypd".format(
+                diff * 100, baseline, int(tolerance * 100), current
+        )
         if below_tolerance:
-            comment = "TPUTCOMP: Computation time changed by {:.2f}% relative to baseline".format(
-                diff * 100
-            )
+            comment = "TPUTCOMP: " + info
         else:
-            comment = "Error: TPUTCOMP: Computation time increase > {:d}% from baseline".format(
-                int(tolerance * 100)
-            )
+            comment = "Error: TPUTCOMP: " + info
 
     return below_tolerance, comment
 
@@ -533,13 +531,12 @@ def _perf_compare_memory_baseline(case, baseline, tolerance):
     if diff is not None:
         below_tolerance = diff < tolerance
 
+        info = "Memory usage highwater changed by {:.2f}%: baseline={:.3f} sypd, tolerance={:d}%, current={:.3f} sypd".format(
+                diff * 100, baseline, int(tolerance * 100), current
+        )
         if below_tolerance:
-            comment = "MEMCOMP: Memory usage highwater has changed by {:.2f}% relative to baseline".format(
-                diff * 100
-            )
+            comment = "MEMCOMP: " + info
         else:
-            comment = "Error: Memory usage increase >{:d}% from baseline's {:f} to {:f}".format(
-                int(tolerance * 100), baseline, current
-            )
+            comment = "Error: MEMCOMP: " + info
 
     return below_tolerance, comment
