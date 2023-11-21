@@ -736,8 +736,12 @@ This allows using a different mpirun command to launch unit tests
         <command name="load">parallelio/2.6.2</command>
       </modules>
 
-      <modules>
-        <command name="load">esmf/8.5.0</command>
+      <modules DEBUG="FALSE">
+        <command name="load">esmf/8.6.0</command>
+      </modules>
+
+      <modules DEBUG="TRUE">
+        <command name="load">esmf/8.6.0-debug</command>
       </modules>
 
     </module_system>
