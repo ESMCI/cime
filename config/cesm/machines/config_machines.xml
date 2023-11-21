@@ -1174,6 +1174,10 @@ This allows using a different mpirun command to launch unit tests
 	<command name="load">parallel-netcdf/1.12.3</command>
       </modules>
 
+      <modules>
+        <command name="load">esmf/8.5.0</command>
+      </modules>
+
     </module_system>
 
     <environment_variables>
