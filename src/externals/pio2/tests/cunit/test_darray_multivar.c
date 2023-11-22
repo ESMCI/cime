@@ -261,9 +261,9 @@ int test_multivar_darray(int iosysid, int ioid, int num_flavors, int *flavor,
         for (int fmt = 0; fmt < num_flavors; fmt++)
         {
             /* BYTE and CHAR don't work with pnetcdf. Don't know why yet. */
-            if (flavor[fmt] == PIO_IOTYPE_PNETCDF && (pio_type == PIO_BYTE || pio_type == PIO_CHAR))
+/*            if (flavor[fmt] == PIO_IOTYPE_PNETCDF && (pio_type == PIO_BYTE || pio_type == PIO_CHAR))
                 continue;
-
+*/
             /* NetCDF-4 types only work with netCDF-4 formats. */
             if (pio_type > PIO_DOUBLE && flavor[fmt] != PIO_IOTYPE_NETCDF4C &&
                 flavor[fmt] != PIO_IOTYPE_NETCDF4P)
@@ -580,15 +580,17 @@ int main(int argc, char **argv)
             if ((ret = PIOc_Init_Intracomm(test_comm, TARGET_NTASKS, ioproc_stride,
                                            ioproc_start, rearranger[r], &iosysid)))
                 return ret;
-
+            /* printf("test Rearranger %d\n",rearranger[r]); */
             /* Run tests. */
             if ((ret = test_all_darray(iosysid, num_flavors, flavor, my_rank, test_comm,
                                        rearranger[r])))
                 return ret;
+            /* printf("test Rearranger %d complete\n",rearranger[r]); */
 
             /* Finalize PIO system. */
             if ((ret = PIOc_free_iosystem(iosysid)))
                 return ret;
+
         }
 
     } /* endif my_rank < TARGET_NTASKS */

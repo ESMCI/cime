@@ -1,3 +1,4 @@
+#include "config.h"
 ! Split comm world into two comms (one with even procs and the other
 ! with odd procs
 SUBROUTINE split_world_odd_even(new_comm, new_rank, new_size, is_even)

@@ -1,3 +1,4 @@
+#include "config.h"
 ! PIO Testing framework utilities module
 MODULE pio_tutil
   USE pio
@@ -35,6 +36,7 @@ MODULE pio_tutil
 
   ! integer types
   INTEGER, PARAMETER, PUBLIC :: fc_short   = selected_int_kind(4)
+  INTEGER, PARAMETER, PUBLIC :: fc_int     = selected_int_kind(6)
 
   ! Misc constants
   INTEGER, PARAMETER :: PIO_TF_MAX_STR_LEN=100
@@ -65,6 +67,9 @@ MODULE pio_tutil
   PUBLIC  :: PIO_TF_Init_, PIO_TF_Finalize_, PIO_TF_Passert_
   PUBLIC  :: PIO_TF_Is_netcdf
   PUBLIC  :: PIO_TF_Get_nc_iotypes, PIO_TF_Get_undef_nc_iotypes
+#ifdef NC_HAS_MULTIFILTERS
+  public  :: pio_tf_get_nc4_filtertypes
+#endif
   PUBLIC  :: PIO_TF_Get_iotypes, PIO_TF_Get_undef_iotypes
   PUBLIC  :: PIO_TF_Get_data_types
   PUBLIC  :: PIO_TF_Check_val_
@@ -91,6 +96,10 @@ MODULE pio_tutil
   ! integer arrays
   INTERFACE PIO_TF_Check_val_
     MODULE PROCEDURE                  &
+        PIO_TF_Check_int_val_val,     &
+        PIO_TF_Check_short_val_val,     &
+        PIO_TF_Check_real_val_val,     &
+        PIO_TF_Check_double_val_val,     &
         PIO_TF_Check_int_arr_val,     &
         PIO_TF_Check_int_arr_arr,     &
         PIO_TF_Check_int_arr_arr_tol, &
@@ -115,6 +124,7 @@ MODULE pio_tutil
   END INTERFACE
 
 CONTAINS
+
   ! Initialize Testing framework - Internal (Not directly used by unit tests)
   SUBROUTINE  PIO_TF_Init_(rearr)
 #ifdef TIMING
@@ -182,6 +192,52 @@ CONTAINS
       PRINT *, "PIO_TF: Error setting PIO logging level"
     end if
   END SUBROUTINE PIO_TF_Init_
+
+  ! Initialize Testing framework - Internal (Not directly used by unit tests)
+  SUBROUTINE  PIO_TF_Init_async_()
+#ifdef TIMING
+   use perf_mod
+#endif
+#ifndef NO_MPIMOD
+    use mpi
+#else
+    include 'mpif.h'
+#endif
+    INTEGER ierr
+
+    CALL MPI_COMM_DUP(MPI_COMM_WORLD, pio_tf_comm_, ierr);
+    CALL MPI_COMM_RANK(pio_tf_comm_, pio_tf_world_rank_, ierr)
+    CALL MPI_COMM_SIZE(pio_tf_comm_, pio_tf_world_sz_, ierr)
+#ifdef TIMING
+    call t_initf('gptl.nl')
+#endif
+
+    pio_tf_log_level_ = 0
+    pio_tf_num_aggregators_ = 0
+    pio_tf_num_io_tasks_ = 0
+    pio_tf_stride_ = 1
+    ! Now read input args from rank 0 and bcast it
+    ! Args supported are --num-io-tasks, --num-aggregators,
+    !   --stride
+
+    CALL Read_input()
+    IF (pio_tf_world_sz_ < pio_tf_num_io_tasks_) THEN
+       pio_tf_num_io_tasks_ = pio_tf_world_sz_
+    END IF
+    IF (pio_tf_num_io_tasks_ <= 1 .AND. pio_tf_stride_ > 1) THEN
+       pio_tf_stride_ = 1
+    END IF
+    IF (pio_tf_num_io_tasks_ == 0) THEN
+      pio_tf_num_io_tasks_ = pio_tf_world_sz_ / pio_tf_stride_
+      IF (pio_tf_num_io_tasks_ < 1) pio_tf_num_io_tasks_ = 1
+    END IF
+
+    ! Set PIO logging level
+    ierr = PIO_set_log_level(pio_tf_log_level_)
+    if(ierr /= PIO_NOERR) then
+      PRINT *, "PIO_TF: Error setting PIO logging level"
+    end if
+  END SUBROUTINE PIO_TF_Init_async_
 
   ! Finalize Testing framework - Internal (Not directly used by unit tests)
   SUBROUTINE  PIO_TF_Finalize_
@@ -295,16 +351,13 @@ CONTAINS
       ! netcdf, netcdf4p, netcdf4c
       num_iotypes = num_iotypes + 3
 #else
-#ifdef _NETCDF
-      ! netcdf
+      ! netcdf is always present.
       num_iotypes = num_iotypes + 1
-#endif
 #endif
 #ifdef _PNETCDF
       ! pnetcdf
       num_iotypes = num_iotypes + 1
 #endif
-
     ! ALLOCATE with 0 elements ok?
     ALLOCATE(iotypes(num_iotypes))
     ALLOCATE(iotype_descs(num_iotypes))
@@ -328,15 +381,65 @@ CONTAINS
       iotype_descs(i) = "NETCDF4P"
       i = i + 1
 #else
-#ifdef _NETCDF
-      ! netcdf
+      ! netcdf is always present.
       iotypes(i) = PIO_iotype_netcdf
       iotype_descs(i) = "NETCDF"
       i = i + 1
 #endif
-#endif
   END SUBROUTINE
+#ifdef PIO_HAS_PAR_FILTERS
+  ! Returns a list of defined netcdf4 filter types
+  ! pio_file : An open file to check
+  ! filtertypes : After the routine returns contains a list of defined
+  !             netcdf4 filter types
+  ! filtertype_descs : After the routine returns contains description of
+  !                 the netcdf4 filter types returned in filtertypes
+  ! num_filtertypes : After the routine returns contains the number of
+  !                 of defined netcdf4 types, i.e., size of filtertypes and
+  !                 filtertype_descs arrays
+  SUBROUTINE PIO_TF_Get_nc4_filtertypes(pio_file, filtertypes, filtertype_descs, num_filtertypes)
+    use pio, only : pio_inq_filter_avail
+    type(file_desc_t), intent(in) :: pio_file
+    INTEGER, DIMENSION(:), ALLOCATABLE, INTENT(OUT) :: filtertypes
+    CHARACTER(LEN=*), DIMENSION(:), ALLOCATABLE, INTENT(OUT) :: filtertype_descs
+    INTEGER, INTENT(OUT) :: num_filtertypes
+    INTEGER :: i
+    integer :: ierr
+    integer, parameter :: num_possible_filters = 6
+    INTEGER :: tmpfiltertypes(num_possible_filters)
 
+    num_filtertypes = 0
+    ! First find the number of filter types
+
+    do i=1,num_possible_filters
+       ierr = pio_inq_filter_avail(pio_file, i)
+       if(ierr == PIO_NOERR) then
+          num_filtertypes = num_filtertypes + 1
+          tmpfiltertypes(num_filtertypes) = i
+       endif
+    enddo
+    allocate(filtertypes(num_filtertypes))
+    allocate(filtertype_descs(num_filtertypes))
+
+    filtertypes = tmpfiltertypes(1:num_filtertypes)
+    do i=1,num_filtertypes
+       select case(filtertypes(i))
+       case (1)
+          filtertype_descs(i) = "DEFLATE"
+       case (2)
+          filtertype_descs(i) = "SHUFFLE"
+       case (3)
+          filtertype_descs(i) = "FLETCHER32"
+       case (4)
+          filtertype_descs(i) = "SZIP"
+       case (5)
+          filtertype_descs(i) = "NBIT"
+       case (6)
+          filtertype_descs(i) = "SCALEOFFSET"
+       end select
+    enddo
+  END SUBROUTINE PIO_TF_Get_nc4_filtertypes
+#endif
   ! Returns a list of undefined netcdf iotypes
   ! e.g. This list could be used by a test to make sure that PIO
   !       fails gracefully for undefined types
@@ -355,14 +458,6 @@ CONTAINS
 
     num_iotypes = 0
     ! First find the number of io types
-#ifndef _NETCDF
-      ! netcdf
-      num_iotypes = num_iotypes + 1
-#ifndef _NETCDF4
-        ! netcdf4p, netcdf4c
-        num_iotypes = num_iotypes + 2
-#endif
-#endif
 #ifndef _PNETCDF
       ! pnetcdf
       num_iotypes = num_iotypes + 1
@@ -378,21 +473,6 @@ CONTAINS
       iotypes(i) = PIO_iotype_pnetcdf
       iotype_descs(i) = "PNETCDF"
       i = i + 1
-#endif
-#ifndef _NETCDF
-      ! netcdf
-      iotypes(i) = PIO_iotype_netcdf
-      iotype_descs(i) = "NETCDF"
-      i = i + 1
-#ifndef _NETCDF4
-        ! netcdf4p, netcdf4c
-        iotypes(i) = PIO_iotype_netcdf4c
-        iotype_descs(i) = "NETCDF4C"
-        i = i + 1
-        iotypes(i) = PIO_iotype_netcdf4p
-        iotype_descs(i) = "NETCDF4P"
-        i = i + 1
-#endif
 #endif
   END SUBROUTINE
 
@@ -416,10 +496,8 @@ CONTAINS
       ! netcdf, netcdf4p, netcdf4c
     num_iotypes = num_iotypes + 3
 #else
-#ifdef _NETCDF
-      ! netcdf
+    ! netcdf is always present.
     num_iotypes = num_iotypes + 1
-#endif
 #endif
 #ifdef _PNETCDF
       ! pnetcdf
@@ -449,12 +527,10 @@ CONTAINS
       iotype_descs(i) = "NETCDF4P"
       i = i + 1
 #else
-#ifdef _NETCDF
-      ! netcdf
+      ! netcdf is always present.
       iotypes(i) = PIO_iotype_netcdf
       iotype_descs(i) = "NETCDF"
       i = i + 1
-#endif
 #endif
   END SUBROUTINE
 
@@ -476,14 +552,6 @@ CONTAINS
 
     ! First find the number of io types
     num_iotypes = 0
-#ifndef _NETCDF
-      ! netcdf
-      num_iotypes = num_iotypes + 1
-#ifndef _NETCDF4
-      ! netcdf4p, netcdf4c
-      num_iotypes = num_iotypes + 2
-#endif
-#endif
 #ifndef _PNETCDF
       ! pnetcdf
       num_iotypes = num_iotypes + 1
@@ -494,27 +562,6 @@ CONTAINS
     ALLOCATE(iotype_descs(num_iotypes))
 
     i = 1
-#ifndef _NETCDF
-      ! netcdf
-      iotypes(i) = PIO_iotype_netcdf
-      iotype_descs(i) = "NETCDF"
-      i = i + 1
-#ifndef _PNETCDF
-      ! pnetcdf
-      iotypes(i) = PIO_iotype_pnetcdf
-      iotype_descs(i) = "PNETCDF"
-      i = i + 1
-#endif
-#ifndef _NETCDF4
-      ! netcdf4p, netcdf4c
-      iotypes(i) = PIO_iotype_netcdf4c
-      iotype_descs(i) = "NETCDF4C"
-      i = i + 1
-      iotypes(i) = PIO_iotype_netcdf4p
-      iotype_descs(i) = "NETCDF4P"
-      i = i + 1
-#endif
-#endif
   END SUBROUTINE
 
   ! Returns a list of PIO base types
@@ -664,6 +711,27 @@ CONTAINS
     if (tol /= 0) continue ! to suppress warning
 
     PIO_TF_Check_int_arr_arr_tol = PIO_TF_Check_int_arr_arr(arr, exp_arr)
+  END FUNCTION
+
+  LOGICAL FUNCTION PIO_TF_Check_int_val_val(val1, val2)
+    INTEGER, INTENT(IN) :: val1, val2
+
+    PIO_TF_Check_int_val_val = val1 == val2
+  END FUNCTION
+  LOGICAL FUNCTION PIO_TF_Check_short_val_val(val1, val2)
+    INTEGER(kind=fc_short), INTENT(IN) :: val1, val2
+
+    PIO_TF_Check_short_val_val = val1 == val2
+  END FUNCTION
+  LOGICAL FUNCTION PIO_TF_Check_real_val_val(val1, val2)
+    real(kind=fc_real), INTENT(IN) :: val1, val2
+
+    PIO_TF_Check_real_val_val = val1 == val2
+  END FUNCTION
+  LOGICAL FUNCTION PIO_TF_Check_double_val_val(val1, val2)
+    real(kind=fc_double), INTENT(IN) :: val1, val2
+
+    PIO_TF_Check_double_val_val = val1 == val2
   END FUNCTION
 
   LOGICAL FUNCTION PIO_TF_Check_int_arr_val(arr, val)

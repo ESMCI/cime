@@ -1,3 +1,4 @@
+#include "config.h"
 ! Get a block cyclic decomposition
 ! If force_rearrange is FALSE, the decomposition is such that
 ! # All even procs have VEC_LOCAL_SZ elements

@@ -1,3 +1,8 @@
+# This is part of the PIO library.
+
+# THis file contains CMake code related to MPI.
+
+# Jim Edwards
 include (CMakeParseArguments)
 
 # Find Valgrind to perform memory leak check
@@ -28,9 +33,9 @@ function (platform_name RETURN_VARIABLE)
 
     if (SITENAME MATCHES "^laramie" OR
             SITENAME MATCHES "^cheyenne" OR
-	    SITENAME MATCHES "^chadmin")
+            SITENAME MATCHES "^chadmin")
 
-	set (${RETURN_VARIABLE} "nwscla" PARENT_SCOPE)
+        set (${RETURN_VARIABLE} "nwscla" PARENT_SCOPE)
 
     # ALCF/Argonne Machines
     elseif (SITENAME MATCHES "^mira" OR
@@ -62,7 +67,6 @@ function (platform_name RETURN_VARIABLE)
         set (${RETURN_VARIABLE} "unknown" PARENT_SCOPE)
 
     endif ()
-
 endfunction ()
 
 #==============================================================================
@@ -89,6 +93,11 @@ function (add_mpi_test TESTNAME)
 
     # Get the platform name
     platform_name (PLATFORM)
+
+    get_property(WITH_MPIEXEC GLOBAL PROPERTY WITH_MPIEXEC)
+    if (WITH_MPIEXEC)
+      set(MPIEXEC "${WITH_MPIEXEC}")
+    endif ()
 
     # Default ("unknown" platform) execution
     if (PLATFORM STREQUAL "unknown")

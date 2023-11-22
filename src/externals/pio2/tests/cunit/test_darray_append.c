@@ -79,7 +79,6 @@ int test_darray_append(int iosysid, int ioid, int num_flavors, int *flavor, int 
     int varid;     /* The ID of the netCDF varable. */
     int varid2;     /* The ID of a netCDF varable of different type. */
     int varid3;   /* the ID of a variable with no unlimited dimension. */
-    int wrong_varid = TEST_VAL_42;  /* A wrong ID. */
     int ret;       /* Return code. */
     MPI_Datatype mpi_type;
     int type_size; /* size of a variable of type pio_type */
@@ -187,9 +186,6 @@ int test_darray_append(int iosysid, int ioid, int num_flavors, int *flavor, int 
 		ERR(ret);
 	    if (other_type && (ret = PIOc_setframe(ncid, varid2, 0)))
 		ERR(ret);
-
-	    int frame = 0;
-	    int flushtodisk = 0;
 
 	    /* These should not work. */
 	    if (PIOc_write_darray(ncid + TEST_VAL_42, varid, ioid, arraylen, test_data, fillvalue) != PIO_EBADID)

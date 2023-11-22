@@ -13,10 +13,14 @@
 #include <config.h>
 #include <pio.h>
 #include <pio_error.h>
-#include <bget.h>
+#include <stdint.h>
 #include <limits.h>
 #include <math.h>
 #include <netcdf.h>
+#ifdef NC_HAS_PAR_FILTERS
+#include <netcdf_filter.h>
+#include <netcdf_meta.h>
+#endif
 #ifdef _NETCDF4
 #include <netcdf_par.h>
 #endif
@@ -31,12 +35,28 @@
 #include <mpe.h>
 #endif /* USE_MPE */
 
-#ifndef MPI_OFFSET
+/* define an MPI type equivalent to size_t */
+#if SIZE_MAX == UCHAR_MAX
+   #define PIO_MPI_SIZE_T MPI_UNSIGNED_CHAR
+#elif SIZE_MAX == USHRT_MAX
+   #define PIO_MPI_SIZE_T MPI_UNSIGNED_SHORT
+#elif SIZE_MAX == UINT_MAX
+   #define PIO_MPI_SIZE_T MPI_UNSIGNED
+#elif SIZE_MAX == ULONG_MAX
+   #define PIO_MPI_SIZE_T MPI_UNSIGNED_LONG
+#elif SIZE_MAX == ULLONG_MAX
+   #define PIO_MPI_SIZE_T MPI_UNSIGNED_LONG_LONG
+#else
+   #error "what is happening here?"
+#endif
+
+
+//#ifndef MPI_OFFSET
 /** MPI_OFFSET is an integer type of size sufficient to represent the
  * size (in bytes) of the largest file supported by MPI. In some MPI
  * implementations MPI_OFFSET is not properly defined.  */
-#define MPI_OFFSET  MPI_LONG_LONG
-#endif
+//#define MPI_OFFSET  MPI_LONG_LONG
+//#endif
 
 /* These are the sizes of types in netCDF files. Do not replace these
  * constants with sizeof() calls for C types. They are not the
@@ -58,19 +78,19 @@
 #define MPI_OFFSET OMPI_OFFSET_DATATYPE
 #endif
 #endif
-#ifndef MPI_Offset
+//#ifndef MPI_Offset
 /** This is the type used for PIO_Offset. */
-#define MPI_Offset long long
-#endif
+//#define MPI_Offset long long
+//#endif
 
 /** Some MPI implementations do not allow passing MPI_DATATYPE_NULL to
  * comm functions even though the send or recv length is 0, in these
- * cases we use MPI_CHAR */
-#if defined(MPT_VERSION) || defined(OPEN_MPI)
+ * cases we use MPI_CHAR, after this issue raised its ugly head again in mpich
+ * 4.0.0 we decided to use this workaround in all cases.
+ * See https://github.com/NCAR/ParallelIO/issues/1945 */
+
 #define PIO_DATATYPE_NULL MPI_CHAR
-#else
-#define PIO_DATATYPE_NULL MPI_DATATYPE_NULL
-#endif
+
 
 #if PIO_ENABLE_LOGGING
 void pio_log(int severity, const char *fmt, ...);
@@ -132,7 +152,7 @@ void pio_log(int severity, const char *fmt, ...);
 extern "C" {
 #endif
 
-    extern PIO_Offset pio_buffer_size_limit;
+    extern PIO_Offset pio_pnetcdf_buffer_size_limit;
 
     /** Used to sort map points in the subset rearranger. */
     typedef struct mapsort
@@ -329,15 +349,6 @@ extern "C" {
     /* Print a trace statement, for debugging. */
     void print_trace (FILE *fp);
 
-    /* Print diagonstic info to stdout. */
-    void cn_buffer_report(iosystem_desc_t *ios, bool collective);
-
-    /* Initialize the compute buffer. */
-    int compute_buffer_init(iosystem_desc_t *ios);
-
-    /* Free the buffer pool. */
-    void free_cn_buffer_pool(iosystem_desc_t *ios);
-
     /* Flush PIO's data buffer. */
     int flush_buffer(int ncid, wmulti_buffer *wmb, bool flushtodisk);
 
@@ -426,6 +437,9 @@ extern "C" {
 
     /* Stop a timer. */
     int pio_stop_timer(const char *name);
+
+    bool check_compmap(iosystem_desc_t *ios, io_desc_t *iodesc,const PIO_Offset *compmap);
+
 
 #if defined(__cplusplus)
 }
@@ -620,6 +634,7 @@ enum PIO_MSG
     PIO_MSG_DEF_VAR_DEFLATE,
     PIO_MSG_INQ_VAR_DEFLATE,
     PIO_MSG_INQ_VAR_SZIP,
+    PIO_MSG_DEF_VAR_SZIP,
     PIO_MSG_DEF_VAR_FLETCHER32,
     PIO_MSG_INQ_VAR_FLETCHER32,
     PIO_MSG_DEF_VAR_CHUNKING,
@@ -637,6 +652,7 @@ enum PIO_MSG
     PIO_MSG_ADVANCEFRAME,
     PIO_MSG_READDARRAY,
     PIO_MSG_SETERRORHANDLING,
+    PIO_MSG_SETLOGLEVEL,
     PIO_MSG_FREEDECOMP,
     PIO_MSG_CLOSE_FILE,
     PIO_MSG_DELETE_FILE,
@@ -644,7 +660,24 @@ enum PIO_MSG
     PIO_MSG_GET_ATT,
     PIO_MSG_PUT_ATT,
     PIO_MSG_INQ_TYPE,
-    PIO_MSG_INQ_UNLIMDIMS
+    PIO_MSG_INQ_UNLIMDIMS,
+#ifdef NC_HAS_BZ2
+    PIO_MSG_INQ_VAR_BZIP2,
+    PIO_MSG_DEF_VAR_BZIP2,
+#endif
+#ifdef NC_HAS_ZSTD
+    PIO_MSG_INQ_VAR_ZSTANDARD,
+    PIO_MSG_DEF_VAR_ZSTANDARD,
+#endif
+    PIO_MSG_DEF_VAR_FILTER,
+    PIO_MSG_INQ_VAR_FILTER_IDS,
+    PIO_MSG_INQ_VAR_FILTER_INFO,
+    PIO_MSG_INQ_FILTER_AVAIL,
+
+#ifdef NC_HAS_QUANTIZE
+    PIO_MSG_DEF_VAR_QUANTIZE,
+    PIO_MSG_INQ_VAR_QUANTIZE,
+#endif
 };
 
 #endif /* __PIO_INTERNAL__ */

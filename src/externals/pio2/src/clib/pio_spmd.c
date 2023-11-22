@@ -124,10 +124,12 @@ int pio_swapm(void *sendbuf, int *sendcounts, int *sdispls, MPI_Datatype *sendty
     if (fc->max_pend_req == 0)
     {
         /* Call the MPI alltoall without flow control. */
-        PLOG((3, "Calling MPI_Alltoallw without flow control."));
+        PLOG((3, "Calling MPI_Alltoallw without flow control. comm=%d my_rank=%d",comm,my_rank));
         if ((mpierr = MPI_Alltoallw(sendbuf, sendcounts, sdispls, sendtypes, recvbuf,
-                                    recvcounts, rdispls, recvtypes, comm)))
+                                    recvcounts, rdispls, recvtypes, comm))){
+            PLOG((3, "Called MPI_Alltoallw without flow control. mpierr %d",mpierr));
             return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
+        }
         return PIO_NOERR;
     }
 
@@ -362,12 +364,13 @@ int pio_swapm(void *sendbuf, int *sendcounts, int *sdispls, MPI_Datatype *sendty
      * them here. */
     if (steps > 0)
     {
-        PLOG((2, "Waiting for outstanding msgs"));
-        if ((mpierr = MPI_Waitall(steps, rcvids, MPI_STATUSES_IGNORE)))
-            return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
-        if (fc->isend)
-            if ((mpierr = MPI_Waitall(steps, sndids, MPI_STATUSES_IGNORE)))
-                return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
+      MPI_Status statuses[steps];
+      PLOG((2, "Waiting for outstanding msgs"));
+      if ((mpierr = MPI_Waitall(steps, rcvids, statuses)))
+	return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
+      if (fc->isend)
+	if ((mpierr = MPI_Waitall(steps, sndids, statuses)))
+	  return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
     }
 
     return PIO_NOERR;

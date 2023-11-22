@@ -1,3 +1,4 @@
+#include "config.h"
 PIO_TF_AUTO_TEST_SUB_BEGIN fail_rank_even
   LOGICAL cond
   ! Even procs fail

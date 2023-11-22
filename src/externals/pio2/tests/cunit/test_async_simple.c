@@ -100,11 +100,11 @@ int main(int argc, char **argv)
 
                     /* Create sample file. */
                     if ((ret = create_nc_sample(sample, iosysid[my_comp_idx], flavor[flv], filename, my_rank, NULL)))
-                        ERR(ret);
+                        AERR2(ret, iosysid[my_comp_idx]);
 
                     /* Check the file for correctness. */
                     if ((ret = check_nc_sample(sample, iosysid[my_comp_idx], flavor[flv], filename, my_rank, NULL)))
-                        ERR(ret);
+                        AERR2(ret, iosysid[my_comp_idx]);
                 }
             } /* next netcdf flavor */
 

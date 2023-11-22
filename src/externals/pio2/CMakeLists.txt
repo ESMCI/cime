@@ -1,11 +1,16 @@
-cmake_minimum_required (VERSION 2.8.12)
-project (PIO C Fortran)
-#cmake_policy(VERSION 3.5.2)
+# This is part of the PIO library.
+
+# This is the CMake build file for the main directory.
+
+# Jim Edwards
+
+cmake_minimum_required (VERSION 3.5.2)
+project (PIO C)
 
 # The project version number.
 set(VERSION_MAJOR   2   CACHE STRING "Project major version number.")
-set(VERSION_MINOR   5   CACHE STRING "Project minor version number.")
-set(VERSION_PATCH   1   CACHE STRING "Project patch version number.")
+set(VERSION_MINOR   6   CACHE STRING "Project minor version number.")
+set(VERSION_PATCH   2   CACHE STRING "Project patch version number.")
 mark_as_advanced(VERSION_MAJOR VERSION_MINOR VERSION_PATCH)
 
 # Create version info in autotools parlance for pio_meta.h.
@@ -15,6 +20,12 @@ set(PIO_VERSION_PATCH ${VERSION_PATCH})
 
 # This is needed for the libpio.settings file.
 SET(PACKAGE_VERSION ${PIO_VERSION_MAJOR}.${PIO_VERSION_MINOR}.${PIO_VERSION_PATCH})
+
+# This provides cmake_print_variables() function for debugging.
+include(CMakePrintHelpers)
+
+# This provides check_symbol_exists
+include(CheckSymbolExists)
 
 # Determine the configure date.
 IF(DEFINED ENV{SOURCE_DATE_EPOCH})
@@ -77,6 +88,7 @@ option (PIO_ENABLE_LOGGING   "Enable debug logging (large output possible)" OFF)
 option (PIO_ENABLE_DOC       "Enable building PIO documentation"            ON)
 option (PIO_ENABLE_COVERAGE  "Enable code coverage"                         OFF)
 option (PIO_ENABLE_EXAMPLES  "Enable PIO examples"                          ON)
+option (PIO_ENABLE_NETCDF_INTEGRATION  "Enable netCDF integration"          OFF)
 option (PIO_INTERNAL_DOC     "Enable PIO developer documentation"           OFF)
 option (PIO_TEST_BIG_ENDIAN  "Enable test to see if machine is big endian"  ON)
 option (PIO_USE_MPIIO        "Enable support for MPI-IO auto detect"        ON)
@@ -84,6 +96,13 @@ option (PIO_USE_MPISERIAL    "Enable mpi-serial support (instead of MPI)"   OFF)
 option (PIO_USE_MALLOC       "Use native malloc (instead of bget package)"  ON)
 option (PIO_USE_PNETCDF_VARD       "Use pnetcdf put_vard "                  OFF)
 option (WITH_PNETCDF         "Require the use of PnetCDF"                   ON)
+option (BUILD_SHARED_LIBS    "Build shared libraries"                       OFF)
+
+if(APPLE)
+  # The linker on macOS does not include `common symbols` by default
+  # Passing the -c flag includes them and fixes an error with undefined symbols (err_buffer, resultlen)
+  set(CMAKE_C_ARCHIVE_FINISH "<CMAKE_RANLIB> -c <TARGET>")
+endif()
 
 # Set a variable that appears in the config.h.in file.
 if(PIO_USE_PNETCDF_VARD)
@@ -93,23 +112,19 @@ else()
 endif()
 
 # Set a variable that appears in the config.h.in file.
-if(PIO_USE_MALLOC)
-  set(USE_MALLOC 1)
+if(PIO_ENABLE_LOGGING)
+  set(ENABLE_LOGGING 1)
+  set(HAS_LOGGING "yes")
 else()
-  set(USE_MALLOC 0)
+  set(ENABLE_LOGGING 0)
+  set(HAS_LOGGING "no")
 endif()
 
 # Set a variable that appears in the config.h.in file.
-if(PIO_ENABLE_LOGGING)
-  set(ENABLE_LOGGING 1)
+if(PIO_ENABLE_NETCDF_INTEGRATION)
+  set(NETCDF_INTEGRATION 1)
 else()
-  set(ENABLE_LOGGING 0)
-endif()
-
-if(PIO_USE_MPISERIAL)
-  set(USE_MPI_SERIAL 1)
-else()
-  set(USE_MPI_SERIAL 0)
+  set(NETCDF_INTEGRATION 0)
 endif()
 
 #==============================================================================
@@ -120,25 +135,28 @@ endif()
 list (APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
 #===== External modules =====
-if (NOT DEFINED USER_CMAKE_MODULE_PATH)
-  message (STATUS "Importing CMake_Fortran_utils")
-  execute_process(
-    COMMAND git clone https://github.com/CESM-Development/CMake_Fortran_utils
-    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-    OUTPUT_QUIET
-    ERROR_QUIET)
-  find_path (USER_CMAKE_MODULE_PATH
-    NAMES mpiexec.cmake
-    HINTS ${CMAKE_BINARY_DIR}/CMake_Fortran_utils)
-  if (USER_CMAKE_MODULE_PATH)
-    message (STATUS "Importing CMake_Fortran_utils - success")
-  else ()
-    message (FATAL_ERROR "Failed to import CMake_Fortran_utils")
+if (PIO_ENABLE_FORTRAN)
+  enable_language(Fortran)
+  if (NOT DEFINED USER_CMAKE_MODULE_PATH)
+    message (STATUS "Importing CMake_Fortran_utils")
+    execute_process(
+      COMMAND git clone https://github.com/CESM-Development/CMake_Fortran_utils
+      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+      OUTPUT_QUIET
+      ERROR_QUIET)
+    find_path (USER_CMAKE_MODULE_PATH
+      NAMES mpiexec.cmake
+      HINTS ${CMAKE_BINARY_DIR}/CMake_Fortran_utils)
+    if (USER_CMAKE_MODULE_PATH)
+      message (STATUS "Importing CMake_Fortran_utils - success")
+    else ()
+      message (FATAL_ERROR "Failed to import CMake_Fortran_utils")
+    endif ()
   endif ()
-endif ()
-set (USER_CMAKE_MODULE_PATH ${USER_CMAKE_MODULE_PATH}
+  set (USER_CMAKE_MODULE_PATH ${USER_CMAKE_MODULE_PATH}
   CACHE STRING "Location of the CMake_Fortran_utils")
-list (APPEND CMAKE_MODULE_PATH ${USER_CMAKE_MODULE_PATH})
+  list (APPEND CMAKE_MODULE_PATH ${USER_CMAKE_MODULE_PATH})
+endif ()
 
 INCLUDE (CheckTypeSize)
 
@@ -148,13 +166,15 @@ if (PIO_USE_MPISERIAL)
   if (MPISERIAL_C_FOUND)
     set (CMAKE_REQUIRED_INCLUDES ${MPISERIAL_C_INCLUDE_DIRS})
   endif ()
+  set(USE_MPI_SERIAL 1)
 else ()
   find_package (MPI REQUIRED)
   set (CMAKE_REQUIRED_INCLUDES ${MPI_INCLUDE_PATH})
+  set(USE_MPI_SERIAL 0)
 endif ()
 
 SET(CMAKE_EXTRA_INCLUDE_FILES "mpi.h")
-check_type_size("MPI_Offset" SIZEOF_MPI_OFFSET)
+CHECK_TYPE_SIZE("MPI_Offset" SIZEOF_MPI_OFFSET)
 SET(CMAKE_EXTRA_INCLUDE_FILES)
 
 #===== Library Variables =====
@@ -198,20 +218,14 @@ set (CMAKE_C_COMPILER_DIRECTIVE "CPR${CMAKE_C_COMPILER_NAME}"
   CACHE STRING "C compiler name preprocessor directive")
 
 # Fortran Compiler Name
-string (TOUPPER "${CMAKE_Fortran_COMPILER_ID}" CMAKE_Fortran_COMPILER_NAME)
-if (CMAKE_Fortran_COMPILER_NAME STREQUAL "XL")
-  set (CMAKE_Fortran_COMPILER_NAME "IBM")
-endif ()
-set (CMAKE_Fortran_COMPILER_DIRECTIVE "CPR${CMAKE_Fortran_COMPILER_NAME}"
-  CACHE STRING "Fortran compiler name preprocessor directive")
-
-# configure a header file to pass some of the CMake settings
-# to the source code
-configure_file (
-  "${PROJECT_SOURCE_DIR}/cmake_config.h.in"
-  "${PROJECT_BINARY_DIR}/config.h"
-  )
-
+if (PIO_ENABLE_FORTRAN)
+  string (TOUPPER "${CMAKE_Fortran_COMPILER_ID}" CMAKE_Fortran_COMPILER_NAME)
+  if (CMAKE_Fortran_COMPILER_NAME STREQUAL "XL")
+    set (CMAKE_Fortran_COMPILER_NAME "IBM")
+  endif ()
+  set (CMAKE_Fortran_COMPILER_DIRECTIVE "CPR${CMAKE_Fortran_COMPILER_NAME}"
+    CACHE STRING "Fortran compiler name preprocessor directive")
+endif()
 #==============================================================================
 #  SET CODE COVERAGE COMPILER FLAGS
 #==============================================================================
@@ -230,6 +244,39 @@ if (PIO_ENABLE_COVERAGE)
   endif ()
 endif ()
 
+# Allow argument mismatch in gfortran versions > 10 for mpi library compatibility
+if (CMAKE_C_COMPILER_NAME STREQUAL "GNU")
+  if ("${CMAKE_Fortran_COMPILER_VERSION}" VERSION_LESS 10)
+    message (WARNING "gfortran version is ${CMAKE_Fortran_COMPILER_VERSION}")
+  else()
+    set (CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -fallow-argument-mismatch")
+  endif()
+endif()
+# Include this so we can check values in netcdf_meta.h.
+INCLUDE(CheckCSourceCompiles)
+INCLUDE(FindNetCDF)
+message("Fortran Library build is ${PIO_ENABLE_FORTRAN}")
+if (PIO_ENABLE_FORTRAN)
+  find_package (NetCDF COMPONENTS C Fortran)
+  if (NOT NetCDF_Fortran_FOUND)
+    include(FindPkgConfig)
+    pkg_check_modules(NetCDF_Fortran REQUIRED IMPORTED_TARGET "netcdf-fortran")
+  endif()
+  if (WITH_PNETCDF)
+    find_package (PnetCDF COMPONENTS C Fortran)
+  endif()
+else()
+  find_package (NetCDF REQUIRED COMPONENTS C)
+  if (WITH_PNETCDF)
+    find_package (PnetCDF COMPONENTS C)
+  endif()
+endif()
+
+# Did we find pnetCDF? If so, set _PNETCDF in config.h.
+if (PnetCDF_C_FOUND)
+  set(_PNETCDF 1)
+endif ()
+
 #==============================================================================
 #  INCLUDE SOURCE DIRECTORIES
 #==============================================================================
@@ -243,7 +290,11 @@ add_subdirectory (src)
 
 # Custom "piotests" target (builds the test executables)
 add_custom_target (tests)
-add_dependencies (tests pioc piof)
+if (PIO_ENABLE_FORTRAN)
+  add_dependencies (tests pioc piof)
+else()
+  add_dependencies (tests pioc)
+endif()
 
 # Custom "check" target that depends upon "tests"
 add_custom_target (check COMMAND ${CMAKE_CTEST_COMMAND})
@@ -264,14 +315,7 @@ if (PIO_ENABLE_DOC)
   add_subdirectory (doc)
 endif ()
 
-# Include this so we can check values in netcdf_meta.h.
-INCLUDE(CheckCSourceCompiles)
-INCLUDE(FindNetCDF)
-find_package (NetCDF REQUIRED)
-find_package (PnetCDF)
-
-
-SET(STATUS_PNETCDF PnetCDF_C_FOUND)
+SET(STATUS_PNETCDF ${PnetCDF_C_FOUND})
 
 ###
 # Check to see if netcdf-4 capability is present in netcdf-c.
@@ -295,6 +339,11 @@ CHECK_C_SOURCE_COMPILES("
 #endif
 int main() {return 0;}" HAVE_NETCDF_PAR)
 
+# Set this synonym for HAVE_NETCDF_PAR. It is defined in config.h.
+if (HAVE_NETCDF_PAR)
+  set(_NETCDF4 1)
+endif ()
+
 ###
 # Check to see if szip write capability is present in netcdf-c.
 ###
@@ -309,12 +358,60 @@ int main() {return 0;}" HAVE_SZIP_WRITE)
 ###
 # Check to see if parallel filters are supported by HDF5/netcdf-c.
 ###
-CHECK_C_SOURCE_COMPILES("
+if (HAVE_NETCDF_PAR)
+  CHECK_C_SOURCE_COMPILES("
 #include <netcdf_meta.h>
 #if !NC_HAS_PAR_FILTERS
+    choke me
+#endif
+int main() {return 0;}" HAVE_PAR_FILTERS)
+else()
+  set(HAVE_PAR_FILTERS 0)
+endif()
+
+###
+# Check to see if this is netcdf-c-4.7.2, which won't work.
+###
+CHECK_C_SOURCE_COMPILES("
+#include <netcdf_meta.h>
+#if NC_VERSION_MAJOR == 4 && NC_VERSION_MINOR == 7 && NC_VERSION_PATCH == 2
+#else
       choke me
 #endif
-int main() {return 0;}" HDF5_HAS_PAR_FILTERS)
+int main() {return 0;}" HAVE_472)
+if (HAVE_472)
+  message (FATAL_ERROR "PIO cannot build with netcdf-c-4.7.2, please upgrade your netCDF library")
+endif ()
+
+###
+# Check to see if dispatch table is supported for netcdf integration.
+###
+CHECK_C_SOURCE_COMPILES("
+#include <netcdf_meta.h>
+#if NC_DISPATCH_VERSION < 2
+      choke me
+#endif
+#if NC_DISPATCH_VERSION > 5
+    choke me
+#endif
+int main() {return 0;}" HAVE_DISPATCH)
+
+if (NETCDF_INTEGRATION)
+  if (NOT HAVE_DISPATCH)
+    message (FATAL_ERROR "The netcdf-c netcdf integration layer is incompatible with the one in this ParallelIO version")
+  endif ()
+  set(HAVE_NETCDF_INTEGRATION 1)
+else ()
+  set(HAVE_NETCDF_INTEGRATION 0)
+endif ()
+
+# Configure testing with MPIEXEC.
+if (NOT WITH_MPIEXEC)
+  set(WITH_MPIEXEC mpiexec)
+endif()
+#set(MPIEXEC "${WITH_MPIEXEC}" CACHE INTERNAL "")
+set(MPIEXEC "${WITH_MPIEXEC}")
+set_property(GLOBAL PROPERTY WITH_MPIEXEC "${WITH_MPIEXEC}")
 
 #####
 # Configure and print the libpio.settings file.
@@ -356,13 +453,18 @@ SET(LDFLAGS "${CMAKE_EXE_LINKER_FLAGS} ${CMAKE_EXE_LINKER_FLAGS_${CMAKE_BUILD_TY
 
 is_disabled(BUILD_SHARED_LIBS enable_static)
 is_enabled(BUILD_SHARED_LIBS enable_shared)
-
+is_enabled(HAVE_PAR_FILTERS have_par_filters)
 is_enabled(USE_SZIP HAS_SZIP_WRITE)
 is_enabled(STATUS_PNETCDF HAS_PNETCDF)
 is_enabled(HAVE_H5Z_SZIP HAS_SZLIB)
-is_enabled(HDF5_HAS_PAR_FILTERS HAS_PAR_FILTERS)
 is_enabled(HAVE_NETCDF4 HAS_NETCDF4)
 is_enabled(HAVE_NETCDF_PAR HAS_NETCDF4_PAR)
+is_enabled(HAVE_NETCDF_INTEGRATION HAS_NETCDF_INTEGRATION)
+is_enabled(PIO_ENABLE_FORTRAN HAS_PIO_FORTRAN)
+
+if(HAVE_PAR_FILTERS)
+  SET(PIO_HAS_PAR_FILTERS 1)
+endif()
 
 # Generate file from template.
 CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/libpio.settings.in"
@@ -376,18 +478,26 @@ FILE(READ "${CMAKE_CURRENT_BINARY_DIR}/libpio.settings"
   LIBPIO_SETTINGS)
 MESSAGE(STATUS ${LIBPIO_SETTINGS})
 
+# Set RPATH for shared libraries
+set(CMAKE_MACOSX_RPATH 1)
+set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+
 # Install libpio.settings file into same location
 # as the libraries.
 INSTALL(FILES "${PIO_BINARY_DIR}/libpio.settings"
   DESTINATION lib
   COMPONENT libraries)
-
+  
 #####
 # Create pio_meta.h include file.
 #####
 configure_file(
   ${CMAKE_CURRENT_SOURCE_DIR}/src/clib/pio_meta.h.in
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/clib/pio_meta.h @ONLY)
+  ${CMAKE_CURRENT_BINARY_DIR}/src/clib/pio_meta.h @ONLY)
 
-FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/clib/pio_meta.h
-  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/src/clib/)
+# configure a header file to pass some of the CMake settings
+# to the source code
+configure_file (
+  "${PROJECT_SOURCE_DIR}/cmake_config.h.in"
+  "${PROJECT_BINARY_DIR}/config.h"
+  )

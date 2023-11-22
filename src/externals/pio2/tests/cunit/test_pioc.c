@@ -7,6 +7,7 @@
 #include <pio.h>
 #include <pio_internal.h>
 #include <pio_tests.h>
+#include <pio_meta.h>
 
 /* The number of tasks this test should run on. */
 #define TARGET_NTASKS 4
@@ -1048,7 +1049,7 @@ int test_empty_files(int iosysid, int num_flavors, int *flavor, int my_rank)
         if ((ret = get_iotype_name(flavor[fmt], iotype_name)))
             ERR(ret);
         sprintf(filename, "%s_empty_%s.nc", TEST_NAME, iotype_name);
-        
+
         if ((ret = PIOc_createfile(iosysid, &ncid, &flavor[fmt], filename, PIO_CLOBBER)))
             ERR(ret);
 
@@ -1076,10 +1077,10 @@ int test_empty_files(int iosysid, int num_flavors, int *flavor, int my_rank)
 /* Check that the fill values are correctly reported by find_var_fill().
  *
  * @param ncid the ID of the open test file.
- * @param ntypes the number ot types we are testing. 
+ * @param ntypes the number ot types we are testing.
  * @param use_custom_fill true if custom fill values were used.
  * @param my_rank rank of this task.
- * @return 0 on success. 
+ * @return 0 on success.
  */
 int check_fillvalues(int ncid, int num_types, int use_custom_fill, int my_rank)
 {
@@ -1128,7 +1129,7 @@ int check_fillvalues(int ncid, int num_types, int use_custom_fill, int my_rank)
 
     if ((ret = pio_get_file(ncid, &file)))
         ERR(ret);
-            
+
     for (int v = 0; v < num_types; v++)
     {
         var_desc_t *vdesc;
@@ -1136,7 +1137,7 @@ int check_fillvalues(int ncid, int num_types, int use_custom_fill, int my_rank)
         /* Get the var info. */
         if ((ret = get_var_desc(v, &file->varlist, &vdesc)))
             ERR(ret);
-                
+
         /* Check the fill value with this internal function. */
         if ((ret = find_var_fillvalue(file, v, vdesc)))
             ERR(ret);
@@ -1194,7 +1195,7 @@ int check_fillvalues(int ncid, int num_types, int use_custom_fill, int my_rank)
 
     return PIO_NOERR;
 }
-        
+
 /* Test the internal function that determins a var's fillvalue.
  *
  * @param iosysid the iosystem ID that will be used for the test.
@@ -1570,18 +1571,19 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
             if ((ret = PIOc_def_var_chunking(ncid, 0, NC_CHUNKED, chunksize)))
                 ERR(ret);
 
-            /* Setting deflate should not work with parallel iotype. */
-            ret = PIOc_def_var_deflate(ncid, 0, 0, 1, 1);
-            if (flavor[fmt] == PIO_IOTYPE_NETCDF4P)
-            {
-                if (ret == PIO_NOERR)
-                    ERR(ERR_WRONG);
-            }
-            else
-            {
-                if (ret != PIO_NOERR)
-                    ERR(ERR_WRONG);
-            }
+            /* Setting deflate works with parallel iotype starting
+	     * with netcdf-c-4.7.4. If present, PIO_HAS_PAR_FILTERS will
+	     * be defined. */
+	    ret = PIOc_def_var_deflate(ncid, 0, 0, 1, 1);
+#ifdef PIO_HAS_PAR_FILTERS
+	    if (ret)
+		ERR(ret);
+#else
+	    if (flavor[fmt] == PIO_IOTYPE_NETCDF4C && ret)
+		ERR(ret);
+	    if (flavor[fmt] == PIO_IOTYPE_NETCDF4P && !ret)
+		ERR(ERR_WRONG);
+#endif
 
             /* Check that the inq_varname function works. */
             if ((ret = PIOc_inq_varname(ncid, 0, NULL)))
@@ -1611,10 +1613,18 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
                 if (shuffle || !deflate || deflate_level != 1)
                     ERR(ERR_AWFUL);
 
-            /* For parallel netCDF-4, no compression available. :-( */
+            /* For parallel netCDF-4, we turned on deflate above, if
+	     * PIO_HAS_PAR_FILTERS is defined. */
             if (flavor[fmt] == PIO_IOTYPE_NETCDF4P)
-                if (shuffle || deflate)
+	    {
+#ifdef PIO_HAS_PAR_FILTERS
+		if (shuffle || !deflate || deflate_level != 1)
                     ERR(ERR_AWFUL);
+#else
+		if (shuffle || deflate)
+                    ERR(ERR_AWFUL);
+#endif /* PIO_HAS_PAR_FILTERS */
+	    }
 
             /* Check setting the chunk cache for the variable. */
             if ((ret = PIOc_set_var_chunk_cache(ncid, 0, VAR_CACHE_SIZE, VAR_CACHE_NELEMS,
@@ -1817,6 +1827,9 @@ int test_scalar(int iosysid, int num_flavors, int *flavor, int my_rank, int asyn
         int test_val = TEST_VAL_42;
         if ((ret = PIOc_put_var_int(ncid, varid, &test_val)))
             ERR(ret);
+        /* flush the write buffer */
+        if ((ret = PIOc_sync(ncid)))
+            ERR(ret);
 
         /* Check the scalar var. */
         if ((ret = check_scalar_var(ncid, varid, flavor[fmt], my_rank)))
@@ -1858,7 +1871,7 @@ int test_malloc_iodesc2(int iosysid, int my_rank)
     int test_type[NUM_NETCDF_TYPES] = {PIO_BYTE, PIO_CHAR, PIO_SHORT, PIO_INT,
                                        PIO_FLOAT, PIO_DOUBLE, PIO_UBYTE, PIO_USHORT,
                                        PIO_UINT, PIO_INT64, PIO_UINT64};
-    MPI_Datatype mpi_type[NUM_NETCDF_TYPES] = {MPI_BYTE, MPI_CHAR, MPI_SHORT, MPI_INT,
+    MPI_Datatype mpi_type[NUM_NETCDF_TYPES] = {MPI_SIGNED_CHAR, MPI_CHAR, MPI_SHORT, MPI_INT,
                                                MPI_FLOAT, MPI_DOUBLE, MPI_UNSIGNED_CHAR,
                                                MPI_UNSIGNED_SHORT, MPI_UNSIGNED, MPI_LONG_LONG,
                                                MPI_UNSIGNED_LONG_LONG, MPI_CHAR};
@@ -2316,7 +2329,6 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
     /* This will be our file name for writing out decompositions. */
     sprintf(filename, "decomp_%d.txt", my_rank);
     sprintf(nc_filename, "decomp_%d.nc", my_rank);
-
     /* This is a simple test that just creates the decomp with
      * async. */
     if (async)

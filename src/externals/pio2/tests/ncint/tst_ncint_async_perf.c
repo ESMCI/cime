@@ -11,6 +11,7 @@
 #include <pio.h>
 #include <sys/time.h>
 #include "pio_err_macros.h"
+#include "ncint.h"
 
 #define FILE_NAME "tst_ncint_async_perf.nc"
 #define VAR_NAME "data_var"
@@ -24,7 +25,7 @@
 #define NDIM2 2
 #define NDIM3 3
 #define NUM_TIMESTEPS 1
-#define NUM_MODES 4
+//#define NUM_MODES 4
 
 extern NC_Dispatch NCINT_dispatcher;
 
@@ -95,6 +96,7 @@ main(int argc, char **argv)
             float num_megabytes = DIM_LEN_X * DIM_LEN_Y * sizeof(int) / (float)1000000 * NUM_TIMESTEPS;
             float delta_in_sec;
             float mb_per_sec;
+/*
             int cmode[NUM_MODES] = {NC_PIO, NC_PIO|NC_NETCDF4,
                                     NC_PIO|NC_NETCDF4|NC_MPIIO,
                                     NC_PIO|NC_PNETCDF};
@@ -102,6 +104,7 @@ main(int argc, char **argv)
                                                           "netCDF-4 sequential  ",
                                                           "netCDF-4 parallel I/O",
                                                           "pnetcdf              "};
+*/                                                          
             int t, m;
 
             /* Print header. */
@@ -162,10 +165,11 @@ main(int argc, char **argv)
                     printf("%s,\t%d,\t%d,\t%d,\t%8.3f,\t%8.1f,\t%8.3f\n", mode_name[m],
                            ntasks, num_io_procs, 1, delta_in_sec, num_megabytes,
                            mb_per_sec);
+
+		free(my_data);
+		if (nc_free_decomp(ioid)) PERR;
             } /* next mode flag */
 
-            free(my_data);
-            if (nc_free_decomp(ioid)) PERR;
             if (nc_free_iosystem(iosysid)) PERR;
         }
     }

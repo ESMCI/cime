@@ -56,7 +56,7 @@ int create_file(MPI_Comm comm, int iosysid, int format, char *filename,
         return ret;
 
     /* Write an attribute. */
-    if ((ret = PIOc_put_att_text(ncid, varid, attname, strnlen(filename, PIO_TF_MAX_STR_LEN),
+    if ((ret = PIOc_put_att_text(ncid, varid, attname, strlen(filename),
 				 filename)))
         return ret;
 
@@ -94,11 +94,11 @@ int check_file(MPI_Comm comm, int iosysid, int format, int ncid, char *filename,
 
     /* Check the attribute. Null terminating byte deliberately ignored
      * to match fortran code. */
-    if (!(att_data = malloc(strnlen(filename, PIO_TF_MAX_STR_LEN) * sizeof(char))))
+    if (!(att_data = malloc(strlen(filename) * sizeof(char))))
         return PIO_ENOMEM;
     if ((ret = PIOc_get_att(ncid, varid, attname, att_data)))
         return ret;
-    if (strncmp(att_data, filename, strnlen(filename, PIO_TF_MAX_STR_LEN)))
+    if (strncmp(att_data, filename, strlen(filename)))
         return ERR_WRONG;
     free(att_data);
 

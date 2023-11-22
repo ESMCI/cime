@@ -42,6 +42,8 @@ execute_process (COMMAND ${HOSTNAME_CMD}
 ## -- Set hostname ID (e.g., alcf, nwsc, nersc, ...)
 message ("hostname is ${HOSTNAME}")
 
+if (DEFINED HOSTNAME_ID)
+else()
 # UCAR/NWSC Machines
 if (HOSTNAME MATCHES "^yslogin" OR
     HOSTNAME MATCHES "^geyser" OR
@@ -51,7 +53,7 @@ if (HOSTNAME MATCHES "^yslogin" OR
 # New UCAR/NWSC SGI Machines
 elseif (HOSTNAME MATCHES "^laramie" OR
         HOSTNAME MATCHES "^chadmin" OR
-	HOSTNAME MATCHES "^cheyenne")
+        HOSTNAME MATCHES "^cheyenne")
    set (HOSTNAME_ID "nwscla")
 # ALCF/Argonne Machines
 elseif (HOSTNAME MATCHES "^mira" OR
@@ -87,10 +89,10 @@ else ()
      if (CMAKE_SYSTEM_NAME MATCHES "Catamount")
         set (HOSTNAME_ID "ncsa")
      else ()
-     	set (HOSTNAME_ID "unknown")
+        set (HOSTNAME_ID "unknown")
      endif ()
 endif ()
-
+endif()
 ## -- Get system info
 
 find_program (UNAME NAMES uname)

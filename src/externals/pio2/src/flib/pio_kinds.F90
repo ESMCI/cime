@@ -4,6 +4,7 @@
 !! types like integer, character, logical, real4 and real8.
 !!
 !<
+#include "config.h"
  module pio_kinds
 
 !  uses mpi if available

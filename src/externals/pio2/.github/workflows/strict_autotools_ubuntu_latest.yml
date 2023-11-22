@@ -1,0 +1,53 @@
+name: strict_autotools_ubuntu_latest
+
+on:
+  push:
+    branches: [ maintodo ]
+  pull_request:
+    branches: [ maintodo ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    env:
+      CC: mpicc
+      FC: mpifort
+      CPPFLAGS: "-I/usr/include -I/usr/local/include -I${GITHUB_WORKSPACE}/pnetcdf/include"
+      LDFLAGS: "-L/usr/lib -L${GITHUB_WORKSPACE}/pnetcdf/lib"
+      CFLAGS: "-std=c99 -Wall"
+      FCFLAGS: "-fallow-argument-mismatch -Wall"
+      PNETCDF_VERSION: checkpoint.1.12.3
+    steps:
+    - uses: actions/checkout@v3
+    - name: Installs
+      run: |
+        set -x
+        sudo apt-get update
+        sudo apt-get install netcdf-bin libnetcdf-dev doxygen graphviz wget gfortran libjpeg-dev libz-dev openmpi-bin libopenmpi-dev
+
+    - name: cache-pnetcdf
+      id: cache-pnetcdf
+      uses: actions/cache@v3
+      with:
+        path: ~/work/ParallelIO/ParallelIO/pnetcdf
+        key: pnetcdf-${{ runner.os }}-${{ env.PNETCDF_VERSION }}-openmpi
+
+    - name: Build PNetCDF
+      if: steps.cache-pnetcdf.outputs.cache-hit != 'true'
+      uses: ./.github/actions/buildpnetcdf
+      with:
+        pnetcdf_version: ${{ env.PNETCDF_VERSION }}
+        install_prefix: ${GITHUB_WORKSPACE}/pnetcdf
+    - name: Build ParallelIO with autotools
+      uses: ./.github/actions/parallelio_autotools
+      with:
+        enable_fortran: True
+        with_mpiexec: 'mpiexec --oversubscribe'
+        with_pnetcdf: ${GITHUB_WORKSPACE}/pnetcdf
+        parallelio_version: ${{ env.GITHUB_SHA }}
+    - name: Run Tests
+      run: |
+        cd ${GITHUB_WORKSPACE}/parallelio-src
+        make -j distcheck
