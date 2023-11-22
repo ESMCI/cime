@@ -25,7 +25,18 @@ int diosysid;
 int ncint_initialized = 0;
 
 /** Version of dispatch table. */
-#define DISPATCH_VERSION 2
+#define DISPATCH_VERSION NC_DISPATCH_VERSION
+
+/* Internal filter actions - copied from nc4internal.h */
+#define NCFILTER_DEF            1
+#define NCFILTER_REMOVE         2
+#define NCFILTER_INQ            3
+#define NCFILTER_FILTERIDS      4
+#define NCFILTER_INFO           5
+#define NCFILTER_FREESPEC       6
+#define NCFILTER_CLIENT_REG     10
+#define NCFILTER_CLIENT_UNREG   11
+#define NCFILTER_CLIENT_INQ     12
 
 /* This is the dispatch object that holds pointers to all the
  * functions that make up the NCINT dispatch interface. */
@@ -109,14 +120,29 @@ NC_Dispatch NCINT_dispatcher = {
     NC_NOTNC4_inq_enum_member,
     NC_NOTNC4_inq_enum_ident,
     NC_NOTNC4_def_opaque,
-    NC_NOTNC4_def_var_deflate,
+    PIO_NCINT_def_var_deflate,
     NC_NOTNC4_def_var_fletcher32,
-    NC_NOTNC4_def_var_chunking,
-    NC_NOTNC4_def_var_endian,
+    PIO_NCINT_def_var_chunking,
+    PIOc_def_var_endian,
     NC_NOTNC4_def_var_filter,
     NC_NOTNC4_set_var_chunk_cache,
     NC_NOTNC4_get_var_chunk_cache,
-    NC_NOTNC4_filter_actions
+#ifdef PIO_HAS_PAR_FILTERS
+#if NC_DISPATCH_VERSION == 2
+    PIO_NCINT_filter_actions,
+#endif
+#if NC_DISPATCH_VERSION >= 3
+    PIOc_inq_var_filter_ids,
+    PIOc_inq_var_filter_info,
+#endif
+#if NC_DISPATCH_VERSION >= 4
+    PIOc_def_var_quantize,
+    PIOc_inq_var_quantize,
+#endif
+#if NC_DISPATCH_VERSION >= 5
+    PIOc_inq_filter_avail,
+#endif
+#endif
 };
 
 /**
@@ -195,9 +221,8 @@ PIO_NCINT_create(const char *path, int cmode, size_t initialsz, int basepe,
     if (!(ios = pio_get_iosystem_from_id(diosysid)))
         return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
 
-    /* Turn of NC_UDF0 in the mode flag. */
-    cmode = cmode & ~NC_UDF0;
-
+    /* Turn off NC_UDF0 in the mode flag. */
+    cmode = ((cmode) & ~(NC_UDF0));
     /* Find the IOTYPE from the mode flag. */
     if ((ret = find_iotype_from_omode(cmode, &iotype)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
@@ -206,10 +231,11 @@ PIO_NCINT_create(const char *path, int cmode, size_t initialsz, int basepe,
     if ((ret = nc4_file_list_add(ncid, path, cmode, NULL)))
         return ret;
 
-    /* Create the file with PIO. The final parameter tests
+    /* Create the file with PIO. The final parameter tells
      * createfile_int to accept the externally assigned ncid. */
     if ((ret = PIOc_createfile_int(diosysid, &ncid, &iotype, path, cmode, 1)))
         return ret;
+    
 
     return PIO_NOERR;
 }
@@ -246,8 +272,8 @@ PIO_NCINT_open(const char *path, int mode, int basepe, size_t *chunksizehintp,
     if (!(ios = pio_get_iosystem_from_id(diosysid)))
         return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
 
-    /* Turn of NC_UDF0 in the mode flag. */
-    mode = mode & ~NC_UDF0;
+    /* Turn off NC_UDF0 in the mode flag. */
+    mode = (mode) & ~(NC_UDF0);
 
     /* Find the IOTYPE from the mode flag. */
     if ((ret = find_iotype_from_omode(mode, &iotype)))
@@ -255,11 +281,11 @@ PIO_NCINT_open(const char *path, int mode, int basepe, size_t *chunksizehintp,
 
     /* Add necessary structs to hold netcdf-4 file data. */
     if ((ret = nc4_file_list_add(ncid, path, mode, NULL)))
-        return ret;
+      return ret;
 
     /* Open the file with PIO. Tell openfile_retry to accept the
      * externally assigned ncid. */
-    if ((ret = PIOc_openfile_retry(diosysid, &ncid, &iotype, path, mode, 0, 1)))
+    if ((ret = PIOc_openfile_retry(diosysid, &ncid, &iotype, path, mode, 1, 1)))
         return ret;
 
     return NC_NOERR;
@@ -406,8 +432,8 @@ PIO_NCINT_inq_format_extended(int ncid, int *formatp, int *modep)
 
     PLOG((2, "%s: ncid 0x%x", __func__, ncid));
 
-    if ((retval = nc4_file_list_get(ncid, NULL, &my_mode, NULL)))
-        return NC_EBADID;
+    if ((retval = PIOc_inq_format(ncid, &my_mode)))
+        return retval;
 
     if (modep)
         *modep = my_mode|NC_UDF0;
@@ -871,7 +897,24 @@ PIO_NCINT_inq_var_all(int ncid, int varid, char *name, nc_type *xtypep,
                       int *no_fill, void *fill_valuep, int *endiannessp,
                       unsigned int *idp, size_t *nparamsp, unsigned int *params)
 {
-    return PIOc_inq_var(ncid, varid, name, xtypep, ndimsp, dimidsp, nattsp);
+    int ret;
+    int format;
+
+    ret = PIOc_inq_var(ncid, varid, name, xtypep, ndimsp, dimidsp, nattsp);
+#ifdef _NETCDF4
+    ret = PIOc_inq_format(ncid, &format);
+    if (!ret && (format == NC_FORMAT_NETCDF4 || format == NC_FORMAT_NETCDF4_CLASSIC) ){
+        if (!ret && contiguousp && chunksizesp)
+            ret = PIOc_inq_var_chunking(ncid, varid, contiguousp, (MPI_Offset *)chunksizesp);
+
+        if (!ret && shufflep && deflatep && deflate_levelp)
+            ret = PIOc_inq_var_deflate(ncid, varid, shufflep, deflatep, deflate_levelp);
+
+        if (!ret && endiannessp)
+            ret = PIOc_inq_var_endian(ncid, varid, endiannessp);
+    }
+#endif
+    return ret;
 }
 
 /**
@@ -951,3 +994,77 @@ PIO_NCINT_inq_type_equal(int ncid1, nc_type typeid1, int ncid2,
         *equalp = typeid1 == typeid2 ? 1 : 0;
     return NC_NOERR;
 }
+
+/**
+ * @internal This functions sets deflate settings for a
+ * netCDF-4 variable. It is called by nc_def_var_deflate().
+ *
+ * @param ncid the ncid of the open file.
+ * @param varid the ID of the variable.
+ * @param shuffle non-zero to turn on shuffle filter.
+ * @param deflate non-zero to turn on zlib compression for this
+ * variable.
+ * @param deflate_level 1 to 9, with 1 being faster and 9 being more
+ * compressed.
+ *
+ * @returns ::NC_NOERR for success
+ * @author Ed Hartnett
+ */
+int
+PIO_NCINT_def_var_deflate(int ncid, int varid, int shuffle, int deflate,
+                          int deflate_level)
+{
+    return PIOc_def_var_deflate(ncid, varid, shuffle, deflate, deflate_level);
+}
+
+/**
+ * @internal Set chunksizes for a variable.
+ *
+ * This function only applies to netCDF-4 files. When used with netCDF
+ * classic files, the error PIO_ENOTNC4 will be returned.
+ *
+ * Chunksizes have important performance repercussions. NetCDF
+ * attempts to choose sensible chunk sizes by default, but for best
+ * performance check chunking against access patterns.
+ *
+ * See the <a
+ * href="http://www.unidata.ucar.edu/software/netcdf/docs/group__variables.html">netCDF
+ * variable documentation</a> for details about the operation of this
+ * function.
+ *
+ * @param ncid the ncid of the open file.
+ * @param varid the ID of the variable to set chunksizes for.
+ * @param storage NC_CONTIGUOUS or NC_CHUNKED.
+ * @param chunksizesp an array of chunksizes. Must have a chunksize for
+ * every variable dimension.
+ * @return PIO_NOERR for success, otherwise an error code.
+ * @ingroup PIO_def_var_c
+ * @author Ed Hartnett
+ */
+int
+PIO_NCINT_def_var_chunking(int ncid, int varid, int storage, const size_t *chunksizesp)
+{
+    return PIOc_def_var_chunking(ncid, varid, storage, (const PIO_Offset *)chunksizesp);
+}
+
+#if NC_DISPATCH_VERSION == 2
+/**
+ * @internal Carry out one of several filter actions
+ *
+ * @param ncid Containing group id
+ * @param varid Containing variable id
+ * @param action Action to perform
+ *
+ * @return PIO_NOERR for success, otherwise an error code.
+ * @author Ed Hartnett
+ */
+int
+PIO_NCINT_filter_actions(int ncid, int varid, int action, struct NC_Filterobject* spec)
+{
+    if (action == NCFILTER_INFO)
+    {
+
+    }
+    return PIO_NOERR;
+}
+#endif

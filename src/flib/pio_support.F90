@@ -1,3 +1,4 @@
+#include "config.h"
 !>
 !! @file
 !! Internal code for compiler workarounds, aborts and debug functions.
@@ -17,6 +18,8 @@ module pio_support
   public :: CheckMPIreturn
   public :: pio_readdof
   public :: pio_writedof
+  public :: pio_write_nc_dof
+  public :: pio_read_nc_dof
   public :: replace_c_null
 
   logical, public :: Debug=.FALSE.            !< debug mode
@@ -90,9 +93,9 @@ contains
     call xl__trbk()
 #endif
 
-    ! passing an argument of 1 to mpi_abort will lead to a STOPALL output 
+    ! passing an argument of 1 to mpi_abort will lead to a STOPALL output
     ! error code of 257
-    call mpi_abort (MPI_COMM_WORLD, 1, ierr)  
+    call mpi_abort (MPI_COMM_WORLD, 1, ierr)
 
 #ifdef CPRNAG
     stop
@@ -136,20 +139,18 @@ contains
   !! Fortran interface to write a mapping file.
   !!
   !! @param file : The file where the decomp map will be written.
-  !! @param gdims : The dimensions of the data array in memory.
+  !! @param gdims : The global dimensions of the data array as stored in memory.
   !! @param DOF : The multidimensional array of indexes that describes how
   !! data in memory are written to a file.
   !! @param comm : The MPI comm index.
-  !! @param punit : Optional argument that is no longer used.
   !! @author T Craig
   !<
-  subroutine pio_writedof (file, gdims, DOF, comm, punit)
+  subroutine pio_writedof (file, gdims, DOF, comm)
     implicit none
     character(len=*),intent(in) :: file
     integer, intent(in) :: gdims(:)
     integer(PIO_OFFSET_KIND)  ,intent(in) :: dof(:)
     integer         ,intent(in) :: comm
-    integer,optional,intent(in) :: punit
     integer :: err
     integer :: ndims
 
@@ -161,16 +162,82 @@ contains
          character(C_CHAR), intent(in) :: file
          integer(C_INT), value, intent(in) :: ndims
          integer(C_INT), intent(in) :: gdims(*)
-         integer(C_SIZE_T), value, intent(in) :: maplen 
+         integer(C_SIZE_T), value, intent(in) :: maplen
          integer(C_SIZE_T), intent(in) :: map(*)
          integer(C_INT), value, intent(in) :: f90_comm
        end function PIOc_writemap_from_f90
     end interface
-    if (present(punit)) continue ! to suppress warning
     ndims = size(gdims)
     err = PIOc_writemap_from_f90(trim(file)//C_NULL_CHAR, ndims, gdims, int(size(dof),C_SIZE_T), dof, comm)
 
   end subroutine pio_writedof
+
+  !>
+  !! Fortran interface to write a netcdf format mapping file.
+  !!
+  !! @param ios : The iosystem structure
+  !! @param filename : The file where the decomp map will be written.
+  !! @param cmode : The netcdf creation mode.
+  !! @param iodesc : The io descriptor structure
+  !! @param title : An optional title to add to the netcdf attributes
+  !! @param history : An optional history to add to the netcdf attributes
+  !! @param fortran_order : Optional logical - Should multidimensional arrays be written in fortran order?
+  !! @param ret : Return code 0 if success
+  !<
+
+  subroutine pio_write_nc_dof(ios, filename, cmode, iodesc, ret, title, history, fortran_order)
+    use pio_types, only : iosystem_desc_t, io_desc_t
+    type(iosystem_desc_t) :: ios
+    character(len=*) :: filename
+    integer :: cmode
+    type(io_desc_t) :: iodesc
+    integer :: ret
+    character(len=*), optional :: title
+    character(len=*), optional :: history
+    logical, optional :: fortran_order
+
+    interface
+       integer(c_int) function PIOc_write_nc_decomp(iosysid, filename, cmode, &
+            ioid, title, history, fortran_order) &
+            bind(C,name="PIOc_write_nc_decomp")
+         use iso_c_binding
+         integer(C_INT), value :: iosysid
+         character(kind=c_char) :: filename
+         integer(C_INT), value :: cmode
+         integer(c_int), value :: ioid
+         character(kind=c_char) :: title
+         character(kind=c_char) :: history
+         integer(c_int), value :: fortran_order
+       end function PIOc_write_nc_decomp
+    end interface
+    character(len=:), allocatable :: ctitle, chistory
+    integer :: nl
+    integer :: forder
+
+    if(present(title)) then
+       ctitle(1:len_trim(title)+1) = trim(title)//C_NULL_CHAR
+    else
+       ctitle(1:1) = C_NULL_CHAR
+    endif
+
+    if(present(history)) then
+       chistory(1:len_trim(history)+1) = trim(history)//C_NULL_CHAR
+    else
+       chistory(1:1) = C_NULL_CHAR
+    endif
+
+    if(present(fortran_order)) then
+       if(fortran_order) then
+          forder = 1
+       else
+          forder = 0
+       endif
+    endif
+    nl = len_trim(filename)
+    ret = PIOc_write_nc_decomp(ios%iosysid, filename(:nl)//C_NULL_CHAR, cmode, iodesc%ioid, ctitle, chistory, forder)
+  end subroutine pio_write_nc_dof
+
+
 
   !>
   !! Fortran interface to read a mapping file.
@@ -182,15 +249,13 @@ contains
   !! @param DOF Pointer to an integer array where the Decomp map will
   !! be stored.
   !! @param comm MPI comm index
-  !! @param punit Optional argument that is no longer used.
   !! @author T Craig
   !<
-  subroutine pio_readdof (file, ndims, gdims, DOF, comm, punit)
+  subroutine pio_readdof (file, ndims, gdims, DOF, comm)
     implicit none
     character(len=*),intent(in) :: file
     integer(PIO_OFFSET_KIND),pointer:: dof(:)
     integer         ,intent(in) :: comm
-    integer,optional,intent(in) :: punit
     integer, intent(out) :: ndims
     integer, pointer :: gdims(:)
     integer(PIO_OFFSET_KIND) :: maplen
@@ -198,7 +263,7 @@ contains
     type(C_PTR) :: tgdims, tmap
     interface
        integer(C_INT) function PIOc_readmap_from_f90(file, ndims, gdims, maplen, map, f90_comm) &
-            bind(C,name="PIOc_readmap_from_f90") 
+            bind(C,name="PIOc_readmap_from_f90")
          use iso_c_binding
          character(C_CHAR), intent(in) :: file
          integer(C_INT), intent(out) :: ndims
@@ -208,12 +273,60 @@ contains
          integer(C_INT), value, intent(in) :: f90_comm
        end function PIOc_readmap_from_f90
     end interface
-    if (present(punit)) continue ! to suppress warning
     ierr = PIOc_readmap_from_f90(trim(file)//C_NULL_CHAR, ndims, tgdims, maplen, tmap, comm);
 
     call c_f_pointer(tgdims, gdims, (/ndims/))
     call c_f_pointer(tmap, DOF, (/maplen/))
-    !    DOF = DOF+1
   end subroutine pio_readdof
+
+  !>
+  !! Fortran interface to read a netcdf format mapping file.
+  !!
+  !! @param ios : The iosystem structure
+  !! @param filename : The file where the decomp map will be written.
+  !! @param iodesc : The io descriptor structure returned
+  !! @param ret : Return code 0 if success
+  !! @param title : An optional title to add to the netcdf attributes
+  !! @param history : An optional history to add to the netcdf attributes
+  !! @param fortran_order : An optional logical - should arrays be read in fortran order
+  !<
+
+  subroutine pio_read_nc_dof(ios, filename, iodesc, ret, title, history, fortran_order)
+    use pio_types, only : iosystem_desc_t, io_desc_t
+    type(iosystem_desc_t) :: ios
+    character(len=*) :: filename
+    type(io_desc_t) :: iodesc
+    integer :: ret
+    character(len=*), optional :: title
+    character(len=*), optional :: history
+    logical, optional :: fortran_order
+
+    interface
+       integer(c_int) function PIOc_read_nc_decomp(iosysid, filename, ioid, &
+            title, history, fortran_order) &
+            bind(C,name="PIOc_read_nc_decomp")
+         use iso_c_binding
+         integer(C_INT), value :: iosysid
+         character(kind=c_char) :: filename
+         integer(c_int)        :: ioid
+         character(kind=c_char) :: title
+         character(kind=c_char) :: history
+         integer(c_int), value :: fortran_order
+       end function PIOc_read_nc_decomp
+    end interface
+    integer :: nl
+    integer :: forder
+
+    nl = len_trim(filename)
+    forder = 0
+    ret = PIOc_read_nc_decomp(ios%iosysid, filename(:nl)//C_NULL_CHAR, iodesc%ioid, title, history, forder)
+    if(present(fortran_order)) then
+       if(forder /= 0) then
+          fortran_order = .true.
+       else
+          fortran_order = .false.
+       endif
+    endif
+  end subroutine pio_read_nc_dof
 
 end module pio_support

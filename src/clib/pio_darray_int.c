@@ -20,10 +20,10 @@
 #endif
 
 /** 10MB default limit. */
-extern PIO_Offset pio_buffer_size_limit;
+extern PIO_Offset pio_pnetcdf_buffer_size_limit;
 
 /** Initial size of compute buffer. */
-bufsize pio_cnbuffer_limit = 33554432;
+long pio_cnbuffer_limit = 33554432;
 
 /** Global buffer pool pointer. */
 extern void *CN_bpool;
@@ -44,40 +44,6 @@ bpool_free(void *p)
     if(p == CN_bpool){
         CN_bpool = NULL;
     }
-}
-
-/**
- * Initialize the compute buffer to size pio_cnbuffer_limit.
- *
- * This routine initializes the compute buffer pool if the bget memory
- * management is used. If malloc is used (that is, PIO_USE_MALLOC is
- * non zero), this function does nothing.
- *
- * @param ios pointer to the iosystem descriptor which will use the
- * new buffer.
- * @returns 0 for success, error code otherwise.
- * @author Jim Edwards
- */
-int
-compute_buffer_init(iosystem_desc_t *ios)
-{
-#if !PIO_USE_MALLOC
-
-    if (!CN_bpool)
-    {
-        if (!(CN_bpool = malloc(pio_cnbuffer_limit)))
-            return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
-
-        bpool(CN_bpool, pio_cnbuffer_limit);
-        if (!CN_bpool)
-            return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
-
-        bectl(NULL, malloc, bpool_free, pio_cnbuffer_limit);
-    }
-#endif
-    PLOG((2, "compute_buffer_init complete"));
-
-    return PIO_NOERR;
 }
 
 #if USE_VARD
@@ -405,7 +371,9 @@ write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *vari
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     var_desc_t *vdesc;    /* Pointer to var info struct. */
+#ifdef _PNETCDF
     int dsize;             /* Data size (for one region). */
+#endif
     int ierr = PIO_NOERR;
 #if USE_VARD_WRITE
     PIO_Offset gdim0;  /* global size of first dimension if no unlimited dimension and ndims<fndims */
@@ -459,6 +427,8 @@ write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *vari
         int rrcnt = 0; /* Number of subarray requests (pnetcdf only). */
         PIO_Offset *startlist[num_regions]; /* Array of start arrays for ncmpi_iput_varn(). */
         PIO_Offset *countlist[num_regions]; /* Array of count  arrays for ncmpi_iput_varn(). */
+
+        ierr = ncmpi_wait_all(file->fh, NC_REQ_ALL, NULL, NULL);
 #endif /* _PNETCDF */
 
         /* Process each region of data to be written. */
@@ -487,11 +457,12 @@ write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *vari
                         bufptr = (void *)((char *)iobuf + iodesc->mpitype_size * (nv * llen + region->loffset));
 
                     /* Ensure collective access. */
-                    ierr = nc_var_par_access(file->fh, varids[nv], NC_COLLECTIVE);
+                    if((ierr = nc_var_par_access(file->fh, varids[nv], NC_COLLECTIVE)))
+                        return pio_err(ios, file, ierr, __FILE__, __LINE__);
 
                     /* Write the data for this variable. */
-                    if (!ierr)
-                        ierr = nc_put_vara(file->fh, varids[nv], (size_t *)start, (size_t *)count, bufptr);
+                    if((ierr = nc_put_vara(file->fh, varids[nv], (size_t *)start, (size_t *)count, bufptr)))
+                        return pio_err(ios, file, ierr, __FILE__, __LINE__);
                 }
                 break;
 #endif
@@ -674,25 +645,10 @@ write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *vari
                         else /* don't flush yet, accumulate the request size */
                             vard_llen += llen;
 #else
-                        if (vdesc->nreqs % PIO_REQUEST_ALLOC_CHUNK == 0)
-                        {
-                            if (!(vdesc->request = realloc(vdesc->request, sizeof(int) *
-                                                           (vdesc->nreqs + PIO_REQUEST_ALLOC_CHUNK))))
-                                return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
 
-                            for (int i = vdesc->nreqs; i < vdesc->nreqs + PIO_REQUEST_ALLOC_CHUNK; i++)
-                                vdesc->request[i] = NC_REQ_NULL;
-                        }
-
-                        /* Write, in non-blocking fashion, a list of subarrays. */
-                        PLOG((3, "about to call ncmpi_iput_varn() varids[%d] = %d rrcnt = %d, llen = %d",
-                              nv, varids[nv], rrcnt, llen));
                         ierr = ncmpi_iput_varn(file->fh, varids[nv], rrcnt, startlist, countlist,
-                                               bufptr, llen, iodesc->mpitype, &vdesc->request[vdesc->nreqs]);
+                                               bufptr, llen, iodesc->mpitype, NULL);
 
-                        /* keeps wait calls in sync */
-                        if (vdesc->request[vdesc->nreqs] == NC_REQ_NULL)
-                            vdesc->request[vdesc->nreqs] = PIO_REQ_NULL;
 
                         vdesc->nreqs++;
 #endif
@@ -977,21 +933,25 @@ recv_and_write_data(file_desc_t *file, const int *varids, const int *frame,
             for (int regioncnt = 0; regioncnt < rregions; regioncnt++)
             {
                 PLOG((3, "writing data for region with regioncnt = %d", regioncnt));
+                bool needtowrite = true;
+
+                if ((ierr = get_var_desc(varids[0], &file->varlist, &vdesc)))
+                    return pio_err(NULL, file, ierr, __FILE__, __LINE__);
 
                 /* Get the start/count arrays for this region. */
                 for (int i = 0; i < fndims; i++)
                 {
                     start[i] = tmp_start[i + regioncnt * fndims];
                     count[i] = tmp_count[i + regioncnt * fndims];
-                    PLOG((3, "start[%d] = %d count[%d] = %d", i, start[i], i, count[i]));
+                    PLOG((3, "needtowrite %d count[%d] %d\n",needtowrite, i, count[i]));
+                    if(i>0 || vdesc->record <0)
+                        needtowrite = (count[i] > 0 && needtowrite);
                 }
 
                 /* Process each variable in the buffer. */
                 for (int nv = 0; nv < nvars; nv++)
                 {
                     PLOG((3, "writing buffer var %d", nv));
-                    if ((ierr = get_var_desc(varids[0], &file->varlist, &vdesc)))
-                        return pio_err(NULL, file, ierr, __FILE__, __LINE__);
 
                     /* Get a pointer to the correct part of the buffer. */
                     bufptr = (void *)((char *)iobuf + iodesc->mpitype_size * (nv * rlen + loffset));
@@ -1013,13 +973,15 @@ recv_and_write_data(file_desc_t *file, const int *varids, const int *frame,
                     }
 
 #ifdef LOGGING
-                    for (int i = 1; i < fndims; i++)
-                        PLOG((3, "start[%d] %d count[%d] %d", i, start[i], i, count[i]));
+                    if(needtowrite)
+                        for (int i = 1; i < fndims; i++)
+                            PLOG((3, "(serial) start[%d] %d count[%d] %d needtowrite %d", i, start[i], i, count[i], needtowrite));
 #endif /* LOGGING */
 
                     /* Call the netCDF functions to write the data. */
-                    if ((ierr = nc_put_vara(file->fh, varids[nv], start, count, bufptr)))
-                        return check_netcdf2(ios, NULL, ierr, __FILE__, __LINE__);
+                    if (needtowrite)
+                        if ((ierr = nc_put_vara(file->fh, varids[nv], start, count, bufptr)))
+                            return check_netcdf2(ios, NULL, ierr, __FILE__, __LINE__);
 
                 } /* next var */
 
@@ -1204,11 +1166,13 @@ pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *iobuf)
         io_region *region;
         size_t start[fndims];
         size_t count[fndims];
-        size_t tmp_bufsize = 1;
         void *bufptr;
+#ifdef _PNETCDF
+        size_t tmp_bufsize = 1;
         int rrlen = 0;
         PIO_Offset *startlist[iodesc->maxregions];
         PIO_Offset *countlist[iodesc->maxregions];
+#endif
 
         /* buffer is incremented by byte and loffset is in terms of
            the iodessc->mpitype so we need to multiply by the size of
@@ -1228,7 +1192,6 @@ pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *iobuf)
         /* For each regions, read the data. */
         for (int regioncnt = 0; regioncnt < iodesc->maxregions; regioncnt++)
         {
-            tmp_bufsize = 1;
             if (region == NULL || iodesc->llen == 0)
             {
                 /* No data for this region. */
@@ -1339,8 +1302,8 @@ pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *iobuf)
 
                 if (tmp_bufsize > 0)
                 {
-                    startlist[rrlen] = bget(fndims * sizeof(PIO_Offset));
-                    countlist[rrlen] = bget(fndims * sizeof(PIO_Offset));
+                    startlist[rrlen] = malloc(fndims * sizeof(PIO_Offset));
+                    countlist[rrlen] = malloc(fndims * sizeof(PIO_Offset));
 
                     for (int j = 0; j < fndims; j++)
                     {
@@ -1373,15 +1336,17 @@ pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *iobuf)
                         return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
 
 #else
+                    //printf("rllen %d mpitype %d\n",iodesc->rllen, iodesc->mpitype);
                     /* Read a list of subarrays. */
                     ierr = ncmpi_get_varn_all(file->fh, vid, rrlen, startlist,
-                                              countlist, iobuf, iodesc->llen, iodesc->mpitype);
+                                              countlist, iobuf, iodesc->rllen, iodesc->mpitype);
 #endif
                     /* Release the start and count arrays. */
                     for (int i = 0; i < rrlen; i++)
                     {
-                        brel(startlist[i]);
-                        brel(countlist[i]);
+//                        PLOG((3,"startlist %d %d countlist %d %d",startlist[i][0],startlist[i][1],countlist[i][0],countlist[i][1]));
+                        free(startlist[i]);
+                        free(countlist[i]);
                     }
                 }
             }
@@ -1701,10 +1666,12 @@ pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid,
                  * tasks. rtask here is the io task rank and
                  * ios->num_iotasks is the number of iotasks actually
                  * used in this decomposition. */
-                if (rtask < ios->num_iotasks && tmp_bufsize > 0)
+                if (rtask < ios->num_iotasks && tmp_bufsize > 0){
+
                     if ((mpierr = MPI_Send(iobuf, tmp_bufsize, iodesc->mpitype, rtask,
                                            4 * ios->num_iotasks + rtask, ios->io_comm)))
                         return check_mpi(NULL, file, mpierr, __FILE__, __LINE__);
+                }
             }
         }
     }
@@ -1733,12 +1700,12 @@ pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid,
 int
 flush_output_buffer(file_desc_t *file, bool force, PIO_Offset addsize)
 {
-    int mpierr;  /* Return code from MPI functions. */
     int ierr = PIO_NOERR;
 
 #ifdef _PNETCDF
     var_desc_t *vdesc;
     PIO_Offset usage = 0;
+    int mpierr;  /* Return code from MPI functions. */
 
     /* Check inputs. */
     pioassert(file, "invalid input", __FILE__, __LINE__);
@@ -1766,66 +1733,42 @@ flush_output_buffer(file_desc_t *file, bool force, PIO_Offset addsize)
     PLOG((2, "flush_output_buffer usage=%ld force=%d",usage, force));
     /* If the user forces it, or the buffer has exceeded the size
      * limit, then flush to disk. */
-    if (force || (usage >= pio_buffer_size_limit))
+    if (force || (usage >= pio_pnetcdf_buffer_size_limit))
     {
-        int rcnt;
         int  maxreq;
-        int reqcnt;
         maxreq = 0;
-        reqcnt = 0;
-        rcnt = 0;
 
         for (int i = 0; i < file->nvars; i++)
         {
             if ((ierr = get_var_desc(i, &file->varlist, &vdesc)))
                 return pio_err(NULL, file, ierr, __FILE__, __LINE__);
-            reqcnt += vdesc->nreqs;
             if (vdesc->nreqs > 0)
                 maxreq = i;
         }
-        int request[reqcnt];
-        int status[reqcnt];
-
         if (file->varlist)
         {
             for (int i = 0; i <= maxreq; i++)
             {
                 if ((ierr = get_var_desc(i, &file->varlist, &vdesc)))
                     return pio_err(NULL, file, ierr, __FILE__, __LINE__);
-#ifdef MPIO_ONESIDED
-                /*onesided optimization requires that all of the requests in a wait_all call represent
-                  a contiguous block of data in the file */
-                if (rcnt > 0 && (prev_record != vdesc->record || vdesc->nreqs == 0))
-                {
-                    ierr = ncmpi_wait_all(file->fh, rcnt, request, status);
-                    rcnt = 0;
-                }
-                prev_record = vdesc->record;
-#endif
-                for (reqcnt = 0; reqcnt < vdesc->nreqs; reqcnt++)
-                    request[rcnt++] = max(vdesc->request[reqcnt], NC_REQ_NULL);
-                PLOG((3,"flush_output_buffer rcnt=%d",rcnt));
 
-                if (vdesc->request != NULL)
-                    free(vdesc->request);
-                vdesc->request = NULL;
                 vdesc->nreqs = 0;
 
 #ifdef FLUSH_EVERY_VAR
-                ierr = ncmpi_wait_all(file->fh, rcnt, request, status);
+                ierr = ncmpi_wait_all(file->fh, NC_REQ_ALL, NULL, NULL);
+                //ierr = ncmpi_wait_all(file->fh, rcnt, request, status);
                 rcnt = 0;
 #endif
             }
         }
-
-        if (rcnt > 0)
-            ierr = ncmpi_wait_all(file->fh, rcnt, request, status);
+        /* make sure all buffers are now clean */
+        ierr = ncmpi_wait_all(file->fh, NC_REQ_ALL, NULL, NULL);
 
         /* Release resources. */
         if (file->iobuf)
         {
             PLOG((3,"freeing variable buffer in flush_output_buffer"));
-            brel(file->iobuf);
+            free(file->iobuf);
             file->iobuf = NULL;
         }
 
@@ -1835,7 +1778,7 @@ flush_output_buffer(file_desc_t *file, bool force, PIO_Offset addsize)
                 return pio_err(NULL, file, ierr, __FILE__, __LINE__);
             if (vdesc->fillbuf)
             {
-                brel(vdesc->fillbuf);
+                free(vdesc->fillbuf);
                 vdesc->fillbuf = NULL;
             }
         }
@@ -1843,82 +1786,6 @@ flush_output_buffer(file_desc_t *file, bool force, PIO_Offset addsize)
 
 #endif /* _PNETCDF */
     return ierr;
-}
-
-/**
- * Print out info about the buffer for debug purposes. This should
- * only be called when logging is enabled.
- *
- * @param ios pointer to the IO system structure
- * @param collective true if collective report is desired
- * @ingroup PIO_write_darray_c
- * @author Jim Edwards
- */
-void
-cn_buffer_report(iosystem_desc_t *ios, bool collective)
-{
-    int mpierr;  /* Return code from MPI functions. */
-
-    PLOG((2, "cn_buffer_report ios->iossysid = %d collective = %d CN_bpool = %d",
-          ios->iosysid, collective, CN_bpool));
-    if (CN_bpool)
-    {
-        long bget_stats[5];
-        long bget_mins[5];
-        long bget_maxs[5];
-
-        bstats(bget_stats, bget_stats+1,bget_stats+2,bget_stats+3,bget_stats+4);
-        if (collective)
-        {
-            PLOG((3, "cn_buffer_report calling MPI_Reduce ios->comp_comm = %d", ios->comp_comm));
-            if ((mpierr = MPI_Reduce(bget_stats, bget_maxs, 5, MPI_LONG, MPI_MAX, 0, ios->comp_comm)))
-                check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
-            PLOG((3, "cn_buffer_report calling MPI_Reduce"));
-            if ((mpierr = MPI_Reduce(bget_stats, bget_mins, 5, MPI_LONG, MPI_MIN, 0, ios->comp_comm)))
-                check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
-            if (ios->compmaster == MPI_ROOT)
-            {
-                PLOG((1, "Currently allocated buffer space %ld %ld", bget_mins[0], bget_maxs[0]));
-                PLOG((1, "Currently available buffer space %ld %ld", bget_mins[1], bget_maxs[1]));
-                PLOG((1, "Current largest free block %ld %ld", bget_mins[2], bget_maxs[2]));
-                PLOG((1, "Number of successful bget calls %ld %ld", bget_mins[3], bget_maxs[3]));
-                PLOG((1, "Number of successful brel calls  %ld %ld", bget_mins[4], bget_maxs[4]));
-            }
-        }
-        else
-        {
-            PLOG((1, "Currently allocated buffer space %ld", bget_stats[0]));
-            PLOG((1, "Currently available buffer space %ld", bget_stats[1]));
-            PLOG((1, "Current largest free block %ld", bget_stats[2]));
-            PLOG((1, "Number of successful bget calls %ld", bget_stats[3]));
-            PLOG((1, "Number of successful brel calls  %ld", bget_stats[4]));
-        }
-    }
-}
-
-/**
- * Free the buffer pool. If malloc is used (that is, PIO_USE_MALLOC is
- * non zero), this function does nothing.
- *
- * @param ios pointer to the IO system structure.
- * @ingroup PIO_write_darray_c
- * @author Jim Edwards
- */
-void
-free_cn_buffer_pool(iosystem_desc_t *ios)
-{
-#if !PIO_USE_MALLOC
-    PLOG((2, "free_cn_buffer_pool CN_bpool = %d", CN_bpool));
-    /* Note: it is possible that CN_bpool has been freed and set to NULL by bpool_free() */
-    if (CN_bpool)
-    {
-        cn_buffer_report(ios, false);
-        bpoolrelease(CN_bpool);
-        PLOG((2, "free_cn_buffer_pool done!"));
-        free(CN_bpool);
-        CN_bpool = NULL;
-    }
-#endif /* !PIO_USE_MALLOC */
 }
 
 /**
@@ -1958,21 +1825,21 @@ flush_buffer(int ncid, wmulti_buffer *wmb, bool flushtodisk)
         wmb->num_arrays = 0;
 
         /* Release the list of variable IDs. */
-        brel(wmb->vid);
+        free(wmb->vid);
         wmb->vid = NULL;
 
         /* Release the data memory. */
-        brel(wmb->data);
+        free(wmb->data);
         wmb->data = NULL;
 
         /* If there is a fill value, release it. */
         if (wmb->fillvalue)
-            brel(wmb->fillvalue);
+            free(wmb->fillvalue);
         wmb->fillvalue = NULL;
 
         /* Release the record number. */
         if (wmb->frame)
-            brel(wmb->frame);
+            free(wmb->frame);
         wmb->frame = NULL;
 
         if (ret)
@@ -2261,7 +2128,7 @@ compute_maxaggregate_bytes(iosystem_desc_t *ios, io_desc_t *iodesc)
 
     /* Determine the max bytes that can be held on IO task. */
     if (ios->ioproc && iodesc->maxiobuflen > 0)
-        maxbytesoniotask = pio_buffer_size_limit / iodesc->maxiobuflen;
+        maxbytesoniotask = pio_pnetcdf_buffer_size_limit / iodesc->maxiobuflen;
 
     /* Determine the max bytes that can be held on computation task. */
     if (ios->comp_rank >= 0 && iodesc->ndof > 0)

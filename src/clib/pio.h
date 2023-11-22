@@ -17,6 +17,16 @@
 #include <uthash.h>
 
 #include <netcdf.h>
+#include <netcdf_meta.h>
+
+#define NETCDF_VERSION_LE(Maj, Min, Pat) \
+    (((NC_VERSION_MAJOR == Maj) && (NC_VERSION_MINOR == Min) && (NC_VERSION_PATCH <= Pat)) || \
+     ((NC_VERSION_MAJOR == Maj) && (NC_VERSION_MINOR < Min)) || (NC_VERSION_MAJOR < Maj))
+
+#define NETCDF_VERSION_GE(Maj, Min, Pat) \
+    (((NC_VERSION_MAJOR == Maj) && (NC_VERSION_MINOR == Min) && (NC_VERSION_PATCH >= Pat)) || \
+     ((NC_VERSION_MAJOR == Maj) && (NC_VERSION_MINOR > Min)) || (NC_VERSION_MAJOR > Maj))
+
 
 /** PIO_OFFSET is an integer type of size sufficient to represent the
  * size (in bytes) of the largest file supported by MPI. This is not
@@ -114,7 +124,7 @@ typedef struct var_desc_t
     int record;
 
     /** ID of each outstanding pnetcdf request for this variable. */
-    int *request;
+//    int *request;
 
     /** Number of requests pending with pnetcdf. */
     int nreqs;
@@ -292,7 +302,7 @@ typedef struct io_desc_t
     /** The actual number of IO tasks participating. */
     int num_aiotasks;
 
-    /** The rearranger in use for this variable. */
+    /** The rearranger in use for this decomposition. */
     int rearranger;
 
     /** Maximum number of regions in the decomposition. */
@@ -305,6 +315,10 @@ typedef struct io_desc_t
     /** If the map is not monotonically increasing we will need to
      * sort it. */
     bool needssort;
+
+    /** If the decomp has repeated values it can only be used for reading
+        since it doesn't make sense to write a single value from more than one location. */
+    bool readonly;
 
     /** The maximum number of bytes of this iodesc before flushing. */
     int maxbytes;
@@ -327,6 +341,10 @@ typedef struct io_desc_t
      * nodes), each io task contains data from the compmap of one or
      * more compute tasks in the iomap array. */
     PIO_Offset llen;
+
+    /** Actual length of the iobuffer on this task for a case where values
+        are repeated in the compmap - used for darray read only. */
+    PIO_Offset rllen;
 
     /** Maximum llen participating. */
     int maxiobuflen;
@@ -442,21 +460,20 @@ typedef struct iosystem_desc_t
      * process is not part of the IO communicator. */
     int io_rank;
 
-    /** Set to MPI_ROOT if this task is the master of IO communicator, 0
+    /** Set to MPI_ROOT if this task is the main of IO communicator, 0
      * otherwise. */
-    int iomaster;
+    int iomain;
 
-    /** Set to MPI_ROOT if this task is the master of comp communicator, 0
+    /** Set to MPI_ROOT if this task is the main of comp communicator, 0
      * otherwise. */
-    int compmaster;
+    int compmain;
 
     /** Rank of IO root task (which is rank 0 in io_comm) in the union
-     * communicator. Will always be 0 for async situations. */
+     * communicator. */
     int ioroot;
 
     /** Rank of computation root task (which is rank 0 in
-     * comm_comms[cmp]) in the union communicator. Will always = number
-     * of IO tasks in async situations. */
+     * comm_comms[cmp]) in the union communicator. */
     int comproot;
 
     /** An array of the ranks of all IO tasks within the union
@@ -668,10 +685,14 @@ enum PIO_ERROR_HANDLERS
 #define PIO_MAX_NAME NC_MAX_NAME /**< Max name length. */
 #define PIO_MAX_VAR_DIMS NC_MAX_VAR_DIMS /**< max per variable dimensions */
 #define PIO_64BIT_OFFSET NC_64BIT_OFFSET /**< Use large (64-bit) file offsets. Mode flag for nc_create(). */
+#define PIO_64BIT_DATA NC_64BIT_DATA /**< CDF5 format. */
 
-/** NC_64BIT_DATA This is a problem - need to define directly instead
- * of using include file. */
-#define PIO_64BIT_DATA 0x0010 /**< CDF5 foemat. */
+#ifdef NC_HAS_QUANTIZE
+#define PIO_NOQUANTIZE NC_NOQUANTIZE
+#define PIO_QUANTIZE_BITGROOM NC_QUANTIZE_BITGROOM
+#define PIO_QUANTIZE_GRANULARBR NC_QUANTIZE_GRANULARBR
+#define PIO_QUANTIZE_BITROUND  NC_QUANTIZE_BITROUND  /**< Use BitRound quantization. */
+#endif
 
 /** Define the netCDF-based error codes. */
 #define PIO_NOERR  NC_NOERR           /**< No Error */
@@ -763,10 +784,11 @@ enum PIO_ERROR_HANDLERS
 #define PIO_FILL_UINT64 NC_FILL_UINT64 /**< Default fill value for this type. */
 
 #define PIO_EINDEP  (-203)  /**< independent access error. */
-
+#define PIO_EINSUFFBUF (-219)         /**< Insufficient buffer size (pnetcdf only) */
 #define PIO_FIRST_ERROR_CODE (-500)  /**< The first error code for PIO. */
 #define PIO_EBADIOTYPE  (-500)       /**< Bad IOTYPE error. */
 #define PIO_EVARDIMMISMATCH (-501)   /**< Variable dimensions do not match in a multivar call. */
+#define PIO_EBADREARR (-502)        /**< Rearranger error in async mode.  */
 #define PIO_REQ_NULL (NC_REQ_NULL-1) /**< Request null. */
 
 #if defined(__cplusplus)
@@ -775,10 +797,14 @@ extern "C" {
     /* Error handling. */
     int PIOc_strerror(int pioerr, char *errstr);
     int PIOc_set_log_level(int level);
+    int PIOc_set_global_log_level(int iosysid, int level);
 
     /* Decomposition. */
 
     /* Init decomposition with 1-based compmap array. */
+    int PIOc_InitDecomp_ReadOnly(int iosysid, int pio_type, int ndims, const int *gdimlen, int maplen,
+                        const PIO_Offset *compmap, int *ioidp, const int *rearr,
+                        const PIO_Offset *iostart, const PIO_Offset *iocount);
     int PIOc_InitDecomp(int iosysid, int pio_type, int ndims, const int *gdimlen, int maplen,
                         const PIO_Offset *compmap, int *ioidp, const int *rearr,
                         const PIO_Offset *iostart, const PIO_Offset *iocount);
@@ -817,6 +843,10 @@ extern "C" {
     int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list, int component_count,
                         int *num_procs_per_comp, int **proc_list, MPI_Comm *io_comm, MPI_Comm *comp_comm,
                         int rearranger, int *iosysidp);
+
+    /* Initializing IO system for async - alternative interface. */
+    int PIOc_init_async_from_comms(MPI_Comm world, int component_count, MPI_Comm *comp_comm,
+                                   MPI_Comm io_comm, int rearranger, int *iosysidp);
 
     /* How many IO tasks in this iosysid? */
     int PIOc_get_numiotasks(int iosysid, int *numiotasks);
@@ -933,6 +963,13 @@ extern "C" {
     int PIOc_set_fill(int ncid, int fillmode, int *old_modep);
     int PIOc_def_var_fill(int ncid, int varid, int no_fill, const void *fill_value);
     int PIOc_inq_var_fill(int ncid, int varid, int *no_fill, void *fill_valuep);
+#ifdef NC_HAS_BZ2
+  int PIOc_inq_var_bzip2(int ncid, int varid, int* hasfilterp, int *levelp);
+#endif
+#ifdef NC_HAS_ZSTD
+  int PIOc_def_var_zstandard(int ncid, int varid, int level);
+  int PIOc_inq_var_zstandard(int ncid, int varid, int* hasfilterp, int *levelp);
+#endif
     int PIOc_rename_var(int ncid, int varid, const char *name);
 
     /* These variable settings only apply to netCDF-4 files. */
@@ -1230,6 +1267,17 @@ extern "C" {
                                const long long *op);
     int PIOc_put_vard_ulonglong(int ncid, int varid, int decompid, const PIO_Offset recnum,
                                 const unsigned long long *op);
+
+#ifdef NC_HAS_PAR_FILTERS
+  int PIOc_def_var_filter(int ncid, int varid,unsigned int id, size_t nparams, unsigned int *params);
+  int PIOc_inq_var_filter_ids(int ncid, int varid, size_t *nfiltersp, unsigned int *ids);
+  int PIOc_inq_var_filter_info(int ncid, int varid, unsigned int id, size_t *nparamsp, unsigned int *params );
+  int PIOc_inq_filter_avail(int ncid, unsigned int id );
+#endif
+#ifdef NC_HAS_QUANTIZE
+  int PIOc_def_var_quantize(int ncid, int varid, int quantize_mode, int nsd );
+  int PIOc_inq_var_quantize(int ncid, int varid, int *quantize_mode, int *nsdp );
+#endif
 
     /* These functions are for the netCDF integration layer. */
     int nc_def_iosystem(MPI_Comm comp_comm, int num_iotasks, int stride, int base, int rearr,

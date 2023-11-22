@@ -1,3 +1,4 @@
+#include "config.h"
 PIO_TF_TEST_SUB_BEGIN create_file_no_opts(iotype, filename)
   implicit none
   integer,  intent(in)  :: iotype

@@ -4,7 +4,6 @@ html/
 \#*\#
 *.o
 Makefile.in
-*.F90.in
 *.lo
 *.la
 Makefile
@@ -30,3 +29,4 @@ m4/
 *.nc
 *.log
 *.gz
+!/decomps/*/*.nc

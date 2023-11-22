@@ -48,9 +48,9 @@ int main(int argc, char **argv)
                               -1, &test_comm)))
         ERR(ERR_INIT);
 
-    /* Is the current process a computation task? */    
+    /* Is the current process a computation task? */
     int comp_task = my_rank < NUM_IO_PROCS ? 0 : 1;
-    
+
     /* Only do something on TARGET_NTASKS tasks. */
     if (my_rank < TARGET_NTASKS)
     {
@@ -86,18 +86,18 @@ int main(int argc, char **argv)
                 /* Create sample file. */
                 if ((ret = create_nc_sample_3(iosysid[my_comp_idx], iotype[i], my_rank, my_comp_idx,
                                               filename, TEST_NAME, 0, 0, 0)))
-                    ERR(ret);
+                    AERR2(ret, iosysid[my_comp_idx]);
 
                 /* Check the file for correctness. */
                 if ((ret = check_nc_sample_3(iosysid[my_comp_idx], iotype[i], my_rank, my_comp_idx,
                                              filename, 0, 0, 0)))
-                    ERR(ret);
+                    AERR2(ret, iosysid[my_comp_idx]);
             } /* next netcdf iotype */
 
             /* Finalize the IO system. Only call this from the computation tasks. */
             for (int c = 0; c < COMPONENT_COUNT; c++)
                 if ((ret = PIOc_free_iosystem(iosysid[c])))
-                    ERR(ret);
+                    AERR2(ret, iosysid[c]);
         } /* endif comp_task */
     } /* endif my_rank < TARGET_NTASKS */
 

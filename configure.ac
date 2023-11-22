@@ -2,23 +2,25 @@
 ## Ed Hartnett 8/16/17
 
 # Initialize autoconf and automake.
-AC_INIT(pio, 2.5.1-development)
+AC_INIT(pio, 2.6.2)
 AC_CONFIG_SRCDIR(src/clib/pio_darray.c)
 AM_INIT_AUTOMAKE([foreign serial-tests])
+
 
 # The PIO version, again. Use AC_SUBST for pio_meta.h and
 # AC_DEFINE_UNQUOTED for config.h.
 AC_SUBST([PIO_VERSION_MAJOR]) PIO_VERSION_MAJOR=2
-AC_SUBST([PIO_VERSION_MINOR]) PIO_VERSION_MINOR=5
-AC_SUBST([PIO_VERSION_PATCH]) PIO_VERSION_PATCH=1
+AC_SUBST([PIO_VERSION_MINOR]) PIO_VERSION_MINOR=6
+AC_SUBST([PIO_VERSION_PATCH]) PIO_VERSION_PATCH=2
 AC_DEFINE_UNQUOTED([PIO_VERSION_MAJOR], [$PIO_VERSION_MAJOR], [PIO major version])
 AC_DEFINE_UNQUOTED([PIO_VERSION_MINOR], [$PIO_VERSION_MINOR], [PIO minor version])
 AC_DEFINE_UNQUOTED([PIO_VERSION_PATCH], [$PIO_VERSION_PATCH], [PIO patch version])
 
 # Once more for the documentation.
 AC_SUBST([VERSION_MAJOR], [2])
-AC_SUBST([VERSION_MINOR], [5])
-AC_SUBST([VERSION_PATCH], [1])
+AC_SUBST([VERSION_MINOR], [6])
+AC_SUBST([VERSION_PATCH], [2])
+
 
 # The m4 directory holds macros for autoconf.
 AC_CONFIG_MACRO_DIR([m4])
@@ -35,6 +37,9 @@ fi
 # Libtool initialisation.
 LD=ld # Required for MPE to work.
 LT_INIT
+
+# Find and learn about install 
+AC_PROG_INSTALL
 
 # Find and learn about the C compiler.
 AC_PROG_CC
@@ -85,9 +90,6 @@ if test -n "$fc_version_info"; then
   FC_VERSION="$FC_VERSION ( $fc_version_info)"
 fi
 
-# Always use malloc in autotools builds.
-AC_DEFINE([PIO_USE_MALLOC], [1], [use malloc for memory])
-
 AC_MSG_CHECKING([whether a PIO_BUFFER_SIZE was specified])
 AC_ARG_WITH([piobuffersize],
               [AS_HELP_STRING([--with-piobuffersize=<integer>],
@@ -101,7 +103,7 @@ AC_MSG_CHECKING([whether debug logging is enabled])
 AC_ARG_ENABLE([logging],
               [AS_HELP_STRING([--enable-logging],
                               [enable debug logging capability (will negatively impact performance). \
-			      This debugging feature is probably only of interest to PIO developers.])])
+                              This debugging feature is probably only of interest to PIO developers.])])
 test "x$enable_logging" = xyes || enable_logging=no
 AC_MSG_RESULT([$enable_logging])
 if test "x$enable_logging" = xyes; then
@@ -117,6 +119,7 @@ test "x$enable_timing" = xyes || enable_timing=no
 AC_MSG_RESULT([$enable_timing])
 if test "x$enable_timing" = xyes; then
    AC_DEFINE([TIMING], 1, [If true, use GPTL timing library.])
+   AC_DEFINE([HAVE_MPI], [1], [required by GPTL timing library])
 fi
 AM_CONDITIONAL(USE_GPTL, [test "x$enable_timing" = xyes])
 
@@ -154,15 +157,15 @@ AC_MSG_RESULT([$enable_mpe])
 if test "x$enable_mpe" = xyes; then
 
    AC_SEARCH_LIBS([pthread_setspecific], [pthread], [], [], [])
-   dnl AC_SEARCH_LIBS([MPE_Log_get_event_number], [mpe], [HAVE_LIBMPE=yes], [HAVE_LIBMPE=no], [])
-   dnl AC_SEARCH_LIBS([MPE_Init_mpi_core], [lmpe], [HAVE_LIBLMPE=yes], [HAVE_LIBLMPE=no], [])
+   AC_SEARCH_LIBS([MPE_Log_get_event_number], [mpe], [HAVE_LIBMPE=yes], [HAVE_LIBMPE=no], [])
+   AC_SEARCH_LIBS([MPE_Init_mpi_core], [lmpe], [HAVE_LIBLMPE=yes], [HAVE_LIBLMPE=no], [])
    AC_CHECK_HEADERS([mpe.h], [HAVE_MPE=yes], [HAVE_MPE=no])
-   dnl if test "x$HAVE_LIBMPE" != xyes; then
-   dnl    AC_MSG_ERROR([-lmpe not found but --enable-mpe used.])
-   dnl fi
-   dnl if test "x$HAVE_LIBLMPE" != xyes; then
-   dnl    AC_MSG_ERROR([-llmpe not found but --enable-mpe used.])
-   dnl fi
+   if test "x$HAVE_LIBMPE" != xyes; then
+      AC_MSG_ERROR([-lmpe not found but --enable-mpe used.])
+   fi
+   if test "x$HAVE_LIBLMPE" != xyes; then
+      AC_MSG_ERROR([-llmpe not found but --enable-mpe used.])
+   fi
    if test $enable_fortran = yes; then
       AC_MSG_ERROR([MPE not implemented in Fortran tests and examples. Build without --enable-fortran])
    fi
@@ -201,12 +204,22 @@ if test "x$enable_developer_docs" = xyes; then
 fi
 AM_CONDITIONAL(BUILD_DOCS, [test "x$enable_docs" = xyes])
 
+# Did the user specify an MPI launcher other than mpiexec?
+AC_MSG_CHECKING([whether a user specified program to run mpi programs])
+AC_ARG_WITH([mpiexec],
+              [AS_HELP_STRING([--with-mpiexec=<command>],
+                              [Specify command to launch MPI parallel tests.])],
+            [WITH_MPIEXEC=$with_mpiexec], [WITH_MPIEXEC=mpiexec])
+AC_MSG_RESULT([$WITH_MPIEXEC])
+AC_SUBST([WITH_MPIEXEC], [$WITH_MPIEXEC])
+
 # Is doxygen installed?
 AC_CHECK_PROGS([DOXYGEN], [doxygen])
 if test -z "$DOXYGEN" -a "x$enable_docs" = xyes; then
    AC_MSG_ERROR([Doxygen not found but --enable-docs used.])
 fi
 
+AC_MSG_NOTICE([processing doxyfile])
 # If building docs, process Doxyfile.in into Doxyfile.
 if test "x$enable_docs" = xyes; then
    AC_SUBST([CMAKE_CURRENT_SOURCE_DIR], ["."])
@@ -223,26 +236,17 @@ if test "x$enable_docs" = xyes; then
    AC_CONFIG_FILES([doc/Doxyfile])
 fi
 
-# NetCDF (at least classic) is required for PIO to build.
-AC_DEFINE([_NETCDF], [1], [netCDF classic library available])
+AC_MSG_NOTICE([finding libraries])
 
-# ????
-AC_DEFINE([CPRGNU], [1], [defined by CMake build])
-
-# We must have MPI to build PIO.
-AC_DEFINE([HAVE_MPI], [1], [defined by CMake build])
-
-# ???
-AC_DEFINE([INCLUDE_CMAKE_FCI], [1], [defined by CMake build])
-
-# All builds are on LINUX.
-AC_DEFINE([LINUX], [1], [defined by CMake build])
-
-# Define to solve intel compiler warning.
-AC_DEFINE([_GNU_SOURCE], [1], [solve strnlen declared implicitly warning on intel compiler])
+# Ensure we have MPI.
+AC_CHECK_FUNCS([MPI_Init])
+if test "x$ac_cv_func_MPI_Init" != "xyes"; then
+   AC_MSG_ERROR([Can't link to MPI library. MPI is required.])
+fi
 
 # Check for netCDF library.
 AC_CHECK_LIB([netcdf], [nc_create], [], [AC_MSG_ERROR([Can't find or link to the netcdf library.])])
+AC_CHECK_HEADERS([netcdf.h netcdf_meta.h])
 
 # Check for pnetcdf library.
 AC_CHECK_LIB([pnetcdf], [ncmpi_create], [], [])
@@ -253,8 +257,6 @@ fi
 # If we have parallel-netcdf, then set these as well.
 if test x$ac_cv_lib_pnetcdf_ncmpi_create = xyes; then
    AC_DEFINE([_PNETCDF], [1], [parallel-netcdf library available])
-   AC_DEFINE([USE_PNETCDF_VARN], [1], [defined by CMake build])
-   AC_DEFINE([USE_PNETCDF_VARN_ON_READ], [1], [defined by CMake build])
 fi
 
 # Do we have netCDF-4?
@@ -286,14 +288,43 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include "netcdf_meta.h"],
 AC_MSG_CHECKING([whether netCDF provides szip write capability])
 AC_MSG_RESULT([${have_szip_write}])
 
-# Do we have parallel filter support?
+# Do we have parallel filter support? Parallel filters are required
+# for iotype NETCDF4P to use compression.
+AC_MSG_CHECKING([whether netCDF provides parallel filter support])
+AC_CHECK_LIB([netcdf], [nc_inq_filter_avail], [have_par_filters=yes], [have_par_filters=no])
+AC_MSG_RESULT([${have_par_filters}])
+if test "x$have_par_filters" = xyes ; then
+   AC_DEFINE([HAVE_PAR_FILTERS], [1], [if true, netcdf-c supports filters with parallel I/O])
+fi
+
+# Is this version 4.7.2, which does not work?
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include "netcdf_meta.h"],
-[[#if !NC_HAS_PAR_FILTERS
+[[#if NC_VERSION_MAJOR == 4 && NC_VERSION_MINOR == 7 && NC_VERSION_PATCH == 2
+#else
 # error
 #endif]
-])], [have_par_filters=yes], [have_par_filters=no])
-AC_MSG_CHECKING([whether netCDF provides parallel filter support])
-AC_MSG_RESULT([${have_par_filters}])
+])], [have_472=yes], [have_472=no])
+AC_MSG_CHECKING([whether this is netcdf-c-4.7.2])
+AC_MSG_RESULT([${have_472}])
+if test "x$have_472" = xyes; then
+   AC_MSG_ERROR([PIO cannot build with netcdf-c-4.7.2, please upgrade your netCDF version.])
+fi
+
+# Do we have the correct dispatch table version in netcdf-c for netcdf
+# integration?
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include "netcdf_meta.h"],
+[[#if NC_DISPATCH_VERSION < 2
+# error
+#endif
+#if NC_DISPATCH_VERSION > 5
+# error
+#endif]
+])], [have_dispatch=yes], [have_dispatch=no])
+AC_MSG_CHECKING([whether netcdf-c supports compatible dispatch table for netcdf integration])
+AC_MSG_RESULT([${have_dispatch}])
+if test "x$enable_netcdf_integration" = xyes -a "x$have_dispatch" = xno; then
+   AC_MSG_ERROR([NetCDF integration version is not compatible with that in ParallelIO])
+fi
 
 # Set some build settings for when netcdf-4 is supported.
 if test x$have_netcdf_par = xyes; then
@@ -308,9 +339,6 @@ if test "x${ac_cv_type_MPI_Offset}" = xyes; then
 else
    AC_MSG_ERROR([Unable to find type MPI_Offset in mpi.h])
 fi
-
-#AC_CHECK_SIZEOF([MPI_Offset], [], [[#include <mpi.h>]])
-#AC_DEFINE([SIZEOF_MPI_OFFSET], [8], [netCDF classic library available])
 
 # If we want the timing library, we must find it.
 if test "x$enable_timing" = xyes; then
@@ -360,18 +388,33 @@ fi
 if test "x$enable_netcdf_integration" = xyes -a "x$have_netcdf_par" = xno; then
    AC_MSG_ERROR([Cannot use netCDF integration unless netCDF library was built for parallel I/O.])
 fi
-# These are needed by ncdispatch.h. Only build with HDF5 parallel
-# versions of netCDF. */
+
+# If netCDF integration is used, set this preprocessor symbol.
 if test "x$enable_netcdf_integration" = xyes; then
-  AC_DEFINE([HDF5_PARALLEL],[1],[Does HDF5 library provide parallel access])
-  AC_DEFINE([USE_NETCDF4],[1],[Does HDF5 library provide parallel access])
   AC_DEFINE([NETCDF_INTEGRATION],[1],[Are we building with netCDF integration])
 fi
-
 AM_CONDITIONAL(BUILD_NCINT, [test "x$enable_netcdf_integration" = xyes])
-AM_CONDITIONAL(NETCDF_INTEGRATION, [test "x$enable_netcdf_integration" = xyes])
+
+# If we are building netCDF integration and also then PIO Fortran
+# library, then we also need netcdf-fortran.
+if test "x$enable_netcdf_integration" = xyes -a "x$enable_fortran" = xyes; then
+   AC_LANG_PUSH([Fortran])
+   AC_CHECK_LIB([netcdff], [nf_inq_libvers], [], [AC_MSG_ERROR([Can't find or link to the netcdf-fortran library, required because both --enable-fortran and --enable-netcdf-integration are specified.])])
+   AC_LANG_POP([Fortran])
+fi
 
 AC_CONFIG_FILES([tests/general/pio_tutil.F90:tests/general/util/pio_tutil.F90])
+
+# The user may have changed the MPIEXEC for these test scripts.
+AC_CONFIG_FILES([tests/cunit/run_tests.sh], [chmod ugo+x tests/cunit/run_tests.sh])
+AC_CONFIG_FILES([tests/ncint/run_tests.sh], [chmod ugo+x tests/ncint/run_tests.sh])
+AC_CONFIG_FILES([tests/ncint/run_perf.sh], [chmod ugo+x tests/ncint/run_perf.sh])
+AC_CONFIG_FILES([tests/fncint/run_tests.sh], [chmod ugo+x tests/fncint/run_tests.sh])
+AC_CONFIG_FILES([tests/general/run_tests.sh], [chmod ugo+x tests/general/run_tests.sh])
+AC_CONFIG_FILES([tests/performance/run_tests.sh], [chmod ugo+x tests/performance/run_tests.sh])
+AC_CONFIG_FILES([tests/unit/run_tests.sh], [chmod ugo+x tests/unit/run_tests.sh])
+AC_CONFIG_FILES([examples/c/run_tests.sh], [chmod ugo+x examples/c/run_tests.sh])
+AC_CONFIG_FILES([examples/f03/run_tests.sh], [chmod ugo+x examples/f03/run_tests.sh])
 
 # Args:
 # 1. netcdf_meta.h variable
@@ -396,9 +439,11 @@ AX_SET_META([PIO_HAS_PNETCDF],[$enable_pnetcdf],[yes])
 AX_SET_META([PIO_HAS_PAR_FILTERS], [$have_par_filters],[yes])
 AX_SET_META([PIO_HAS_NETCDF4], [$have_netcdf4],[yes])
 AX_SET_META([PIO_HAS_NETCDF4_PAR], [$have_netcdf_par],[yes])
+AX_SET_META([PIO_HAS_NETCDF_INTEGRATION], [$enable_netcdf_integration],[yes])
 
 # Create output variables from various shell variables, for use in
 # generating libpio.settings.
+
 AC_SUBST([enable_shared])
 AC_SUBST([enable_static])
 AC_SUBST([CFLAGS])
@@ -410,44 +455,46 @@ AC_SUBST([FPPFLAGS]) # ignored by autotools
 AC_SUBST(HAS_PNETCDF,[$enable_pnetcdf])
 AC_SUBST(HAS_LOGGING, [$enable_logging])
 AC_SUBST(HAS_SZIP_WRITE, [$have_szip_write])
-AC_SUBST([HAS_PAR_FILTERS], [$have_par_filters])
+AC_SUBST([have_par_filters])
 AC_SUBST([HAS_NETCDF4], [$have_netcdf4])
 AC_SUBST([HAS_NETCDF4_PAR], [$have_netcdf_par])
+AC_SUBST([HAS_NETCDF_INTEGRATION], [$enable_netcdf_integration])
+AC_SUBST([HAS_PIO_FORTRAN], [$enable_fortran])
 
-# Create the build summary file. 
+# Create the build summary file.
 AC_CONFIG_FILES([libpio.settings
                  src/clib/pio_meta.h
-		 ])
+                 ])
 AC_CONFIG_LINKS([tests/unit/input.nl:tests/unit/input.nl])
 
 # Create the config.h file.
 AC_CONFIG_HEADERS([config.h])
 
 # Create the makefiles.
-AC_OUTPUT(Makefile
-          src/Makefile
-          src/clib/Makefile
-          src/ncint/Makefile
-          src/flib/Makefile
-          src/gptl/Makefile
-          tests/Makefile
-          tests/cunit/Makefile
-          tests/ncint/Makefile
-          tests/fncint/Makefile
-          tests/unit/Makefile
-          tests/general/Makefile
-          tests/general/util/Makefile
-          tests/performance/Makefile
-          doc/Makefile
-          doc/source/Makefile
-          doc/images/Makefile
-          examples/Makefile
-          examples/c/Makefile
-          examples/f03/Makefile
-          cmake/Makefile
-          scripts/Makefile)
+AC_CONFIG_FILES(Makefile
+	        src/Makefile
+        	src/clib/Makefile
+                src/ncint/Makefile
+                src/flib/Makefile
+                src/gptl/Makefile
+                tests/Makefile
+                tests/cunit/Makefile
+                tests/ncint/Makefile
+                tests/fncint/Makefile
+                tests/unit/Makefile
+                tests/general/Makefile
+                tests/general/util/Makefile
+                tests/performance/Makefile
+                doc/Makefile
+                doc/source/Makefile
+                doc/images/Makefile
+                examples/Makefile
+                examples/c/Makefile
+                examples/f03/Makefile
+                cmake/Makefile
+                scripts/Makefile)
+
+AC_OUTPUT()
 
 # Show the build summary.
 cat libpio.settings
-
-

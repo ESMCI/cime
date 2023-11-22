@@ -1,10 +1,11 @@
-name: cmake
+name: cmake ubuntu openmpi latest
+#with AddressSanitizer
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
 
 jobs:
   build:
@@ -14,31 +15,36 @@ jobs:
     env:
       CC: mpicc
       FC: mpifort
-      CPPFLAGS: "-I/usr/include -I/usr/local/include"
-
+      FCFLAGS: "-fallow-argument-mismatch"
+#      LDFLAGS: "-static-libasan"
+#      ASAN_OPTIONS: "detect_odr_violation=0"
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Installs
       run: |
-        sudo apt-get install netcdf-bin libnetcdf-dev doxygen graphviz wget gfortran libjpeg-dev libz-dev openmpi-bin libopenmpi-dev 
-
-    - name: pnetcdf build
-      run: |
-        wget https://parallel-netcdf.github.io/Release/pnetcdf-1.12.1.tar.gz 
-        tar -xzvf pnetcdf-1.12.1.tar.gz
-        ls -l
-        pushd pnetcdf-1.12.1
-        ./configure --prefix=/usr --enable-shared --disable-cxx
-        make
-        sudo make install
-        popd
+        set -x
+        sudo apt-get update
+        sudo apt-get install netcdf-bin libnetcdf-dev doxygen graphviz wget gfortran \
+        libjpeg-dev libz-dev openmpi-bin libopenmpi-dev cmake pnetcdf-bin libpnetcdf-dev libnetcdff-dev
+        nc-config --all
 
     - name: cmake build
+      uses: ./.github/actions/parallelio_cmake
+      with:
+        parallelio_version: ${{ env.GITHUB_SHA }}
+        enable_fortran: True
+        enable_logging: True
+        install_prefix: ${GITHUB_WORKSPACE}/parallelio
+        mpiexec_flags: --oversubscribe
+#        extra_cflags: "-g -O0 -fsanitize=address -fno-omit-frame-pointer -static-libasan"
+#        extra_fflags: "-g -O0 -fsanitize=address -fno-omit-frame-pointer -static-libasan"
+    - name: parallelio tests
       run: |
-        find /usr -name libnetcdf.so
-        mkdir build
-        cd build
-        cmake -Wno-dev -DNetCDF_C_LIBRARY=/usr/lib/x86_64-linux-gnu/libnetcdf.so -DNetCDF_C_INCLUDE_DIR=/usr/include -DCMAKE_PREFIX_PATH=/usr -DPIO_HDF5_LOGGING=On -DPIO_USE_MALLOC=On -DPIO_ENABLE_LOGGING=On -DPIO_ENABLE_TIMING=Off ..
-        make VERBOSE=1
+        pushd $GITHUB_WORKSPACE/build
         make tests VERBOSE=1
         ctest -VV
+        popd
+
+#    - name: Setup tmate session
+#      if: ${{ failure() }}
+#      uses: mxschmitt/action-tmate@v3

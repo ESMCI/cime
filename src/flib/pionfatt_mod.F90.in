@@ -1,4 +1,5 @@
 #define __PIO_FILE__ "pionfatt_mod.F90"
+#include "config.h"
 !>
 !! @file
 !! @brief NetCDF attribute interface to PIO
@@ -34,7 +35,6 @@ module pionfatt_mod
      module procedure put_att_1d_vid_{TYPE}
   end interface
 
-
   !>
   !! @private
   !<
@@ -44,6 +44,15 @@ module pionfatt_mod
      ! TYPE real,int,double,short
      module procedure get_att_1d_{TYPE}, get_att_desc_1d_{TYPE}, get_att_1d_id_{TYPE}
   end interface
+
+  !>
+  !! @private
+  !<
+  public :: inq_var_fill
+  interface inq_var_fill
+     ! TYPE double,int,short,real
+     module procedure inq_var_fill_{TYPE}
+  end interface inq_var_fill
 
   !> @cond doxygen_cant_handle_so_exclude
   private :: modName
@@ -107,8 +116,7 @@ module pionfatt_mod
      end function PIOc_put_att_float
   end interface
   interface
-     ! TYPE int,double,short
-     integer(C_INT) function PIOc_get_att_float (ncid, varid, name, op) &
+      integer(C_INT) function PIOc_get_att_float (ncid, varid, name, op) &
           bind(C,name="PIOc_get_att_float")
        use iso_c_binding
        integer(C_INT), value         :: ncid
@@ -117,9 +125,42 @@ module pionfatt_mod
        real(C_FLOAT),        intent(out)   :: op
      end function PIOc_get_att_float
   end interface
+  interface
+     integer(C_INT) function PIOc_inq_var_fill (ncid, varid, no_fill, fillvalue) &
+          bind(C, name="PIOc_inq_var_fill")
+       use iso_c_binding
+       integer(C_INT), value       :: ncid
+       integer(C_INT), value       :: varid
+       integer(C_INT), intent(out) :: no_fill
+       type(C_PTR), value          :: fillvalue
+     end function PIOc_inq_var_fill
+  end interface
   !> @endcond
 
 contains
+  !pl The next line is needed by genf90.pl, do not remove it.
+  ! TYPE real,double,int,short
+  !>
+  !! @public
+  !! @ingroup PIO_inq_var_fill
+  !! @brief Inquires about var fill value
+  !! @details
+  !! @param File @copydoc file_desc_t
+  !! @param vdesc : The netcdf variable descriptor
+  !! @param no_fill : whether this variable has no_fill enabled
+  !! @param fillvalue : the fillvalue used for this variable, returns default if not set.
+  !! @retval ierr @copydoc error_return
+  !<
+  integer function inq_var_fill_{TYPE} (File, vdesc, no_fill, fillvalue) result(ierr)
+    type (File_desc_t), intent(in) :: File
+    type(var_desc_t), intent(in)  :: vdesc
+    ! fillvalue needs to not be optional to avoid ambiguity
+    integer, intent(out) :: no_fill
+    {VTYPE}, target, intent(out) :: fillvalue
+
+    ierr = PIOc_inq_var_fill (File%fh, vdesc%varid-1, no_fill, C_LOC(fillvalue))
+
+  end function inq_var_fill_{TYPE}
 
   !>
   !! @public

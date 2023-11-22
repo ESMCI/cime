@@ -31,6 +31,7 @@
 #define TEST_DARRAY_WRITE 3
 #define TEST_CLOSE 4
 #define TEST_CALCULATE 5
+#define TEST_DARRAY_READ 6
 
 int init_mpe_test_logging(int my_rank, int test_event[][TEST_NUM_EVENTS]);
 void test_start_mpe_log(int state);
@@ -64,6 +65,7 @@ void test_stop_mpe_log(int state, const char *msg);
 #define ERR_WRONG 1112
 #define ERR_GPTL 1113
 #define ERR_MPI 1114
+#define ERR_MEM 1115
 
 /** The meaning of life, the universe, and everything. */
 #define TEST_VAL_42 42
@@ -80,6 +82,9 @@ void test_stop_mpe_log(int state, const char *msg);
 #else
 #define NUM_PIO_TYPES_TO_TEST 6
 #endif /* _NETCDF4 */
+
+/* Need this for performance calculations. */
+#define MILLION 1000000
 
 /* Function prototypes. */
 int pio_test_init2(int argc, char **argv, int *my_rank, int *ntasks, int min_ntasks,

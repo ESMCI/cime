@@ -1,3 +1,5 @@
+#include "config.h"
+#include <netcdf_meta.h>
 !>
 !! @file
 !! Derived datatypes and constants for PIO Fortran API.
@@ -124,38 +126,54 @@ module pio_types
   !! The type of variable(s) associated with this iodesc.
   !! @copydoc PIO_kinds
 
-#ifdef _PNETCDF
-#include <pnetcdf.inc>
-  integer, public, parameter :: PIO_64BIT_DATA = nf_64bit_data            !< CDF5 format
-#else
-#include <netcdf.inc>
-  integer, public, parameter :: PIO_64BIT_DATA = 0            !< CDF5 format
-#endif
-  integer, public, parameter :: PIO_num_OST =  16 !< num ost
-  integer, public, parameter :: PIO_global = nf_global       !< global atts
-  integer, public, parameter :: PIO_unlimited = nf_unlimited !< unlimited dimension
-  integer, public, parameter :: PIO_double = nf_double       !< double type
-  integer, public, parameter :: PIO_real   = nf_real         !< real type
-  integer, public, parameter :: PIO_int    = nf_int          !< int type
-  integer, public, parameter :: PIO_short  = nf_short        !< short int type
-  integer, public, parameter :: PIO_char   = nf_char         !< char type
-  integer, public, parameter :: PIO_noerr  = nf_noerr        !< no error
-  integer, public, parameter :: PIO_WRITE  = nf_write        !< read-write
-  integer, public, parameter :: PIO_nowrite  = nf_nowrite    !< read-only
-  integer, public, parameter :: PIO_CLOBBER = nf_clobber     !< clobber existing file
-  integer, public, parameter :: PIO_NOCLOBBER = nf_NOclobber !< do not clobber existing file
-  integer, public, parameter :: PIO_NOFILL = nf_nofill       !< do not use fill values
-  integer, public, parameter :: PIO_MAX_NAME = nf_max_name   !< max name len
-  integer, public, parameter :: PIO_MAX_VAR_DIMS = min(6,nf_max_var_dims) !< max dims for a var
-  integer, public, parameter :: PIO_64BIT_OFFSET = nf_64bit_offset        !< 64bit offset format
-  integer, public, parameter :: PIO_FILL_INT = nf_fill_int;               !< int fill value
-  real, public, parameter :: PIO_FILL_FLOAT = nf_fill_float;              !< float fill value
-  double precision, public, parameter :: PIO_FILL_DOUBLE = nf_fill_double; !< double fill value
+  integer, public, parameter :: PIO_64BIT_DATA = 32    !< CDF5 format
+  integer, public, parameter :: PIO_num_OST =  16      !< num ost
+  integer, public, parameter :: PIO_global = 0         !< global atts
+  integer, public, parameter :: PIO_unlimited = 0      !< unlimited dimension
+  integer, public, parameter :: PIO_double = 6         !< double type
+  integer, public, parameter :: PIO_real   = 5         !< real type
+  integer, public, parameter :: PIO_int    = 4         !< int type
+  integer, public, parameter :: PIO_short  = 3         !< short int type
+  integer, public, parameter :: PIO_char   = 2         !< char type
+  integer, public, parameter :: PIO_noerr  = 0         !< no error
+  integer, public, parameter :: PIO_WRITE  = 1         !< read-write
+  integer, public, parameter :: PIO_nowrite  = 0       !< read-only
+  integer, public, parameter :: PIO_CLOBBER = 0        !< clobber existing file
+  integer, public, parameter :: PIO_NOCLOBBER = 4      !< do not clobber existing file
+  integer, public, parameter :: PIO_FILL = 0           !< use fill values
+  integer, public, parameter :: PIO_NOFILL = 256       !< do not use fill values
+  integer, public, parameter :: PIO_MAX_NAME = 256     !< max name len
+  integer, public, parameter :: PIO_MAX_VAR_DIMS = 6   !< max dims for a var
+  integer, public, parameter :: PIO_64BIT_OFFSET = 512 !< 64bit offset format
+  integer, public, parameter :: PIO_FILL_INT = -2147483647             !< int fill value
+  real, public, parameter :: PIO_FILL_FLOAT = 9.9692099683868690e+36   !< float fill value
+
+  double precision, public, parameter :: PIO_FILL_DOUBLE = 9.9692099683868690d+36 !< double fill value
 
   enum, bind(c)
      enumerator :: PIO_rearr_comm_p2p = 0 !< do point-to-point communications using mpi send and recv calls.
      enumerator :: PIO_rearr_comm_coll    !< use the MPI_ALLTOALLW function of the mpi library
   end enum
+#ifdef NC_HAS_QUANTIZE
+  enum, bind(c)
+     enumerator :: PIO_NOQUANTIZE = 0
+     enumerator :: PIO_QUANTIZE_BITGROOM
+     enumerator :: PIO_QUANTIZE_GRANULARBR
+     enumerator :: PIO_QUANTIZE_BITROUND
+  end enum
+#endif
+#ifdef NC_HAS_MULTIFILTERS
+  enum, bind(c)
+     enumerator :: PIO_FILTER_NONE = 0
+     enumerator :: PIO_FILTER_DEFLATE
+     enumerator :: PIO_FILTER_SHUFFLE
+     enumerator :: PIO_FILTER_FLETCHER32
+     enumerator :: PIO_FILTER_SZIP
+     enumerator :: PIO_FILTER_NBIT
+     enumerator :: PIO_FILTER_SCALEOFFSET
+  end ENUM
+#endif
+
 
   !>
   !! @defgroup PIO_rearr_comm_t Rearranger Communication
@@ -209,6 +227,9 @@ module pio_types
   end type PIO_rearr_opt_t
 
   public :: PIO_rearr_comm_p2p, PIO_rearr_comm_coll,&
+#ifdef NC_HAS_QUANTIZE
+       PIO_NOQUANTIZE, PIO_QUANTIZE_BITGROOM, PIO_QUANTIZE_GRANULARBR, PIO_QUANTIZE_BITROUND, &
+#endif
        PIO_rearr_comm_fc_2d_enable, PIO_rearr_comm_fc_1d_comp2io,&
        PIO_rearr_comm_fc_1d_io2comp, PIO_rearr_comm_fc_2d_disable
 
