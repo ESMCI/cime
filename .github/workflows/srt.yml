@@ -18,7 +18,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [2.7, 3.8]
+        # python 2.7 has been removed
+        python-version: [3.8, 3.10]
     env:
       CC: mpicc
       FC: mpifort
