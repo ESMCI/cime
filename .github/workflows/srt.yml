@@ -19,7 +19,7 @@ jobs:
     strategy:
       matrix:
         # python 2.7 has been removed
-        python-version: [3.8, 3.10]
+        python-version: ["3.8", "3.10"]
     env:
       CC: mpicc
       FC: mpifort
