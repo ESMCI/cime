@@ -43,7 +43,7 @@ jobs:
       - name: Checkout cprnc
         uses: actions/checkout@v2
         with:
-          repository: https://github.com/ESMCI/cprnc
+          repository: ESMCI/cprnc
           path: CIME/non_py/cprnc
       # Offical action is deprecated in favor of pre-commit.ci
       # Should evaulate switching or just running manually.
