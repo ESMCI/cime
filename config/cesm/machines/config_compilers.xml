@@ -755,7 +755,14 @@ using a fortran linker.
     <append> -lnetcdff -lnetcdf </append>
   </SLIBS>
 </compiler>
-
+<compiler MACH="derecho" COMPILER="intel">
+  <CFLAGS>
+    <append> -march=core-avx2 -no-fma</append>
+  </CFLAGS>
+  <FFLAGS>
+    <append> -march=core-avx2 -no-fma</append>
+  </FFLAGS>
+</compiler>
 
 <compiler MACH="eastwind" COMPILER="intel">
   <CFLAGS>
