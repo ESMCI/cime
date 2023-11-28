@@ -40,11 +40,6 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: 3.9
-      - name: Checkout cprnc
-        uses: actions/checkout@v2
-        with:
-          repository: ESMCI/cprnc
-          path: CIME/non_py/cprnc
       # Offical action is deprecated in favor of pre-commit.ci
       # Should evaulate switching or just running manually.
       # - name: Runs pre-commit action
@@ -93,6 +88,9 @@ jobs:
           git config --global --add safe.directory /__w/cime/cime
 
           init_cime
+
+          # Get cprnc
+          git clone https://github.com/ESMCI/cprnc CIME/non_py/cprnc
 
           pytest -vvv --cov=CIME --machine docker --no-fortran-run CIME/tests/test_unit*
 
@@ -146,6 +144,8 @@ jobs:
             init_cime
           fi
 
+          # Get cprnc
+          git clone https://github.com/ESMCI/cprnc CIME/non_py/cprnc
           source /opt/conda/etc/profile.d/conda.sh
 
           conda activate base
