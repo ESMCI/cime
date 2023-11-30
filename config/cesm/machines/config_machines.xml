@@ -1112,6 +1112,7 @@ This allows using a different mpirun command to launch unit tests
       <executable>mpiexec</executable>
       <arguments>
 	<arg name="label"> --label</arg>
+	<arg name="buffer"> --line-buffer</arg>
 	<arg name="num_tasks" > -n {{ total_tasks }}</arg>
       </arguments>
     </mpirun>
