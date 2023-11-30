@@ -391,7 +391,7 @@
   <batch_system MACH="derecho" type="pbs" >
     <batch_submit>qsub</batch_submit>
     <submit_args>
-      <arg name="-l job_priority=" flag="$JOB_PRIORITY"/>
+      <arg flag="-l job_priority=" name="$JOB_PRIORITY"/>
     </submit_args>
     <directives>
       <directive default="/bin/bash" > -S {{ shell }}  </directive>
