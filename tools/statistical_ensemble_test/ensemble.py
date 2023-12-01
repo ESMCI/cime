@@ -61,7 +61,7 @@ def main(argv):
         run_type = 'ensemble'
         clone_count = ens_size - 1
         if ens_size > 999:
-            print 'Error: cannot have an ensemble size greater than 999.'
+            print('Error: cannot have an ensemble size greater than 999.')
             sys.exit()
         print('STATUS: ensemble size = ' + str(ens_size))
     
