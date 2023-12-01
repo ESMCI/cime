@@ -135,6 +135,10 @@ function init_cesm() {
     update_cime "${install_path}/cime/"
 
     cd "${install_path}/cime"
+# Need to run manage_externals again incase branch changes externals instructions
+    "${install_path}/manage_externals/checkout_externals -e Externals_cime.cfg"
+
+
 }
 
 #######################################
