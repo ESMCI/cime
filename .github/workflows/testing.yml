@@ -145,7 +145,7 @@ jobs:
           fi
 
           # Get cprnc
-          git clone https://github.com/ESMCI/cprnc $INSTALL_PATH/CIME/non_py/cprnc
+          # git clone https://github.com/ESMCI/cprnc $INSTALL_PATH/CIME/non_py/cprnc
           source /opt/conda/etc/profile.d/conda.sh
 
           conda activate base
