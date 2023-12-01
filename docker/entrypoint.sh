@@ -168,6 +168,8 @@ function init_cime() {
     update_cime "${install_path}"
 
     cd "${install_path}"
+
+    "/src/CESM/manage_externals/checkout_externals -e Externals_cime.cfg"
 }
 
 if [[ ! -e "${HOME}/.cime" ]]
