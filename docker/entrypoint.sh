@@ -99,7 +99,7 @@ function init_e3sm() {
             extras=" --depth 1"
         fi
 
-        git submodule update --init ${extras}
+        git submodule update --init --recursive ${extras}
     fi
 
     fixup_mct "${install_path}/externals/mct"
