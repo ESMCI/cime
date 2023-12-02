@@ -129,6 +129,13 @@ function init_e3sm() {
 
     cd "${install_path}/cime"
 
+    if [[ ! -e "${PWD}/.gitmodules.bak" ]]
+    then
+        echo "Convering git@github.com to https://github.com urls in ${PWD}/.gitmodules"
+
+        sed -i".bak" "s/git@github.com:/https:\/\/github.com\//g" "${PWD}/.gitmodules"
+    fi
+
     echo "Initializing submodules in ${PWD}"
 
     git submodule update --init ${extras}
@@ -162,7 +169,16 @@ function init_cesm() {
     cd "${install_path}/cime"
 
     # Need to run manage_externals again incase branch changes externals instructions
-    "/src/CESM/manage_externals/checkout_externals -e Externals_cime.cfg"
+    # "${install_path}/manage_externals/checkout_externals -e cime/Externals_cime.cfg"
+
+    if [[ ! -e "${PWD}/.gitmodules.bak" ]]
+    then
+        echo "Convering git@github.com to https://github.com urls in ${PWD}/.gitmodules"
+
+        sed -i".bak" "s/git@github.com:/https:\/\/github.com\//g" "${PWD}/.gitmodules"
+    fi
+
+    git submodule update --init
 }
 
 #######################################
@@ -196,7 +212,16 @@ function init_cime() {
     cd "${install_path}"
 
     # Need to run manage_externals again incase branch changes externals instructions
-    "/src/CESM/manage_externals/checkout_externals -e Externals_cime.cfg"
+    # "${install_path}/manage_externals/checkout_externals -e cime/Externals_cime.cfg"
+
+    if [[ ! -e "${PWD}/.gitmodules.bak" ]]
+    then
+        echo "Convering git@github.com to https://github.com urls in ${PWD}/.gitmodules"
+
+        sed -i".bak" "s/git@github.com:/https:\/\/github.com\//g" "${PWD}/.gitmodules"
+    fi
+
+    git submodule update --init
 }
 
 if [[ ! -e "${HOME}/.cime" ]]
