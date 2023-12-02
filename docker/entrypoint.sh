@@ -131,7 +131,7 @@ function init_e3sm() {
 
     mkdir -p /storage/inputdata
 
-    echo "Copying cached inputdata from /cache to /storage/inputdata" 
+    echo "Copying cached inputdata from /cache to /storage/inputdata"
 
     rsync -vr /cache/ /storage/inputdata/
 
