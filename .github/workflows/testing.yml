@@ -89,9 +89,6 @@ jobs:
 
           init_cime
 
-          # Get cprnc
-          git clone https://github.com/ESMCI/cprnc CIME/non_py/cprnc
-
           pytest -vvv --cov=CIME --machine docker --no-fortran-run CIME/tests/test_unit*
 
   # Run system tests
