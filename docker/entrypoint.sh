@@ -115,14 +115,6 @@ function init_e3sm() {
         echo "Initializing submodules in ${PWD}"
 
         git submodule update --init ${extras}
-
-        pushd cime/
-
-        echo "Initializing submodules in ${PWD}"
-
-        git submodule update --init ${extras}
-
-        popd
     fi
 
     fixup_mct "${install_path}/externals/mct"
@@ -136,6 +128,10 @@ function init_e3sm() {
     rsync -vr /cache/ /storage/inputdata/
 
     cd "${install_path}/cime"
+
+    echo "Initializing submodules in ${PWD}"
+
+    git submodule update --init ${extras}
 }
 
 #######################################
@@ -166,7 +162,7 @@ function init_cesm() {
     cd "${install_path}/cime"
 
     # Need to run manage_externals again incase branch changes externals instructions
-    "${install_path}/manage_externals/checkout_externals -e Externals_cime.cfg"
+    "/src/CESM/manage_externals/checkout_externals -e Externals_cime.cfg"
 }
 
 #######################################
@@ -199,6 +195,7 @@ function init_cime() {
 
     cd "${install_path}"
 
+    # Need to run manage_externals again incase branch changes externals instructions
     "/src/CESM/manage_externals/checkout_externals -e Externals_cime.cfg"
 }
 
