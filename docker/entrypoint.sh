@@ -1,6 +1,9 @@
 #!/bin/bash
 
-set -x
+if [[ -n "${DEBUG}" ]]
+then
+    set -x
+fi
 
 readonly INIT=${INIT:-"true"}
 readonly UPDATE_CIME=${UPDATE_CIME:-"false"}
@@ -24,6 +27,8 @@ function clone_repo() {
         extras="${extras} --depth 1"
     fi
 
+    echo "Cloning branch ${branch} of ${repo} into ${path} using ${flags}"
+
     git clone -b "${branch}" ${extras} "${repo}" "${path}" || true
 }
 
@@ -38,11 +43,15 @@ function fixup_mct {
     # TODO make PR to fix
     if [[ ! -e "${mct_path}/mct/Makefile.bak" ]]
     then
+        echo "Fixing AR variable in ${mct_path}/mct/Makefile"
+
         sed -i".bak" "s/\$(AR)/\$(AR) \$(ARFLAGS)/g" "${mct_path}/mct/Makefile"
     fi
 
     if [[ ! -e "${mct_path}/mpeu/Makefile.bak" ]]
     then
+        echo "Fixing AR variable in ${mct_path}/mpeu/Makefile"
+
         sed -i".bak" "s/\$(AR)/\$(AR) \$(ARFLAGS)/g" "${mct_path}/mpeu/Makefile"
     fi
 }
@@ -77,6 +86,8 @@ function update_cime() {
 # Creates an environment with E3SM source.
 #######################################
 function init_e3sm() {
+    echo "Setting up E3SM"
+
     export CIME_MODEL="e3sm"
 
     local extras=""
@@ -91,6 +102,8 @@ function init_e3sm() {
 
         if [[ ! -e "${PWD}/.gitmodules.bak" ]]
         then
+            echo "Convering git@github.com to https://github.com urls in ${PWD}/.gitmodules"
+
             sed -i".bak" "s/git@github.com:/https:\/\/github.com\//g" "${PWD}/.gitmodules"
         fi
 
@@ -99,7 +112,17 @@ function init_e3sm() {
             extras=" --depth 1"
         fi
 
-        git submodule update --init --recursive ${extras}
+        echo "Initializing submodules in ${PWD}"
+
+        git submodule update --init ${extras}
+
+        pushd cime/
+
+        echo "Initializing submodules in ${PWD}"
+
+        git submodule update --init ${extras}
+
+        popd
     fi
 
     fixup_mct "${install_path}/externals/mct"
@@ -107,6 +130,8 @@ function init_e3sm() {
     update_cime "${install_path}/cime"
 
     mkdir -p /storage/inputdata
+
+    echo "Copying cached inputdata from /cache to /storage/inputdata" 
 
     rsync -vr /cache/ /storage/inputdata/
 
@@ -117,6 +142,8 @@ function init_e3sm() {
 # Creates an environment with CESM source.
 #######################################
 function init_cesm() {
+    echo "Setting up CESM"
+
     export CIME_MODEL="cesm"
 
     local install_path="${INSTALL_PATH:-/src/CESM}"
@@ -128,6 +155,8 @@ function init_cesm() {
 
     cd "${install_path}"
 
+    echo "Checking out externals"
+
     "${install_path}/manage_externals/checkout_externals"
 
     fixup_mct "${install_path}/libraries/mct"
@@ -135,7 +164,7 @@ function init_cesm() {
     update_cime "${install_path}/cime/"
 
     cd "${install_path}/cime"
-    
+
     # Need to run manage_externals again incase branch changes externals instructions
     "${install_path}/manage_externals/checkout_externals -e Externals_cime.cfg"
 }
@@ -145,6 +174,8 @@ function init_cesm() {
 # Similar to old github actions environment.
 #######################################
 function init_cime() {
+    echo "Settig up CIME"
+
     export CIME_MODEL="cesm"
     export ESMFMKFILE="/opt/conda/lib/esmf.mk"
 
@@ -167,7 +198,7 @@ function init_cime() {
     update_cime "${install_path}"
 
     cd "${install_path}"
-    #
+
     # Need to run manage_externals again incase branch changes externals instructions
     "${install_path}/manage_externals/checkout_externals -e Externals_cime.cfg"
 }
