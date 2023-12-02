@@ -199,8 +199,7 @@ function init_cime() {
 
     cd "${install_path}"
 
-    # Need to run manage_externals again incase branch changes externals instructions
-    "${install_path}/manage_externals/checkout_externals -e Externals_cime.cfg"
+    "/src/CESM/manage_externals/checkout_externals -e Externals_cime.cfg"
 }
 
 if [[ ! -e "${HOME}/.cime" ]]
