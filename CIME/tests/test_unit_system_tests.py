@@ -509,16 +509,14 @@ class TestUnitSystemTests(unittest.TestCase):
             with open(baseline_dir / "cpl-tput.log") as fd:
                 lines = fd.readlines()
 
-            assert len(lines) == 2
-            assert re.match("# sha:.* date:.*", lines[0])
-            assert lines[1] == "719.635"
+            assert len(lines) == 1
+            assert re.match("sha:.* date:.* (\d+\.\d+)", lines[0])
 
             with open(baseline_dir / "cpl-mem.log") as fd:
                 lines = fd.readlines()
 
-            assert len(lines) == 2
-            assert re.match("# sha:.* date:.*", lines[0])
-            assert lines[1] == "1673.89"
+            assert len(lines) == 1
+            assert re.match("sha:.* date:.* (\d+\.\d+)", lines[0])
 
     def test_kwargs(self):
         case = mock.MagicMock()

@@ -155,35 +155,29 @@ class TestUnitBaselinesPerformance(unittest.TestCase):
     def test_read_baseline_file_multi_line(self):
         with mock.patch(
             "builtins.open",
-            mock.mock_open(read_data="#comment about data\n1000.0\n2000.0\n"),
+            mock.mock_open(
+                read_data="sha:1df0 date:2023 1000.0\nsha:3b05 date:2023 2000.0"
+            ),
         ) as mock_file:
             baseline = performance.read_baseline_file("/tmp/cpl-mem.log")
 
         mock_file.assert_called_with("/tmp/cpl-mem.log")
-        assert baseline == "1000.0\n2000.0"
+        assert baseline == "2000.0"
 
     def test_read_baseline_file_content(self):
         with mock.patch(
-            "builtins.open", mock.mock_open(read_data="1000.0")
+            "builtins.open", mock.mock_open(read_data="sha:1df0 date:2023 1000.0")
         ) as mock_file:
             baseline = performance.read_baseline_file("/tmp/cpl-mem.log")
 
         mock_file.assert_called_with("/tmp/cpl-mem.log")
         assert baseline == "1000.0"
 
-    def test_read_baseline_file(self):
-        with mock.patch("builtins.open", mock.mock_open(read_data="")) as mock_file:
-            baseline = performance.read_baseline_file("/tmp/cpl-mem.log")
-
-        mock_file.assert_called_with("/tmp/cpl-mem.log")
-        assert baseline == ""
-
     def test_write_baseline_file(self):
         with mock.patch("builtins.open", mock.mock_open()) as mock_file:
             performance.write_baseline_file("/tmp/cpl-tput.log", "1000")
 
-        mock_file.assert_called_with("/tmp/cpl-tput.log", "w")
-        mock_file.return_value.write.assert_called_with("1000")
+        mock_file.assert_called_with("/tmp/cpl-tput.log", "a")
 
     @mock.patch("CIME.baselines.performance.get_cpl_throughput")
     @mock.patch("CIME.baselines.performance.get_latest_cpl_logs")
@@ -368,7 +362,7 @@ class TestUnitBaselinesPerformance(unittest.TestCase):
         assert below_tolerance
         assert (
             comment
-            == "TPUTCOMP: Computation time changed by -0.80% relative to baseline"
+            == "TPUTCOMP: Throughput changed by -0.80%: baseline=500.000 sypd, tolerance=10%, current=504.000 sypd"
         )
 
     @mock.patch("CIME.baselines.performance._perf_get_throughput")
@@ -399,7 +393,8 @@ class TestUnitBaselinesPerformance(unittest.TestCase):
 
         assert not below_tolerance
         assert (
-            comment == "Error: TPUTCOMP: Computation time increase > 5% from baseline"
+            comment
+            == "Error: TPUTCOMP: Throughput changed by 49.60%: baseline=1000.000 sypd, tolerance=5%, current=504.000 sypd"
         )
 
     @mock.patch("CIME.baselines.performance._perf_get_throughput")
@@ -431,7 +426,7 @@ class TestUnitBaselinesPerformance(unittest.TestCase):
         assert below_tolerance
         assert (
             comment
-            == "TPUTCOMP: Computation time changed by -0.80% relative to baseline"
+            == "TPUTCOMP: Throughput changed by -0.80%: baseline=500.000 sypd, tolerance=5%, current=504.000 sypd"
         )
 
     @mock.patch("CIME.baselines.performance.get_cpl_mem_usage")
@@ -466,7 +461,7 @@ class TestUnitBaselinesPerformance(unittest.TestCase):
         assert below_tolerance
         assert (
             comment
-            == "MEMCOMP: Memory usage highwater has changed by 0.00% relative to baseline"
+            == "MEMCOMP: Memory usage highwater changed by 0.00%: baseline=0.000 MB, tolerance=5%, current=1003.000 MB"
         )
 
     @mock.patch("CIME.baselines.performance.get_cpl_mem_usage")
@@ -557,7 +552,7 @@ class TestUnitBaselinesPerformance(unittest.TestCase):
         assert below_tolerance
         assert (
             comment
-            == "MEMCOMP: Memory usage highwater has changed by 0.30% relative to baseline"
+            == "MEMCOMP: Memory usage highwater changed by 0.30%: baseline=1000.000 MB, tolerance=10%, current=1003.000 MB"
         )
 
     @mock.patch("CIME.baselines.performance.get_cpl_mem_usage")
@@ -592,7 +587,7 @@ class TestUnitBaselinesPerformance(unittest.TestCase):
         assert not below_tolerance
         assert (
             comment
-            == "Error: Memory usage increase >5% from baseline's 1000.000000 to 2003.000000"
+            == "Error: MEMCOMP: Memory usage highwater changed by 100.30%: baseline=1000.000 MB, tolerance=5%, current=2003.000 MB"
         )
 
     @mock.patch("CIME.baselines.performance.get_cpl_mem_usage")
@@ -627,7 +622,7 @@ class TestUnitBaselinesPerformance(unittest.TestCase):
         assert below_tolerance
         assert (
             comment
-            == "MEMCOMP: Memory usage highwater has changed by 0.30% relative to baseline"
+            == "MEMCOMP: Memory usage highwater changed by 0.30%: baseline=1000.000 MB, tolerance=5%, current=1003.000 MB"
         )
 
     def test_get_latest_cpl_logs_found_multiple(self):

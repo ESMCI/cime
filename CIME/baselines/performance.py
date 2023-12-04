@@ -428,9 +428,11 @@ def read_baseline_file(baseline_file):
         Value stored in baseline file without comments.
     """
     with open(baseline_file) as fd:
-        lines = [x.strip().split(" ")[-1] for x in fd.readlines() if not x.startswith("#")]
+        lines = [
+            x.strip().split(" ")[-1] for x in fd.readlines() if not x.startswith("#")
+        ]
 
-    return "\n".join(lines)
+    return lines[-1]
 
 
 def _perf_compare_throughput_baseline(case, baseline, tolerance):
@@ -474,7 +476,7 @@ def _perf_compare_throughput_baseline(case, baseline, tolerance):
         below_tolerance = diff < tolerance
 
         info = "Throughput changed by {:.2f}%: baseline={:.3f} sypd, tolerance={:d}%, current={:.3f} sypd".format(
-                diff * 100, baseline, int(tolerance * 100), current
+            diff * 100, baseline, int(tolerance * 100), current
         )
         if below_tolerance:
             comment = "TPUTCOMP: " + info
@@ -531,8 +533,8 @@ def _perf_compare_memory_baseline(case, baseline, tolerance):
     if diff is not None:
         below_tolerance = diff < tolerance
 
-        info = "Memory usage highwater changed by {:.2f}%: baseline={:.3f} sypd, tolerance={:d}%, current={:.3f} sypd".format(
-                diff * 100, baseline, int(tolerance * 100), current
+        info = "Memory usage highwater changed by {:.2f}%: baseline={:.3f} MB, tolerance={:d}%, current={:.3f} MB".format(
+            diff * 100, baseline, int(tolerance * 100), current
         )
         if below_tolerance:
             comment = "MEMCOMP: " + info
