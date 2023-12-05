@@ -81,12 +81,11 @@ fi
 # Build the cprnc executable (for comparison of netcdf files)
 echo "" >> ${test_log}
 echo "Building cprnc in ${PWD}/builds ..." >> ${test_log}
-cp ${cime_root}/CIME/non_py/cprnc/*.F90 .
-cp ${cime_root}/CIME/non_py/cprnc/Makefile .
-cp ${cime_root}/CIME/non_py/cprnc/Depends .
-cp ${cime_root}/CIME/non_py/cprnc/*.in .
-(. .env_mach_specific.sh && make GENF90=${cime_root}/CIME/non_py/externals/genf90/genf90.pl) >> ${test_log} 2>&1
-if [ ! -f cprnc ]; then
+mkdir ${PWD}/builds/cprnc
+cd  ${PWD}/builds/cprnc
+cmake -DCMAKE_INSTALL_PREFIX=${PWD} ${cime_root}/CIME/non_py/cprnc
+make install
+if [ ! -f bin/cprnc ]; then
     echo "ERROR building cprnc" >&2
     echo "cat ${test_log} for more info" >&2
     exit 1
@@ -104,33 +103,33 @@ for baseline in ${ocn_baseline} ${lnd_baseline}; do
     # and adding in datestring for current day and .nc file extension.
     testfile=`basename ${baseline} | rev | cut -d. -f3- | rev`.${datestring}.nc
     if [ ! -f ${testfile} ]; then
-	echo "ERROR: ${testfile} not generated" >&2
-	echo "cat ${test_log} for more info" >&2
-	exit 1
+        echo "ERROR: ${testfile} not generated" >&2
+        echo "cat ${test_log} for more info" >&2
+        exit 1
     fi
     # Compare against baseline and print report from cprnc comparison
     echo "Comparing $testfile against ${baseline}..."
-    (. builds/.env_mach_specific.sh && ./builds/cprnc -m ${testfile} ${baseline}) >> ${test_log} 2>&1
+    (. builds/.env_mach_specific.sh && ./builds/bin/cprnc -m ${testfile} ${baseline}) >> ${test_log} 2>&1
 
     # Check results
     last=`tail -n3 ${test_log}`
     if [[ ${last} =~ "STOP" ]]; then
-	echo ${last} >&2
-	echo "Error running cprnc" >&2
-	echo "cat ${test_log} for more info" >&2
-	exit 1
+        echo ${last} >&2
+        echo "Error running cprnc" >&2
+        echo "cat ${test_log} for more info" >&2
+        exit 1
     fi
     if [[ ${last} =~ "DIFFERENT" ]]; then
-	echo ${last} >&2
-	echo ${baseline} DIFFERENT FROM ${testfile} >&2
-	echo "cat ${test_log} for more info" >&2
-	exit 1
+        echo ${last} >&2
+        echo ${baseline} DIFFERENT FROM ${testfile} >&2
+        echo "cat ${test_log} for more info" >&2
+        exit 1
     fi
     if ! [[ ${last} =~ "IDENTICAL" ]]; then
-	echo ${last} >&2
-	echo "undetermined output from cprnc" >&2
-	echo "cat ${test_log} for more info" >&2
-	exit 1
+        echo ${last} >&2
+        echo "undetermined output from cprnc" >&2
+        echo "cat ${test_log} for more info" >&2
+        exit 1
     fi
 done
 

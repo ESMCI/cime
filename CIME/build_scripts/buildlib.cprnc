@@ -6,7 +6,7 @@ sys.path.append(os.path.join(_CIMEROOT, "CIME", "Tools"))
 
 from standard_script_setup import *
 from CIME import utils
-from CIME.utils import run_bld_cmd_ensure_logging
+from CIME.utils import run_bld_cmd_ensure_logging, CIMEError
 from CIME.case import Case
 from CIME.build import get_standard_cmake_args
 
@@ -63,10 +63,35 @@ def buildlib(bldroot, installpath, case):
     )
 
     cmake_args = get_standard_cmake_args(case, "ignore_sharedpath")
+
     os.environ["CIMEROOT"] = cimeroot
-    cmake_cmd = ". ./.env_mach_specific.sh && NETCDF=$(dirname $(dirname $(which nf-config))) cmake {cmake_args} -DMPILIB=mpi-serial -DDEBUG=FALSE -C Macros.cmake {cimeroot}/CIME/non_py/cprnc -DCMAKE_PREFIX_PATH={dest_path} -DBLDROOT={bldroot}".format(
-        cimeroot=cimeroot, dest_path=installpath, cmake_args=cmake_args, bldroot=bldroot
+
+    srcroot = case.get_value("SRCROOT")
+
+    cprnc_src_root = None
+    candidate_paths = (
+        os.path.join(cimeroot, "CIME/non_py/cprnc"),
+        os.path.join(srcroot, "externals/cprnc"),
     )
+
+    for candidate in candidate_paths:
+        if os.path.exists(candidate):
+            cprnc_src_root = candidate
+
+            break
+        else:
+            logger.debug("{!r} is not a valid cprnc source path")
+
+    if cprnc_src_root is None:
+        raise CIMEError("Could not find a valid cprnc source directory")
+
+    cmake_cmd = ". ./.env_mach_specific.sh && NETCDF=$(dirname $(dirname $(which nf-config))) cmake {cmake_args} -DMPILIB=mpi-serial -DDEBUG=FALSE -C Macros.cmake {cprnc_src_root} -DCMAKE_PREFIX_PATH={dest_path} -DBLDROOT={bldroot}".format(
+        cprnc_src_root=cprnc_src_root,
+        dest_path=installpath,
+        cmake_args=cmake_args,
+        bldroot=bldroot,
+    )
+
     run_bld_cmd_ensure_logging(cmake_cmd, logger, from_dir=bldroot)
 
     gmake_cmd = case.get_value("GMAKE")
