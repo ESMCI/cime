@@ -121,25 +121,25 @@ def perf_write_baseline(case, basegen_dir, throughput=True, memory=True):
 
     if throughput:
         try:
-            tput = perf_get_throughput(case, config)
+            tput, mode = perf_get_throughput(case, config)
         except RuntimeError as e:
             logger.debug("Could not get throughput: {0!s}".format(e))
         else:
             baseline_file = os.path.join(basegen_dir, "cpl-tput.log")
 
-            write_baseline_file(baseline_file, tput)
+            write_baseline_file(baseline_file, tput, mode)
 
             logger.info("Updated throughput baseline to {!s}".format(tput))
 
     if memory:
         try:
-            mem = perf_get_memory(case, config)
+            mem, mode = perf_get_memory(case, config)
         except RuntimeError as e:
             logger.info("Could not get memory usage: {0!s}".format(e))
         else:
             baseline_file = os.path.join(basegen_dir, "cpl-mem.log")
 
-            write_baseline_file(baseline_file, mem)
+            write_baseline_file(baseline_file, mem, mode)
 
             logger.info("Updated memory usage baseline to {!s}".format(mem))
 
@@ -184,16 +184,11 @@ def perf_get_throughput(case, config):
         Model throughput.
     """
     try:
-        tput = config.perf_get_throughput(case)
+        tput, mode = config.perf_get_throughput(case)
     except AttributeError:
-        tput = _perf_get_throughput(case)
+        tput, mode = _perf_get_throughput(case)
 
-        if tput is None:
-            raise RuntimeError("Could not get default throughput") from None
-
-        tput = str(tput)
-
-    return tput
+    return tput, mode
 
 
 def perf_get_memory(case, config):
@@ -215,19 +210,14 @@ def perf_get_memory(case, config):
         Model memory usage.
     """
     try:
-        mem = config.perf_get_memory(case)
+        mem, mode = config.perf_get_memory(case)
     except AttributeError:
-        mem = _perf_get_memory(case)
+        mem, mode = _perf_get_memory(case)
 
-        if mem is None:
-            raise RuntimeError("Could not get default memory usage") from None
-
-        mem = str(mem[-1][1])
-
-    return mem
+    return mem, mode
 
 
-def write_baseline_file(baseline_file, value):
+def write_baseline_file(baseline_file, value, mode="a"):
     """
     Writes value to `baseline_file`.
 
@@ -237,13 +227,11 @@ def write_baseline_file(baseline_file, value):
         Path to the baseline file.
     value : str
         Value to write.
+    mode : str
+        Mode to open file with.
     """
-    commit_hash = get_current_commit(repo=get_src_root())
-
-    timestamp = get_timestamp(timestamp_format="%Y-%m-%d_%H:%M:%S")
-
-    with open(baseline_file, "a") as fd:
-        fd.write(f"sha:{commit_hash} date:{timestamp} {value}\n")
+    with open(baseline_file, mode) as fd:
+        fd.write(value)
 
 
 def _perf_get_memory(case, cpllog=None):
@@ -269,6 +257,17 @@ def _perf_get_memory(case, cpllog=None):
     RuntimeError
         If not enough sample were found.
     """
+    memlist = perf_get_memory_list(case, cpllog)
+
+    if memlist is None:
+        raise RuntimeError("Could not get default memory usage") from None
+
+    value = _format_baseline(memlist[-1][1])
+
+    return value, "a"
+
+
+def perf_get_memory_list(case, cpllog):
     if cpllog is None:
         cpllog = get_latest_cpl_logs(case)
     else:
@@ -316,7 +315,12 @@ def _perf_get_throughput(case):
 
         logger.debug("Could not parse throughput from coupler log")
 
-    return tput
+    if tput is None:
+        raise RuntimeError("Could not get default throughput") from None
+
+    value = _format_baseline(tput)
+
+    return value, "a"
 
 
 def get_latest_cpl_logs(case):
@@ -428,11 +432,9 @@ def read_baseline_file(baseline_file):
         Value stored in baseline file without comments.
     """
     with open(baseline_file) as fd:
-        lines = [
-            x.strip().split(" ")[-1] for x in fd.readlines() if not x.startswith("#")
-        ]
+        lines = [x.strip() for x in fd.readlines() if not x.startswith("#") and x != ""]
 
-    return lines[-1]
+    return "\n".join(lines)
 
 
 def _perf_compare_throughput_baseline(case, baseline, tolerance):
@@ -457,13 +459,20 @@ def _perf_compare_throughput_baseline(case, baseline, tolerance):
     comment : str
         provides explanation from comparison.
     """
-    current = _perf_get_throughput(case)
+    current, _ = _perf_get_throughput(case)
+
+    try:
+        current = float(_parse_baseline(current))
+    except (ValueError, TypeError):
+        comment = "Could not compare throughput to baseline, as baseline had no value."
+
+        return None, comment
 
     try:
         # default baseline is stored as single float
-        baseline = float(baseline)
-    except ValueError:
-        comment = "Could not compare throughput to baseline, as basline had no value."
+        baseline = float(_parse_baseline(baseline))
+    except (ValueError, TypeError):
+        comment = "Could not compare throughput to baseline, as baseline had no value."
 
         return None, comment
 
@@ -509,16 +518,21 @@ def _perf_compare_memory_baseline(case, baseline, tolerance):
         provides explanation from comparison.
     """
     try:
-        current = _perf_get_memory(case)
+        current, _ = _perf_get_memory(case)
     except RuntimeError as e:
         return None, str(e)
-    else:
-        current = current[-1][1]
+
+    try:
+        current = float(_parse_baseline(current))
+    except (ValueError, TypeError):
+        comment = "Could not compare throughput to baseline, as baseline had no value."
+
+        return None, comment
 
     try:
         # default baseline is stored as single float
-        baseline = float(baseline)
-    except ValueError:
+        baseline = float(_parse_baseline(baseline))
+    except (ValueError, TypeError):
         baseline = 0.0
 
     try:
@@ -542,3 +556,55 @@ def _perf_compare_memory_baseline(case, baseline, tolerance):
             comment = "Error: MEMCOMP: " + info
 
     return below_tolerance, comment
+
+
+def _format_baseline(value):
+    """
+    Encodes value with default baseline format.
+
+    Default format:
+    sha: <commit sha> date: <date of bless> <value>
+
+    Parameters
+    ----------
+    value : str
+        Baseline value to encode.
+
+    Returns
+    -------
+    value : str
+        Baseline entry.
+    """
+    commit_hash = get_current_commit(repo=get_src_root())
+
+    timestamp = get_timestamp(timestamp_format="%Y-%m-%d_%H:%M:%S")
+
+    return f"sha:{commit_hash} date:{timestamp} {value}\n"
+
+
+def _parse_baseline(data):
+    """
+    Parses default baseline format.
+
+    Default format:
+    sha: <commit sha> date: <date of bless> <value>
+
+    Parameters
+    ----------
+    data : str
+        Containing contents of baseline file.
+
+    Returns
+    -------
+    value : str
+        Value of the latest blessed baseline.
+    """
+    lines = data.split("\n")
+    lines = [x for x in lines if x != ""]
+
+    try:
+        value = lines[-1].strip().split(" ")[-1]
+    except IndexError:
+        value = None
+
+    return value
