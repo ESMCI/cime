@@ -1,13 +1,15 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CIME.baselines package &mdash; CIME master documentation</title>
-      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=d05bb7fd" />
+
+  
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -282,6 +284,11 @@ method of parsing the coupler log is used.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="CIME.baselines.performance.perf_get_memory_list">
+<span class="sig-prename descclassname"><span class="pre">CIME.baselines.performance.</span></span><span class="sig-name descname"><span class="pre">perf_get_memory_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">case</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cpllog</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/baselines/performance.html#perf_get_memory_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.baselines.performance.perf_get_memory_list" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="CIME.baselines.performance.perf_get_throughput">
 <span class="sig-prename descclassname"><span class="pre">CIME.baselines.performance.</span></span><span class="sig-name descname"><span class="pre">perf_get_throughput</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">case</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/baselines/performance.html#perf_get_throughput"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.baselines.performance.perf_get_throughput" title="Link to this definition"></a></dt>
 <dd><p>Gets the model throughput.</p>
@@ -346,7 +353,7 @@ method of parsing the coupler log is used.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="CIME.baselines.performance.write_baseline_file">
-<span class="sig-prename descclassname"><span class="pre">CIME.baselines.performance.</span></span><span class="sig-name descname"><span class="pre">write_baseline_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">baseline_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/baselines/performance.html#write_baseline_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.baselines.performance.write_baseline_file" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">CIME.baselines.performance.</span></span><span class="sig-name descname"><span class="pre">write_baseline_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">baseline_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'a'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/baselines/performance.html#write_baseline_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.baselines.performance.write_baseline_file" title="Link to this definition"></a></dt>
 <dd><p>Writes value to <cite>baseline_file</cite>.</p>
 <section id="id16">
 <h3>Parameters<a class="headerlink" href="#id16" title="Link to this heading"></a></h3>
@@ -354,6 +361,8 @@ method of parsing the coupler log is used.</p>
 <dt>baseline_file<span class="classifier">str</span></dt><dd><p>Path to the baseline file.</p>
 </dd>
 <dt>value<span class="classifier">str</span></dt><dd><p>Value to write.</p>
+</dd>
+<dt>mode<span class="classifier">str</span></dt><dd><p>Mode to open file with.</p>
 </dd>
 </dl>
 </section>

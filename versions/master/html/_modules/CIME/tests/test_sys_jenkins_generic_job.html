@@ -1,12 +1,14 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CIME.tests.test_sys_jenkins_generic_job &mdash; CIME master documentation</title>
-      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=d05bb7fd" />
+
+  
   <!--[if lt IE 9]>
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -163,18 +165,17 @@
 <div class="viewcode-block" id="TestJenkinsGenericJob.assert_num_leftovers">
 <a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_jenkins_generic_job.TestJenkinsGenericJob.assert_num_leftovers">[docs]</a>
     <span class="k">def</span> <span class="nf">assert_num_leftovers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">suite</span><span class="p">):</span>
-        <span class="n">num_tests_in_tiny</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">get_tests</span><span class="o">.</span><span class="n">get_test_suite</span><span class="p">(</span><span class="n">suite</span><span class="p">))</span>
+        <span class="n">num_tests_in_suite</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">get_tests</span><span class="o">.</span><span class="n">get_test_suite</span><span class="p">(</span><span class="n">suite</span><span class="p">))</span>
 
-        <span class="n">jenkins_dirs</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span>
-            <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/*</span><span class="si">%s</span><span class="s2">*/&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_jenkins_root</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_baseline_name</span><span class="o">.</span><span class="n">capitalize</span><span class="p">())</span>
-        <span class="p">)</span>  <span class="c1"># case dirs</span>
+        <span class="n">case_glob</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/*</span><span class="si">%s</span><span class="s2">*/&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_jenkins_root</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_baseline_name</span><span class="o">.</span><span class="n">capitalize</span><span class="p">())</span>
+        <span class="n">jenkins_dirs</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">case_glob</span><span class="p">)</span>  <span class="c1"># Case dirs</span>
         <span class="c1"># scratch_dirs = glob.glob(&quot;%s/*%s*/&quot; % (self._testroot, test_id)) # blr/run dirs</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
-            <span class="n">num_tests_in_tiny</span><span class="p">,</span>
+            <span class="n">num_tests_in_suite</span><span class="p">,</span>
             <span class="nb">len</span><span class="p">(</span><span class="n">jenkins_dirs</span><span class="p">),</span>
-            <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Wrong number of leftover directories in </span><span class="si">%s</span><span class="s2">, expected </span><span class="si">%d</span><span class="s2">, see </span><span class="si">%s</span><span class="s2">&quot;</span>
-            <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_jenkins_root</span><span class="p">,</span> <span class="n">num_tests_in_tiny</span><span class="p">,</span> <span class="n">jenkins_dirs</span><span class="p">),</span>
+            <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Wrong number of leftover directories in </span><span class="si">%s</span><span class="s2">, expected </span><span class="si">%d</span><span class="s2">, see </span><span class="si">%s</span><span class="s2">. Glob checked </span><span class="si">%s</span><span class="s2">&quot;</span>
+            <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_jenkins_root</span><span class="p">,</span> <span class="n">num_tests_in_suite</span><span class="p">,</span> <span class="n">jenkins_dirs</span><span class="p">,</span> <span class="n">case_glob</span><span class="p">),</span>
         <span class="p">)</span></div>
 
 
@@ -201,6 +202,24 @@
             <span class="s2">&quot;cime_test_only_pass&quot;</span>
         <span class="p">)</span>  <span class="c1"># jenkins_generic_job should have automatically cleaned up leftovers from prior run</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assert_dashboard_has_build</span><span class="p">(</span><span class="n">build_name</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestJenkinsGenericJob.test_jenkins_generic_job_save_timing">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_jenkins_generic_job.TestJenkinsGenericJob.test_jenkins_generic_job_save_timing">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_jenkins_generic_job_save_timing</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">simple_test</span><span class="p">(</span>
+            <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;-t cime_test_timing --save-timing -b </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_baseline_name</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assert_num_leftovers</span><span class="p">(</span><span class="s2">&quot;cime_test_timing&quot;</span><span class="p">)</span>
+
+        <span class="n">jenkins_dirs</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span>
+            <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/*</span><span class="si">%s</span><span class="s2">*/&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_jenkins_root</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_baseline_name</span><span class="o">.</span><span class="n">capitalize</span><span class="p">())</span>
+        <span class="p">)</span>  <span class="c1"># case dirs</span>
+        <span class="n">case</span> <span class="o">=</span> <span class="n">jenkins_dirs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_cmd_assert_result</span><span class="p">(</span>
+            <span class="s2">&quot;./xmlquery --value SAVE_TIMING&quot;</span><span class="p">,</span> <span class="n">from_dir</span><span class="o">=</span><span class="n">case</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="s2">&quot;TRUE&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="TestJenkinsGenericJob.test_jenkins_generic_job_kill">

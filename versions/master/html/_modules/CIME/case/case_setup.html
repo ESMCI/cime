@@ -1,12 +1,14 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CIME.case.case_setup &mdash; CIME master documentation</title>
-      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=d05bb7fd" />
+
+  
   <!--[if lt IE 9]>
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -113,6 +115,7 @@
 <span class="kn">import</span> <span class="nn">errno</span><span class="o">,</span> <span class="nn">shutil</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
 
 <span class="c1">###############################################################################</span>
 <span class="k">def</span> <span class="nf">_build_usernl_files</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">comp</span><span class="p">):</span>
@@ -506,6 +509,14 @@
                 <span class="n">glcroot</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;COMP_ROOT_DIR_GLC&quot;</span><span class="p">)</span>
                 <span class="n">run_cmd_no_fail</span><span class="p">(</span>
                     <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/cime_config/cism.template </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">glcroot</span><span class="p">,</span> <span class="n">caseroot</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="n">comp</span> <span class="o">==</span> <span class="s2">&quot;cam&quot;</span><span class="p">:</span>
+                <span class="n">camroot</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;COMP_ROOT_DIR_ATM&quot;</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Running cam.case_setup.py&quot;</span><span class="p">)</span>
+                <span class="n">run_cmd_no_fail</span><span class="p">(</span>
+                    <span class="s2">&quot;python </span><span class="si">{cam}</span><span class="s2">/cime_config/cam.case_setup.py </span><span class="si">{cam}</span><span class="s2"> </span><span class="si">{case}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">cam</span><span class="o">=</span><span class="n">camroot</span><span class="p">,</span> <span class="n">case</span><span class="o">=</span><span class="n">caseroot</span>
+                    <span class="p">)</span>
                 <span class="p">)</span>
 
         <span class="n">_build_usernl_files</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="s2">&quot;drv&quot;</span><span class="p">,</span> <span class="s2">&quot;cpl&quot;</span><span class="p">)</span>

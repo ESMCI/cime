@@ -1,12 +1,14 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CIME.bless_test_results &mdash; CIME master documentation</title>
-      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=d05bb7fd" />
+
+  
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -91,6 +93,7 @@
     <span class="n">get_scripts_root</span><span class="p">,</span>
     <span class="n">EnvironmentContext</span><span class="p">,</span>
     <span class="n">parse_test_name</span><span class="p">,</span>
+    <span class="n">match_any</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">CIME.config</span> <span class="kn">import</span> <span class="n">Config</span>
 <span class="kn">from</span> <span class="nn">CIME.test_status</span> <span class="kn">import</span> <span class="o">*</span>
@@ -107,9 +110,7 @@
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="bless_throughput">
-<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.bless_test_results.bless_throughput">[docs]</a>
-<span class="k">def</span> <span class="nf">bless_throughput</span><span class="p">(</span>
+<span class="k">def</span> <span class="nf">_bless_throughput</span><span class="p">(</span>
     <span class="n">case</span><span class="p">,</span>
     <span class="n">test_name</span><span class="p">,</span>
     <span class="n">baseline_root</span><span class="p">,</span>
@@ -119,17 +120,23 @@
 <span class="p">):</span>
     <span class="n">success</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">reason</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">below_threshold</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="n">baseline_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
         <span class="n">baseline_root</span><span class="p">,</span> <span class="n">baseline_name</span><span class="p">,</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEBASEID&quot;</span><span class="p">)</span>
     <span class="p">)</span>
 
-    <span class="n">below_threshold</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">perf_compare_throughput_baseline</span><span class="p">(</span>
-        <span class="n">case</span><span class="p">,</span> <span class="n">baseline_dir</span><span class="o">=</span><span class="n">baseline_dir</span>
-    <span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">below_threshold</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">perf_compare_throughput_baseline</span><span class="p">(</span>
+            <span class="n">case</span><span class="p">,</span> <span class="n">baseline_dir</span><span class="o">=</span><span class="n">baseline_dir</span>
+        <span class="p">)</span>
+    <span class="k">except</span> <span class="ne">FileNotFoundError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">comment</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Could not read throughput file: </span><span class="si">{</span><span class="n">e</span><span class="si">!s}</span><span class="s2">&quot;</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">comment</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Error comparing throughput baseline: </span><span class="si">{</span><span class="n">e</span><span class="si">!s}</span><span class="s2">&quot;</span>
 
     <span class="k">if</span> <span class="n">below_threshold</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Diff appears to have been already resolved.&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Throughput diff appears to have been already resolved.&quot;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">comment</span><span class="p">)</span>
 
@@ -143,13 +150,10 @@
 
                 <span class="n">reason</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Failed to write baseline throughput for </span><span class="si">{</span><span class="n">test_name</span><span class="si">!r}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">!s}</span><span class="s2">&quot;</span>
 
-    <span class="k">return</span> <span class="n">success</span><span class="p">,</span> <span class="n">reason</span></div>
+    <span class="k">return</span> <span class="n">success</span><span class="p">,</span> <span class="n">reason</span>
 
 
-
-<div class="viewcode-block" id="bless_memory">
-<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.bless_test_results.bless_memory">[docs]</a>
-<span class="k">def</span> <span class="nf">bless_memory</span><span class="p">(</span>
+<span class="k">def</span> <span class="nf">_bless_memory</span><span class="p">(</span>
     <span class="n">case</span><span class="p">,</span>
     <span class="n">test_name</span><span class="p">,</span>
     <span class="n">baseline_root</span><span class="p">,</span>
@@ -159,17 +163,23 @@
 <span class="p">):</span>
     <span class="n">success</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">reason</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">below_threshold</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="n">baseline_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
         <span class="n">baseline_root</span><span class="p">,</span> <span class="n">baseline_name</span><span class="p">,</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEBASEID&quot;</span><span class="p">)</span>
     <span class="p">)</span>
 
-    <span class="n">below_threshold</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">perf_compare_memory_baseline</span><span class="p">(</span>
-        <span class="n">case</span><span class="p">,</span> <span class="n">baseline_dir</span><span class="o">=</span><span class="n">baseline_dir</span>
-    <span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">below_threshold</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">perf_compare_memory_baseline</span><span class="p">(</span>
+            <span class="n">case</span><span class="p">,</span> <span class="n">baseline_dir</span><span class="o">=</span><span class="n">baseline_dir</span>
+        <span class="p">)</span>
+    <span class="k">except</span> <span class="ne">FileNotFoundError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">comment</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Could not read memory usage file: </span><span class="si">{</span><span class="n">e</span><span class="si">!s}</span><span class="s2">&quot;</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">comment</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Error comparing memory baseline: </span><span class="si">{</span><span class="n">e</span><span class="si">!s}</span><span class="s2">&quot;</span>
 
     <span class="k">if</span> <span class="n">below_threshold</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Diff appears to have been already resolved.&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Memory usage diff appears to have been already resolved.&quot;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">comment</span><span class="p">)</span>
 
@@ -183,8 +193,7 @@
 
                 <span class="n">reason</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Failed to write baseline memory usage for test </span><span class="si">{</span><span class="n">test_name</span><span class="si">!r}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">!s}</span><span class="s2">&quot;</span>
 
-    <span class="k">return</span> <span class="n">success</span><span class="p">,</span> <span class="n">reason</span></div>
-
+    <span class="k">return</span> <span class="n">success</span><span class="p">,</span> <span class="n">reason</span>
 
 
 <span class="c1">###############################################################################</span>
@@ -194,7 +203,7 @@
     <span class="n">test_name</span><span class="p">,</span>
     <span class="n">report_only</span><span class="p">,</span>
     <span class="n">force</span><span class="p">,</span>
-    <span class="n">pesfile</span><span class="p">,</span>
+    <span class="n">pes_file</span><span class="p">,</span>
     <span class="n">baseline_name</span><span class="p">,</span>
     <span class="n">baseline_root</span><span class="p">,</span>
     <span class="n">new_test_root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -212,11 +221,12 @@
     <span class="p">):</span>
         <span class="n">config</span> <span class="o">=</span> <span class="n">Config</span><span class="o">.</span><span class="n">instance</span><span class="p">()</span>
 
-        <span class="n">create_test_gen_args</span> <span class="o">=</span> <span class="s2">&quot; -g </span><span class="si">{}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-            <span class="n">baseline_name</span>
+        <span class="n">create_test_gen_args</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot; -g </span><span class="si">{}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">baseline_name</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">create_test_flag_mode</span> <span class="o">==</span> <span class="s2">&quot;cesm&quot;</span>
             <span class="k">else</span> <span class="s2">&quot; -g -b </span><span class="si">{}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">baseline_name</span><span class="p">)</span>
         <span class="p">)</span>
+
         <span class="k">if</span> <span class="n">new_test_root</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">create_test_gen_args</span> <span class="o">+=</span> <span class="s2">&quot; --test-root=</span><span class="si">{0}</span><span class="s2"> --output-root=</span><span class="si">{0}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                 <span class="n">new_test_root</span>
@@ -224,8 +234,8 @@
         <span class="k">if</span> <span class="n">new_test_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">create_test_gen_args</span> <span class="o">+=</span> <span class="s2">&quot; -t </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">new_test_id</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">pesfile</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">create_test_gen_args</span> <span class="o">+=</span> <span class="s2">&quot; --pesfile </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pesfile</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">pes_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">create_test_gen_args</span> <span class="o">+=</span> <span class="s2">&quot; --pesfile </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pes_file</span><span class="p">)</span>
 
         <span class="n">stat</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">run_cmd</span><span class="p">(</span>
             <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/create_test </span><span class="si">{}</span><span class="s2"> --namelists-only </span><span class="si">{}</span><span class="s2"> --baseline-root </span><span class="si">{}</span><span class="s2"> -o&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
@@ -242,11 +252,9 @@
 
 
 
-<span class="c1">###############################################################################</span>
 <div class="viewcode-block" id="bless_history">
 <a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.bless_test_results.bless_history">[docs]</a>
 <span class="k">def</span> <span class="nf">bless_history</span><span class="p">(</span><span class="n">test_name</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">baseline_name</span><span class="p">,</span> <span class="n">baseline_root</span><span class="p">,</span> <span class="n">report_only</span><span class="p">,</span> <span class="n">force</span><span class="p">):</span>
-    <span class="c1">###############################################################################</span>
     <span class="n">real_user</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;REALUSER&quot;</span><span class="p">)</span>
     <span class="k">with</span> <span class="n">EnvironmentContext</span><span class="p">(</span><span class="n">USER</span><span class="o">=</span><span class="n">real_user</span><span class="p">):</span>
 
@@ -281,7 +289,6 @@
 
 
 
-<span class="c1">###############################################################################</span>
 <div class="viewcode-block" id="bless_test_results">
 <a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.bless_test_results.bless_test_results">[docs]</a>
 <span class="k">def</span> <span class="nf">bless_test_results</span><span class="p">(</span>
@@ -292,18 +299,21 @@
     <span class="n">test_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">namelists_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">hist_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="n">tput_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="n">mem_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">report_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">force</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="n">pesfile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">pes_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">bless_tests</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">no_skip_pass</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">new_test_root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">new_test_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">exclude</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">bless_tput</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">bless_mem</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">bless_perf</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="o">**</span><span class="n">_</span><span class="p">,</span>  <span class="c1"># Capture all for extra</span>
 <span class="p">):</span>
-    <span class="c1">###############################################################################</span>
+    <span class="n">bless_all</span> <span class="o">=</span> <span class="ow">not</span> <span class="p">(</span><span class="n">namelists_only</span> <span class="o">|</span> <span class="n">hist_only</span> <span class="o">|</span> <span class="n">bless_tput</span> <span class="o">|</span> <span class="n">bless_mem</span> <span class="o">|</span> <span class="n">bless_perf</span><span class="p">)</span>
+
     <span class="n">test_status_files</span> <span class="o">=</span> <span class="n">get_test_status_files</span><span class="p">(</span><span class="n">test_root</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">test_id</span><span class="o">=</span><span class="n">test_id</span><span class="p">)</span>
 
     <span class="c1"># auto-adjust test-id if multiple rounds of tests were matched</span>
@@ -320,9 +330,13 @@
     <span class="n">most_recent</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">timestamps</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Matched test batch is </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">most_recent</span><span class="p">))</span>
 
-    <span class="n">bless_tests_counts</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">bless_tests_counts</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">if</span> <span class="n">bless_tests</span><span class="p">:</span>
         <span class="n">bless_tests_counts</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">([(</span><span class="n">bless_test</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">bless_test</span> <span class="ow">in</span> <span class="n">bless_tests</span><span class="p">])</span>
+
+    <span class="c1"># compile excludes into single regex</span>
+    <span class="k">if</span> <span class="n">exclude</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">exclude</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s2">&quot;|&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">)&quot;</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">exclude</span><span class="p">]))</span>
 
     <span class="n">broken_blesses</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">test_status_file</span> <span class="ow">in</span> <span class="n">test_status_files</span><span class="p">:</span>
@@ -336,10 +350,11 @@
         <span class="n">testopts</span> <span class="o">=</span> <span class="n">parse_test_name</span><span class="p">(</span><span class="n">test_name</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">testopts</span> <span class="o">=</span> <span class="p">[]</span> <span class="k">if</span> <span class="n">testopts</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">testopts</span>
         <span class="n">build_only</span> <span class="o">=</span> <span class="s2">&quot;B&quot;</span> <span class="ow">in</span> <span class="n">testopts</span>
+        <span class="c1"># TODO test_name will never be None otherwise `parse_test_name` would raise an error</span>
         <span class="k">if</span> <span class="n">test_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">case_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">test_dir</span><span class="p">)</span>
             <span class="n">test_name</span> <span class="o">=</span> <span class="n">CIME</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">normalize_case_id</span><span class="p">(</span><span class="n">case_dir</span><span class="p">)</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">bless_tests</span> <span class="ow">or</span> <span class="n">CIME</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">match_any</span><span class="p">(</span><span class="n">test_name</span><span class="p">,</span> <span class="n">bless_tests_counts</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">bless_tests</span> <span class="ow">or</span> <span class="n">match_any</span><span class="p">(</span><span class="n">test_name</span><span class="p">,</span> <span class="n">bless_tests_counts</span><span class="p">):</span>
                 <span class="n">broken_blesses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                     <span class="p">(</span>
                         <span class="s2">&quot;unknown&quot;</span><span class="p">,</span>
@@ -352,172 +367,172 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">continue</span>
 
-        <span class="k">if</span> <span class="n">bless_tests</span> <span class="ow">in</span> <span class="p">[[],</span> <span class="kc">None</span><span class="p">]</span> <span class="ow">or</span> <span class="n">CIME</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">match_any</span><span class="p">(</span>
-            <span class="n">test_name</span><span class="p">,</span> <span class="n">bless_tests_counts</span>
-        <span class="p">):</span>
-            <span class="n">ts_kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">ignore_namelists</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ignore_memleak</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="c1"># Must pass tests to continue</span>
+        <span class="n">has_no_tests</span> <span class="o">=</span> <span class="n">bless_tests</span> <span class="ow">in</span> <span class="p">[[],</span> <span class="kc">None</span><span class="p">]</span>
+        <span class="n">match_test_name</span> <span class="o">=</span> <span class="n">match_any</span><span class="p">(</span><span class="n">test_name</span><span class="p">,</span> <span class="n">bless_tests_counts</span><span class="p">)</span>
+        <span class="n">excluded</span> <span class="o">=</span> <span class="n">exclude</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">test_name</span><span class="p">)</span> <span class="k">if</span> <span class="n">exclude</span> <span class="k">else</span> <span class="kc">False</span>
 
-            <span class="k">if</span> <span class="n">tput_only</span><span class="p">:</span>
-                <span class="n">ts_kwargs</span><span class="p">[</span><span class="s2">&quot;check_throughput&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">has_no_tests</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">match_test_name</span><span class="p">)</span> <span class="ow">or</span> <span class="n">excluded</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Skipping </span><span class="si">{!r}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">test_name</span><span class="p">))</span>
 
-            <span class="k">if</span> <span class="n">mem_only</span><span class="p">:</span>
-                <span class="n">ts_kwargs</span><span class="p">[</span><span class="s2">&quot;check_memory&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">continue</span>
 
-            <span class="n">overall_result</span><span class="p">,</span> <span class="n">phase</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">get_overall_test_status</span><span class="p">(</span><span class="o">**</span><span class="n">ts_kwargs</span><span class="p">)</span>
+        <span class="n">overall_result</span><span class="p">,</span> <span class="n">phase</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">get_overall_test_status</span><span class="p">(</span>
+            <span class="n">ignore_namelists</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">ignore_memleak</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">check_throughput</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">check_memory</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
 
-            <span class="c1"># See if we need to bless namelist</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">hist_only</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">no_skip_pass</span><span class="p">:</span>
-                    <span class="n">nl_bless</span> <span class="o">=</span> <span class="kc">True</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">nl_bless</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">get_status</span><span class="p">(</span><span class="n">NAMELIST_PHASE</span><span class="p">)</span> <span class="o">!=</span> <span class="n">TEST_PASS_STATUS</span>
+        <span class="c1"># See if we need to bless namelist</span>
+        <span class="k">if</span> <span class="n">namelists_only</span> <span class="ow">or</span> <span class="n">bless_all</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">no_skip_pass</span><span class="p">:</span>
+                <span class="n">nl_bless</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">nl_bless</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="n">nl_bless</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">get_status</span><span class="p">(</span><span class="n">NAMELIST_PHASE</span><span class="p">)</span> <span class="o">!=</span> <span class="n">TEST_PASS_STATUS</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">nl_bless</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="n">hist_bless</span><span class="p">,</span> <span class="n">tput_bless</span><span class="p">,</span> <span class="n">mem_bless</span> <span class="o">=</span> <span class="p">[</span><span class="kc">False</span><span class="p">]</span> <span class="o">*</span> <span class="mi">3</span>
+
+        <span class="c1"># Skip if test is build only i.e. testopts contains &quot;B&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">build_only</span><span class="p">:</span>
+            <span class="n">bless_needed</span> <span class="o">=</span> <span class="n">is_bless_needed</span><span class="p">(</span>
+                <span class="n">test_name</span><span class="p">,</span> <span class="n">ts</span><span class="p">,</span> <span class="n">broken_blesses</span><span class="p">,</span> <span class="n">overall_result</span><span class="p">,</span> <span class="n">no_skip_pass</span><span class="p">,</span> <span class="n">phase</span>
+            <span class="p">)</span>
 
             <span class="c1"># See if we need to bless baselines</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">namelists_only</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">build_only</span><span class="p">:</span>
-                <span class="n">run_result</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">get_status</span><span class="p">(</span><span class="n">RUN_PHASE</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">run_result</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">broken_blesses</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">test_name</span><span class="p">,</span> <span class="s2">&quot;no run phase&quot;</span><span class="p">))</span>
-                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                        <span class="s2">&quot;Test &#39;</span><span class="si">{}</span><span class="s2">&#39; did not make it to run phase&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">test_name</span><span class="p">)</span>
-                    <span class="p">)</span>
-                    <span class="n">hist_bless</span> <span class="o">=</span> <span class="kc">False</span>
-                <span class="k">elif</span> <span class="n">run_result</span> <span class="o">!=</span> <span class="n">TEST_PASS_STATUS</span><span class="p">:</span>
-                    <span class="n">broken_blesses</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">test_name</span><span class="p">,</span> <span class="s2">&quot;run phase did not pass&quot;</span><span class="p">))</span>
-                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                        <span class="s2">&quot;Test &#39;</span><span class="si">{}</span><span class="s2">&#39; run phase did not pass, not safe to bless, test status = </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                            <span class="n">test_name</span><span class="p">,</span> <span class="n">ts</span><span class="o">.</span><span class="n">phase_statuses_dump</span><span class="p">()</span>
-                        <span class="p">)</span>
-                    <span class="p">)</span>
-                    <span class="n">hist_bless</span> <span class="o">=</span> <span class="kc">False</span>
-                <span class="k">elif</span> <span class="n">overall_result</span> <span class="o">==</span> <span class="n">TEST_FAIL_STATUS</span><span class="p">:</span>
-                    <span class="n">broken_blesses</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">test_name</span><span class="p">,</span> <span class="s2">&quot;test did not pass&quot;</span><span class="p">))</span>
-                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                        <span class="s2">&quot;Test &#39;</span><span class="si">{}</span><span class="s2">&#39; did not pass due to phase </span><span class="si">{}</span><span class="s2">, not safe to bless, test status = </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                            <span class="n">test_name</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">ts</span><span class="o">.</span><span class="n">phase_statuses_dump</span><span class="p">()</span>
-                        <span class="p">)</span>
-                    <span class="p">)</span>
-                    <span class="n">hist_bless</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="n">hist_only</span> <span class="ow">or</span> <span class="n">bless_all</span><span class="p">:</span>
+                <span class="n">hist_bless</span> <span class="o">=</span> <span class="n">bless_needed</span>
 
-                <span class="k">elif</span> <span class="n">no_skip_pass</span><span class="p">:</span>
-                    <span class="n">hist_bless</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">if</span> <span class="n">bless_tput</span> <span class="ow">or</span> <span class="n">bless_perf</span><span class="p">:</span>
+                <span class="n">tput_bless</span> <span class="o">=</span> <span class="n">bless_needed</span>
+
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">tput_bless</span><span class="p">:</span>
+                    <span class="n">tput_bless</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">get_status</span><span class="p">(</span><span class="n">THROUGHPUT_PHASE</span><span class="p">)</span> <span class="o">!=</span> <span class="n">TEST_PASS_STATUS</span>
+
+            <span class="k">if</span> <span class="n">bless_mem</span> <span class="ow">or</span> <span class="n">bless_perf</span><span class="p">:</span>
+                <span class="n">mem_bless</span> <span class="o">=</span> <span class="n">bless_needed</span>
+
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">mem_bless</span><span class="p">:</span>
+                    <span class="n">mem_bless</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">get_status</span><span class="p">(</span><span class="n">MEMCOMP_PHASE</span><span class="p">)</span> <span class="o">!=</span> <span class="n">TEST_PASS_STATUS</span>
+
+        <span class="c1"># Now, do the bless</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">nl_bless</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">hist_bless</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">tput_bless</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">mem_bless</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="s2">&quot;Nothing to bless for test: </span><span class="si">{}</span><span class="s2">, overall status: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">test_name</span><span class="p">,</span> <span class="n">overall_result</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Determined blesses for </span><span class="si">{!r}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">test_name</span><span class="p">))</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;nl_bless     = </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nl_bless</span><span class="p">))</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;hist_bless   = </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">hist_bless</span><span class="p">))</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;tput_bless   = </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tput_bless</span><span class="p">))</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;mem_bless    = </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mem_bless</span><span class="p">))</span>
+
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="s2">&quot;###############################################################################&quot;</span>
+            <span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="s2">&quot;Blessing results for test: </span><span class="si">{}</span><span class="s2">, most recent result: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">test_name</span><span class="p">,</span> <span class="n">overall_result</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Case dir: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">test_dir</span><span class="p">))</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="s2">&quot;###############################################################################&quot;</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">force</span><span class="p">:</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+            <span class="k">with</span> <span class="n">Case</span><span class="p">(</span><span class="n">test_dir</span><span class="p">)</span> <span class="k">as</span> <span class="n">case</span><span class="p">:</span>
+                <span class="c1"># Resolve baseline_name and baseline_root</span>
+                <span class="k">if</span> <span class="n">baseline_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">baseline_name_resolved</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;BASELINE_NAME_CMP&quot;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">baseline_name_resolved</span><span class="p">:</span>
+                        <span class="n">cime_root</span> <span class="o">=</span> <span class="n">CIME</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_cime_root</span><span class="p">()</span>
+                        <span class="n">baseline_name_resolved</span> <span class="o">=</span> <span class="n">CIME</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_current_branch</span><span class="p">(</span>
+                            <span class="n">repo</span><span class="o">=</span><span class="n">cime_root</span>
+                        <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">hist_bless</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">get_status</span><span class="p">(</span><span class="n">BASELINE_PHASE</span><span class="p">)</span> <span class="o">!=</span> <span class="n">TEST_PASS_STATUS</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">hist_bless</span> <span class="o">=</span> <span class="kc">False</span>
+                    <span class="n">baseline_name_resolved</span> <span class="o">=</span> <span class="n">baseline_name</span>
 
-            <span class="c1"># Now, do the bless</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">nl_bless</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">hist_bless</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">tput_only</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">mem_only</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                    <span class="s2">&quot;Nothing to bless for test: </span><span class="si">{}</span><span class="s2">, overall status: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                        <span class="n">test_name</span><span class="p">,</span> <span class="n">overall_result</span>
+                <span class="k">if</span> <span class="n">baseline_root</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">baseline_root_resolved</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;BASELINE_ROOT&quot;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">baseline_root_resolved</span> <span class="o">=</span> <span class="n">baseline_root</span>
+
+                <span class="k">if</span> <span class="n">baseline_name_resolved</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">broken_blesses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="p">(</span><span class="n">test_name</span><span class="p">,</span> <span class="s2">&quot;Could not determine baseline name&quot;</span><span class="p">)</span>
                     <span class="p">)</span>
-                <span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                    <span class="s2">&quot;###############################################################################&quot;</span>
-                <span class="p">)</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                    <span class="s2">&quot;Blessing results for test: </span><span class="si">{}</span><span class="s2">, most recent result: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                        <span class="n">test_name</span><span class="p">,</span> <span class="n">overall_result</span>
+                    <span class="k">continue</span>
+
+                <span class="k">if</span> <span class="n">baseline_root_resolved</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">broken_blesses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="p">(</span><span class="n">test_name</span><span class="p">,</span> <span class="s2">&quot;Could not determine baseline root&quot;</span><span class="p">)</span>
                     <span class="p">)</span>
-                <span class="p">)</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Case dir: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">test_dir</span><span class="p">))</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                    <span class="s2">&quot;###############################################################################&quot;</span>
-                <span class="p">)</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">force</span><span class="p">:</span>
-                    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+                    <span class="k">continue</span>
 
-                <span class="k">with</span> <span class="n">Case</span><span class="p">(</span><span class="n">test_dir</span><span class="p">)</span> <span class="k">as</span> <span class="n">case</span><span class="p">:</span>
-                    <span class="c1"># Resolve baseline_name and baseline_root</span>
-                    <span class="k">if</span> <span class="n">baseline_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                        <span class="n">baseline_name_resolved</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;BASELINE_NAME_CMP&quot;</span><span class="p">)</span>
-                        <span class="k">if</span> <span class="ow">not</span> <span class="n">baseline_name_resolved</span><span class="p">:</span>
-                            <span class="n">baseline_name_resolved</span> <span class="o">=</span> <span class="n">CIME</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_current_branch</span><span class="p">(</span>
-                                <span class="n">repo</span><span class="o">=</span><span class="n">CIME</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_cime_root</span><span class="p">()</span>
-                            <span class="p">)</span>
+                <span class="c1"># Bless namelists</span>
+                <span class="k">if</span> <span class="n">nl_bless</span><span class="p">:</span>
+                    <span class="n">success</span><span class="p">,</span> <span class="n">reason</span> <span class="o">=</span> <span class="n">bless_namelists</span><span class="p">(</span>
+                        <span class="n">test_name</span><span class="p">,</span>
+                        <span class="n">report_only</span><span class="p">,</span>
+                        <span class="n">force</span><span class="p">,</span>
+                        <span class="n">pes_file</span><span class="p">,</span>
+                        <span class="n">baseline_name_resolved</span><span class="p">,</span>
+                        <span class="n">baseline_root_resolved</span><span class="p">,</span>
+                        <span class="n">new_test_root</span><span class="o">=</span><span class="n">new_test_root</span><span class="p">,</span>
+                        <span class="n">new_test_id</span><span class="o">=</span><span class="n">new_test_id</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">success</span><span class="p">:</span>
+                        <span class="n">broken_blesses</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">test_name</span><span class="p">,</span> <span class="n">reason</span><span class="p">))</span>
+
+                <span class="c1"># Bless hist files</span>
+                <span class="k">if</span> <span class="n">hist_bless</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="s2">&quot;HOMME&quot;</span> <span class="ow">in</span> <span class="n">test_name</span><span class="p">:</span>
+                        <span class="n">success</span> <span class="o">=</span> <span class="kc">False</span>
+                        <span class="n">reason</span> <span class="o">=</span> <span class="s2">&quot;HOMME tests cannot be blessed with bless_for_tests&quot;</span>
                     <span class="k">else</span><span class="p">:</span>
-                        <span class="n">baseline_name_resolved</span> <span class="o">=</span> <span class="n">baseline_name</span>
-
-                    <span class="k">if</span> <span class="n">baseline_root</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                        <span class="n">baseline_root_resolved</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;BASELINE_ROOT&quot;</span><span class="p">)</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="n">baseline_root_resolved</span> <span class="o">=</span> <span class="n">baseline_root</span>
-
-                    <span class="k">if</span> <span class="n">baseline_name_resolved</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                        <span class="n">broken_blesses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                            <span class="p">(</span><span class="n">test_name</span><span class="p">,</span> <span class="s2">&quot;Could not determine baseline name&quot;</span><span class="p">)</span>
-                        <span class="p">)</span>
-                        <span class="k">continue</span>
-
-                    <span class="k">if</span> <span class="n">baseline_root_resolved</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                        <span class="n">broken_blesses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                            <span class="p">(</span><span class="n">test_name</span><span class="p">,</span> <span class="s2">&quot;Could not determine baseline root&quot;</span><span class="p">)</span>
-                        <span class="p">)</span>
-                        <span class="k">continue</span>
-
-                    <span class="c1"># Bless namelists</span>
-                    <span class="k">if</span> <span class="n">nl_bless</span><span class="p">:</span>
-                        <span class="n">success</span><span class="p">,</span> <span class="n">reason</span> <span class="o">=</span> <span class="n">bless_namelists</span><span class="p">(</span>
+                        <span class="n">success</span><span class="p">,</span> <span class="n">reason</span> <span class="o">=</span> <span class="n">bless_history</span><span class="p">(</span>
                             <span class="n">test_name</span><span class="p">,</span>
-                            <span class="n">report_only</span><span class="p">,</span>
-                            <span class="n">force</span><span class="p">,</span>
-                            <span class="n">pesfile</span><span class="p">,</span>
-                            <span class="n">baseline_name_resolved</span><span class="p">,</span>
-                            <span class="n">baseline_root_resolved</span><span class="p">,</span>
-                            <span class="n">new_test_root</span><span class="o">=</span><span class="n">new_test_root</span><span class="p">,</span>
-                            <span class="n">new_test_id</span><span class="o">=</span><span class="n">new_test_id</span><span class="p">,</span>
-                        <span class="p">)</span>
-                        <span class="k">if</span> <span class="ow">not</span> <span class="n">success</span><span class="p">:</span>
-                            <span class="n">broken_blesses</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">test_name</span><span class="p">,</span> <span class="n">reason</span><span class="p">))</span>
-
-                    <span class="c1"># Bless hist files</span>
-                    <span class="k">if</span> <span class="n">hist_bless</span><span class="p">:</span>
-                        <span class="k">if</span> <span class="s2">&quot;HOMME&quot;</span> <span class="ow">in</span> <span class="n">test_name</span><span class="p">:</span>
-                            <span class="n">success</span> <span class="o">=</span> <span class="kc">False</span>
-                            <span class="n">reason</span> <span class="o">=</span> <span class="p">(</span>
-                                <span class="s2">&quot;HOMME tests cannot be blessed with bless_for_tests&quot;</span>
-                            <span class="p">)</span>
-                        <span class="k">else</span><span class="p">:</span>
-                            <span class="n">success</span><span class="p">,</span> <span class="n">reason</span> <span class="o">=</span> <span class="n">bless_history</span><span class="p">(</span>
-                                <span class="n">test_name</span><span class="p">,</span>
-                                <span class="n">case</span><span class="p">,</span>
-                                <span class="n">baseline_name_resolved</span><span class="p">,</span>
-                                <span class="n">baseline_root_resolved</span><span class="p">,</span>
-                                <span class="n">report_only</span><span class="p">,</span>
-                                <span class="n">force</span><span class="p">,</span>
-                            <span class="p">)</span>
-
-                        <span class="k">if</span> <span class="ow">not</span> <span class="n">success</span><span class="p">:</span>
-                            <span class="n">broken_blesses</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">test_name</span><span class="p">,</span> <span class="n">reason</span><span class="p">))</span>
-
-                    <span class="k">if</span> <span class="n">tput_only</span><span class="p">:</span>
-                        <span class="n">success</span><span class="p">,</span> <span class="n">reason</span> <span class="o">=</span> <span class="n">bless_throughput</span><span class="p">(</span>
                             <span class="n">case</span><span class="p">,</span>
-                            <span class="n">test_name</span><span class="p">,</span>
-                            <span class="n">baseline_root_resolved</span><span class="p">,</span>
                             <span class="n">baseline_name_resolved</span><span class="p">,</span>
+                            <span class="n">baseline_root_resolved</span><span class="p">,</span>
                             <span class="n">report_only</span><span class="p">,</span>
                             <span class="n">force</span><span class="p">,</span>
                         <span class="p">)</span>
 
-                        <span class="k">if</span> <span class="ow">not</span> <span class="n">success</span><span class="p">:</span>
-                            <span class="n">broken_blesses</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">test_name</span><span class="p">,</span> <span class="n">reason</span><span class="p">))</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">success</span><span class="p">:</span>
+                        <span class="n">broken_blesses</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">test_name</span><span class="p">,</span> <span class="n">reason</span><span class="p">))</span>
 
-                    <span class="k">if</span> <span class="n">mem_only</span><span class="p">:</span>
-                        <span class="n">success</span><span class="p">,</span> <span class="n">reason</span> <span class="o">=</span> <span class="n">bless_memory</span><span class="p">(</span>
-                            <span class="n">case</span><span class="p">,</span>
-                            <span class="n">test_name</span><span class="p">,</span>
-                            <span class="n">baseline_root_resolved</span><span class="p">,</span>
-                            <span class="n">baseline_name_resolved</span><span class="p">,</span>
-                            <span class="n">report_only</span><span class="p">,</span>
-                            <span class="n">force</span><span class="p">,</span>
-                        <span class="p">)</span>
+                <span class="k">if</span> <span class="n">tput_bless</span><span class="p">:</span>
+                    <span class="n">success</span><span class="p">,</span> <span class="n">reason</span> <span class="o">=</span> <span class="n">_bless_throughput</span><span class="p">(</span>
+                        <span class="n">case</span><span class="p">,</span>
+                        <span class="n">test_name</span><span class="p">,</span>
+                        <span class="n">baseline_root_resolved</span><span class="p">,</span>
+                        <span class="n">baseline_name_resolved</span><span class="p">,</span>
+                        <span class="n">report_only</span><span class="p">,</span>
+                        <span class="n">force</span><span class="p">,</span>
+                    <span class="p">)</span>
 
-                        <span class="k">if</span> <span class="ow">not</span> <span class="n">success</span><span class="p">:</span>
-                            <span class="n">broken_blesses</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">test_name</span><span class="p">,</span> <span class="n">reason</span><span class="p">))</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">success</span><span class="p">:</span>
+                        <span class="n">broken_blesses</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">test_name</span><span class="p">,</span> <span class="n">reason</span><span class="p">))</span>
+
+                <span class="k">if</span> <span class="n">mem_bless</span><span class="p">:</span>
+                    <span class="n">success</span><span class="p">,</span> <span class="n">reason</span> <span class="o">=</span> <span class="n">_bless_memory</span><span class="p">(</span>
+                        <span class="n">case</span><span class="p">,</span>
+                        <span class="n">test_name</span><span class="p">,</span>
+                        <span class="n">baseline_root_resolved</span><span class="p">,</span>
+                        <span class="n">baseline_name_resolved</span><span class="p">,</span>
+                        <span class="n">report_only</span><span class="p">,</span>
+                        <span class="n">force</span><span class="p">,</span>
+                    <span class="p">)</span>
+
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">success</span><span class="p">:</span>
+                        <span class="n">broken_blesses</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">test_name</span><span class="p">,</span> <span class="n">reason</span><span class="p">))</span>
 
     <span class="c1"># Emit a warning if items in bless_tests did not match anything</span>
     <span class="k">if</span> <span class="n">bless_tests</span><span class="p">:</span>
@@ -541,6 +556,43 @@
         <span class="n">success</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="k">return</span> <span class="n">success</span></div>
+
+
+
+<div class="viewcode-block" id="is_bless_needed">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.bless_test_results.is_bless_needed">[docs]</a>
+<span class="k">def</span> <span class="nf">is_bless_needed</span><span class="p">(</span><span class="n">test_name</span><span class="p">,</span> <span class="n">ts</span><span class="p">,</span> <span class="n">broken_blesses</span><span class="p">,</span> <span class="n">overall_result</span><span class="p">,</span> <span class="n">no_skip_pass</span><span class="p">,</span> <span class="n">phase</span><span class="p">):</span>
+    <span class="n">needed</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="n">run_result</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">get_status</span><span class="p">(</span><span class="n">RUN_PHASE</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">run_result</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">broken_blesses</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">test_name</span><span class="p">,</span> <span class="s2">&quot;no run phase&quot;</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Test &#39;</span><span class="si">{}</span><span class="s2">&#39; did not make it to run phase&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">test_name</span><span class="p">))</span>
+        <span class="n">needed</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">elif</span> <span class="n">run_result</span> <span class="o">!=</span> <span class="n">TEST_PASS_STATUS</span><span class="p">:</span>
+        <span class="n">broken_blesses</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">test_name</span><span class="p">,</span> <span class="s2">&quot;run phase did not pass&quot;</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+            <span class="s2">&quot;Test &#39;</span><span class="si">{}</span><span class="s2">&#39; run phase did not pass, not safe to bless, test status = </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">test_name</span><span class="p">,</span> <span class="n">ts</span><span class="o">.</span><span class="n">phase_statuses_dump</span><span class="p">()</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">needed</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">elif</span> <span class="n">overall_result</span> <span class="o">==</span> <span class="n">TEST_FAIL_STATUS</span><span class="p">:</span>
+        <span class="n">broken_blesses</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">test_name</span><span class="p">,</span> <span class="s2">&quot;test did not pass&quot;</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+            <span class="s2">&quot;Test &#39;</span><span class="si">{}</span><span class="s2">&#39; did not pass due to phase </span><span class="si">{}</span><span class="s2">, not safe to bless, test status = </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">test_name</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">ts</span><span class="o">.</span><span class="n">phase_statuses_dump</span><span class="p">()</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">needed</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">elif</span> <span class="n">no_skip_pass</span><span class="p">:</span>
+        <span class="n">needed</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">needed</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">get_status</span><span class="p">(</span><span class="n">BASELINE_PHASE</span><span class="p">)</span> <span class="o">!=</span> <span class="n">TEST_PASS_STATUS</span>
+
+    <span class="k">return</span> <span class="n">needed</span></div>
 
 </pre></div>
 

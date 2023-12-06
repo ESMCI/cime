@@ -1,13 +1,15 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>jenkins_generic_job &mdash; CIME master documentation</title>
-      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=d05bb7fd" />
+
+  
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -230,6 +232,10 @@ options:
   --check-memory        Fail if memory check fails (fail if tests footprint
                         grows) (default: False)
   --ignore-memleak      Do not fail if there are memleaks (default: False)
+  --ignore-namelists    Do not fail if there are namelist diffs (default:
+                        False)
+  --save-timing         Tell create_test to save timings of tests (default:
+                        False)
   --pes-file PES_FILE   Full pathname of an optional pes specification file.
                         The file can follow either the config_pes.xml or the
                         env_mach_pes.xml format. (default: None)

@@ -1,13 +1,15 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>8. Testing &mdash; CIME master documentation</title>
-      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=d05bb7fd" />
+
+  
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -644,10 +646,12 @@ of the various test phases.</p>
 <span class="sd">  -------</span>
 <span class="sd">  str</span>
 <span class="sd">    Storing throughput value.</span>
+<span class="sd">  str</span>
+<span class="sd">    Open baseline file for writing.</span>
 <span class="sd">  &quot;&quot;&quot;</span>
   <span class="n">current</span> <span class="o">=</span> <span class="n">analyze_throughput</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
 
-  <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">current</span><span class="p">)</span>
+  <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">current</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span>
 
 <span class="k">def</span> <span class="nf">perf_get_memory</span><span class="p">(</span><span class="n">case</span><span class="p">):</span>
 <span class="w">  </span><span class="sd">&quot;&quot;&quot;</span>
@@ -660,10 +664,12 @@ of the various test phases.</p>
 <span class="sd">  -------</span>
 <span class="sd">  str</span>
 <span class="sd">    Storing memory value.</span>
+<span class="sd">  str</span>
+<span class="sd">    Open baseline file for writing.</span>
 <span class="sd">  &quot;&quot;&quot;</span>
   <span class="n">current</span> <span class="o">=</span> <span class="n">analyze_memory</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
 
-  <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">current</span><span class="p">)</span>
+  <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">current</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span>
 
 <span class="k">def</span> <span class="nf">perf_compare_throughput_baseline</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">baseline</span><span class="p">,</span> <span class="n">tolerance</span><span class="p">):</span>
 <span class="w">  </span><span class="sd">&quot;&quot;&quot;</span>

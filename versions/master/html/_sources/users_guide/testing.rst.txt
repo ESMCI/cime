@@ -441,10 +441,12 @@ The following pseudo code is an example of this customization.::
     -------
     str
       Storing throughput value.
+    str
+      Open baseline file for writing.
     """
     current = analyze_throughput(...)
 
-    return json.dumps(current)
+    return json.dumps(current), "w"
 
   def perf_get_memory(case):
     """
@@ -457,10 +459,12 @@ The following pseudo code is an example of this customization.::
     -------
     str
       Storing memory value.
+    str
+      Open baseline file for writing.
     """
     current = analyze_memory(case)
 
-    return json.dumps(current)
+    return json.dumps(current), "w"
 
   def perf_compare_throughput_baseline(case, baseline, tolerance):
     """

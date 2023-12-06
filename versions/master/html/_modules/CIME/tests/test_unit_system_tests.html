@@ -1,12 +1,14 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CIME.tests.test_unit_system_tests &mdash; CIME master documentation</title>
-      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=d05bb7fd" />
+
+  
   <!--[if lt IE 9]>
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -89,6 +91,7 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">tempfile</span>
 <span class="kn">import</span> <span class="nn">gzip</span>
+<span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">from</span> <span class="nn">re</span> <span class="kn">import</span> <span class="n">A</span>
 <span class="kn">import</span> <span class="nn">unittest</span>
 <span class="kn">from</span> <span class="nn">unittest</span> <span class="kn">import</span> <span class="n">mock</span>
@@ -162,12 +165,12 @@
 <a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_system_tests.TestUnitSystemTests.test_check_for_memleak_runtime_error">[docs]</a>
     <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.system_tests_common.load_coupler_customization&quot;</span><span class="p">)</span>
     <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.system_tests_common.append_testlog&quot;</span><span class="p">)</span>
-    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.system_tests_common._perf_get_memory&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.system_tests_common.perf_get_memory_list&quot;</span><span class="p">)</span>
     <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.system_tests_common.get_latest_cpl_logs&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">test_check_for_memleak_runtime_error</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">get_latest_cpl_logs</span><span class="p">,</span>
-        <span class="n">_perf_get_memory</span><span class="p">,</span>
+        <span class="n">perf_get_memory_list</span><span class="p">,</span>
         <span class="n">append_testlog</span><span class="p">,</span>
         <span class="n">load_coupler_customization</span><span class="p">,</span>
     <span class="p">):</span>
@@ -175,7 +178,7 @@
             <span class="ne">AttributeError</span>
         <span class="p">)</span>
 
-        <span class="n">_perf_get_memory</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="ne">RuntimeError</span>
+        <span class="n">perf_get_memory_list</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="ne">RuntimeError</span>
 
         <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tempdir</span><span class="p">:</span>
             <span class="n">caseroot</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">tempdir</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;caseroot&quot;</span>
@@ -215,12 +218,12 @@
 <a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_system_tests.TestUnitSystemTests.test_check_for_memleak_not_enough_samples">[docs]</a>
     <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.system_tests_common.load_coupler_customization&quot;</span><span class="p">)</span>
     <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.system_tests_common.append_testlog&quot;</span><span class="p">)</span>
-    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.system_tests_common._perf_get_memory&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.system_tests_common.perf_get_memory_list&quot;</span><span class="p">)</span>
     <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.system_tests_common.get_latest_cpl_logs&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">test_check_for_memleak_not_enough_samples</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">get_latest_cpl_logs</span><span class="p">,</span>
-        <span class="n">_perf_get_memory</span><span class="p">,</span>
+        <span class="n">perf_get_memory_list</span><span class="p">,</span>
         <span class="n">append_testlog</span><span class="p">,</span>
         <span class="n">load_coupler_customization</span><span class="p">,</span>
     <span class="p">):</span>
@@ -228,7 +231,7 @@
             <span class="ne">AttributeError</span>
         <span class="p">)</span>
 
-        <span class="n">_perf_get_memory</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">perf_get_memory_list</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">[</span>
             <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">),</span>
             <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
         <span class="p">]</span>
@@ -271,12 +274,12 @@
 <a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_system_tests.TestUnitSystemTests.test_check_for_memleak_found">[docs]</a>
     <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.system_tests_common.load_coupler_customization&quot;</span><span class="p">)</span>
     <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.system_tests_common.append_testlog&quot;</span><span class="p">)</span>
-    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.system_tests_common._perf_get_memory&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.system_tests_common.perf_get_memory_list&quot;</span><span class="p">)</span>
     <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.system_tests_common.get_latest_cpl_logs&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">test_check_for_memleak_found</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">get_latest_cpl_logs</span><span class="p">,</span>
-        <span class="n">_perf_get_memory</span><span class="p">,</span>
+        <span class="n">perf_get_memory_list</span><span class="p">,</span>
         <span class="n">append_testlog</span><span class="p">,</span>
         <span class="n">load_coupler_customization</span><span class="p">,</span>
     <span class="p">):</span>
@@ -284,7 +287,7 @@
             <span class="ne">AttributeError</span>
         <span class="p">)</span>
 
-        <span class="n">_perf_get_memory</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">perf_get_memory_list</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">[</span>
             <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">),</span>
             <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mf">2000.0</span><span class="p">),</span>
             <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mf">3000.0</span><span class="p">),</span>
@@ -331,12 +334,12 @@
 <a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_system_tests.TestUnitSystemTests.test_check_for_memleak">[docs]</a>
     <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.system_tests_common.load_coupler_customization&quot;</span><span class="p">)</span>
     <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.system_tests_common.append_testlog&quot;</span><span class="p">)</span>
-    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.system_tests_common._perf_get_memory&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.system_tests_common.perf_get_memory_list&quot;</span><span class="p">)</span>
     <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.system_tests_common.get_latest_cpl_logs&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">test_check_for_memleak</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">get_latest_cpl_logs</span><span class="p">,</span>
-        <span class="n">_perf_get_memory</span><span class="p">,</span>
+        <span class="n">perf_get_memory_list</span><span class="p">,</span>
         <span class="n">append_testlog</span><span class="p">,</span>
         <span class="n">load_coupler_customization</span><span class="p">,</span>
     <span class="p">):</span>
@@ -344,7 +347,7 @@
             <span class="ne">AttributeError</span>
         <span class="p">)</span>
 
-        <span class="n">_perf_get_memory</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">perf_get_memory_list</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">[</span>
             <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mf">3040.0</span><span class="p">),</span>
             <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mf">3002.0</span><span class="p">),</span>
             <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mf">3030.0</span><span class="p">),</span>
@@ -632,13 +635,13 @@
                 <span class="n">lines</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
 
             <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
-            <span class="k">assert</span> <span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;719.635&quot;</span>
+            <span class="k">assert</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s2">&quot;sha:.* date:.* (\d+\.\d+)&quot;</span><span class="p">,</span> <span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">baseline_dir</span> <span class="o">/</span> <span class="s2">&quot;cpl-mem.log&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
                 <span class="n">lines</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
 
             <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
-            <span class="k">assert</span> <span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;1673.89&quot;</span></div>
+            <span class="k">assert</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s2">&quot;sha:.* date:.* (\d+\.\d+)&quot;</span><span class="p">,</span> <span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div>
 
 
 <div class="viewcode-block" id="TestUnitSystemTests.test_kwargs">

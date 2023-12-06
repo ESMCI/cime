@@ -1,12 +1,14 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CIME.baselines.performance &mdash; CIME master documentation</title>
-      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=d05bb7fd" />
+
+  
   <!--[if lt IE 9]>
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -90,7 +92,7 @@
 <span class="kn">import</span> <span class="nn">gzip</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">CIME.config</span> <span class="kn">import</span> <span class="n">Config</span>
-<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="n">expect</span>
+<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="n">expect</span><span class="p">,</span> <span class="n">get_src_root</span><span class="p">,</span> <span class="n">get_current_commit</span><span class="p">,</span> <span class="n">get_timestamp</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -122,14 +124,7 @@
 
     <span class="n">baseline_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">baseline_dir</span><span class="p">,</span> <span class="s2">&quot;cpl-tput.log&quot;</span><span class="p">)</span>
 
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">baseline</span> <span class="o">=</span> <span class="n">read_baseline_file</span><span class="p">(</span><span class="n">baseline_file</span><span class="p">)</span>
-    <span class="k">except</span> <span class="ne">FileNotFoundError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="n">comment</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Could not read baseline throughput file: </span><span class="si">{</span><span class="n">e</span><span class="si">!s}</span><span class="s2">&quot;</span>
-
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">comment</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="n">comment</span>
+    <span class="n">baseline</span> <span class="o">=</span> <span class="n">read_baseline_file</span><span class="p">(</span><span class="n">baseline_file</span><span class="p">)</span>
 
     <span class="n">tolerance</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;TEST_TPUT_TOLERANCE&quot;</span><span class="p">)</span>
 
@@ -181,14 +176,7 @@
 
     <span class="n">baseline_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">baseline_dir</span><span class="p">,</span> <span class="s2">&quot;cpl-mem.log&quot;</span><span class="p">)</span>
 
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">baseline</span> <span class="o">=</span> <span class="n">read_baseline_file</span><span class="p">(</span><span class="n">baseline_file</span><span class="p">)</span>
-    <span class="k">except</span> <span class="ne">FileNotFoundError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="n">comment</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Could not read baseline memory usage: </span><span class="si">{</span><span class="n">e</span><span class="si">!s}</span><span class="s2">&quot;</span>
-
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">comment</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="n">comment</span>
+    <span class="n">baseline</span> <span class="o">=</span> <span class="n">read_baseline_file</span><span class="p">(</span><span class="n">baseline_file</span><span class="p">)</span>
 
     <span class="n">tolerance</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;TEST_MEMLEAK_TOLERANCE&quot;</span><span class="p">)</span>
 
@@ -229,23 +217,27 @@
 
     <span class="k">if</span> <span class="n">throughput</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">tput</span> <span class="o">=</span> <span class="n">perf_get_throughput</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+            <span class="n">tput</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="n">perf_get_throughput</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Could not get throughput: </span><span class="si">{0!s}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">baseline_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">basegen_dir</span><span class="p">,</span> <span class="s2">&quot;cpl-tput.log&quot;</span><span class="p">)</span>
 
-            <span class="n">write_baseline_file</span><span class="p">(</span><span class="n">baseline_file</span><span class="p">,</span> <span class="n">tput</span><span class="p">)</span>
+            <span class="n">write_baseline_file</span><span class="p">(</span><span class="n">baseline_file</span><span class="p">,</span> <span class="n">tput</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
+
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Updated throughput baseline to </span><span class="si">{!s}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tput</span><span class="p">))</span>
 
     <span class="k">if</span> <span class="n">memory</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">mem</span> <span class="o">=</span> <span class="n">perf_get_memory</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+            <span class="n">mem</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="n">perf_get_memory</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Could not get memory usage: </span><span class="si">{0!s}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">baseline_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">basegen_dir</span><span class="p">,</span> <span class="s2">&quot;cpl-mem.log&quot;</span><span class="p">)</span>
 
-            <span class="n">write_baseline_file</span><span class="p">(</span><span class="n">baseline_file</span><span class="p">,</span> <span class="n">mem</span><span class="p">)</span></div>
+            <span class="n">write_baseline_file</span><span class="p">(</span><span class="n">baseline_file</span><span class="p">,</span> <span class="n">mem</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
+
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Updated memory usage baseline to </span><span class="si">{!s}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mem</span><span class="p">))</span></div>
 
 
 
@@ -294,16 +286,11 @@
 <span class="sd">        Model throughput.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">tput</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">perf_get_throughput</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
+        <span class="n">tput</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">perf_get_throughput</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-        <span class="n">tput</span> <span class="o">=</span> <span class="n">_perf_get_throughput</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
+        <span class="n">tput</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="n">_perf_get_throughput</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">tput</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Could not get default throughput&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span>
-
-        <span class="n">tput</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">tput</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">tput</span></div>
+    <span class="k">return</span> <span class="n">tput</span><span class="p">,</span> <span class="n">mode</span></div>
 
 
 
@@ -328,22 +315,17 @@
 <span class="sd">        Model memory usage.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">mem</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">perf_get_memory</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
+        <span class="n">mem</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">perf_get_memory</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-        <span class="n">mem</span> <span class="o">=</span> <span class="n">_perf_get_memory</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
+        <span class="n">mem</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="n">_perf_get_memory</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">mem</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Could not get default memory usage&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span>
-
-        <span class="n">mem</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">mem</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
-
-    <span class="k">return</span> <span class="n">mem</span></div>
+    <span class="k">return</span> <span class="n">mem</span><span class="p">,</span> <span class="n">mode</span></div>
 
 
 
 <div class="viewcode-block" id="write_baseline_file">
 <a class="viewcode-back" href="../../../CIME_api/CIME.baselines.html#CIME.baselines.performance.write_baseline_file">[docs]</a>
-<span class="k">def</span> <span class="nf">write_baseline_file</span><span class="p">(</span><span class="n">baseline_file</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">write_baseline_file</span><span class="p">(</span><span class="n">baseline_file</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;a&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Writes value to `baseline_file`.</span>
 
@@ -353,8 +335,10 @@
 <span class="sd">        Path to the baseline file.</span>
 <span class="sd">    value : str</span>
 <span class="sd">        Value to write.</span>
+<span class="sd">    mode : str</span>
+<span class="sd">        Mode to open file with.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">baseline_file</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">baseline_file</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
         <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
 
 
@@ -382,6 +366,19 @@
 <span class="sd">    RuntimeError</span>
 <span class="sd">        If not enough sample were found.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">memlist</span> <span class="o">=</span> <span class="n">perf_get_memory_list</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">cpllog</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">memlist</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Could not get default memory usage&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span>
+
+    <span class="n">value</span> <span class="o">=</span> <span class="n">_format_baseline</span><span class="p">(</span><span class="n">memlist</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">value</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span>
+
+
+<div class="viewcode-block" id="perf_get_memory_list">
+<a class="viewcode-back" href="../../../CIME_api/CIME.baselines.html#CIME.baselines.performance.perf_get_memory_list">[docs]</a>
+<span class="k">def</span> <span class="nf">perf_get_memory_list</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">cpllog</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">cpllog</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">cpllog</span> <span class="o">=</span> <span class="n">get_latest_cpl_logs</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
@@ -401,7 +398,8 @@
                 <span class="sa">f</span><span class="s2">&quot;Found </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">memlist</span><span class="p">)</span><span class="si">}</span><span class="s2"> memory usage samples, need atleast 4&quot;</span>
             <span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">memlist</span>
+    <span class="k">return</span> <span class="n">memlist</span></div>
+
 
 
 <span class="k">def</span> <span class="nf">_perf_get_throughput</span><span class="p">(</span><span class="n">case</span><span class="p">):</span>
@@ -429,7 +427,12 @@
 
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Could not parse throughput from coupler log&quot;</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">tput</span>
+    <span class="k">if</span> <span class="n">tput</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Could not get default throughput&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span>
+
+    <span class="n">value</span> <span class="o">=</span> <span class="n">_format_baseline</span><span class="p">(</span><span class="n">tput</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">value</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span>
 
 
 <div class="viewcode-block" id="get_latest_cpl_logs">
@@ -552,7 +555,7 @@
 <span class="sd">        Value stored in baseline file without comments.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">baseline_file</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
-        <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">fd</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">x</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">)]</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">fd</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">x</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">x</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">]</span>
 
     <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span></div>
 
@@ -580,13 +583,20 @@
 <span class="sd">    comment : str</span>
 <span class="sd">        provides explanation from comparison.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">current</span> <span class="o">=</span> <span class="n">_perf_get_throughput</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
+    <span class="n">current</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_perf_get_throughput</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">current</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">_parse_baseline</span><span class="p">(</span><span class="n">current</span><span class="p">))</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+        <span class="n">comment</span> <span class="o">=</span> <span class="s2">&quot;Could not compare throughput to baseline, as baseline had no value.&quot;</span>
+
+        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="n">comment</span>
 
     <span class="k">try</span><span class="p">:</span>
         <span class="c1"># default baseline is stored as single float</span>
-        <span class="n">baseline</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">baseline</span><span class="p">)</span>
-    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-        <span class="n">comment</span> <span class="o">=</span> <span class="s2">&quot;Could not compare throughput to baseline, as basline had no value.&quot;</span>
+        <span class="n">baseline</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">_parse_baseline</span><span class="p">(</span><span class="n">baseline</span><span class="p">))</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+        <span class="n">comment</span> <span class="o">=</span> <span class="s2">&quot;Could not compare throughput to baseline, as baseline had no value.&quot;</span>
 
         <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="n">comment</span>
 
@@ -598,14 +608,13 @@
     <span class="k">if</span> <span class="n">diff</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">below_tolerance</span> <span class="o">=</span> <span class="n">diff</span> <span class="o">&lt;</span> <span class="n">tolerance</span>
 
+        <span class="n">info</span> <span class="o">=</span> <span class="s2">&quot;Throughput changed by </span><span class="si">{:.2f}</span><span class="s2">%: baseline=</span><span class="si">{:.3f}</span><span class="s2"> sypd, tolerance=</span><span class="si">{:d}</span><span class="s2">%, current=</span><span class="si">{:.3f}</span><span class="s2"> sypd&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">diff</span> <span class="o">*</span> <span class="mi">100</span><span class="p">,</span> <span class="n">baseline</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">tolerance</span> <span class="o">*</span> <span class="mi">100</span><span class="p">),</span> <span class="n">current</span>
+        <span class="p">)</span>
         <span class="k">if</span> <span class="n">below_tolerance</span><span class="p">:</span>
-            <span class="n">comment</span> <span class="o">=</span> <span class="s2">&quot;TPUTCOMP: Computation time changed by </span><span class="si">{:.2f}% r</span><span class="s2">elative to baseline&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">diff</span> <span class="o">*</span> <span class="mi">100</span>
-            <span class="p">)</span>
+            <span class="n">comment</span> <span class="o">=</span> <span class="s2">&quot;TPUTCOMP: &quot;</span> <span class="o">+</span> <span class="n">info</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">comment</span> <span class="o">=</span> <span class="s2">&quot;Error: TPUTCOMP: Computation time increase &gt; </span><span class="si">{:d}% f</span><span class="s2">rom baseline&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="nb">int</span><span class="p">(</span><span class="n">tolerance</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span>
-            <span class="p">)</span>
+            <span class="n">comment</span> <span class="o">=</span> <span class="s2">&quot;Error: TPUTCOMP: &quot;</span> <span class="o">+</span> <span class="n">info</span>
 
     <span class="k">return</span> <span class="n">below_tolerance</span><span class="p">,</span> <span class="n">comment</span>
 
@@ -633,16 +642,21 @@
 <span class="sd">        provides explanation from comparison.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">current</span> <span class="o">=</span> <span class="n">_perf_get_memory</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
+        <span class="n">current</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_perf_get_memory</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">current</span> <span class="o">=</span> <span class="n">current</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">current</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">_parse_baseline</span><span class="p">(</span><span class="n">current</span><span class="p">))</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+        <span class="n">comment</span> <span class="o">=</span> <span class="s2">&quot;Could not compare throughput to baseline, as baseline had no value.&quot;</span>
+
+        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="n">comment</span>
 
     <span class="k">try</span><span class="p">:</span>
         <span class="c1"># default baseline is stored as single float</span>
-        <span class="n">baseline</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">baseline</span><span class="p">)</span>
-    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="n">baseline</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">_parse_baseline</span><span class="p">(</span><span class="n">baseline</span><span class="p">))</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
         <span class="n">baseline</span> <span class="o">=</span> <span class="mf">0.0</span>
 
     <span class="k">try</span><span class="p">:</span>
@@ -657,16 +671,67 @@
     <span class="k">if</span> <span class="n">diff</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">below_tolerance</span> <span class="o">=</span> <span class="n">diff</span> <span class="o">&lt;</span> <span class="n">tolerance</span>
 
+        <span class="n">info</span> <span class="o">=</span> <span class="s2">&quot;Memory usage highwater changed by </span><span class="si">{:.2f}</span><span class="s2">%: baseline=</span><span class="si">{:.3f}</span><span class="s2"> MB, tolerance=</span><span class="si">{:d}</span><span class="s2">%, current=</span><span class="si">{:.3f}</span><span class="s2"> MB&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">diff</span> <span class="o">*</span> <span class="mi">100</span><span class="p">,</span> <span class="n">baseline</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">tolerance</span> <span class="o">*</span> <span class="mi">100</span><span class="p">),</span> <span class="n">current</span>
+        <span class="p">)</span>
         <span class="k">if</span> <span class="n">below_tolerance</span><span class="p">:</span>
-            <span class="n">comment</span> <span class="o">=</span> <span class="s2">&quot;MEMCOMP: Memory usage highwater has changed by </span><span class="si">{:.2f}% r</span><span class="s2">elative to baseline&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">diff</span> <span class="o">*</span> <span class="mi">100</span>
-            <span class="p">)</span>
+            <span class="n">comment</span> <span class="o">=</span> <span class="s2">&quot;MEMCOMP: &quot;</span> <span class="o">+</span> <span class="n">info</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">comment</span> <span class="o">=</span> <span class="s2">&quot;Error: Memory usage increase &gt;</span><span class="si">{:d}% f</span><span class="s2">rom baseline&#39;s </span><span class="si">{:f}</span><span class="s2"> to </span><span class="si">{:f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="nb">int</span><span class="p">(</span><span class="n">tolerance</span> <span class="o">*</span> <span class="mi">100</span><span class="p">),</span> <span class="n">baseline</span><span class="p">,</span> <span class="n">current</span>
-            <span class="p">)</span>
+            <span class="n">comment</span> <span class="o">=</span> <span class="s2">&quot;Error: MEMCOMP: &quot;</span> <span class="o">+</span> <span class="n">info</span>
 
     <span class="k">return</span> <span class="n">below_tolerance</span><span class="p">,</span> <span class="n">comment</span>
+
+
+<span class="k">def</span> <span class="nf">_format_baseline</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Encodes value with default baseline format.</span>
+
+<span class="sd">    Default format:</span>
+<span class="sd">    sha: &lt;commit sha&gt; date: &lt;date of bless&gt; &lt;value&gt;</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    value : str</span>
+<span class="sd">        Baseline value to encode.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    value : str</span>
+<span class="sd">        Baseline entry.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">commit_hash</span> <span class="o">=</span> <span class="n">get_current_commit</span><span class="p">(</span><span class="n">repo</span><span class="o">=</span><span class="n">get_src_root</span><span class="p">())</span>
+
+    <span class="n">timestamp</span> <span class="o">=</span> <span class="n">get_timestamp</span><span class="p">(</span><span class="n">timestamp_format</span><span class="o">=</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">_%H:%M:%S&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;sha:</span><span class="si">{</span><span class="n">commit_hash</span><span class="si">}</span><span class="s2"> date:</span><span class="si">{</span><span class="n">timestamp</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+
+<span class="k">def</span> <span class="nf">_parse_baseline</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parses default baseline format.</span>
+
+<span class="sd">    Default format:</span>
+<span class="sd">    sha: &lt;commit sha&gt; date: &lt;date of bless&gt; &lt;value&gt;</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data : str</span>
+<span class="sd">        Containing contents of baseline file.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    value : str</span>
+<span class="sd">        Value of the latest blessed baseline.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">lines</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">lines</span> <span class="k">if</span> <span class="n">x</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">]</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">return</span> <span class="n">value</span>
 </pre></div>
 
            </div>

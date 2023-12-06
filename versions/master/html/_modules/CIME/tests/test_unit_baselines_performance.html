@@ -1,12 +1,14 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CIME.tests.test_unit_baselines_performance &mdash; CIME master documentation</title>
-      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=d05bb7fd" />
+
+  
   <!--[if lt IE 9]>
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -119,27 +121,11 @@
 <div class="viewcode-block" id="TestUnitBaselinesPerformance">
 <a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_baselines_performance.TestUnitBaselinesPerformance">[docs]</a>
 <span class="k">class</span> <span class="nc">TestUnitBaselinesPerformance</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
-<div class="viewcode-block" id="TestUnitBaselinesPerformance.test_perf_get_memory_default_no_value">
-<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_baselines_performance.TestUnitBaselinesPerformance.test_perf_get_memory_default_no_value">[docs]</a>
-    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.baselines.performance._perf_get_memory&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test_perf_get_memory_default_no_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_perf_get_memory</span><span class="p">):</span>
-        <span class="n">_perf_get_memory</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="kc">None</span>
-
-        <span class="n">case</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
-
-        <span class="n">config</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
-
-        <span class="n">config</span><span class="o">.</span><span class="n">perf_get_memory</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="ne">AttributeError</span>
-
-        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">):</span>
-            <span class="n">performance</span><span class="o">.</span><span class="n">perf_get_memory</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span></div>
-
-
 <div class="viewcode-block" id="TestUnitBaselinesPerformance.test_perf_get_memory_default">
 <a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_baselines_performance.TestUnitBaselinesPerformance.test_perf_get_memory_default">[docs]</a>
     <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.baselines.performance._perf_get_memory&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">test_perf_get_memory_default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_perf_get_memory</span><span class="p">):</span>
-        <span class="n">_perf_get_memory</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)]</span>
+        <span class="n">_perf_get_memory</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;1000&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span>
 
         <span class="n">case</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
 
@@ -149,7 +135,7 @@
 
         <span class="n">mem</span> <span class="o">=</span> <span class="n">performance</span><span class="o">.</span><span class="n">perf_get_memory</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
 
-        <span class="k">assert</span> <span class="n">mem</span> <span class="o">==</span> <span class="s2">&quot;1000&quot;</span></div>
+        <span class="k">assert</span> <span class="n">mem</span> <span class="o">==</span> <span class="p">(</span><span class="s2">&quot;1000&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="TestUnitBaselinesPerformance.test_perf_get_memory">
@@ -159,34 +145,18 @@
 
         <span class="n">config</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
 
-        <span class="n">config</span><span class="o">.</span><span class="n">perf_get_memory</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="s2">&quot;1000&quot;</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">perf_get_memory</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;1000&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span>
 
         <span class="n">mem</span> <span class="o">=</span> <span class="n">performance</span><span class="o">.</span><span class="n">perf_get_memory</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
 
-        <span class="k">assert</span> <span class="n">mem</span> <span class="o">==</span> <span class="s2">&quot;1000&quot;</span></div>
-
-
-<div class="viewcode-block" id="TestUnitBaselinesPerformance.test_perf_get_throughput_default_no_value">
-<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_baselines_performance.TestUnitBaselinesPerformance.test_perf_get_throughput_default_no_value">[docs]</a>
-    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.baselines.performance._perf_get_throughput&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test_perf_get_throughput_default_no_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_perf_get_throughput</span><span class="p">):</span>
-        <span class="n">_perf_get_throughput</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="kc">None</span>
-
-        <span class="n">case</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
-
-        <span class="n">config</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
-
-        <span class="n">config</span><span class="o">.</span><span class="n">perf_get_throughput</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="ne">AttributeError</span>
-
-        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">):</span>
-            <span class="n">performance</span><span class="o">.</span><span class="n">perf_get_throughput</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span></div>
+        <span class="k">assert</span> <span class="n">mem</span> <span class="o">==</span> <span class="p">(</span><span class="s2">&quot;1000&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="TestUnitBaselinesPerformance.test_perf_get_throughput_default">
 <a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_baselines_performance.TestUnitBaselinesPerformance.test_perf_get_throughput_default">[docs]</a>
     <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.baselines.performance._perf_get_throughput&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">test_perf_get_throughput_default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_perf_get_throughput</span><span class="p">):</span>
-        <span class="n">_perf_get_throughput</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="mi">100</span>
+        <span class="n">_perf_get_throughput</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;100&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span>
 
         <span class="n">case</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
 
@@ -196,7 +166,7 @@
 
         <span class="n">tput</span> <span class="o">=</span> <span class="n">performance</span><span class="o">.</span><span class="n">perf_get_throughput</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
 
-        <span class="k">assert</span> <span class="n">tput</span> <span class="o">==</span> <span class="s2">&quot;100&quot;</span></div>
+        <span class="k">assert</span> <span class="n">tput</span> <span class="o">==</span> <span class="p">(</span><span class="s2">&quot;100&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="TestUnitBaselinesPerformance.test_perf_get_throughput">
@@ -206,11 +176,11 @@
 
         <span class="n">config</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
 
-        <span class="n">config</span><span class="o">.</span><span class="n">perf_get_throughput</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="s2">&quot;100&quot;</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">perf_get_throughput</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;100&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span>
 
         <span class="n">tput</span> <span class="o">=</span> <span class="n">performance</span><span class="o">.</span><span class="n">perf_get_throughput</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
 
-        <span class="k">assert</span> <span class="n">tput</span> <span class="o">==</span> <span class="s2">&quot;100&quot;</span></div>
+        <span class="k">assert</span> <span class="n">tput</span> <span class="o">==</span> <span class="p">(</span><span class="s2">&quot;100&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="TestUnitBaselinesPerformance.test_get_cpl_throughput_no_file">
@@ -278,34 +248,26 @@
     <span class="k">def</span> <span class="nf">test_read_baseline_file_multi_line</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">with</span> <span class="n">mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span>
             <span class="s2">&quot;builtins.open&quot;</span><span class="p">,</span>
-            <span class="n">mock</span><span class="o">.</span><span class="n">mock_open</span><span class="p">(</span><span class="n">read_data</span><span class="o">=</span><span class="s2">&quot;#comment about data</span><span class="se">\n</span><span class="s2">1000.0</span><span class="se">\n</span><span class="s2">2000.0</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">),</span>
+            <span class="n">mock</span><span class="o">.</span><span class="n">mock_open</span><span class="p">(</span>
+                <span class="n">read_data</span><span class="o">=</span><span class="s2">&quot;sha:1df0 date:2023 1000.0</span><span class="se">\n</span><span class="s2">sha:3b05 date:2023 2000.0&quot;</span>
+            <span class="p">),</span>
         <span class="p">)</span> <span class="k">as</span> <span class="n">mock_file</span><span class="p">:</span>
             <span class="n">baseline</span> <span class="o">=</span> <span class="n">performance</span><span class="o">.</span><span class="n">read_baseline_file</span><span class="p">(</span><span class="s2">&quot;/tmp/cpl-mem.log&quot;</span><span class="p">)</span>
 
         <span class="n">mock_file</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="s2">&quot;/tmp/cpl-mem.log&quot;</span><span class="p">)</span>
-        <span class="k">assert</span> <span class="n">baseline</span> <span class="o">==</span> <span class="s2">&quot;1000.0</span><span class="se">\n</span><span class="s2">2000.0&quot;</span></div>
+        <span class="k">assert</span> <span class="n">baseline</span> <span class="o">==</span> <span class="s2">&quot;sha:1df0 date:2023 1000.0</span><span class="se">\n</span><span class="s2">sha:3b05 date:2023 2000.0&quot;</span></div>
 
 
 <div class="viewcode-block" id="TestUnitBaselinesPerformance.test_read_baseline_file_content">
 <a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_baselines_performance.TestUnitBaselinesPerformance.test_read_baseline_file_content">[docs]</a>
     <span class="k">def</span> <span class="nf">test_read_baseline_file_content</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">with</span> <span class="n">mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span>
-            <span class="s2">&quot;builtins.open&quot;</span><span class="p">,</span> <span class="n">mock</span><span class="o">.</span><span class="n">mock_open</span><span class="p">(</span><span class="n">read_data</span><span class="o">=</span><span class="s2">&quot;1000.0&quot;</span><span class="p">)</span>
+            <span class="s2">&quot;builtins.open&quot;</span><span class="p">,</span> <span class="n">mock</span><span class="o">.</span><span class="n">mock_open</span><span class="p">(</span><span class="n">read_data</span><span class="o">=</span><span class="s2">&quot;sha:1df0 date:2023 1000.0&quot;</span><span class="p">)</span>
         <span class="p">)</span> <span class="k">as</span> <span class="n">mock_file</span><span class="p">:</span>
             <span class="n">baseline</span> <span class="o">=</span> <span class="n">performance</span><span class="o">.</span><span class="n">read_baseline_file</span><span class="p">(</span><span class="s2">&quot;/tmp/cpl-mem.log&quot;</span><span class="p">)</span>
 
         <span class="n">mock_file</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="s2">&quot;/tmp/cpl-mem.log&quot;</span><span class="p">)</span>
-        <span class="k">assert</span> <span class="n">baseline</span> <span class="o">==</span> <span class="s2">&quot;1000.0&quot;</span></div>
-
-
-<div class="viewcode-block" id="TestUnitBaselinesPerformance.test_read_baseline_file">
-<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_baselines_performance.TestUnitBaselinesPerformance.test_read_baseline_file">[docs]</a>
-    <span class="k">def</span> <span class="nf">test_read_baseline_file</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">with</span> <span class="n">mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;builtins.open&quot;</span><span class="p">,</span> <span class="n">mock</span><span class="o">.</span><span class="n">mock_open</span><span class="p">(</span><span class="n">read_data</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">))</span> <span class="k">as</span> <span class="n">mock_file</span><span class="p">:</span>
-            <span class="n">baseline</span> <span class="o">=</span> <span class="n">performance</span><span class="o">.</span><span class="n">read_baseline_file</span><span class="p">(</span><span class="s2">&quot;/tmp/cpl-mem.log&quot;</span><span class="p">)</span>
-
-        <span class="n">mock_file</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="s2">&quot;/tmp/cpl-mem.log&quot;</span><span class="p">)</span>
-        <span class="k">assert</span> <span class="n">baseline</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span></div>
+        <span class="k">assert</span> <span class="n">baseline</span> <span class="o">==</span> <span class="s2">&quot;sha:1df0 date:2023 1000.0&quot;</span></div>
 
 
 <div class="viewcode-block" id="TestUnitBaselinesPerformance.test_write_baseline_file">
@@ -314,8 +276,7 @@
         <span class="k">with</span> <span class="n">mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;builtins.open&quot;</span><span class="p">,</span> <span class="n">mock</span><span class="o">.</span><span class="n">mock_open</span><span class="p">())</span> <span class="k">as</span> <span class="n">mock_file</span><span class="p">:</span>
             <span class="n">performance</span><span class="o">.</span><span class="n">write_baseline_file</span><span class="p">(</span><span class="s2">&quot;/tmp/cpl-tput.log&quot;</span><span class="p">,</span> <span class="s2">&quot;1000&quot;</span><span class="p">)</span>
 
-        <span class="n">mock_file</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="s2">&quot;/tmp/cpl-tput.log&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
-        <span class="n">mock_file</span><span class="o">.</span><span class="n">return_value</span><span class="o">.</span><span class="n">write</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="s2">&quot;1000&quot;</span><span class="p">)</span></div>
+        <span class="n">mock_file</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="s2">&quot;/tmp/cpl-tput.log&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="TestUnitBaselinesPerformance.test__perf_get_throughput">
@@ -328,9 +289,8 @@
         <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tempdir</span><span class="p">:</span>
             <span class="n">case</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">baseline_root</span> <span class="o">=</span> <span class="n">create_mock_case</span><span class="p">(</span><span class="n">tempdir</span><span class="p">,</span> <span class="n">get_latest_cpl_logs</span><span class="p">)</span>
 
-            <span class="n">tput</span> <span class="o">=</span> <span class="n">performance</span><span class="o">.</span><span class="n">_perf_get_throughput</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
-
-            <span class="k">assert</span> <span class="n">tput</span> <span class="o">==</span> <span class="kc">None</span></div>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">):</span>
+                <span class="n">performance</span><span class="o">.</span><span class="n">_perf_get_throughput</span><span class="p">(</span><span class="n">case</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="TestUnitBaselinesPerformance.test__perf_get_memory_override">
@@ -343,9 +303,8 @@
         <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tempdir</span><span class="p">:</span>
             <span class="n">case</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">baseline_root</span> <span class="o">=</span> <span class="n">create_mock_case</span><span class="p">(</span><span class="n">tempdir</span><span class="p">,</span> <span class="n">get_latest_cpl_logs</span><span class="p">)</span>
 
-            <span class="n">mem</span> <span class="o">=</span> <span class="n">performance</span><span class="o">.</span><span class="n">_perf_get_memory</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="s2">&quot;/tmp/override&quot;</span><span class="p">)</span>
-
-            <span class="k">assert</span> <span class="n">mem</span> <span class="o">==</span> <span class="kc">None</span></div>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">):</span>
+                <span class="n">performance</span><span class="o">.</span><span class="n">_perf_get_memory</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="s2">&quot;/tmp/override&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="TestUnitBaselinesPerformance.test__perf_get_memory">
@@ -358,9 +317,8 @@
         <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tempdir</span><span class="p">:</span>
             <span class="n">case</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">baseline_root</span> <span class="o">=</span> <span class="n">create_mock_case</span><span class="p">(</span><span class="n">tempdir</span><span class="p">,</span> <span class="n">get_latest_cpl_logs</span><span class="p">)</span>
 
-            <span class="n">mem</span> <span class="o">=</span> <span class="n">performance</span><span class="o">.</span><span class="n">_perf_get_memory</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
-
-            <span class="k">assert</span> <span class="n">mem</span> <span class="o">==</span> <span class="kc">None</span></div>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">):</span>
+                <span class="n">performance</span><span class="o">.</span><span class="n">_perf_get_memory</span><span class="p">(</span><span class="n">case</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="TestUnitBaselinesPerformance.test_write_baseline_skip">
@@ -420,9 +378,9 @@
     <span class="k">def</span> <span class="nf">test_perf_write_baseline</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">perf_get_throughput</span><span class="p">,</span> <span class="n">perf_get_memory</span><span class="p">,</span> <span class="n">write_baseline_file</span>
     <span class="p">):</span>
-        <span class="n">perf_get_throughput</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="s2">&quot;100&quot;</span>
+        <span class="n">perf_get_throughput</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;100&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span>
 
-        <span class="n">perf_get_memory</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="s2">&quot;1000&quot;</span>
+        <span class="n">perf_get_memory</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;1000&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span>
 
         <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tempdir</span><span class="p">:</span>
             <span class="n">case</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">baseline_root</span> <span class="o">=</span> <span class="n">create_mock_case</span><span class="p">(</span><span class="n">tempdir</span><span class="p">)</span>
@@ -431,8 +389,12 @@
 
         <span class="n">perf_get_throughput</span><span class="o">.</span><span class="n">assert_called</span><span class="p">()</span>
         <span class="n">perf_get_memory</span><span class="o">.</span><span class="n">assert_called</span><span class="p">()</span>
-        <span class="n">write_baseline_file</span><span class="o">.</span><span class="n">assert_any_call</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">baseline_root</span> <span class="o">/</span> <span class="s2">&quot;cpl-tput.log&quot;</span><span class="p">),</span> <span class="s2">&quot;100&quot;</span><span class="p">)</span>
-        <span class="n">write_baseline_file</span><span class="o">.</span><span class="n">assert_any_call</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">baseline_root</span> <span class="o">/</span> <span class="s2">&quot;cpl-mem.log&quot;</span><span class="p">),</span> <span class="s2">&quot;1000&quot;</span><span class="p">)</span></div>
+        <span class="n">write_baseline_file</span><span class="o">.</span><span class="n">assert_any_call</span><span class="p">(</span>
+            <span class="nb">str</span><span class="p">(</span><span class="n">baseline_root</span> <span class="o">/</span> <span class="s2">&quot;cpl-tput.log&quot;</span><span class="p">),</span> <span class="s2">&quot;100&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span>
+        <span class="p">)</span>
+        <span class="n">write_baseline_file</span><span class="o">.</span><span class="n">assert_any_call</span><span class="p">(</span>
+            <span class="nb">str</span><span class="p">(</span><span class="n">baseline_root</span> <span class="o">/</span> <span class="s2">&quot;cpl-mem.log&quot;</span><span class="p">),</span> <span class="s2">&quot;1000&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="TestUnitBaselinesPerformance.test_perf_compare_throughput_baseline_no_baseline_file">
@@ -457,12 +419,8 @@
                 <span class="mf">0.05</span><span class="p">,</span>
             <span class="p">)</span>
 
-            <span class="p">(</span><span class="n">below_tolerance</span><span class="p">,</span> <span class="n">comment</span><span class="p">)</span> <span class="o">=</span> <span class="n">performance</span><span class="o">.</span><span class="n">perf_compare_throughput_baseline</span><span class="p">(</span>
-                <span class="k">case</span>
-            <span class="p">)</span>
-
-        <span class="k">assert</span> <span class="n">below_tolerance</span> <span class="ow">is</span> <span class="kc">None</span>
-        <span class="k">assert</span> <span class="n">comment</span> <span class="o">==</span> <span class="s2">&quot;Could not read baseline throughput file: &quot;</span></div>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">FileNotFoundError</span><span class="p">):</span>
+                <span class="n">performance</span><span class="o">.</span><span class="n">perf_compare_throughput_baseline</span><span class="p">(</span><span class="n">case</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="TestUnitBaselinesPerformance.test_perf_compare_throughput_baseline_no_baseline">
@@ -475,7 +433,7 @@
     <span class="p">):</span>
         <span class="n">read_baseline_file</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
 
-        <span class="n">_perf_get_throughput</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="mi">504</span>
+        <span class="n">_perf_get_throughput</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;504&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span>
 
         <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tempdir</span><span class="p">:</span>
             <span class="n">case</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">baseline_root</span> <span class="o">=</span> <span class="n">create_mock_case</span><span class="p">(</span><span class="n">tempdir</span><span class="p">,</span> <span class="n">get_latest_cpl_logs</span><span class="p">)</span>
@@ -496,7 +454,7 @@
         <span class="k">assert</span> <span class="n">below_tolerance</span> <span class="ow">is</span> <span class="kc">None</span>
         <span class="k">assert</span> <span class="p">(</span>
             <span class="n">comment</span>
-            <span class="o">==</span> <span class="s2">&quot;Could not compare throughput to baseline, as basline had no value.&quot;</span>
+            <span class="o">==</span> <span class="s2">&quot;Could not compare throughput to baseline, as baseline had no value.&quot;</span>
         <span class="p">)</span></div>
 
 
@@ -510,7 +468,7 @@
     <span class="p">):</span>
         <span class="n">read_baseline_file</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="s2">&quot;500&quot;</span>
 
-        <span class="n">_perf_get_throughput</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="mi">504</span>
+        <span class="n">_perf_get_throughput</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;504&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span>
 
         <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tempdir</span><span class="p">:</span>
             <span class="n">case</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">baseline_root</span> <span class="o">=</span> <span class="n">create_mock_case</span><span class="p">(</span><span class="n">tempdir</span><span class="p">,</span> <span class="n">get_latest_cpl_logs</span><span class="p">)</span>
@@ -531,7 +489,7 @@
         <span class="k">assert</span> <span class="n">below_tolerance</span>
         <span class="k">assert</span> <span class="p">(</span>
             <span class="n">comment</span>
-            <span class="o">==</span> <span class="s2">&quot;TPUTCOMP: Computation time changed by -0.80</span><span class="si">% r</span><span class="s2">elative to baseline&quot;</span>
+            <span class="o">==</span> <span class="s2">&quot;TPUTCOMP: Throughput changed by -0.80%: baseline=500.000 sypd, tolerance=10%, current=504.000 sypd&quot;</span>
         <span class="p">)</span></div>
 
 
@@ -545,7 +503,7 @@
     <span class="p">):</span>
         <span class="n">read_baseline_file</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="s2">&quot;1000&quot;</span>
 
-        <span class="n">_perf_get_throughput</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="mi">504</span>
+        <span class="n">_perf_get_throughput</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;504&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span>
 
         <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tempdir</span><span class="p">:</span>
             <span class="n">case</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">baseline_root</span> <span class="o">=</span> <span class="n">create_mock_case</span><span class="p">(</span><span class="n">tempdir</span><span class="p">,</span> <span class="n">get_latest_cpl_logs</span><span class="p">)</span>
@@ -565,7 +523,8 @@
 
         <span class="k">assert</span> <span class="ow">not</span> <span class="n">below_tolerance</span>
         <span class="k">assert</span> <span class="p">(</span>
-            <span class="n">comment</span> <span class="o">==</span> <span class="s2">&quot;Error: TPUTCOMP: Computation time increase &gt; 5</span><span class="si">% f</span><span class="s2">rom baseline&quot;</span>
+            <span class="n">comment</span>
+            <span class="o">==</span> <span class="s2">&quot;Error: TPUTCOMP: Throughput changed by 49.60%: baseline=1000.000 sypd, tolerance=5%, current=504.000 sypd&quot;</span>
         <span class="p">)</span></div>
 
 
@@ -579,7 +538,7 @@
     <span class="p">):</span>
         <span class="n">read_baseline_file</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="s2">&quot;500&quot;</span>
 
-        <span class="n">_perf_get_throughput</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="mi">504</span>
+        <span class="n">_perf_get_throughput</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;504&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span>
 
         <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tempdir</span><span class="p">:</span>
             <span class="n">case</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">baseline_root</span> <span class="o">=</span> <span class="n">create_mock_case</span><span class="p">(</span><span class="n">tempdir</span><span class="p">,</span> <span class="n">get_latest_cpl_logs</span><span class="p">)</span>
@@ -600,7 +559,7 @@
         <span class="k">assert</span> <span class="n">below_tolerance</span>
         <span class="k">assert</span> <span class="p">(</span>
             <span class="n">comment</span>
-            <span class="o">==</span> <span class="s2">&quot;TPUTCOMP: Computation time changed by -0.80</span><span class="si">% r</span><span class="s2">elative to baseline&quot;</span>
+            <span class="o">==</span> <span class="s2">&quot;TPUTCOMP: Throughput changed by -0.80%: baseline=500.000 sypd, tolerance=5%, current=504.000 sypd&quot;</span>
         <span class="p">)</span></div>
 
 
@@ -638,7 +597,7 @@
         <span class="k">assert</span> <span class="n">below_tolerance</span>
         <span class="k">assert</span> <span class="p">(</span>
             <span class="n">comment</span>
-            <span class="o">==</span> <span class="s2">&quot;MEMCOMP: Memory usage highwater has changed by 0.00</span><span class="si">% r</span><span class="s2">elative to baseline&quot;</span>
+            <span class="o">==</span> <span class="s2">&quot;MEMCOMP: Memory usage highwater changed by 0.00%: baseline=0.000 MB, tolerance=5%, current=1003.000 MB&quot;</span>
         <span class="p">)</span></div>
 
 
@@ -700,10 +659,8 @@
                 <span class="mf">0.05</span><span class="p">,</span>
             <span class="p">)</span>
 
-            <span class="p">(</span><span class="n">below_tolerance</span><span class="p">,</span> <span class="n">comment</span><span class="p">)</span> <span class="o">=</span> <span class="n">performance</span><span class="o">.</span><span class="n">perf_compare_memory_baseline</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
-
-        <span class="k">assert</span> <span class="n">below_tolerance</span> <span class="ow">is</span> <span class="kc">None</span>
-        <span class="k">assert</span> <span class="n">comment</span> <span class="o">==</span> <span class="s2">&quot;Could not read baseline memory usage: &quot;</span></div>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">FileNotFoundError</span><span class="p">):</span>
+                <span class="n">performance</span><span class="o">.</span><span class="n">perf_compare_memory_baseline</span><span class="p">(</span><span class="n">case</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="TestUnitBaselinesPerformance.test_perf_compare_memory_baseline_no_tolerance">
@@ -740,7 +697,7 @@
         <span class="k">assert</span> <span class="n">below_tolerance</span>
         <span class="k">assert</span> <span class="p">(</span>
             <span class="n">comment</span>
-            <span class="o">==</span> <span class="s2">&quot;MEMCOMP: Memory usage highwater has changed by 0.30</span><span class="si">% r</span><span class="s2">elative to baseline&quot;</span>
+            <span class="o">==</span> <span class="s2">&quot;MEMCOMP: Memory usage highwater changed by 0.30%: baseline=1000.000 MB, tolerance=10%, current=1003.000 MB&quot;</span>
         <span class="p">)</span></div>
 
 
@@ -778,7 +735,7 @@
         <span class="k">assert</span> <span class="ow">not</span> <span class="n">below_tolerance</span>
         <span class="k">assert</span> <span class="p">(</span>
             <span class="n">comment</span>
-            <span class="o">==</span> <span class="s2">&quot;Error: Memory usage increase &gt;5</span><span class="si">% f</span><span class="s2">rom baseline&#39;s 1000.000000 to 2003.000000&quot;</span>
+            <span class="o">==</span> <span class="s2">&quot;Error: MEMCOMP: Memory usage highwater changed by 100.30%: baseline=1000.000 MB, tolerance=5%, current=2003.000 MB&quot;</span>
         <span class="p">)</span></div>
 
 
@@ -816,7 +773,7 @@
         <span class="k">assert</span> <span class="n">below_tolerance</span>
         <span class="k">assert</span> <span class="p">(</span>
             <span class="n">comment</span>
-            <span class="o">==</span> <span class="s2">&quot;MEMCOMP: Memory usage highwater has changed by 0.30</span><span class="si">% r</span><span class="s2">elative to baseline&quot;</span>
+            <span class="o">==</span> <span class="s2">&quot;MEMCOMP: Memory usage highwater changed by 0.30%: baseline=1000.000 MB, tolerance=5%, current=1003.000 MB&quot;</span>
         <span class="p">)</span></div>
 
 

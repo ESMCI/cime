@@ -1,12 +1,14 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CIME.SystemTests.system_tests_common &mdash; CIME master documentation</title>
-      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=d05bb7fd" />
+
+  
   <!--[if lt IE 9]>
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -114,7 +116,7 @@
 <span class="kn">from</span> <span class="nn">CIME.locked_files</span> <span class="kn">import</span> <span class="n">LOCKED_DIR</span><span class="p">,</span> <span class="n">lock_file</span><span class="p">,</span> <span class="n">is_locked</span>
 <span class="kn">from</span> <span class="nn">CIME.baselines.performance</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">get_latest_cpl_logs</span><span class="p">,</span>
-    <span class="n">_perf_get_memory</span><span class="p">,</span>
+    <span class="n">perf_get_memory_list</span><span class="p">,</span>
     <span class="n">perf_compare_memory_baseline</span><span class="p">,</span>
     <span class="n">perf_compare_throughput_baseline</span><span class="p">,</span>
     <span class="n">perf_write_baseline</span><span class="p">,</span>
@@ -804,40 +806,59 @@
 <span class="sd">        Compares current test memory usage to baseline.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="p">:</span>
-            <span class="n">below_tolerance</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">perf_compare_memory_baseline</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">below_tolerance</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">perf_compare_memory_baseline</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Failed to compare memory usage baseline: </span><span class="si">{!s}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
 
-            <span class="k">if</span> <span class="n">below_tolerance</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">append_testlog</span><span class="p">(</span><span class="n">comment</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_orig_caseroot</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span>
+                    <span class="n">MEMCOMP_PHASE</span><span class="p">,</span> <span class="n">TEST_FAIL_STATUS</span><span class="p">,</span> <span class="n">comments</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">below_tolerance</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">append_testlog</span><span class="p">(</span><span class="n">comment</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_orig_caseroot</span><span class="p">)</span>
 
-                <span class="k">if</span> <span class="p">(</span>
-                    <span class="n">below_tolerance</span>
-                    <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">get_status</span><span class="p">(</span><span class="n">MEMCOMP_PHASE</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span>
-                <span class="p">):</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span><span class="n">MEMCOMP_PHASE</span><span class="p">,</span> <span class="n">TEST_PASS_STATUS</span><span class="p">)</span>
-                <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">get_status</span><span class="p">(</span><span class="n">MEMCOMP_PHASE</span><span class="p">)</span> <span class="o">!=</span> <span class="n">TEST_FAIL_STATUS</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span>
-                        <span class="n">MEMCOMP_PHASE</span><span class="p">,</span> <span class="n">TEST_FAIL_STATUS</span><span class="p">,</span> <span class="n">comments</span><span class="o">=</span><span class="n">comment</span>
-                    <span class="p">)</span>
+                    <span class="k">if</span> <span class="p">(</span>
+                        <span class="n">below_tolerance</span>
+                        <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">get_status</span><span class="p">(</span><span class="n">MEMCOMP_PHASE</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span>
+                    <span class="p">):</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span><span class="n">MEMCOMP_PHASE</span><span class="p">,</span> <span class="n">TEST_PASS_STATUS</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">get_status</span><span class="p">(</span><span class="n">MEMCOMP_PHASE</span><span class="p">)</span> <span class="o">!=</span> <span class="n">TEST_FAIL_STATUS</span>
+                    <span class="p">):</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span>
+                            <span class="n">MEMCOMP_PHASE</span><span class="p">,</span> <span class="n">TEST_FAIL_STATUS</span><span class="p">,</span> <span class="n">comments</span><span class="o">=</span><span class="n">comment</span>
+                        <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_compare_throughput</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compares current test throughput to baseline.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="p">:</span>
-            <span class="n">below_tolerance</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">perf_compare_throughput_baseline</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">below_tolerance</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">perf_compare_throughput_baseline</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Failed to compare throughput baseline: </span><span class="si">{!s}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
 
-            <span class="k">if</span> <span class="n">below_tolerance</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">append_testlog</span><span class="p">(</span><span class="n">comment</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_orig_caseroot</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span>
+                    <span class="n">THROUGHPUT_PHASE</span><span class="p">,</span> <span class="n">TEST_FAIL_STATUS</span><span class="p">,</span> <span class="n">comments</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">below_tolerance</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">append_testlog</span><span class="p">(</span><span class="n">comment</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_orig_caseroot</span><span class="p">)</span>
 
-                <span class="k">if</span> <span class="p">(</span>
-                    <span class="n">below_tolerance</span>
-                    <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">get_status</span><span class="p">(</span><span class="n">THROUGHPUT_PHASE</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span>
-                <span class="p">):</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span><span class="n">THROUGHPUT_PHASE</span><span class="p">,</span> <span class="n">TEST_PASS_STATUS</span><span class="p">)</span>
-                <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">get_status</span><span class="p">(</span><span class="n">THROUGHPUT_PHASE</span><span class="p">)</span> <span class="o">!=</span> <span class="n">TEST_FAIL_STATUS</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span>
-                        <span class="n">THROUGHPUT_PHASE</span><span class="p">,</span> <span class="n">TEST_FAIL_STATUS</span><span class="p">,</span> <span class="n">comments</span><span class="o">=</span><span class="n">comment</span>
-                    <span class="p">)</span>
+                    <span class="k">if</span> <span class="p">(</span>
+                        <span class="n">below_tolerance</span>
+                        <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">get_status</span><span class="p">(</span><span class="n">THROUGHPUT_PHASE</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span>
+                    <span class="p">):</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span><span class="n">THROUGHPUT_PHASE</span><span class="p">,</span> <span class="n">TEST_PASS_STATUS</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">get_status</span><span class="p">(</span><span class="n">THROUGHPUT_PHASE</span><span class="p">)</span>
+                        <span class="o">!=</span> <span class="n">TEST_FAIL_STATUS</span>
+                    <span class="p">):</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span>
+                            <span class="n">THROUGHPUT_PHASE</span><span class="p">,</span> <span class="n">TEST_FAIL_STATUS</span><span class="p">,</span> <span class="n">comments</span><span class="o">=</span><span class="n">comment</span>
+                        <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_compare_baseline</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -908,7 +929,7 @@
 
     <span class="k">for</span> <span class="n">cpllog</span> <span class="ow">in</span> <span class="n">latestcpllogs</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">memlist</span> <span class="o">=</span> <span class="n">_perf_get_memory</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">cpllog</span><span class="p">)</span>
+            <span class="n">memlist</span> <span class="o">=</span> <span class="n">perf_get_memory_list</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">cpllog</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;insufficient data for memleak test&quot;</span>
 
