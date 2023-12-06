@@ -29,21 +29,8 @@ def create_mock_case(tempdir, get_latest_cpl_logs=None):
 
 class TestUnitBaselinesPerformance(unittest.TestCase):
     @mock.patch("CIME.baselines.performance._perf_get_memory")
-    def test_perf_get_memory_default_no_value(self, _perf_get_memory):
-        _perf_get_memory.return_value = None
-
-        case = mock.MagicMock()
-
-        config = mock.MagicMock()
-
-        config.perf_get_memory.side_effect = AttributeError
-
-        with self.assertRaises(RuntimeError):
-            performance.perf_get_memory(case, config)
-
-    @mock.patch("CIME.baselines.performance._perf_get_memory")
     def test_perf_get_memory_default(self, _perf_get_memory):
-        _perf_get_memory.return_value = [(1, 1000)]
+        _perf_get_memory.return_value = ("1000", "a")
 
         case = mock.MagicMock()
 
@@ -53,35 +40,22 @@ class TestUnitBaselinesPerformance(unittest.TestCase):
 
         mem = performance.perf_get_memory(case, config)
 
-        assert mem == "1000"
+        assert mem == ("1000", "a")
 
     def test_perf_get_memory(self):
         case = mock.MagicMock()
 
         config = mock.MagicMock()
 
-        config.perf_get_memory.return_value = "1000"
+        config.perf_get_memory.return_value = ("1000", "a")
 
         mem = performance.perf_get_memory(case, config)
 
-        assert mem == "1000"
-
-    @mock.patch("CIME.baselines.performance._perf_get_throughput")
-    def test_perf_get_throughput_default_no_value(self, _perf_get_throughput):
-        _perf_get_throughput.return_value = None
-
-        case = mock.MagicMock()
-
-        config = mock.MagicMock()
-
-        config.perf_get_throughput.side_effect = AttributeError
-
-        with self.assertRaises(RuntimeError):
-            performance.perf_get_throughput(case, config)
+        assert mem == ("1000", "a")
 
     @mock.patch("CIME.baselines.performance._perf_get_throughput")
     def test_perf_get_throughput_default(self, _perf_get_throughput):
-        _perf_get_throughput.return_value = 100
+        _perf_get_throughput.return_value = ("100", "a")
 
         case = mock.MagicMock()
 
@@ -91,18 +65,18 @@ class TestUnitBaselinesPerformance(unittest.TestCase):
 
         tput = performance.perf_get_throughput(case, config)
 
-        assert tput == "100"
+        assert tput == ("100", "a")
 
     def test_perf_get_throughput(self):
         case = mock.MagicMock()
 
         config = mock.MagicMock()
 
-        config.perf_get_throughput.return_value = "100"
+        config.perf_get_throughput.return_value = ("100", "a")
 
         tput = performance.perf_get_throughput(case, config)
 
-        assert tput == "100"
+        assert tput == ("100", "a")
 
     def test_get_cpl_throughput_no_file(self):
         throughput = performance.get_cpl_throughput("/tmp/cpl.log")
@@ -155,35 +129,29 @@ class TestUnitBaselinesPerformance(unittest.TestCase):
     def test_read_baseline_file_multi_line(self):
         with mock.patch(
             "builtins.open",
-            mock.mock_open(read_data="#comment about data\n1000.0\n2000.0\n"),
+            mock.mock_open(
+                read_data="sha:1df0 date:2023 1000.0\nsha:3b05 date:2023 2000.0"
+            ),
         ) as mock_file:
             baseline = performance.read_baseline_file("/tmp/cpl-mem.log")
 
         mock_file.assert_called_with("/tmp/cpl-mem.log")
-        assert baseline == "1000.0\n2000.0"
+        assert baseline == "sha:1df0 date:2023 1000.0\nsha:3b05 date:2023 2000.0"
 
     def test_read_baseline_file_content(self):
         with mock.patch(
-            "builtins.open", mock.mock_open(read_data="1000.0")
+            "builtins.open", mock.mock_open(read_data="sha:1df0 date:2023 1000.0")
         ) as mock_file:
             baseline = performance.read_baseline_file("/tmp/cpl-mem.log")
 
         mock_file.assert_called_with("/tmp/cpl-mem.log")
-        assert baseline == "1000.0"
-
-    def test_read_baseline_file(self):
-        with mock.patch("builtins.open", mock.mock_open(read_data="")) as mock_file:
-            baseline = performance.read_baseline_file("/tmp/cpl-mem.log")
-
-        mock_file.assert_called_with("/tmp/cpl-mem.log")
-        assert baseline == ""
+        assert baseline == "sha:1df0 date:2023 1000.0"
 
     def test_write_baseline_file(self):
         with mock.patch("builtins.open", mock.mock_open()) as mock_file:
             performance.write_baseline_file("/tmp/cpl-tput.log", "1000")
 
-        mock_file.assert_called_with("/tmp/cpl-tput.log", "w")
-        mock_file.return_value.write.assert_called_with("1000")
+        mock_file.assert_called_with("/tmp/cpl-tput.log", "a")
 
     @mock.patch("CIME.baselines.performance.get_cpl_throughput")
     @mock.patch("CIME.baselines.performance.get_latest_cpl_logs")
@@ -193,9 +161,8 @@ class TestUnitBaselinesPerformance(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tempdir:
             case, _, _, baseline_root = create_mock_case(tempdir, get_latest_cpl_logs)
 
-            tput = performance._perf_get_throughput(case)
-
-            assert tput == None
+            with self.assertRaises(RuntimeError):
+                performance._perf_get_throughput(case)
 
     @mock.patch("CIME.baselines.performance.get_cpl_mem_usage")
     @mock.patch("CIME.baselines.performance.get_latest_cpl_logs")
@@ -205,9 +172,8 @@ class TestUnitBaselinesPerformance(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tempdir:
             case, _, _, baseline_root = create_mock_case(tempdir, get_latest_cpl_logs)
 
-            mem = performance._perf_get_memory(case, "/tmp/override")
-
-            assert mem == None
+            with self.assertRaises(RuntimeError):
+                performance._perf_get_memory(case, "/tmp/override")
 
     @mock.patch("CIME.baselines.performance.get_cpl_mem_usage")
     @mock.patch("CIME.baselines.performance.get_latest_cpl_logs")
@@ -217,9 +183,8 @@ class TestUnitBaselinesPerformance(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tempdir:
             case, _, _, baseline_root = create_mock_case(tempdir, get_latest_cpl_logs)
 
-            mem = performance._perf_get_memory(case)
-
-            assert mem == None
+            with self.assertRaises(RuntimeError):
+                performance._perf_get_memory(case)
 
     @mock.patch("CIME.baselines.performance.write_baseline_file")
     @mock.patch("CIME.baselines.performance.perf_get_memory")
@@ -270,9 +235,9 @@ class TestUnitBaselinesPerformance(unittest.TestCase):
     def test_perf_write_baseline(
         self, perf_get_throughput, perf_get_memory, write_baseline_file
     ):
-        perf_get_throughput.return_value = "100"
+        perf_get_throughput.return_value = ("100", "a")
 
-        perf_get_memory.return_value = "1000"
+        perf_get_memory.return_value = ("1000", "a")
 
         with tempfile.TemporaryDirectory() as tempdir:
             case, _, _, baseline_root = create_mock_case(tempdir)
@@ -281,8 +246,12 @@ class TestUnitBaselinesPerformance(unittest.TestCase):
 
         perf_get_throughput.assert_called()
         perf_get_memory.assert_called()
-        write_baseline_file.assert_any_call(str(baseline_root / "cpl-tput.log"), "100")
-        write_baseline_file.assert_any_call(str(baseline_root / "cpl-mem.log"), "1000")
+        write_baseline_file.assert_any_call(
+            str(baseline_root / "cpl-tput.log"), "100", "a"
+        )
+        write_baseline_file.assert_any_call(
+            str(baseline_root / "cpl-mem.log"), "1000", "a"
+        )
 
     @mock.patch("CIME.baselines.performance._perf_get_throughput")
     @mock.patch("CIME.baselines.performance.read_baseline_file")
@@ -315,7 +284,7 @@ class TestUnitBaselinesPerformance(unittest.TestCase):
     ):
         read_baseline_file.return_value = ""
 
-        _perf_get_throughput.return_value = 504
+        _perf_get_throughput.return_value = ("504", "a")
 
         with tempfile.TemporaryDirectory() as tempdir:
             case, _, _, baseline_root = create_mock_case(tempdir, get_latest_cpl_logs)
@@ -336,7 +305,7 @@ class TestUnitBaselinesPerformance(unittest.TestCase):
         assert below_tolerance is None
         assert (
             comment
-            == "Could not compare throughput to baseline, as basline had no value."
+            == "Could not compare throughput to baseline, as baseline had no value."
         )
 
     @mock.patch("CIME.baselines.performance._perf_get_throughput")
@@ -347,7 +316,7 @@ class TestUnitBaselinesPerformance(unittest.TestCase):
     ):
         read_baseline_file.return_value = "500"
 
-        _perf_get_throughput.return_value = 504
+        _perf_get_throughput.return_value = ("504", "a")
 
         with tempfile.TemporaryDirectory() as tempdir:
             case, _, _, baseline_root = create_mock_case(tempdir, get_latest_cpl_logs)
@@ -368,7 +337,7 @@ class TestUnitBaselinesPerformance(unittest.TestCase):
         assert below_tolerance
         assert (
             comment
-            == "TPUTCOMP: Computation time changed by -0.80% relative to baseline"
+            == "TPUTCOMP: Throughput changed by -0.80%: baseline=500.000 sypd, tolerance=10%, current=504.000 sypd"
         )
 
     @mock.patch("CIME.baselines.performance._perf_get_throughput")
@@ -379,7 +348,7 @@ class TestUnitBaselinesPerformance(unittest.TestCase):
     ):
         read_baseline_file.return_value = "1000"
 
-        _perf_get_throughput.return_value = 504
+        _perf_get_throughput.return_value = ("504", "a")
 
         with tempfile.TemporaryDirectory() as tempdir:
             case, _, _, baseline_root = create_mock_case(tempdir, get_latest_cpl_logs)
@@ -399,7 +368,8 @@ class TestUnitBaselinesPerformance(unittest.TestCase):
 
         assert not below_tolerance
         assert (
-            comment == "Error: TPUTCOMP: Computation time increase > 5% from baseline"
+            comment
+            == "Error: TPUTCOMP: Throughput changed by 49.60%: baseline=1000.000 sypd, tolerance=5%, current=504.000 sypd"
         )
 
     @mock.patch("CIME.baselines.performance._perf_get_throughput")
@@ -410,7 +380,7 @@ class TestUnitBaselinesPerformance(unittest.TestCase):
     ):
         read_baseline_file.return_value = "500"
 
-        _perf_get_throughput.return_value = 504
+        _perf_get_throughput.return_value = ("504", "a")
 
         with tempfile.TemporaryDirectory() as tempdir:
             case, _, _, baseline_root = create_mock_case(tempdir, get_latest_cpl_logs)
@@ -431,7 +401,7 @@ class TestUnitBaselinesPerformance(unittest.TestCase):
         assert below_tolerance
         assert (
             comment
-            == "TPUTCOMP: Computation time changed by -0.80% relative to baseline"
+            == "TPUTCOMP: Throughput changed by -0.80%: baseline=500.000 sypd, tolerance=5%, current=504.000 sypd"
         )
 
     @mock.patch("CIME.baselines.performance.get_cpl_mem_usage")
@@ -466,7 +436,7 @@ class TestUnitBaselinesPerformance(unittest.TestCase):
         assert below_tolerance
         assert (
             comment
-            == "MEMCOMP: Memory usage highwater has changed by 0.00% relative to baseline"
+            == "MEMCOMP: Memory usage highwater changed by 0.00%: baseline=0.000 MB, tolerance=5%, current=1003.000 MB"
         )
 
     @mock.patch("CIME.baselines.performance.get_cpl_mem_usage")
@@ -557,7 +527,7 @@ class TestUnitBaselinesPerformance(unittest.TestCase):
         assert below_tolerance
         assert (
             comment
-            == "MEMCOMP: Memory usage highwater has changed by 0.30% relative to baseline"
+            == "MEMCOMP: Memory usage highwater changed by 0.30%: baseline=1000.000 MB, tolerance=10%, current=1003.000 MB"
         )
 
     @mock.patch("CIME.baselines.performance.get_cpl_mem_usage")
@@ -592,7 +562,7 @@ class TestUnitBaselinesPerformance(unittest.TestCase):
         assert not below_tolerance
         assert (
             comment
-            == "Error: Memory usage increase >5% from baseline's 1000.000000 to 2003.000000"
+            == "Error: MEMCOMP: Memory usage highwater changed by 100.30%: baseline=1000.000 MB, tolerance=5%, current=2003.000 MB"
         )
 
     @mock.patch("CIME.baselines.performance.get_cpl_mem_usage")
@@ -627,7 +597,7 @@ class TestUnitBaselinesPerformance(unittest.TestCase):
         assert below_tolerance
         assert (
             comment
-            == "MEMCOMP: Memory usage highwater has changed by 0.30% relative to baseline"
+            == "MEMCOMP: Memory usage highwater changed by 0.30%: baseline=1000.000 MB, tolerance=5%, current=1003.000 MB"
         )
 
     def test_get_latest_cpl_logs_found_multiple(self):
