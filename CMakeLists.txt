@@ -96,7 +96,6 @@ endif()
 
 if (EXISTS ${SRC_ROOT}/share/src)
   add_subdirectory(${SRC_ROOT}/share/src share_src)
-  add_subdirectory(${SRC_ROOT}/components/cpl7/mct_shr mct_src)
   add_subdirectory(${SRC_ROOT}/share/unit_test_stubs/util csm_share_stubs)
   include_directories(${SRC_ROOT}/share/include)
 else()
@@ -115,9 +114,4 @@ else()
 endif()
 
 # Now the actual test directories.
-if (EXISTS ${SRC_ROOT}/components/cpl7/driver/unit_test)
-  add_subdirectory(${SRC_ROOT}/components/cpl7/driver/unit_test unit_test)
-else()
-  add_subdirectory(${SRC_ROOT}/driver-mct/unit_test unit_test)
-endif()
 add_subdirectory(${SRC_ROOT}/share/test/unit ${CMAKE_BINARY_DIR}/unittests)
