@@ -12,7 +12,14 @@ logger = logging.getLogger(__name__)
 
 
 class Machines(GenericXML):
-    def __init__(self, infile=None, files=None, machine=None, extra_machines_dir=None):
+    def __init__(
+        self,
+        infile=None,
+        files=None,
+        machine=None,
+        extra_machines_dir=None,
+        read_only=True,
+    ):
         """
         initialize an object
         if a filename is provided it will be used,
@@ -46,7 +53,7 @@ class Machines(GenericXML):
         else:
             expect(False, f"file not found {infile}")
 
-        GenericXML.__init__(self, infile, schema)
+        GenericXML.__init__(self, infile, schema, read_only=read_only)
 
         # Append the contents of $HOME/.cime/config_machines.xml if it exists.
         #

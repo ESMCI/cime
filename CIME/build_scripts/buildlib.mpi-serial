@@ -50,6 +50,11 @@ def buildlib(bldroot, installpath, case):
     ###############################################################################
     caseroot = case.get_value("CASEROOT")
     srcroot = case.get_value("SRCROOT")
+    # check to see if MPI_SERIAL is installed
+    with open(os.path.join(caseroot, "Macros.make"), "r") as f:
+        for line in f:
+            if "MPI_SERIAL_PATH" in line:
+                return
 
     customize_path = os.path.join(srcroot, "cime_config", "customize")
 

@@ -373,7 +373,13 @@ ifeq ($(strip $(MPILIB)), mpi-serial)
   MPIFC	  := $(SFC)
   MPICC	  := $(SCC)
   MPICXX  := $(SCXX)
-  CONFIG_ARGS += MCT_PATH=$(SHAREDLIBROOT)/$(SHAREDPATH)/mct/mpi-serial
+  ifndef MPI_SERIAL_PATH
+    CONFIG_ARGS += MCT_PATH=$(SHAREDLIBROOT)/$(SHAREDPATH)/mct/mpi-serial
+  else
+    CONFIG_ARGS += MCT_PATH=$(MPI_SERIAL_PATH)
+    INC_MPI := $(MPI_SERIAL_PATH)/include
+    LIB_MPI := $(MPI_SERIAL_PATH)/lib
+  endif
 else
   CC  := $(MPICC)
   FC  := $(MPIFC)
@@ -567,9 +573,9 @@ ifdef MPAS_LIBDIR
 # used to build the MPAS dycore if needed.
 libmpas: cam_abortutils.o physconst.o
 	$(MAKE) -C $(MPAS_LIBDIR) CC="$(CC)" FC="$(FC)" PIODEF="$(PIODEF)" \
-        FFLAGS='$(FREEFLAGS) $(FFLAGS)' GPUFLAGS='$(GPUFLAGS)' \
-        CASEROOT='$(CASEROOT)' COMPILER='$(COMPILER)' MACH='$(MACH)' \
-        FCINCLUDES='$(INCLDIR) $(INCS) -I$(ABS_INSTALL_SHAREDPATH)/include -I$(ABS_ESMF_PATH)/include'
+	FFLAGS='$(FREEFLAGS) $(FFLAGS)' GPUFLAGS='$(GPUFLAGS)' \
+	CASEROOT='$(CASEROOT)' COMPILER='$(COMPILER)' MACH='$(MACH)' \
+	FCINCLUDES='$(INCLDIR) $(INCS) -I$(ABS_INSTALL_SHAREDPATH)/include -I$(ABS_ESMF_PATH)/include'
 
 dyn_comp.o: libmpas
 dyn_grid.o: libmpas
