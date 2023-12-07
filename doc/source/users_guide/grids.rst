@@ -94,7 +94,8 @@ The steps for adding a new component grid to the model system follow. This proce
    If you are introducing just one new grid, you can leverage SCRIP grid files that are already in place for the other components.
    There is no supported functionality for creating the SCRIP format file.
 
-2. Build the **check_map** utility by following the instructions in **$CCSMROOT/mapping/check_maps/INSTALL**. Also confirm that the `ESMF <http://www.cesm.ucar.edu/models2.0/external-link-here>`_ toolkit is installed on your machine.
+2. Build the **check_map** utility by following the instructions in **$CCSMROOT/mapping/check_maps/INSTALL**.
+Also confirm that the `ESMF <https://earthsystemmodeling.org/download/>`_ toolkit is installed on your machine.
 
    When you add new user-defined grid files, you also need to generate a set of mapping files so the coupler can send data from a component on one grid to a component on another grid.
    There is an ESMF tool that tests the mapping file by comparing a mapping of a smooth function to its true value on the destination grid.
@@ -176,8 +177,9 @@ The steps for adding a new component grid to the model system follow. This proce
    .. note:: If the ocean and land grids *are identical* then the mapping file will simply be unity and the land fraction will be one minus the ocean fraction.
 
 5. If you are adding a new ocn or rtm grid, create a new rtm->ocn mapping file. (Otherwise you can skip this step.)
-   The process for mapping from the runoff grid to the ocean grid is currently undergoing many changes.
-   At this time, if you are running with a new ocean or runoff grid, please contact Michael Levy (mlevy_AT_ucar_DOT_edu) for assistance. If you are running with standard ocean and runoff grids, the mapping file should already exist and you do not need to generate it.
+   The process for mapping from the runoff grid to the ocean grid is complicated.
+   If you are running with a new ocean or runoff grid and need help, please make a new post on CESM bulletin board (under the `appropriate ocean model <https://bb.cgd.ucar.edu/cesm/#ocean.147>`_).
+   If you are running with standard ocean and runoff grids, the mapping file should already exist and you do not need to generate it.
 
 
 6. CESM specific: If you are adding a new atmosphere grid, this means you are also generating a new land grid, and you will need to create a new CLM surface dataset. (Otherwise you can skip this step).
