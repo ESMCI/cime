@@ -177,7 +177,7 @@ The steps for adding a new component grid to the model system follow. This proce
 
 5. If you are adding a new ocn or rtm grid, create a new rtm->ocn mapping file. (Otherwise you can skip this step.)
    The process for mapping from the runoff grid to the ocean grid is complicated.
-   If you are running with a new ocean or runoff grid and need help, please open a `CIME issue ticket <https://github.com/ESMCI/cime/issues>`_ or make a new post on CESM bulletin board (under the `appropriate ocean model <https://bb.cgd.ucar.edu/cesm/#ocean.147>`_).
+   If you are running with a new ocean or runoff grid and need help, please make a new post on CESM bulletin board (under the `appropriate ocean model <https://bb.cgd.ucar.edu/cesm/#ocean.147>`_).
    If you are running with standard ocean and runoff grids, the mapping file should already exist and you do not need to generate it.
 
 
