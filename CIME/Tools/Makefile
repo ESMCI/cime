@@ -601,10 +601,12 @@ ifdef LAPACK_LIBDIR
    SLIBS += -L$(LAPACK_LIBDIR) -llapack -lblas
 endif
 ifdef LIB_MPI
-   ifndef MPI_LIB_NAME
-      SLIBS += -L$(LIB_MPI) -lmpi
-   else
-      SLIBS += -L$(LIB_MPI) -l$(MPI_LIB_NAME)
+   ifndef MPI_SERIAL_PATH
+     ifndef MPI_LIB_NAME
+	SLIBS += -L$(LIB_MPI) -lmpi
+     else
+	SLIBS += -L$(LIB_MPI) -l$(MPI_LIB_NAME)
+     endif
    endif
 endif
 
@@ -925,12 +927,21 @@ GENF90 ?= $(CIMEROOT)/CIME/non_py/externals/genf90/genf90.pl
 .SUFFIXES: .F90 .F .f90 .f .c .cpp .o .in
 
 ifeq ($(MPILIB),mpi-serial)
-  MPISERIAL = $(INSTALL_SHAREDPATH)/lib/libmpi-serial.a
-  MLIBS += -L$(INSTALL_SHAREDPATH)/lib -lmpi-serial
-  CMAKE_OPTS += -DMPI_C_INCLUDE_PATH=$(INSTALL_SHAREDPATH)/include \
+  ifdef MPI_SERIAL_PATH
+    MPISERIAL = $(MPI_SERIAL_PATH)/lib/libmpi-serial.a
+    MLIBS += -L$(MPI_SERIAL_PATH)/lib -lmpi-serial
+    CMAKE_OPTS += -DMPI_C_INCLUDE_PATH=$(MPI_SERIAL_PATH)/include \
+      -DMPI_Fortran_INCLUDE_PATH=$(MPI_SERIAL_PATH)/include \
+      -DMPI_C_LIBRARIES=$(MPI_SERIAL_PATH)/lib/libmpi-serial.a \
+      -DMPI_Fortran_LIBRARIES=$(MPI_SERIAL_PATH)/lib/libmpi-serial.a
+  else
+    MPISERIAL = $(INSTALL_SHAREDPATH)/lib/libmpi-serial.a
+    MLIBS += -L$(INSTALL_SHAREDPATH)/lib -lmpi-serial
+    CMAKE_OPTS += -DMPI_C_INCLUDE_PATH=$(INSTALL_SHAREDPATH)/include \
       -DMPI_Fortran_INCLUDE_PATH=$(INSTALL_SHAREDPATH)/include \
       -DMPI_C_LIBRARIES=$(INSTALL_SHAREDPATH)/lib/libmpi-serial.a \
       -DMPI_Fortran_LIBRARIES=$(INSTALL_SHAREDPATH)/lib/libmpi-serial.a
+  endif
 endif
 
 $(MCTLIBS)  : $(MPISERIAL)
