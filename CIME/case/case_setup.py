@@ -422,6 +422,14 @@ def _case_setup_impl(
                 run_cmd_no_fail(
                     "{}/cime_config/cism.template {}".format(glcroot, caseroot)
                 )
+            if comp == "cam":
+                camroot = case.get_value("COMP_ROOT_DIR_ATM")
+                logger.debug("Running cam.case_setup.py")
+                run_cmd_no_fail(
+                    "python {cam}/cime_config/cam.case_setup.py {cam} {case}".format(
+                    cam=camroot, case=caseroot
+                    ) 
+                )
 
         _build_usernl_files(case, "drv", "cpl")
 
