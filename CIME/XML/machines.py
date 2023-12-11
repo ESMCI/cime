@@ -137,10 +137,19 @@ class Machines(GenericXML):
         Return a list of machines defined for a given CIME_MODEL
         """
         machines = []
-        nodes = self.get_children("machine")
-        for node in nodes:
-            mach = self.get(node, "MACH")
-            machines.append(mach)
+        if self.version < 3:
+            nodes = self.get_children("machine")
+            for node in nodes:
+                mach = self.get(node, "MACH")
+                machines.append(mach)
+        else:
+            machines = [
+                os.path.basename(f.path)
+                for f in os.scandir(self.machines_dir)
+                if f.is_dir()
+            ]
+            machines.remove("cmake_macros")
+        machines.sort()
         return machines
 
     def probe_machine_name(self, warn=True):
