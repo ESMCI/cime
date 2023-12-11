@@ -291,11 +291,15 @@ class Machines(GenericXML):
         if machine == "Query":
             return machine
         elif self.version == 3:
-            GenericXML.read(
-                self,
-                os.path.join(self.machines_dir, machine, "config_machines.xml"),
-                schema=schema,
+            machines_file = os.path.join(
+                self.machines_dir, machine, "config_machines.xml"
             )
+            if os.path.isfile(machines_file):
+                GenericXML.read(
+                    self,
+                    machines_file,
+                    schema=schema,
+                )
         self.machine_node = super(Machines, self).get_child(
             "machine",
             {"MACH": machine},
