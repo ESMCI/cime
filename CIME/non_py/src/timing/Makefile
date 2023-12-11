@@ -52,7 +52,11 @@ ifeq ($(strip $(MPILIB)), mpi-serial)
   FC      := $(SFC)
   MPIFC   := $(SFC)
   MPICC   := $(SCC)
-  INCLDIR += -I$(GPTL_LIBDIR)/../mct/mpi-serial
+  ifdef MPI_SERIAL_PATH
+    INCLDIR += -I$(MPI_SERIAL_PATH)/include
+  else
+    INCLDIR += -I$(GPTL_LIBDIR)/../mct/mpi-serial
+  endif
 else
   CC := $(MPICC)
   FC := $(MPIFC)
