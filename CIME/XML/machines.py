@@ -188,7 +188,7 @@ class Machines(GenericXML):
     def _probe_machine_name_one_guess_v2(self, nametomatch):
 
         nodes = self.get_children("machine")
-
+        machine = None
         for node in nodes:
             machtocheck = self.get(node, "MACH")
             logger.debug("machine is " + machtocheck)
