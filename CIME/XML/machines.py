@@ -44,8 +44,6 @@ class Machines(GenericXML):
             files = Files()
         if infile is None:
             infile = files.get_value("MACHINES_SPEC_FILE")
-        schema = files.get_schema("MACHINES_SPEC_FILE")
-        logger.debug("Verifying using schema {}".format(schema))
 
         self.machines_dir = os.path.dirname(infile)
         if os.path.exists(infile):
@@ -53,9 +51,16 @@ class Machines(GenericXML):
         else:
             expect(False, f"file not found {infile}")
 
-        GenericXML.__init__(self, infile, schema, read_only=read_only)
+        schema = {
+            "3.0": files.get_schema(
+                "MACHINES_SPEC_FILE", attributes={"version": "3.0"}
+            ),
+            "2.0": files.get_schema(
+                "MACHINES_SPEC_FILE", attributes={"version": "2.0"}
+            ),
+        }
 
-        self.version = self.get_version()
+        GenericXML.__init__(self, infile, schema, read_only=read_only)
 
         # Append the contents of $HOME/.cime/config_machines.xml if it exists.
         #
@@ -137,7 +142,7 @@ class Machines(GenericXML):
         Return a list of machines defined for a given CIME_MODEL
         """
         machines = []
-        if self.version < 3:
+        if self.get_version() < 3:
             nodes = self.get_children("machine")
             for node in nodes:
                 mach = self.get(node, "MACH")
@@ -189,7 +194,7 @@ class Machines(GenericXML):
         Find a matching regular expression for nametomatch in the NODENAME_REGEX
         field in the file. First match wins. Returns None if no match is found.
         """
-        if self.version < 3:
+        if self.get_version() < 3:
             return self._probe_machine_name_one_guess_v2(nametomatch)
         else:
             return self._probe_machine_name_one_guess_v3(nametomatch)
@@ -299,7 +304,7 @@ class Machines(GenericXML):
         """
         if machine == "Query":
             return machine
-        elif self.version == 3:
+        elif self.get_version() == 3:
             machines_file = os.path.join(
                 self.machines_dir, machine, "config_machines.xml"
             )

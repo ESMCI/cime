@@ -8,7 +8,7 @@ from CIME.utils import safe_copy, get_src_root
 import xml.etree.ElementTree as ET
 
 # pylint: disable=import-error
-from distutils.spawn import find_executable
+from shutil import which
 import getpass
 from copy import deepcopy
 from collections import namedtuple
@@ -126,8 +126,10 @@ class GenericXML(object):
             logger.debug("read: {}".format(infile))
             with open(infile, "r", encoding="utf-8") as fd:
                 self.read_fd(fd)
-
-            if schema is not None and self.get_version() > 1.0:
+            version = str(self.get_version())
+            if type(schema) is dict:
+                self.validate_xml_file(infile, schema[version])
+            elif schema is not None and self.get_version() > 1.0:
                 self.validate_xml_file(infile, schema)
 
             logger.debug("File version is {}".format(str(self.get_version())))
@@ -472,7 +474,7 @@ class GenericXML(object):
         xmlstr = self.get_raw_record()
 
         # xmllint provides a better format option for the output file
-        xmllint = find_executable("xmllint")
+        xmllint = which("xmllint")
 
         if xmllint:
             if isinstance(outfile, str):
@@ -690,7 +692,7 @@ class GenericXML(object):
         """
         expect(os.path.isfile(filename), "xml file not found {}".format(filename))
         expect(os.path.isfile(schema), "schema file not found {}".format(schema))
-        xmllint = find_executable("xmllint")
+        xmllint = which("xmllint")
 
         expect(
             xmllint and os.path.isfile(xmllint),

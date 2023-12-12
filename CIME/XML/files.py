@@ -136,7 +136,10 @@ class Files(EntryID):
 
     def get_schema(self, nodename, attributes=None):
         node = self.get_optional_child("entry", {"id": nodename})
+
         schemanode = self.get_optional_child("schema", root=node, attributes=attributes)
+        logger.debug("Found schema for {} {}".format(nodename, self.text(schemanode)))
+
         if schemanode is not None:
             logger.debug("Found schema for {}".format(nodename))
             return self.get_resolved_value(self.text(schemanode))
