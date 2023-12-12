@@ -60,7 +60,7 @@ class Machines(GenericXML):
             ),
         }
         # Before v3 there was but one choice
-        if not schema:
+        if not schema["3.0"]:
             schema = files.get_schema("MACHINES_SPEC_FILE")
 
         logger.debug("Verifying using schema {}".format(schema))
