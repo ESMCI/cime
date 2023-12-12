@@ -59,6 +59,7 @@ class Machines(GenericXML):
                 "MACHINES_SPEC_FILE", attributes={"version": "2.0"}
             ),
         }
+        logger.debug("Verifying using schema {}".format(schema))
 
         GenericXML.__init__(self, infile, schema, read_only=read_only)
 
