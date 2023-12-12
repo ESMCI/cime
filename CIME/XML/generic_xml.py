@@ -690,8 +690,13 @@ class GenericXML(object):
         """
         validate an XML file against a provided schema file using pylint
         """
-        expect(os.path.isfile(filename), "xml file not found {}".format(filename))
-        expect(os.path.isfile(schema), "schema file not found {}".format(schema))
+        expect(
+            filename and os.path.isfile(filename),
+            "xml file not found {}".format(filename),
+        )
+        expect(
+            schema and os.path.isfile(schema), "schema file not found {}".format(schema)
+        )
         xmllint = which("xmllint")
 
         expect(
