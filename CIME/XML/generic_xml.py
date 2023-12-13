@@ -105,7 +105,8 @@ class GenericXML(object):
 
     def read(self, infile, schema=None):
         """
-        Read and parse an xml file into the object
+        Read and parse an xml file into the object.  The schema variable can either be a path to an xsd schema file or
+        a dictionary of paths to files by version.
         """
         cached_read = False
         if not self.DISABLE_CACHING and infile in self._FILEMAP:

@@ -30,6 +30,9 @@ class Machines(GenericXML):
         additional directory that will be searched for a config_machines.xml file; if
         found, the contents of this file will be appended to the standard
         config_machines.xml. An empty string is treated the same as None.
+
+        The schema variable can be passed as a path to an xsd schema file or a dictionary of paths
+        with version number as keys.
         """
 
         self.machine_node = None
