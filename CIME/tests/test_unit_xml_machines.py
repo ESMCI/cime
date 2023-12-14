@@ -78,10 +78,10 @@ MACHINE_TEST_XML = """<config_machines version="2.0">
       <env name="NETCDF_FORTRAN_PATH">/opt/ubuntu/pe/netcdf-hdf5parallel/4.8.1.3/gnu/9.1/</env>
       <env name="PNETCDF_PATH">$SHELL{dirname $(dirname $(which pnetcdf_version))}</env>
     </environment_variables>
-    <environment_variables SMP_PRESENT="TRUE">
+    <environment_variables BUILD_THREADED="TRUE">
       <env name="OMP_STACKSIZE">128M</env>
     </environment_variables>
-    <environment_variables SMP_PRESENT="TRUE" compiler="gnu">
+    <environment_variables BUILD_THREADED="TRUE" compiler="gnu">
       <env name="OMP_PLACES">cores</env>
     </environment_variables>
   </machine>
@@ -126,10 +126,10 @@ MACHINE_TEST_XML = """<config_machines version="2.0">
       <env name="NETCDF_FORTRAN_PATH">/opt/ubuntu/pe/netcdf-hdf5parallel/4.8.1.3/gnu/9.1/</env>
       <env name="PNETCDF_PATH">$SHELL{dirname $(dirname $(which pnetcdf_version))}</env>
     </environment_variables>
-    <environment_variables SMP_PRESENT="TRUE">
+    <environment_variables BUILD_THREADED="TRUE">
       <env name="OMP_STACKSIZE">128M</env>
     </environment_variables>
-    <environment_variables SMP_PRESENT="TRUE" compiler="gnu">
+    <environment_variables BUILD_THREADED="TRUE" compiler="gnu">
       <env name="OMP_PLACES">cores</env>
     </environment_variables>
   </machine>
