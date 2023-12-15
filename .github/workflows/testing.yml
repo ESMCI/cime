@@ -108,6 +108,9 @@ jobs:
           # exclude nuopc driver when running e3sm tests
           - model: "e3sm"
             driver: "nuopc"
+          # exclude mct driver when running cesm tests
+          - model: "cesm"
+            driver: "mct"
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
