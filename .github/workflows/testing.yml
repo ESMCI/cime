@@ -72,7 +72,7 @@ jobs:
         env:
           INIT: "false"
           CIME_MODEL: "cesm"
-          CIME_DRIVER: "mct"
+          CIME_DRIVER: "nuopc"
           UPDATE_CIME: "true"
           GIT_SHALLOW: "true"
           CIME_TEST_PLATFORM: ubuntu-latest
