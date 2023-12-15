@@ -43,7 +43,8 @@
     <group>case_last</group>
     <file>env_case.xml</file>
     <desc>file containing machine specifications for target model primary component (for documentation only - DO NOT EDIT)</desc>
-    <schema>$CIMEROOT/CIME/data/config/xml_schemas/config_machines.xsd</schema>
+    <schema version="2.0">$CIMEROOT/CIME/data/config/xml_schemas/config_machines.xsd</schema>
+    <schema version="3.0">$CIMEROOT/CIME/data/config/xml_schemas/config_machines_version3.xsd</schema>
   </entry>
 
   <entry id="BATCH_SPEC_FILE">
