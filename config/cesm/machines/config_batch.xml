@@ -349,6 +349,7 @@
     </directives>
     <queues>
       <queue walltimemax="12:00:00" nodemin="1" nodemax="2488" default="true">main</queue>
+      <queue walltimemax="1:00:00" nodemin="1" nodemax="2" >develop</queue>
     </queues>
   </batch_system>
 
