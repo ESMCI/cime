@@ -164,9 +164,10 @@ def generate_makefile_macro(case, caseroot):
 
         # Append CMakeLists.txt with compset specific stuff
         comps = _get_compset_comps(case)
+        if not case.get_value("COMP_INTERFACE") == "nuopc":
+            comps.append("mct")
         comps.extend(
             [
-                "mct",
                 "pio{}".format(case.get_value("PIO_VERSION")),
                 "gptl",
                 "csm_share",
@@ -755,10 +756,8 @@ def _build_libraries(
         logger.info("UFS_DRIVER is set to {}".format(ufs_driver))
     if ufs_driver and ufs_driver == "nems" and not cpl_in_complist:
         libs = []
-    elif case.get_value("MODEL") == "cesm" and comp_interface == "nuopc":
-        libs = ["gptl", "mct", "pio", "csm_share"]
     elif case.get_value("MODEL") == "cesm":
-        libs = ["gptl", "mct", "pio", "csm_share", "csm_share_cpl7"]
+        libs = ["gptl", "pio", "csm_share"]
     elif case.get_value("MODEL") == "e3sm":
         libs = ["gptl", "mct", "spio", "csm_share"]
     else:
