@@ -162,6 +162,7 @@ class Machines(GenericXML):
                 if f.is_dir()
             ]
             machines.remove("cmake_macros")
+            machines.remove("userdefined_laptop_template")
         machines.sort()
         return machines
 
