@@ -343,39 +343,6 @@
     </submit_args>
   </batch_system>
 
-  <batch_system MACH="cori-haswell" type="slurm" >
-    <batch_submit>sbatch</batch_submit>
-    <submit_args>
-      <arg flag="--time" name="$JOB_WALLCLOCK_TIME"/>
-      <arg flag="-q" name="$JOB_QUEUE"/>
-      <arg flag="--account" name="$PROJECT"/>
-    </submit_args>
-    <directives>
-      <directive>-C haswell </directive>
-    </directives>
-    <queues>
-      <queue walltimemax="06:00:00" nodemin="1" nodemax="710">regular</queue>
-    <!--  <queue walltimemax="00:30:00" nodemin="1" nodemax="3072" default="true">debug</queue> -->
-    </queues>
-  </batch_system>
-
-  <batch_system MACH="cori-knl" type="slurm" >
-    <batch_submit>sbatch</batch_submit>
-    <submit_args>
-      <arg flag="--time" name="$JOB_WALLCLOCK_TIME"/>
-      <arg flag="-q" name="$JOB_QUEUE"/>
-      <arg flag="--account" name="$PROJECT"/>
-    </submit_args>
-    <directives>
-      <directive>-C knl,quad,cache </directive>
-      <directive>-S 2 </directive>
-    </directives>
-    <queues>
-      <queue walltimemax="02:00:00" nodemin="1" nodemax="177">regular</queue>
-    <!--  <queue walltimemax="00:30:00" nodemin="1" nodemax="3072" default="true">debug</queue> -->
-    </queues>
-  </batch_system>
-
   <batch_system MACH="daint" type="slurm" >
     <batch_submit>sbatch</batch_submit>
     <submit_args>
@@ -620,6 +587,24 @@
     </queues>
   </batch_system>
 
+  <batch_system MACH="perlmutter" type="slurm" >
+    <batch_submit>sbatch</batch_submit>
+    <submit_args>
+      <arg flag="--time" name="$JOB_WALLCLOCK_TIME" />
+      <arg flag="-q" name="$JOB_QUEUE" />
+      <arg flag="--account" name="$PROJECT" />
+    </submit_args>
+    <directives>
+      <directive> --constraint=cpu</directive>
+    </directives>
+    <queues>
+      <queue walltimemax="24:00:00" nodemin="1" nodemax="3072">regular</queue>
+      <queue walltimemax="00:30:00" nodemin="1" nodemax="8" default="true">debug</queue>
+    </queues>
+  </batch_system>
+
+
+
   <!-- NAS pleiades machines -->
   <batch_system type="pbs" MACH="pleiades-bro" >
     <directives>
@@ -718,7 +703,7 @@
       <arg flag="-P" name="$PROJECT"/>
     </submit_args>
     <directives>
-      <directive                       > -R "span[ptile={{ tasks_per_node }}]"</directive>
+      <directive> -R "span[ptile={{ tasks_per_node }}]"</directive>
     </directives>
     <queues>
       <queue walltimemin="00:00" walltimemax="02:00" default="true">p_short</queue>
