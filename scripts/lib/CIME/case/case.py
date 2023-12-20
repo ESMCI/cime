@@ -859,7 +859,7 @@ class Case(object):
 
         self._setup_mach_pes(pecount, multi_driver, ninst, machine_name, mpilib)
 
-        if multi_driver and ninst>1:
+        if multi_driver and int(ninst) > 1:
             logger.info(" Driver/Coupler has %s instances" % ninst)
 
         #--------------------------------------------
