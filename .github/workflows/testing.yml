@@ -101,6 +101,8 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
     strategy:
+      # allow all jobs to finish
+      fail-fast: false
       matrix:
         model: ["e3sm", "cesm"]
         driver: ["mct", "nuopc"]
