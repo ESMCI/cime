@@ -48,7 +48,7 @@ ifeq ($(strip $(SMP)),TRUE)
    THREADDIR = threads
    compile_threaded = TRUE
 else
-   ifeq ($(strip $(SMP_PRESENT)),TRUE)
+   ifeq ($(strip $(BUILD_THREADED)),TRUE)
       THREADDIR = threads
       compile_threaded = TRUE
    else

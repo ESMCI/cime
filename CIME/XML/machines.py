@@ -150,18 +150,22 @@ class Machines(GenericXML):
         Return a list of machines defined for a given CIME_MODEL
         """
         machines = []
-        if self.get_version() < 3:
-            nodes = self.get_children("machine")
-            for node in nodes:
-                mach = self.get(node, "MACH")
-                machines.append(mach)
-        else:
-            machines = [
+        nodes = self.get_children("machine")
+        for node in nodes:
+            mach = self.get(node, "MACH")
+            machines.append(mach)
+        if self.get_version() == 3.0:
+            machdirs = [
                 os.path.basename(f.path)
                 for f in os.scandir(self.machines_dir)
                 if f.is_dir()
             ]
-            machines.remove("cmake_macros")
+            machdirs.remove("cmake_macros")
+            machdirs.remove("userdefined_laptop_template")
+            for mach in machdirs:
+                if mach not in machines:
+                    machines.append(mach)
+
         machines.sort()
         return machines
 

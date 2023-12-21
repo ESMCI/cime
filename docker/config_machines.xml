@@ -3,7 +3,7 @@
 <config_machines version="2.0">
   <machine MACH="docker">
     <DESC>Docker</DESC>
-    <NODENAME_REGEX>docker</NODENAME_REGEX>
+<!--    <NODENAME_REGEX>docker</NODENAME_REGEX> -->
     <OS>LINUX</OS>
     <PROXY />
     <COMPILERS>gnu,gnuX</COMPILERS>

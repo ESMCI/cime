@@ -45,7 +45,7 @@ _CMD_ARGS_FOR_BUILD = (
     "OS",
     "PIO_VERSION",
     "SHAREDLIBROOT",
-    "SMP_PRESENT",
+    "BUILD_THREADED",
     "USE_ESMF_LIB",
     "USE_MOAB",
     "CAM_CONFIG_OPTS",
