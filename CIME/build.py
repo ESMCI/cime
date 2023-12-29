@@ -1,5 +1,5 @@
 """
-functions for building CIME models
+functions for building CIME models using cmake and make
 """
 import glob, shutil, time, threading, subprocess
 from pathlib import Path
