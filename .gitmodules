@@ -1,3 +1,24 @@
 [submodule "CIME/non_py/cprnc"]
 	path = CIME/non_py/cprnc
 	url = https://github.com/ESMCI/cprnc
+[submodule "ccs_config"]
+	path = ccs_config
+	url = https://github.com/ESMCI/ccs_config_cesm
+[submodule "components/cmeps"]
+	path = components/cmeps
+	url = https://github.com/ESCOMP/CMEPS.git
+[submodule "components/cdeps"]
+	path = components/cdeps
+	url = https://github.com/ESCOMP/CDEPS.git
+[submodule "components/cpl7"]
+	path = components/cpl7
+	url = https://github.com/ESCOMP/CESM_CPL7andDataComps
+[submodule "share"]
+	path = share
+	url = https://github.com/ESCOMP/CESM_share
+[submodule "libraries/mct"]
+	path = libraries/mct
+	url = https://github.com/MCSclimate/MCT
+[submodule "libraries/parallelio"]
+	path = libraries/parallelio
+	url = https://github.com/NCAR/ParallelIO

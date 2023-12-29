@@ -117,8 +117,6 @@ function init_e3sm() {
         git submodule update --init ${extras}
     fi
 
-    fixup_mct "${install_path}/externals/mct"
-
     update_cime "${install_path}/cime"
 
     mkdir -p /storage/inputdata
@@ -139,6 +137,8 @@ function init_e3sm() {
     echo "Initializing submodules in ${PWD}"
 
     git submodule update --init ${extras}
+
+    fixup_mct "${install_path}/externals/mct"
 }
 
 #######################################
@@ -151,10 +151,10 @@ function init_cesm() {
 
     local install_path="${INSTALL_PATH:-/src/CESM}"
 
-    if [[ ! -e "${install_path}" ]]
-    then
-        clone_repo "${CESM_REPO}" "${install_path}" "${CESM_BRANCH:-master}"
-    fi
+#    if [[ ! -e "${install_path}" ]]
+#    then
+#        clone_repo "${CESM_REPO}" "${install_path}" "${CESM_BRANCH:-master}"
+#    fi
 
     pushd "${install_path}"
 
@@ -162,7 +162,7 @@ function init_cesm() {
 
     echo "Checking out externals from `pwd`"
 
-    "${install_path}/manage_externals/checkout_externals" -v
+    "${install_path}/install"
 
     popd
 
@@ -203,13 +203,11 @@ function init_cime() {
     fi
 
     # required to using checkout_externals script
-    clone_repo "${CESM_REPO}" "/src/CESM" "${CESM_BRANCH:-master}"
+#    clone_repo "${CESM_REPO}" "/src/CESM" "${CESM_BRANCH:-master}"
 
     cd "${install_path}"
 
-    "/src/CESM/manage_externals/checkout_externals" -v
-
-    fixup_mct "${install_path}/libraries/mct"
+    "install"
 
     update_cime "${install_path}"
 
@@ -226,6 +224,9 @@ function init_cime() {
     fi
 
     git submodule update --init
+
+    fixup_mct "${install_path}/libraries/mct"
+
 }
 
 if [[ ! -e "${HOME}/.cime" ]]
@@ -245,9 +246,9 @@ then
     if [[ "${CIME_MODEL}" == "e3sm" ]]
     then
         init_e3sm
-    elif [[ "${CIME_MODEL}" == "cesm" ]]
-    then
-        init_cesm
+#    elif [[ "${CIME_MODEL}" == "cesm" ]]
+#    then
+#        init_cesm
     else
         init_cime
     fi

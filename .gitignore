@@ -22,8 +22,4 @@ scripts/Tools/JENKINS*
 # Ignore anything that are produced under scripts "cases" directory
 /scripts/cases/
 
-#Ignore Externals
-components
-libraries
-share
 test_coverage/**
