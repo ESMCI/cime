@@ -145,13 +145,13 @@ class FakeCase(object):
             "DEBUG": debug,
             "COMP_INTERFACE": comp_interface,
             "PIO_VERSION": 2,
-            "SMP_PRESENT": threading,
+            "BUILD_THREADED": threading,
             "MODEL": get_model(),
             "SRCROOT": get_src_root(),
         }
 
     def get_build_threaded(self):
-        return self.get_value("SMP_PRESENT")
+        return self.get_value("BUILD_THREADED")
 
     def get_case_root(self):
         """Returns the root directory for this case."""

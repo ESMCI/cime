@@ -20,22 +20,22 @@ class TestTestScheduler(base.BaseTestCase):
             self.skipTest("Skipping chksum test. Depends on CESM settings")
 
         ts = test_scheduler.TestScheduler(
-            ["SEQ_Ln9.f19_g16_rx1.A.cori-haswell_gnu"],
-            machine_name="cori-haswell",
+            ["SEQ_Ln9.f19_g16_rx1.A.perlmutter_gnu"],
+            machine_name="perlmutter",
             chksum=True,
             test_root="/tests",
         )
 
         with mock.patch.object(ts, "_shell_cmd_for_phase") as _shell_cmd_for_phase:
             ts._run_phase(
-                "SEQ_Ln9.f19_g16_rx1.A.cori-haswell_gnu"
+                "SEQ_Ln9.f19_g16_rx1.A.perlmutter_gnu"
             )  # pylint: disable=protected-access
 
             _shell_cmd_for_phase.assert_called_with(
-                "SEQ_Ln9.f19_g16_rx1.A.cori-haswell_gnu",
+                "SEQ_Ln9.f19_g16_rx1.A.perlmutter_gnu",
                 "./case.submit --skip-preview-namelist --chksum",
                 "RUN",
-                from_dir="/tests/SEQ_Ln9.f19_g16_rx1.A.cori-haswell_gnu.00:00:00",
+                from_dir="/tests/SEQ_Ln9.f19_g16_rx1.A.perlmutter_gnu.00:00:00",
             )
 
     def test_a_phases(self):

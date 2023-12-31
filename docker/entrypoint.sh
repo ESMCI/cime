@@ -27,7 +27,7 @@ function clone_repo() {
         extras="${extras} --depth 1"
     fi
 
-    echo "Cloning branch ${branch} of ${repo} into ${path} using ${flags}"
+    echo "Cloning branch ${branch} of ${repo} into ${path} with flags: ${flags}"
 
     git clone -b "${branch}" ${extras} "${repo}" "${path}" || true
 }
@@ -156,17 +156,21 @@ function init_cesm() {
         clone_repo "${CESM_REPO}" "${install_path}" "${CESM_BRANCH:-master}"
     fi
 
-    cd "${install_path}"
+    pushd "${install_path}"
 
-    echo "Checking out externals"
+    pushd "${install_path}/cime"
 
-    "${install_path}/manage_externals/checkout_externals"
+    echo "Checking out externals from `pwd`"
+
+    "${install_path}/manage_externals/checkout_externals" -v
+
+    popd
 
     fixup_mct "${install_path}/libraries/mct"
 
     update_cime "${install_path}/cime/"
 
-    cd "${install_path}/cime"
+    pushd "${install_path}/cime"
 
     # Need to run manage_externals again incase branch changes externals instructions
     # "${install_path}/manage_externals/checkout_externals -e cime/Externals_cime.cfg"

@@ -109,10 +109,12 @@ class TestCreateNewcase(base.BaseTestCase):
             new_batch_command = case.get_value(
                 "BATCH_COMMAND_FLAGS", subgroup="case.run"
             )
-            self.assertTrue(
-                "fred" in new_batch_command,
-                msg="Failed to update JOB_QUEUE in BATCH_COMMAND_FLAGS",
-            )
+        self.assertTrue(
+            "fred" in new_batch_command,
+            msg="Failed to update JOB_QUEUE in BATCH_COMMAND_FLAGS {}".format(
+                new_batch_command
+            ),
+        )
 
         # Trying to set values outside of context manager should fail
         case = Case(testdir, read_only=False)
