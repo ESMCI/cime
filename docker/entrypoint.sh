@@ -197,17 +197,19 @@ function init_cime() {
     then
         clone_repo "${CIME_REPO}" "${install_path}" "${CIME_BRANCH:-master}"
     fi
+    if [[ ! -e "${install_path}/install" ]]
+    then
+        # required to using checkout_externals script
+        clone_repo "${CESM_REPO}" "/src/CESM" "${CESM_BRANCH:-master}"
 
-    # required to using checkout_externals script
-    clone_repo "${CESM_REPO}" "/src/CESM" "${CESM_BRANCH:-master}"
+        cd "${install_path}"
 
-    cd "${install_path}"
-
-    "/src/CESM/manage_externals/checkout_externals"
-
-    fixup_mct "${install_path}/libraries/mct"
+        "/src/CESM/manage_externals/checkout_externals"
+    fi
 
     update_cime "${install_path}"
+
+    fixup_mct "${install_path}/libraries/mct"
 
     cd "${install_path}"
 
@@ -221,7 +223,7 @@ function init_cime() {
         sed -i".bak" "s/git@github.com:/https:\/\/github.com\//g" "${PWD}/.gitmodules"
     fi
 
-    git submodule update --init
+    git submodule update --init --recursive
 }
 
 if [[ ! -e "${HOME}/.cime" ]]
@@ -241,7 +243,7 @@ then
     if [[ "${CIME_MODEL}" == "e3sm" ]]
     then
         init_e3sm
-    elif [[ "${CIME_MODEL}" == "cesm" ]]
+    elif [[ "${CIME_MODEL}" == "cesm" && ! -f "install" ]]
     then
         init_cesm
     else
