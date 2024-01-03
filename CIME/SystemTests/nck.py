@@ -61,4 +61,3 @@ class NCK(SystemTestsCompareTwo):
             if rootpe > 1:
                 self._case.set_value("ROOTPE_{}".format(comp), int(rootpe - ntasks))
             self._case.set_value("NTASKS_{}".format(comp), ntasks * 2)
-        self._case.case_setup(test_mode=True, reset=True)
