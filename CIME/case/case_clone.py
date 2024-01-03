@@ -219,6 +219,8 @@ def create_clone(
             )
         )
 
+        newcase.case_setup()
+
     return newcase
 
 
