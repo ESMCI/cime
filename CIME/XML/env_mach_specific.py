@@ -277,19 +277,25 @@ class EnvMachSpecific(EnvBase):
                         if env_value.startswith("sh"):
                             lines.append("{}".format(env_name))
                     else:
-                        lines.append("export {}={}".format(env_name, env_value))
+                        if env_value is None:
+                            lines.append("unset {}".format(env_name))
+                        else:
+                            lines.append("export {}={}".format(env_name, env_value))
 
                 elif shell == "csh":
                     if env_name == "source":
                         if env_value.startswith("csh"):
                             lines.append("{}".format(env_name))
                     else:
-                        lines.append("setenv {} {}".format(env_name, env_value))
+                        if env_value is None:
+                            lines.append("unsetenv {}".format(env_name))
+                        else:
+                            lines.append("setenv {} {}".format(env_name, env_value))
                 else:
                     expect(False, "Unknown shell type: '{}'".format(shell))
 
         with open(os.path.join(output_dir, filename), "w") as fd:
-            fd.write("\n".join(lines))
+            fd.write("\n".join(lines) + "\n")
 
     # Private API
 
