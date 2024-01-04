@@ -207,8 +207,12 @@ function init_cime() {
 
     cd "${install_path}"
 
-    "/src/CESM/manage_externals/checkout_externals" -v
-
+    if [[ ! -e "/src/CESM/manage_externals" ]]
+    then
+      "/src/CESM/install"
+    else
+      "/src/CESM/manage_externals/checkout_externals" -v
+    fi
     fixup_mct "${install_path}/libraries/mct"
 
     update_cime "${install_path}"
