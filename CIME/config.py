@@ -308,3 +308,8 @@ class Config(ConfigBase):
             "{srcroot}/libraries/mct",
             desc="Sets the path to the mct library.",
         )
+        self._set_attribute(
+            "mpi_serial_path",
+            "{srcroot}/libraries/mpi-serial",
+            desc="Sets the path to the mpi-serial library.",
+        )

@@ -642,6 +642,10 @@ endif
 
 ifneq ("$(wildcard $(SRCROOT)/libraries)","")
     EXTERN_PATH = $(SRCROOT)/libraries
+    MPI-SERIAL_PATH = $(EXTERN_PATH)/mct/mpi-serial
+    ifeq ("$(wildcard $(MPI-SERIAL_PATH))","")
+      MPI-SERIAL_PATH = $(EXTERN_PATH)/mpi-serial
+    endif
 else
     EXTERN_PATH = $(SRCROOT)/externals
 endif
@@ -651,8 +655,8 @@ $(SHAREDLIBROOT)/$(SHAREDPATH)/mct/Makefile.conf:
 	$(CONFIG_SHELL) $(EXTERN_PATH)/mct/configure $(CONFIG_ARGS) --srcdir $(EXTERN_PATH)/mct
 
 $(SHAREDLIBROOT)/$(SHAREDPATH)/mct/mpi-serial/Makefile.conf:
-	@echo "SHAREDLIBROOT |$(SHAREDLIBROOT)| SHAREDPATH |$(SHAREDPATH)|"; \
-	$(CONFIG_SHELL) $(EXTERN_PATH)/mct/mpi-serial/configure $(CONFIG_ARGS) --srcdir $(EXTERN_PATH)/mct/mpi-serial
+	@echo "SHAREDLIBROOT |$(SHAREDLIBROOT)| SHAREDPATH |$(SHAREDPATH)| MPI-SERIAL_PATH |$(MPI-SERIAL_PATH)|"; \
+	$(CONFIG_SHELL) $(MPI-SERIAL_PATH)/configure $(CONFIG_ARGS) --srcdir $(MPI-SERIAL_PATH)
 
 ifndef IO_LIB_SRCROOT
   ifndef PIO_SRCROOT
