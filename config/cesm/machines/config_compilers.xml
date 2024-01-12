@@ -242,6 +242,7 @@ using a fortran linker.
   </FREEFLAGS>
   <LDFLAGS>
     <append compile_threaded="true"> -qopenmp </append>
+    <append> -L/glade/u/apps/opt/conda/envs/npl-2023b/lib/python3.10/config-3.10-x86_64-linux-gnu -L/glade/u/apps/opt/conda/envs/npl-2023b/lib -lpython3.10 -lcrypt -lpthread -ldl  -lutil -lrt -lm -lm </append>
   </LDFLAGS>
   <MPICC> mpicc  </MPICC>
   <MPICXX> mpicxx </MPICXX>
