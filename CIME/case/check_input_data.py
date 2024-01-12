@@ -212,7 +212,7 @@ def _check_all_input_data_impl(
                 chksum=chksum and chksum_found,
             )
         if download and not success:
-            if not chksum:
+            if chksum:
                 chksum_found = _download_checksum_file(self.get_value("RUNDIR"))
             success = _downloadfromserver(self, input_data_root, data_list_dir)
 
