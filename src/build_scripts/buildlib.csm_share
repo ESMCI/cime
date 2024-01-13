@@ -45,7 +45,9 @@ def buildlib(bldroot, installpath, caseroot):
 ###############################################################################
     with Case(caseroot, read_only=False) as case:
         cimeroot = case.get_value("CIMEROOT")
+        srcroot = case.get_value("SRCROOT")
         filepath = [os.path.join(caseroot,"SourceMods","src.share"),
+                    os.path.join(srcroot, "forpy"),
                     os.path.join(cimeroot,"src","drivers","mct","shr"),
                     os.path.join(cimeroot,"src","share","streams"),
                     os.path.join(cimeroot,"src","share","util"),
