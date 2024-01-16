@@ -136,7 +136,7 @@ jobs:
   system-testing:
     runs-on: ubuntu-latest
     # temporary disable
-    if: ${{ github.sha == "" }}
+    if: ${{ github.sha == '' }}
       # if: ${{ always() && ! cancelled() }}
     container:
       image: ghcr.io/esmci/cime:latest
