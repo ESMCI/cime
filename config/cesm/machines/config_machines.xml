@@ -669,11 +669,11 @@ This allows using a different mpirun command to launch unit tests
     <MAX_MPITASKS_PER_NODE>128</MAX_MPITASKS_PER_NODE>
     <PROJECT_REQUIRED>TRUE</PROJECT_REQUIRED>
     <mpirun mpilib="default">
-      <executable>mpiexec</executable>
+      <executable>mpibind</executable>
       <arguments>
         <arg name="label"> --label</arg>
-        <arg name="buffer"> --line-buffer</arg>
-        <arg name="num_tasks" > -n {{ total_tasks }}</arg>
+	<arg name="buffer"> --line-buffer</arg>
+	<arg name="separator"> -- </arg>
       </arguments>
     </mpirun>
     <module_system type="module" allow_error="true">
@@ -752,7 +752,7 @@ This allows using a different mpirun command to launch unit tests
       <env name="FI_MR_CACHE_MONITOR">memhooks</env>
     </environment_variables>
     <environment_variables mpilib="mpich">
-      <env name="MPICH_MPIIO_HINTS">*:romio_cb_read=enable:romio_cb_write=enable:striping_factor=24</env>
+      <env name="MPICH_MPIIO_HINTS">*:romio_cb_read=enable:romio_cb_write=enable:striping_factor=4:striping_unit=16777216</env>
     </environment_variables>
   </machine>
 
