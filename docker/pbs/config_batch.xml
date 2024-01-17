@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<config_batch version="2.0">
+	<batch_system MACH="docker" type="pbs">
+		<queues>
+			<queue walltimemax="01:00:00" nodemax="1" default="true" strict="true">workq</queue>
+			<queue walltimemax="500:00:00" nodemax="1">workq</queue>
+		</queues>
+	</batch_system>
+</config_batch>

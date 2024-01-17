@@ -10,7 +10,7 @@ Check the sphinx version as follows:
 
 >sphinx-build --version
 
-The documentation source is stored with the CIME master code base. However, 
+The documentation source is stored with the CIME master code base. However,
 the built html files are stored separately in the orphan gh-pages branch
 and can be viewed from a browser at URL:
 

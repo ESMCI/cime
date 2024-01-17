@@ -217,10 +217,7 @@ if [ $MACH == "UNSET" ]; then
     r+([0-9])i+([0-9])n+([0-9]) )
       MACH="cheyenne"
     ;;
-    geyser* )
-      MACH="dav"
-    ;;
-    caldera* )
+    casper* )
       MACH="dav"
     ;;
     pronghorn* )
@@ -298,14 +295,17 @@ fi
 case $MACH in
   ## cheyenne
   "cheyenne" )
+    esmfvers=8.1.0b23
+    intelvers=19.0.5
     module purge
-    module load intel/17.0.1 esmf_libs/7.0.0
+    module load intel/$intelvers esmf_libs
+    module use /glade/p/cesmdata/cseg/PROGS/modulefiles/esmfpkgs/intel/$intelvers
     if [ "$serial" == "TRUE" ]; then
       # No MPIEXEC
       if [ -z "$MPIEXEC" ]; then
         MPIEXEC=""
       fi
-      module load esmf-7.1.0r-ncdfio-uni-O
+      module load esmf-${esmfvers}-ncdfio-mpiuni-O
     else
       # MPIEXEC should be mpirun -np
       if [ -z "$MPIEXEC" ]; then
@@ -314,22 +314,23 @@ case $MACH in
         fi
         MPIEXEC="mpirun -np $NCPUS"
       fi
-      module load esmf-7.1.0r-ncdfio-mpi-O
-      module load mpt/2.15f
+      module load esmf-${esmfvers}-ncdfio-mpt-O
+      module load mpt/2.22
     fi
     # need to load module to access ncatted
     module load nco
   ;;
-## geyser, caldera, or pronghorn
+## casper
   "dav" )
+    esmfvers=8.0.0
     module purge
-    module load intel/17.0.1 esmflibs/7.1.0r
+    module load intel/19.1.1 esmflibs/${esmfvers}
     if [ "$serial" == "TRUE" ]; then
       # No MPIEXEC
       if [ -z "$MPIEXEC" ]; then
         MPIEXEC=""
       fi
-      module load esmf-7.1.0r-ncdfio-uni-O
+      module load esmf-${esmfvers}-ncdfio-uni-O
     else
       echo "ERROR: Parallel ESMF tools are not available on $MACH, use --serial"
       exit 1
@@ -394,7 +395,7 @@ if [ "$mapping" == "NULL" ]; then
   echo "ERROR: $map_type is not a valid option for --maptype"
   exit 9
 fi
-cmd="$MPIEXEC $ESMF_REGRID --ignore_unmapped -m $mapping -w $fmap -s $fsrc -d $fdst $pass_thru"
+cmd="$MPIEXEC $ESMF_REGRID --ignore_unmapped --ignore_degenerate -m $mapping -w $fmap -s $fsrc -d $fdst $pass_thru"
 
 if [ $use_large == "true" ]; then
   cmd="$cmd --64bit_offset"

@@ -15,16 +15,14 @@ Table of contents
 -----------------
 .. toctree::
    :maxdepth: 2
-      
+
    what_cime/index.rst
    users_guide/index.rst
-   data_models/index.rst
-   driver_cpl/index.rst
    build_cpl/index.rst
    misc_tools/index.rst
 
-Addendum
----------
+Appendices
+----------
 .. toctree::
    :maxdepth: 2
 
@@ -43,6 +41,6 @@ Python Module Indices and Search
 
 
 
-CIME is developed by the 
-`E3SM <https://climatemodeling.science.energy.gov/projects/energy-exascale-earth-system-model>`_ and 
+CIME is developed by the
+`E3SM <https://climatemodeling.science.energy.gov/projects/energy-exascale-earth-system-model>`_ and
 `CESM <http://www.cesm.ucar.edu/>`_ projects.

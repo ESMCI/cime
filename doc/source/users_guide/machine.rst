@@ -57,9 +57,35 @@ Each ``<machine>`` tag requires the following input:
   * May have optional attributes of ``compiler``, ``mpilib`` and/or ``threaded``
   * May have an optional ``<arguments>`` element which in turn contains one or more ``<arg>`` elements.
     These specify the arguments to the mpi executable and are dependent on your mpi library implementation.
-  * May have an option ``<run_exe>`` element which overrides the ``default_run_exe``
-  * May have an option ``<run_misc_suffix>`` element which overrides the ``default_run_misc_suffix``
+  * May have an optional ``<run_exe>`` element which overrides the ``default_run_exe``
+  * May have an optional ``<run_misc_suffix>`` element which overrides the ``default_run_misc_suffix``
+  * May have an optional ``<aprun_mode>`` element which controls how CIME generates arguments when ``<executable>`` contains ``aprun``. 
 
+  The ``<aprun_mode>`` element can be one of the following. The default value is ``ignore``.
+
+  * ``ignore`` will cause CIME to ignore it's aprun module and join the values found in ``<arguments>``.
+  * ``default`` will use CIME's aprun module to generate arguments.
+  * ``override`` behaves the same as ``default`` expect it will use ``<arguments>`` to mutate the generated arguments. When using this mode a ``position`` attribute can be placed on ``<arg>`` tags to specify how it's used.
+
+  The ``position`` attribute on ``<arg>`` can take one of the following values. The default value is ``per``.
+
+  * ``global`` causes the value of the ``<arg>`` element to be used as a global argument for ``aprun``.
+  * ``per`` causes the value of the ``<arg>`` element to be appended to each separate binaries arguments.
+
+  Example using ``override``:
+  ::
+
+    <executable>aprun</executable>
+    <aprun_mode>override</aprun_mode>
+    <arguments>
+      <arg position="global">-e DEBUG=true</arg>
+      <arg>-j 20</arg>
+    </arguments>
+
+  Sample command output:
+  ::
+
+    aprun -e DEBUG=true ... -j 20 e3sm.exe : ... -j 20 e3sm.exe
 
 * ``module_system``: How and what modules to load on this system. Module systems allow you to easily load multiple compiler environments on a machine. CIME provides support for two types of module tools: `module <http://www.tacc.utexas.edu/tacc-projects/mclay/lmod>`_ and `soft  <http://www.mcs.anl.gov/hs/software/systems/softenv/softenv-intro.html>`_. If neither of these is available on your machine, simply set ``<module_system type="none"\>``.
 
@@ -104,7 +130,7 @@ The **config_batch.xml** schema is defined in **$CIMEROOT/config/xml_schemas/con
 
 CIME supports these batch systems: pbs, cobalt, lsf and slurm.
 
-As is the case for **config_compilers.xml**, the entries in **config_batch.xml** are hierarchical.
+The entries in **config_batch.xml** are hierarchical.
 
 #. General configurations for each system are provided at the top of the file.
 
@@ -132,24 +158,22 @@ In addition, there is **case.test** job that is used by the CIME system test wor
 Compiler settings
 -----------------
 
-CIME looks at the xml element ``COMPILERS_SPEC_FILE`` in the **config_files.xml** file to identify supported out-of-the-box compiler details for the target model. The node has the following contents:
+CIME looks at the xml element ``CMAKE_MACROS_DIR`` in the **config_files.xml** file to identify supported out-of-the-box compiler details for the target model. The node has the following contents:
 ::
 
-  <entry id="COMPILERS_SPEC_FILE">
+  <entry id="CMAKE_MACROS_DIR">
     <type>char</type>
-    <default_value>$CIMEROOT/cime_config/$MODEL/machines/config_compilers.xml</default_value>
+    <default_value>$CIMEROOT/config/$MODEL/machines/cmake_macros</default_value>
     <group>case_last</group>
     <file>env_case.xml</file>
-    <desc>file containing compiler specifications for target model primary component (for documentation only - DO NOT EDIT)</desc>
-    <schema>$CIMEROOT/cime_config/xml_schemas/config_compilers_v2.xsd</schema>
+    <desc>Directory containing cmake macros (for documentation only - DO NOT EDIT)</desc>
   </entry>
 
-Additional compilers are made avilable by adding entries to the files pointed to by COMPILERS_SPEC_FILE or to a config_compilers.xml file
-in your CIME config directory.
+Additional compilers are made avilable by adding cmake macros files to the directory pointed to by CMAKE_MACROS_DIR or to your $HOME/.cime directory.
 
 .. _compilerfile:
 
-config_compilers.xml - compiler paths and options
+config_compilers.xml - compiler paths and options **DEPRECATED use cmake_macros**
 -------------------------------------------------
 The **config_compilers.xml** file defines compiler flags for building CIME (and also CESM and E3SM prognostic CIME-driven components).
 

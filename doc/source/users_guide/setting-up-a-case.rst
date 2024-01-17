@@ -16,9 +16,9 @@ After creating a case or changing aspects of a case, such as the pe-layout, call
 This creates the following additional files and directories in ``$CASEROOT``:
 
    =============================   ===============================================================================================================================
-   .case.run                       A (hidden) file with the commands that will be used to run the model (such as “mpirun”) and any batch directives needed. 
+   .case.run                       A (hidden) file with the commands that will be used to run the model (such as “mpirun”) and any batch directives needed.
                                    The directive values are generated using the contents
-                                   of **env_mach_pes.xml**. Running `case.setup --clean <../Tools_user/case.setup.html>`_  will remove this file. 
+                                   of **env_mach_pes.xml**. Running `case.setup --clean <../Tools_user/case.setup.html>`_  will remove this file.
 				   This file should not be edited directly and instead controlled through XML variables in **env_batch.xml**. It should also
 				   *never* be run directly.
 

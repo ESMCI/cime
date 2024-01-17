@@ -105,8 +105,8 @@ In what follows we outline the process for method (2) above:
 
       xmllint --noout --schema $CIME/config/xml_schemas/config_machines.xsd $HOME/.cime/config_machines.xml
 
--  If you find that you need to introduce compiler settings specific to your machine, create a **$HOME/.cime/config_compilers.xml** file.
-   The default compiler settings are defined in **$CIME/config/$model/machines/config_compilers.xml**. There is no template for **config_compilers.xml**.
+-  If you find that you need to introduce compiler settings specific to your machine, create a **$HOME/.cime/*.cmake** file.
+   The default compiler settings are defined in **$CIME/config/$model/machines/cmake_macros/**.
 
 -  If you have a batch system, you may also need to create a **$HOME/.cime/config_batch.xml** file.
    Out-of-the-box batch settings are set in **$CIME/config/$model/machines/config_batch.xml**.

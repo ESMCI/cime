@@ -124,4 +124,3 @@ You can also set the following env variables:
                  (Known machines will load tools from modules)
   MPIEXEC ------ Name of mpirun executable
                  (currently tools only run in serial due to module issues)
-

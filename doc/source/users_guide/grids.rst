@@ -94,7 +94,7 @@ The steps for adding a new component grid to the model system follow. This proce
    If you are introducing just one new grid, you can leverage SCRIP grid files that are already in place for the other components.
    There is no supported functionality for creating the SCRIP format file.
 
-2. Build the **check_map** utility by following the instructions in **$CCSMROOT/mapping/check_maps/INSTALL**. Also confirm that the `ESMF <http://www.cesm.ucar.edu/models2.0/external-link-here>`_ toolkit is installed on your machine.
+2. Build the **check_map** utility by following the instructions in **$CIMEROOT/tools/mapping/check_maps/INSTALL**. Also confirm that the ESMF toolkit is installed on your machine.
 
    When you add new user-defined grid files, you also need to generate a set of mapping files so the coupler can send data from a component on one grid to a component on another grid.
    There is an ESMF tool that tests the mapping file by comparing a mapping of a smooth function to its true value on the destination grid.
@@ -113,14 +113,14 @@ The steps for adding a new component grid to the model system follow. This proce
 
   Using the SCRIP grid files from Step 1, generate a set of conservative (area-averaged) and non-conservative (patch and bilinear) mapping files.
 
-  You can do this by calling **gen_cesm_maps.sh** in ``$CCSMROOT/tools/mapping/gen_mapping_files/``.
+  You can do this by calling **gen_cesm_maps.sh** in ``$CIMEROOT/tools/mapping/gen_mapping_files/``.
   This script generates all the mapping files needed except ``rof -> ocn``, which is discussed below.
   This script uses the ESMF offline weight generation utility, which you must build *prior* to running **gen_cesm_maps.sh**.
 
   The **README** file in the **gen_mapping_files/** directory describes how to run **gen_cesm_maps.sh**. The basic usage is shown here:
    ::
 
-    > cd $CCSMROOT/mapping/gen_mapping_files
+    > cd $CIMEROOT/tools/mapping/gen_mapping_files
     > ./gen_cesm_maps.sh \
        --fileocn  <input SCRIP ocn_grid full pathname>  \
        --fileatm  <input SCRIP atm grid full pathname>  \
@@ -150,12 +150,12 @@ The steps for adding a new component grid to the model system follow. This proce
                    If you also omit the runoff grid, then only the 5 atm<->ocn maps will be generated.
 
    .. note:: ESMF_RegridWeightGen runs in parallel, and the ``gen_cesm_maps.sh`` script has been written to run on yellowstone.
-                   To run on any other machine, you may need to add some environment variables to ``$CCSMROOT/mapping/gen_mapping_files/gen_ESMF_mapping_file/create_ESMF_map.sh`` -- search for hostname to see where to edit the file.
+                   To run on any other machine, you may need to add some environment variables to ``$CIMEROOT/tools/mapping/gen_mapping_files/gen_ESMF_mapping_file/create_ESMF_map.sh`` -- search for hostname to see where to edit the file.
 
 4. Generate atmosphere, land and ocean / ice domain files.
 
    Using the conservative ocean to land and ocean to atmosphere mapping files created in the previous step, you can create domain files for the atmosphere, land, and ocean; these are basically grid files with consistent masks and fractions.
-   You make these files by calling **gen_domain** in **$CCSMROOT/mapping/gen_domain_files**.
+   You make these files by calling **gen_domain** in **$CIMEROOT/tools/mapping/gen_domain_files**.
    The **INSTALL** file in the **gen_domain_files/** directory describes how to build the **gen_domain** executable. The **README** file in the same directory explains how to use the tool. The basic usage is:
    ::
 
@@ -184,14 +184,14 @@ The steps for adding a new component grid to the model system follow. This proce
    You need to first generate mapping files for CLM surface dataset (since this is a non-standard grid).
    ::
 
-      > cd $CCSMROOT/models/lnd/clm/tools/mkmapdata
+      > cd $CIMEROOT/../components/clm/tools/mkmapdata
       > ./mkmapdata.sh --gridfile <lnd SCRIP grid file> --res <atm resolution name> --gridtype global
 
     These mapping files are then used to generate CLM surface dataset. Below is an example for a current day surface dataset (model year 2000).
 
     ::
 
-       > cd  $CCSMROOT/models/lnd/clm/tools/mksurfdata_map
+       > cd $CIMEROOT/../components/clm/tools/mksurfdata_map
        > ./mksurfdata.pl -res usrspec -usr_gname <atm resolution name> -usr_gdate yymmdd -y 2000
 
 7. Create grid file needed for create_newcase.

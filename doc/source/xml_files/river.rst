@@ -4,7 +4,7 @@
 CIME River Runoff Data and Stub XML Files
 #########################################
 
-River runoff component XML files for data, stub, and dead components. 
+River runoff component XML files for data, stub, and dead components.
 
 .. toctree::
    :maxdepth: 1
@@ -19,11 +19,11 @@ XML specification for archiving drof output files.
 
 .. literalinclude:: ../../../src/components/data_comps/drof/cime_config/config_archive.xml
 
-XML variables and component descriptions specific to drof. 
+XML variables and component descriptions specific to drof.
 
 .. literalinclude:: ../../../src/components/data_comps/drof/cime_config/config_component.xml
 
-XML variables and component descriptions specific to drof. 
+XML variables and component descriptions specific to drof.
 
 .. literalinclude:: ../../../src/components/data_comps/drof/cime_config/config_component.xml
 
@@ -39,7 +39,7 @@ CIMEROOT/src/components/stub_comps/srof/cime_config
 The river runoff stub model, **srof**, does not output any files in the RUNDIR nor
 does it have any namelist settings.
 
-XML variables and component descriptions specific to srof. 
+XML variables and component descriptions specific to srof.
 
 .. literalinclude:: ../../../src/components/stub_comps/srof/cime_config/config_component.xml
 
@@ -54,8 +54,3 @@ does it have any namelist settings.
 XML variables and component descriptions specific to xrof.
 
 .. literalinclude:: ../../../src/components/xcpl_comps/xrof/cime_config/config_component.xml
-
-
-
-
-

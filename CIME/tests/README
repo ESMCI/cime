@@ -1,0 +1,50 @@
+The directory structure is expected to stay flat. The following naming schema
+should be used to maintain this pattern.
+
+Unit test should be prefixed with `_unit` while System Tests are prefixed with
+`_sys`.
+
+For example, writing unit tests for CIME/foo.py would map to
+CIME/tests/test_unit_foo.py and CIME/SystemTests/bar.py would map to
+CIME/tests/test_sys_bar.py.
+
+There are a few methods you can use to run the unit tests here:
+
+Both `scripts_regression_tests.py` and `pytest` support the same CLI arguments.
+See `--help` using either command.
+
+- Using `scripts_regression_tests.py` from scripts/tests, run:
+
+  `./scripts_regression_tests.py`
+
+  This runs all the unit and sys tests.
+
+  `./scripts_regression_tests.py test_unit_doctest`
+
+  This runs a specific test file.
+
+  `./scripts_regression_tests.py test_unit_doctest.TestDocs`
+
+  This runs a specific test class.
+
+  `./scripts_regression_tests.py test_unit_doctest.TestDocs.test_lib_docs`
+
+  This runs a specific test case.
+
+- Using `pytest` from scripts/tests, run:
+
+  `pytest`
+
+  This runs all the unit and sys tests.
+
+  `pytest test_unit_doctest.py`
+
+  This runs a specific test file.
+
+  `pytest test_unit_doctest::TestDocs`
+
+  This runs a specific test class.
+
+  `pytest test_unit_doctest::TestDocs::test_lib_docs`
+
+  This runs a specific test case.

@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<config_batch version="2.0">
+  <batch_system MACH="docker" type="slurm">
+    <submit_args>
+      <argument>-w docker</argument>
+    </submit_args>
+    <queues>
+      <queue walltimemax="01:00:00" nodemax="1" default="true">long</queue>
+      <queue walltimemax="00:30:00" nodemax="1" default="false">short</queue>
+    </queues>
+  </batch_system>
+</config_batch>

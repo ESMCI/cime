@@ -1,0 +1,168 @@
+name: cime testing
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'CIME/**'
+      - 'scripts/**'
+      - 'tools/**'
+      - 'utils/**'
+
+  pull_request:
+    branches:
+      - master
+    paths:
+      - 'CIME/**'
+      - 'scripts/**'
+      - 'tools/**'
+      - 'utils/**'
+
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read # to fetch code (actions/checkout)
+  packages: read
+
+jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Set up python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      # Offical action is deprecated in favor of pre-commit.ci
+      # Should evaulate switching or just running manually.
+      # - name: Runs pre-commit action
+      #   # Do not run if using act tooling (https://github.com/nektos/act)
+      #   if: ${{ !env.ACT }}
+      #   uses: pre-commit/action@v2.0.3
+      - name: Runs pre-commit
+        run: |
+          pip install pre-commit
+
+          pre-commit run -a
+
+  # Runs unit testing under different python versions.
+  unit-testing:
+    runs-on: ubuntu-latest
+    if: ${{ always() && ! cancelled() }}
+    container:
+      image: ghcr.io/esmci/cime:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    strategy:
+      matrix:
+        python-version: ['3.8', '3.9', '3.10']
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Run tests
+        shell: bash
+        env:
+          INIT: "false"
+          CIME_MODEL: "cesm"
+          CIME_DRIVER: "nuopc"
+          UPDATE_CIME: "true"
+          GIT_SHALLOW: "true"
+          CIME_TEST_PLATFORM: ubuntu-latest
+        run: |
+          export INSTALL_PATH="${PWD}"
+          export CIME_REPO=https://github.com/${{ github.event.pull_request.head.repo.full_name || github.repository }}
+          export CIME_BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF##*/}}
+
+          mamba install -y python=${{ matrix.python-version }}
+
+          source /entrypoint.sh
+
+          git config --global --add safe.directory /__w/cime/cime
+
+          init_cime
+
+          pytest -vvv --cov=CIME --machine docker --no-fortran-run CIME/tests/test_unit*
+
+  # Run system tests
+  system-testing:
+    runs-on: ubuntu-latest
+    if: ${{ always() && ! cancelled() }}
+    container:
+      image: ghcr.io/esmci/cime:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    strategy:
+      # allow all jobs to finish
+      fail-fast: false
+      matrix:
+        model: ["e3sm", "cesm"]
+        driver: ["mct", "nuopc"]
+        exclude:
+          # exclude nuopc driver when running e3sm tests
+          - model: "e3sm"
+            driver: "nuopc"
+          # exclude mct driver when running cesm tests
+          - model: "cesm"
+            driver: "mct"
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Cache inputdata
+        uses: actions/cache@v2
+        with:
+          path: /storage/inputdata
+          key: inputdata-2
+      - name: Run tests
+        shell: bash
+        env:
+          INIT: "false"
+          CIME_MODEL: ${{ matrix.model }}
+          CIME_DRIVER: ${{ matrix.driver }}
+          UPDATE_CIME: "true"
+          GIT_SHALLOW: "true"
+          CIME_TEST_PLATFORM: ubuntu-latest
+        run: |
+          export INSTALL_PATH="${PWD}/cime"
+          export CIME_REPO=https://github.com/${{ github.event.pull_request.head.repo.full_name || github.repository }}
+          export CIME_BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF##*/}}
+
+          source /entrypoint.sh
+
+          git config --global --add safe.directory /__w/cime/cime
+
+          if [[ "${CIME_MODEL}" == "e3sm" ]]
+          then
+            init_e3sm
+          else
+            init_cime
+          fi
+
+          # Get cprnc
+          # git clone https://github.com/ESMCI/cprnc $INSTALL_PATH/CIME/non_py/cprnc
+          source /opt/conda/etc/profile.d/conda.sh
+
+          conda activate base
+
+          pytest -vvv --cov=CIME --machine docker --no-fortran-run --no-teardown CIME/tests/test_sys*
+      - name: Create testing log archive
+        if: ${{ failure() }}
+        shell: bash
+        run: tar -czvf /testing-logs-${GITHUB_RUN_NUMBER}.tar.gz /storage/cases/
+        # How to download artifacts:
+        # https://docs.github.com/en/actions/managing-workflow-runs/downloading-workflow-artifacts
+      - name: Upload testing logs
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: testing-logs-${{ github.run_number }}
+          path: /testing-logs-${{ github.run_number}}.tar.gz
+          retention-days: 4

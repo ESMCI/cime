@@ -54,7 +54,7 @@ class Printer(object):
         item - Object to be printed.
         end - String appended to the end.
         """
-        self._output.write(str(item)+end)
+        self._output.write(str(item) + end)
 
     def comment(self, string):
         """Print the input str as a comment.
@@ -72,7 +72,7 @@ class Printer(object):
         char - Character that the line is composed of.
         length - Horizontal line length.
         """
-        self.comment(char*length)
+        self.comment(char * length)
 
     def print_header(self, string):
         """Write a string into a header, denoting a new output section."""
@@ -87,14 +87,15 @@ class Printer(object):
         if self._color:
             # ANSI sequence turns the text bright red.
             esc_char = chr(curses.ascii.ESC)
-            to_red_text = esc_char+"[1;31m"
-            to_default_text = esc_char+"[0m"
+            to_red_text = esc_char + "[1;31m"
+            to_default_text = esc_char + "[0m"
         else:
             to_red_text = ""
             to_default_text = ""
 
-        self._error.write(to_red_text+"ERROR: "+
-                          error_message+to_default_text+"\n")
+        self._error.write(
+            to_red_text + "ERROR: " + error_message + to_default_text + "\n"
+        )
 
 
 class ScriptPrinter(Printer):
@@ -128,7 +129,7 @@ class ScriptPrinter(Printer):
 
     def comment(self, string):
         """Write a comment (prepends "#")."""
-        self.print("# "+string)
+        self.print("# " + string)
 
     def print_header(self, string):
         """Write a header in a comment.
@@ -147,5 +148,5 @@ class ScriptPrinter(Printer):
         item - Object to be printed.
         end - String appended to the end.
         """
-        new_item = (" "*self.indent_size*self.indent_level)+str(item)
+        new_item = (" " * self.indent_size * self.indent_level) + str(item)
         super(ScriptPrinter, self).print(new_item, end)

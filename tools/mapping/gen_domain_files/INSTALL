@@ -3,7 +3,7 @@ HOW TO BUILD
 ============
 
 (1) $ cd src
-(2) $ ../../../configure --macros-format Makefile --mpilib mpi-serial
+(2) $ ../../../../CIME/scripts/configure --macros-format Makefile --mpilib mpi-serial
 Bash users:
 (3) $ (. ./.env_mach_specific.sh ; gmake)
 csh users:
@@ -14,4 +14,3 @@ where [machine name] is the name of the machine you are building on. In most
 cases configure can figure that out on its own, but if you get an error that is
 the first fix to try. Also, some machines have dedicated build nodes, so you
 might need to SSH to another node before the 'gmake' step.
-

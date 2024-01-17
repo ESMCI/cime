@@ -6,56 +6,30 @@
    contain the root `toctree` directive.
 
 #####################################
- What is CIME?  
+ What is CIME?
 #####################################
 
 .. toctree::
    :maxdepth: 3
    :numbered:
-      
-
-CIME, pronounced "SEAM", contains the support scripts (configure,
-build, run, test), data models, essential utility libraries, a “main”
-and other tools that are needed to build a single-executable coupled
-Earth System Model.  CIME is available in a stand-alone package that
-can be compiled and tested without active prognostic components but is
-typically included in the source of a climate model. CIME does not
-contain: any active components, any intra-component coupling
-capability (such as atmosphere physics-dynamics coupling).
 
 *********
 Overview
 *********
 
-CIME is comprised of:
+CIME, pronounced "SEAM", primarily consists of a Case Control System that supports the configuration, compilation, execution, system testing and unit testing of an Earth System Model. The two main components of the Case Control System are:
 
-1. A Case Control System to support configuration, compilation, execution, system testing and unit testing of a earth system model:
+1. Scripts to enable simple generation of model executables and associated input files for different scientific cases, component resolutions and combinations of full, data and stub components with a handful of commands.
+2. Testing utilities to run defined system tests and report results for different configurations of the coupled system.
 
-    i. Scripts to enable simple generation of model executables and associated input files for different scientific cases, component resolutions and combinations of full, data and stub components with a handful of commands.
-    ii. Testing utilities to run defined system tests and report results for different configurations of the coupled system.
+CIME also contains additional stand-alone tools, including:
 
-2. A default coupled model architecture:
+1. Parallel regridding weight generation program
+2. Scripts to automate off-line load-balancing.
+3. Scripts to conduct ensemble-based statistical consistency tests.
+4. Netcdf file comparison program (for bit-for-bit).
 
-    i. A programmer interface and libraries to implement a hub-and-spoke inter-component coupling architecture.
-    ii. An implementation of a "hub" that needs 7 components (atm, ocn, lnd, sea-ice, land-ice, river, wave). a.k.a. “the driver”.
-    iii. The ability to allow active and data components to be mixed in any combination as long as each component implements the coupling programmer interface.
-
-3. Non-active Data and Stub components:
-
-    i. “Data-only” versions of 6 of the 7 components that can replace active components at build-time.
-    ii. “Stub” versions of all 7 components for building a complete system.
-
-4. Source code for external libraries useful in scientific applications in general and climate models in particular.
-    i.  Parallel I/O library.
-    ii. The Model Coupling Toolkit.
-    iii. Timing library.
-
-5. Additional stand-alone tools:
-
-    i. Parallel regridding weight generation program
-    ii. Scripts to automate off-line load-balancing.
-    iii. Scripts to conduct ensemble-based statistical consistency tests.
-    iv. Netcdf file comparison program (for bit-for-bit).
+CIME does **not** contain the source code for any Earth System Model drivers or components. It is typically included alongside the source code of a host model. However, CIME does include pointers to external repositories that contain drivers, data models and other test components. These external components can be easily assembled to facilitate end-to-end system tests of the CIME infrastructure, which are defined in the CIME repository.
 
 *************************
 Development
@@ -64,6 +38,3 @@ Development
 CIME is developed in an open-source, public repository hosted under the Earth
 System Model Computational Infrastructure (ESMCI) organization on
 Github at http://github.com/ESMCI/cime.
-
-
-

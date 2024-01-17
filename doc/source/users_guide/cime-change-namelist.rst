@@ -195,7 +195,7 @@ Each data model can be runtime-configured with its own namelist.
 Data Atmosphere (DATM)
 ~~~~~~~~~~~~~~~~~~~~~~
 
-DATM is discussed in detail in :ref:`data atmosphere overview <data-atm>`.
+DATM is discussed in detail in :ref:`data atmosphere overview <data-atm>` (**link currently broken**).
 DATM can be user-customized by changing either its  *namelist input files* or its *stream files*.
 The namelist file for DATM is **datm_in** (or **datm_in_NNN** for multiple instances).
 
@@ -217,7 +217,7 @@ After calling `preview_namelists <../Tools_user/preview_namelists.html>`_ again,
 Data Ocean (DOCN)
 ~~~~~~~~~~~~~~~~~~~~~~
 
-DOCN is discussed in detail in :ref:`data ocean overview <data-ocean>`.
+DOCN is discussed in detail in :ref:`data ocean overview <data-ocean>` (**link currently broken**).
 DOCN can be user-customized by changing either its namelist input or its stream files.
 The namelist file for DOCN is **docn_in** (or **docn_in_NNN** for multiple instances).
 
@@ -239,7 +239,7 @@ After changing this file and calling `preview_namelists <../Tools_user/preview_n
 Data Sea-ice (DICE)
 ~~~~~~~~~~~~~~~~~~~~~~
 
-DICE is discussed in detail in :ref:`data sea-ice overview <data-seaice>`.
+DICE is discussed in detail in :ref:`data sea-ice overview <data-seaice>` (**link currently broken**).
 DICE can be user-customized by changing either its namelist input or its stream files.
 The namelist file for DICE is ``dice_in`` (or ``dice_in_NNN`` for multiple instances) and its values can be changed by editing the ``$CASEROOT`` file ``user_nl_dice`` (or ``user_nl_dice_NNN`` for multiple instances).
 
@@ -256,7 +256,7 @@ The namelist file for DICE is ``dice_in`` (or ``dice_in_NNN`` for multiple insta
 Data Land (DLND)
 ~~~~~~~~~~~~~~~~~~~~~~
 
-DLND is discussed in detail in :ref:`data land overview <data-lnd>`.
+DLND is discussed in detail in :ref:`data land overview <data-lnd>` (**link currently broken**).
 DLND can be user-customized by changing either its namelist input or its stream files.
 The namelist file for DLND is ``dlnd_in`` (or ``dlnd_in_NNN`` for multiple instances) and its values can be changed by editing the ``$CASEROOT`` file ``user_nl_dlnd`` (or ``user_nl_dlnd_NNN`` for multiple instances).
 
@@ -273,7 +273,7 @@ The namelist file for DLND is ``dlnd_in`` (or ``dlnd_in_NNN`` for multiple insta
 Data River (DROF)
 ~~~~~~~~~~~~~~~~~~~~~~
 
-DROF is discussed in detail in :ref:`data river overview <data-river>`.
+DROF is discussed in detail in :ref:`data river overview <data-river>` (**link currently broken**).
 DROF can be user-customized by changing either its namelist input or its stream files.
 The namelist file for DROF is ``drof_in`` (or ``drof_in_NNN`` for multiple instances) and its values can be changed by editing the ``$CASEROOT`` file ``user_nl_drof`` (or ``user_nl_drof_NNN`` for multiple instances).
 
@@ -298,7 +298,7 @@ CIME calls **$SRCROOT/components/cam/cime_config/buildnml** to generate the CAM'
 
 CAM-specific CIME xml variables are set in **$SRCROOT/components/cam/cime_config/config_component.xml** and are used by CAM's **buildnml** script to generate the namelist.
 
-For complete documentation of namelist settings, see `CAM namelist variables <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_.
+For complete documentation of namelist settings, see `CAM namelist variables <https://www.cesm.ucar.edu/models/cesm2/settings/current/cam_nml.html>`_.
 
 To modify CAM namelist settings, add the appropriate keyword/value pair at the end of the **$CASEROOT/user_nl_cam** file. (See the documentation for each file at the top of that file.)
 
@@ -316,7 +316,7 @@ CIME calls **$SRCROOT/components/clm/cime_config/buildnml** to generate the CLM 
 
 CLM-specific CIME xml variables are set in **$SRCROOT/components/clm/cime_config/config_component.xml** and are used by CLM's **buildnml** script to generate the namelist.
 
-For complete documentation of namelist settings, see `CLM namelist variables <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_.
+For complete documentation of namelist settings, see `CLM namelist variables <https://www.cesm.ucar.edu/models/cesm2/settings/current/clm5_0_nml.html>`_.
 
 To modify CLM namelist settings, add the appropriate keyword/value pair at the end of the **$CASEROOT/user_nl_clm** file.
 
@@ -336,34 +336,32 @@ CICE
 
 CIME calls **$SRCROOT/components/cice/cime_config/buildnml** to generate the CICE namelist variables.
 
-For complete documentation of namelist settings, see `CICE namelist variables <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_.
+For complete documentation of namelist settings, see `CICE namelist variables <https://www.cesm.ucar.edu/models/cesm2/settings/current/cice_nml.html>`_.
 
 To modify CICE namelist settings, add the appropriate keyword/value pair at the end of the **$CASEROOT/user_nl_cice** file.
 (See the documentation for each file at the top of that file.)
 To see the result of your change, call `preview_namelists <../Tools_user/preview_namelists.html>`_ and verify that the changes appear correctly in **CaseDocs/ice_in**.
 
-In addition, `case.setup <../Tools_user/case.setup.html>`_  creates CICE's compile time `block decomposition variables <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_ in **env_build.xml** as follows:
+In addition, `case.setup <../Tools_user/case.setup.html>`_  creates CICE's compile time `block decomposition variables <https://www.cesm.ucar.edu/models/cesm2/settings/current/cice_input.html>`_ in **env_build.xml**.
 
 POP2
 ~~~~
 
 CIME calls **$SRCROOT/components/pop2/cime_config/buildnml** to generate the POP2 namelist variables.
 
-For complete documentation of namelist settings, see `POP2 namelist variables <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_.
+For complete documentation of namelist settings, see `POP2 namelist variables <https://www.cesm.ucar.edu/models/cesm2/settings/current/pop2_nml.html>`_.
 
 To modify POP2 namelist settings, add the appropriate keyword/value pair at the end of the **$CASEROOT/user_nl_pop2** file.
 (See the documentation for each file at the top of that file.)
 To see the result of your change, call `preview_namelists <../Tools_user/preview_namelists.html>`_ and verify that the changes appear correctly in **CaseDocs/ocn_in**.
 
-In addition, `case.setup <../Tools_user/case.setup.html>`_ generates POP2's compile-time `block decomposition variables <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_ in **env_build.xml** as shown here:
-
 CISM
 ~~~~
 
-See `CISM namelist variables <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_ for a complete description of the CISM runtime namelist variables. This includes variables that appear both in **cism_in** and in **cism.config**.
+See `CISM namelist variables <https://www.cesm.ucar.edu/models/cesm2/settings/current/cism_nml.html>`_ for a complete description of the CISM runtime namelist variables. This includes variables that appear both in **cism_in** and in **cism.config**.
 
 To modify any of these settings, add the appropriate keyword/value pair at the end of the **user_nl_cism** file. (See the documentation for each file at the top of that file.)
 Note that there is no distinction between variables that will appear in **cism_in** and those that will appear in **cism.config**: simply add a new variable setting in **user_nl_cism**, and it will be added to the appropriate place in **cism_in** or **cism.config**.
 To see the result of your change, call `preview_namelists <../Tools_user/preview_namelists.html>`_ and verify that the changes appear correctly in **CaseDocs/cism_in** and **CaseDocs/cism.config**.
 
-Some CISM runtime settings are sets via **env_run.xml**, as documented in `CISM runtime variables <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_.
+Some CISM runtime settings are sets via **env_run.xml**, as documented in `CISM runtime variables <https://www.cesm.ucar.edu/models/cesm2/settings/current/cism_input.html>`_.

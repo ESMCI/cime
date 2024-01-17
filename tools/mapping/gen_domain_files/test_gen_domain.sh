@@ -52,17 +52,22 @@ echo "" >> ${test_log}
 echo "Building gen_domain in ${PWD}/builds ..." >> ${test_log}
 mkdir -p builds
 cd builds
-${cime_root}/tools/configure --macros-format Makefile --mpilib mpi-serial >> ${test_log} 2>&1
+
+# Gen env_mach_specific
+${cime_root}/CIME/scripts/configure --mpilib mpi-serial >> ${test_log} 2>&1
 if [ ! -f .env_mach_specific.sh ]; then
     # try without mpi-serial flag
-    echo "ERROR running ${cime_root}/tools/configure" >&2
+    echo "ERROR running ${cime_root}/CIME/scripts/configure" >&2
     echo "It's possible mpi-serial doesn't work on this machine. Trying again with default" >&2
-    ${cime_root}/tools/configure --clean --macros-format Makefile >> ${test_log} 2>&1
+    ${cime_root}/CIME/scripts/configure --clean >> ${test_log} 2>&1
+    (. .env_mach_specific.sh && ${cime_root}/CIME/scripts/configure --macros-format Makefile) >> ${test_log} 2>&1
     if [ ! -f .env_mach_specific.sh ]; then
-        echo "ERROR running ${cime_root}/tools/configure" >&2
+        echo "ERROR running ${cime_root}/CIME/scripts/configure" >&2
         echo "cat ${test_log} for more info" >&2
         exit 1
     fi
+else
+    (. .env_mach_specific.sh && ${cime_root}/CIME/scripts/configure --macros-format Makefile --mpilib mpi-serial) >> ${test_log} 2>&1
 fi
 
 cp ${cime_root}/tools/mapping/gen_domain_files/src/* .
@@ -76,12 +81,11 @@ fi
 # Build the cprnc executable (for comparison of netcdf files)
 echo "" >> ${test_log}
 echo "Building cprnc in ${PWD}/builds ..." >> ${test_log}
-cp ${cime_root}/tools/cprnc/*.F90 .
-cp ${cime_root}/tools/cprnc/Makefile .
-cp ${cime_root}/tools/cprnc/Depends .
-cp ${cime_root}/tools/cprnc/*.in .
-(. .env_mach_specific.sh && make GENF90=${cime_root}/src/externals/genf90/genf90.pl) >> ${test_log} 2>&1
-if [ ! -f cprnc ]; then
+mkdir ${PWD}/builds/cprnc
+cd  ${PWD}/builds/cprnc
+cmake -DCMAKE_INSTALL_PREFIX=${PWD} ${cime_root}/CIME/non_py/cprnc
+make install
+if [ ! -f bin/cprnc ]; then
     echo "ERROR building cprnc" >&2
     echo "cat ${test_log} for more info" >&2
     exit 1
@@ -99,33 +103,33 @@ for baseline in ${ocn_baseline} ${lnd_baseline}; do
     # and adding in datestring for current day and .nc file extension.
     testfile=`basename ${baseline} | rev | cut -d. -f3- | rev`.${datestring}.nc
     if [ ! -f ${testfile} ]; then
-	echo "ERROR: ${testfile} not generated" >&2
-	echo "cat ${test_log} for more info" >&2
-	exit 1
+        echo "ERROR: ${testfile} not generated" >&2
+        echo "cat ${test_log} for more info" >&2
+        exit 1
     fi
     # Compare against baseline and print report from cprnc comparison
     echo "Comparing $testfile against ${baseline}..."
-    (. builds/.env_mach_specific.sh && ./builds/cprnc -m ${testfile} ${baseline}) >> ${test_log} 2>&1
+    (. builds/.env_mach_specific.sh && ./builds/bin/cprnc -m ${testfile} ${baseline}) >> ${test_log} 2>&1
 
     # Check results
     last=`tail -n3 ${test_log}`
     if [[ ${last} =~ "STOP" ]]; then
-	echo ${last} >&2
-	echo "Error running cprnc" >&2
-	echo "cat ${test_log} for more info" >&2
-	exit 1
+        echo ${last} >&2
+        echo "Error running cprnc" >&2
+        echo "cat ${test_log} for more info" >&2
+        exit 1
     fi
     if [[ ${last} =~ "DIFFERENT" ]]; then
-	echo ${last} >&2
-	echo ${baseline} DIFFERENT FROM ${testfile} >&2
-	echo "cat ${test_log} for more info" >&2
-	exit 1
+        echo ${last} >&2
+        echo ${baseline} DIFFERENT FROM ${testfile} >&2
+        echo "cat ${test_log} for more info" >&2
+        exit 1
     fi
     if ! [[ ${last} =~ "IDENTICAL" ]]; then
-	echo ${last} >&2
-	echo "undetermined output from cprnc" >&2
-	echo "cat ${test_log} for more info" >&2
-	exit 1
+        echo ${last} >&2
+        echo "undetermined output from cprnc" >&2
+        echo "cat ${test_log} for more info" >&2
+        exit 1
     fi
 done
 

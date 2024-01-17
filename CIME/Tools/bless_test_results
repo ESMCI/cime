@@ -1,0 +1,191 @@
+#!/usr/bin/env python3
+
+"""
+Analyze results from a test root area, finding namelist and non-BFB
+changes, and updating baselines. Purpose is, instead of re-running tests
+in generate mode, which is very slow, allow for very fast analsis and
+blessing of diffs.
+
+You may need to load modules for cprnc to work.
+"""
+from standard_script_setup import *
+
+from CIME.utils import expect
+from CIME.XML.machines import Machines
+from CIME.bless_test_results import bless_test_results
+
+import argparse
+import sys
+import os
+import logging
+
+_MACHINE = Machines()
+
+
+def parse_command_line(args, description):
+    parser = argparse.ArgumentParser(
+        usage="""\n{0} [-n] [-r <TESTROOT>] [-b <BRANCH>] [-c <COMPILER>] [<TEST> <TEST> ...] [--verbose]
+OR
+{0} --help
+
+\033[1mEXAMPLES:\033[0m
+    \033[1;32m# From most recent run, bless any namelist changes \033[0m
+    > {0} -n
+    \033[1;32m# From most recent run, bless all changes \033[0m
+    > {0}
+    \033[1;32m# From most recent run, bless changes to test foo and bar only \033[0m
+    > {0} foo bar
+    \033[1;32m# From most recent run, bless only namelist changes to test foo and bar only \033[0m
+    > {0} -n foo bar
+    \033[1;32m# From most recent run of jenkins, bless history changes for next \033[0m
+    > {0} -r /home/jenkins/acme/scratch/jenkins -b next --hist-only
+""".format(
+            os.path.basename(args[0])
+        ),
+        description=description,
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+
+    create_bless_options(parser)
+
+    create_baseline_options(parser)
+
+    create_test_options(parser)
+
+    CIME.utils.setup_standard_logging_options(parser)
+
+    parser.add_argument(
+        "-c",
+        "--compiler",
+        default=_MACHINE.get_default_compiler(),
+        help="Compiler of run you want to bless",
+    )
+
+    parser.add_argument(
+        "-p",
+        "--no-skip-pass",
+        action="store_true",
+        help="Normally, if namelist or baseline phase exists and shows PASS, we assume no bless is needed. "
+        "This option forces the bless to happen regardless.",
+    )
+
+    mutual_execution = parser.add_mutually_exclusive_group()
+
+    mutual_execution.add_argument(
+        "--report-only",
+        action="store_true",
+        help="Only report what files will be overwritten and why. Caution is a good thing when updating baselines",
+    )
+
+    mutual_execution.add_argument(
+        "-f",
+        "--force",
+        action="store_true",
+        help="Update every diff without asking. VERY DANGEROUS. Should only be used within testing scripts.",
+    )
+
+    parser.add_argument(
+        "--pes-file",
+        help="Full pathname of an optional pes specification file. The file"
+        "\ncan follow either the config_pes.xml or the env_mach_pes.xml format.",
+    )
+
+    parser.add_argument("--exclude", nargs="*", help="Exclude tests")
+
+    parser.add_argument(
+        "bless_tests",
+        nargs="*",
+        help="When blessing, limit the bless to tests matching these regex",
+    )
+
+    args = CIME.utils.parse_args_and_handle_standard_logging_options(args, parser)
+
+    return vars(args)
+
+
+def create_bless_options(parser):
+    bless_group = parser.add_argument_group("Bless options")
+
+    mutual_bless_group = bless_group.add_mutually_exclusive_group()
+
+    mutual_bless_group.add_argument(
+        "-n", "--namelists-only", action="store_true", help="Only analyze namelists."
+    )
+
+    mutual_bless_group.add_argument(
+        "--hist-only", action="store_true", help="Only analyze history files."
+    )
+
+    mutual_perf_group = bless_group.add_mutually_exclusive_group()
+
+    mutual_perf_group.add_argument(
+        "--bless-tput",
+        action="store_true",
+        help="Bless throughput, use `--bless-perf` to bless throughput and memory",
+    )
+
+    mutual_perf_group.add_argument(
+        "--bless-mem",
+        action="store_true",
+        help="Bless memory, use `--bless-perf` to bless throughput and memory",
+    )
+
+    bless_group.add_argument(
+        "--bless-perf", action="store_true", help="Bless both throughput and memory"
+    )
+
+
+def create_baseline_options(parser):
+    baseline_group = parser.add_argument_group("Baseline options")
+
+    baseline_group.add_argument(
+        "-b",
+        "--baseline-name",
+        help="Name of baselines to use. Default will use BASELINE_NAME_CMP first if possible, otherwise branch name.",
+    )
+
+    baseline_group.add_argument(
+        "--baseline-root",
+        help="Root of baselines. Default will use the BASELINE_ROOT from the case.",
+    )
+
+
+def create_test_options(parser):
+    default_testroot = _MACHINE.get_value("CIME_OUTPUT_ROOT")
+
+    test_group = parser.add_argument_group("Test options")
+
+    test_group.add_argument(
+        "-r",
+        "--test-root",
+        default=default_testroot,
+        help="Path to test results that are being blessed",
+    )
+
+    test_group.add_argument(
+        "--new-test-root",
+        help="If bless_test_results needs to create cases (for blessing namelists), use this root area",
+    )
+
+    test_group.add_argument(
+        "--new-test-id",
+        help="If bless_test_results needs to create cases (for blessing namelists), use this test id",
+    )
+
+    test_group.add_argument(
+        "-t",
+        "--test-id",
+        help="Limit processes to case dirs matching this test-id. Can be useful if mutiple runs dumped into the same dir.",
+    )
+
+
+def _main_func(description):
+    kwargs = parse_command_line(sys.argv, description)
+
+    success = bless_test_results(**kwargs)
+
+    sys.exit(0 if success else 1)
+
+
+if __name__ == "__main__":
+    _main_func(__doc__)

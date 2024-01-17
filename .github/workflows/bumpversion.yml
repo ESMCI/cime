@@ -1,0 +1,24 @@
+name: Bump version
+on:
+  push:
+    branches:
+      - master
+permissions: {}
+jobs:
+  build:
+    permissions:
+      contents: write # to create a tag (mathieudutour/github-tag-action)
+
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Bump version and push tag
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v6.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          create_annotated_tag: true
+          default_bump: patch
+          dry_run: false
+          tag_prefix: cime
+          fetch_all_tags: true

@@ -1,0 +1,3 @@
+[submodule "CIME/non_py/cprnc"]
+	path = CIME/non_py/cprnc
+	url = git@github.com:ESMCI/cprnc

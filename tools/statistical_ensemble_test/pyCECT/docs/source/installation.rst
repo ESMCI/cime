@@ -1,7 +1,0 @@
-============
-Installation
-============
-
-*COMING SOON*
-
-

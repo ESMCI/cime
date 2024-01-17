@@ -10,6 +10,7 @@ import os.path
 
 __all__ = ("TestSuiteSpec", "suites_from_xml")
 
+
 class TestSuiteSpec(object):
 
     """Specification for the location of a test suite.
@@ -35,9 +36,10 @@ class TestSuiteSpec(object):
         directories - Path to the test suite.
         """
 
-        assert (len(labels) == len(directories)), \
-            "TestSuiteSpec: Number of spec labels and number of spec "+ \
-            "directories do not match."
+        assert len(labels) == len(directories), (
+            "TestSuiteSpec: Number of spec labels and number of spec "
+            + "directories do not match."
+        )
 
         self.name = name
         self.labels = []
@@ -48,15 +50,15 @@ class TestSuiteSpec(object):
             else:
                 self.labels.append(self.UNLABELED_STRING)
 
-        self.directories = [os.path.abspath(directory)
-                            for directory in directories]
+        self.directories = [os.path.abspath(directory) for directory in directories]
 
     def __iter__(self):
         """Iterate over directories.
 
         Each iteration yields a (label, directory) pair.
         """
-        return ( (l, d) for l, d in zip(self.labels, self.directories) )
+        return ((l, d) for l, d in zip(self.labels, self.directories))
+
 
 def suites_from_xml(xml_tree, known_paths=None):
     """Generate test suite descriptions from XML.
@@ -89,10 +91,10 @@ def suites_from_xml(xml_tree, known_paths=None):
             path = directory.text.strip()
             if "relative_to" in directory.keys():
                 relative_to_key = directory.get("relative_to")
-                assert relative_to_key in known_paths, \
-                    "suites_from_xml: Unrecognized relative_to attribute."
-                path = os.path.join(known_paths[relative_to_key],
-                                    path)
+                assert (
+                    relative_to_key in known_paths
+                ), "suites_from_xml: Unrecognized relative_to attribute."
+                path = os.path.join(known_paths[relative_to_key], path)
             directories.append(path)
             if "label" in directory.keys():
                 labels.append(directory.get("label"))

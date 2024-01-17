@@ -1,6 +1,6 @@
 module test_circle
 
-use pfunit_mod
+use funit
 
 use circle, only: circle_area, pi, r8
 

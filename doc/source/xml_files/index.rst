@@ -11,9 +11,9 @@ CIMEROOT.  Modifcations to XML settings is case specific and the tools
 and modify these settings while ensuring the continued schema
 integrity of the XML.
 
-For advanced CIME developers, there are XML schema definition files 
+For advanced CIME developers, there are XML schema definition files
 in the CIMEROOT/config/xml_schemas directory that can be used with
-**xmllint** to verify the XML. 
+**xmllint** to verify the XML.
 
 .. toctree::
    :maxdepth: 2
@@ -21,9 +21,3 @@ in the CIMEROOT/config/xml_schemas directory that can be used with
    e3sm.rst
    cesm.rst
    common.rst
-   components.rst
-   drivers.rst
-
-
-
-

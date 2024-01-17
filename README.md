@@ -1,13 +1,14 @@
 # cime
 Common Infrastructure for Modeling the Earth
 
-CIME, pronounced “SEAM”, contains the support scripts (configure, build, run, test), data models, essential
-utility libraries, a “main” and other tools that are needed to build a single-executable coupled Earth System Model.
-CIME is available in a stand-alone package that can be compiled and tested without active prognostic components
-but is typically included in the source of a climate model. CIME does not contain: any active components,
-any intra-component coupling capability (such as atmosphere physics-dynamics coupling).
+CIME, pronounced "SEAM", primarily consists of a Case Control System that supports the configuration, compilation, execution, system testing and unit testing of an Earth System Model. The two main components of the Case Control System are:
 
-*cime* (pronounced: seem) is currently used by the
+1. Scripts to enable simple generation of model executables and associated input files for different scientific cases, component resolutions and combinations of full, data and stub components with a handful of commands.
+2. Testing utilities to run defined system tests and report results for different configurations of the coupled system.
+
+CIME does **not** contain the source code for any Earth System Model drivers or components. It is typically included alongside the source code of a host model. However, CIME does include pointers to external repositories that contain drivers, data models and other test components. These external components can be easily assembled to facilitate end-to-end system tests of the CIME infrastructure, which are defined in the CIME repository.
+
+CIME is currently used by the
 <a href="http://www2.cesm.ucar.edu">Community Earth System Model </a>
      (CESM) and the <a href="https://climatemodeling.science.energy.gov/projects/energy-exascale-earth-system-model">
 Energy Exascale Earth System Model</a> (E3SM).
@@ -19,16 +20,10 @@ See <a href="http://esmci.github.io/cime">esmci.github.io/cime</a>
 # Developers
 
 ## Lead Developers
-Case Control System: Jim Edwards (NCAR), Jim Foucar (SNL)
-
-MCT-based Coupler/Driver:  Mariana Vertenstein (NCAR), Robert Jacob (ANL)
-
-Data Models:  Mariana Vertenstein (NCAR)
+Jim Edwards (NCAR), Jim Foucar (SNL)
 
 ## Also Developed by
-Alice Bertini (NCAR), Tony Craig (NCAR), Michael Deakin (SNL), Chris Fischer (NCAR), Steve Goldhaber (NCAR),
-Erich Foster (SNL), Mike Levy (NCAR), Bill Sacks (NCAR), Andrew Salinger (SNL), Sean Santos (NCAR), Jason Sarich (ANL),
-Andreas Wilke (ANL).
+Alice Bertini (NCAR), Jason Boutte (LLNL), Tony Craig (NCAR), Michael Deakin (SNL), Chris Fischer (NCAR), Erich Foster (SNL), Steve Goldhaber (NCAR), Robert Jacob (ANL), Mike Levy (NCAR), Bill Sacks (NCAR), Andrew Salinger (SNL), Sean Santos (NCAR), Jason Sarich (ANL), Mariana Vertenstein (NCAR), Andreas Wilke (ANL).
 
 # Acknowledgements
 

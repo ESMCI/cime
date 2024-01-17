@@ -15,7 +15,7 @@ CIMEROOT/src/drivers/mct/cime_config
 
 The Model Coupling Toolkit (MCT) based driver/coupler is
 treated as a component by CIME with associated XML files
-to define behavior. 
+to define behavior.
 
 XML specification for archiving coupler output files.
 
@@ -43,7 +43,7 @@ XML settings for driver/coupler defined component set (compset) PE layouts.
 
 
 **************************************************************
-CIMEROOT/src/drivers/mct/cime_config/namelist_definition_*.xml 
+CIMEROOT/src/drivers/mct/cime_config/namelist_definition_*.xml
 **************************************************************
 
 XML namelist definitions for the driver/coupler.
@@ -57,6 +57,3 @@ XML namelist definitions for the driver/coupler fields.
 XML namelist definitions for the driver/coupler model input/output settings.
 
 .. literalinclude:: ../../../src/drivers/mct/cime_config/namelist_definition_modelio.xml
-
-
-

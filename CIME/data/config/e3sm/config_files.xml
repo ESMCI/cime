@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+
+<?xml-stylesheet type="text/xsl" href="definitions_variables.xsl" ?>
+
+<entry_id version="3.0">
+
+  <entry id="MODEL_CONFIG_FILES">
+    <type>char</type>
+    <default_value>$SRCROOT/cime_config/config_files.xml</default_value>
+    <group>case_last</group>
+    <file>env_case.xml</file>
+    <desc>file containing paths</desc>
+  </entry>
+
+</entry_id>
