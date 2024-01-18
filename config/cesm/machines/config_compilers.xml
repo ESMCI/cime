@@ -749,6 +749,7 @@ using a fortran linker.
   <PNETCDF_PATH>$ENV{PNETCDF}</PNETCDF_PATH>
   <SLIBS>
     <append> -lnetcdff -lnetcdf </append>
+    <append>-L/glade/work/wchapman/miniconda3.1/envs/cesmTORCH/lib -lpython3.11 -Wl,-rpath  /glade/work/wchapman/miniconda3.1/envs/cesmTORCH/lib/ </append>
   </SLIBS>
 </compiler>
 
@@ -761,9 +762,6 @@ using a fortran linker.
   <FFLAGS>
     <append> -march=core-avx2 -no-fma</append>
   </FFLAGS>
-  <LDFLAGS>
-    <append>-L/glade/u/apps/derecho/23.09/spack/opt/spack/python/3.10.12/gcc/7.5.0/lmsy/lib  -lpython3.10</append>
-  </LDFLAGS>
 </compiler>
 
 <compiler MACH="perlmutter" >
