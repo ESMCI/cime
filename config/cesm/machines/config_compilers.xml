@@ -749,7 +749,7 @@ using a fortran linker.
   <PNETCDF_PATH>$ENV{PNETCDF}</PNETCDF_PATH>
   <SLIBS>
     <append> -lnetcdff -lnetcdf </append>
-    <append>-L/glade/work/wchapman/miniconda3.1/envs/cesmTORCH/lib -lpython3.11 -Wl,-rpath  /glade/work/wchapman/miniconda3.1/envs/cesmTORCH/lib/ </append>
+    <append>-L/glade/work/wchapman/miniconda3.2/lib -lpython3.11 -Wl,-rpath  /glade/work/wchapman/miniconda3.2/lib/ </append>
   </SLIBS>
 </compiler>
 
