@@ -20,11 +20,6 @@ on:
       - 'utils/**'
 
   workflow_dispatch:
-    inputs:
-      cesm_branch:
-        description: 'CESM branch to checkout'
-        type: string
-        default: 'master'
 
 concurrency:
   group: ${{ github.ref }}
@@ -84,7 +79,7 @@ jobs:
         run: |
           export INSTALL_PATH="${PWD}"
           export CIME_REPO=https://github.com/${{ github.event.pull_request.head.repo.full_name || github.repository }}
-          export CIME_BRANCH=${GITHUB_HEAD_REF:-${{inputs.cesm_branch}}}
+          export CIME_BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF##*/}}
 
           mamba install -y python=${{ matrix.python-version }}
 
