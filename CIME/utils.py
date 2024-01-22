@@ -532,10 +532,10 @@ def get_model():
     # One last try
     if model is None:
         srcroot = get_src_root()
-        
+
         if os.path.isfile(os.path.join(srcroot, "describe_version")):
             model = "cesm"
-            
+
             if os.path.isfile(os.path.join(srcroot, "Externals.cfg")):
                 with open(os.path.join(srcroot, "Externals.cfg")) as fd:
                     for line in fd:
