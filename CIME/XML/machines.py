@@ -318,7 +318,7 @@ class Machines(GenericXML):
             return machine
         elif self.get_version() == 3:
             machines_file = os.path.join(
-                self.machines_dir, machine, "config_machines.xml"
+                os.environ.get("HOME"), ".cime", machine, "config_machines.xml"
             )
             if os.path.isfile(machines_file):
                 GenericXML.read(
@@ -326,6 +326,16 @@ class Machines(GenericXML):
                     machines_file,
                     schema=schema,
                 )
+            else:
+                machines_file = os.path.join(
+                    self.machines_dir, machine, "config_machines.xml"
+                )
+                if os.path.isfile(machines_file):
+                    GenericXML.read(
+                        self,
+                        machines_file,
+                        schema=schema,
+                    )
         self.machine_node = super(Machines, self).get_child(
             "machine",
             {"MACH": machine},
