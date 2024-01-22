@@ -533,12 +533,14 @@ def get_model():
     if model is None:
         srcroot = get_src_root()
 
-        if os.path.isfile(os.path.join(srcroot, "Externals.cfg")):
+        if os.path.isfile(os.path.join(srcroot, "describe_version")):
             model = "cesm"
-            with open(os.path.join(srcroot, "Externals.cfg")) as fd:
-                for line in fd:
-                    if re.search("ufs", line):
-                        model = "ufs"
+
+            if os.path.isfile(os.path.join(srcroot, "Externals.cfg")):
+                with open(os.path.join(srcroot, "Externals.cfg")) as fd:
+                    for line in fd:
+                        if re.search("ufs", line):
+                            model = "ufs"
         else:
             model = "e3sm"
         # This message interfers with the correct operation of xmlquery
