@@ -125,10 +125,10 @@ using a fortran linker.
     <base>  -fconvert=big-endian -ffree-line-length-none -ffixed-line-length-none </base>
     <append compile_threaded="true"> -fopenmp </append>
     <!-- Ideally, we would also have 'invalid' in the ffpe-trap list. But at
-	 least with some versions of gfortran (confirmed with 5.4.0, 6.3.0 and
-	 7.1.0), gfortran's isnan (which is called in cime via the
-	 CPRGNU-specific shr_infnan_isnan) causes a floating point exception
-	 when called on a signaling NaN. -->
+         least with some versions of gfortran (confirmed with 5.4.0, 6.3.0 and
+         7.1.0), gfortran's isnan (which is called in cime via the
+         CPRGNU-specific shr_infnan_isnan) causes a floating point exception
+         when called on a signaling NaN. -->
     <append DEBUG="TRUE"> -g -Wall -Og -fbacktrace -ffpe-trap=zero,overflow -fcheck=bounds </append>
     <append DEBUG="FALSE"> -O </append>
   </FFLAGS>
@@ -748,8 +748,7 @@ using a fortran linker.
   <NETCDF_PATH>$ENV{NETCDF}</NETCDF_PATH>
   <PNETCDF_PATH>$ENV{PNETCDF}</PNETCDF_PATH>
   <SLIBS>
-    <append> -lnetcdff -lnetcdf </append>
-    <append>-L/glade/work/wchapman/miniconda3.2/lib -lpython3.11 -Wl,-rpath  /glade/work/wchapman/miniconda3.2/lib/ </append>
+    <append> -Wl,--copy-dt-needed-entries -lnetcdff -lnetcdf </append>
   </SLIBS>
 </compiler>
 
@@ -762,11 +761,14 @@ using a fortran linker.
   <FFLAGS>
     <append> -march=core-avx2 -no-fma</append>
   </FFLAGS>
+  <SLIBS>
+    <append>-L$(CONDA_PREFIX)/lib -lpython3 -Wl,-rpath,$(CONDA_PREFIX)/lib</append>
+  </SLIBS>
 </compiler>
 
 <compiler MACH="perlmutter" >
   <FFLAGS>
-    <append> -march=core-avx2 -no-fma</append>
+    <append> -march=core-avx2 -no-fma </append>
   </FFLAGS>
   <CFLAGS>
     <append> -march=core-avx2 -no-fma -qno-opt-dynamic-align -fp-model precise -std=gnu99 </append>
@@ -1050,7 +1052,7 @@ using a fortran linker.
 <compiler MACH="homebrew" COMPILER="gnu">
   <LDFLAGS>
     <!-- These LDFLAGS provide lapack and blas support on a Mac. This
-	 may require installation of the Apple Developer Tools. -->
+         may require installation of the Apple Developer Tools. -->
     <append> -framework Accelerate </append>
   </LDFLAGS>
 </compiler>
