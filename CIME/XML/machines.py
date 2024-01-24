@@ -7,6 +7,7 @@ from CIME.XML.files import Files
 from CIME.utils import convert_to_unknown_type, get_cime_config
 
 import socket
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
@@ -317,20 +318,20 @@ class Machines(GenericXML):
         if machine == "Query":
             return machine
         elif self.get_version() == 3:
-            machines_file = os.path.join(
-                os.environ.get("HOME"), ".cime", machine, "config_machines.xml"
-            )
-            if os.path.isfile(machines_file):
+            machines_file = Path.home() / ".cime" / machine / "config_machines.xml"
+
+            if machines_file.exists():
                 GenericXML.read(
                     self,
                     machines_file,
                     schema=schema,
                 )
             else:
-                machines_file = os.path.join(
-                    self.machines_dir, machine, "config_machines.xml"
+                machines_file = (
+                    Path(self.machines_dir) / machine / "config_machines.xml"
                 )
-                if os.path.isfile(machines_file):
+
+                if machines_file.exists():
                     GenericXML.read(
                         self,
                         machines_file,
