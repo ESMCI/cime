@@ -481,7 +481,7 @@ class Case(object):
 
             if result is not None:
                 if resolved and isinstance(result, str):
-                    result = self.get_resolved_value(result)
+                    result = self.get_resolved_value(result, subgroup=subgroup)
                     vtype = env_file.get_type_info(item)
                     if vtype is not None and vtype != "char":
                         result = convert_to_type(result, vtype, item)
