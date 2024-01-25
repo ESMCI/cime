@@ -12,8 +12,6 @@ from CIME.utils import expect, run_and_log_case_status, CIMEError, get_time_in_s
 from CIME.locked_files import unlock_file, lock_file
 from CIME.test_status import *
 
-import socket
-
 logger = logging.getLogger(__name__)
 
 
@@ -39,6 +37,7 @@ def _submit(
     batch_args=None,
     workflow=True,
     chksum=False,
+    dryrun=False,
 ):
     if job is None:
         job = case.get_first_job()
@@ -164,9 +163,6 @@ manual edits to these file will be lost!
         case.check_case(skip_pnl=skip_pnl, chksum=chksum)
         if job == case.get_primary_job():
             case.check_DA_settings()
-            if case.get_value("MACH") == "mira":
-                with open(".original_host", "w") as fd:
-                    fd.write(socket.gethostname())
 
     # Load Modules
     case.load_env()
@@ -185,16 +181,20 @@ manual edits to these file will be lost!
         mail_type=mail_type,
         batch_args=batch_args,
         workflow=workflow,
+        dry_run=dryrun,
     )
-
     xml_jobids = []
-    for jobname, jobid in job_ids.items():
-        logger.info("Submitted job {} with id {}".format(jobname, jobid))
-        if jobid:
-            xml_jobids.append("{}:{}".format(jobname, jobid))
+    if dryrun:
+        for job in job_ids:
+            xml_jobids.append("{}:{}".format(job[0], job[1]))
+    else:
+        for jobname, jobid in job_ids.items():
+            logger.info("Submitted job {} with id {}".format(jobname, jobid))
+            if jobid:
+                xml_jobids.append("{}:{}".format(jobname, jobid))
 
     xml_jobid_text = ", ".join(xml_jobids)
-    if xml_jobid_text:
+    if xml_jobid_text and not dryrun:
         case.set_value("JOB_IDS", xml_jobid_text)
 
     return xml_jobid_text
@@ -214,6 +214,7 @@ def submit(
     batch_args=None,
     workflow=True,
     chksum=False,
+    dryrun=False,
 ):
     if resubmit_immediate and self.get_value("MACH") in ["mira", "cetus"]:
         logger.warning(
@@ -266,6 +267,7 @@ def submit(
             batch_args=batch_args,
             workflow=workflow,
             chksum=chksum,
+            dryrun=dryrun,
         )
         run_and_log_case_status(
             functor,
@@ -353,7 +355,7 @@ def check_case(self, skip_pnl=False, chksum=False):
 
     expect(
         self.get_value("BUILD_COMPLETE"),
-        "Build complete is " "not True please rebuild the model by calling case.build",
+        "Build complete is not True please rebuild the model by calling case.build",
     )
     logger.info("Check case OK")
 

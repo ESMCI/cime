@@ -612,7 +612,9 @@ class GenericXML(object):
 
         return value if valnodes else None
 
-    def get_resolved_value(self, raw_value, allow_unresolved_envvars=False):
+    def get_resolved_value(
+        self, raw_value, allow_unresolved_envvars=False, subgroup=None
+    ):
         """
         A value in the xml file may contain references to other xml
         variables or to environment variables. These are refered to in
@@ -662,7 +664,8 @@ class GenericXML(object):
             logger.debug("find: {}".format(var))
             # The overridden versions of this method do not simply return None
             # so the pylint should not be flagging this
-            ref = self.get_value(var)  # pylint: disable=assignment-from-none
+            # pylint: disable=assignment-from-none
+            ref = self.get_value(var, subgroup=subgroup)
 
             if ref is not None:
                 logger.debug("resolve: " + str(ref))
