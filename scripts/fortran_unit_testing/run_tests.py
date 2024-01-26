@@ -130,7 +130,7 @@ override the command provided by Machines."""
 
     args = CIME.utils.parse_args_and_handle_standard_logging_options(args, parser)
     output = Printer(color=args.color)
-
+    # pylint: disable=broad-exception-raised
     if args.xml_test_list is None and args.test_spec_dir is None:
         output.print_error(
             "You must specify either --test-spec-dir or --xml-test-list."

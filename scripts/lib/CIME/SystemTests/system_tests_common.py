@@ -399,6 +399,7 @@ class SystemTestsCommon(object):
         """
         compare the current test output to a baseline result
         """
+        memlist = None
         with self._test_status:
             # compare baseline
             success, comments = compare_baseline(self._case)

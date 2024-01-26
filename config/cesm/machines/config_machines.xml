@@ -996,7 +996,7 @@ This allows using a different mpirun command to launch unit tests
     <DESC>NCAR AMD EPYC </DESC>
     <NODENAME_REGEX>de.*.hpc.ucar.edu</NODENAME_REGEX>
     <OS>CNL</OS>
-    <COMPILERS>intel</COMPILERS>
+    <COMPILERS>intel,gnu</COMPILERS>
 <!--    <COMPILERS>intel,gnu,cray,nvhpc,intel-oneapi,intel-classic</COMPILERS> -->
     <MPILIBS>mpich</MPILIBS>
     <CIME_OUTPUT_ROOT>$ENV{SCRATCH}</CIME_OUTPUT_ROOT>
