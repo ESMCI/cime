@@ -15,18 +15,16 @@ logger = logging.getLogger(__name__)
 ###############################################################################
 def _run_pylint(on_file, interactive):
 ###############################################################################
-    pylintstr = find_executable("pylint")
+    pylint = find_executable("pylint")
 
     cmd_options = " --disable=I,C,R,logging-not-lazy,wildcard-import,unused-wildcard-import"
     cmd_options += ",fixme,broad-except,bare-except,eval-used,exec-used,global-statement"
     cmd_options += ",logging-format-interpolation,no-name-in-module,unspecified-encoding"
     cmd_options += ",arguments-renamed,no-member,redefined-outer-name"
-    cmd_options += ",deprecated-module,deprecated-class"
-
     cimeroot = get_cime_root()
-            
-#    if "scripts/Tools" in on_file:
-#        cmd_options +=",relative-import"
+
+    if "scripts/Tools" in on_file:
+        cmd_options +=",relative-import"
 
     # add init-hook option
     cmd_options += " --init-hook='sys.path.extend((\"%s\",\"%s\",\"%s\"))'"%\
@@ -34,7 +32,7 @@ def _run_pylint(on_file, interactive):
          os.path.join(cimeroot,"scripts","Tools"),
          os.path.join(cimeroot,"scripts","fortran_unit_testing","python"))
 
-    cmd = "%s %s %s" % (pylintstr, cmd_options, on_file)
+    cmd = "%s %s %s" % (pylint, cmd_options, on_file)
     logger.debug("pylint command is %s"%cmd)
     stat, out, err = run_cmd(cmd, verbose=False, from_dir=cimeroot)
     if stat != 0:
