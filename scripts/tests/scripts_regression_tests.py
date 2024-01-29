@@ -2764,7 +2764,7 @@ def check_for_pylint():
     from distutils.spawn import find_executable
     pylint = find_executable("pylint")
     if pylint is not None:
-        output = run_cmd_no_fail("pylint --version")
+        output = run_cmd_no_fail(pylint+" --version")
         pylintver = re.search(r"pylint\s+(\d+)[.](\d+)[.](\d+)", output)
         major = int(pylintver.group(1))
         minor = int(pylintver.group(2))

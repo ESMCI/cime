@@ -863,7 +863,6 @@ def shouldRaise(eclass, method, *args, **kw):
         if not isinstance(e, eclass):
             raise
         return
-    # pylint: disable=broad-exception-raised
     raise Exception("Expected exception %s not raised" %
                     str(eclass))
 
