@@ -304,7 +304,7 @@ def _post_run_check(case, lid):
         if fv3_standalone:
             file_prefix = model
         else:
-            file_prefix = "drv"
+            file_prefix = "med"
     else:
         file_prefix = "cpl"
 
