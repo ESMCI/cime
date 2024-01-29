@@ -722,6 +722,19 @@
     CLM. This is currently only supported for certain machines.</desc>
   </entry>
 
+  <entry id="USE_CONDA">
+    <type>logical</type>
+    <valid_values>TRUE,FALSE</valid_values>
+    <default_value>FALSE</default_value>
+    <group>build_def</group>
+    <file>env_build.xml</file>
+    <desc> TRUE implies linking to a python3 library located in CONDA_PREFIX/lib
+    and using the file forpy_mod.F90 to allow calls between fortran and python
+    typical python usage might include pytorch, tensorflow, and/or numpy
+    </desc>
+  </entry>
+
+
   <entry id="USE_ALBANY">
     <type>logical</type>
     <valid_values>TRUE,FALSE</valid_values>

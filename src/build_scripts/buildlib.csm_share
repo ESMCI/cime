@@ -47,7 +47,6 @@ def buildlib(bldroot, installpath, caseroot):
         cimeroot = case.get_value("CIMEROOT")
         srcroot = case.get_value("SRCROOT")
         filepath = [os.path.join(caseroot,"SourceMods","src.share"),
-                    os.path.join(srcroot, "forpy"),
                     os.path.join(cimeroot,"src","drivers","mct","shr"),
                     os.path.join(cimeroot,"src","share","streams"),
                     os.path.join(cimeroot,"src","share","util"),
@@ -61,6 +60,10 @@ def buildlib(bldroot, installpath, caseroot):
             use_esmf = "noesmf"
             filepath.append(os.path.join(cimeroot, "src", "share", "esmf_wrf_timemgr"))
 
+        if case.get_value("USE_CONDA"):
+            filepath.append(os.path.join(srcroot, "forpy"))
+
+            
         comp_interface = case.get_value("COMP_INTERFACE")
         ninst_value = case.get_value("NINST_VALUE")
 

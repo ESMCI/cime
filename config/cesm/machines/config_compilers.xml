@@ -761,9 +761,25 @@ using a fortran linker.
   <FFLAGS>
     <append> -march=core-avx2 -no-fma</append>
   </FFLAGS>
+</compiler>
+
+<compiler MACH="derecho-gpu">
+  <NETCDF_PATH>$ENV{NETCDF}</NETCDF_PATH>
+  <PNETCDF_PATH>$ENV{PNETCDF}</PNETCDF_PATH>
   <SLIBS>
-    <append>-L$(CONDA_PREFIX)/lib -lpython3 -Wl,-rpath,$(CONDA_PREFIX)/lib</append>
+    <append> -Wl,--copy-dt-needed-entries -lnetcdff -lnetcdf </append>
   </SLIBS>
+</compiler>
+
+<compiler MACH="derecho-gpu" COMPILER="intel">
+  <CFLAGS>
+    <base>  -qno-opt-dynamic-align -fp-model precise -std=gnu99 </base>
+    <append MODEL="mpi-serial"> -std=gnu89 </append>
+    <append> -march=core-avx2 -no-fma</append>
+  </CFLAGS>
+  <FFLAGS>
+    <append> -march=core-avx2 -no-fma</append>
+  </FFLAGS>
 </compiler>
 
 <compiler MACH="perlmutter" >
