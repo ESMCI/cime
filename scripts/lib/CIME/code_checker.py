@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 ###############################################################################
 def _run_pylint(on_file, interactive):
 ###############################################################################
-    pylint = find_executable("pylint")
+    pylint = find_executable("pylint") 
 
     cmd_options = " --disable=I,C,R,logging-not-lazy,wildcard-import,unused-wildcard-import"
     cmd_options += ",fixme,broad-except,bare-except,eval-used,exec-used,global-statement"

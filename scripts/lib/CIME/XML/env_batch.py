@@ -328,7 +328,8 @@ class EnvBatch(EnvBase):
         directive_prefix = None
 
         roots = self.get_children("batch_system")
-        queue = self.get_value("JOB_QUEUE", subgroup=job)
+        # This must go through the case object
+        queue = case.get_value("JOB_QUEUE", subgroup=job)
         if self._batchtype != "none" and not queue in self._get_all_queue_names():
             unknown_queue = True
             qnode = self.get_default_queue()
