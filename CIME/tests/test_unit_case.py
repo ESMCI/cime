@@ -86,6 +86,7 @@ class TestCaseSubmit(unittest.TestCase):
                 batch_args=None,
                 workflow=True,
                 chksum=True,
+                dryrun=False,
             )
 
 

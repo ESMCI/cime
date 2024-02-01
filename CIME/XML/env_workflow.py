@@ -112,7 +112,13 @@ class EnvWorkflow(EnvBase):
         if ngpus_per_node > max_gpus_per_node:
             ngpus_per_node = max_gpus_per_node
 
-        return task_count, num_nodes, tasks_per_node, thread_count, ngpus_per_node
+        return (
+            task_count,
+            num_nodes,
+            tasks_per_node,
+            thread_count,
+            ngpus_per_node,
+        )
 
     # pylint: disable=arguments-differ
     def get_value(self, item, attribute=None, resolved=True, subgroup="PRIMARY"):
