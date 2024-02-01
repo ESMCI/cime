@@ -329,7 +329,7 @@ def get_latest_cpl_logs(case):
     """
     coupler_log_path = case.get_value("RUNDIR")
 
-    cpllog_name = "drv" if case.get_value("COMP_INTERFACE") == "nuopc" else "cpl"
+    cpllog_name = "med" if case.get_value("COMP_INTERFACE") == "nuopc" else "cpl"
 
     cpllogs = glob.glob(os.path.join(coupler_log_path, "{}*.log.*".format(cpllog_name)))
 

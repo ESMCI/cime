@@ -84,7 +84,7 @@ RUN curl -L -k -o "${PWD}/pnetcdf.tar.gz" \
             make install && \
             rm -rf "${PWD}/pnetcdf"
 
-RUN mkdir /root/.cime
+RUN mkdir -p /root/.cime /storage/timings
 
 COPY config_machines.xml /root/.cime/
 COPY docker.cmake /root/.cime/

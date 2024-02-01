@@ -481,7 +481,7 @@ class Case(object):
 
             if result is not None:
                 if resolved and isinstance(result, str):
-                    result = self.get_resolved_value(result)
+                    result = self.get_resolved_value(result, subgroup=subgroup)
                     vtype = env_file.get_type_info(item)
                     if vtype is not None and vtype != "char":
                         result = convert_to_type(result, vtype, item)
@@ -548,13 +548,17 @@ class Case(object):
 
         return result
 
-    def get_resolved_value(self, item, recurse=0, allow_unresolved_envvars=False):
+    def get_resolved_value(
+        self, item, recurse=0, allow_unresolved_envvars=False, subgroup=None
+    ):
         num_unresolved = item.count("$") if item else 0
         recurse_limit = 10
         if num_unresolved > 0 and recurse < recurse_limit:
             for env_file in self._env_entryid_files:
                 item = env_file.get_resolved_value(
-                    item, allow_unresolved_envvars=allow_unresolved_envvars
+                    item,
+                    allow_unresolved_envvars=allow_unresolved_envvars,
+                    subgroup=subgroup,
                 )
             if "$" not in item:
                 return item
@@ -563,6 +567,7 @@ class Case(object):
                     item,
                     recurse=recurse + 1,
                     allow_unresolved_envvars=allow_unresolved_envvars,
+                    subgroup=subgroup,
                 )
 
         return item
