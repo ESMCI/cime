@@ -1124,8 +1124,14 @@ class EnvBatch(EnvBase):
                 jobid_pattern is not None,
                 "Could not find jobid_pattern in env_batch.xml",
             )
+
+            # If no output was provided, skip the search. This could
+            # be because --no-batch was provided.
+            if not output:
+                return output
         else:
             return output
+
         search_match = re.search(jobid_pattern, output)
         expect(
             search_match is not None,
