@@ -236,7 +236,7 @@ class TestCimeCase(base.BaseTestCase):
         )
 
         with Case(casedir, read_only=False) as case:
-            build_threaded = case.get_value("SMP_PRESENT")
+            build_threaded = case.get_value("BUILD_THREADED")
             self.assertFalse(build_threaded)
 
             build_threaded = case.get_build_threaded()
@@ -254,7 +254,7 @@ class TestCimeCase(base.BaseTestCase):
         )
 
         with Case(casedir, read_only=False) as case:
-            build_threaded = case.get_value("SMP_PRESENT")
+            build_threaded = case.get_value("BUILD_THREADED")
             self.assertTrue(build_threaded)
 
             build_threaded = case.get_build_threaded()

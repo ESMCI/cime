@@ -8,7 +8,7 @@ from CIME.utils import safe_copy, get_src_root
 import xml.etree.ElementTree as ET
 
 # pylint: disable=import-error
-from distutils.spawn import find_executable
+from shutil import which
 import getpass
 from copy import deepcopy
 from collections import namedtuple
@@ -105,7 +105,8 @@ class GenericXML(object):
 
     def read(self, infile, schema=None):
         """
-        Read and parse an xml file into the object
+        Read and parse an xml file into the object.  The schema variable can either be a path to an xsd schema file or
+        a dictionary of paths to files by version.
         """
         cached_read = False
         if not self.DISABLE_CACHING and infile in self._FILEMAP:
@@ -126,8 +127,10 @@ class GenericXML(object):
             logger.debug("read: {}".format(infile))
             with open(infile, "r", encoding="utf-8") as fd:
                 self.read_fd(fd)
-
-            if schema is not None and self.get_version() > 1.0:
+            version = str(self.get_version())
+            if type(schema) is dict:
+                self.validate_xml_file(infile, schema[version])
+            elif schema is not None and self.get_version() > 1.0:
                 self.validate_xml_file(infile, schema)
 
             logger.debug("File version is {}".format(str(self.get_version())))
@@ -472,7 +475,7 @@ class GenericXML(object):
         xmlstr = self.get_raw_record()
 
         # xmllint provides a better format option for the output file
-        xmllint = find_executable("xmllint")
+        xmllint = which("xmllint")
 
         if xmllint:
             if isinstance(outfile, str):
@@ -609,7 +612,9 @@ class GenericXML(object):
 
         return value if valnodes else None
 
-    def get_resolved_value(self, raw_value, allow_unresolved_envvars=False):
+    def get_resolved_value(
+        self, raw_value, allow_unresolved_envvars=False, subgroup=None
+    ):
         """
         A value in the xml file may contain references to other xml
         variables or to environment variables. These are refered to in
@@ -659,7 +664,8 @@ class GenericXML(object):
             logger.debug("find: {}".format(var))
             # The overridden versions of this method do not simply return None
             # so the pylint should not be flagging this
-            ref = self.get_value(var)  # pylint: disable=assignment-from-none
+            # pylint: disable=assignment-from-none
+            ref = self.get_value(var, subgroup=subgroup)
 
             if ref is not None:
                 logger.debug("resolve: " + str(ref))
@@ -688,9 +694,14 @@ class GenericXML(object):
         """
         validate an XML file against a provided schema file using pylint
         """
-        expect(os.path.isfile(filename), "xml file not found {}".format(filename))
-        expect(os.path.isfile(schema), "schema file not found {}".format(schema))
-        xmllint = find_executable("xmllint")
+        expect(
+            filename and os.path.isfile(filename),
+            "xml file not found {}".format(filename),
+        )
+        expect(
+            schema and os.path.isfile(schema), "schema file not found {}".format(schema)
+        )
+        xmllint = which("xmllint")
 
         expect(
             xmllint and os.path.isfile(xmllint),

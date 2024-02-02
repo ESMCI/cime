@@ -72,7 +72,7 @@ jobs:
         env:
           INIT: "false"
           CIME_MODEL: "cesm"
-          CIME_DRIVER: "mct"
+          CIME_DRIVER: "nuopc"
           UPDATE_CIME: "true"
           GIT_SHALLOW: "true"
           CIME_TEST_PLATFORM: ubuntu-latest
@@ -101,6 +101,8 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
     strategy:
+      # allow all jobs to finish
+      fail-fast: false
       matrix:
         model: ["e3sm", "cesm"]
         driver: ["mct", "nuopc"]
@@ -108,6 +110,9 @@ jobs:
           # exclude nuopc driver when running e3sm tests
           - model: "e3sm"
             driver: "nuopc"
+          # exclude mct driver when running cesm tests
+          - model: "cesm"
+            driver: "mct"
     steps:
       - name: Checkout code
         uses: actions/checkout@v2

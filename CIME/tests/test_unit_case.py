@@ -86,6 +86,7 @@ class TestCaseSubmit(unittest.TestCase):
                 batch_args=None,
                 workflow=True,
                 chksum=True,
+                dryrun=False,
             )
 
 
@@ -232,14 +233,14 @@ class TestCase(unittest.TestCase):
                     self.srcroot,
                     "A",
                     "f19_g16_rx1",
-                    machine_name="cori-haswell",
+                    machine_name="perlmutter",
                 )
 
                 # Check that they're all called
                 configure.assert_called_with(
                     "A",
                     "f19_g16_rx1",
-                    machine_name="cori-haswell",
+                    machine_name="perlmutter",
                     project=None,
                     pecount=None,
                     compiler=None,
@@ -309,14 +310,14 @@ class TestCase(unittest.TestCase):
                     self.srcroot,
                     "A",
                     "f19_g16_rx1",
-                    machine_name="cori-haswell",
+                    machine_name="perlmutter",
                 )
 
                 # Check that they're all called
                 configure.assert_called_with(
                     "A",
                     "f19_g16_rx1",
-                    machine_name="cori-haswell",
+                    machine_name="perlmutter",
                     project=None,
                     pecount=None,
                     compiler=None,

@@ -24,6 +24,9 @@ Classes that inherit from this are REQUIRED to implement the following methods:
 (2) _case_two_setup
     This method will be called to set up case 2, the "test" case
 
+Note that the base class will always call case_setup(reset=True) on
+both case1 and case2 during setup.
+
 In addition, they MAY require the following methods:
 
 (1) _common_setup
@@ -559,6 +562,7 @@ class SystemTestsCompareTwo(SystemTestsCommon):
             self._activate_case2()
             self._common_setup()
             self._case_two_setup()
+            self._case2.case_setup(test_mode=True, reset=True)
 
         fix_single_exe_case(self._case2)
 

@@ -110,7 +110,7 @@ class SystemTestsCommon(object):
         self._init_locked_files(caseroot, expected)
         self._skip_pnl = False
         self._cpllog = (
-            "drv" if self._case.get_value("COMP_INTERFACE") == "nuopc" else "cpl"
+            "med" if self._case.get_value("COMP_INTERFACE") == "nuopc" else "cpl"
         )
         self._ninja = False
         self._dry_run = False

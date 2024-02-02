@@ -813,6 +813,7 @@ class EnvBatch(EnvBase):
                     dry_run=dry_run,
                     workflow=workflow,
                 )
+
                 batch_job_id = str(alljobs.index(job)) if dry_run else result
                 depid[job] = batch_job_id
                 jobcmds.append((job, result))
@@ -921,35 +922,33 @@ class EnvBatch(EnvBase):
             logger.info("Starting job script {}".format(job))
             function_name = job.replace(".", "_")
             job_name = "." + job
-            if not dry_run:
-                args = self._build_run_args(
-                    job,
-                    True,
-                    skip_pnl=skip_pnl,
-                    set_continue_run=resubmit_immediate,
-                    submit_resubmits=workflow and not resubmit_immediate,
-                )
-                try:
-                    if hasattr(case, function_name):
-                        getattr(case, function_name)(
-                            **{k: v for k, (v, _) in args.items()}
-                        )
+            args = self._build_run_args(
+                job,
+                True,
+                skip_pnl=skip_pnl,
+                set_continue_run=resubmit_immediate,
+                submit_resubmits=workflow and not resubmit_immediate,
+            )
+            try:
+                if hasattr(case, function_name):
+                    getattr(case, function_name)(**{k: v for k, (v, _) in args.items()})
+                else:
+                    expect(
+                        os.path.isfile(job_name),
+                        "Could not find file {}".format(job_name),
+                    )
+                    if dry_run:
+                        return os.path.join(self._caseroot, job_name)
                     else:
-                        expect(
-                            os.path.isfile(job_name),
-                            "Could not find file {}".format(job_name),
-                        )
                         run_cmd_no_fail(
                             os.path.join(self._caseroot, job_name),
                             combine_output=True,
                             verbose=True,
                             from_dir=self._caseroot,
                         )
-                except Exception as e:
-                    # We don't want exception from the run phases getting into submit phase
-                    logger.warning(
-                        "Exception from {}: {}".format(function_name, str(e))
-                    )
+            except Exception as e:
+                # We don't want exception from the run phases getting into submit phase
+                logger.warning("Exception from {}: {}".format(function_name, str(e)))
 
             return
 
@@ -1088,10 +1087,10 @@ class EnvBatch(EnvBase):
             # add ` before cd $CASEROOT and at end of command
             submitcmd = submitcmd.replace("cd $CASEROOT", "'cd $CASEROOT") + "'"
 
+        submitcmd = case.get_resolved_value(submitcmd, subgroup=job)
         if dry_run:
             return submitcmd
         else:
-            submitcmd = case.get_resolved_value(submitcmd)
             logger.info("Submitting job script {}".format(submitcmd))
             output = run_cmd_no_fail(submitcmd, combine_output=True)
             jobid = self.get_job_id(output)

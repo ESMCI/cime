@@ -38,7 +38,7 @@ OR
 
     CIME.utils.setup_standard_logging_options(parser)
 
-    default_baseline = CIME.utils.get_current_branch(repo=CIME.utils.get_cime_root())
+    default_baseline = CIME.utils.get_current_branch(repo=CIME.utils.get_src_root())
     if default_baseline is not None:
         default_baseline = default_baseline.replace(".", "_").replace(
             "/", "_"

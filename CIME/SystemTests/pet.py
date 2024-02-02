@@ -34,12 +34,7 @@ class PET(SystemTestsCompareTwo):
             if self._case.get_value("NTHRDS_{}".format(comp)) <= 1:
                 self._case.set_value("NTHRDS_{}".format(comp), 2)
 
-        # Need to redo case_setup because we may have changed the number of threads
-
     def _case_two_setup(self):
         # Do a run with all threads set to 1
         for comp in self._case.get_values("COMP_CLASSES"):
             self._case.set_value("NTHRDS_{}".format(comp), 1)
-
-        # Need to redo case_setup because we may have changed the number of threads
-        self._case.case_setup(reset=True, test_mode=True)
