@@ -1413,7 +1413,7 @@ def safe_copy(src_path, tgt_path, preserve_meta=True):
                 tgt_path,
                 preserve_mode=preserve_meta,
                 preserve_times=preserve_meta,
-                verbose=0
+                verbose=0,
             )
         else:
             # I am not the owner, just copy file contents
@@ -1427,7 +1427,7 @@ def safe_copy(src_path, tgt_path, preserve_meta=True):
             tgt_path,
             preserve_mode=preserve_meta,
             preserve_times=preserve_meta,
-            verbose=0
+            verbose=0,
         )
 
     # If src file was executable, then the tgt file should be too
