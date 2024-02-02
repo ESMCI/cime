@@ -427,8 +427,8 @@ def _case_setup_impl(
                 logger.debug("Running cam.case_setup.py")
                 run_cmd_no_fail(
                     "python {cam}/cime_config/cam.case_setup.py {cam} {case}".format(
-                    cam=camroot, case=caseroot
-                    ) 
+                        cam=camroot, case=caseroot
+                    )
                 )
 
         _build_usernl_files(case, "drv", "cpl")
