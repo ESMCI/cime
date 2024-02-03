@@ -89,6 +89,7 @@ jobs:
   unit-testing:
     runs-on: ubuntu-latest
     if: ${{ always() && ! cancelled() }}
+    needs: build-containers
     container:
       image: ghcr.io/esmci/cime:sha-${{ github.sha }}
       credentials:
