@@ -259,9 +259,11 @@ class Machines(GenericXML):
 
     def _probe_machine_name_one_guess_v3(self, nametomatch):
 
-        node = self.get_child("NODENAME_REGEX", root=self.root)
+        nodes = self.get_children("NODENAME_REGEX", root=self.root)
 
-        for child in self.get_children(root=node):
+        children = [y for x in nodes for y in self.get_children(root=x)]
+
+        for child in children:
             machtocheck = self.get(child, "MACH")
             regex_str = self.text(child)
             logger.debug(
