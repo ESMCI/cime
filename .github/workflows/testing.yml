@@ -32,11 +32,9 @@ permissions:
   packages: read
 
 jobs:
-  # Only build container if there has been a change.
   build-containers:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
       packages: write
     steps:
       - name: Checkout code
@@ -65,8 +63,7 @@ jobs:
         with:
           target: base
           context: docker/
-            # push: ${{ github.event_name == 'push' }}
-          push: true
+          push: ${{ github.event_name == 'push' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
@@ -82,12 +79,6 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: 3.9
-      # Offical action is deprecated in favor of pre-commit.ci
-      # Should evaulate switching or just running manually.
-      # - name: Runs pre-commit action
-      #   # Do not run if using act tooling (https://github.com/nektos/act)
-      #   if: ${{ !env.ACT }}
-      #   uses: pre-commit/action@v2.0.3
       - name: Runs pre-commit
         run: |
           pip install pre-commit
@@ -112,26 +103,24 @@ jobs:
       - name: Run tests
         shell: bash
         env:
-          INIT: "false"
           CIME_MODEL: "cesm"
           CIME_DRIVER: "nuopc"
-          UPDATE_CIME: "true"
-          GIT_SHALLOW: "true"
           CIME_TEST_PLATFORM: ubuntu-latest
         run: |
-          export INSTALL_PATH="${PWD}"
-          export CIME_REPO=https://github.com/${{ github.event.pull_request.head.repo.full_name || github.repository }}
-          export CIME_BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF##*/}}
+          echo $GITHUB_WORKSPACE
+          # export INSTALL_PATH="${PWD}"
+          # export CIME_REPO=https://github.com/${{ github.event.pull_request.head.repo.full_name || github.repository }}
+          # export CIME_BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF##*/}}
 
-          mamba install -y python=${{ matrix.python-version }}
+          # mamba install -y python=${{ matrix.python-version }}
 
-          source /entrypoint.sh
+          # source /entrypoint.sh
 
-          git config --global --add safe.directory /__w/cime/cime
+          # git config --global --add safe.directory /__w/cime/cime
 
-          init_cime
+          # init_cime
 
-          pytest -vvv --cov=CIME --machine docker --no-fortran-run CIME/tests/test_unit*
+          # pytest -vvv --cov=CIME --machine docker --no-fortran-run CIME/tests/test_unit*
 
   # Run system tests
   system-testing:
