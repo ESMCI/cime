@@ -65,7 +65,7 @@ elif [[ "${CIME_MODEL}" == "cesm" ]]
 then
     echo "Setting up CESM"
 
-    if [[ "${SRC_PATH}" != "/src" ]]
+    if [[ "${SRC_PATH}" != "/src/cime" ]]
     then
         cp -rf /src/ccs_config /src/components /src/libraries /src/share ../
     fi
