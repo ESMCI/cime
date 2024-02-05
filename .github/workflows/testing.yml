@@ -109,15 +109,14 @@ jobs:
         run: |
           export SRC_PATH="${GITHUB_WORKSPACE}"
 
-          echo $GITHUB_WORKSPACE
-
           mamba install -y python=${{ matrix.python-version }}
 
           source /entrypoint.sh
 
-          echo $HOME
-
+          # GitHub runner home is different than container
           cp -rf /root/.cime /github/home/
+
+          git status
 
           pytest -vvv --cov=CIME --machine docker --no-fortran-run CIME/tests/test_unit*
 

@@ -72,11 +72,11 @@ then
 
     git config --global --add safe.directory "${PWD}"
 
+    git config --global --add safe.directory "${PWD}/CIME/non_py/cprnc"
+
     fix_gitmodules "${PWD}"
 
     git submodule update --init "${GIT_SUBMODULE_FLAGS}"
-
-    git config --global --add safe.directory "${PWD}/cime"
 
     fix_mct_arflags /src/libraries/mct
 
