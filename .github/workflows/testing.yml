@@ -117,7 +117,7 @@ jobs:
 
           echo $HOME
 
-          id
+          cp -rf /root/.cime /github/home/
 
           pytest -vvv --cov=CIME --machine docker --no-fortran-run CIME/tests/test_unit*
 
