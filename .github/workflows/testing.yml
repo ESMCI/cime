@@ -54,8 +54,6 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: ghcr.io/ESMCI/cime
-          flavor: |
-            latest=auto
           tags: |
             type=sha,format=long
       - name: Build and push
@@ -63,7 +61,8 @@ jobs:
         with:
           target: base
           context: docker/
-          push: ${{ github.event_name == 'push' }}
+          # Only push on pull request
+          push: ${{ github.event_name == 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
