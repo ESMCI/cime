@@ -97,16 +97,9 @@ jobs:
     strategy:
       matrix:
         python-version: ['3.8', '3.9', '3.10']
-    defaults:
-      run:
-        working-directory: /src
     steps:
-      - name: Remove existing /src/cime
-        run: rm -rf /src/cime
       - name: Checkout code
         uses: actions/checkout@v2
-        with:
-          path: /src/cime
       - name: Run tests
         shell: bash
         env:
@@ -114,19 +107,11 @@ jobs:
           CIME_DRIVER: "nuopc"
           CIME_TEST_PLATFORM: ubuntu-latest
         run: |
-          echo $PWD
-
-          ls -la .
-
-          git config --global --add safe.directory $GITHUB_WORKSPACE
-
           git status
 
           mamba install -y python=${{ matrix.python-version }}
 
           source /entrypoint.sh
-
-          echo $GITHUB_WORKSPACE
 
           # pytest -vvv --cov=CIME --machine docker --no-fortran-run CIME/tests/test_unit*
 

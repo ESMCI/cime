@@ -65,6 +65,11 @@ elif [[ "${CIME_MODEL}" == "cesm" ]]
 then
     echo "Setting up CESM"
 
+    if [[ "${SRC_PATH}" != "/src" ]]
+    then
+        cp -rf /src/ccs_config /src/components /src/libraries /src/share ../
+    fi
+
     fix_gitmodules "${PWD}"
 
     git submodule update --init "${GIT_SUBMODULE_FLAGS}"
