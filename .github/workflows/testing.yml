@@ -107,6 +107,10 @@ jobs:
           CIME_DRIVER: "nuopc"
           CIME_TEST_PLATFORM: ubuntu-latest
         run: |
+          export SRC_PATH="${GITHUB_WORKSPACE}"
+
+          echo $GITHUB_WORKSPACE
+
           git status
 
           mamba install -y python=${{ matrix.python-version }}
