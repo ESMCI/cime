@@ -101,8 +101,12 @@ jobs:
       run:
         working-directory: /src
     steps:
+      - name: Remove existing /src/cime
+        run: rm -rf /src/cime
       - name: Checkout code
         uses: actions/checkout@v2
+        with:
+          path: /src/cime
       - name: Run tests
         shell: bash
         env:
