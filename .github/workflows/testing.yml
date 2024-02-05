@@ -110,6 +110,10 @@ jobs:
           CIME_DRIVER: "nuopc"
           CIME_TEST_PLATFORM: ubuntu-latest
         run: |
+          echo $PWD
+
+          ls -la .
+
           git config --global --add safe.directory $GITHUB_WORKSPACE
 
           git status
