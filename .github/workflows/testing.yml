@@ -107,6 +107,14 @@ jobs:
           CIME_DRIVER: "nuopc"
           CIME_TEST_PLATFORM: ubuntu-latest
         run: |
+          git config --global --add safe.directory $GITHUB_WORKSPACE
+
+          git status
+
+          mamba install -y python=${{ matrix.python-version }}
+
+          source /entrypoint.sh
+
           echo $GITHUB_WORKSPACE
           # export INSTALL_PATH="${PWD}"
           # export CIME_REPO=https://github.com/${{ github.event.pull_request.head.repo.full_name || github.repository }}
