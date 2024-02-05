@@ -115,6 +115,10 @@ jobs:
 
           source /entrypoint.sh
 
+          echo $HOME
+
+          id
+
           pytest -vvv --cov=CIME --machine docker --no-fortran-run CIME/tests/test_unit*
 
   # Run system tests
