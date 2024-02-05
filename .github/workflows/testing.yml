@@ -97,6 +97,9 @@ jobs:
     strategy:
       matrix:
         python-version: ['3.8', '3.9', '3.10']
+    defaults:
+      run:
+        working-directory: /src
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -116,17 +119,6 @@ jobs:
           source /entrypoint.sh
 
           echo $GITHUB_WORKSPACE
-          # export INSTALL_PATH="${PWD}"
-          # export CIME_REPO=https://github.com/${{ github.event.pull_request.head.repo.full_name || github.repository }}
-          # export CIME_BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF##*/}}
-
-          # mamba install -y python=${{ matrix.python-version }}
-
-          # source /entrypoint.sh
-
-          # git config --global --add safe.directory /__w/cime/cime
-
-          # init_cime
 
           # pytest -vvv --cov=CIME --machine docker --no-fortran-run CIME/tests/test_unit*
 

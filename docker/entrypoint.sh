@@ -5,6 +5,7 @@ then
     set -x
 fi
 
+SRC_PATH="`pwd`"
 GIT_FLAGS="--filter=tree:0"
 GIT_SUBMODULE_FLAGS="--recommend-shallow"
 
@@ -43,15 +44,15 @@ if [[ "${CIME_MODEL}" == "e3sm" ]]
 then
     echo "Setting up E3SM"
 
-    git clone -b ${E3SM_BRANCH:-master} ${GIT_FLAGS} ${E3SM_REPO:-https://github.com/E3SM-Project/E3SM} /src/E3SM
+    git clone -b ${E3SM_BRANCH:-master} ${GIT_FLAGS} ${E3SM_REPO:-https://github.com/E3SM-Project/E3SM} "${SRC_PATH}/E3SM"
 
-    pushd /src/E3SM
+    pushd "${SRC_PATH}/E3SM"
 
     fix_gitmodules "${PWD}"
 
     git submodule update --init "${GIT_SUBMODULE_FLAGS}"
 
-    fix_mct_arflags /src/E3SM/externals/mct
+    fix_mct_arflags "${SRC_PATH}/E3SM/externals/mct"
 
     pushd cime
 
@@ -64,7 +65,7 @@ elif [[ "${CIME_MODEL}" == "cesm" ]]
 then
     echo "Setting up CESM"
 
-    fix_gitmodules /src/cime
+    fix_gitmodules "${PWD}"
 
     git submodule update --init "${GIT_SUBMODULE_FLAGS}"
 
