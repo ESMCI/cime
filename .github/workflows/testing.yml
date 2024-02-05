@@ -111,8 +111,6 @@ jobs:
 
           echo $GITHUB_WORKSPACE
 
-          git status
-
           mamba install -y python=${{ matrix.python-version }}
 
           source /entrypoint.sh
