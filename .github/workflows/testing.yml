@@ -162,6 +162,8 @@ jobs:
 
           source /entrypoint.sh
 
+          rm -rf "${GITHUB_WORKSPACE}/E3SM/cime"
+
           # GitHub runner home is different than container
           cp -rf /root/.cime /github/home/
 
