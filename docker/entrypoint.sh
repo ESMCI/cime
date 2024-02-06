@@ -48,17 +48,21 @@ then
 
     pushd "${SRC_PATH}/E3SM"
 
+    git config --global --add safe.directory "${PWD}"
+
     fix_gitmodules "${PWD}"
 
     git status
 
-    git submodule update --init --recursive "${GIT_SUBMODULE_FLAGS}"
+    git submodule update --init "${GIT_SUBMODULE_FLAGS}"
 
     fix_mct_arflags "${SRC_PATH}/E3SM/externals/mct"
 
     pushd cime
 
     fix_gitmodules "${PWD}"
+
+    git config --global --add safe.directory "${PWD}/CIME/non_py/cprnc"
 
     git submodule update --init "${GIT_SUBMODULE_FLAGS}"
 

@@ -67,7 +67,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-      - run: sleep 2
+      - run: sleep 5
 
   pre-commit:
     runs-on: ubuntu-latest
