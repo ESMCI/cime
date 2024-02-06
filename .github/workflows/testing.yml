@@ -166,8 +166,10 @@ jobs:
           cp -rf /root/.cime /github/home/
 
           if [[ "${CIME_MODEL}" == "e3sm" ]]; then
-            # For E3SM model, need to be in correct CIME directory
-            pushd E3SM/cime
+            git remote set-url origin https://github.com/${{ github.event.pull_request.head.repo.full_name || github.repository }}
+            git remote set-branches origin "*"
+            git fetch origin
+            git checkout ${GITHUB_HEAD_REF:-${GITHUB_REF##*/}}
           fi
 
           git status
