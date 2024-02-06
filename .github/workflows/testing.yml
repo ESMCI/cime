@@ -87,7 +87,8 @@ jobs:
   # Runs unit testing under different python versions.
   unit-testing:
     runs-on: ubuntu-latest
-    if: ${{ always() && ! cancelled() }}
+    if: ${{ github.sha == '' }}
+    # if: ${{ always() && ! cancelled() }}
     needs: build-containers
     container:
       image: ghcr.io/esmci/cime:sha-${{ github.sha }}
@@ -123,9 +124,7 @@ jobs:
   # Run system tests
   system-testing:
     runs-on: ubuntu-latest
-    # temporary disable
-    if: ${{ github.sha == '' }}
-      # if: ${{ always() && ! cancelled() }}
+    if: ${{ always() && ! cancelled() }}
     container:
       image: ghcr.io/esmci/cime:latest
       credentials:
@@ -155,33 +154,18 @@ jobs:
       - name: Run tests
         shell: bash
         env:
-          INIT: "false"
           CIME_MODEL: ${{ matrix.model }}
           CIME_DRIVER: ${{ matrix.driver }}
-          UPDATE_CIME: "true"
-          GIT_SHALLOW: "true"
           CIME_TEST_PLATFORM: ubuntu-latest
         run: |
-          export INSTALL_PATH="${PWD}/cime"
-          export CIME_REPO=https://github.com/${{ github.event.pull_request.head.repo.full_name || github.repository }}
-          export CIME_BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF##*/}}
+          export SRC_PATH="${GITHUB_WORKSPACE}"
 
           source /entrypoint.sh
 
-          git config --global --add safe.directory /__w/cime/cime
+          # GitHub runner home is different than container
+          cp -rf /root/.cime /github/home/
 
-          if [[ "${CIME_MODEL}" == "e3sm" ]]
-          then
-            init_e3sm
-          else
-            init_cime
-          fi
-
-          # Get cprnc
-          # git clone https://github.com/ESMCI/cprnc $INSTALL_PATH/CIME/non_py/cprnc
-          source /opt/conda/etc/profile.d/conda.sh
-
-          conda activate base
+          git status
 
           pytest -vvv --cov=CIME --machine docker --no-fortran-run --no-teardown CIME/tests/test_sys*
       - name: Create testing log archive
