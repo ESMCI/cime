@@ -67,7 +67,6 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-      - run: sleep 5
 
   pre-commit:
     runs-on: ubuntu-latest
@@ -126,6 +125,7 @@ jobs:
   system-testing:
     runs-on: ubuntu-latest
     if: ${{ always() && ! cancelled() }}
+    needs: build-containers
     container:
       image: ghcr.io/esmci/cime:sha-${{ github.sha }}
       credentials:
