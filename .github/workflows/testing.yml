@@ -67,6 +67,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+      - run: sleep 2
 
   pre-commit:
     runs-on: ubuntu-latest
@@ -170,6 +171,9 @@ jobs:
             git remote set-branches origin "*"
             git fetch origin
             git checkout ${GITHUB_HEAD_REF:-${GITHUB_REF##*/}}
+
+            # sync correct submodules
+            git submodule update
           fi
 
           git status
