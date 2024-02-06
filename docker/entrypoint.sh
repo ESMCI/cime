@@ -50,7 +50,9 @@ then
 
     fix_gitmodules "${PWD}"
 
-    git submodule update --init "${GIT_SUBMODULE_FLAGS}"
+    git status
+
+    git submodule update --init --recursive "${GIT_SUBMODULE_FLAGS}"
 
     fix_mct_arflags "${SRC_PATH}/E3SM/externals/mct"
 
