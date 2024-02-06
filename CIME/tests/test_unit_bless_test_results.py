@@ -798,13 +798,21 @@ class TestUnitBlessTestResults(unittest.TestCase):
 
         assert not success
 
+    @mock.patch("CIME.utils.get_current_branch")
     @mock.patch("CIME.bless_test_results.bless_namelists")
     @mock.patch("CIME.bless_test_results.Case")
     @mock.patch("CIME.bless_test_results.TestStatus")
     @mock.patch("CIME.bless_test_results.get_test_status_files")
     def test_baseline_name_none(
-        self, get_test_status_files, TestStatus, Case, bless_namelists
+        self,
+        get_test_status_files,
+        TestStatus,
+        Case,
+        bless_namelists,
+        get_current_branch,
     ):
+        get_current_branch.return_value = "master"
+
         bless_namelists.return_value = (True, "")
 
         get_test_status_files.return_value = [
@@ -819,6 +827,7 @@ class TestUnitBlessTestResults(unittest.TestCase):
         case = Case.return_value.__enter__.return_value
         case.get_value.side_effect = [None, None]
 
+        breakpoint()
         success = bless_test_results(
             None,
             "/tmp/baselines",
