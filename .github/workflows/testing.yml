@@ -126,7 +126,7 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ always() && ! cancelled() }}
     container:
-      image: ghcr.io/esmci/cime:latest
+      image: ghcr.io/esmci/cime:sha-${{ github.sha }}
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
