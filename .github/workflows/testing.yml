@@ -179,9 +179,10 @@ jobs:
 
           git status
 
-          if [[ "${CIME_MODEL}" == "e3sm" ]]; then
-            pytest -vvv --cov=CIME --machine docker --no-fortran-run --no-teardown CIME/tests/test_sys*
-          fi
+          pytest -vvv --cov=CIME --machine docker --no-fortran-run --no-teardown CIME/tests/test_sys*
+      - uses: mxschmitt/action-tmate@v3
+        with:
+          limit-access-to-actor: true
       - name: Create testing log archive
         if: ${{ failure() }}
         shell: bash
