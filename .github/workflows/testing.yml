@@ -131,6 +131,7 @@ jobs:
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
+      options: --hostname docker
     strategy:
       # allow all jobs to finish
       fail-fast: false
@@ -178,11 +179,9 @@ jobs:
 
           git status
 
-          which ar
-
-          export 
-
-          # pytest -vvv --cov=CIME --machine docker --no-fortran-run --no-teardown CIME/tests/test_sys*
+          if [[ "${CIME_MODEL}" == "e3sm" ]]; then
+            pytest -vvv --cov=CIME --machine docker --no-fortran-run --no-teardown CIME/tests/test_sys*
+          fi
       - name: Create testing log archive
         if: ${{ failure() }}
         shell: bash
