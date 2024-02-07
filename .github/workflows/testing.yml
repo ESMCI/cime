@@ -175,6 +175,10 @@ jobs:
 
             # sync correct submodules
             git submodule update
+
+            source /opt/conda/etc/profile.d/conda.sh
+
+            conda activate base
           fi
 
           git status
