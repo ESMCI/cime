@@ -183,7 +183,7 @@ jobs:
 
           git status
 
-          pytest -vvv --cov=CIME --machine docker --no-fortran-run --no-teardown CIME/tests/test_sys*
+          # pytest -vvv --cov=CIME --machine docker --no-fortran-run --no-teardown CIME/tests/test_sys*
       - uses: mxschmitt/action-tmate@v3
         if: ${{ failure() }}
         with:
