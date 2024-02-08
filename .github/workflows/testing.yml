@@ -55,14 +55,14 @@ jobs:
         with:
           images: ghcr.io/ESMCI/cime
           tags: |
+            type=raw,value=latest,enable=${{ github.event_name == 'push' }}
             type=sha,format=long
       - name: Build and push
         uses: docker/build-push-action@v3
         with:
           target: base
           context: docker/
-          # Only push on pull request
-          push: ${{ github.event_name == 'pull_request' }}
+          push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
@@ -70,6 +70,7 @@ jobs:
 
   pre-commit:
     runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'pull_request' && ! cancelled() }}
     timeout-minutes: 2
     steps:
       - name: Checkout code
@@ -87,7 +88,7 @@ jobs:
   # Runs unit testing under different python versions.
   unit-testing:
     runs-on: ubuntu-latest
-    if: ${{ always() && ! cancelled() }}
+    if: ${{ github.event_name == 'pull_request' && always() && ! cancelled() }}
     needs: build-containers
     container:
       image: ghcr.io/esmci/cime:sha-${{ github.sha }}
@@ -123,7 +124,7 @@ jobs:
   # Run system tests
   system-testing:
     runs-on: ubuntu-latest
-    if: ${{ always() && ! cancelled() }}
+    if: ${{ github.event_name == 'pull_request' && always() && ! cancelled() }}
     needs: build-containers
     container:
       image: ghcr.io/esmci/cime:sha-${{ github.sha }}
