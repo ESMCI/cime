@@ -929,8 +929,12 @@ class EnvBatch(EnvBase):
                 set_continue_run=resubmit_immediate,
                 submit_resubmits=workflow and not resubmit_immediate,
             )
+
             try:
                 if hasattr(case, function_name):
+                    if dry_run:
+                        return
+
                     getattr(case, function_name)(**{k: v for k, (v, _) in args.items()})
                 else:
                     expect(
