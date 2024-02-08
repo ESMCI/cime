@@ -87,8 +87,7 @@ jobs:
   # Runs unit testing under different python versions.
   unit-testing:
     runs-on: ubuntu-latest
-    if: ${{ github.sha == '' }}
-    # if: ${{ always() && ! cancelled() }}
+    if: ${{ always() && ! cancelled() }}
     needs: build-containers
     container:
       image: ghcr.io/esmci/cime:sha-${{ github.sha }}
