@@ -13,6 +13,7 @@ from CIME.utils import (
     expect,
     get_current_commit,
     SharedArea,
+    is_comp_standalone,
 )
 from CIME.test_status import *
 from CIME.hist_utils import (
@@ -289,10 +290,12 @@ class SystemTestsCommon(object):
             if self._case.get_value("COMPARE_BASELINE"):
                 if do_baseline_ops:
                     self._phase_modifying_call(BASELINE_PHASE, self._compare_baseline)
-                    self._phase_modifying_call(MEMCOMP_PHASE, self._compare_memory)
-                    self._phase_modifying_call(
-                        THROUGHPUT_PHASE, self._compare_throughput
-                    )
+                    comp_standalone, _ = is_comp_standalone(self._case)
+                    if not comp_standalone:
+                        self._phase_modifying_call(MEMCOMP_PHASE, self._compare_memory)
+                        self._phase_modifying_call(
+                            THROUGHPUT_PHASE, self._compare_throughput
+                        )
                 else:
                     with self._test_status:
                         self._test_status.set_status(BASELINE_PHASE, TEST_PEND_STATUS)
