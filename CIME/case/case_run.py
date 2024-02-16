@@ -320,9 +320,6 @@ def _post_run_check(case, lid):
     cpl_logfile = cpl_logs[0]
     # find the last model.log and cpl.log
     model_logfile = os.path.join(rundir, model + ".log." + lid)
-    print(
-        f"driver {driver} cpl_logfile {cpl_logfile} model_logfile {model_logfile} comp_standalone {comp_standalone}"
-    )
     if not os.path.isfile(model_logfile):
         expect(False, "Model did not complete, no {} log file ".format(model_logfile))
     elif os.stat(model_logfile).st_size == 0:
@@ -330,7 +327,6 @@ def _post_run_check(case, lid):
     else:
         count_ok = 0
         for cpl_logfile in cpl_logs:
-            print(f"cpl_logfile {cpl_logfile}")
             if not os.path.isfile(cpl_logfile):
                 break
             with open(cpl_logfile, "r") as fd:
