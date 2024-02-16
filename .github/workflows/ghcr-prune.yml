@@ -13,7 +13,7 @@ jobs:
   prune:
     permissions:
       packages: write
-    runs-on: ubuntu
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
