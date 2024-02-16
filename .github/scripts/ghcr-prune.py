@@ -45,6 +45,12 @@ logger = logging.getLogger("ghcr-prune")
 
 
 class GitHubPaginate:
+    """Iterator for GitHub API.
+
+    Provides small wrapper for GitHub API to utilize paging in API calls.
+
+    https://docs.github.com/en/rest/using-the-rest-api/using-pagination-in-the-rest-api?apiVersion=2022-11-28
+    """
     def __init__(self, token, org, name, age, filter, untagged, **_):
         self.token = token
         self.session = None
