@@ -5,7 +5,7 @@ from CIME.XML.standard_module_setup import *
 from CIME.config import Config
 from CIME.utils import gzip_existing_file, new_lid, run_and_log_case_status
 from CIME.utils import run_sub_or_cmd, append_status, safe_copy, model_log, CIMEError
-from CIME.utils import get_model, batch_jobid
+from CIME.utils import batch_jobid, is_comp_standalone
 from CIME.get_timing import get_timing
 
 import shutil, time, sys, os, glob
@@ -292,16 +292,12 @@ def _post_run_check(case, lid):
     ###############################################################################
 
     rundir = case.get_value("RUNDIR")
-    model = case.get_value("MODEL")
     driver = case.get_value("COMP_INTERFACE")
-    model = get_model()
 
-    fv3_standalone = False
+    comp_standalone, model = is_comp_standalone(case)
 
-    if "CPL" not in case.get_values("COMP_CLASSES"):
-        fv3_standalone = True
     if driver == "nuopc":
-        if fv3_standalone:
+        if comp_standalone:
             file_prefix = model
         else:
             file_prefix = "med"
@@ -322,7 +318,6 @@ def _post_run_check(case, lid):
         cpl_logs = [os.path.join(rundir, file_prefix + ".log." + lid)]
 
     cpl_logfile = cpl_logs[0]
-
     # find the last model.log and cpl.log
     model_logfile = os.path.join(rundir, model + ".log." + lid)
     if not os.path.isfile(model_logfile):
@@ -332,15 +327,19 @@ def _post_run_check(case, lid):
     else:
         count_ok = 0
         for cpl_logfile in cpl_logs:
-            print(f"cpl_logfile {cpl_logfile}")
             if not os.path.isfile(cpl_logfile):
                 break
             with open(cpl_logfile, "r") as fd:
-                if fv3_standalone and "HAS ENDED" in fd.read():
+                logfile = fd.read()
+                if (
+                    comp_standalone
+                    and "HAS ENDED" in logfile
+                    or "END OF MODEL RUN" in logfile
+                ):
                     count_ok += 1
-                elif not fv3_standalone and "SUCCESSFUL TERMINATION" in fd.read():
+                elif not comp_standalone and "SUCCESSFUL TERMINATION" in logfile:
                     count_ok += 1
-        if count_ok != cpl_ninst:
+        if count_ok < cpl_ninst:
             expect(False, "Model did not complete - see {} \n ".format(cpl_logfile))
 
 
