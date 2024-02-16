@@ -456,7 +456,7 @@ class SystemTestsCommon(object):
             raise CIMEError(
                 "Could not find all inputdata on any server, try "
                 "manually running `./check_input_data --download "
-                f"--versbose` from {caseroot!r}."
+                f"--verbose` from {caseroot!r}."
             ) from None
         if submit_resubmits is None:
             do_resub = self._case.get_value("BATCH_SYSTEM") != "none"
