@@ -6,7 +6,17 @@ import json
 from datetime import datetime
 from datetime import timedelta
 
-parser = argparse.ArgumentParser()
+description = """
+This script can be used to prune container images hosted on ghcr.io.\n
+
+Our testing workflow will build and push container images to ghcr.io
+that are only used for testing. This script is used to cleanup these
+temporary images.
+
+You can filter containers by any combination of name, age, and untagged.
+"""
+
+parser = argparse.ArgumentParser(description=description, formatter_class=argparse.RawTextHelpFormatter)
 
 parser.add_argument("--token", required=True, help='GitHub token with "repo" scope')
 parser.add_argument("--org", required=True, help="Organization name")
