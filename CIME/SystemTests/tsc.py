@@ -32,7 +32,9 @@ NINST = 12
 SIM_LENGTH = 600  # seconds
 OUT_FREQ = 10  # seconds
 INSPECT_AT = [300, 450, 600]  # seconds
-INIT_COND_FILE_TEMPLATE = "20231105.v3b01.F2010.ne4_oQU240.chrysalis.{}.{}.0002-{:02d}-01-00000.nc"
+INIT_COND_FILE_TEMPLATE = (
+    "20231105.v3b01.F2010.ne4_oQU240.chrysalis.{}.{}.0002-{:02d}-01-00000.nc"
+)
 VAR_LIST = [
     "T",
     "Q",

@@ -45,7 +45,9 @@ PERTURBATIONS = OrderedDict(
     ]
 )
 FCLD_NC = "cam.h0.cloud.nc"
-INIT_COND_FILE_TEMPLATE = "20231105.v3b01.F2010.ne4_oQU240.chrysalis.{}.{}.0002-{:02d}-01-00000.nc"
+INIT_COND_FILE_TEMPLATE = (
+    "20231105.v3b01.F2010.ne4_oQU240.chrysalis.{}.{}.0002-{:02d}-01-00000.nc"
+)
 INSTANCE_FILE_TEMPLATE = "{}{}_{:04d}.h0.0001-01-01-00000{}.nc"
 
 
