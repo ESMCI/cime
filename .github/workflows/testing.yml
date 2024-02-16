@@ -9,6 +9,7 @@ on:
       - 'scripts/**'
       - 'tools/**'
       - 'utils/**'
+      - 'docker/**'
 
   pull_request:
     branches:
@@ -18,6 +19,7 @@ on:
       - 'scripts/**'
       - 'tools/**'
       - 'utils/**'
+      - 'docker/**'
 
   workflow_dispatch:
 
@@ -30,8 +32,45 @@ permissions:
   packages: read
 
 jobs:
+  build-containers:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ghcr.io/ESMCI/cime
+          tags: |
+            type=raw,value=latest,enable=${{ github.event_name == 'push' }}
+            type=sha,format=long
+      - name: Build and push
+        uses: docker/build-push-action@v3
+        with:
+          target: base
+          context: docker/
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
   pre-commit:
     runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'pull_request' && ! cancelled() }}
     timeout-minutes: 2
     steps:
       - name: Checkout code
@@ -40,12 +79,6 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: 3.9
-      # Offical action is deprecated in favor of pre-commit.ci
-      # Should evaulate switching or just running manually.
-      # - name: Runs pre-commit action
-      #   # Do not run if using act tooling (https://github.com/nektos/act)
-      #   if: ${{ !env.ACT }}
-      #   uses: pre-commit/action@v2.0.3
       - name: Runs pre-commit
         run: |
           pip install pre-commit
@@ -55,9 +88,10 @@ jobs:
   # Runs unit testing under different python versions.
   unit-testing:
     runs-on: ubuntu-latest
-    if: ${{ always() && ! cancelled() }}
+    if: ${{ github.event_name == 'pull_request' && always() && ! cancelled() }}
+    needs: build-containers
     container:
-      image: ghcr.io/esmci/cime:latest
+      image: ghcr.io/esmci/cime:sha-${{ github.sha }}
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
@@ -70,36 +104,34 @@ jobs:
       - name: Run tests
         shell: bash
         env:
-          INIT: "false"
           CIME_MODEL: "cesm"
           CIME_DRIVER: "nuopc"
-          UPDATE_CIME: "true"
-          GIT_SHALLOW: "true"
           CIME_TEST_PLATFORM: ubuntu-latest
         run: |
-          export INSTALL_PATH="${PWD}"
-          export CIME_REPO=https://github.com/${{ github.event.pull_request.head.repo.full_name || github.repository }}
-          export CIME_BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF##*/}}
+          export SRC_PATH="${GITHUB_WORKSPACE}"
 
           mamba install -y python=${{ matrix.python-version }}
 
           source /entrypoint.sh
 
-          git config --global --add safe.directory /__w/cime/cime
+          # GitHub runner home is different than container
+          cp -rf /root/.cime /github/home/
 
-          init_cime
+          git status
 
           pytest -vvv --cov=CIME --machine docker --no-fortran-run CIME/tests/test_unit*
 
   # Run system tests
   system-testing:
     runs-on: ubuntu-latest
-    if: ${{ always() && ! cancelled() }}
+    if: ${{ github.event_name == 'pull_request' && always() && ! cancelled() }}
+    needs: build-containers
     container:
-      image: ghcr.io/esmci/cime:latest
+      image: ghcr.io/esmci/cime:sha-${{ github.sha }}
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
+      options: --hostname docker
     strategy:
       # allow all jobs to finish
       fail-fast: false
@@ -124,45 +156,48 @@ jobs:
       - name: Run tests
         shell: bash
         env:
-          INIT: "false"
           CIME_MODEL: ${{ matrix.model }}
           CIME_DRIVER: ${{ matrix.driver }}
-          UPDATE_CIME: "true"
-          GIT_SHALLOW: "true"
           CIME_TEST_PLATFORM: ubuntu-latest
         run: |
-          export INSTALL_PATH="${PWD}/cime"
-          export CIME_REPO=https://github.com/${{ github.event.pull_request.head.repo.full_name || github.repository }}
-          export CIME_BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF##*/}}
+          export SRC_PATH="${GITHUB_WORKSPACE}"
 
           source /entrypoint.sh
 
-          git config --global --add safe.directory /__w/cime/cime
+          # GitHub runner home is different than container
+          cp -rf /root/.cime /github/home/
 
-          if [[ "${CIME_MODEL}" == "e3sm" ]]
-          then
-            init_e3sm
-          else
-            init_cime
+          if [[ "${CIME_MODEL}" == "e3sm" ]]; then
+            git remote set-url origin https://github.com/${{ github.event.pull_request.head.repo.full_name || github.repository }}
+            git remote set-branches origin "*"
+            git fetch origin
+            git checkout ${GITHUB_HEAD_REF:-${GITHUB_REF##*/}}
+
+            # sync correct submodules
+            git submodule update
+
+            source /opt/conda/etc/profile.d/conda.sh
+
+            conda activate base
           fi
 
-          # Get cprnc
-          # git clone https://github.com/ESMCI/cprnc $INSTALL_PATH/CIME/non_py/cprnc
-          source /opt/conda/etc/profile.d/conda.sh
-
-          conda activate base
+          git status
 
           pytest -vvv --cov=CIME --machine docker --no-fortran-run --no-teardown CIME/tests/test_sys*
+      - uses: mxschmitt/action-tmate@v3
+        if: ${{ !always() }}
+        with:
+          limit-access-to-actor: true
       - name: Create testing log archive
         if: ${{ failure() }}
         shell: bash
-        run: tar -czvf /testing-logs-${GITHUB_RUN_NUMBER}.tar.gz /storage/cases/
+        run: tar -czvf /testing-logs-${GITHUB_RUN_NUMBER}-${{ matrix.model }}-${{ matrix.driver }}.tar.gz /storage/cases/
         # How to download artifacts:
         # https://docs.github.com/en/actions/managing-workflow-runs/downloading-workflow-artifacts
       - name: Upload testing logs
         if: ${{ failure() }}
         uses: actions/upload-artifact@v3
         with:
-          name: testing-logs-${{ github.run_number }}
-          path: /testing-logs-${{ github.run_number}}.tar.gz
+          name: testing-logs-${{ github.run_number }}-${{ matrix.model }}-${{ matrix.driver }}
+          path: /testing-logs-${{ github.run_number}}-${{ matrix.model }}-${{ matrix.driver }}.tar.gz
           retention-days: 4
