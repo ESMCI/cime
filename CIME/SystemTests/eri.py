@@ -26,7 +26,8 @@ def _get_rest_date(archive_root):
 
 def _helper(dout_sr, refdate, refsec, rundir):
     rest_path = os.path.join(dout_sr, "rest", "{}-{}".format(refdate, refsec))
-
+    if not os.path.exists(rundir):
+        os.makedirs(rundir)
     for item in glob.glob("{}/*{}*".format(rest_path, refdate)):
         dst = os.path.join(rundir, os.path.basename(item))
         if os.path.exists(dst):
