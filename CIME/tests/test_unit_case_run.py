@@ -5,20 +5,18 @@ from CIME.utils import CIMEError
 from CIME.case.case_run import TERMINATION_TEXT
 from CIME.case.case_run import _post_run_check
 
+
 def _case_post_run_check():
     case = mock.MagicMock()
 
     # RUNDIR, COMP_INTERFACE, COMP_CPL, COMP_ATM, COMP_OCN, MULTI_DRIVER
-    case.get_value.side_effect = (
-        "/tmp/run", "mct",
-        "cpl", "satm", "socn",
-        False
-    )
+    case.get_value.side_effect = ("/tmp/run", "mct", "cpl", "satm", "socn", False)
 
     # COMP_CLASSES
     case.get_values.return_value = ("CPL", "ATM", "OCN")
 
     return case
+
 
 class TestCaseSubmit(unittest.TestCase):
     @mock.patch("os.stat")
@@ -45,5 +43,8 @@ class TestCaseSubmit(unittest.TestCase):
         case = _case_post_run_check()
 
         with self.assertRaises(CIMEError):
-            with mock.patch("builtins.open", mock.mock_open(read_data="I DONT HAVE A TERMINATION MESSAGE")) as mock_file:
+            with mock.patch(
+                "builtins.open",
+                mock.mock_open(read_data="I DONT HAVE A TERMINATION MESSAGE"),
+            ) as mock_file:
                 _post_run_check(case, "1234")
