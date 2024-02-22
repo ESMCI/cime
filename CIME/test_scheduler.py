@@ -1429,6 +1429,7 @@ class TestScheduler(object):
         check_throughput=False,
         check_memory=False,
         ignore_namelists=False,
+        ignore_diffs=False,
         ignore_memleak=False,
     ):
         ###########################################################################
@@ -1484,6 +1485,7 @@ class TestScheduler(object):
             check_throughput=check_throughput,
             check_memory=check_memory,
             ignore_namelists=ignore_namelists,
+            ignore_diffs=ignore_diffs,
             ignore_memleak=ignore_memleak,
             no_run=self._no_run,
             expect_test_complete=expect_test_complete,
