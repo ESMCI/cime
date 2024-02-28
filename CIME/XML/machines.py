@@ -4,7 +4,7 @@ Interface to the config_machines.xml file.  This class inherits from GenericXML.
 from CIME.XML.standard_module_setup import *
 from CIME.XML.generic_xml import GenericXML
 from CIME.XML.files import Files
-from CIME.utils import convert_to_unknown_type, get_cime_config
+from CIME.utils import convert_to_unknown_type, get_cime_config, expect
 
 import socket
 from pathlib import Path
@@ -48,6 +48,7 @@ class Machines(GenericXML):
             files = Files()
         if infile is None:
             infile = files.get_value("MACHINES_SPEC_FILE")
+        expect(infile,"No machines file specified")
 
         self.machines_dir = os.path.dirname(infile)
         if os.path.exists(infile):
