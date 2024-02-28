@@ -534,9 +534,9 @@ def get_model():
     if model is None:
         srcroot = get_src_root()
 
-        if os.path.isfile(os.path.join(srcroot, ".lib")):
+        if os.path.isdir(os.path.join(srcroot, ".lib")):
             model = "cesm"
-        elif os.path.isfile(os.path.join(srcroot, ".Externals.cfg")):
+        elif os.path.isfile(os.path.join(srcroot, "Externals.cfg")):
             model = "ufs"
         else:
             model = "e3sm"
