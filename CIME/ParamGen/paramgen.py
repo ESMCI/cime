@@ -369,7 +369,7 @@ class ParamGen:
         if self._match == "last":
             return data_dict[guards_eval_true[-1]]
         raise RuntimeError("Unknown match option.")
-    
+
     def _reduce_recursive(self, data, expand_func=None):
         """A recursive method to reduce a given data_dict. This method is intended to be called by the reduce method
         only. Check the docstring of the reduce method for more information."""
@@ -378,7 +378,9 @@ class ParamGen:
 
             # (1) Expand vars in keys
             if expand_func is not None:
-                data = {ParamGen._expand_vars(key, expand_func) : data[key] for key in data}
+                data = {
+                    ParamGen._expand_vars(key, expand_func): data[key] for key in data
+                }
 
             # (2) Evaulate guards (if applicable)
             if ParamGen.is_guarded_dict(data):
@@ -387,18 +389,17 @@ class ParamGen:
             # (3) Call _reduce_recursive for all branches of dict
             else:
                 for key in data:
-                    data[key] = self._reduce_recursive(data[key], expand_func) 
+                    data[key] = self._reduce_recursive(data[key], expand_func)
 
-        else: # data is not a dict, and so is a value.
+        else:  # data is not a dict, and so is a value.
 
             # (4) Finally, process values by expanding vars and applying formulas
             if isinstance(data, str):
                 data = ParamGen._expand_vars(data, expand_func)
             if is_formula(data):
                 data = eval_formula(data.strip()[1:])
-            
-        return data
 
+        return data
 
     def reduce(self, expand_func=None):
         """
