@@ -224,8 +224,7 @@ def bless_test_results(
     is_perf_bless = bless_mem or bless_tput
 
     expect(
-        not (is_perf_bless and hist_only) and
-        not (is_perf_bless and namelists_only),
+        not (is_perf_bless and hist_only) and not (is_perf_bless and namelists_only),
         "Do not mix performance and non-performance blesses",
     )
 
@@ -319,9 +318,7 @@ def bless_test_results(
             tput_bless = (
                 bless_tput and ts.get_status(THROUGHPUT_PHASE) != TEST_PASS_STATUS
             )
-            mem_bless = (
-                bless_mem and ts.get_status(MEMCOMP_PHASE) != TEST_PASS_STATUS
-            )
+            mem_bless = bless_mem and ts.get_status(MEMCOMP_PHASE) != TEST_PASS_STATUS
 
         expect(
             not ((nl_bless or hist_bless) and (tput_bless or mem_bless)),
@@ -469,7 +466,9 @@ had a mistake (likely compiler or testid).""".format(
     return success
 
 
-def is_hist_bless_needed(test_name, ts, broken_blesses, overall_result, no_skip_pass, phase):
+def is_hist_bless_needed(
+    test_name, ts, broken_blesses, overall_result, no_skip_pass, phase
+):
     needed = False
 
     run_result = ts.get_status(RUN_PHASE)
