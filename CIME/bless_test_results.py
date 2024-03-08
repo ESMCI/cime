@@ -313,18 +313,15 @@ def bless_test_results(
 
         # Skip if test is build only i.e. testopts contains "B"
         if not build_only:
-            bless_needed = is_bless_needed(
+            hist_bless = is_hist_bless_needed(
                 test_name, ts, broken_blesses, overall_result, no_skip_pass, phase
+            ) and (hist_only or bless_all_non_perf)
+            tput_bless = (
+                bless_tput and ts.get_status(THROUGHPUT_PHASE) != TEST_PASS_STATUS
             )
-
-            if bless_needed:
-                hist_bless = hist_only or bless_all_non_perf
-                tput_bless = (
-                    bless_tput and ts.get_status(THROUGHPUT_PHASE) != TEST_PASS_STATUS
-                )
-                mem_bless = (
-                    bless_mem and ts.get_status(MEMCOMP_PHASE) != TEST_PASS_STATUS
-                )
+            mem_bless = (
+                bless_mem and ts.get_status(MEMCOMP_PHASE) != TEST_PASS_STATUS
+            )
 
         expect(
             not ((nl_bless or hist_bless) and (tput_bless or mem_bless)),
@@ -472,7 +469,7 @@ had a mistake (likely compiler or testid).""".format(
     return success
 
 
-def is_bless_needed(test_name, ts, broken_blesses, overall_result, no_skip_pass, phase):
+def is_hist_bless_needed(test_name, ts, broken_blesses, overall_result, no_skip_pass, phase):
     needed = False
 
     run_result = ts.get_status(RUN_PHASE)
