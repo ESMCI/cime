@@ -34,6 +34,7 @@ permissions:
 jobs:
   build-containers:
     runs-on: ubuntu-latest
+    if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
     permissions:
       packages: write
     steps:
@@ -91,7 +92,7 @@ jobs:
     if: ${{ github.event_name == 'pull_request' && always() && ! cancelled() }}
     needs: build-containers
     container:
-      image: ghcr.io/esmci/cime:sha-${{ github.sha }}
+      image: ghcr.io/esmci/cime:${{ github.event.pull_request.head.repo.full_name == github.repository && format('sha-{0}', github.sha) || 'latest' }}
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
@@ -127,7 +128,7 @@ jobs:
     if: ${{ github.event_name == 'pull_request' && always() && ! cancelled() }}
     needs: build-containers
     container:
-      image: ghcr.io/esmci/cime:sha-${{ github.sha }}
+      image: ghcr.io/esmci/cime:${{ github.event.pull_request.head.repo.full_name == github.repository && format('sha-{0}', github.sha) || 'latest' }}
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
