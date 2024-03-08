@@ -221,14 +221,11 @@ def bless_test_results(
         bless_tput = True
 
     bless_all_non_perf = not (namelists_only | hist_only | bless_tput | bless_mem)
-    perf_bless = bless_mem or bless_tput
+    is_perf_bless = bless_mem or bless_tput
 
     expect(
-        not (perf_bless and hist_only),
-        "Do not mix performance and non-performance blesses",
-    )
-    expect(
-        not (perf_bless and namelists_only),
+        not (is_perf_bless and hist_only) and
+        not (is_perf_bless and namelists_only),
         "Do not mix performance and non-performance blesses",
     )
 
@@ -298,7 +295,7 @@ def bless_test_results(
         overall_result, phase = ts.get_overall_test_status(
             ignore_namelists=True,
             ignore_memleak=True,
-            ignore_diffs=perf_bless,
+            ignore_diffs=is_perf_bless,
             check_throughput=bless_tput,
             check_memory=bless_mem,
         )
