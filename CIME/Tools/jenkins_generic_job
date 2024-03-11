@@ -187,6 +187,12 @@ OR
     )
 
     parser.add_argument(
+        "--ignore-diffs",
+        action="store_true",
+        help="Do not fail if there are history diffs",
+    )
+
+    parser.add_argument(
         "--save-timing",
         action="store_true",
         help="Tell create_test to save timings of tests",
@@ -272,6 +278,7 @@ OR
         args.check_memory,
         args.ignore_memleak,
         args.ignore_namelists,
+        args.ignore_diffs,
         args.save_timing,
         args.pes_file,
         args.jenkins_id,
@@ -304,6 +311,7 @@ def _main_func(description):
         check_memory,
         ignore_memleak,
         ignore_namelists,
+        ignore_diffs,
         save_timing,
         pes_file,
         jenkins_id,
@@ -334,6 +342,7 @@ def _main_func(description):
             check_memory,
             ignore_memleak,
             ignore_namelists,
+            ignore_diffs,
             save_timing,
             pes_file,
             jenkins_id,
