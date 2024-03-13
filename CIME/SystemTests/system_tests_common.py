@@ -700,8 +700,11 @@ for some of your components.
             else:
                 if below_tolerance is not None:
                     append_testlog(comment, self._orig_caseroot)
-
-                    if (
+                    if "No baseline memory file present" in comment:
+                        self._test_status.set_status(
+                            MEMCOMP_PHASE, TEST_PASS_STATUS, comments=comment
+                        )
+                    elif (
                         below_tolerance
                         and self._test_status.get_status(MEMCOMP_PHASE) is None
                     ):
