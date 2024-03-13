@@ -4,9 +4,6 @@ on:
     # run once a day
     - cron: '0 2 * * *'
 
-  # Temporary to test
-  pull_request:
-
 permissions: {}
 
 jobs:
