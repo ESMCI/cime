@@ -86,7 +86,7 @@ def perf_compare_memory_baseline(case, baseline_dir=None):
         tolerance = 0.1
 
     baseline_file = os.path.join(baseline_dir, "cpl-mem.log")
-    if not os.path.exists(baseline_file):
+    if os.path.exists(baseline_dir) and not os.path.exists(baseline_file):
         return True, ": No baseline memory file present"
 
     baseline = read_baseline_file(baseline_file)
