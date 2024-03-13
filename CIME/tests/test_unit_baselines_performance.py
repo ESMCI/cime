@@ -434,7 +434,10 @@ class TestUnitBaselinesPerformance(unittest.TestCase):
             (below_tolerance, comment) = performance.perf_compare_memory_baseline(case)
 
         assert below_tolerance
-        assert comment == "MEMCOMP: No baseline memory file present"
+        assert (
+            comment
+            == "MEMCOMP: Memory usage highwater changed by 0.00%: baseline=0.000 MB, tolerance=5%, current=1003.000 MB"
+        )
 
     @mock.patch("CIME.baselines.performance.get_cpl_mem_usage")
     @mock.patch("CIME.baselines.performance.read_baseline_file")
