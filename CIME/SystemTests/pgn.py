@@ -45,7 +45,9 @@ PERTURBATIONS = OrderedDict(
     ]
 )
 FCLD_NC = "cam.h0.cloud.nc"
-INIT_COND_FILE_TEMPLATE = "20210915.v2.ne4_oQU240.F2010.{}.{}.0002-{:02d}-01-00000.nc"
+INIT_COND_FILE_TEMPLATE = (
+    "20231105.v3b01.F2010.ne4_oQU240.chrysalis.{}.{}.0002-{:02d}-01-00000.nc"
+)
 INSTANCE_FILE_TEMPLATE = "{}{}_{:04d}.h0.0001-01-01-00000{}.nc"
 
 
@@ -95,8 +97,8 @@ class PGN(SystemTestsCommon):
         logger.debug("PGN_INFO: Updating user_nl_* files")
 
         csmdata_root = self._case.get_value("DIN_LOC_ROOT")
-        csmdata_atm = os.path.join(csmdata_root, "atm/cam/inic/homme/ne4_v2_init")
-        csmdata_lnd = os.path.join(csmdata_root, "lnd/clm2/initdata/ne4_oQU240_v2_init")
+        csmdata_atm = os.path.join(csmdata_root, "atm/cam/inic/homme/ne4_v3_init")
+        csmdata_lnd = os.path.join(csmdata_root, "lnd/clm2/initdata/ne4_oQU240_v3_init")
 
         iinst = 1
         for icond in range(1, NUMBER_INITIAL_CONDITIONS + 1):

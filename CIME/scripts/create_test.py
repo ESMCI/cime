@@ -393,6 +393,12 @@ def parse_command_line(args, description):
     )
 
     parser.add_argument(
+        "--ignore-diffs",
+        action="store_true",
+        help="Do not fail if there history file diffs",
+    )
+
+    parser.add_argument(
         "--ignore-memleak", action="store_true", help="Do not fail if there's a memleak"
     )
 
@@ -761,6 +767,7 @@ def parse_command_line(args, description):
         args.check_throughput,
         args.check_memory,
         args.ignore_namelists,
+        args.ignore_diffs,
         args.ignore_memleak,
         args.allow_pnl,
         args.non_local,
@@ -921,6 +928,7 @@ def create_test(
     check_throughput,
     check_memory,
     ignore_namelists,
+    ignore_diffs,
     ignore_memleak,
     allow_pnl,
     non_local,
@@ -976,6 +984,7 @@ def create_test(
         check_throughput=check_throughput,
         check_memory=check_memory,
         ignore_namelists=ignore_namelists,
+        ignore_diffs=ignore_diffs,
         ignore_memleak=ignore_memleak,
     )
 
@@ -1064,6 +1073,7 @@ def _main_func(description=None):
         check_throughput,
         check_memory,
         ignore_namelists,
+        ignore_diffs,
         ignore_memleak,
         allow_pnl,
         non_local,
@@ -1116,6 +1126,7 @@ def _main_func(description=None):
             check_throughput,
             check_memory,
             ignore_namelists,
+            ignore_diffs,
             ignore_memleak,
             allow_pnl,
             non_local,
