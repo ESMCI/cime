@@ -80,15 +80,16 @@ def perf_compare_memory_baseline(case, baseline_dir=None):
         baseline_dir = case.get_baseline_dir()
 
     config = load_coupler_customization(case)
-
-    baseline_file = os.path.join(baseline_dir, "cpl-mem.log")
-
-    baseline = read_baseline_file(baseline_file)
-
     tolerance = case.get_value("TEST_MEMLEAK_TOLERANCE")
 
     if tolerance is None:
         tolerance = 0.1
+
+    baseline_file = os.path.join(baseline_dir, "cpl-mem.log")
+    if not os.path.exists(baseline_file):
+        return tolerance, "MEMCOMP: No baseline memory file present"
+
+    baseline = read_baseline_file(baseline_file)
 
     try:
         below_tolerance, comments = config.perf_compare_memory_baseline(

@@ -736,7 +736,11 @@ def run_sub_or_cmd(
         fullcmd += " >& {} ".format(logfile)
 
     stat, output, _ = run_cmd(
-        "{}".format(fullcmd), combine_output=True, from_dir=from_dir, timeout=timeout
+        "{}".format(fullcmd),
+        combine_output=True,
+        from_dir=from_dir,
+        timeout=timeout,
+        verbose=True,
     )
     if output:  # Will be empty if logfile
         logger.info(output)
