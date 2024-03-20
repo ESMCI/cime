@@ -6,6 +6,11 @@ import json
 from datetime import datetime
 from datetime import timedelta
 
+
+class GHCRPruneError(Exception):
+    pass
+
+
 description = """
 This script can be used to prune container images hosted on ghcr.io.\n
 
@@ -16,17 +21,28 @@ temporary images.
 You can filter containers by any combination of name, age, and untagged.
 """
 
-parser = argparse.ArgumentParser(description=description, formatter_class=argparse.RawTextHelpFormatter)
+parser = argparse.ArgumentParser(
+    description=description, formatter_class=argparse.RawTextHelpFormatter
+)
 
 parser.add_argument("--token", required=True, help='GitHub token with "repo" scope')
 parser.add_argument("--org", required=True, help="Organization name")
 parser.add_argument("--name", required=True, help="Package name")
 parser.add_argument(
-    "--age", type=int, help="Filter versions by age, removing anything older than"
+    "--age",
+    type=int,
+    help="Filter versions by age, removing anything older than",
+    default=7,
 )
 parser.add_argument(
     "--filter", help="Filter which versions are consider for pruning", default=".*"
 )
+parser.add_argument(
+    "--filter-pr",
+    action="store_true",
+    help="Filter pull requests, will skip removal if pull request is still open.",
+)
+parser.add_argument("--pr-prefix", default="pr-", help="Prefix for a pull request tag")
 parser.add_argument("--untagged", action="store_true", help="Prune untagged versions")
 parser.add_argument(
     "--dry-run", action="store_true", help="Does not actually delete anything"
@@ -43,6 +59,8 @@ logging.basicConfig(level=kwargs["log_level"])
 
 logger = logging.getLogger("ghcr-prune")
 
+logger.debug(f"Running with arguments:\n{kwargs}")
+
 
 class GitHubPaginate:
     """Iterator for GitHub API.
@@ -51,13 +69,19 @@ class GitHubPaginate:
 
     https://docs.github.com/en/rest/using-the-rest-api/using-pagination-in-the-rest-api?apiVersion=2022-11-28
     """
-    def __init__(self, token, org, name, age, filter, untagged, **_):
+
+    def __init__(
+        self, token, org, name, age, filter, untagged, filter_pr, pr_prefix, **_
+    ):
         self.token = token
         self.session = None
         self.url = (
             f"https://api.github.com/orgs/{org}/packages/container/{name}/versions"
         )
+        self.pr_url = f"https://api.github.com/repos/{org}/{name}/pulls"
         self.expired = datetime.now() - timedelta(days=age)
+        self.filter_pr = filter_pr
+        self.pr_prefix = pr_prefix
         self.filter = re.compile(filter)
         self.page = None
         self.untagged = untagged
@@ -72,12 +96,27 @@ class GitHubPaginate:
             }
         )
 
+    def is_pr_open(self, pr_number):
+        logger.info(f"Checking if PR {pr_number} is still open")
+
+        pr_url = f"{self.pr_url}/{pr_number}"
+
+        response = self.session.get(pr_url)
+
+        response.raise_for_status()
+
+        data = response.json()
+
+        state = data["state"]
+
+        return state == "open"
+
     def grab_page(self):
         if self.session is None:
-            raise Exception("Must create session first")
+            raise GHCRPruneError("Must create session first")
 
         if self.url is None:
-            raise Exception("No more pages")
+            raise GHCRPruneError("No more pages")
 
         response = self.session.get(self.url)
 
@@ -90,7 +129,7 @@ class GitHubPaginate:
         if remaining <= 0:
             reset = response.headers["X-RateLimit-Reset"]
 
-            raise Exception(f"Hit ratelimit will reset at {reset}")
+            raise GHCRPruneError(f"Hit ratelimit will reset at {reset}")
 
         try:
             self.url = self.get_next_url(response.headers["Link"])
@@ -120,29 +159,39 @@ class GitHubPaginate:
 
             logger.debug(f"Processing\n{json.dumps(x, indent=2)}")
 
-            try:
-                tag = x["metadata"]["container"]["tags"][0]
-            except IndexError:
+            tags = x["metadata"]["container"]["tags"]
+
+            if len(tags) == 0:
                 logger.info(f'Found untagged version {x["id"]}')
 
                 if self.untagged:
+                    logger.info(f'Pruning {x["id"]}, untagged')
+
                     results.append(url)
 
                 continue
 
-            if not self.filter.match(tag):
-                logger.info(f"Skipping {tag}, did not match filter")
+            for tag in tags:
+                if self.filter_pr and tag.startswith(self.pr_prefix):
+                    pr_number = tag[len(self.pr_prefix) :]
 
-                continue
+                    if self.is_pr_open(pr_number):
+                        logger.info(f"Skipping {tag}, PR is still open")
 
-            if updated_at < self.expired:
-                logger.info(
-                    f"Pruning {tag}, updated at {updated_at}, expiration {self.expired}"
-                )
+                        continue
+                elif not self.filter.match(tag):
+                    logger.info(f"Skipping {tag}, did not match filter")
 
-                results.append(url)
-            else:
-                logger.info(f"Skipping {tag}, more recent than {self.expired}")
+                    continue
+
+                if updated_at < self.expired:
+                    logger.info(
+                        f"Pruning {tag}, updated at {updated_at}, expiration {self.expired}"
+                    )
+
+                    results.append(url)
+                else:
+                    logger.info(f"Skipping {tag}, more recent than {self.expired}")
 
         return results
 
@@ -155,7 +204,7 @@ class GitHubPaginate:
         if self.page is None or len(self.page) == 0:
             try:
                 self.page = self.grab_page()
-            except Exception as e:
+            except GHCRPruneError as e:
                 logger.debug(f"StopIteration condition {e!r}")
 
                 raise StopIteration from None
@@ -181,7 +230,7 @@ class GitHubPaginate:
 pager = GitHubPaginate(**kwargs)
 
 for url in pager:
-    if kwargs["dry_run"]:
-        logger.info(f"Pruning {url}")
-    else:
+    logger.info(f"Pruning {url}")
+
+    if not kwargs["dry_run"]:
         pager.remove_container(url)
