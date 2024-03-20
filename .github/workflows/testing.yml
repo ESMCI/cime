@@ -57,6 +57,7 @@ jobs:
           images: ghcr.io/ESMCI/cime
           tags: |
             type=raw,value=latest,enable=${{ github.event_name == 'push' }}
+            type=ref,event=pull_request,enable=${{ github.event_name == 'pull_request' }}
             type=sha,format=long
       - name: Build and push
         uses: docker/build-push-action@v3
