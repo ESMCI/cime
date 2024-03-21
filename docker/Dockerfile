@@ -111,6 +111,9 @@ WORKDIR /src/cime
 COPY .cime /root/.cime
 COPY entrypoint.sh /entrypoint.sh
 
+# TODO: REMOVE trigger
+ENV TRIGGER=0
+
 ENTRYPOINT [ "/entrypoint.sh" ]
 
 FROM base as slurm

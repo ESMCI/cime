@@ -34,7 +34,7 @@ permissions:
 jobs:
   build-containers:
     runs-on: ubuntu-latest
-    if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
+    if: ${{ github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository }}
     permissions:
       packages: write
     steps:
@@ -57,6 +57,7 @@ jobs:
           images: ghcr.io/ESMCI/cime
           tags: |
             type=raw,value=latest,enable=${{ github.event_name == 'push' }}
+            type=ref,event=pr,enable=${{ github.event_name == 'pull_request' }}
             type=sha,format=long
       - name: Build and push
         uses: docker/build-push-action@v3
