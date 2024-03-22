@@ -573,6 +573,7 @@ def wait_for_test(
     check_throughput,
     check_memory,
     ignore_namelists,
+    ignore_diffs,
     ignore_memleak,
     no_run,
 ):
@@ -607,6 +608,7 @@ def wait_for_test(
                     check_throughput=check_throughput,
                     check_memory=check_memory,
                     ignore_namelists=ignore_namelists,
+                    ignore_diffs=ignore_diffs,
                     ignore_memleak=ignore_memleak,
                 )
 
@@ -649,6 +651,7 @@ def wait_for_tests_impl(
     check_throughput=False,
     check_memory=False,
     ignore_namelists=False,
+    ignore_diffs=False,
     ignore_memleak=False,
     no_run=False,
 ):
@@ -665,6 +668,7 @@ def wait_for_tests_impl(
                 check_throughput,
                 check_memory,
                 ignore_namelists,
+                ignore_diffs,
                 ignore_memleak,
                 no_run,
             ),
@@ -717,6 +721,7 @@ def wait_for_tests(
     check_throughput=False,
     check_memory=False,
     ignore_namelists=False,
+    ignore_diffs=False,
     ignore_memleak=False,
     cdash_build_name=None,
     cdash_project=E3SM_MAIN_CDASH,
@@ -739,6 +744,7 @@ def wait_for_tests(
             check_throughput,
             check_memory,
             ignore_namelists,
+            ignore_diffs,
             ignore_memleak,
             no_run,
         )

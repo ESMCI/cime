@@ -216,7 +216,17 @@ def bless_test_results(
     bless_perf=False,
     **_,  # Capture all for extra
 ):
-    bless_all = not (namelists_only | hist_only | bless_tput | bless_mem | bless_perf)
+    if bless_perf:
+        bless_mem = True
+        bless_tput = True
+
+    bless_all_non_perf = not (namelists_only | hist_only | bless_tput | bless_mem)
+    is_perf_bless = bless_mem or bless_tput
+
+    expect(
+        not (is_perf_bless and hist_only) and not (is_perf_bless and namelists_only),
+        "Do not mix performance and non-performance blesses",
+    )
 
     test_status_files = get_test_status_files(test_root, compiler, test_id=test_id)
 
@@ -284,12 +294,13 @@ def bless_test_results(
         overall_result, phase = ts.get_overall_test_status(
             ignore_namelists=True,
             ignore_memleak=True,
-            check_throughput=False,
-            check_memory=False,
+            ignore_diffs=is_perf_bless,
+            check_throughput=bless_tput,
+            check_memory=bless_mem,
         )
 
         # See if we need to bless namelist
-        if namelists_only or bless_all:
+        if namelists_only or bless_all_non_perf:
             if no_skip_pass:
                 nl_bless = True
             else:
@@ -301,25 +312,18 @@ def bless_test_results(
 
         # Skip if test is build only i.e. testopts contains "B"
         if not build_only:
-            bless_needed = is_bless_needed(
+            hist_bless = is_hist_bless_needed(
                 test_name, ts, broken_blesses, overall_result, no_skip_pass, phase
+            ) and (hist_only or bless_all_non_perf)
+            tput_bless = (
+                bless_tput and ts.get_status(THROUGHPUT_PHASE) != TEST_PASS_STATUS
             )
+            mem_bless = bless_mem and ts.get_status(MEMCOMP_PHASE) != TEST_PASS_STATUS
 
-            # See if we need to bless baselines
-            if hist_only or bless_all:
-                hist_bless = bless_needed
-
-            if bless_tput or bless_perf:
-                tput_bless = bless_needed
-
-                if not tput_bless:
-                    tput_bless = ts.get_status(THROUGHPUT_PHASE) != TEST_PASS_STATUS
-
-            if bless_mem or bless_perf:
-                mem_bless = bless_needed
-
-                if not mem_bless:
-                    mem_bless = ts.get_status(MEMCOMP_PHASE) != TEST_PASS_STATUS
+        expect(
+            not ((nl_bless or hist_bless) and (tput_bless or mem_bless)),
+            "Do not mix performance and non-performance blessing",
+        )
 
         # Now, do the bless
         if not nl_bless and not hist_bless and not tput_bless and not mem_bless:
@@ -462,7 +466,9 @@ had a mistake (likely compiler or testid).""".format(
     return success
 
 
-def is_bless_needed(test_name, ts, broken_blesses, overall_result, no_skip_pass, phase):
+def is_hist_bless_needed(
+    test_name, ts, broken_blesses, overall_result, no_skip_pass, phase
+):
     needed = False
 
     run_result = ts.get_status(RUN_PHASE)
