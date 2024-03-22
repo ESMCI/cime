@@ -4,7 +4,7 @@ on:
     # run once a day
     - cron: '0 2 * * *'
 
-workflow_dispatch:
+  workflow_dispatch:
 
 permissions: {}
 
