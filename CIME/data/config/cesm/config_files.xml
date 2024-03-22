@@ -197,7 +197,8 @@
     <default_value>unset</default_value>
     <values>
       <value component="cism"                        >$SRCROOT/components/cism/</value>
-      <value component="dglc"                        >$SRCROOT/components/cpl7/components/data_comps_$COMP_INTERFACE/dglc</value>
+      <value component="dglc" comp_interface="mct"   >$SRCROOT/components/cpl7/components/data_comps_$COMP_INTERFACE/dglc</value>
+      <value component="dglc" comp_interface="nuopc" >$SRCROOT/components/cdeps/dglc</value>
       <value component="sglc" comp_interface="mct"   >$SRCROOT/components/cpl7/components/stub_comps_$COMP_INTERFACE/sglc</value>
       <value component="sglc" comp_interface="nuopc" >$CIMEROOT/CIME/non_py/src/components/stub_comps_$COMP_INTERFACE/sglc</value>
       <value component="xglc" comp_interface="mct"   >$SRCROOT/components/cpl7/components/xcpl_comps_$COMP_INTERFACE/xglc</value>
@@ -358,6 +359,7 @@
       <value component="dice">$COMP_ROOT_DIR_ICE/cime_config/config_archive.xml</value>
       <value component="dlnd">$COMP_ROOT_DIR_LND/cime_config/config_archive.xml</value>
       <value component="docn">$COMP_ROOT_DIR_OCN/cime_config/config_archive.xml</value>
+      <value component="dglc">$COMP_ROOT_DIR_GLC/cime_config/config_archive.xml</value>
       <value component="dwav">$COMP_ROOT_DIR_WAV/cime_config/config_archive.xml</value>
       <!-- external model components -->
       <value component="cam"       >$COMP_ROOT_DIR_ATM/cime_config/config_archive.xml</value>
@@ -429,6 +431,7 @@
       <value component="dlnd"      >$SRCROOT/components/cdeps/dlnd/cime_config/testdefs/testlist_dlnd.xml</value>
       <value component="docn"      >$SRCROOT/components/cdeps/docn/cime_config/testdefs/testlist_docn.xml</value>
       <value component="drof"      >$SRCROOT/components/cdeps/drof/cime_config/testdefs/testlist_drof.xml</value>
+      <value component="dglc"      >$SRCROOT/components/cdeps/dglc/cime_config/testdefs/testlist_dglc.xml</value>
       <value component="dwav"      >$SRCROOT/components/cdeps/dwav/cime_config/testdefs/testlist_dwav.xml</value>
     </values>
     <group>case_last</group>
@@ -461,6 +464,7 @@
       <value component="dlnd" comp_interface="nuopc" >$SRCROOT/components/cdeps/dlnd/cime_config/testdefs/testmods_dirs</value>
       <value component="docn" comp_interface="nuopc" >$SRCROOT/components/cdeps/docn/cime_config/testdefs/testmods_dirs</value>
       <value component="drof" comp_interface="nuopc" >$SRCROOT/components/cdeps/drof/cime_config/testdefs/testmods_dirs</value>
+      <value component="dglc" comp_interface="nuopc" >$SRCROOT/components/cdeps/dglc/cime_config/testdefs/testmods_dirs</value>
       <value component="dwav" comp_interface="nuopc" >$SRCROOT/components/cdeps/dwav/cime_config/testdefs/testmods_dirs</value>
     </values>
     <group>case_last</group>
@@ -504,6 +508,7 @@
       <value component="dice">$COMP_ROOT_DIR_ICE/cime_config/namelist_definition_dice.xml</value>
       <value component="dlnd">$COMP_ROOT_DIR_LND/cime_config/namelist_definition_dlnd.xml</value>
       <value component="docn">$COMP_ROOT_DIR_OCN/cime_config/namelist_definition_docn.xml</value>
+      <value component="dglc">$COMP_ROOT_DIR_GLC/cime_config/namelist_definition_dglc.xml</value>
       <value component="dwav">$COMP_ROOT_DIR_WAV/cime_config/namelist_definition_dwav.xml</value>
 
       <!-- external model components -->

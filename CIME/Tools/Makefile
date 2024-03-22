@@ -300,6 +300,10 @@ ifeq ($(ULIBDEP),$(null))
       ULIBDEP += $(LIBROOT)/libatm.a
       CPPDEFS += -DATM_PRESENT
     endif
+    ifeq ($(GLC_PRESENT),TRUE)
+      ULIBDEP += $(LIBROOT)/libglc.a
+      CPPDEFS += -DGLC_PRESENT
+    endif
     ifeq ($(ICE_PRESENT),TRUE)
       ULIBDEP += $(LIBROOT)/libice.a
       CPPDEFS += -DICE_PRESENT
@@ -315,10 +319,6 @@ ifeq ($(ULIBDEP),$(null))
     ifeq ($(ROF_PRESENT),TRUE)
       ULIBDEP += $(LIBROOT)/librof.a
       CPPDEFS += -DROF_PRESENT
-    endif
-    ifeq ($(GLC_PRESENT),TRUE)
-      ULIBDEP += $(LIBROOT)/libglc.a
-      CPPDEFS += -DGLC_PRESENT
     endif
     ifeq ($(WAV_PRESENT),TRUE)
       ULIBDEP += $(LIBROOT)/libwav.a
