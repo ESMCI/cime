@@ -15,6 +15,7 @@ from CIME.utils import (
     get_batch_script_for_job,
     get_logging_options,
     format_time,
+    add_flag_to_cmd,
 )
 from CIME.locked_files import lock_file, unlock_file
 from collections import OrderedDict
@@ -555,7 +556,7 @@ class EnvBatch(EnvBase):
 
         return "\n".join(result)
 
-    def get_submit_args(self, case, job):
+    def get_submit_args(self, case, job, resolve=True):
         """
         return a list of touples (flag, name)
         """
@@ -563,7 +564,7 @@ class EnvBatch(EnvBase):
 
         submit_arg_nodes = self._get_arg_nodes(case, bs_nodes)
 
-        submitargs = self._process_args(case, submit_arg_nodes, job)
+        submitargs = self._process_args(case, submit_arg_nodes, job, resolve=resolve)
 
         return submitargs
 
@@ -597,7 +598,7 @@ class EnvBatch(EnvBase):
 
         return submit_arg_nodes
 
-    def _process_args(self, case, submit_arg_nodes, job):
+    def _process_args(self, case, submit_arg_nodes, job, resolve=True):
         submitargs = " "
 
         for arg in submit_arg_nodes:
@@ -619,19 +620,25 @@ class EnvBatch(EnvBase):
                 if " " in flag:
                     flag, name = flag.split()
                 if name:
-                    if "$" in name:
+                    if resolve and "$" in name:
                         rflag = self._resolve_argument(case, flag, name, job)
+                        # This is to prevent -gpu_type=none in qsub args
+                        if rflag.endswith("=none"):
+                            continue
                         if len(rflag) > len(flag):
                             submitargs += " {}".format(rflag)
                     else:
-                        submitargs += " {} {}".format(flag, name)
+                        submitargs += " " + add_flag_to_cmd(flag, name)
                 else:
                     submitargs += " {}".format(flag)
             else:
-                try:
-                    submitargs += self._resolve_argument(case, flag, name, job)
-                except ValueError:
-                    continue
+                if resolve:
+                    try:
+                        submitargs += self._resolve_argument(case, flag, name, job)
+                    except ValueError:
+                        continue
+                else:
+                    submitargs += " " + add_flag_to_cmd(flag, name)
 
         return submitargs
 
@@ -697,13 +704,8 @@ class EnvBatch(EnvBase):
             if flag == "-q" and rval == "batch" and case.get_value("MACH") == "blues":
                 # Special case. Do not provide '-q batch' for blues
                 raise ValueError()
-            if (
-                flag.rfind("=", len(flag) - 1, len(flag)) >= 0
-                or flag.rfind(":", len(flag) - 1, len(flag)) >= 0
-            ):
-                submitargs = " {}{}".format(flag, str(rval).strip())
-            else:
-                submitargs = " {} {}".format(flag, str(rval).strip())
+
+            submitargs = " " + add_flag_to_cmd(flag, rval)
 
         return submitargs
 
@@ -793,20 +795,10 @@ class EnvBatch(EnvBase):
         batch_job_id = None
         for _ in range(num_submit):
             for job, dependency in jobs:
-                if dependency is not None:
-                    deps = dependency.split()
-                else:
-                    deps = []
-                dep_jobs = []
-                if user_prereq is not None:
-                    dep_jobs.append(user_prereq)
-                for dep in deps:
-                    if dep in depid.keys() and depid[dep] is not None:
-                        dep_jobs.append(str(depid[dep]))
-                if prev_job is not None:
-                    dep_jobs.append(prev_job)
+                dep_jobs = get_job_deps(dependency, depid, prev_job, user_prereq)
 
                 logger.debug("job {} depends on {}".format(job, dep_jobs))
+
                 result = self._submit_single_job(
                     case,
                     job,
@@ -961,10 +953,20 @@ class EnvBatch(EnvBase):
 
             return
 
-        submitargs = self.get_submit_args(case, job)
-        args_override = self.get_value("BATCH_COMMAND_FLAGS", subgroup=job)
-        if args_override:
-            submitargs = args_override
+        submitargs = case.get_value("BATCH_COMMAND_FLAGS", subgroup=job, resolved=False)
+
+        project = case.get_value("PROJECT", subgroup=job)
+
+        if not project:
+            # If there is no project then we need to remove the project flag
+            if (
+                batch_system == "pbs" or batch_system == "cobalt"
+            ) and " -A " in submitargs:
+                submitargs = submitargs.replace("-A", "")
+            elif batch_system == "lsf" and " -P " in submitargs:
+                submitargs = submitargs.replace("-P", "")
+            elif batch_system == "slurm" and " --account " in submitargs:
+                submitargs = submitargs.replace("--account", "")
 
         if dep_jobs is not None and len(dep_jobs) > 0:
             logger.debug("dependencies: {}".format(dep_jobs))
@@ -1387,3 +1389,41 @@ class EnvBatch(EnvBase):
                         input_batch_script, job
                     )
                 )
+
+
+def get_job_deps(dependency, depid, prev_job=None, user_prereq=None):
+    """
+    Gather list of job batch ids that a job depends on.
+
+    Parameters
+    ----------
+    dependency : str
+        List of dependent job names.
+    depid : dict
+        Lookup where keys are job names and values are the batch id.
+    user_prereq : str
+        User requested dependency.
+
+    Returns
+    -------
+    list
+        List of batch ids that job depends on.
+    """
+    deps = []
+    dep_jobs = []
+
+    if user_prereq is not None:
+        dep_jobs.append(user_prereq)
+
+    if dependency is not None:
+        # Match all words, excluding "and" and "or"
+        deps = re.findall(r"\b(?!and\b|or\b)\w+(?:\.\w+)?\b", dependency)
+
+        for dep in deps:
+            if dep in depid and depid[dep] is not None:
+                dep_jobs.append(str(depid[dep]))
+
+    if prev_job is not None:
+        dep_jobs.append(prev_job)
+
+    return dep_jobs

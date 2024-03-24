@@ -16,31 +16,42 @@ class TestUnitTest(base.BaseTestCase):
         cls._testroot = os.path.join(cls.TEST_ROOT, "TestUnitTests")
         cls._testdirs = []
 
-    def _has_unit_test_support(self):
-        if self.TEST_COMPILER is None:
-            compiler = self.MACHINE.get_default_compiler()
-        else:
-            compiler = self.TEST_COMPILER
+    def setUp(self):
+        super().setUp()
 
-        mach = self.MACHINE.get_machine_name()
+        self._driver = utils.get_cime_default_driver()
+        self._has_pfunit = self._has_unit_test_support()
+
+    def _has_unit_test_support(self):
         cmake_macros_dir = Files().get_value("CMAKE_MACROS_DIR")
 
         macros_to_check = [
-            os.path.join(cmake_macros_dir, "{}_{}.cmake".format(compiler, mach)),
-            os.path.join(cmake_macros_dir, "{}.cmake".format(mach)),
+            os.path.join(
+                cmake_macros_dir,
+                "{}_{}.cmake".format(self._compiler, self._machine),
+            ),
+            os.path.join(cmake_macros_dir, "{}.cmake".format(self._machine)),
+            os.path.join(
+                os.environ.get("HOME"),
+                ".cime",
+                "{}_{}.cmake".format(self._compiler, self._machine),
+            ),
+            os.path.join(
+                os.environ.get("HOME"), ".cime", "{}.cmake".format(self._machine)
+            ),
         ]
 
         for macro_to_check in macros_to_check:
             if os.path.exists(macro_to_check):
                 macro_text = open(macro_to_check, "r").read()
-
-                return "PFUNIT_PATH" in macro_text
+                if "PFUNIT_PATH" in macro_text:
+                    return True
 
         return False
 
     def test_a_unit_test(self):
         cls = self.__class__
-        if not self._has_unit_test_support():
+        if not self._has_pfunit:
             self.skipTest(
                 "Skipping TestUnitTest - PFUNIT_PATH not found for the default compiler on this machine"
             )
@@ -55,8 +66,7 @@ class TestUnitTest(base.BaseTestCase):
         test_spec_dir = os.path.join(
             os.path.dirname(unit_test_tool), "Examples", "interpolate_1d", "tests"
         )
-        args = "--build-dir {} --test-spec-dir {}".format(test_dir, test_spec_dir)
-        args += " --machine {}".format(self.MACHINE.get_machine_name())
+        args = f"--build-dir {test_dir} --test-spec-dir {test_spec_dir} --machine {self._machine} --compiler {self._compiler} --comp-interface {self._driver}"
         utils.run_cmd_no_fail("{} {}".format(unit_test_tool, args))
         cls._do_teardown.append(test_dir)
 
@@ -79,8 +89,7 @@ class TestUnitTest(base.BaseTestCase):
                 test_spec_dir, "scripts", "fortran_unit_testing", "run_tests.py"
             )
         )
-        args = "--build-dir {} --test-spec-dir {}".format(test_dir, test_spec_dir)
-        args += " --machine {}".format(self.MACHINE.get_machine_name())
+        args = f"--build-dir {test_dir} --test-spec-dir {test_spec_dir} --machine {self._machine} --compiler {self._compiler} --comp-interface {self._driver}"
         utils.run_cmd_no_fail("{} {}".format(unit_test_tool, args))
         cls._do_teardown.append(test_dir)
 

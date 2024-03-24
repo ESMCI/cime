@@ -1,16 +1,11 @@
 <?xml version="1.0"?>
 <!-- This is an ordered list, not all fields are required, optional fields are noted below. -->
-<config_machines version="2.0">
+<config_machines version="3.0">
 <!-- MACH is the name that you will use in machine options -->
   <machine MACH="mymachine">
 
     <!-- DESC: a text description of the machine, this field is current not used in code-->
     <DESC>SITE VENDOR platform, os is ---, xx pes/node, batch system is ---</DESC>
-
-	<!-- NODENAME_REGEX: a regular expression used to identify this machine
-	  it must work on compute nodes as well as login nodes, use machine option
-	  to create_test or create_newcase if this flag is not available -->
-    <NODENAME_REGEX>.*.cheyenne.ucar.edu</NODENAME_REGEX>
 
     <!-- OS: the operating system of this machine. Passed to cppflags for
 	 compiled programs as -DVALUE  recognized are LINUX, AIX, Darwin, CNL -->

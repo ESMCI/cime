@@ -364,8 +364,10 @@ def get_histfiles_for_restarts(
     histfiles = set()
     rest_hist_varname = archive.get_entry_value("rest_history_varname", archive_entry)
     if rest_hist_varname != "unset":
-        cmd = "ncdump -v {} {} ".format(
-            rest_hist_varname, os.path.join(rundir, restfile)
+        ncdump = shutil.which("ncdump")
+        expect(ncdump, "ncdump not found in path")
+        cmd = "{} -v {} {} ".format(
+            ncdump, rest_hist_varname, os.path.join(rundir, restfile)
         )
         if testonly:
             out = "{} =".format(rest_hist_varname)
@@ -1184,7 +1186,9 @@ def test_env_archive(self, testdir="env_archive_test"):
 
     for comp_archive_spec in comp_archive_specs:
         comp_expected = archive.get(comp_archive_spec, "compname")
-        if comp_expected == "ww3":
+        # Rename ww3 component when case and archive names don't match,
+        # specific to CESM.
+        if comp_expected == "ww3" and "ww" in comps_in_case:
             comp_expected = "ww"
         comp_class = archive.get(comp_archive_spec, "compclass").upper()
         if comp_class in components:

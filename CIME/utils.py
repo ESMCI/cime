@@ -8,6 +8,7 @@ import io, logging, gzip, sys, os, time, re, shutil, glob, string, random, impor
 import importlib.util
 import errno, signal, warnings, filecmp
 import stat as statlib
+from argparse import Action
 from contextlib import contextmanager
 
 from distutils import file_util
@@ -19,6 +20,14 @@ logger = logging.getLogger(__name__)
 # Fix to pass user defined `srcroot` to `CIME.XML.generic_xml.GenericXML`
 # where it's used to resolve $SRCROOT in XML config files.
 GLOBAL = {}
+
+
+def deprecate_action(message):
+    class ActionStoreDeprecated(Action):
+        def __call__(self, parser, namespace, values, option_string=None):
+            raise DeprecationWarning(f"{option_string} is deprecated{message}")
+
+    return ActionStoreDeprecated
 
 
 def import_from_file(name, file_path):
@@ -262,7 +271,7 @@ def _read_cime_config_file():
     cime_config_file = os.path.abspath(
         os.path.join(os.path.expanduser("~"), ".cime", "config")
     )
-    cime_config = configparser.SafeConfigParser()
+    cime_config = configparser.ConfigParser()
     if os.path.isfile(cime_config_file):
         cime_config.read(cime_config_file)
         for section in cime_config.sections():
@@ -652,8 +661,8 @@ def import_and_run_sub_or_cmd(
             run_sub_or_cmd(
                 cmd, cmdargs, subname, subargs, logfile, case, from_dir, timeout
             )
-        except Exception as e:
-            raise e from None
+        except Exception as e1:
+            raise e1 from None
     except Exception:
         if logfile:
             with open(logfile, "a") as log_fd:
@@ -1005,6 +1014,12 @@ def parse_test_name(test_name):
     ['ERS', None, 'fe12_123', 'JGF', 'machine', 'compiler', None]
     >>> parse_test_name('ERS.fe12_123.JGF.machine_compiler.test-mods')
     ['ERS', None, 'fe12_123', 'JGF', 'machine', 'compiler', ['test/mods']]
+    >>> parse_test_name('ERS.fe12_123.JGF.*_compiler.test-mods')
+    ['ERS', None, 'fe12_123', 'JGF', None, 'compiler', ['test/mods']]
+    >>> parse_test_name('ERS.fe12_123.JGF.machine_*.test-mods')
+    ['ERS', None, 'fe12_123', 'JGF', 'machine', None, ['test/mods']]
+    >>> parse_test_name('ERS.fe12_123.JGF.*_*.test-mods')
+    ['ERS', None, 'fe12_123', 'JGF', None, None, ['test/mods']]
     >>> parse_test_name('ERS.fe12_123.JGF.machine_compiler.test-mods--other-dir-path--and-one-more')
     ['ERS', None, 'fe12_123', 'JGF', 'machine', 'compiler', ['test/mods', 'other/dir/path', 'and/one/more']]
     >>> parse_test_name('SMS.f19_g16.2000_DATM%QI.A_XLND_SICE_SOCN_XROF_XGLC_SWAV.mach-ine_compiler.test-mods') # doctest: +IGNORE_EXCEPTION_DETAIL
@@ -1038,6 +1053,10 @@ def parse_test_name(test_name):
             ),
         )
         rv[4:5] = rv[4].split("_")
+        if rv[4] == "*":
+            rv[4] = None
+        if rv[5] == "*":
+            rv[5] = None
         rv.pop()
 
     if rv[-1] is not None:
@@ -1130,7 +1149,6 @@ def get_full_test_name(
     ]
 
     result = partial_test
-
     for partial_val, arg_val, name in required_fields:
         if partial_val is None:
             # Add to result based on args
@@ -1140,9 +1158,14 @@ def get_full_test_name(
                     partial_test, name
                 ),
             )
-            result = "{}{}{}".format(
-                result, "_" if name == "compiler" else ".", arg_val
-            )
+            if name == "machine" and "*_" in result:
+                result = result.replace("*_", arg_val + "_")
+            elif name == "compiler" and "_*" in result:
+                result = result.replace("_*", "_" + arg_val)
+            else:
+                result = "{}{}{}".format(
+                    result, "_" if name == "compiler" else ".", arg_val
+                )
         elif arg_val is not None and partial_val != partial_compiler:
             expect(
                 arg_val == partial_val,
@@ -1602,20 +1625,25 @@ def find_files(rootdir, pattern):
 
 
 def setup_standard_logging_options(parser):
+    group = parser.add_argument_group("Logging options")
+
     helpfile = os.path.join(os.getcwd(), os.path.basename("{}.log".format(sys.argv[0])))
-    parser.add_argument(
+
+    group.add_argument(
         "-d",
         "--debug",
         action="store_true",
         help="Print debug information (very verbose) to file {}".format(helpfile),
     )
-    parser.add_argument(
+
+    group.add_argument(
         "-v",
         "--verbose",
         action="store_true",
         help="Add additional context (time and file) to log messages",
     )
-    parser.add_argument(
+
+    group.add_argument(
         "-s",
         "--silent",
         action="store_true",
@@ -2681,3 +2709,28 @@ def clear_folder(_dir):
                     os.rmdir(file_path)
             except Exception as e:
                 print(e)
+
+
+def add_flag_to_cmd(flag, val):
+    """
+    Given a flag and value for a shell command, return a string
+
+    >>> add_flag_to_cmd("-f", "hi")
+    '-f hi'
+    >>> add_flag_to_cmd("--foo", 42)
+    '--foo 42'
+    >>> add_flag_to_cmd("--foo=", 42)
+    '--foo=42'
+    >>> add_flag_to_cmd("--foo:", 42)
+    '--foo:42'
+    >>> add_flag_to_cmd("--foo:", " hi ")
+    '--foo:hi'
+    """
+    no_space_chars = "=:"
+    no_space = False
+    for item in no_space_chars:
+        if flag.endswith(item):
+            no_space = True
+
+    separator = "" if no_space else " "
+    return "{}{}{}".format(flag, separator, str(val).strip())

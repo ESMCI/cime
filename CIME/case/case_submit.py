@@ -94,8 +94,10 @@ def _submit(
         batch_system = "none"
     else:
         batch_system = env_batch.get_batch_system_type()
-    unlock_file(os.path.basename(env_batch.filename), caseroot=caseroot)
-    case.set_value("BATCH_SYSTEM", batch_system)
+
+    if batch_system != case.get_value("BATCH_SYSTEM"):
+        unlock_file(os.path.basename(env_batch.filename), caseroot=caseroot)
+        case.set_value("BATCH_SYSTEM", batch_system)
 
     env_batch_has_changed = False
     if not external_workflow:
@@ -287,7 +289,8 @@ def check_case(self, skip_pnl=False, chksum=False):
     if not skip_pnl:
         self.create_namelists()  # Must be called before check_all_input_data
     logger.info("Checking that inputdata is available as part of case submission")
-    self.check_all_input_data(chksum=chksum)
+    if not self.get_value("TEST"):
+        self.check_all_input_data(chksum=chksum)
 
     if self.get_value("COMP_WAV") == "ww":
         # the ww3 buildnml has dependencies on inputdata so we must run it again

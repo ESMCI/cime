@@ -42,7 +42,8 @@
     <group>case_last</group>
     <file>env_case.xml</file>
     <desc>file containing machine specifications for target model primary component (for documentation only - DO NOT EDIT)</desc>
-    <schema>$CIMEROOT/CIME/data/config/xml_schemas/config_machines.xsd</schema>
+    <schema version="2.0">$CIMEROOT/CIME/data/config/xml_schemas/config_machines.xsd</schema>
+    <schema version="3.0">$CIMEROOT/CIME/data/config/xml_schemas/config_machines_version3.xsd</schema>
   </entry>
 
   <entry id="BATCH_SPEC_FILE">
@@ -415,7 +416,7 @@
       <value component="cam"       >$COMP_ROOT_DIR_ATM/cime_config/testdefs/testlist_cam.xml</value>
       <value component="cism"      >$COMP_ROOT_DIR_GLC/cime_config/testdefs/testlist_cism.xml</value>
       <value component="clm"       >$COMP_ROOT_DIR_LND/cime_config/testdefs/testlist_clm.xml</value>
-      <value component="slim"      >$COMP_ROOT_DIR_LND/cime_config/testdefs/testlist_clm.xml</value>
+      <value component="slim"      >$COMP_ROOT_DIR_LND/cime_config/testdefs/testlist_slim.xml</value>
       <value component="cice5"     >$COMP_ROOT_DIR_ICE/cime_config/testdefs/testlist_cice.xml</value>
       <value component="cice"      >$COMP_ROOT_DIR_ICE/cime_config/testdefs/testlist_cice.xml</value>
       <value component="pop"       >$COMP_ROOT_DIR_OCN/cime_config/testdefs/testlist_pop.xml</value>

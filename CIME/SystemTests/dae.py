@@ -27,7 +27,7 @@ class DAE(SystemTestsCompareTwo):
     """
 
     ###########################################################################
-    def __init__(self, case):
+    def __init__(self, case, **kwargs):
         ###########################################################################
         SystemTestsCompareTwo.__init__(
             self,
@@ -36,6 +36,7 @@ class DAE(SystemTestsCompareTwo):
             run_two_suffix="da",
             run_one_description="no data assimilation",
             run_two_description="data assimilation",
+            **kwargs,
         )
 
     ###########################################################################

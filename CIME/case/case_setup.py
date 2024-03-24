@@ -21,13 +21,13 @@ from CIME.utils import (
     copy_local_macros_to_dir,
 )
 from CIME.utils import batch_jobid
-from CIME.utils import transform_vars
 from CIME.test_status import *
 from CIME.locked_files import unlock_file, lock_file
 
 import errno, shutil
 
 logger = logging.getLogger(__name__)
+
 
 ###############################################################################
 def _build_usernl_files(case, model, comp):
@@ -142,12 +142,29 @@ def _create_macros_cmake(
     ###############################################################################
     if not os.path.isfile(os.path.join(caseroot, "Macros.cmake")):
         safe_copy(os.path.join(cmake_macros_dir, "Macros.cmake"), caseroot)
-    if not os.path.exists(os.path.join(caseroot, "cmake_macros")):
-        shutil.copytree(cmake_macros_dir, case_cmake_path)
 
-    copy_depends_files(
-        mach_obj.get_machine_name(), mach_obj.machines_dir, caseroot, compiler
-    )
+    if not os.path.exists(case_cmake_path):
+        os.mkdir(case_cmake_path)
+
+    # This impl is coupled to contents of Macros.cmake
+    os_ = mach_obj.get_value("OS")
+    mach = mach_obj.get_machine_name()
+    macros = [
+        "universal.cmake",
+        os_ + ".cmake",
+        compiler + ".cmake",
+        "{}_{}.cmake".format(compiler, os),
+        mach + ".cmake",
+        "{}_{}.cmake".format(compiler, mach),
+        "CMakeLists.txt",
+    ]
+    for macro in macros:
+        repo_macro = os.path.join(cmake_macros_dir, macro)
+        case_macro = os.path.join(case_cmake_path, macro)
+        if not os.path.exists(case_macro) and os.path.exists(repo_macro):
+            safe_copy(repo_macro, case_cmake_path)
+
+    copy_depends_files(mach, mach_obj.machines_dir, caseroot, compiler)
 
 
 ###############################################################################
@@ -328,7 +345,7 @@ def _case_setup_impl(
 
             case.initialize_derived_attributes()
 
-            case.set_value("SMP_PRESENT", case.get_build_threaded())
+            case.set_value("BUILD_THREADED", case.get_build_threaded())
 
         else:
             case.check_pelayouts_require_rebuild(models)
@@ -344,7 +361,7 @@ def _case_setup_impl(
             cost_per_node = case.get_value("COSTPES_PER_NODE")
             case.set_value("COST_PES", case.num_nodes * cost_per_node)
             threaded = case.get_build_threaded()
-            case.set_value("SMP_PRESENT", threaded)
+            case.set_value("BUILD_THREADED", threaded)
             if threaded and case.total_tasks * case.thread_count > cost_per_node:
                 smt_factor = max(
                     1.0, int(case.get_value("MAX_TASKS_PER_NODE") / cost_per_node)
@@ -482,31 +499,3 @@ def case_setup(self, clean=False, test_mode=False, reset=False, keep=None):
             caseroot=caseroot,
             is_batch=is_batch,
         )
-
-    # put the following section here to make sure the rundir is generated first
-    machdir = self.get_value("MACHDIR")
-    mach = self.get_value("MACH")
-    ngpus_per_node = self.get_value("NGPUS_PER_NODE")
-    overrides = {}
-    overrides["ngpus_per_node"] = ngpus_per_node
-    input_template = os.path.join(machdir, "mpi_run_gpu.{}".format(mach))
-    if os.path.isfile(input_template):
-        # update the wrapper script that sets the device id for each MPI rank
-        output_text = transform_vars(
-            open(input_template, "r").read(), case=self, overrides=overrides
-        )
-
-        # write it out to the run dir
-        rundir = self.get_value("RUNDIR")
-        output_name = os.path.join(rundir, "set_device_rank.sh")
-        logger.info("Creating file {}".format(output_name))
-        with open(output_name, "w") as f:
-            f.write(output_text)
-
-        # make the wrapper script executable
-        if os.path.isfile(output_name):
-            os.system("chmod +x " + output_name)
-        else:
-            expect(
-                False, "The file {} is not written out correctly.".format(output_name)
-            )

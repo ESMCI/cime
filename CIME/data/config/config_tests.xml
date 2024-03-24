@@ -66,7 +66,7 @@ ERP    pes counts hybrid (open-MP/MPI) restart bfb test from startup, default 6 
        do an 11 day initial test - write a restart at day 6     (suffix base)
        half the number of tasks and threads for each component
        do a  5  day restart test starting from restart at day 6 (suffix rest)
-       this is just like an ERS test but the pe-counts/threading count are modified on retart
+       this is just like an ERS test but the pe-counts/threading count are modified on restart
 
 ERI    hybrid/branch/exact restart test, default (by default STOP_N is 22 days)
        (1) ref1case

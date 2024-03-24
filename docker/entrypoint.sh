@@ -1,6 +1,9 @@
 #!/bin/bash
 
-set -x
+if [[ -n "${DEBUG}" ]]
+then
+    set -x
+fi
 
 readonly INIT=${INIT:-"true"}
 readonly UPDATE_CIME=${UPDATE_CIME:-"false"}
@@ -24,6 +27,8 @@ function clone_repo() {
         extras="${extras} --depth 1"
     fi
 
+    echo "Cloning branch ${branch} of ${repo} into ${path} with flags: ${flags}"
+
     git clone -b "${branch}" ${extras} "${repo}" "${path}" || true
 }
 
@@ -38,11 +43,15 @@ function fixup_mct {
     # TODO make PR to fix
     if [[ ! -e "${mct_path}/mct/Makefile.bak" ]]
     then
+        echo "Fixing AR variable in ${mct_path}/mct/Makefile"
+
         sed -i".bak" "s/\$(AR)/\$(AR) \$(ARFLAGS)/g" "${mct_path}/mct/Makefile"
     fi
 
     if [[ ! -e "${mct_path}/mpeu/Makefile.bak" ]]
     then
+        echo "Fixing AR variable in ${mct_path}/mpeu/Makefile"
+
         sed -i".bak" "s/\$(AR)/\$(AR) \$(ARFLAGS)/g" "${mct_path}/mpeu/Makefile"
     fi
 }
@@ -77,6 +86,8 @@ function update_cime() {
 # Creates an environment with E3SM source.
 #######################################
 function init_e3sm() {
+    echo "Setting up E3SM"
+
     export CIME_MODEL="e3sm"
 
     local extras=""
@@ -91,6 +102,8 @@ function init_e3sm() {
 
         if [[ ! -e "${PWD}/.gitmodules.bak" ]]
         then
+            echo "Convering git@github.com to https://github.com urls in ${PWD}/.gitmodules"
+
             sed -i".bak" "s/git@github.com:/https:\/\/github.com\//g" "${PWD}/.gitmodules"
         fi
 
@@ -99,6 +112,8 @@ function init_e3sm() {
             extras=" --depth 1"
         fi
 
+        echo "Initializing submodules in ${PWD}"
+
         git submodule update --init ${extras}
     fi
 
@@ -106,23 +121,32 @@ function init_e3sm() {
 
     update_cime "${install_path}/cime"
 
-    curl -L --create-dirs \
-        -o ${cache_path}/cpl/gridmaps/oQU240/map_oQU240_to_ne4np4_aave.160614.nc \
-        https://web.lcrc.anl.gov/public/e3sm/inputdata/cpl/gridmaps/oQU240/map_oQU240_to_ne4np4_aave.160614.nc
-    curl -L --create-dirs \
-        -o ${cache_path}/share/domains/domain.ocn.ne4np4_oQU240.160614.nc \
-        https://web.lcrc.anl.gov/public/e3sm/inputdata/share/domains/domain.ocn.ne4np4_oQU240.160614.nc
-    curl -L --create-dirs \
-        -o ${cache_path}/share/domains/domain.lnd.ne4np4_oQU240.160614.nc \
-        https://web.lcrc.anl.gov/public/e3sm/inputdata/share/domains/domain.lnd.ne4np4_oQU240.160614.nc
+    mkdir -p /storage/inputdata
+
+    echo "Copying cached inputdata from /cache to /storage/inputdata"
+
+    rsync -vr /cache/ /storage/inputdata/
 
     cd "${install_path}/cime"
+
+    if [[ ! -e "${PWD}/.gitmodules.bak" ]]
+    then
+        echo "Convering git@github.com to https://github.com urls in ${PWD}/.gitmodules"
+
+        sed -i".bak" "s/git@github.com:/https:\/\/github.com\//g" "${PWD}/.gitmodules"
+    fi
+
+    echo "Initializing submodules in ${PWD}"
+
+    git submodule update --init ${extras}
 }
 
 #######################################
 # Creates an environment with CESM source.
 #######################################
 function init_cesm() {
+    echo "Setting up CESM"
+
     export CIME_MODEL="cesm"
 
     local install_path="${INSTALL_PATH:-/src/CESM}"
@@ -132,15 +156,33 @@ function init_cesm() {
         clone_repo "${CESM_REPO}" "${install_path}" "${CESM_BRANCH:-master}"
     fi
 
-    cd "${install_path}"
+    pushd "${install_path}"
 
-    "${install_path}/manage_externals/checkout_externals"
+    pushd "${install_path}/cime"
+
+    echo "Checking out externals from `pwd`"
+
+    "${install_path}/manage_externals/checkout_externals" -v
+
+    popd
 
     fixup_mct "${install_path}/libraries/mct"
 
     update_cime "${install_path}/cime/"
 
-    cd "${install_path}/cime"
+    pushd "${install_path}/cime"
+
+    # Need to run manage_externals again incase branch changes externals instructions
+    # "${install_path}/manage_externals/checkout_externals -e cime/Externals_cime.cfg"
+
+    if [[ ! -e "${PWD}/.gitmodules.bak" ]]
+    then
+        echo "Convering git@github.com to https://github.com urls in ${PWD}/.gitmodules"
+
+        sed -i".bak" "s/git@github.com:/https:\/\/github.com\//g" "${PWD}/.gitmodules"
+    fi
+
+    git submodule update --init
 }
 
 #######################################
@@ -148,6 +190,8 @@ function init_cesm() {
 # Similar to old github actions environment.
 #######################################
 function init_cime() {
+    echo "Settig up CIME"
+
     export CIME_MODEL="cesm"
     export ESMFMKFILE="/opt/conda/lib/esmf.mk"
 
@@ -163,13 +207,25 @@ function init_cime() {
 
     cd "${install_path}"
 
-    "/src/CESM/manage_externals/checkout_externals"
+    "/src/CESM/manage_externals/checkout_externals" -v
 
     fixup_mct "${install_path}/libraries/mct"
 
     update_cime "${install_path}"
 
     cd "${install_path}"
+
+    # Need to run manage_externals again incase branch changes externals instructions
+    # "${install_path}/manage_externals/checkout_externals -e cime/Externals_cime.cfg"
+
+    if [[ ! -e "${PWD}/.gitmodules.bak" ]]
+    then
+        echo "Convering git@github.com to https://github.com urls in ${PWD}/.gitmodules"
+
+        sed -i".bak" "s/git@github.com:/https:\/\/github.com\//g" "${PWD}/.gitmodules"
+    fi
+
+    git submodule update --init
 }
 
 if [[ ! -e "${HOME}/.cime" ]]

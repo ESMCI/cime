@@ -18,6 +18,7 @@ class RestartTest(SystemTestsCompareTwo):
         run_one_description="initial",
         run_two_description="restart",
         multisubmit=False,
+        **kwargs
     ):
         SystemTestsCompareTwo.__init__(
             self,
@@ -27,6 +28,7 @@ class RestartTest(SystemTestsCompareTwo):
             run_one_description=run_one_description,
             run_two_description=run_two_description,
             multisubmit=multisubmit,
+            **kwargs
         )
 
     def _case_one_setup(self):

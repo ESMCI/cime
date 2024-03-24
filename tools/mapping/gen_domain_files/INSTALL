@@ -3,7 +3,7 @@ HOW TO BUILD
 ============
 
 (1) $ cd src
-(2) $ ../../../configure --macros-format Makefile --mpilib mpi-serial
+(2) $ ../../../../CIME/scripts/configure --macros-format Makefile --mpilib mpi-serial
 Bash users:
 (3) $ (. ./.env_mach_specific.sh ; gmake)
 csh users:

@@ -50,11 +50,11 @@ INSTANCE_FILE_TEMPLATE = "{}{}_{:04d}.h0.0001-01-01-00000{}.nc"
 
 
 class PGN(SystemTestsCommon):
-    def __init__(self, case):
+    def __init__(self, case, **kwargs):
         """
         initialize an object interface to the PGN test
         """
-        super(PGN, self).__init__(case)
+        super(PGN, self).__init__(case, **kwargs)
         if self._case.get_value("MODEL") == "e3sm":
             self.atmmod = "eam"
             self.lndmod = "elm"

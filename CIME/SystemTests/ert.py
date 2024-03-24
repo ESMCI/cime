@@ -10,11 +10,11 @@ logger = logging.getLogger(__name__)
 
 
 class ERT(SystemTestsCommon):
-    def __init__(self, case):
+    def __init__(self, case, **kwargs):
         """
         initialize an object interface to the ERT system test
         """
-        SystemTestsCommon.__init__(self, case)
+        SystemTestsCommon.__init__(self, case, **kwargs)
 
     def _ert_first_phase(self):
 

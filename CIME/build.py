@@ -45,7 +45,7 @@ _CMD_ARGS_FOR_BUILD = (
     "OS",
     "PIO_VERSION",
     "SHAREDLIBROOT",
-    "SMP_PRESENT",
+    "BUILD_THREADED",
     "USE_ESMF_LIB",
     "USE_MOAB",
     "CAM_CONFIG_OPTS",
@@ -171,6 +171,7 @@ def generate_makefile_macro(case, caseroot):
                 "gptl",
                 "csm_share",
                 "csm_share_cpl7",
+                "mpi-serial",
             ]
         )
         cmake_macro = os.path.join(caseroot, "Macros.cmake")
@@ -245,10 +246,24 @@ def get_standard_cmake_args(case, sharedpath):
     cmake_args += " -Dcompile_threaded={} ".format(
         stringify_bool(case.get_build_threaded())
     )
+    # check settings for GPU
+    gpu_type = case.get_value("GPU_TYPE")
+    gpu_offload = case.get_value("GPU_OFFLOAD")
+    if gpu_type != "none":
+        expect(
+            gpu_offload != "none",
+            "Both GPU_TYPE and GPU_OFFLOAD must be defined if either is",
+        )
+        cmake_args += f" -DGPU_TYPE={gpu_type} -DGPU_OFFLOAD={gpu_offload}"
+    else:
+        expect(
+            gpu_offload == "none",
+            "Both GPU_TYPE and GPU_OFFLOAD must be defined if either is",
+        )
 
     ocn_model = case.get_value("COMP_OCN")
-    atm_model = case.get_value("COMP_ATM")
-    if ocn_model == "mom" or atm_model == "fv3gfs":
+    atm_dycore = case.get_value("CAM_DYCORE")
+    if ocn_model == "mom" or (atm_dycore and atm_dycore == "fv3"):
         cmake_args += " -DUSE_FMS=TRUE "
 
     cmake_args += " -DINSTALL_SHAREDPATH={} ".format(
@@ -265,6 +280,7 @@ def get_standard_cmake_args(case, sharedpath):
     for var in _CMD_ARGS_FOR_BUILD:
         cmake_args += xml_to_make_variable(case, var, cmake=True)
 
+    atm_model = case.get_value("COMP_ATM")
     if atm_model == "scream":
         cmake_args += xml_to_make_variable(case, "HOMME_TARGET", cmake=True)
 
@@ -471,59 +487,63 @@ def _build_model_cmake(
             os.makedirs(build_dir)
 
     # Components-specific cmake args. Cmake requires all component inputs to be available
-    # regardless of requested build list
-    cmp_cmake_args = ""
-    all_models = []
-    files = Files(comp_interface=comp_interface)
-    for model, _, _, _, config_dir in complist:
-        # Create the Filepath and CIME_cppdefs files
-        if model == "cpl":
-            config_dir = os.path.join(
-                files.get_value("COMP_ROOT_DIR_CPL"), "cime_config"
-            )
-
-        cmp_cmake_args += _create_build_metadata_for_component(
-            config_dir, libroot, bldroot, case
-        )
-        all_models.append(model)
-
-    # Call CMake
-    cmake_args = get_standard_cmake_args(case, sharedpath)
-    cmake_env = ""
-    ninja_path = os.path.join(srcroot, "externals/ninja/bin")
-    if ninja:
-        cmake_args += " -GNinja "
-        cmake_env += "PATH={}:$PATH ".format(ninja_path)
-
-    # Glue all pieces together:
-    #  - cmake environment
-    #  - common (i.e. project-wide) cmake args
-    #  - component-specific cmake args
-    #  - path to src folder
+    # regardless of requested build list. We do not want to re-invoke cmake
+    # if it has already been called.
     do_timing = "/usr/bin/time -p " if os.path.exists("/usr/bin/time") else ""
-    cmake_cmd = "{} {}cmake {} {} {}/components".format(
-        cmake_env, do_timing, cmake_args, cmp_cmake_args, srcroot
-    )
-    stat = 0
-    if dry_run:
-        logger.info("CMake cmd:\ncd {} && {}\n\n".format(bldroot, cmake_cmd))
-    else:
-        logger.info(
-            "Configuring full {} model with output to file {}".format(
-                cime_model, bldlog
-            )
-        )
-        logger.info("   Calling cmake directly, see top of log file for specific call")
-        with open(bldlog, "w") as fd:
-            fd.write("Configuring with cmake cmd:\n{}\n\n".format(cmake_cmd))
+    if not os.path.exists(os.path.join(bldroot, "CMakeCache.txt")):
+        cmp_cmake_args = ""
+        all_models = []
+        files = Files(comp_interface=comp_interface)
+        for model, _, _, _, config_dir in complist:
+            # Create the Filepath and CIME_cppdefs files
+            if model == "cpl":
+                config_dir = os.path.join(
+                    files.get_value("COMP_ROOT_DIR_CPL"), "cime_config"
+                )
 
-        # Add logging before running
-        cmake_cmd = "({}) >> {} 2>&1".format(cmake_cmd, bldlog)
-        stat = run_cmd(cmake_cmd, from_dir=bldroot)[0]
-        expect(
-            stat == 0,
-            "BUILD FAIL: cmake config {} failed, cat {}".format(cime_model, bldlog),
+            cmp_cmake_args += _create_build_metadata_for_component(
+                config_dir, libroot, bldroot, case
+            )
+            all_models.append(model)
+
+        # Call CMake
+        cmake_args = get_standard_cmake_args(case, sharedpath)
+        cmake_env = ""
+        ninja_path = os.path.join(srcroot, "externals/ninja/bin")
+        if ninja:
+            cmake_args += " -GNinja "
+            cmake_env += "PATH={}:$PATH ".format(ninja_path)
+
+        # Glue all pieces together:
+        #  - cmake environment
+        #  - common (i.e. project-wide) cmake args
+        #  - component-specific cmake args
+        #  - path to src folder
+        cmake_cmd = "{} {}cmake {} {} {}/components".format(
+            cmake_env, do_timing, cmake_args, cmp_cmake_args, srcroot
         )
+        stat = 0
+        if dry_run:
+            logger.info("CMake cmd:\ncd {} && {}\n\n".format(bldroot, cmake_cmd))
+        else:
+            logger.info(
+                "Configuring full {} model with output to file {}".format(
+                    cime_model, bldlog
+                )
+            )
+            logger.info(
+                "   Calling cmake directly, see top of log file for specific call"
+            )
+            with open(bldlog, "w") as fd:
+                fd.write("Configuring with cmake cmd:\n{}\n\n".format(cmake_cmd))
+
+            # Add logging before running
+            cmake_cmd = "({}) >> {} 2>&1".format(cmake_cmd, bldlog)
+            stat = run_cmd(cmake_cmd, from_dir=bldroot)[0]
+            expect(
+                stat == 0,
+                "BUILD FAIL: cmake config {} failed, cat {}".format(cime_model, bldlog),
+            )
 
     # Set up buildlist
     if not buildlist:
@@ -756,8 +776,9 @@ def _build_libraries(
         libs.append("CDEPS")
 
     ocn_model = case.get_value("COMP_OCN")
-    atm_model = case.get_value("COMP_ATM")
-    if ocn_model == "mom" or atm_model == "fv3gfs":
+
+    atm_dycore = case.get_value("CAM_DYCORE")
+    if ocn_model == "mom" or (atm_dycore and atm_dycore == "fv3"):
         libs.append("FMS")
 
     files = Files(comp_interface=comp_interface)
@@ -1111,6 +1132,7 @@ def _case_build_impl(
     ninst_build = case.get_value("NINST_BUILD")
     smp_value = case.get_value("SMP_VALUE")
     clm_use_petsc = case.get_value("CLM_USE_PETSC")
+    mpaso_use_petsc = case.get_value("MPASO_USE_PETSC")
     cism_use_trilinos = case.get_value("CISM_USE_TRILINOS")
     mali_use_albany = case.get_value("MALI_USE_ALBANY")
     mach = case.get_value("MACH")
@@ -1135,7 +1157,7 @@ def _case_build_impl(
     # the future there may be others -- so USE_PETSC will be true if
     # ANY of those are true.
 
-    use_petsc = clm_use_petsc
+    use_petsc = bool(clm_use_petsc) or bool(mpaso_use_petsc)
     case.set_value("USE_PETSC", use_petsc)
 
     # Set the overall USE_TRILINOS variable to TRUE if any of the

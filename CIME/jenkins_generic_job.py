@@ -278,6 +278,9 @@ def jenkins_generic_job(
     update_success,
     check_throughput,
     check_memory,
+    ignore_memleak,
+    ignore_namelists,
+    save_timing,
     pes_file,
     jenkins_id,
     queue,
@@ -360,16 +363,19 @@ def jenkins_generic_job(
         create_test_args.append("-j {:d}".format(parallel_jobs))
 
     if walltime is not None:
-        create_test_args.append(" --walltime " + walltime)
+        create_test_args.append("--walltime " + walltime)
 
     if baseline_root is not None:
-        create_test_args.append(" --baseline-root " + baseline_root)
+        create_test_args.append("--baseline-root " + baseline_root)
 
     if pes_file is not None:
-        create_test_args.append(" --pesfile " + pes_file)
+        create_test_args.append("--pesfile " + pes_file)
 
     if queue is not None:
-        create_test_args.append(" --queue " + queue)
+        create_test_args.append("--queue " + queue)
+
+    if save_timing:
+        create_test_args.append("--save-timing")
 
     create_test_cmd = "./create_test " + " ".join(create_test_args)
 
@@ -416,7 +422,8 @@ def jenkins_generic_job(
         no_wait=not use_batch,  # wait if using queue
         check_throughput=check_throughput,
         check_memory=check_memory,
-        ignore_namelists=False,  # don't ignore namelist diffs
+        ignore_namelists=ignore_namelists,
+        ignore_memleak=ignore_memleak,
         cdash_build_name=cdash_build_name,
         cdash_project=cdash_project,
         cdash_build_group=cdash_build_group,

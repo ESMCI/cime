@@ -12,6 +12,11 @@ from CIME.tests import base
 from CIME.case.case import Case
 from CIME.XML.env_run import EnvRun
 
+try:
+    collectionsAbc = collections.abc
+except AttributeError:
+    collectionsAbc = collections
+
 
 class TestCimeCase(base.BaseTestCase):
     def test_cime_case(self):
@@ -86,7 +91,7 @@ class TestCimeCase(base.BaseTestCase):
                 prereq=prereq_name, job=job_name, skip_pnl=True, dry_run=True
             )
             self.assertTrue(
-                isinstance(batch_commands, collections.Sequence),
+                isinstance(batch_commands, collectionsAbc.Sequence),
                 "case.submit_jobs did not return a sequence for a dry run",
             )
             self.assertTrue(
@@ -99,7 +104,7 @@ class TestCimeCase(base.BaseTestCase):
             # The prerequisite should be applied to all jobs, though we're only expecting one
             for batch_cmd in batch_commands:
                 self.assertTrue(
-                    isinstance(batch_cmd, collections.Sequence),
+                    isinstance(batch_cmd, collectionsAbc.Sequence),
                     "case.submit_jobs did not return a sequence of sequences",
                 )
                 self.assertTrue(
@@ -161,7 +166,7 @@ class TestCimeCase(base.BaseTestCase):
                 dry_run=True,
             )
             self.assertTrue(
-                isinstance(batch_commands, collections.Sequence),
+                isinstance(batch_commands, collectionsAbc.Sequence),
                 "case.submit_jobs did not return a sequence for a dry run",
             )
             num_submissions = 1
@@ -190,7 +195,7 @@ class TestCimeCase(base.BaseTestCase):
                 job=job_name, skip_pnl=True, dry_run=True, resubmit_immediate=True
             )
             self.assertTrue(
-                isinstance(batch_commands, collections.Sequence),
+                isinstance(batch_commands, collectionsAbc.Sequence),
                 "case.submit_jobs did not return a sequence for a dry run",
             )
             if case.get_value("DOUT_S"):
@@ -231,7 +236,7 @@ class TestCimeCase(base.BaseTestCase):
         )
 
         with Case(casedir, read_only=False) as case:
-            build_threaded = case.get_value("SMP_PRESENT")
+            build_threaded = case.get_value("BUILD_THREADED")
             self.assertFalse(build_threaded)
 
             build_threaded = case.get_build_threaded()
@@ -249,7 +254,7 @@ class TestCimeCase(base.BaseTestCase):
         )
 
         with Case(casedir, read_only=False) as case:
-            build_threaded = case.get_value("SMP_PRESENT")
+            build_threaded = case.get_value("BUILD_THREADED")
             self.assertTrue(build_threaded)
 
             build_threaded = case.get_build_threaded()

@@ -25,7 +25,7 @@ class PRE(SystemTestsCompareTwo):
     """
 
     ###########################################################################
-    def __init__(self, case):
+    def __init__(self, case, **kwargs):
         ###########################################################################
         SystemTestsCompareTwo.__init__(
             self,
@@ -34,6 +34,7 @@ class PRE(SystemTestsCompareTwo):
             run_two_suffix="pr",
             run_one_description="no pause/resume",
             run_two_description="pause/resume",
+            **kwargs
         )
         self._stopopt = ""
         self._stopn = 0

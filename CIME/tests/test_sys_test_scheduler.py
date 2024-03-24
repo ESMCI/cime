@@ -20,22 +20,22 @@ class TestTestScheduler(base.BaseTestCase):
             self.skipTest("Skipping chksum test. Depends on CESM settings")
 
         ts = test_scheduler.TestScheduler(
-            ["SEQ_Ln9.f19_g16_rx1.A.cori-haswell_gnu"],
-            machine_name="cori-haswell",
+            ["SEQ_Ln9.f19_g16_rx1.A.perlmutter_gnu"],
+            machine_name="perlmutter",
             chksum=True,
             test_root="/tests",
         )
 
         with mock.patch.object(ts, "_shell_cmd_for_phase") as _shell_cmd_for_phase:
             ts._run_phase(
-                "SEQ_Ln9.f19_g16_rx1.A.cori-haswell_gnu"
+                "SEQ_Ln9.f19_g16_rx1.A.perlmutter_gnu"
             )  # pylint: disable=protected-access
 
             _shell_cmd_for_phase.assert_called_with(
-                "SEQ_Ln9.f19_g16_rx1.A.cori-haswell_gnu",
+                "SEQ_Ln9.f19_g16_rx1.A.perlmutter_gnu",
                 "./case.submit --skip-preview-namelist --chksum",
                 "RUN",
-                from_dir="/tests/SEQ_Ln9.f19_g16_rx1.A.cori-haswell_gnu.00:00:00",
+                from_dir="/tests/SEQ_Ln9.f19_g16_rx1.A.perlmutter_gnu.00:00:00",
             )
 
     def test_a_phases(self):
@@ -278,6 +278,60 @@ class TestTestScheduler(base.BaseTestCase):
                         test_status.MEMLEAK_PHASE,
                         test_status.TEST_PASS_STATUS,
                     )
+
+    def test_force_rebuild(self):
+        tests = get_tests.get_full_test_names(
+            [
+                "TESTBUILDFAIL_P1.f19_g16_rx1.A",
+                "TESTRUNFAIL_P1.f19_g16_rx1.A",
+                "TESTRUNPASS_P1.f19_g16_rx1.A",
+            ],
+            self._machine,
+            self._compiler,
+        )
+        test_id = "%s-%s" % (self._baseline_name, utils.get_timestamp())
+        ct = test_scheduler.TestScheduler(
+            tests,
+            test_id=test_id,
+            no_batch=self.NO_BATCH,
+            test_root=self._testroot,
+            output_root=self._testroot,
+            compiler=self._compiler,
+            mpilib=self.TEST_MPILIB,
+            machine_name=self.MACHINE.get_machine_name(),
+        )
+
+        log_lvl = logging.getLogger().getEffectiveLevel()
+        logging.disable(logging.CRITICAL)
+        try:
+            ct.run_tests()
+        finally:
+            logging.getLogger().setLevel(log_lvl)
+
+        ct = test_scheduler.TestScheduler(
+            tests,
+            test_id=test_id,
+            no_batch=self.NO_BATCH,
+            test_root=self._testroot,
+            output_root=self._testroot,
+            compiler=self._compiler,
+            mpilib=self.TEST_MPILIB,
+            machine_name=self.MACHINE.get_machine_name(),
+            force_rebuild=True,
+            use_existing=True,
+        )
+
+        test_statuses = glob.glob("%s/*%s/TestStatus" % (self._testroot, test_id))
+
+        for x in test_statuses:
+            casedir = os.path.dirname(x)
+
+            ts = test_status.TestStatus(test_dir=casedir)
+
+            self.assertTrue(
+                ts.get_status(test_status.SHAREDLIB_BUILD_PHASE)
+                == test_status.TEST_PEND_STATUS
+            )
 
     def test_c_use_existing(self):
         tests = get_tests.get_full_test_names(

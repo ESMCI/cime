@@ -274,6 +274,17 @@ class TestStatus(object):
     def get_comment(self, phase):
         return self._phase_statuses[phase][1] if phase in self._phase_statuses else None
 
+    def current_is(self, phase, status):
+        try:
+            latest = self.get_latest_phase()
+        except KeyError:
+            return False
+
+        return latest == phase and self.get_status(phase) == status
+
+    def get_latest_phase(self):
+        return list(self._phase_statuses.keys())[-1]
+
     def phase_statuses_dump(
         self, prefix="", skip_passes=False, skip_phase_list=None, xfails=None
     ):
@@ -449,7 +460,7 @@ class TestStatus(object):
                     if rv == TEST_PASS_STATUS:
                         rv = NAMELIST_FAIL_STATUS
 
-                elif phase == BASELINE_PHASE:
+                elif phase in [BASELINE_PHASE, THROUGHPUT_PHASE, MEMCOMP_PHASE]:
                     if rv in [NAMELIST_FAIL_STATUS, TEST_PASS_STATUS]:
                         phase_responsible_for_status = phase
                         rv = TEST_DIFF_STATUS
@@ -501,7 +512,9 @@ class TestStatus(object):
         >>> _test_helper2('PASS ERS.foo.A RUN\nFAIL ERS.foo.A TPUTCOMP')
         ('PASS', 'RUN')
         >>> _test_helper2('PASS ERS.foo.A RUN\nFAIL ERS.foo.A TPUTCOMP', check_throughput=True)
-        ('FAIL', 'TPUTCOMP')
+        ('DIFF', 'TPUTCOMP')
+        >>> _test_helper2('PASS ERS.foo.A RUN\nFAIL ERS.foo.A MEMCOMP', check_memory=True)
+        ('DIFF', 'MEMCOMP')
         >>> _test_helper2('PASS ERS.foo.A MODEL_BUILD\nPASS ERS.foo.A RUN\nFAIL ERS.foo.A NLCOMP')
         ('NLFAIL', 'RUN')
         >>> _test_helper2('PASS ERS.foo.A MODEL_BUILD\nPEND ERS.foo.A RUN\nFAIL ERS.foo.A NLCOMP')

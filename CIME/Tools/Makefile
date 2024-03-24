@@ -48,7 +48,7 @@ ifeq ($(strip $(SMP)),TRUE)
    THREADDIR = threads
    compile_threaded = TRUE
 else
-   ifeq ($(strip $(SMP_PRESENT)),TRUE)
+   ifeq ($(strip $(BUILD_THREADED)),TRUE)
       THREADDIR = threads
       compile_threaded = TRUE
    else
@@ -373,7 +373,13 @@ ifeq ($(strip $(MPILIB)), mpi-serial)
   MPIFC	  := $(SFC)
   MPICC	  := $(SCC)
   MPICXX  := $(SCXX)
-  CONFIG_ARGS += MCT_PATH=$(SHAREDLIBROOT)/$(SHAREDPATH)/mct/mpi-serial
+  ifndef MPI_SERIAL_PATH
+    CONFIG_ARGS += MCT_PATH=$(SHAREDLIBROOT)/$(SHAREDPATH)/mct/mpi-serial
+  else
+    CONFIG_ARGS += MCT_PATH=$(MPI_SERIAL_PATH)
+    INC_MPI := $(MPI_SERIAL_PATH)/include
+    LIB_MPI := $(MPI_SERIAL_PATH)/lib
+  endif
 else
   CC  := $(MPICC)
   FC  := $(MPIFC)
@@ -541,7 +547,7 @@ cospsimulator_intr.o: $(COSP_LIBDIR)/libcosp.a
 endif
 
 ifdef FV3CORE_LIBDIR
-$(FV3CORE_LIBDIR)/libfv3core.a: $(EXEROOT)/FMS/libfms.a
+$(FV3CORE_LIBDIR)/libfv3core.a: $(LIBROOT)/libfms.a
 	$(MAKE) -C $(FV3CORE_LIBDIR) complib COMPLIB='$(FV3CORE_LIBDIR)/libfv3core.a' F90='$(FC)' CC='$(CC)' FFLAGS='$(FFLAGS) $(FC_AUTO_R8)'  CFLAGS='$(CFLAGS)' INCLDIR='$(INCLDIR)' FC_TYPE='$(COMPILER)'
 
 dyn_grid.o: $(FV3CORE_LIBDIR)/libfv3core.a
@@ -561,8 +567,14 @@ ifdef MPAS_LIBDIR
 # this isn't necessary, since libmpas should never be an actual file (the library that is created
 # is named libmpas.a), but adding the PHONY declaration provides an extra bit of safety
 .PHONY: libmpas
+# The CASEROOT, COMPILER and MACH are added so that the Depends file could be visible to
+# the MPAS dycore.
+# The GPUFLAGS is added so that the GPU flags defined in ccs_config_cesm could also be
+# used to build the MPAS dycore if needed.
 libmpas: cam_abortutils.o physconst.o
-	$(MAKE) -C $(MPAS_LIBDIR) CC="$(CC)" FC="$(FC)" PIODEF="$(PIODEF)" FFLAGS='$(FREEFLAGS) $(FFLAGS)' \
+	$(MAKE) -C $(MPAS_LIBDIR) CC="$(CC)" FC="$(FC)" PIODEF="$(PIODEF)" \
+	FFLAGS='$(FREEFLAGS) $(FFLAGS)' GPUFLAGS='$(GPUFLAGS)' \
+	CASEROOT='$(CASEROOT)' COMPILER='$(COMPILER)' MACH='$(MACH)' \
 	FCINCLUDES='$(INCLDIR) $(INCS) -I$(ABS_INSTALL_SHAREDPATH)/include -I$(ABS_ESMF_PATH)/include'
 
 dyn_comp.o: libmpas
@@ -589,10 +601,12 @@ ifdef LAPACK_LIBDIR
    SLIBS += -L$(LAPACK_LIBDIR) -llapack -lblas
 endif
 ifdef LIB_MPI
-   ifndef MPI_LIB_NAME
-      SLIBS += -L$(LIB_MPI) -lmpi
-   else
-      SLIBS += -L$(LIB_MPI) -l$(MPI_LIB_NAME)
+   ifndef MPI_SERIAL_PATH
+     ifndef MPI_LIB_NAME
+	SLIBS += -L$(LIB_MPI) -lmpi
+     else
+	SLIBS += -L$(LIB_MPI) -l$(MPI_LIB_NAME)
+     endif
    endif
 endif
 
@@ -613,6 +627,9 @@ endif
 
 # Remove arch flag if it exists
 F90_LDFLAGS := $(filter-out -arch%,$(LDFLAGS))
+ifdef GPUFLAGS
+  F90_LDFLAGS += $(GPUFLAGS)
+endif
 
 # Machine stuff to appear last on the link step
 ifndef MLIBS
@@ -875,7 +892,7 @@ endif
 
 ifdef FV3CORE_LIBDIR
   ULIBDEP += $(FV3CORE_LIBDIR)/libfv3core.a
-  ULIBDEP += $(EXEROOT)/FMS/libfms.a
+  ULIBDEP += $(LIBROOT)/libfms.a
 endif
 
 ifdef MPAS_LIBDIR
@@ -910,12 +927,21 @@ GENF90 ?= $(CIMEROOT)/CIME/non_py/externals/genf90/genf90.pl
 .SUFFIXES: .F90 .F .f90 .f .c .cpp .o .in
 
 ifeq ($(MPILIB),mpi-serial)
-  MPISERIAL = $(INSTALL_SHAREDPATH)/lib/libmpi-serial.a
-  MLIBS += $(MPISERIAL)
-  CMAKE_OPTS += -DMPI_C_INCLUDE_PATH=$(INSTALL_SHAREDPATH)/include \
+  ifdef MPI_SERIAL_PATH
+    MPISERIAL = $(MPI_SERIAL_PATH)/lib/libmpi-serial.a
+    MLIBS += -L$(MPI_SERIAL_PATH)/lib -lmpi-serial
+    CMAKE_OPTS += -DMPI_C_INCLUDE_PATH=$(MPI_SERIAL_PATH)/include \
+      -DMPI_Fortran_INCLUDE_PATH=$(MPI_SERIAL_PATH)/include \
+      -DMPI_C_LIBRARIES=$(MPI_SERIAL_PATH)/lib/libmpi-serial.a \
+      -DMPI_Fortran_LIBRARIES=$(MPI_SERIAL_PATH)/lib/libmpi-serial.a
+  else
+    MPISERIAL = $(INSTALL_SHAREDPATH)/lib/libmpi-serial.a
+    MLIBS += -L$(INSTALL_SHAREDPATH)/lib -lmpi-serial
+    CMAKE_OPTS += -DMPI_C_INCLUDE_PATH=$(INSTALL_SHAREDPATH)/include \
       -DMPI_Fortran_INCLUDE_PATH=$(INSTALL_SHAREDPATH)/include \
       -DMPI_C_LIBRARIES=$(INSTALL_SHAREDPATH)/lib/libmpi-serial.a \
       -DMPI_Fortran_LIBRARIES=$(INSTALL_SHAREDPATH)/lib/libmpi-serial.a
+  endif
 endif
 
 $(MCTLIBS)  : $(MPISERIAL)

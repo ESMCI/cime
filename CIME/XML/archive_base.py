@@ -3,11 +3,39 @@ Base class for archive files.  This class inherits from generic_xml.py
 """
 from CIME.XML.standard_module_setup import *
 from CIME.XML.generic_xml import GenericXML
+from CIME.utils import convert_to_type
 
 logger = logging.getLogger(__name__)
 
 
 class ArchiveBase(GenericXML):
+    def exclude_testing(self, compname):
+        """
+        Checks if component should be excluded from testing.
+        """
+        value = self._get_attribute(compname, "exclude_testing")
+
+        if value is None:
+            return False
+
+        return convert_to_type(value, "logical")
+
+    def _get_attribute(self, compname, attr_name):
+        attrib = self.get_entry_attributes(compname)
+
+        if attrib is None:
+            return None
+
+        return attrib.get(attr_name, None)
+
+    def get_entry_attributes(self, compname):
+        entry = self.get_entry(compname)
+
+        if entry is None:
+            return None
+
+        return self.attrib(entry)
+
     def get_entry(self, compname):
         """
         Returns an xml node corresponding to compname in comp_archive_spec
@@ -117,7 +145,11 @@ class ArchiveBase(GenericXML):
                 ext = ext[:-1]
             string = model + r"\d?_?(\d{4})?\." + ext
             if has_suffix:
-                string += "." + suffix + "$"
+                if not suffix in string:
+                    string += r"\." + suffix + "$"
+
+                if not string.endswith("$"):
+                    string += "$"
 
             logger.debug("Regex is {}".format(string))
             pfile = re.compile(string)

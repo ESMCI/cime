@@ -24,6 +24,9 @@ Classes that inherit from this are REQUIRED to implement the following methods:
 (2) _case_two_setup
     This method will be called to set up case 2, the "test" case
 
+Note that the base class will always call case_setup(reset=True) on
+both case1 and case2 during setup.
+
 In addition, they MAY require the following methods:
 
 (1) _common_setup
@@ -45,7 +48,7 @@ In addition, they MAY require the following methods:
 """
 
 from CIME.XML.standard_module_setup import *
-from CIME.SystemTests.system_tests_common import SystemTestsCommon
+from CIME.SystemTests.system_tests_common import SystemTestsCommon, fix_single_exe_case
 from CIME.case import Case
 from CIME.config import Config
 from CIME.test_status import *
@@ -66,6 +69,8 @@ class SystemTestsCompareTwo(SystemTestsCommon):
         multisubmit=False,
         ignore_fieldlist_diffs=False,
         case_two_keep_init_generated_files=False,
+        dry_run=False,
+        **kwargs
     ):
         """
         Initialize a SystemTestsCompareTwo object. Individual test cases that
@@ -98,7 +103,7 @@ class SystemTestsCompareTwo(SystemTestsCommon):
                 is provided for the sake of specific tests, e.g., a test of the behavior
                 of running with init_generated_files in place.
         """
-        SystemTestsCommon.__init__(self, case)
+        SystemTestsCommon.__init__(self, case, **kwargs)
 
         self._separate_builds = separate_builds
         self._ignore_fieldlist_diffs = ignore_fieldlist_diffs
@@ -136,7 +141,9 @@ class SystemTestsCompareTwo(SystemTestsCommon):
         # _setup_cases_if_not_yet_done
         self._case2 = None
 
-        self._setup_cases_if_not_yet_done()
+        # Prevent additional setup_case calls when detecting support for `--single-exe`
+        if not dry_run:
+            self._setup_cases_if_not_yet_done()
 
         self._multisubmit = (
             multisubmit and self._case1.get_value("BATCH_SYSTEM") != "none"
@@ -548,12 +555,16 @@ class SystemTestsCompareTwo(SystemTestsCommon):
         # This assures that case one namelists are populated
         # and creates the case.test script
         self._case.case_setup(test_mode=False, reset=True)
+        fix_single_exe_case(self._case)
 
         # Set up case 2
         with self._case2:
             self._activate_case2()
             self._common_setup()
             self._case_two_setup()
+            self._case2.case_setup(test_mode=True, reset=True)
+
+        fix_single_exe_case(self._case2)
 
         # Go back to case 1 to ensure that's where we are for any following code
         self._activate_case1()

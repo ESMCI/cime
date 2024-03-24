@@ -22,7 +22,7 @@ module dead_methods_mod
   use NUOPC_Model  , only : NUOPC_ModelGet
   use shr_kind_mod , only : r8 => shr_kind_r8, cl=>shr_kind_cl, cs=>shr_kind_cs
   use shr_sys_mod  , only : shr_sys_abort
-  use shr_file_mod , only : shr_file_setlogunit, shr_file_getLogUnit
+  use shr_log_mod , only : shr_log_setlogunit, shr_log_getLogUnit
 
   implicit none
   private
@@ -157,7 +157,7 @@ contains
        logUnit = 6
     endif
 
-    call shr_file_setLogUnit (logunit)
+    call shr_log_setLogUnit (logunit)
 
     call ESMF_GridCompGet(gcomp, name=name, rc=rc)
     if (chkerr(rc,__LINE__,u_FILE_u)) return

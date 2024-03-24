@@ -44,7 +44,6 @@ default_short_term_archiving       True                     bool   If set to `Tr
 driver_choices                     ('mct', 'nuopc')         tuple  Sets the available driver choices for the model.
 driver_default                     nuopc                    str    Sets the default driver for the model.
 enable_smp                         True                     bool   If set to `True` then `SMP=` is added to model compile command.
-gpus_use_set_device_rank           True                     bool   If set to `True` and NGPUS_PER_NODE > 0 then `$RUNDIR/set_device_rank.sh` is appended when the MPI run command is generated.
 make_case_run_batch_script         False                    bool   If set to `True` and case is not a test then `case.run.sh` is created in case directory from `$MACHDIR/template.case.run.sh`.
 mct_path                           {srcroot}/libraries/mct  str    Sets the path to the mct library.
 serialize_sharedlib_builds         True                     bool   If set to `True` then the TestScheduler will use `proc_pool + 1` processors to build shared libraries otherwise a single processor is used.

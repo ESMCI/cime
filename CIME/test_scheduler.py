@@ -13,7 +13,7 @@ import traceback, stat, threading, time, glob
 from collections import OrderedDict
 
 from CIME.XML.standard_module_setup import *
-from CIME.get_tests import get_recommended_test_time, get_build_groups
+from CIME.get_tests import get_recommended_test_time, get_build_groups, is_perf_test
 from CIME.utils import (
     append_status,
     append_testlog,
@@ -209,6 +209,7 @@ class TestScheduler(object):
         single_exe=False,
         workflow=None,
         chksum=False,
+        force_rebuild=False,
     ):
         ###########################################################################
         self._cime_root = get_cime_root()
@@ -224,7 +225,11 @@ class TestScheduler(object):
         self._input_dir = input_dir
         self._pesfile = pesfile
         self._allow_baseline_overwrite = allow_baseline_overwrite
-        self._allow_pnl = allow_pnl
+        self._single_exe = single_exe
+        if self._single_exe:
+            self._allow_pnl = True
+        else:
+            self._allow_pnl = allow_pnl
         self._non_local = non_local
         self._build_groups = []
         self._workflow = workflow
@@ -287,6 +292,7 @@ class TestScheduler(object):
         )
 
         self._clean = clean
+
         self._namelists_only = namelists_only
 
         self._walltime = walltime
@@ -392,6 +398,9 @@ class TestScheduler(object):
         if use_existing:
             for test in self._tests:
                 with TestStatus(self._get_test_dir(test)) as ts:
+                    if force_rebuild:
+                        ts.set_status(SHAREDLIB_BUILD_PHASE, TEST_PEND_STATUS)
+
                     for phase, status in ts:
                         if phase in CORE_PHASES:
                             if status in [TEST_PEND_STATUS, TEST_FAIL_STATUS]:
@@ -661,8 +670,17 @@ class TestScheduler(object):
                     pesize = case_opt[1:]
                     create_newcase_cmd += " --pecount {}".format(pesize)
                 elif case_opt.startswith("G"):
-                    ngpus_per_node = case_opt[1:]
-                    create_newcase_cmd += " --ngpus-per-node {}".format(ngpus_per_node)
+                    if "-" in case_opt:
+                        ngpus_per_node, gpu_type, gpu_offload = case_opt[1:].split("-")
+                    else:
+                        error = "GPU test argument format is ngpus_per_node-gpu_type-gpu_offload"
+                        self._log_output(test, error)
+                        return False, error
+                    create_newcase_cmd += (
+                        " --ngpus-per-node {} --gpu-type {} --gpu-offload {}".format(
+                            ngpus_per_node, gpu_type, gpu_offload
+                        )
+                    )
                 elif case_opt.startswith("V"):
                     self._cime_driver = case_opt[1:]
                     create_newcase_cmd += " --driver {}".format(self._cime_driver)
@@ -949,7 +967,10 @@ class TestScheduler(object):
                 )
             envtest.set_initial_values(case)
             case.set_value("TEST", True)
-            case.set_value("SAVE_TIMING", self._save_timing)
+            if is_perf_test(test):
+                case.set_value("SAVE_TIMING", True)
+            else:
+                case.set_value("SAVE_TIMING", self._save_timing)
 
             # handle single-exe here, all cases will use the EXEROOT from
             # the first case in the build group
@@ -994,6 +1015,17 @@ class TestScheduler(object):
                 cmdstat in [0, TESTS_FAILED_ERR_CODE],
                 "Fatal error in case.cmpgen_namelists: {}".format(output),
             )
+
+        if self._single_exe:
+            with Case(self._get_test_dir(test), read_only=False) as case:
+                tests = Tests()
+
+                try:
+                    tests.support_single_exe(case)
+                except Exception:
+                    self._update_test_status_file(test, SETUP_PHASE, TEST_FAIL_STATUS)
+
+                    raise
 
         return rv
 

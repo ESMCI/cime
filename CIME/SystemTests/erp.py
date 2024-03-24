@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 class ERP(RestartTest):
-    def __init__(self, case):
+    def __init__(self, case, **kwargs):
         """
         initialize a test object
         """
@@ -26,6 +26,7 @@ class ERP(RestartTest):
             run_two_suffix="rest",
             run_one_description="initial",
             run_two_description="restart",
+            **kwargs
         )
 
     def _case_two_setup(self):
@@ -41,10 +42,6 @@ class ERP(RestartTest):
                 self._case.set_value("ROOTPE_{}".format(comp), int(rootpe / 2))
 
         RestartTest._case_two_setup(self)
-        self._case.case_setup(test_mode=True, reset=True)
-        # Note, some components, like CESM-CICE, have
-        # decomposition information in env_build.xml that
-        # needs to be regenerated for the above new tasks and thread counts
 
     def _case_one_custom_postrun_action(self):
         self.copy_case1_restarts_to_case2()

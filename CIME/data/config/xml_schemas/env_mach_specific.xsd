@@ -9,7 +9,9 @@
 <xs:attribute name="PIO_VERSION" type="xs:integer"/>
 <xs:attribute name="mpilib" type="xs:string"/>
 <xs:attribute name="comp_interface" type="xs:string"/>
-<xs:attribute name="SMP_PRESENT" type="xs:string"/>
+<xs:attribute name="gpu_type" type="xs:string"/>
+<xs:attribute name="gpu_offload" type="xs:string"/>
+<xs:attribute name="BUILD_THREADED" type="xs:string"/>
 <xs:attribute name="value" type="xs:string"/>
 <xs:attribute name="unit_testing" type="xs:boolean"/>
 <xs:attribute name="queue" type="xs:string"/>
@@ -102,6 +104,8 @@
       <xs:attribute ref="PIO_VERSION" />
       <xs:attribute ref="mpilib"/>
       <xs:attribute ref="comp_interface"/>
+      <xs:attribute ref="gpu_type"/>
+      <xs:attribute ref="gpu_offload"/>
     </xs:complexType>
   </xs:element>
 
@@ -134,7 +138,7 @@
       <xs:attribute ref="mpilib"/>
       <xs:attribute ref="compiler"/>
       <xs:attribute ref="unit_testing"/>
-      <xs:attribute ref="SMP_PRESENT"/>
+      <xs:attribute ref="BUILD_THREADED"/>
     </xs:complexType>
   </xs:element>
   <xs:element name="resource">

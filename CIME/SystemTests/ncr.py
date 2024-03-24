@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 class NCR(SystemTestsCompareTwo):
-    def __init__(self, case):
+    def __init__(self, case, **kwargs):
         """
         initialize an NCR test
         """
@@ -26,6 +26,7 @@ class NCR(SystemTestsCompareTwo):
             run_two_suffix="singleinst",
             run_one_description="two instances, each with the same number of tasks",
             run_two_description="default build",
+            **kwargs
         )
 
     def _comp_classes(self):
