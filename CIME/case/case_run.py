@@ -316,9 +316,14 @@ def _post_run_check(case, lid):
             cpl_logs.append(
                 os.path.join(rundir, file_prefix + "_%04d.log." % (inst + 1) + lid)
             )
+            if driver == "nuopc" and comp_standalone:
+                cpl_logs.append(
+                    os.path.join(rundir, "med_%04d.log." % (inst + 1) + lid)
+                )
     else:
         cpl_logs = [os.path.join(rundir, file_prefix + ".log." + lid)]
-
+        if driver == "nuopc" and comp_standalone:
+            cpl_logs.append(os.path.join(rundir, "med.log." + lid))
     cpl_logfile = cpl_logs[0]
     # find the last model.log and cpl.log
     model_logfile = os.path.join(rundir, model + ".log." + lid)
