@@ -153,6 +153,8 @@ class GitHubPaginate:
 
         logger.info(f"Processing {len(data)} containers")
 
+        logger.info(f"Expiration date set to {self.expired}")
+
         for x in data:
             url = x["url"]
             updated_at = datetime.strptime(x["updated_at"], "%Y-%m-%dT%H:%M:%SZ")
@@ -165,33 +167,46 @@ class GitHubPaginate:
                 logger.info(f'Found untagged version {x["id"]}')
 
                 if self.untagged:
-                    logger.info(f'Pruning {x["id"]}, untagged')
+                    logger.info(f'Pruning version {x["id"]}')
 
                     results.append(url)
 
                 continue
+
+            # Any tag that is still valid will cause a pacakge version to not be removed
+            remove_package_version = True
 
             for tag in tags:
                 if self.filter_pr and tag.startswith(self.pr_prefix):
                     pr_number = tag[len(self.pr_prefix) :]
 
                     if self.is_pr_open(pr_number):
-                        logger.info(f"Skipping {tag}, PR is still open")
+                        logger.info(
+                            f"Skipping package version {x['id']}, PR {pr_number} is still open"
+                        )
 
-                        continue
-                elif not self.filter.match(tag):
-                    logger.info(f"Skipping {tag}, did not match filter")
+                        remove_package_version = False
 
-                    continue
-
-                if updated_at < self.expired:
+                        break
+                elif self.filter.match(tag) and updated_at > self.expired:
                     logger.info(
-                        f"Pruning {tag}, updated at {updated_at}, expiration {self.expired}"
+                        f"Skipping package version {x['id']}, tag {tag!r} matched but was updated at {updated_at}"
                     )
 
-                    results.append(url)
+                    remove_package_version = False
+
+                    break
                 else:
-                    logger.info(f"Skipping {tag}, more recent than {self.expired}")
+                    logger.info(f"Skipping package version {x['id']}, tag {tag!r}")
+
+                    remove_package_version = False
+
+                    break
+
+            if remove_package_version:
+                logger.info(f"Pruning package version {x['id']}")
+
+                results.append(url)
 
         return results
 
