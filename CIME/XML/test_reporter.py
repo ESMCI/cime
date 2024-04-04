@@ -76,7 +76,7 @@ class TestReporter(GenericXML):
         os.system("stty echo")
         print()
         params = {"username": username, "password": password, "testXML": xmlstr}
-        url = "https://csegweb.cgd.ucar.edu/testdb/cgi-bin/processXMLtest.cgi"
+        url = "https://cseg.cgd.ucar.edu/testdb/cgi-bin/processXMLtest.cgi"
         data = urllib.parse.urlencode(params)
         data = data.encode("ascii")
         req = urllib.request.Request(url, data)
