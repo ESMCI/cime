@@ -131,10 +131,10 @@ class SystemTestsCommon(object):
         env_run.xml file. If it does exist, restore values changed in a previous
         run of the test.
         """
-        if is_locked("env_run.orig.xml"):
+        if is_locked("env_run.orig.xml", caseroot):
             self.compare_env_run(expected=expected)
         elif os.path.isfile(os.path.join(caseroot, "env_run.xml")):
-            lock_file("env_run.xml", caseroot=caseroot, newname="env_run.orig.xml")
+            lock_file("env_run.xml", caseroot, newname="env_run.orig.xml")
 
     def _resetup_case(self, phase, reset=False):
         """

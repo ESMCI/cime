@@ -9,7 +9,12 @@ submit, check_case and check_da_settings are members of class Case in file case.
 import configparser
 from CIME.XML.standard_module_setup import *
 from CIME.utils import expect, run_and_log_case_status, CIMEError, get_time_in_seconds
-from CIME.locked_files import unlock_file, lock_file
+from CIME.locked_files import (
+    unlock_file,
+    lock_file,
+    check_lockedfile,
+    check_lockedfiles,
+)
 from CIME.test_status import *
 
 logger = logging.getLogger(__name__)
@@ -95,15 +100,14 @@ def _submit(
         batch_system = env_batch.get_batch_system_type()
 
     if batch_system != case.get_value("BATCH_SYSTEM"):
-        unlock_file(os.path.basename(env_batch.filename), caseroot=caseroot)
+        unlock_file(os.path.basename(env_batch.filename), caseroot)
+
         case.set_value("BATCH_SYSTEM", batch_system)
 
     env_batch_has_changed = False
     if not external_workflow:
         try:
-            case.check_lockedfile(
-                os.path.basename(env_batch.filename), caseroot=caseroot
-            )
+            check_lockedfile(case, os.path.basename(env_batch.filename))
         except:
             env_batch_has_changed = True
 
@@ -116,8 +120,10 @@ manual edits to these file will be lost!
 """
         )
         env_batch.make_all_batch_files(case)
+
     case.flush()
-    lock_file(os.path.basename(env_batch.filename), caseroot=caseroot)
+
+    lock_file(os.path.basename(env_batch.filename), caseroot)
 
     if resubmit:
         # This is a resubmission, do not reinitialize test values
@@ -143,7 +149,7 @@ manual edits to these file will be lost!
 
         env_batch_has_changed = False
         try:
-            case.check_lockedfile(os.path.basename(env_batch.filename))
+            check_lockedfile(case, os.path.basename(env_batch.filename))
         except CIMEError:
             env_batch_has_changed = True
 
@@ -157,10 +163,12 @@ manual edits to these file will be lost!
             )
             env_batch.make_all_batch_files(case)
 
-        unlock_file(os.path.basename(env_batch.filename), caseroot=caseroot)
-        lock_file(os.path.basename(env_batch.filename), caseroot=caseroot)
+        unlock_file(os.path.basename(env_batch.filename), caseroot)
+
+        lock_file(os.path.basename(env_batch.filename), caseroot)
 
         case.check_case(skip_pnl=skip_pnl, chksum=chksum)
+
         if job == case.get_primary_job():
             case.check_DA_settings()
 
@@ -287,7 +295,8 @@ def submit(
 
 
 def check_case(self, skip_pnl=False, chksum=False):
-    self.check_lockedfiles()
+    check_lockedfiles(self)
+
     if not skip_pnl:
         self.create_namelists()  # Must be called before check_all_input_data
 
