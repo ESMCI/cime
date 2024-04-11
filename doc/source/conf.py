@@ -207,11 +207,7 @@ html_context["display_lower_left"] = True
 
 html_context["current_language"] = language
 
-from git import Repo
-
-repo = Repo(search_parent_directories=True)
-
-current_version = repo.active_branch.name
+current_version = "master"
 
 html_context["current_version"] = current_version
 html_context["version"] = current_version

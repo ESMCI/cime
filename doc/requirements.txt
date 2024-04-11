@@ -1,5 +1,4 @@
 sphinx
 sphinxcontrib-programoutput
 sphinx-rtd-theme
-gitpython
 evv4esm
