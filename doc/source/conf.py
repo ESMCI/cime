@@ -212,10 +212,18 @@ current_version = "master"
 html_context["current_version"] = current_version
 html_context["version"] = current_version
 
-html_context["versions"] = (
-    ("master", "versions/master"),
-    ("CESM2.2", "versions/cesm2.2"),
-    ("CESM2.1 (cime5.6)", "versions/maint-5.6"),
-    ("ufs_release_v1.1", "versions/ufs_release_v1.1"),
-    ("ufs_release_v1.0", "versions/ufs_release_v1.0"),
+# List of name pairs (display, directory)
+versions = (
+    ("master", "master"),
+    ("CESM2.2", "cesm2.2."),
+    ("CESM2.1 (cime5.6)", "maint-5.6"),
+    ("ufs_release_v1.1", "ufs_release_v1.1"),
+    ("ufs_release_v1.0", "ufs_release_v1.0"),
 )
+
+html_context["versions"] = list()
+
+for display, directory in versions:
+    html_context["versions"].append(
+        (display, "../../../versions/" + directory + "/html")
+    )
