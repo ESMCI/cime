@@ -215,7 +215,7 @@ html_context["version"] = current_version
 # List of name pairs (display, directory)
 versions = (
     ("master", "master"),
-    ("CESM2.2", "cesm2.2."),
+    ("CESM2.2", "cesm2.2"),
     ("CESM2.1 (cime5.6)", "maint-5.6"),
     ("ufs_release_v1.1", "ufs_release_v1.1"),
     ("ufs_release_v1.0", "ufs_release_v1.0"),
