@@ -1,0 +1,19 @@
+CIME.data package
+=================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   CIME.data.config
+   CIME.data.templates
+
+Module contents
+---------------
+
+.. automodule:: CIME.data
+   :members:
+   :undoc-members:
+   :show-inheritance:
