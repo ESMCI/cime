@@ -15,7 +15,6 @@ class TestLockedFiles(unittest.TestCase):
 
             src_case.set_value("USER", "root")
 
-            breakpoint()
             src_case.write(force_write=True)
 
     def test_is_locked(self):
