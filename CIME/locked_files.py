@@ -77,14 +77,12 @@ def check_lockedfiles(case, skip=None):
         if filename.count(".") > 1 or any([filename.startswith(x) for x in skip]):
             continue
 
-        env_name, diff = diff_lockedfile(case, caseroot, filename)
-
-        if diff:
-            check_diff(case, filename, env_name, diff)
+        check_lockedfile(case, filename, caseroot=caseroot)
 
 
-def check_lockedfile(case, filebase):
-    caseroot = case.get_value("CASEROOT")
+def check_lockedfile(case, filebase, caseroot=None):
+    if caseroot is None:
+        caseroot = case.get_value("CASEROOT")
 
     env_name, diff = diff_lockedfile(case, caseroot, filebase)
 
@@ -102,6 +100,17 @@ def diff_lockedfile(case, caseroot, filename):
     if not locked_file.is_file():
         return env_name, {}
 
+    try:
+        l_env, r_env = _get_case_env(case, caseroot, locked_file, env_name)
+    except NameError as e:
+        logger.warning(e)
+
+        return env_name, {}
+
+    return env_name, l_env.compare_xml(r_env)
+
+
+def _get_case_env(case, caseroot, locked_file, env_name):
     if env_name == "env_build":
         l_env = case.get_env("build")
         r_env = EnvBuild(caseroot, str(locked_file), read_only=True)
@@ -120,13 +129,13 @@ def diff_lockedfile(case, caseroot, filename):
         l_env = case.get_env("batch")
         r_env = EnvBatch(caseroot, str(locked_file), read_only=True)
     else:
-        logger.warning(
-            "Locked XML file {!r} is not currently being handled".format(filename)
+        raise NameError(
+            "Locked XML file {!r} is not currently being handled".format(
+                locked_file.name
+            )
         )
 
-        return env_name, {}
-
-    return env_name, l_env.compare_xml(r_env)
+    return l_env, r_env
 
 
 def check_diff(case, filename, env_name, diff):
