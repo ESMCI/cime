@@ -16,6 +16,18 @@ logger = logging.getLogger(__name__)
 # data.
 GRID_SEP = ":"
 
+# elements of a valid grid long name
+grid_prefix = {
+    "atm": "a%",
+    "lnd": "l%",
+    "ocnice": "oi%",
+    "rof": "r%",
+    "wav": "w%",
+    "glc": "g%",
+    "mask": "m%",
+    "iac": "z%",
+}
+
 
 class Grids(GenericXML):
     def __init__(self, infile=None, files=None, comp_interface=None):
@@ -77,7 +89,11 @@ class Grids(GenericXML):
             name = levmatch.group(1) + levmatch.group(2) + levmatch.group(4)
 
         # determine component_grids dictionary and grid longname
-        lname = self._read_config_grids(name, compset, atmnlev, lndnlev)
+        if self._valid_lname(name):
+            lname = name
+        else:
+            lname = self._read_config_grids(name, compset, atmnlev, lndnlev)
+
         gridinfo["GRID"] = lname
         component_grids = _ComponentGrids(lname)
 
@@ -93,6 +109,17 @@ class Grids(GenericXML):
         component_grids.check_num_elements(gridinfo)
 
         return gridinfo
+
+    def _valid_lname(self, name):
+        """
+        check if the grid long name is valid
+        """
+        valid = True
+        for comp in self._comp_gridnames:
+            if not (grid_prefix[comp] in name):
+                valid = False
+                break
+        return valid
 
     def _read_config_grids(self, name, compset, atmnlev, lndnlev):
         """
@@ -186,24 +213,12 @@ class Grids(GenericXML):
         else:
             model_grid["mask"] = model_grid["ocnice"]
 
-        # determine component grids and associated required domains and gridmaps
-        # TODO: this should be in XML, not here
-        prefix = {
-            "atm": "a%",
-            "lnd": "l%",
-            "ocnice": "oi%",
-            "rof": "r%",
-            "wav": "w%",
-            "glc": "g%",
-            "mask": "m%",
-            "iac": "z%",
-        }
         lname = ""
         for component_gridname in self._comp_gridnames:
             if lname:
-                lname = lname + "_" + prefix[component_gridname]
+                lname = lname + "_" + grid_prefix[component_gridname]
             else:
-                lname = prefix[component_gridname]
+                lname = grid_prefix[component_gridname]
             if model_grid[component_gridname] is not None:
                 lname += model_grid[component_gridname]
                 if component_gridname == "atm" and atmnlev is not None:
