@@ -1,9 +1,5 @@
 name: Prune ghcr.io container images
 on:
-  schedule:
-    # run once a day
-    - cron: '0 2 * * *'
-
   workflow_dispatch:
 
 permissions: {}
