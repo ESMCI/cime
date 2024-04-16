@@ -27,11 +27,11 @@ def get_pertlim_uf(rand_num):
        k = (i - 1)%100
        if i%2 != 0:
           ll = j + (k/2)*18
-          ippt = '{0:03d}'.format(ll)
+          ippt = '{0:03d}'.format(int(ll))
           ptlim = "0."+ippt+"d-13"
        else:
           ll = j + ((k-1)/2)*18
-          ippt = '{0:03d}'.format(ll)
+          ippt = '{0:03d}'.format(int(ll))
           ptlim = "-0."+ippt+"d-13"
     return ptlim 
 

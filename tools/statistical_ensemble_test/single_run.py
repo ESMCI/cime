@@ -307,7 +307,7 @@ def single_case(opts_dict, case_flags, stat_dir):
                 f.write(text2)
                 f.write(text3)
                 if opts_dict['pertlim'] != "0":
-                    text = "\npertlim = " + opts_dict['pertlim']
+                    text = "\npertlim = " + str(opts_dict['pertlim'])
                     f.write(text)
         else:
             print("Warning: no user_nl_cam found")
