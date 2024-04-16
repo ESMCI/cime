@@ -75,6 +75,12 @@ OR
     )
 
     parser.add_argument(
+        "--ignore-diffs",
+        action="store_true",
+        help="Do not fail a test if the only problem is diffing history files",
+    )
+
+    parser.add_argument(
         "--ignore-memleak",
         action="store_true",
         help="Do not fail a test if the only problem is a memleak",
@@ -122,6 +128,7 @@ OR
         args.check_throughput,
         args.check_memory,
         args.ignore_namelist_diffs,
+        args.ignore_diffs,
         args.ignore_memleak,
         args.cdash_build_name,
         args.cdash_project,
@@ -142,6 +149,7 @@ def _main_func(description):
         check_throughput,
         check_memory,
         ignore_namelist_diffs,
+        ignore_diffs,
         ignore_memleak,
         cdash_build_name,
         cdash_project,
@@ -160,6 +168,7 @@ def _main_func(description):
             check_throughput=check_throughput,
             check_memory=check_memory,
             ignore_namelists=ignore_namelist_diffs,
+            ignore_diffs=ignore_diffs,
             ignore_memleak=ignore_memleak,
             cdash_build_name=cdash_build_name,
             cdash_project=cdash_project,

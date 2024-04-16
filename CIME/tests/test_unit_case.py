@@ -23,18 +23,10 @@ class TestCaseSubmit(unittest.TestCase):
     def test_check_case(self):
         case = mock.MagicMock()
         # get_value arguments TEST, COMP_WAV, COMP_INTERFACE, BUILD_COMPLETE
-        case.get_value.side_effect = [False, "", "", True]
+        case.get_value.side_effect = ["", "", True]
         case_submit.check_case(case, chksum=True)
 
         case.check_all_input_data.assert_called_with(chksum=True)
-
-    def test_check_case_test(self):
-        case = mock.MagicMock()
-        # get_value arguments TEST, COMP_WAV, COMP_INTERFACE, BUILD_COMPLETE
-        case.get_value.side_effect = [True, "", "", True]
-        case_submit.check_case(case, chksum=True)
-
-        case.check_all_input_data.assert_not_called()
 
     @mock.patch("CIME.case.case_submit.lock_file")
     @mock.patch("CIME.case.case_submit.unlock_file")

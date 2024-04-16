@@ -263,6 +263,7 @@ class Machines(GenericXML):
 
         children = [y for x in nodes for y in self.get_children(root=x)]
 
+        machine = None
         for child in children:
             machtocheck = self.get(child, "MACH")
             regex_str = self.text(child)

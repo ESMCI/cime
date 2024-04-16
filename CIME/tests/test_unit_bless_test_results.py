@@ -10,7 +10,7 @@ from CIME.bless_test_results import (
     _bless_memory,
     bless_history,
     bless_namelists,
-    is_bless_needed,
+    is_hist_bless_needed,
 )
 
 
@@ -469,7 +469,7 @@ class TestUnitBlessTestResults(unittest.TestCase):
 
         ts = TestStatus.return_value
         ts.get_name.return_value = "SMS.f19_g16.S.docker_gnu"
-        ts.get_overall_test_status.return_value = ("PASS", "RUN")
+        ts.get_overall_test_status.return_value = ("DIFF", "MEMCOMP")
         ts.get_status.side_effect = ["PASS", "PASS", "FAIL", "FAIL"]
 
         case = Case.return_value.__enter__.return_value
@@ -508,7 +508,7 @@ class TestUnitBlessTestResults(unittest.TestCase):
 
         ts = TestStatus.return_value
         ts.get_name.return_value = "SMS.f19_g16.S.docker_gnu"
-        ts.get_overall_test_status.return_value = ("PASS", "RUN")
+        ts.get_overall_test_status.return_value = ("DIFF", "TPUTCOMP")
         ts.get_status.side_effect = ["PASS", "PASS", "FAIL", "FAIL"]
 
         case = Case.return_value.__enter__.return_value
@@ -950,7 +950,7 @@ class TestUnitBlessTestResults(unittest.TestCase):
 
         broken_blesses = []
 
-        needed = is_bless_needed(
+        needed = is_hist_bless_needed(
             "SMS.f19_g16.A", ts, broken_blesses, "PASS", True, "RUN"
         )
 
@@ -965,7 +965,7 @@ class TestUnitBlessTestResults(unittest.TestCase):
 
         broken_blesses = []
 
-        needed = is_bless_needed(
+        needed = is_hist_bless_needed(
             "SMS.f19_g16.A", ts, broken_blesses, "FAIL", False, "RUN"
         )
 
@@ -978,7 +978,7 @@ class TestUnitBlessTestResults(unittest.TestCase):
 
         broken_blesses = []
 
-        needed = is_bless_needed(
+        needed = is_hist_bless_needed(
             "SMS.f19_g16.A", ts, broken_blesses, "PASS", False, "RUN"
         )
 
@@ -993,7 +993,7 @@ class TestUnitBlessTestResults(unittest.TestCase):
 
         broken_blesses = []
 
-        needed = is_bless_needed(
+        needed = is_hist_bless_needed(
             "SMS.f19_g16.A", ts, broken_blesses, "PASS", False, "RUN"
         )
 
@@ -1006,7 +1006,7 @@ class TestUnitBlessTestResults(unittest.TestCase):
 
         broken_blesses = []
 
-        needed = is_bless_needed(
+        needed = is_hist_bless_needed(
             "SMS.f19_g16.A", ts, broken_blesses, "PASS", False, "RUN"
         )
 
@@ -1019,7 +1019,7 @@ class TestUnitBlessTestResults(unittest.TestCase):
 
         broken_blesses = []
 
-        needed = is_bless_needed(
+        needed = is_hist_bless_needed(
             "SMS.f19_g16.A", ts, broken_blesses, "PASS", False, "RUN"
         )
 

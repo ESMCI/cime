@@ -10,6 +10,8 @@ from CIME.get_timing import get_timing
 
 import shutil, time, sys, os, glob
 
+TERMINATION_TEXT = ("HAS ENDED", "END OF MODEL RUN", "SUCCESSFUL TERMINATION")
+
 logger = logging.getLogger(__name__)
 
 ###############################################################################
@@ -314,9 +316,14 @@ def _post_run_check(case, lid):
             cpl_logs.append(
                 os.path.join(rundir, file_prefix + "_%04d.log." % (inst + 1) + lid)
             )
+            if driver == "nuopc" and comp_standalone:
+                cpl_logs.append(
+                    os.path.join(rundir, "med_%04d.log." % (inst + 1) + lid)
+                )
     else:
         cpl_logs = [os.path.join(rundir, file_prefix + ".log." + lid)]
-
+        if driver == "nuopc" and comp_standalone:
+            cpl_logs.append(os.path.join(rundir, "med.log." + lid))
     cpl_logfile = cpl_logs[0]
     # find the last model.log and cpl.log
     model_logfile = os.path.join(rundir, model + ".log." + lid)
@@ -331,13 +338,7 @@ def _post_run_check(case, lid):
                 break
             with open(cpl_logfile, "r") as fd:
                 logfile = fd.read()
-                if (
-                    comp_standalone
-                    and "HAS ENDED" in logfile
-                    or "END OF MODEL RUN" in logfile
-                ):
-                    count_ok += 1
-                elif not comp_standalone and "SUCCESSFUL TERMINATION" in logfile:
+                if any([x in logfile for x in TERMINATION_TEXT]):
                     count_ok += 1
         if count_ok < cpl_ninst:
             expect(False, "Model did not complete - see {} \n ".format(cpl_logfile))
