@@ -814,7 +814,7 @@ If you want this test to be part of a suite, then it must be described in the re
       Object.keys(data).forEach(function(key) {
         let value = data[key];
 
-        let item = `<dd><a href="${baseUri}/versions/${key}/html/">${value}</a></dd>`
+        let item = `<dd><a href="${baseUri[1]}/versions/${key}/html/">${value}</a></dd>`
 
         versionElement.append(item);
       });

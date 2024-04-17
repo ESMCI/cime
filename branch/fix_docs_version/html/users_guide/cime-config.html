@@ -230,7 +230,7 @@ case.  The cmake macro files are examined in the following order, with later fil
       Object.keys(data).forEach(function(key) {
         let value = data[key];
 
-        let item = `<dd><a href="${baseUri}/versions/${key}/html/">${value}</a></dd>`
+        let item = `<dd><a href="${baseUri[1]}/versions/${key}/html/">${value}</a></dd>`
 
         versionElement.append(item);
       });
