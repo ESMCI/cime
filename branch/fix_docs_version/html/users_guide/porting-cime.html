@@ -314,13 +314,13 @@ intermittently, such as at the end of the month.</p>
   <script type="text/javascript">
     $.get("../../../versions/versions.json", function(data) {
       let versionElement = $("#versions");
-      let baseUriRegex = /(.*\/cime\/versions).*/g;
+      let baseUriRegex = /(.*\/cime).*/g;
       let baseUri = baseUriRegex.exec(document.baseURI);
 
       Object.keys(data).forEach(function(key) {
         let value = data[key];
 
-        let item = `<dd><a href="${baseUri}/${key}/html/">${value}</a></dd>`
+        let item = `<dd><a href="${baseUri}/versions/${key}/html/">${value}</a></dd>`
 
         versionElement.append(item);
       });
