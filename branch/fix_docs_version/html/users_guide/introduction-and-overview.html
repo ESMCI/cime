@@ -312,7 +312,11 @@ For variables that can be set in more than one way, the order of precedence is:<
 
   <script type="text/javascript">
     $.get("../../../versions/versions.json", function(data) {
-      console.log(data);
+      let versionElement = $("#versions");
+      console.log(versionElement);
+      Object.keys(data).forEach(function(key) {
+        console.log(key);
+      });
     });
   </script>
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
@@ -323,6 +327,7 @@ For variables that can be set in more than one way, the order of precedence is:<
     </span>
     <div class="rst-other-versions">
       
+      <dl id="versions" />
       
       <dl>
         <dt>Versions</dt>

@@ -312,7 +312,11 @@ To enable this, you will need to do the following:</p>
 
   <script type="text/javascript">
     $.get("../../../versions/versions.json", function(data) {
-      console.log(data);
+      let versionElement = $("#versions");
+      console.log(versionElement);
+      Object.keys(data).forEach(function(key) {
+        console.log(key);
+      });
     });
   </script>
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
@@ -323,6 +327,7 @@ To enable this, you will need to do the following:</p>
     </span>
     <div class="rst-other-versions">
       
+      <dl id="versions" />
       
       <dl>
         <dt>Versions</dt>

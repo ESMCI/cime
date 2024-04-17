@@ -501,7 +501,11 @@ To see the result of your change, call <a class="reference external" href="../To
 
   <script type="text/javascript">
     $.get("../../../versions/versions.json", function(data) {
-      console.log(data);
+      let versionElement = $("#versions");
+      console.log(versionElement);
+      Object.keys(data).forEach(function(key) {
+        console.log(key);
+      });
     });
   </script>
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
@@ -512,6 +516,7 @@ To see the result of your change, call <a class="reference external" href="../To
     </span>
     <div class="rst-other-versions">
       
+      <dl id="versions" />
       
       <dl>
         <dt>Versions</dt>

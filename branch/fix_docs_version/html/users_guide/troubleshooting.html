@@ -235,7 +235,11 @@ Also note that answers will change slightly, so if the error arises from a rare 
 
   <script type="text/javascript">
     $.get("../../../versions/versions.json", function(data) {
-      console.log(data);
+      let versionElement = $("#versions");
+      console.log(versionElement);
+      Object.keys(data).forEach(function(key) {
+        console.log(key);
+      });
     });
   </script>
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
@@ -246,6 +250,7 @@ Also note that answers will change slightly, so if the error arises from a rare 
     </span>
     <div class="rst-other-versions">
       
+      <dl id="versions" />
       
       <dl>
         <dt>Versions</dt>

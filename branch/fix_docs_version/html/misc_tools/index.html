@@ -154,7 +154,11 @@ tools that are necessary and/or useful when building a climate model.  Guides fo
 
   <script type="text/javascript">
     $.get("../../../versions/versions.json", function(data) {
-      console.log(data);
+      let versionElement = $("#versions");
+      console.log(versionElement);
+      Object.keys(data).forEach(function(key) {
+        console.log(key);
+      });
     });
   </script>
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
@@ -165,6 +169,7 @@ tools that are necessary and/or useful when building a climate model.  Guides fo
     </span>
     <div class="rst-other-versions">
       
+      <dl id="versions" />
       
       <dl>
         <dt>Versions</dt>
