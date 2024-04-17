@@ -1,5 +1,10 @@
 {% if READTHEDOCS or display_lower_left %}
 {# Add rst-badge after rst-versions for small badge style. #}
+  <script type="text/javascript">
+    $.get("../../versions.json", function(data) {
+      console.log(data);
+    });
+  </script>
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Read the Docs</span>
