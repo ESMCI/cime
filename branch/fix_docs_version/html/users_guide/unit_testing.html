@@ -515,19 +515,23 @@ documentation about how to use the CIME unit test infrastructure (in the
 
   <script type="text/javascript">
     let baseUriRegex = /(.*\/cime).*/g;
-    let baseUri = baseUriRegex.exec(document.baseURI);
+    let parsedUri = baseUriRegex.exec(document.baseURI);
 
-    $.get(`${baseUri}/versions/versions.json`, function(data) {
-      let versionElement = $("#versions");
+    if (parsedUri != null && parsedUri.length == 2) {
+      let baseUri = parsedUri[0];
 
-      Object.keys(data).forEach(function(key) {
-        let value = data[key];
+      $.get(`${baseUri}/versions/versions.json`, function(data) {
+        let versionElement = $("#versions");
 
-        let item = `<dd><a href="${baseUri[1]}/versions/${key}/html/">${value}</a></dd>`
+        Object.keys(data).forEach(function(key) {
+          let value = data[key];
 
-        versionElement.append(item);
+          let item = `<dd><a href="${baseUri}/versions/${key}/html/">${value}</a></dd>`
+
+          versionElement.append(item);
+        });
       });
-    });
+    }
   </script>
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
