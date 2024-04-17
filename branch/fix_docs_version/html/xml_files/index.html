@@ -157,6 +157,8 @@ in the CIMEROOT/config/xml_schemas directory that can be used with
       let baseUriRegex = /(.*\/cime).*/g;
       let baseUri = baseUriRegex.exec(document.baseURI);
 
+      console.log(baseUri);
+
       Object.keys(data).forEach(function(key) {
         let value = data[key];
 

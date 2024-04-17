@@ -811,6 +811,8 @@ If you want this test to be part of a suite, then it must be described in the re
       let baseUriRegex = /(.*\/cime).*/g;
       let baseUri = baseUriRegex.exec(document.baseURI);
 
+      console.log(baseUri);
+
       Object.keys(data).forEach(function(key) {
         let value = data[key];
 

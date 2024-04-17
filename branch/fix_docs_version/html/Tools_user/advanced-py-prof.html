@@ -196,6 +196,8 @@ FileNotFoundError: [Errno 2] No such file or directory: &#39;basename&#39;
       let baseUriRegex = /(.*\/cime).*/g;
       let baseUri = baseUriRegex.exec(document.baseURI);
 
+      console.log(baseUri);
+
       Object.keys(data).forEach(function(key) {
         let value = data[key];
 

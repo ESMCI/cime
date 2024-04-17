@@ -403,6 +403,8 @@ created with these changes applied.</p>
       let baseUriRegex = /(.*\/cime).*/g;
       let baseUri = baseUriRegex.exec(document.baseURI);
 
+      console.log(baseUri);
+
       Object.keys(data).forEach(function(key) {
         let value = data[key];
 

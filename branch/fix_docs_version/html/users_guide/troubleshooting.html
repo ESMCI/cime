@@ -239,6 +239,8 @@ Also note that answers will change slightly, so if the error arises from a rare 
       let baseUriRegex = /(.*\/cime).*/g;
       let baseUri = baseUriRegex.exec(document.baseURI);
 
+      console.log(baseUri);
+
       Object.keys(data).forEach(function(key) {
         let value = data[key];
 

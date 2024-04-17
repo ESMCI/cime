@@ -228,6 +228,8 @@ To change the DOCN stream txt file instance 0002, copy <strong>docn.streams.txt.
       let baseUriRegex = /(.*\/cime).*/g;
       let baseUri = baseUriRegex.exec(document.baseURI);
 
+      console.log(baseUri);
+
       Object.keys(data).forEach(function(key) {
         let value = data[key];
 

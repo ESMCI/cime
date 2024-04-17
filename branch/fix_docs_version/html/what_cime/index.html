@@ -154,6 +154,8 @@ Github at <a class="reference external" href="http://github.com/ESMCI/cime">http
       let baseUriRegex = /(.*\/cime).*/g;
       let baseUri = baseUriRegex.exec(document.baseURI);
 
+      console.log(baseUri);
+
       Object.keys(data).forEach(function(key) {
         let value = data[key];
 

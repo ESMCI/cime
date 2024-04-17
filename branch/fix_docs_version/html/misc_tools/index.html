@@ -158,6 +158,8 @@ tools that are necessary and/or useful when building a climate model.  Guides fo
       let baseUriRegex = /(.*\/cime).*/g;
       let baseUri = baseUriRegex.exec(document.baseURI);
 
+      console.log(baseUri);
+
       Object.keys(data).forEach(function(key) {
         let value = data[key];
 

@@ -231,6 +231,8 @@ documentation for details. This flag is a bit subtle in that it is a per-compone
       let baseUriRegex = /(.*\/cime).*/g;
       let baseUri = baseUriRegex.exec(document.baseURI);
 
+      console.log(baseUri);
+
       Object.keys(data).forEach(function(key) {
         let value = data[key];
 
