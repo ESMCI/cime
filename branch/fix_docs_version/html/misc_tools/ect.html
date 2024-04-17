@@ -220,9 +220,13 @@ README_pyCECT.rst with the pyCECT tools).</p>
   <script type="text/javascript">
     $.get("../../../versions/versions.json", function(data) {
       let versionElement = $("#versions");
-      console.log(versionElement);
+
       Object.keys(data).forEach(function(key) {
-        console.log(key);
+        let value = data[key];
+
+        let item = `<dd><a href="../../../versions/${key}/html/">${value}</a></dd>`
+
+        versionElement.append(item);
       });
     });
   </script>
@@ -234,7 +238,9 @@ README_pyCECT.rst with the pyCECT tools).</p>
     </span>
     <div class="rst-other-versions">
       
-      <dl id="versions" />
+      <dl id="versions">
+        <dt>Versions</dt>
+      </dl>
       
       <dl>
         <dt>Versions</dt>

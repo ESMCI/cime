@@ -808,9 +808,13 @@ If you want this test to be part of a suite, then it must be described in the re
   <script type="text/javascript">
     $.get("../../../versions/versions.json", function(data) {
       let versionElement = $("#versions");
-      console.log(versionElement);
+
       Object.keys(data).forEach(function(key) {
-        console.log(key);
+        let value = data[key];
+
+        let item = `<dd><a href="../../../versions/${key}/html/">${value}</a></dd>`
+
+        versionElement.append(item);
       });
     });
   </script>
@@ -822,7 +826,9 @@ If you want this test to be part of a suite, then it must be described in the re
     </span>
     <div class="rst-other-versions">
       
-      <dl id="versions" />
+      <dl id="versions">
+        <dt>Versions</dt>
+      </dl>
       
       <dl>
         <dt>Versions</dt>
