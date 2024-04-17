@@ -2,7 +2,11 @@
 {# Add rst-badge after rst-versions for small badge style. #}
   <script type="text/javascript">
     $.get("../../../versions/versions.json", function(data) {
-      console.log(data);
+      let versionElement = $("#versions");
+      console.log(versionElement);
+      Object.keys(data).forEach(function(key) {
+        console.log(key);
+      });
     });
   </script>
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
@@ -22,6 +26,7 @@
         {% endfor %}
       </dl>
       {% endif %}
+      <dl id="versions" />
       {% if versions|length >= 1 %}
       <dl>
         <dt>{{ _('Versions') }}</dt>
