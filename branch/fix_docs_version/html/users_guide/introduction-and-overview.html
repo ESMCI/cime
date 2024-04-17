@@ -311,11 +311,11 @@ For variables that can be set in more than one way, the order of precedence is:<
   
 
   <script type="text/javascript">
-    let baseUriRegex = /(.*\/cime).*/g;
+    let baseUriRegex = /(.*\/cime)\/.*/g;
     let parsedUri = baseUriRegex.exec(document.baseURI);
 
     if (parsedUri != null && parsedUri.length == 2) {
-      let baseUri = parsedUri[0];
+      let baseUri = parsedUri[1];
 
       $.get(`${baseUri}/versions/versions.json`, function(data) {
         let versionElement = $("#versions");
