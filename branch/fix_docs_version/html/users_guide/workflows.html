@@ -226,12 +226,11 @@ documentation for details. This flag is a bit subtle in that it is a per-compone
   
 
   <script type="text/javascript">
-    $.get("../../../versions/versions.json", function(data) {
-      let versionElement = $("#versions");
-      let baseUriRegex = /(.*\/cime).*/g;
-      let baseUri = baseUriRegex.exec(document.baseURI);
+    let baseUriRegex = /(.*\/cime).*/g;
+    let baseUri = baseUriRegex.exec(document.baseURI);
 
-      console.log(baseUri);
+    $.get(`${baseUri}/versions/versions.json`, function(data) {
+      let versionElement = $("#versions");
 
       Object.keys(data).forEach(function(key) {
         let value = data[key];

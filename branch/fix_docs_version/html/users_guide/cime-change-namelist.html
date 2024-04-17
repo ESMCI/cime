@@ -500,12 +500,11 @@ To see the result of your change, call <a class="reference external" href="../To
   
 
   <script type="text/javascript">
-    $.get("../../../versions/versions.json", function(data) {
-      let versionElement = $("#versions");
-      let baseUriRegex = /(.*\/cime).*/g;
-      let baseUri = baseUriRegex.exec(document.baseURI);
+    let baseUriRegex = /(.*\/cime).*/g;
+    let baseUri = baseUriRegex.exec(document.baseURI);
 
-      console.log(baseUri);
+    $.get(`${baseUri}/versions/versions.json`, function(data) {
+      let versionElement = $("#versions");
 
       Object.keys(data).forEach(function(key) {
         let value = data[key];
