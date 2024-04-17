@@ -1,12 +1,11 @@
 {% if READTHEDOCS or display_lower_left %}
 {# Add rst-badge after rst-versions for small badge style. #}
   <script type="text/javascript">
-    $.get("../../../versions/versions.json", function(data) {
-      let versionElement = $("#versions");
-      let baseUriRegex = /(.*\/cime).*/g;
-      let baseUri = baseUriRegex.exec(document.baseURI);
+    let baseUriRegex = /(.*\/cime).*/g;
+    let baseUri = baseUriRegex.exec(document.baseURI);
 
-      console.log(baseUri);
+    $.get(`${baseUri}/versions/versions.json`, function(data) {
+      let versionElement = $("#versions");
 
       Object.keys(data).forEach(function(key) {
         let value = data[key];
