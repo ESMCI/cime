@@ -29,8 +29,11 @@ def _helper(dout_sr, refdate, refsec, rundir):
 
     for item in glob.glob("{}/*{}*".format(rest_path, refdate)):
         dst = os.path.join(rundir, os.path.basename(item))
-        if os.path.exists(dst):
+        if not os.path.exists(rundir):
+            os.mkdir(rundir)
+        elif os.path.exists(dst):
             os.remove(dst)
+
         os.symlink(item, dst)
 
     for item in glob.glob("{}/*rpointer*".format(rest_path)):
