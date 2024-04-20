@@ -17,14 +17,71 @@ import CIME.utils
 from CIME.SystemTests.system_tests_common import SystemTestsCommon
 from CIME.case.case_setup import case_setup
 from CIME.XML.machines import Machines
-
+from CIME.config import ConfigBase
+from CIME.utils import parse_test_name
+from CIME.utils import CIMEError
+from CIME.XML.files import Files
 
 import evv4esm  # pylint: disable=import-error
 from evv4esm.__main__ import main as evv  # pylint: disable=import-error
 
 evv_lib_dir = os.path.abspath(os.path.dirname(evv4esm.__file__))
+
 logger = logging.getLogger(__name__)
-NINST = 30
+
+
+class MVKConfig(ConfigBase):
+    def __init__(self):
+        super().__init__()
+
+        if self.loaded:
+            return
+
+        self._set_attribute("component", None, "Main component")
+        self._set_attribute("ninst", 30, "Number of instances")
+
+    def write_inst_nml(self, case, write_line, iinst):
+        """Write per instance namelist.
+
+        This method is called once per instance.
+
+        Args:
+            case (CIME.case.case.Case): The case instance.
+            write_line (function): Function takes single `str` argument.
+            iinst (int): Instance unique number.
+        """
+        write_line("new_random = .true.")
+        write_line("pertlim = 1.0e-10")
+        write_line("seed_custom = {}".format(iinst))
+        write_line("seed_clock = .true.")
+
+    def test_config(self, case, run_dir, base_dir, evv_lib_dir):
+        """Configure the evv test.
+
+        This method is used to pass the evv4esm configuration to be written for the test.
+
+        Args:
+            case (CIME.case.case.Case): The case instance.
+            run_dir (str): Path the case's run directory.
+            base_dir (str): Path to the case's baseline directory.
+            evv_lib_dir (str): Path to the evv4esm package root.
+
+        Returns:
+            dict: Dictionary with test configuration.
+        """
+        config = {
+            "module": os.path.join(evv_lib_dir, "extensions", "ks.py"),
+            "test-case": "Test",
+            "test-dir": run_dir,
+            "ref-case": "Baseline",
+            "ref-dir": base_dir,
+            "var-set": "default",
+            "ninst": self.ninst,
+            "critical": 13,
+            "component": self.component,
+        }
+
+        return config
 
 
 class MVK(SystemTestsCommon):
@@ -34,10 +91,56 @@ class MVK(SystemTestsCommon):
         """
         SystemTestsCommon.__init__(self, case, **kwargs)
 
-        if self._case.get_value("MODEL") == "e3sm":
-            self.component = "eam"
+        casebaseid = self._case.get_value("CASEBASEID")
+
+        *_, test_mods = parse_test_name(casebaseid)
+
+        if test_mods:
+            comp_interface = self._case.get_value("COMP_INTERFACE")
+
+            files = Files(comp_interface=comp_interface)
+
+            for mod in test_mods:
+                if mod.find("/") == -1:
+                    raise CIMEError(
+                        "Missing testmod component. Testmods are specified as '${component}-${testmod}"
+                    )
+                else:
+                    component, modpath = mod.split("/", 1)
+
+                testmods_dir = files.get_value(
+                    "TESTS_MODS_DIR", {"component": component}
+                )
+
+                test_mod_file = os.path.join(testmods_dir, component, modpath)
+
+                if not os.path.exists(test_mod_file):
+                    usermods_dir = files.get_value(
+                        "USER_MODS_DIR", {"component": component}
+                    )
+
+                    test_mod_file = os.path.join(usermods_dir, component, modpath)
+
+                    if not os.path.exists(test_mod_file):
+                        raise CIMEError(
+                            "Missing testmod file {!r}, checked {} and {}".format(
+                                modpath, testmods_dir, usermods_dir
+                            )
+                        )
+
+            self._config = MVKConfig.load(test_mod_file)
         else:
-            self.component = "cam"
+            self._config = MVKConfig()
+
+        # Use old behavior for component
+        if self._config.component is None:
+            # TODO remove model specific
+            if self._case.get_value("MODEL") == "e3sm":
+                self.component = "eam"
+            else:
+                self.component = "cam"
+        else:
+            self.component = self._config.component
 
         if (
             self._case.get_value("RESUBMIT") == 0
@@ -57,22 +160,24 @@ class MVK(SystemTestsCommon):
 
                 ntasks = self._case.get_value("NTASKS_{}".format(comp))
 
-                self._case.set_value("NTASKS_{}".format(comp), ntasks * NINST)
+                self._case.set_value(
+                    "NTASKS_{}".format(comp), ntasks * self._config.ninst
+                )
+
                 if comp != "CPL":
-                    self._case.set_value("NINST_{}".format(comp), NINST)
+                    self._case.set_value("NINST_{}".format(comp), self._config.ninst)
 
             self._case.flush()
 
             case_setup(self._case, test_mode=False, reset=True)
 
-        for iinst in range(1, NINST + 1):
+        for iinst in range(1, self._config.ninst + 1):
             with open(
                 "user_nl_{}_{:04d}".format(self.component, iinst), "w"
-            ) as nl_atm_file:
-                nl_atm_file.write("new_random = .true.\n")
-                nl_atm_file.write("pertlim = 1.0e-10\n")
-                nl_atm_file.write("seed_custom = {}\n".format(iinst))
-                nl_atm_file.write("seed_clock = .true.\n")
+            ) as nml_file:
+                write_line = lambda x: nml_file.write(f"{x}\n")
+
+                self._config.write_inst_nml(self._case, write_line, iinst)
 
         self.build_indv(sharedlib_only=sharedlib_only, model_only=model_only)
 
@@ -128,25 +233,18 @@ class MVK(SystemTestsCommon):
             )
 
             test_name = "{}".format(case_name.split(".")[-1])
-            evv_config = {
-                test_name: {
-                    "module": os.path.join(evv_lib_dir, "extensions", "ks.py"),
-                    "test-case": "Test",
-                    "test-dir": run_dir,
-                    "ref-case": "Baseline",
-                    "ref-dir": base_dir,
-                    "var-set": "default",
-                    "ninst": NINST,
-                    "critical": 13,
-                    "component": self.component,
-                }
-            }
 
-            json_file = os.path.join(run_dir, ".".join([case_name, "json"]))
+            test_config = self._config.test_config(
+                self._case, run_dir, base_dir, evv_lib_dir
+            )
+
+            evv_config = {test_name: test_config}
+
+            json_file = os.path.join(run_dir, f"{case_name}.json")
             with open(json_file, "w") as config_file:
                 json.dump(evv_config, config_file, indent=4)
 
-            evv_out_dir = os.path.join(run_dir, ".".join([case_name, "evv"]))
+            evv_out_dir = os.path.join(run_dir, f"{case_name}.evv")
             evv(["-e", json_file, "-o", evv_out_dir])
 
             with open(os.path.join(evv_out_dir, "index.json")) as evv_f:
