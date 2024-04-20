@@ -35,6 +35,7 @@ Case Control System Part 2: Configuration, Porting, Testing and Use Cases
    :numbered:
 
    cime-internals.rst
+   components.rst
    compsets.rst
    grids.rst
    machine.rst
