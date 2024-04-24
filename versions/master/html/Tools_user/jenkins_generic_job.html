@@ -7,7 +7,7 @@
   <title>jenkins_generic_job &mdash; CIME master documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
-      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=d05bb7fd" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
 
   
   <!--[if lt IE 9]>
@@ -17,9 +17,8 @@
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
         <script src="../_static/documentation_options.js?v=30d551ce"></script>
-        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-        <script src="../_static/pop_ver.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -149,107 +148,14 @@
 <div class="toctree-wrapper compound">
 </div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ ./jenkins_generic_job --help
-usage: 
-jenkins_generic_job [-g] [-d] [--verbose]
-OR
-jenkins_generic_job --help
-
-[1mEXAMPLES:[0m
-    [1;32m# Run the tests and compare baselines [0m
-    &gt; jenkins_generic_job
-    [1;32m# Run the tests, compare baselines, and update dashboard [0m
-    &gt; jenkins_generic_job -d
-    [1;32m# Run the tests, generating a full set of baselines (useful for first run on a machine) [0m
-    &gt; jenkins_generic_job -g
-
-Jenkins runs this script to perform a test of an e3sm test suite. Essentially,
-a wrapper around create_test and wait_for_tests that handles cleanup of old
-test results and ensures that the batch system is left in a clean state.
-
-options:
-  -h, --help            show this help message and exit
-  -g, --generate-baselines
-                        Generate baselines (default: False)
-  --baseline-compare    Do baseline comparisons. Off by default. (default:
-                        False)
-  --submit-to-cdash     Send results to CDash (default: False)
-  -n, --no-submit       Force us to not send results to CDash, overrides
-                        --submit-to-cdash. Useful for CI (default: False)
-  --update-success      Record test success in baselines. Only the nightly
-                        process should use this in general. (default: False)
-  --no-update-success   For us to not record test success in baselines,
-                        overrides --update-success. Useful for CI. (default:
-                        False)
-  --no-batch            Do not use batch system even if on batch machine
-                        (default: False)
-  -c CDASH_BUILD_NAME, --cdash-build-name CDASH_BUILD_NAME
-                        Build name to use for CDash submission. Default will
-                        be &lt;TEST_SUITE&gt;_&lt;BRANCH&gt;_&lt;COMPILER&gt; (default: None)
-  -p CDASH_PROJECT, --cdash-project CDASH_PROJECT
-                        The name of the CDash project where results should be
-                        uploaded (default: E3SM)
-  -b BASELINE_NAME, --baseline-name BASELINE_NAME
-                        Baseline name for baselines to use. Also impacts
-                        dashboard job name. Useful for testing a branch other
-                        than next or master (default: master)
-  -B BASELINE_ROOT, --baseline-root BASELINE_ROOT
-                        Baseline area for baselines to use. Default will be
-                        config_machine value for machine (default: None)
-  -O OVERRIDE_BASELINE_NAME, --override-baseline-name OVERRIDE_BASELINE_NAME
-                        Force comparison with these baseines without impacting
-                        dashboard or test-id. (default: None)
-  -t TEST_SUITE, --test-suite TEST_SUITE
-                        Override default e3sm test suite that will be run
-                        (default: None)
-  -r SCRATCH_ROOT, --scratch-root SCRATCH_ROOT
-                        Override default e3sm scratch root. Use this to avoid
-                        conflicting with other jenkins jobs (default: None)
-  --cdash-build-group CDASH_BUILD_GROUP
-                        The build group to be used to display results on the
-                        CDash dashboard. (default: ACME_Latest)
-  -j PARALLEL_JOBS, --parallel-jobs PARALLEL_JOBS
-                        Number of tasks create_test should perform
-                        simultaneously. Default will be min(num_cores,
-                        num_tests). (default: None)
-  --walltime WALLTIME   Force a specific walltime for all tests. (default:
-                        None)
-  -m MACHINE, --machine MACHINE
-                        The machine for which to build tests, this machine
-                        must be defined in the config_machines.xml file for
-                        the given model. Default is to match the name of the
-                        machine in the test name or the name of the machine
-                        this script is run on to the NODENAME_REGEX field in
-                        config_machines.xml. This option is highly unsafe and
-                        should only be used if you know what you&#39;re doing.
-                        (default: None)
-  --compiler COMPILER   Compiler to use to build cime. Default will be the
-                        default defined for the machine. (default: None)
-  -q QUEUE, --queue QUEUE
-                        Force create_test to use a specific queue. (default:
-                        None)
-  --check-throughput    Fail if throughput check fails (fail if tests slow
-                        down) (default: False)
-  --check-memory        Fail if memory check fails (fail if tests footprint
-                        grows) (default: False)
-  --ignore-memleak      Do not fail if there are memleaks (default: False)
-  --ignore-namelists    Do not fail if there are namelist diffs (default:
-                        False)
-  --save-timing         Tell create_test to save timings of tests (default:
-                        False)
-  --pes-file PES_FILE   Full pathname of an optional pes specification file.
-                        The file can follow either the config_pes.xml or the
-                        env_mach_pes.xml format. (default: None)
-  --jenkins-id JENKINS_ID
-                        Specify an &#39;id&#39; for the Jenkins jobs. (default: None)
-
-Logging options:
-  -d, --debug           Print debug information (very verbose) to file /home/r
-                        unner/work/cime/cime/CIME/Tools/jenkins_generic_job.lo
-                        g (default: False)
-  -v, --verbose         Add additional context (time and file) to log messages
-                        (default: False)
-  -s, --silent          Print only warnings and error messages (default:
-                        False)
+Traceback (most recent call last):
+  File &quot;/home/runner/work/cime/cime/CIME/Tools/./jenkins_generic_job&quot;, line 10, in &lt;module&gt;
+    from standard_script_setup import *
+  File &quot;/home/runner/work/cime/cime/CIME/Tools/standard_script_setup.py&quot;, line 42, in &lt;module&gt;
+    import CIME.utils
+  File &quot;/home/runner/work/cime/cime/CIME/utils.py&quot;, line 15, in &lt;module&gt;
+    from distutils import file_util
+ModuleNotFoundError: No module named &#39;distutils&#39;
 </pre></div>
 </div>
 </section>
@@ -281,7 +187,44 @@ Logging options:
       </div>
     </section>
   </div>
-  <script>
+  
+
+  <script type="text/javascript">
+    let baseUriRegex = /(.*\/cime)\/.*/g;
+    let parsedUri = baseUriRegex.exec(document.baseURI);
+
+    if (parsedUri != null && parsedUri.length == 2) {
+      let baseUri = parsedUri[1];
+
+      $.get(`${baseUri}/versions/versions.json`, function(data) {
+        let versionElement = $("#versions");
+
+        Object.keys(data).forEach(function(key) {
+          let value = data[key];
+
+          let item = `<dd><a href="${baseUri}/versions/${key}/html/">${value}</a></dd>`
+
+          versionElement.append(item);
+        });
+      });
+    }
+  </script>
+  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      <span class="fa fa-book"> Read the Docs</span>
+      v: master
+      <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+      
+      <dl id="versions">
+        <dt>Versions</dt>
+      </dl>
+      
+      
+    </div>
+  </div>
+<script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });

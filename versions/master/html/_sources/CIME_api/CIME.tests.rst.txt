@@ -212,6 +212,14 @@ CIME.tests.test\_unit\_case\_fake module
    :undoc-members:
    :show-inheritance:
 
+CIME.tests.test\_unit\_case\_run module
+---------------------------------------
+
+.. automodule:: CIME.tests.test_unit_case_run
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 CIME.tests.test\_unit\_case\_setup module
 -----------------------------------------
 

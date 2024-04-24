@@ -7,7 +7,7 @@
   <title>archive_metadata &mdash; CIME master documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
-      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=d05bb7fd" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
 
   
   <!--[if lt IE 9]>
@@ -17,9 +17,8 @@
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
         <script src="../_static/documentation_options.js?v=30d551ce"></script>
-        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-        <script src="../_static/pop_ver.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -149,80 +148,14 @@
 <div class="toctree-wrapper compound">
 </div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ ./archive_metadata --help
-/home/runner/work/cime/cime/CIME/utils.py:204: SyntaxWarning: invalid escape sequence &#39;\]&#39;
-  chars = &quot;+*?&lt;&gt;/{}[\]~`@:&quot;  # pylint: disable=anomalous-backslash-in-string
-usage: archive_metadata [-h] [-d] [-v] [-s] --user USER --password
-                        [--caseroot CASEROOT] [--workdir WORKDIR] --expType
-                        {CMIP6,production,tuning,lens,C1,C2,C3,C4,C5}
-                        [--title TITLE] [--ignore-logs] [--ignore-timing]
-                        [--ignore-repo-update] [--add-files USER_ADD_FILES]
-                        [--dryrun] [--query_cmip6 QUERY_CMIP6 QUERY_CMIP6]
-                        [--test-post]
-
-Query and parse the caseroot files to gather metadata information that can be
-posted to the CESM experiments database. CMIP6 experiment case names must be
-reserved already in the experiment database. Please see:
-https://csesgweb.cgd.ucar.edu/expdb2.0 for details.
-
-options:
-  -h, --help            show this help message and exit
-  --user USER           User name for SVN CESM developer access (required)
-  --password            Password for SVN CESM developer access (required)
-  --caseroot CASEROOT   Fully quailfied path to case root directory
-                        (optional). Defaults to current working directory.
-  --workdir WORKDIR     Fully quailfied path to directory for storing
-                        intermediate case files. A sub-directory called
-                        archive_temp_dir is created, populated with case
-                        files, and posted to the CESM experiments database and
-                        SVN repository at URL &quot;https://svn-
-                        cesm2-expdb.cgd.ucar.edu&quot;. This argument can be used
-                        to archive a caseroot when the user does not have
-                        write permission in the caseroot (optional). Defaults
-                        to current working directory.
-  --expType {CMIP6,production,tuning,lens,C1,C2,C3,C4,C5}
-                        Experiment type. For CMIP6 experiments, the case must
-                        already exist in the experiments database at URL
-                        &quot;http://csegweb.cgd.ucar.edu/expdb2.0&quot; (required).
-                        Must be one of &quot;[&#39;CMIP6&#39;, &#39;production&#39;, &#39;tuning&#39;,
-                        &#39;lens&#39;, &#39;C1&#39;, &#39;C2&#39;, &#39;C3&#39;, &#39;C4&#39;, &#39;C5&#39;]&quot;
-  --title TITLE         Title of experiment (optional).
-  --ignore-logs         Ignore updating the SVN repository with the
-                        caseroot/logs files. The experiments database will be
-                        updated (optional).
-  --ignore-timing       Ignore updating the the SVN repository with
-                        caseroot/timing files.The experiments database will be
-                        updated (optional).
-  --ignore-repo-update  Ignore updating the SVN repository with all the
-                        caseroot files. The experiments database will be
-                        updated (optional).
-  --add-files USER_ADD_FILES
-                        Comma-separated list with no spaces of files or
-                        directories to be added to the SVN repository. These
-                        are in addition to the default added caseroot files
-                        and directories: &quot;[&#39;Buildconf&#39;, &#39;CaseDocs&#39;,
-                        &#39;CaseStatus&#39;, &#39;LockedFiles&#39;, &#39;Macros.make&#39;,
-                        &#39;README.case&#39;, &#39;SourceMods&#39;,
-                        &#39;software_environment.txt&#39;], *.xml, user_nl_*&quot;
-                        (optional).
-  --dryrun              Parse settings and print what actions will be taken
-                        but do not execute the action (optional).
-  --query_cmip6 QUERY_CMIP6 QUERY_CMIP6
-                        Query the experiments database global attributes for
-                        specified CMIP6 casename as argument 1. Writes a json
-                        formatted output file, specified by argument 2, to
-                        subdir archive_files (optional).
-  --test-post           Post metadata to the test expdb2.0 web application
-                        server at URL
-                        &quot;http://csegwebdev.cgd.ucar.edu/expdb2.0&quot;. No --test-
-                        post argument defaults to posting metadata to the
-                        production expdb2.0 web application server at URL
-                        &quot;http://csegweb.cgd.ucar.edu/expdb2.0&quot; (optional).
-
-Logging options:
-  -d, --debug           Print debug information (very verbose) to file /home/r
-                        unner/work/cime/cime/CIME/Tools/archive_metadata.log
-  -v, --verbose         Add additional context (time and file) to log messages
-  -s, --silent          Print only warnings and error messages
+Traceback (most recent call last):
+  File &quot;/home/runner/work/cime/cime/CIME/Tools/./archive_metadata&quot;, line 27, in &lt;module&gt;
+    from standard_script_setup import *
+  File &quot;/home/runner/work/cime/cime/CIME/Tools/standard_script_setup.py&quot;, line 42, in &lt;module&gt;
+    import CIME.utils
+  File &quot;/home/runner/work/cime/cime/CIME/utils.py&quot;, line 15, in &lt;module&gt;
+    from distutils import file_util
+ModuleNotFoundError: No module named &#39;distutils&#39;
 </pre></div>
 </div>
 </section>
@@ -254,7 +187,44 @@ Logging options:
       </div>
     </section>
   </div>
-  <script>
+  
+
+  <script type="text/javascript">
+    let baseUriRegex = /(.*\/cime)\/.*/g;
+    let parsedUri = baseUriRegex.exec(document.baseURI);
+
+    if (parsedUri != null && parsedUri.length == 2) {
+      let baseUri = parsedUri[1];
+
+      $.get(`${baseUri}/versions/versions.json`, function(data) {
+        let versionElement = $("#versions");
+
+        Object.keys(data).forEach(function(key) {
+          let value = data[key];
+
+          let item = `<dd><a href="${baseUri}/versions/${key}/html/">${value}</a></dd>`
+
+          versionElement.append(item);
+        });
+      });
+    }
+  </script>
+  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      <span class="fa fa-book"> Read the Docs</span>
+      v: master
+      <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+      
+      <dl id="versions">
+        <dt>Versions</dt>
+      </dl>
+      
+      
+    </div>
+  </div>
+<script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });

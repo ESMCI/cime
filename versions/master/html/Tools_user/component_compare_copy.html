@@ -7,7 +7,7 @@
   <title>component_compare_copy &mdash; CIME master documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
-      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=d05bb7fd" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
 
   
   <!--[if lt IE 9]>
@@ -17,9 +17,8 @@
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
         <script src="../_static/documentation_options.js?v=30d551ce"></script>
-        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-        <script src="../_static/pop_ver.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -149,33 +148,14 @@
 <div class="toctree-wrapper compound">
 </div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ ./component_compare_copy --help
-usage: 
-component_compare_copy suffix [&lt;casedir&gt;] [--verbose]
-OR
-component_compare_copy --help
-
-[1mEXAMPLES:[0m
-    [1;32m# Setup case [0m
-    &gt; component_compare_copy
-
-Copy the most recent batch of hist files in a case, adding the given suffix.
-This allows us to save these results if we want to run the case again.
-
-positional arguments:
-  caseroot         Case directory (default:
-                   /home/runner/work/cime/cime/CIME/Tools)
-
-options:
-  -h, --help       show this help message and exit
-  --suffix SUFFIX  Suffix to append to hist files (default: None)
-
-Logging options:
-  -d, --debug      Print debug information (very verbose) to file /home/runner
-                   /work/cime/cime/CIME/Tools/component_compare_copy.log
-                   (default: False)
-  -v, --verbose    Add additional context (time and file) to log messages
-                   (default: False)
-  -s, --silent     Print only warnings and error messages (default: False)
+Traceback (most recent call last):
+  File &quot;/home/runner/work/cime/cime/CIME/Tools/./component_compare_copy&quot;, line 8, in &lt;module&gt;
+    from standard_script_setup import *
+  File &quot;/home/runner/work/cime/cime/CIME/Tools/standard_script_setup.py&quot;, line 42, in &lt;module&gt;
+    import CIME.utils
+  File &quot;/home/runner/work/cime/cime/CIME/utils.py&quot;, line 15, in &lt;module&gt;
+    from distutils import file_util
+ModuleNotFoundError: No module named &#39;distutils&#39;
 </pre></div>
 </div>
 </section>
@@ -207,7 +187,44 @@ Logging options:
       </div>
     </section>
   </div>
-  <script>
+  
+
+  <script type="text/javascript">
+    let baseUriRegex = /(.*\/cime)\/.*/g;
+    let parsedUri = baseUriRegex.exec(document.baseURI);
+
+    if (parsedUri != null && parsedUri.length == 2) {
+      let baseUri = parsedUri[1];
+
+      $.get(`${baseUri}/versions/versions.json`, function(data) {
+        let versionElement = $("#versions");
+
+        Object.keys(data).forEach(function(key) {
+          let value = data[key];
+
+          let item = `<dd><a href="${baseUri}/versions/${key}/html/">${value}</a></dd>`
+
+          versionElement.append(item);
+        });
+      });
+    }
+  </script>
+  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      <span class="fa fa-book"> Read the Docs</span>
+      v: master
+      <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+      
+      <dl id="versions">
+        <dt>Versions</dt>
+      </dl>
+      
+      
+    </div>
+  </div>
+<script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });

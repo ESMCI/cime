@@ -7,7 +7,7 @@
   <title>create_test &mdash; CIME master documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
-      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=d05bb7fd" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
 
   
   <!--[if lt IE 9]>
@@ -17,9 +17,8 @@
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
         <script src="../_static/documentation_options.js?v=30d551ce"></script>
-        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-        <script src="../_static/pop_ver.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -149,142 +148,16 @@
 <div class="toctree-wrapper compound">
 </div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ ./create_test --help
-usage: create_test [-h] [-d] [-v] [-s] [--no-run] [--no-build] [--no-setup]
-                   [-u] [--save-timing] [--no-batch] [--single-exe]
-                   [--single-submit] [-r TEST_ROOT]
-                   [--output-root OUTPUT_ROOT] [--baseline-root BASELINE_ROOT]
-                   [--clean] [-m MACHINE] [--mpilib MPILIB] [-c COMPARE]
-                   [-g GENERATE] [--xml-machine XML_MACHINE]
-                   [--xml-compiler XML_COMPILER] [--xml-category XML_CATEGORY]
-                   [--xml-testlist XML_TESTLIST] [--driver {mct,nuopc}]
-                   [--compiler COMPILER] [-n] [-p PROJECT] [-t TEST_ID]
-                   [-j PARALLEL_JOBS] [--proc-pool PROC_POOL]
-                   [--walltime WALLTIME] [-q QUEUE] [-f TESTFILE] [-o]
-                   [--wait] [--allow-pnl] [--check-throughput]
-                   [--check-memory] [--ignore-namelists] [--ignore-memleak]
-                   [--force-procs FORCE_PROCS] [--force-threads FORCE_THREADS]
-                   [-i INPUT_DIR] [--pesfile PESFILE] [--retry RETRY] [-N]
-                   [--workflow WORKFLOW] [--chksum] [--srcroot SRCROOT]
-                   [--force-rebuild] [--mail-user MAIL_USER] [-M MAIL_TYPE]
-                   [testargs ...]
-
-positional arguments:
-  testargs              Tests to run. Testname form is TEST.GRID.COMPSET[.MACHINE_COMPILER]
-
-options:
-  -h, --help            show this help message and exit
-  --no-run              Do not run generated tests
-  --no-build            Do not build generated tests, implies --no-run
-  --no-setup            Do not setup generated tests, implies --no-build and --no-run
-  -u, --use-existing    Use pre-existing case directories they will pick up at the 
-                        latest PEND state or re-run the first failed state. Requires test-id
-  --save-timing         Enable archiving of performance data.
-  --no-batch            Do not submit jobs to batch system, run locally.
-                        If false, this will default to machine setting.
-  --single-exe          Use a single build for all cases. This can 
-                        drastically improve test throughput but is currently use-at-your-own risk.
-                        It&#39;s up to the user to ensure that all cases are build-compatible.
-                        E3SM tests belonging to a suite with share enabled will always share exes.
-  --single-submit       Use a single interactive allocation to run all the tests. This can 
-                        drastically reduce queue waiting but only makes sense on batch machines.
-  -r TEST_ROOT, --test-root TEST_ROOT
-                        Where test cases will be created. The default is output root
-                        as defined in the config_machines file
-  --output-root OUTPUT_ROOT
-                        Where the case output is written.
-  --baseline-root BASELINE_ROOT
-                        Specifies a root directory for baseline datasets that will 
-                        be used for Bit-for-bit generate and/or compare testing.
-  --clean               Specifies if tests should be cleaned after run. If set, all object
-                        executables and data files will be removed after the tests are run.
-  -m MACHINE, --machine MACHINE
-                        The machine for creating and building tests. This machine must be defined
-                        in the config_machines.xml file for the given model. The default is to 
-                        to match the name of the machine in the test name or the name of the 
-                        machine this script is run on to the NODENAME_REGEX field in 
-                        config_machines.xml. WARNING: This option is highly unsafe and should 
-                        only be used if you are an expert.
-  --mpilib MPILIB       Specify the mpilib. To see list of supported MPI libraries for each machine, 
-                        invoke ./query_config. The default is the first listing .
-  -c COMPARE, --compare COMPARE
-                        While testing, compare baselines against the given compare directory. 
-  -g GENERATE, --generate GENERATE
-                        While testing, generate baselines in the given generate directory. 
-                        NOTE: this can also be done after the fact with bless_test_results
-  --xml-machine XML_MACHINE
-                        Use this machine key in the lookup in testlist.xml. 
-                        The default is all if any --xml- argument is used.
-  --xml-compiler XML_COMPILER
-                        Use this compiler key in the lookup in testlist.xml. 
-                        The default is all if any --xml- argument is used.
-  --xml-category XML_CATEGORY
-                        Use this category key in the lookup in testlist.xml. 
-                        The default is all if any --xml- argument is used.
-  --xml-testlist XML_TESTLIST
-                        Use this testlist to lookup tests.The default is specified in config_files.xml
-  --driver {mct,nuopc}  Override driver specified in tests and use this one.
-  --compiler COMPILER   Compiler for building cime. Default will be the name in the 
-                        Testname or the default defined for the machine.
-  -n, --namelists-only  Only perform namelist actions for tests
-  -p PROJECT, --project PROJECT
-                        Specify a project id for the case (optional).
-                        Used for accounting and directory permissions when on a batch system.
-                        The default is user or machine specified by PROJECT.
-                        Accounting (only) may be overridden by user or machine specified CHARGE_ACCOUNT.
-  -t TEST_ID, --test-id TEST_ID
-                        Specify an &#39;id&#39; for the test. This is simply a string that is appended 
-                        to the end of a test name. If no test-id is specified, a time stamp plus a 
-                        random string will be used (ensuring a high probability of uniqueness). 
-                        If a test-id is specified, it is the user&#39;s responsibility to ensure that 
-                        each run of create_test uses a unique test-id. WARNING: problems will occur 
-                        if you use the same test-id twice on the same file system, even if the test 
-                        lists are completely different.
-  -j PARALLEL_JOBS, --parallel-jobs PARALLEL_JOBS
-                        Number of tasks create_test should perform simultaneously. The default 
-                         is min(num_cores, num_tests).
-  --proc-pool PROC_POOL
-                        The size of the processor pool that create_test can use. The default is 
-                        MAX_MPITASKS_PER_NODE + 25 percent.
-  --walltime WALLTIME   Set the wallclock limit for all tests in the suite. 
-                        Use the variable CIME_GLOBAL_WALLTIME to set this for all tests.
-  -q QUEUE, --queue QUEUE
-                        Force batch system to use a certain queue
-  -f TESTFILE, --testfile TESTFILE
-                        A file containing an ascii list of tests to run
-  -o, --allow-baseline-overwrite
-                        If the --generate option is given, then an attempt to overwrite 
-                        an existing baseline directory will raise an error. WARNING: Specifying this 
-                        option will allow existing baseline directories to be silently overwritten.
-  --wait                On batch systems, wait for submitted jobs to complete
-  --allow-pnl           Do not pass skip-pnl to case.submit
-  --check-throughput    Fail if throughput check fails. Requires --wait on batch systems
-  --check-memory        Fail if memory check fails. Requires --wait on batch systems
-  --ignore-namelists    Do not fail if there namelist diffs
-  --ignore-memleak      Do not fail if there&#39;s a memleak
-  --force-procs FORCE_PROCS
-                        For all tests to run with this number of processors
-  --force-threads FORCE_THREADS
-                        For all tests to run with this number of threads
-  -i INPUT_DIR, --input-dir INPUT_DIR
-                        Use a non-default location for input files
-  --pesfile PESFILE     Full pathname of an optional pes specification file. The file
-                        can follow either the config_pes.xml or the env_mach_pes.xml format.
-  --retry RETRY         Automatically retry failed tests. &gt;0 implies --wait
-  -N, --non-local       Use when you&#39;ve requested a machine that you aren&#39;t on. Will reduce errors for missing directories etc.
-  --workflow WORKFLOW   A workflow from config_workflow.xml to apply to this case. 
-  --chksum              Verifies input data checksums.
-  --srcroot SRCROOT     Alternative pathname for source root directory. The default is /home/runner/work/cime
-  --force-rebuild       When used with &#39;use-existing&#39; and &#39;test-id&#39;, thetests will have their &#39;BUILD_SHAREDLIB&#39; phase reset to &#39;PEND&#39;.
-  --mail-user MAIL_USER
-                        Email to be used for batch notification.
-  -M MAIL_TYPE, --mail-type MAIL_TYPE
-                        When to send user email. Options are: never, all, begin, end, fail.
-                        You can specify multiple types with either comma-separated args or multiple -M flags.
-
-Logging options:
-  -d, --debug           Print debug information (very verbose) to file /home/runner/work/cime/cime/scripts/create_test.log
-  -v, --verbose         Add additional context (time and file) to log messages
-  -s, --silent          Print only warnings and error messages
+Traceback (most recent call last):
+  File &quot;/home/runner/work/cime/cime/scripts/./create_test&quot;, line 15, in &lt;module&gt;
+    from CIME.scripts.create_test import _main_func
+  File &quot;/home/runner/work/cime/cime/CIME/scripts/create_test.py&quot;, line 29, in &lt;module&gt;
+    from CIME.Tools.standard_script_setup import *
+  File &quot;/home/runner/work/cime/cime/CIME/Tools/standard_script_setup.py&quot;, line 42, in &lt;module&gt;
+    import CIME.utils
+  File &quot;/home/runner/work/cime/cime/CIME/utils.py&quot;, line 15, in &lt;module&gt;
+    from distutils import file_util
+ModuleNotFoundError: No module named &#39;distutils&#39;
 </pre></div>
 </div>
 </section>
@@ -316,7 +189,44 @@ Logging options:
       </div>
     </section>
   </div>
-  <script>
+  
+
+  <script type="text/javascript">
+    let baseUriRegex = /(.*\/cime)\/.*/g;
+    let parsedUri = baseUriRegex.exec(document.baseURI);
+
+    if (parsedUri != null && parsedUri.length == 2) {
+      let baseUri = parsedUri[1];
+
+      $.get(`${baseUri}/versions/versions.json`, function(data) {
+        let versionElement = $("#versions");
+
+        Object.keys(data).forEach(function(key) {
+          let value = data[key];
+
+          let item = `<dd><a href="${baseUri}/versions/${key}/html/">${value}</a></dd>`
+
+          versionElement.append(item);
+        });
+      });
+    }
+  </script>
+  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      <span class="fa fa-book"> Read the Docs</span>
+      v: master
+      <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+      
+      <dl id="versions">
+        <dt>Versions</dt>
+      </dl>
+      
+      
+    </div>
+  </div>
+<script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });

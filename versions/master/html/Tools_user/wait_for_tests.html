@@ -7,7 +7,7 @@
   <title>wait_for_tests &mdash; CIME master documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
-      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=d05bb7fd" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
 
   
   <!--[if lt IE 9]>
@@ -17,9 +17,8 @@
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
         <script src="../_static/documentation_options.js?v=30d551ce"></script>
-        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-        <script src="../_static/pop_ver.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -149,66 +148,14 @@
 <div class="toctree-wrapper compound">
 </div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ ./wait_for_tests --help
-usage: 
-wait_for_tests [&lt;Path to TestStatus&gt; &lt;Path to TestStatus&gt; ...]  [--verbose]
-OR
-wait_for_tests --help
-
-[1mEXAMPLES:[0m
-    [1;32m# Wait for test in current dir[0m
-    &gt; wait_for_tests
-    [1;32m# Wait for test in user specified tests[0m
-    &gt; wait_for_tests path/to/testdir
-    [1;32m# Wait for all tests in a test area[0m
-    &gt; wait_for_tests path/to/testarea/*/TestStatus
-
-Wait for a queued set of E3SM tests to finish by watching the TestStatus
-files. If all tests pass, 0 is returned, otherwise a non-zero error code is
-returned. Note that this program waits for the RUN phase specifically and will
-not terminate if the RUN phase didn&#39;t happen.
-
-positional arguments:
-  paths                 Paths to test directories or status file. Pwd default.
-                        (default: .)
-
-options:
-  -h, --help            show this help message and exit
-  -n, --no-wait         Do not wait for tests to finish (default: False)
-  --no-run              Do not expect run phase to be completed (default:
-                        False)
-  -t, --check-throughput
-                        Fail if throughput check fails (fail if tests slow
-                        down) (default: False)
-  -m, --check-memory    Fail if memory check fails (fail if tests footprint
-                        grows) (default: False)
-  -i, --ignore-namelist-diffs
-                        Do not fail a test if the only problem is diffing
-                        namelists (default: False)
-  --ignore-memleak      Do not fail a test if the only problem is a memleak
-                        (default: False)
-  --force-log-upload    Always upload logs to cdash, even if test passed
-                        (default: False)
-  -b CDASH_BUILD_NAME, --cdash-build-name CDASH_BUILD_NAME
-                        Build name, implies you want results send to Cdash
-                        (default: None)
-  -p CDASH_PROJECT, --cdash-project CDASH_PROJECT
-                        The name of the CDash project where results should be
-                        uploaded (default: E3SM)
-  -g CDASH_BUILD_GROUP, --cdash-build-group CDASH_BUILD_GROUP
-                        The build group to be used to display results on the
-                        CDash dashboard. (default: ACME_Latest)
-  --timeout TIMEOUT     Timeout wait in seconds. (default: None)
-  --update-success      Record test success in baselines. Only the nightly
-                        process should use this in general. (default: False)
-
-Logging options:
-  -d, --debug           Print debug information (very verbose) to file /home/r
-                        unner/work/cime/cime/CIME/Tools/wait_for_tests.log
-                        (default: False)
-  -v, --verbose         Add additional context (time and file) to log messages
-                        (default: False)
-  -s, --silent          Print only warnings and error messages (default:
-                        False)
+Traceback (most recent call last):
+  File &quot;/home/runner/work/cime/cime/CIME/Tools/./wait_for_tests&quot;, line 11, in &lt;module&gt;
+    from standard_script_setup import *
+  File &quot;/home/runner/work/cime/cime/CIME/Tools/standard_script_setup.py&quot;, line 42, in &lt;module&gt;
+    import CIME.utils
+  File &quot;/home/runner/work/cime/cime/CIME/utils.py&quot;, line 15, in &lt;module&gt;
+    from distutils import file_util
+ModuleNotFoundError: No module named &#39;distutils&#39;
 </pre></div>
 </div>
 </section>
@@ -240,7 +187,44 @@ Logging options:
       </div>
     </section>
   </div>
-  <script>
+  
+
+  <script type="text/javascript">
+    let baseUriRegex = /(.*\/cime)\/.*/g;
+    let parsedUri = baseUriRegex.exec(document.baseURI);
+
+    if (parsedUri != null && parsedUri.length == 2) {
+      let baseUri = parsedUri[1];
+
+      $.get(`${baseUri}/versions/versions.json`, function(data) {
+        let versionElement = $("#versions");
+
+        Object.keys(data).forEach(function(key) {
+          let value = data[key];
+
+          let item = `<dd><a href="${baseUri}/versions/${key}/html/">${value}</a></dd>`
+
+          versionElement.append(item);
+        });
+      });
+    }
+  </script>
+  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      <span class="fa fa-book"> Read the Docs</span>
+      v: master
+      <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+      
+      <dl id="versions">
+        <dt>Versions</dt>
+      </dl>
+      
+      
+    </div>
+  </div>
+<script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });

@@ -7,7 +7,7 @@
   <title>Tools &mdash; CIME master documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
-      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=d05bb7fd" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
 
   
   <!--[if lt IE 9]>
@@ -17,9 +17,8 @@
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
         <script src="../_static/documentation_options.js?v=30d551ce"></script>
-        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-        <script src="../_static/pop_ver.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -97,23 +96,9 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="Tools.html">Tools package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="Tools.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools.html#module-Tools.generate_cylc_workflow">Tools.generate_cylc_workflow module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Tools.html#Tools.generate_cylc_workflow.cylc_batch_job_template"><code class="docutils literal notranslate"><span class="pre">cylc_batch_job_template()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="Tools.html#Tools.generate_cylc_workflow.cylc_get_case_path_string"><code class="docutils literal notranslate"><span class="pre">cylc_get_case_path_string()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="Tools.html#Tools.generate_cylc_workflow.cylc_get_ensemble_first_and_last"><code class="docutils literal notranslate"><span class="pre">cylc_get_ensemble_first_and_last()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="Tools.html#Tools.generate_cylc_workflow.cylc_script_job_template"><code class="docutils literal notranslate"><span class="pre">cylc_script_job_template()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="Tools.html#Tools.generate_cylc_workflow.parse_command_line"><code class="docutils literal notranslate"><span class="pre">parse_command_line()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="Tools.html#module-Tools.standard_script_setup">Tools.standard_script_setup module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Tools.html#Tools.standard_script_setup.check_minimum_python_version"><code class="docutils literal notranslate"><span class="pre">check_minimum_python_version()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="Tools.html#module-Tools.testreporter">Tools.testreporter module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Tools.html#Tools.testreporter.get_testreporter_xml"><code class="docutils literal notranslate"><span class="pre">get_testreporter_xml()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="Tools.html#Tools.testreporter.parse_command_line"><code class="docutils literal notranslate"><span class="pre">parse_command_line()</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="Tools.html#tools-generate-cylc-workflow-module">Tools.generate_cylc_workflow module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tools.html#tools-standard-script-setup-module">Tools.standard_script_setup module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tools.html#tools-testreporter-module">Tools.testreporter module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Tools.html#module-Tools">Module contents</a></li>
 </ul>
 </li>
@@ -148,7 +133,44 @@
       </div>
     </section>
   </div>
-  <script>
+  
+
+  <script type="text/javascript">
+    let baseUriRegex = /(.*\/cime)\/.*/g;
+    let parsedUri = baseUriRegex.exec(document.baseURI);
+
+    if (parsedUri != null && parsedUri.length == 2) {
+      let baseUri = parsedUri[1];
+
+      $.get(`${baseUri}/versions/versions.json`, function(data) {
+        let versionElement = $("#versions");
+
+        Object.keys(data).forEach(function(key) {
+          let value = data[key];
+
+          let item = `<dd><a href="${baseUri}/versions/${key}/html/">${value}</a></dd>`
+
+          versionElement.append(item);
+        });
+      });
+    }
+  </script>
+  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      <span class="fa fa-book"> Read the Docs</span>
+      v: master
+      <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+      
+      <dl id="versions">
+        <dt>Versions</dt>
+      </dl>
+      
+      
+    </div>
+  </div>
+<script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });

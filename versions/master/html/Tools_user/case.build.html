@@ -7,7 +7,7 @@
   <title>case.build &mdash; CIME master documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
-      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=d05bb7fd" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
 
   
   <!--[if lt IE 9]>
@@ -17,9 +17,8 @@
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
         <script src="../_static/documentation_options.js?v=30d551ce"></script>
-        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-        <script src="../_static/pop_ver.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -149,86 +148,14 @@
 <div class="toctree-wrapper compound">
 </div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ ./case.build --help
-usage: case.build [-h] [-d] [-v] [-s] [--ninja] [--separate-builds]
-                  [--skip-submit] [--dry-run]
-                  [--sharedlib-only | -m | -b {cpl,atm,lnd,ice,ocn,rof,glc,wav,esp,iac,csmshare,mct,pio,gptl} [{cpl,atm,lnd,ice,ocn,rof,glc,wav,esp,iac,csmshare,mct,pio,gptl} ...]
-                  | --skip-provenance-check | --clean-all | --clean
-                  [{cpl,atm,lnd,ice,ocn,rof,glc,wav,esp,iac,csmshare,mct,pio,gptl} ...]
-                  | --clean-depends
-                  [{cpl,atm,lnd,ice,ocn,rof,glc,wav,esp,iac,csmshare} ...]]
-                  [caseroot]
-
-Builds the case.
-
-case.setup must be run before this. In addition, any changes to env_build.xml
-must be made before running this.
-
-This must be run before running case.submit.
-
-There are two usage modes; both modes accept the --caseroot option, but
-other options are specific to one mode or the other:
-
-1) To build the model:
-
-   Typical usage is simply:
-      ./case.build
-
-   This can be used for the initial build as well as for incrementally
-   rebuilding after changing some source files.
-
-   Optionally, you can specify one of the following options, although this is
-   not common:
-      --sharedlib-only
-      --model-only
-      --build ...
-
-   In addition, if you&#39;d like to skip saving build provenance (typically because
-   there was some error in doing so), you can add:
-      --skip-provenance-check
-
-2) To clean part or all of the build:
-
-   To clean the whole build; this should be done after modifying either
-   env_build.xml or Macros.make:
-      ./case.build --clean-all
-
-   To clean select portions of the build, for example, after adding new source
-   files for one component:
-      ./case.build --clean ...
-   or:
-      ./case.build --clean-depends ...
-
-positional arguments:
-  caseroot              Case directory to build.
-                        Default is current directory.
-
-options:
-  -h, --help            show this help message and exit
-  --ninja               Use ninja backed for CMake (instead of gmake). The ninja backend is better at scanning fortran dependencies but seems to be less reliable across different platforms and compilers.
-  --separate-builds     Build each component one at a time, separately, with output going to separate logs
-  --skip-submit         Sets the current test phase to RUN, skipping the SUBMIT phase. This may be useful if rebuilding the model while this test is in the batch queue. ONLY USE IF A TEST CASE, OTHERWISE IGNORED.
-  --dry-run             Just print the cmake and ninja commands.
-  --sharedlib-only      Only build shared libraries.
-  -m, --model-only      Assume shared libraries are already built.
-  -b {cpl,atm,lnd,ice,ocn,rof,glc,wav,esp,iac,csmshare,mct,pio,gptl} [{cpl,atm,lnd,ice,ocn,rof,glc,wav,esp,iac,csmshare,mct,pio,gptl} ...], --build {cpl,atm,lnd,ice,ocn,rof,glc,wav,esp,iac,csmshare,mct,pio,gptl} [{cpl,atm,lnd,ice,ocn,rof,glc,wav,esp,iac,csmshare,mct,pio,gptl} ...]
-                        Libraries to build.
-                        Will cause namelist generation to be skipped.
-  --skip-provenance-check
-                        Do not check and save build provenance
-  --clean-all           Clean all objects (including sharedlib objects that may be
-                        used by other builds).
-  --clean [{cpl,atm,lnd,ice,ocn,rof,glc,wav,esp,iac,csmshare,mct,pio,gptl} ...]
-                        Clean objects associated with specific libraries.
-                        With no arguments, clean all objects other than sharedlib objects.
-  --clean-depends [{cpl,atm,lnd,ice,ocn,rof,glc,wav,esp,iac,csmshare} ...]
-                        Clean Depends and Srcfiles only.
-                        This allows you to rebuild after adding new
-                        files in the source tree or in SourceMods.
-
-Logging options:
-  -d, --debug           Print debug information (very verbose) to file /home/runner/work/cime/cime/CIME/Tools/case.build.log
-  -v, --verbose         Add additional context (time and file) to log messages
-  -s, --silent          Print only warnings and error messages
+Traceback (most recent call last):
+  File &quot;/home/runner/work/cime/cime/CIME/Tools/./case.build&quot;, line 45, in &lt;module&gt;
+    from standard_script_setup import *
+  File &quot;/home/runner/work/cime/cime/CIME/Tools/standard_script_setup.py&quot;, line 42, in &lt;module&gt;
+    import CIME.utils
+  File &quot;/home/runner/work/cime/cime/CIME/utils.py&quot;, line 15, in &lt;module&gt;
+    from distutils import file_util
+ModuleNotFoundError: No module named &#39;distutils&#39;
 </pre></div>
 </div>
 </section>
@@ -260,7 +187,44 @@ Logging options:
       </div>
     </section>
   </div>
-  <script>
+  
+
+  <script type="text/javascript">
+    let baseUriRegex = /(.*\/cime)\/.*/g;
+    let parsedUri = baseUriRegex.exec(document.baseURI);
+
+    if (parsedUri != null && parsedUri.length == 2) {
+      let baseUri = parsedUri[1];
+
+      $.get(`${baseUri}/versions/versions.json`, function(data) {
+        let versionElement = $("#versions");
+
+        Object.keys(data).forEach(function(key) {
+          let value = data[key];
+
+          let item = `<dd><a href="${baseUri}/versions/${key}/html/">${value}</a></dd>`
+
+          versionElement.append(item);
+        });
+      });
+    }
+  </script>
+  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      <span class="fa fa-book"> Read the Docs</span>
+      v: master
+      <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+      
+      <dl id="versions">
+        <dt>Versions</dt>
+      </dl>
+      
+      
+    </div>
+  </div>
+<script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });

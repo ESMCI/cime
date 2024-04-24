@@ -7,7 +7,7 @@
   <title>preview_run &mdash; CIME master documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
-      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=d05bb7fd" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
 
   
   <!--[if lt IE 9]>
@@ -17,9 +17,8 @@
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
         <script src="../_static/documentation_options.js?v=30d551ce"></script>
-        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-        <script src="../_static/pop_ver.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -149,35 +148,14 @@
 <div class="toctree-wrapper compound">
 </div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ ./preview_run --help
-usage: preview_run [-h] [-d] [-v] [-s] [-j JOB] [caseroot]
-
-Queries key CIME shell commands (mpirun and batch submission).
-
-To force a certain mpirun command, use:
-   ./xmlchange MPI_RUN_COMMAND=$your_cmd
-
-Example:
-   ./xmlchange MPI_RUN_COMMAND=&#39;mpiexec -np 16 --some-flag&#39;
-
-To force a certain qsub command, use:
-   ./xmlchange --subgroup=case.run BATCH_COMMAND_FLAGS=$your_flags
-
-Example:
-   ./xmlchange --subgroup=case.run BATCH_COMMAND_FLAGS=&#39;--some-flag --other-flag&#39;
-
-positional arguments:
-  caseroot           Case directory to query.
-                     Default is current directory.
-
-options:
-  -h, --help         show this help message and exit
-  -j JOB, --job JOB  The job you want to print.
-                     Default is case.run (or case.test if this is a test).
-
-Logging options:
-  -d, --debug        Print debug information (very verbose) to file /home/runner/work/cime/cime/CIME/Tools/preview_run.log
-  -v, --verbose      Add additional context (time and file) to log messages
-  -s, --silent       Print only warnings and error messages
+Traceback (most recent call last):
+  File &quot;/home/runner/work/cime/cime/CIME/Tools/./preview_run&quot;, line 19, in &lt;module&gt;
+    from standard_script_setup import *
+  File &quot;/home/runner/work/cime/cime/CIME/Tools/standard_script_setup.py&quot;, line 42, in &lt;module&gt;
+    import CIME.utils
+  File &quot;/home/runner/work/cime/cime/CIME/utils.py&quot;, line 15, in &lt;module&gt;
+    from distutils import file_util
+ModuleNotFoundError: No module named &#39;distutils&#39;
 </pre></div>
 </div>
 </section>
@@ -209,7 +187,44 @@ Logging options:
       </div>
     </section>
   </div>
-  <script>
+  
+
+  <script type="text/javascript">
+    let baseUriRegex = /(.*\/cime)\/.*/g;
+    let parsedUri = baseUriRegex.exec(document.baseURI);
+
+    if (parsedUri != null && parsedUri.length == 2) {
+      let baseUri = parsedUri[1];
+
+      $.get(`${baseUri}/versions/versions.json`, function(data) {
+        let versionElement = $("#versions");
+
+        Object.keys(data).forEach(function(key) {
+          let value = data[key];
+
+          let item = `<dd><a href="${baseUri}/versions/${key}/html/">${value}</a></dd>`
+
+          versionElement.append(item);
+        });
+      });
+    }
+  </script>
+  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      <span class="fa fa-book"> Read the Docs</span>
+      v: master
+      <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+      
+      <dl id="versions">
+        <dt>Versions</dt>
+      </dl>
+      
+      
+    </div>
+  </div>
+<script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
