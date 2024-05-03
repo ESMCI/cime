@@ -1,11 +1,66 @@
 import os
 import unittest
 import tempfile
+from unittest import mock
+from pathlib import Path
 
 from CIME.config import Config
 
 
+def spy(method):
+    m = mock.MagicMock()
+
+    def wrapper(self, *args, **kwargs):
+        m(*args, **kwargs)
+        return method(self, *args, **kwargs)
+
+    wrapper.mock = m
+    return wrapper
+
+
 class TestConfig(unittest.TestCase):
+    def test_ignore(self):
+        test_paths = (
+            ("valid.py", False),
+            ("module/valid.py", False),
+            ("valid_test.py", False),
+            ("test_something.py", True),
+            ("tests/test_something.py", True),
+            ("conftest.py", True),
+            ("tests/conftest.py", True),
+            ("tests/generic/test_something.py", True),
+            ("tests/generic/conftest.py", True),
+        )
+
+        with tempfile.TemporaryDirectory() as _tempdir:
+            for src_path_name in ("generic", "test", "tests"):
+                customize_path = Path(
+                    _tempdir, src_path_name, "cime_config", "customize"
+                )
+
+                for test_path_name, _ in test_paths:
+                    test_file = customize_path / test_path_name
+
+                    test_file.parent.mkdir(parents=True, exist_ok=True)
+
+                    test_file.touch()
+
+                with mock.patch(
+                    "CIME.config.Config._load_file", spy(Config._load_file)
+                ) as mock_load_file:
+                    _ = Config.load(f"{customize_path}")
+
+                    loaded_files = [
+                        f'{Path(x[0][0]).relative_to(f"{customize_path}")}'
+                        for x in mock_load_file.mock.call_args_list
+                    ]
+
+                    for test_path_name, ignored in test_paths:
+                        if ignored:
+                            assert test_path_name not in loaded_files
+                        else:
+                            assert test_path_name in loaded_files
+
     def test_class_external(self):
         with tempfile.TemporaryDirectory() as tempdir:
             complex_file = os.path.join(tempdir, "01_complex.py")
