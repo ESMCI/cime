@@ -4,6 +4,7 @@ import logging
 import importlib.machinery
 import importlib.util
 import inspect
+from pathlib import Path
 
 from CIME import utils
 
@@ -75,12 +76,17 @@ class ConfigBase:
 
         logger.debug("Searching %r for files to load", customize_path)
 
-        customize_files = glob.glob(f"{customize_path}/**/*.py", recursive=True)
+        customize_path = Path(customize_path)
 
-        # filter out any tests
-        customize_files = [
-            x for x in customize_files if "tests" not in x and "conftest" not in x
-        ]
+        if customize_path.is_file():
+            customize_files = [f"{customize_path}"]
+        else:
+            customize_files = glob.glob(f"{customize_path}/**/*.py", recursive=True)
+
+            # filter out any tests
+            customize_files = [
+                x for x in customize_files if "tests" not in x and "conftest" not in x
+            ]
 
         customize_module_spec = importlib.machinery.ModuleSpec("cime_customize", None)
 

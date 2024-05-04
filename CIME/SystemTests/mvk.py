@@ -11,6 +11,7 @@ import json
 import logging
 
 from distutils import dir_util
+from pathlib import Path
 
 import CIME.test_status
 import CIME.utils
@@ -140,8 +141,12 @@ class MVK(SystemTestsCommon):
                             )
                         )
 
-            self._config = MVKConfig.load(test_mod_file)
-        else:
+                params_file = Path(test_mod_file, "params.py")
+
+                if params_file.exists():
+                    self._config = MVKConfig.load(test_mod_file)
+
+        if self._config is None:
             self._config = MVKConfig()
 
         # Use old behavior for component
