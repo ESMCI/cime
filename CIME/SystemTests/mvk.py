@@ -25,7 +25,7 @@ from CIME.XML.files import Files
 import evv4esm  # pylint: disable=import-error
 from evv4esm.__main__ import main as evv  # pylint: disable=import-error
 
-evv_lib_dir = os.path.abspath(os.path.dirname(evv4esm.__file__))
+EVV_LIB_DIR = os.path.abspath(os.path.dirname(evv4esm.__file__))
 
 logger = logging.getLogger(__name__)
 
@@ -37,13 +37,21 @@ class MVKConfig(ConfigBase):
         if self.loaded:
             return
 
-        self._set_attribute("component", "", "Main component")
-        self._set_attribute("ninst", 30, "Number of instances")
+        self._set_attribute("component", "", "Model component name.")
+        self._set_attribute("ninst", 30, "The number of instances.")
+        self._set_attribute(
+            "critical", 13, "The critical value for rejecting the null hypothese."
+        )
+        self._set_attribute(
+            "var_set", "default", "Name of the variable set to analyze."
+        )
+        self._set_attribute("ref_case", "Baseline", "Name of the reference case.")
+        self._set_attribute("test_case", "Test", "Name of the test case.")
 
     def write_inst_nml(self, case, write_line, iinst):
         """Write per instance namelist.
 
-        This method is called once per instance.
+        This method is called once per instance to generate the namelist.
 
         Args:
             case (CIME.case.case.Case): The case instance.
@@ -71,13 +79,13 @@ class MVKConfig(ConfigBase):
         """
         config = {
             "module": os.path.join(evv_lib_dir, "extensions", "ks.py"),
-            "test-case": "Test",
+            "test-case": self.test_case,
             "test-dir": run_dir,
-            "ref-case": "Baseline",
+            "ref-case": self.ref_case,
             "ref-dir": base_dir,
-            "var-set": "default",
+            "var-set": self.var_set,
             "ninst": self.ninst,
-            "critical": 13,
+            "critical": self.critical,
             "component": self.component,
         }
 
@@ -235,7 +243,7 @@ class MVK(SystemTestsCommon):
             test_name = "{}".format(case_name.split(".")[-1])
 
             test_config = self._config.test_config(
-                self._case, run_dir, base_dir, evv_lib_dir
+                self._case, run_dir, base_dir, EVV_LIB_DIR
             )
 
             evv_config = {test_name: test_config}
