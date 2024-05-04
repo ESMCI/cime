@@ -152,7 +152,7 @@ class ConfigBase:
     def print_method_rst(self):
         print_rst_header("Methods")
 
-        methods = inspect.getmembers(self, lambda x: inspect.ismethod(x))
+        methods = inspect.getmembers(self, inspect.ismethod)
 
         ignore = (
             "__init__",

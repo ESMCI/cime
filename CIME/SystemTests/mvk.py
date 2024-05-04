@@ -48,7 +48,9 @@ class MVKConfig(ConfigBase):
         self._set_attribute("ref_case", "Baseline", "Name of the reference case.")
         self._set_attribute("test_case", "Test", "Name of the test case.")
 
-    def write_inst_nml(self, case, write_line, iinst):
+    def write_inst_nml(
+        self, case, write_line, iinst
+    ):  # pylint: disable=unused-argument
         """Write per instance namelist.
 
         This method is called once per instance to generate the namelist.
@@ -63,7 +65,9 @@ class MVKConfig(ConfigBase):
         write_line("seed_custom = {}".format(iinst))
         write_line("seed_clock = .true.")
 
-    def test_config(self, case, run_dir, base_dir, evv_lib_dir):
+    def test_config(
+        self, case, run_dir, base_dir, evv_lib_dir
+    ):  # pylint: disable=unused-argument
         """Configure the evv test.
 
         This method is used to pass the evv4esm configuration to be written for the test.
@@ -108,7 +112,7 @@ class MVK(SystemTestsCommon):
 
             files = Files(comp_interface=comp_interface)
 
-            for mod in test_mods:
+            for mod in test_mods:  # pylint: disable=not-an-iterable
                 if mod.find("/") == -1:
                     raise CIMEError(
                         "Missing testmod component. Testmods are specified as '${component}-${testmod}"
@@ -183,7 +187,11 @@ class MVK(SystemTestsCommon):
             with open(
                 "user_nl_{}_{:04d}".format(self.component, iinst), "w"
             ) as nml_file:
-                write_line = lambda x: nml_file.write(f"{x}\n")
+                write_line = (
+                    lambda x: nml_file.write(  # pylint: disable=cell-var-from-loop
+                        f"{x}\n"
+                    )
+                )
 
                 self._config.write_inst_nml(self._case, write_line, iinst)
 
