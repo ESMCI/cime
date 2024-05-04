@@ -50,7 +50,7 @@ class MVKConfig(ConfigBase):
         self._set_attribute("test_case", "Test", "Name of the test case.")
 
     def write_inst_nml(
-        self, case, write_line, iinst
+        self, case, set_nml_variable, iinst
     ):  # pylint: disable=unused-argument
         """Write per instance namelist.
 
@@ -58,13 +58,13 @@ class MVKConfig(ConfigBase):
 
         Args:
             case (CIME.case.case.Case): The case instance.
-            write_line (function): Function takes single `str` argument.
+            write_nml_variable (function): Function takes two `str` arguments.
             iinst (int): Instance unique number.
         """
-        write_line("new_random = .true.")
-        write_line("pertlim = 1.0e-10")
-        write_line("seed_custom = {}".format(iinst))
-        write_line("seed_clock = .true.")
+        set_nml_variable("new_random", ".true.")
+        set_nml_variable("pertlim", "1.0e-10")
+        set_nml_variable("seed_custom", f"{iinst}")
+        set_nml_variable("seed_clock", ".true.")
 
     def test_config(
         self, case, run_dir, base_dir, evv_lib_dir
@@ -192,13 +192,13 @@ class MVK(SystemTestsCommon):
             with open(
                 "user_nl_{}_{:04d}".format(self.component, iinst), "w"
             ) as nml_file:
-                write_line = (
+                set_nml_variable = (
                     lambda x: nml_file.write(  # pylint: disable=cell-var-from-loop
                         f"{x}\n"
                     )
                 )
 
-                self._config.write_inst_nml(self._case, write_line, iinst)
+                self._config.write_inst_nml(self._case, set_nml_variable, iinst)
 
         self.build_indv(sharedlib_only=sharedlib_only, model_only=model_only)
 
