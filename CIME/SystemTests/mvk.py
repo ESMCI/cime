@@ -37,7 +37,7 @@ class MVKConfig(ConfigBase):
         if self.loaded:
             return
 
-        self._set_attribute("component", None, "Main component")
+        self._set_attribute("component", "", "Main component")
         self._set_attribute("ninst", 30, "Number of instances")
 
     def write_inst_nml(self, case, write_line, iinst):
@@ -133,7 +133,7 @@ class MVK(SystemTestsCommon):
             self._config = MVKConfig()
 
         # Use old behavior for component
-        if self._config.component is None:
+        if self._config.component == "":
             # TODO remove model specific
             if self._case.get_value("MODEL") == "e3sm":
                 self.component = "eam"
