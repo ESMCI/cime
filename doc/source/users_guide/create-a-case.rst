@@ -63,7 +63,7 @@ In the argument to ``--case``, the case name is taken from the string after the 
 The output from create_newcase includes information such as.
 
 - The compset longname is ``2000_DATM%NYF_SLND_DICE%SSMI_DOCN%DOM_DROF%NYF_SGLC_SWAV``
-- The model resolution is ``a%0.9x1.25_l%0.9x1.25_oi%gx1v6_r%r05_m%gx1v6_g%null_w%null``
+- The grid set is ``a%0.9x1.25_l%0.9x1.25_oi%gx1v6_r%r05_m%gx1v6_g%null_w%null``
 
 `create_newcase  <../Tools_user/create_newcase.html>`_ installs files in ``$CASEROOT`` that will build and run the model and to optionally archive the case on the target platform.
 
@@ -74,23 +74,26 @@ Running `create_newcase  <../Tools_user/create_newcase.html>`_ creates the follo
 - `case.build  <../Tools_user/case.build.html>`_
      Script to build component and utility libraries and model executable.
 
+- `case.cmpgen_namelist <../Tools_user/case.submit.html>`_
+     Script to perform namelist baseline operations (compare, generate, or both)."
+
+-  case.qstatus
+    Script to query the queue on any queue system.
+
 - `case.setup  <../Tools_user/case.setup.html>`_
     Script used to set up the case (create the case.run script, Macros file and user_nl_xxx files).
-
-- `case.st_archive <../Tools_user/case.st_archive.html>`_
-     Script to perform short term archiving to disk for your case output. Note that this script is run automatically by the normal CIME workflow.
 
 - `case.submit <../Tools_user/case.submit.html>`_
      Script to submit the case to run using the machine's batch queueing system.
 
-- `case.cmpgen_namelist <../Tools_user/case.submit.html>`_
-     Script to perform namelist baseline operations (compare, generate, or both)."
+- `check_case <../Tools_user/check_case.html>`_
+     Script to verify case is set up correctly.
 
-- `xmlchange <../Tools_user/xmlchange.html>`_
-     Script to modify values in the xml files.
+- `check_input_data <../Tools_user/check_input_data.html>`_
+     Script for checking for various input data sets and moving them into place.
 
-- `xmlquery <../Tools_user/xmlquery.html>`_
-     Script to query values in the xml files.
+- `pelayout <../Tools_user/pelayout.html>`_
+     Script to query and modify the NTASKS, ROOTPE, and NTHRDS for each component model.
 
 - `preview_namelists <../Tools_user/preview_namelists.html>`_
      Script for users to see their component namelists in ``$CASEROOT/CaseDocs`` before running the model.
@@ -98,15 +101,12 @@ Running `create_newcase  <../Tools_user/create_newcase.html>`_ creates the follo
 - `preview_run <../Tools_user/preview_run.html>`_
      Script for users to see batch submit and mpirun command."
 
-- `check_input_data <../Tools_user/check_input_data.html>`_
-     Script for checking for various input data sets and moving them into place.
+- `xmlchange <../Tools_user/xmlchange.html>`_
+     Script to modify values in the xml files.
 
-- `check_case <../Tools_user/check_case.html>`_
-     Script to verify case is set up correctly.
+- `xmlquery <../Tools_user/xmlquery.html>`_
+     Script to query values in the xml files.
 
-- `pelayout <../Tools_user/pelayout.html>`_
-     Script to query and modify the NTASKS, ROOTPE, and NTHRDS for each component model.
-     This a convenience script that can be used in place of `xmlchange <../Tools_user/xmlchange.html>`_ and `xmlquery <../Tools_user/xmlquery.html>`_.
 
 **XML Files**
 
@@ -114,24 +114,30 @@ Running `create_newcase  <../Tools_user/create_newcase.html>`_ creates the follo
    Defines patterns of files to be sent to the short-term archive.
    You can edit this file at any time. You **CANNOT** use `xmlchange <../Tools_user/xmlchange.html>`_  to modify variables in this file."
 
-- env_mach_specific.xml
-   Sets a number of machine-specific environment variables for building and/or running.
-   You **CANNOT** use `xmlchange <../Tools_user/xmlchange.html>`_  to modify variables in this file.
+- env_batch.xml
+   Sets batch system settings such as wallclock time and queue name."
 
 - env_build.xml
    Sets model build settings. This includes component resolutions and component compile-time configuration options.
    You must run the case.build command after changing this file.
 
-- env_run.xml
-   Sets runtime settings such as length of run, frequency of restarts, output of coupler diagnostics, and short-term and long-term archiving.
-   This file can be edited at any time before a job starts.
+- env_case.xml
+   Parameters set by create_newcase
 
 - env_mach_pes.xml
    Sets component machine-specific processor layout (see changing pe layout ).
    The settings in this are critical to a well-load-balanced simulation (see :ref:`load balancing <optimizing-processor-layout>`).
 
-- env_batch.xml
-   Sets batch system settings such as wallclock time and queue name."
+- env_mach_specific.xml
+   Sets a number of machine-specific environment variables for building and/or running.
+   You **CANNOT** use `xmlchange <../Tools_user/xmlchange.html>`_  to modify variables in this file.
+
+- env_run.xml
+   Sets runtime settings such as length of run, frequency of restarts, output of coupler diagnostics, and short-term and long-term archiving.
+   This file can be edited at any time before a job starts.
+
+- env_workflow.xml
+   Sets paramateres for the runtime workflow.
 
 **User Source Mods Directory**
 

@@ -17,12 +17,15 @@
 Overview
 *********
 
-CIME, pronounced "SEAM", primarily consists of a Case Control System that supports the configuration, compilation, execution, system testing and unit testing of an Earth System Model. The two main components of the Case Control System are:
+CIME (Common Infrastructure for Modeling the Earth, pronounced "SEAM") primarily consists of a Case Control System that supports the configuration, compilation, execution, system testing and unit testing of an Earth System Model. The three main components of the Case Control System are:
 
-1. Scripts to enable simple generation of model executables and associated input files for different scientific cases, component resolutions and combinations of full, data and stub components with a handful of commands.
-2. Testing utilities to run defined system tests and report results for different configurations of the coupled system.
+1. XML files that  describe the available machines, models and model configurations.
+2. Python scripts that take user commands and parse the XML files to configure a set of models with their
+   build and runtime options for a specified machine and the provide additional commands to build executables and
+   submit jobs.
+3. Testing utilities to run defined system tests and report results for different configurations of the coupled system.
 
-CIME also contains additional stand-alone tools, including:
+CIME also contains additional stand-alone tools useful for Earth system modeling including:
 
 1. Parallel regridding weight generation program
 2. Scripts to automate off-line load-balancing.

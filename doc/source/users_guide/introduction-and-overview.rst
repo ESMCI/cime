@@ -26,7 +26,7 @@ Other prerequisites:
 
 CIME's commands are Python scripts and require a correct version of
 the Python interpreter to be installed. The Python version must be
-greater than 2.7.  Determine which version you have
+greater than 2.11.  Determine which version you have
 like this:
 ::
 
@@ -37,7 +37,7 @@ Consult your local documentation if you need to update your python version.
 Key Terms and concepts
 ======================
 
-The following key terms and concepts are ingrained in CIME and used frequently in this documentation.
+The following key terms and concepts are ingrained in the CCS and used frequently in this documentation.
 See the :ref:`glossary` for a more complete list of terms.
 
 **components**
@@ -63,26 +63,61 @@ See the :ref:`glossary` for a more complete list of terms.
    *data*: For some climate problems, it is necessary to reduce feedbacks within the system by replacing an active model with a
    version that sends and receives the same variables to and from other models, but with the values read from files rather
    than computed from the equations. The values received are ignored. These active-model substitutes are called *data models*.
-   CIME provides data models for each of the possible components.  You could add your own data model implementation of a component
-   but as for active models only one at a time can be used.
 
-   *stub*: For some configurations, no data model is needed, so CIME provides *stub* versions that simply occupy the
-   required place in the driver and do not send or receive any data.
+   *stub*: For some configurations, no data model is needed and one instead uses a *stub* version that simply occupies the
+   required place in the driver and does not send or receive any data.  For example, if you are setting up an aqua-planet case
+   you would only need a stub for the land model.
 
-**component set** or **compset**:   The particular combination of active, data and stub versions of the 7 components is referred to
+**component set** or **compset**:
+
+   The particular combination of active, data and stub versions of the 7 components is referred to
    as a *component set* or  *compset*.  The Case Control System allows one to define
-   several possible compsets and configure and run them on supported platforms. See :ref:`Component Sets<compsets>` for more information.
+   several possible compsets and configure and run them on supported platforms.
+   Here is an example of a component set *longname* from E3SM for a fully coupled active case:
+::
 
-**grid** or **model grid**:
+   1850SOI_EAM%CMIP6_ELM%CNPRDCTCBCTOP_MPASSI_MPASO_MOSART_SGLC_SWAV
+
+See :ref:`Component Sets<compsets>` for more information. "GLC" originally meant "glacier model" and is now an ice-sheet model but the GLC letters have stuck.
+
+**compset alias**:
+
+   Typing a compset longname like the above can be exhausting so the CCS allows defining a shorter *compset alias*
+   which is a short string that substitutes for the longname. In E3SM, the above longname can be reffered to as "WCYCL1850".
+
+.. note:: 
+
+     Long ago, CESM established a convention for the first letter in a compset alias based
+     on the combination of active, data and stub components.
+     If you see mention of "B-case" or "F-case", it comes from these conventions.
+     They pre-date the introduction of a wave model as an option.
+
+    ===  ========================================================================================
+    A    All data models
+    B    All models fully active with stub glc
+    C    Active ocean with data atm, river and sea ice. stub lnd, glc
+    D    Active sea ice with data atm, ocean (slab) and river. stub lnd, glc
+    E    Active atm, lnd, sea-ice, river, data ocean (slab), stub glc
+    F    Active atm, lnd, river, sea-ice (thermodynamics only), data ocean (fixed SST), stub glc
+    G    Active ocean and sea ice, data atmosphere and river, stub lnd and glc 
+    H    Active ocean and sea ice, data atmosphere, stub lnd, river and glc 
+    I    Active land and river model, data atmosphere, stub ocn, sea-ice, glc
+    IG   Active land, river and ice-sheet, data atmosphere, stub ocn, sea-ice
+    S    All stub models (for testing only)
+    X    All x-compsets (2D sine waves for each component except stub glc; for testing only)
+    ===  ========================================================================================
+..
+**grid set**:
+
    Each active model must solve its equations on a numerical grid. CIME allows models within the system to have
-   different grids. The resulting set of all numerical grids is called the *model grid* or sometimes just the *grid*, where
-   *grid* is a unique name that denotes a set of numerical grids. Sometimes the *resolution* also refers to a specific set
-   of grids.
+   different grids. The resulting set of all numerical grids is called the *grid set* or usually just the *grid*. Like
+   the compset longnamme, the CCS allows one to define an alias to represent a grid set.  This alias is also referred to
+   as the *grid* or sometimes the *resolution*.
 
 **machine and compilers**:
    The *machine* is the computer you are using to run CIME and build and run the climate model. It could be a workstation
    or a national supercomputer. The exact name of  *machine* is typically the UNIX hostname but it could be any string.  A machine
-   may have one more more versions of Fortran, C and C++ *compilers* that are needed to compile the model's source code and CIME
+   may have one more more versions of Fortran, C and C++ *compilers* that are needed to compile the model's source code and CIME.
 
 **case**:
     To build and execute a CIME-enabled climate model, you have to make choices of compset, model grid,
@@ -95,10 +130,10 @@ See the :ref:`glossary` for a more complete list of terms.
    the model source code and version-controlled together, its possible to match supported out-of-the-box cases with specific
    versions of the model source code, promoting reproducibility and provenance.  An out-of-the-box case is also called a *base case*
 
-CIME and your environment
+CCS and your environment
 =========================
 
-Before using any CIME commands, set the ``CIME_MODEL`` environment variable. In bash, use **export** as shown and replace
+Before using any CCS commands, set the ``CIME_MODEL`` environment variable. In bash, use **export** as shown and replace
 **<model>** with the appropriate text. Current possibilities are "e3sm" or "cesm."
 ::
 
@@ -139,16 +174,13 @@ After you submit the case, you can follow the progress of your run by monitoring
 Repeat the command until you see the message ``case.run success``.
 
 
-Discovering available cases with **query_config**
+Discovering available pre-defined compsets with **query_config**
 =================================================
 
-Your CIME-driven model has many more possible cases besides the simple one in the above Quick Start.
+Your CIME-driven model likely has many compset and gridset aliases defined for cases that are widely used by the
+model developers.
 
 Use the utility `query_config <../Tools_user/query_config.html>`_  to see which out-of-the-box compsets, components, grids and machines are available for your model.
-
-If CIME is downloaded in standalone mode, only standalone CIME compsets can be queried.
-
-If CIME is part of a CIME-driven model, `query_config <../Tools_user/query_config.html>`_ will allow you to query all prognostic component compsets.
 
 To see lists of available compsets, components, grids and machines, look at the **help** text::
 
