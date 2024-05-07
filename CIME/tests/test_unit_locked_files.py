@@ -62,7 +62,7 @@ class TestLockedFiles(unittest.TestCase):
         }
 
         with self.assertRaisesRegex(
-            CIMEError, "ERROR: A rebuild is required, please run:.*"
+            CIMEError, "ERROR: For your changes to take effect, run:.*"
         ):
             locked_files.check_diff(case, "env_mach_pes.xml", "env_mach_pes", diff)
 
@@ -93,7 +93,13 @@ class TestLockedFiles(unittest.TestCase):
             "PIO_VERSION": ("1", "2"),
         }
 
-        locked_files.check_diff(case, "env_build.xml", "env_build", diff)
+        expected_msg = """ERROR: For your changes to take effect, run:
+./case.build --clean-all
+./case.build
+        """
+
+        with self.assertRaises(CIMEError, msg=expected_msg):
+            locked_files.check_diff(case, "env_build.xml", "env_build", diff)
 
         case.set_value.assert_any_call("BUILD_COMPLETE", False)
         case.set_value.assert_any_call("BUILD_STATUS", 2)
@@ -105,7 +111,13 @@ class TestLockedFiles(unittest.TestCase):
             "some_key": ("value1", "value2"),
         }
 
-        locked_files.check_diff(case, "env_build.xml", "env_build", diff)
+        expected_msg = """ERROR: For your changes to take effect, run:
+./case.build --clean-all
+./case.build
+        """
+
+        with self.assertRaises(CIMEError, msg=expected_msg):
+            locked_files.check_diff(case, "env_build.xml", "env_build", diff)
 
         case.set_value.assert_any_call("BUILD_COMPLETE", False)
         case.set_value.assert_any_call("BUILD_STATUS", 1)

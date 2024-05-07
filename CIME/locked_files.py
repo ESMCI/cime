@@ -173,11 +173,18 @@ def check_diff(case, filename, env_name, diff):
                 )
 
             case.set_value("BUILD_STATUS", build_status)
+
+            expect(
+                False,
+                "For your changes to take effect, run:\n./case.build --clean-all\n./case.build",
+            )
     elif env_name == "env_batch":
         expect(
             False,
             "Batch configuration has changed, please run `./case.setup --reset`",
         )
+    elif env_name == "env_mach_pes":
+        expect(False, "For your changes to take effect, run:\n./case.setup --reset")
     else:
         toggle_build_status = False
 
