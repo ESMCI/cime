@@ -159,29 +159,24 @@ def check_diff(case, filename, env_name, diff):
             False,
             f"Cannot change `env_case.xml`, please restore origin {filename!r}",
         )
-    elif env_name == "env_build":
-        toggle_build_status = True if diff else False
+    elif env_name == "env_build" and diff:
+        case.set_value("BUILD_COMPLETE", False)
 
-        if toggle_build_status:
-            logger.warning("Setting 'BUILD_COMPLETE' to False")
+        build_status = 1
 
-            case.set_value("BUILD_COMPLETE", False)
+        if "PIO_VERSION" in diff:
+            build_status = 2
 
-            build_status = 1
-
-            if "PIO_VERSION" in diff:
-                build_status = 2
-
-                logging.critical(
-                    "Changing 'PIO_VERSION' requires running `./case.build --clean-all` to rebuild"
-                )
-
-            case.set_value("BUILD_STATUS", build_status)
-
-            expect(
-                False,
-                "For your changes to take effect, run:\n./case.build --clean-all\n./case.build",
+            logging.critical(
+                "Changing 'PIO_VERSION' requires running `./case.build --clean-all` to rebuild"
             )
+
+        case.set_value("BUILD_STATUS", build_status)
+
+        expect(
+            False,
+            "For your changes to take effect, run:\n./case.build --clean-all\n./case.build",
+        )
     elif env_name == "env_batch":
         expect(
             False,
