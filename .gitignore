@@ -4,6 +4,7 @@ buildnmlc
 buildlib.*c
 CIME.egg-info/
 build/
+_build/
 dist/
 .coverage
 
