@@ -50,7 +50,7 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../what_cime/index.html">What is CIME?</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="index.html">Case Control System Part 1: Basic Usage</a><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Using the Case Control System</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="introduction-and-overview.html">1. Introduction</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">2. Creating a Case</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#calling-create-newcase">2.1. Calling <strong>create_newcase</strong></a></li>
@@ -66,10 +66,11 @@
 <li class="toctree-l2"><a class="reference internal" href="cime-change-namelist.html">7. Customizing your input variables</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cime-config.html">8. CIME user config directory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cime-customize.html">9. CIME config and hooks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html">10. Troubleshooting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testing.html">10. Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html">11. Troubleshooting</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="index.html#case-control-system-part-2-configuration-porting-testing-and-use-cases">Case Control System Part 2: Configuration, Porting, Testing and Use Cases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html#configuring-the-case-control-system">Configuring the Case Control System</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../build_cpl/index.html">Building a Coupled Model with CIME</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../misc_tools/index.html">Miscellaneous Tools</a></li>
 </ul>
@@ -95,7 +96,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="index.html">Case Control System Part 1: Basic Usage</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Using the Case Control System</a></li>
       <li class="breadcrumb-item active"><span class="section-number">2. </span>Creating a Case</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/users_guide/create-a-case.rst.txt" rel="nofollow"> View page source</a>
@@ -159,7 +160,7 @@ If that directory already exists, a warning is printed and the command aborts.</
 <p>The output from create_newcase includes information such as.</p>
 <ul class="simple">
 <li><p>The compset longname is <code class="docutils literal notranslate"><span class="pre">2000_DATM%NYF_SLND_DICE%SSMI_DOCN%DOM_DROF%NYF_SGLC_SWAV</span></code></p></li>
-<li><p>The model resolution is <code class="docutils literal notranslate"><span class="pre">a%0.9x1.25_l%0.9x1.25_oi%gx1v6_r%r05_m%gx1v6_g%null_w%null</span></code></p></li>
+<li><p>The grid set is <code class="docutils literal notranslate"><span class="pre">a%0.9x1.25_l%0.9x1.25_oi%gx1v6_r%r05_m%gx1v6_g%null_w%null</span></code></p></li>
 </ul>
 <p><a class="reference external" href="../Tools_user/create_newcase.html">create_newcase</a> installs files in <code class="docutils literal notranslate"><span class="pre">$CASEROOT</span></code> that will build and run the model and to optionally archive the case on the target platform.</p>
 <p>Running <a class="reference external" href="../Tools_user/create_newcase.html">create_newcase</a> creates the following scripts, files and directories in <code class="docutils literal notranslate"><span class="pre">$CASEROOT</span></code>:</p>
@@ -171,12 +172,17 @@ If that directory already exists, a warning is printed and the command aborts.</
 </dl>
 </li>
 <li><dl class="simple">
-<dt><a class="reference external" href="../Tools_user/case.setup.html">case.setup</a></dt><dd><p>Script used to set up the case (create the case.run script, Macros file and user_nl_xxx files).</p>
+<dt><a class="reference external" href="../Tools_user/case.submit.html">case.cmpgen_namelist</a></dt><dd><p>Script to perform namelist baseline operations (compare, generate, or both).”</p>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
-<dt><a class="reference external" href="../Tools_user/case.st_archive.html">case.st_archive</a></dt><dd><p>Script to perform short term archiving to disk for your case output. Note that this script is run automatically by the normal CIME workflow.</p>
+<dt>case.qstatus</dt><dd><p>Script to query the queue on any queue system.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><a class="reference external" href="../Tools_user/case.setup.html">case.setup</a></dt><dd><p>Script used to set up the case (create the case.run script, Macros file and user_nl_xxx files).</p>
 </dd>
 </dl>
 </li>
@@ -186,17 +192,17 @@ If that directory already exists, a warning is printed and the command aborts.</
 </dl>
 </li>
 <li><dl class="simple">
-<dt><a class="reference external" href="../Tools_user/case.submit.html">case.cmpgen_namelist</a></dt><dd><p>Script to perform namelist baseline operations (compare, generate, or both).”</p>
+<dt><a class="reference external" href="../Tools_user/check_case.html">check_case</a></dt><dd><p>Script to verify case is set up correctly.</p>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
-<dt><a class="reference external" href="../Tools_user/xmlchange.html">xmlchange</a></dt><dd><p>Script to modify values in the xml files.</p>
+<dt><a class="reference external" href="../Tools_user/check_input_data.html">check_input_data</a></dt><dd><p>Script for checking for various input data sets and moving them into place.</p>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
-<dt><a class="reference external" href="../Tools_user/xmlquery.html">xmlquery</a></dt><dd><p>Script to query values in the xml files.</p>
+<dt><a class="reference external" href="../Tools_user/pelayout.html">pelayout</a></dt><dd><p>Script to query and modify the NTASKS, ROOTPE, and NTHRDS for each component model.</p>
 </dd>
 </dl>
 </li>
@@ -211,18 +217,12 @@ If that directory already exists, a warning is printed and the command aborts.</
 </dl>
 </li>
 <li><dl class="simple">
-<dt><a class="reference external" href="../Tools_user/check_input_data.html">check_input_data</a></dt><dd><p>Script for checking for various input data sets and moving them into place.</p>
+<dt><a class="reference external" href="../Tools_user/xmlchange.html">xmlchange</a></dt><dd><p>Script to modify values in the xml files.</p>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
-<dt><a class="reference external" href="../Tools_user/check_case.html">check_case</a></dt><dd><p>Script to verify case is set up correctly.</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt><a class="reference external" href="../Tools_user/pelayout.html">pelayout</a></dt><dd><p>Script to query and modify the NTASKS, ROOTPE, and NTHRDS for each component model.
-This a convenience script that can be used in place of <a class="reference external" href="../Tools_user/xmlchange.html">xmlchange</a> and <a class="reference external" href="../Tools_user/xmlquery.html">xmlquery</a>.</p>
+<dt><a class="reference external" href="../Tools_user/xmlquery.html">xmlquery</a></dt><dd><p>Script to query values in the xml files.</p>
 </dd>
 </dl>
 </li>
@@ -236,8 +236,7 @@ You can edit this file at any time. You <strong>CANNOT</strong> use <a class="re
 </dl>
 </li>
 <li><dl class="simple">
-<dt>env_mach_specific.xml</dt><dd><p>Sets a number of machine-specific environment variables for building and/or running.
-You <strong>CANNOT</strong> use <a class="reference external" href="../Tools_user/xmlchange.html">xmlchange</a>  to modify variables in this file.</p>
+<dt>env_batch.xml</dt><dd><p>Sets batch system settings such as wallclock time and queue name.”</p>
 </dd>
 </dl>
 </li>
@@ -248,8 +247,7 @@ You must run the case.build command after changing this file.</p>
 </dl>
 </li>
 <li><dl class="simple">
-<dt>env_run.xml</dt><dd><p>Sets runtime settings such as length of run, frequency of restarts, output of coupler diagnostics, and short-term and long-term archiving.
-This file can be edited at any time before a job starts.</p>
+<dt>env_case.xml</dt><dd><p>Parameters set by create_newcase</p>
 </dd>
 </dl>
 </li>
@@ -260,7 +258,19 @@ The settings in this are critical to a well-load-balanced simulation (see <a cla
 </dl>
 </li>
 <li><dl class="simple">
-<dt>env_batch.xml</dt><dd><p>Sets batch system settings such as wallclock time and queue name.”</p>
+<dt>env_mach_specific.xml</dt><dd><p>Sets a number of machine-specific environment variables for building and/or running.
+You <strong>CANNOT</strong> use <a class="reference external" href="../Tools_user/xmlchange.html">xmlchange</a>  to modify variables in this file.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>env_run.xml</dt><dd><p>Sets runtime settings such as length of run, frequency of restarts, output of coupler diagnostics, and short-term and long-term archiving.
+This file can be edited at any time before a job starts.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>env_workflow.xml</dt><dd><p>Sets paramateres for the runtime workflow.</p>
 </dd>
 </dl>
 </li>

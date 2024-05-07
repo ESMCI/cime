@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>7. Timers and timing &mdash; CIME master documentation</title>
+  <title>Timers and timing &mdash; CIME master documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
@@ -21,9 +21,7 @@
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="8. Testing" href="testing.html" />
-    <link rel="prev" title="6. Porting and validating CIME on a new platform" href="porting-cime.html" /> 
+    <link rel="search" title="Search" href="../search.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -48,30 +46,10 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul class="current">
+              <ul>
 <li class="toctree-l1"><a class="reference internal" href="../what_cime/index.html">What is CIME?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="index.html">Case Control System Part 1: Basic Usage</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="index.html#case-control-system-part-2-configuration-porting-testing-and-use-cases">Case Control System Part 2: Configuration, Porting, Testing and Use Cases</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="cime-internals.html">1. Main Configuration File</a></li>
-<li class="toctree-l2"><a class="reference internal" href="compsets.html">2. Component sets</a></li>
-<li class="toctree-l2"><a class="reference internal" href="grids.html">3. Model grids</a></li>
-<li class="toctree-l2"><a class="reference internal" href="machine.html">4. Defining the machine</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pes-threads.html">5. Controlling processors and threads</a></li>
-<li class="toctree-l2"><a class="reference internal" href="porting-cime.html">6. Porting and validating CIME on a new platform</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">7. Timers and timing</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#model-timing-data">7.1. Model timing data</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#controlling-timers">7.2. Controlling timers</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#advice-on-setting-your-wallclock-time">7.3. Advice on setting your wallclock time</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="testing.html">8. Testing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_testing.html">9. Fortran Unit Testing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="multi-instance.html">10. Multi-instance component functionality</a></li>
-<li class="toctree-l2"><a class="reference internal" href="workflows.html">11. Workflows</a></li>
-<li class="toctree-l2"><a class="reference internal" href="cime-dir.html">12. Directory content</a></li>
-<li class="toctree-l2"><a class="reference internal" href="index.html#indices-and-tables">Indices and tables</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">Using the Case Control System</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html#configuring-the-case-control-system">Configuring the Case Control System</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../build_cpl/index.html">Building a Coupled Model with CIME</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../misc_tools/index.html">Miscellaneous Tools</a></li>
 </ul>
@@ -97,8 +75,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="index.html">Case Control System Part 1: Basic Usage</a></li>
-      <li class="breadcrumb-item active"><span class="section-number">7. </span>Timers and timing</li>
+      <li class="breadcrumb-item active">Timers and timing</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/users_guide/timers.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -109,11 +86,11 @@
            <div itemprop="articleBody">
              
   <section id="timers-and-timing">
-<span id="timers"></span><h1><span class="section-number">7. </span>Timers and timing<a class="headerlink" href="#timers-and-timing" title="Link to this heading"></a></h1>
+<span id="timers"></span><h1>Timers and timing<a class="headerlink" href="#timers-and-timing" title="Link to this heading"></a></h1>
 <p>CIME includes a copy of the General Purpose Timing Library (GPTL) and timers are placed throughout the CIME driver.  CIME-driven models typically
 also have GPTL timers in their code and very detailed timing information can be obtained.</p>
 <section id="model-timing-data">
-<span id="id1"></span><h2><span class="section-number">7.1. </span>Model timing data<a class="headerlink" href="#model-timing-data" title="Link to this heading"></a></h2>
+<span id="id1"></span><h2>Model timing data<a class="headerlink" href="#model-timing-data" title="Link to this heading"></a></h2>
 <p>Every model run produces three types of timing output that you can examine:</p>
 <ol class="arabic">
 <li><p><strong>$CASEROOT/timing/$model_timing.$CASE.$datestamp</strong></p>
@@ -214,7 +191,7 @@ month. This file will appear either in <strong>$RUNDIR</strong> or in
 <p>The xml variable <code class="docutils literal notranslate"><span class="pre">CHECK_TIMING</span></code>, if set to <code class="docutils literal notranslate"><span class="pre">TRUE</span></code> (the default) will produce the timing files in the <strong>$CASEROOT/timing</strong> directory.</p>
 </section>
 <section id="controlling-timers">
-<h2><span class="section-number">7.2. </span>Controlling timers<a class="headerlink" href="#controlling-timers" title="Link to this heading"></a></h2>
+<h2>Controlling timers<a class="headerlink" href="#controlling-timers" title="Link to this heading"></a></h2>
 <p>User customization of timers is done via the xml variables <code class="docutils literal notranslate"><span class="pre">TIMER_LEVEL</span></code> and <code class="docutils literal notranslate"><span class="pre">TIMER_DETAIL</span></code>.</p>
 <ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">TIMER_LEVEL</span></code>:</p>
@@ -240,7 +217,7 @@ add the following line in your <strong>$CASEROOT/user_nl_cpl</strong>:</p>
 </div>
 </section>
 <section id="advice-on-setting-your-wallclock-time">
-<h2><span class="section-number">7.3. </span>Advice on setting your wallclock time<a class="headerlink" href="#advice-on-setting-your-wallclock-time" title="Link to this heading"></a></h2>
+<h2>Advice on setting your wallclock time<a class="headerlink" href="#advice-on-setting-your-wallclock-time" title="Link to this heading"></a></h2>
 <dl>
 <dt>When you look at the <strong>$model_timing.$CASE.$datestamp</strong> file for “Model Throughput”, you will find output like this:</dt><dd><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Overall</span> <span class="n">Metrics</span><span class="p">:</span>
 <span class="n">Model</span> <span class="n">Cost</span><span class="p">:</span> <span class="mf">327.14</span> <span class="n">pe</span><span class="o">-</span><span class="n">hrs</span><span class="o">/</span><span class="n">simulated_year</span> <span class="p">(</span><span class="n">scale</span><span class="o">=</span> <span class="mf">0.50</span><span class="p">)</span>
@@ -273,10 +250,7 @@ year/job. In this example, set your wallclock at 12 hours and invoke
 
            </div>
           </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="porting-cime.html" class="btn btn-neutral float-left" title="6. Porting and validating CIME on a new platform" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="testing.html" class="btn btn-neutral float-right" title="8. Testing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-    </div>
+          <footer>
 
   <hr/>
 

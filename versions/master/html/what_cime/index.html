@@ -22,7 +22,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Case Control System Part 1: Basic Usage" href="../users_guide/index.html" />
+    <link rel="next" title="Using the Case Control System" href="../users_guide/index.html" />
     <link rel="prev" title="CIME documentation" href="../index.html" /> 
 </head>
 
@@ -54,8 +54,8 @@
 <li class="toctree-l2"><a class="reference internal" href="#development">Development</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../users_guide/index.html">Case Control System Part 1: Basic Usage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../users_guide/index.html#case-control-system-part-2-configuration-porting-testing-and-use-cases">Case Control System Part 2: Configuration, Porting, Testing and Use Cases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users_guide/index.html">Using the Case Control System</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users_guide/index.html#configuring-the-case-control-system">Configuring the Case Control System</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../build_cpl/index.html">Building a Coupled Model with CIME</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../misc_tools/index.html">Miscellaneous Tools</a></li>
 </ul>
@@ -97,12 +97,15 @@
 </div>
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
-<p>CIME, pronounced “SEAM”, primarily consists of a Case Control System that supports the configuration, compilation, execution, system testing and unit testing of an Earth System Model. The two main components of the Case Control System are:</p>
+<p>CIME (Common Infrastructure for Modeling the Earth, pronounced “SEAM”) primarily consists of a Case Control System that supports the configuration, compilation, execution, system testing and unit testing of an Earth System Model. The three main components of the Case Control System are:</p>
 <ol class="arabic simple">
-<li><p>Scripts to enable simple generation of model executables and associated input files for different scientific cases, component resolutions and combinations of full, data and stub components with a handful of commands.</p></li>
+<li><p>XML files that  describe the available machines, models and model configurations.</p></li>
+<li><p>Python scripts that take user commands and parse the XML files to configure a set of models with their
+build and runtime options for a specified machine and the provide additional commands to build executables and
+submit jobs.</p></li>
 <li><p>Testing utilities to run defined system tests and report results for different configurations of the coupled system.</p></li>
 </ol>
-<p>CIME also contains additional stand-alone tools, including:</p>
+<p>CIME also contains additional stand-alone tools useful for Earth system modeling including:</p>
 <ol class="arabic simple">
 <li><p>Parallel regridding weight generation program</p></li>
 <li><p>Scripts to automate off-line load-balancing.</p></li>
@@ -124,7 +127,7 @@ Github at <a class="reference external" href="http://github.com/ESMCI/cime">http
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="../index.html" class="btn btn-neutral float-left" title="CIME documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="../users_guide/index.html" class="btn btn-neutral float-right" title="Case Control System Part 1: Basic Usage" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../users_guide/index.html" class="btn btn-neutral float-right" title="Using the Case Control System" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

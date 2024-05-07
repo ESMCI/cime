@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>10. Troubleshooting &mdash; CIME master documentation</title>
+  <title>11. Troubleshooting &mdash; CIME master documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
@@ -23,7 +23,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="1. Main Configuration File" href="cime-internals.html" />
-    <link rel="prev" title="9. CIME config and hooks" href="cime-customize.html" /> 
+    <link rel="prev" title="10. Testing" href="testing.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -50,7 +50,7 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../what_cime/index.html">What is CIME?</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="index.html">Case Control System Part 1: Basic Usage</a><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Using the Case Control System</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="introduction-and-overview.html">1. Introduction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="create-a-case.html">2. Creating a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="setting-up-a-case.html">3. Setting up a Case</a></li>
@@ -60,16 +60,17 @@
 <li class="toctree-l2"><a class="reference internal" href="cime-change-namelist.html">7. Customizing your input variables</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cime-config.html">8. CIME user config directory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cime-customize.html">9. CIME config and hooks</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">10. Troubleshooting</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#troubleshooting-case-creation">10.1. Troubleshooting case creation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#troubleshooting-problems-in-cime-scripts">10.2. Troubleshooting problems in cime scripts</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#troubleshooting-job-submission">10.3. Troubleshooting job submission</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#troubleshooting-runtime-problems">10.4. Troubleshooting runtime problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testing.html">10. Testing</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">11. Troubleshooting</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#troubleshooting-case-creation">11.1. Troubleshooting case creation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#troubleshooting-problems-in-cime-scripts">11.2. Troubleshooting problems in cime scripts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#troubleshooting-job-submission">11.3. Troubleshooting job submission</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#troubleshooting-runtime-problems">11.4. Troubleshooting runtime problems</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="index.html#case-control-system-part-2-configuration-porting-testing-and-use-cases">Case Control System Part 2: Configuration, Porting, Testing and Use Cases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html#configuring-the-case-control-system">Configuring the Case Control System</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../build_cpl/index.html">Building a Coupled Model with CIME</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../misc_tools/index.html">Miscellaneous Tools</a></li>
 </ul>
@@ -95,8 +96,8 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="index.html">Case Control System Part 1: Basic Usage</a></li>
-      <li class="breadcrumb-item active"><span class="section-number">10. </span>Troubleshooting</li>
+          <li class="breadcrumb-item"><a href="index.html">Using the Case Control System</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">11. </span>Troubleshooting</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/users_guide/troubleshooting.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -107,9 +108,9 @@
            <div itemprop="articleBody">
              
   <section id="troubleshooting">
-<span id="id1"></span><h1><span class="section-number">10. </span>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Link to this heading"></a></h1>
+<span id="id1"></span><h1><span class="section-number">11. </span>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Link to this heading"></a></h1>
 <section id="troubleshooting-case-creation">
-<h2><span class="section-number">10.1. </span>Troubleshooting case creation<a class="headerlink" href="#troubleshooting-case-creation" title="Link to this heading"></a></h2>
+<h2><span class="section-number">11.1. </span>Troubleshooting case creation<a class="headerlink" href="#troubleshooting-case-creation" title="Link to this heading"></a></h2>
 <p>Generally, <a class="reference external" href="../Tools_user/create_newcase.html">create_newcase</a> errors are reported to the terminal and should provide some guidance about what caused them.</p>
 <p>If <a class="reference external" href="../Tools_user/create_newcase.html">create_newcase</a> fails on a relatively generic error, first check to make sure the command-line arguments match the interface’s specification. See the help text to review usage.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">create_newcase</span> <span class="o">--</span><span class="n">help</span>
@@ -117,11 +118,11 @@
 </div>
 </section>
 <section id="troubleshooting-problems-in-cime-scripts">
-<h2><span class="section-number">10.2. </span>Troubleshooting problems in cime scripts<a class="headerlink" href="#troubleshooting-problems-in-cime-scripts" title="Link to this heading"></a></h2>
+<h2><span class="section-number">11.2. </span>Troubleshooting problems in cime scripts<a class="headerlink" href="#troubleshooting-problems-in-cime-scripts" title="Link to this heading"></a></h2>
 <p>If any of the python-based cime scripts are dying in a mysterious way, more information can be obtained by rerunning the script with the <code class="docutils literal notranslate"><span class="pre">--debug</span></code> option.</p>
 </section>
 <section id="troubleshooting-job-submission">
-<h2><span class="section-number">10.3. </span>Troubleshooting job submission<a class="headerlink" href="#troubleshooting-job-submission" title="Link to this heading"></a></h2>
+<h2><span class="section-number">11.3. </span>Troubleshooting job submission<a class="headerlink" href="#troubleshooting-job-submission" title="Link to this heading"></a></h2>
 <p>Most problems associated with submission or launch are site-specific.
 The batch and run aspects of the <a class="reference external" href="../Tools_user/case.submit.html">case.submit</a> script are created by parsing the variables in <strong>$CASEROOT/env_batch.xml</strong> file.</p>
 <p>Take these steps to check for problems:</p>
@@ -131,7 +132,7 @@ The batch and run aspects of the <a class="reference external" href="../Tools_us
 </ol>
 </section>
 <section id="troubleshooting-runtime-problems">
-<h2><span class="section-number">10.4. </span>Troubleshooting runtime problems<a class="headerlink" href="#troubleshooting-runtime-problems" title="Link to this heading"></a></h2>
+<h2><span class="section-number">11.4. </span>Troubleshooting runtime problems<a class="headerlink" href="#troubleshooting-runtime-problems" title="Link to this heading"></a></h2>
 <p>To see if a run completed successfully, check the last several lines of the <strong>cpl.log</strong> file for a string like <code class="docutils literal notranslate"><span class="pre">SUCCESSFUL</span> <span class="pre">TERMINATION</span></code>. A successful job also usually copies the log files to the <strong>$CASEROOT/logs</strong> directory.</p>
 <p>Check these things first when a job fails:</p>
 <ul class="simple">
@@ -208,7 +209,7 @@ Also note that answers will change slightly, so if the error arises from a rare 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="cime-customize.html" class="btn btn-neutral float-left" title="9. CIME config and hooks" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="testing.html" class="btn btn-neutral float-left" title="10. Testing" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="cime-internals.html" class="btn btn-neutral float-right" title="1. Main Configuration File" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

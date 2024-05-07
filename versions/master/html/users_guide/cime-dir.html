@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>12. Directory content &mdash; CIME master documentation</title>
+  <title>10. Directory content &mdash; CIME master documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
@@ -23,7 +23,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Building a Coupled Model with CIME" href="../build_cpl/index.html" />
-    <link rel="prev" title="11. Workflows" href="workflows.html" /> 
+    <link rel="prev" title="9. Workflows" href="workflows.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -50,20 +50,18 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../what_cime/index.html">What is CIME?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="index.html">Case Control System Part 1: Basic Usage</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="index.html#case-control-system-part-2-configuration-porting-testing-and-use-cases">Case Control System Part 2: Configuration, Porting, Testing and Use Cases</a><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="index.html">Using the Case Control System</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html#configuring-the-case-control-system">Configuring the Case Control System</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="cime-internals.html">1. Main Configuration File</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compsets.html">2. Component sets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="grids.html">3. Model grids</a></li>
 <li class="toctree-l2"><a class="reference internal" href="machine.html">4. Defining the machine</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pes-threads.html">5. Controlling processors and threads</a></li>
 <li class="toctree-l2"><a class="reference internal" href="porting-cime.html">6. Porting and validating CIME on a new platform</a></li>
-<li class="toctree-l2"><a class="reference internal" href="timers.html">7. Timers and timing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="testing.html">8. Testing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_testing.html">9. Fortran Unit Testing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="multi-instance.html">10. Multi-instance component functionality</a></li>
-<li class="toctree-l2"><a class="reference internal" href="workflows.html">11. Workflows</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">12. Directory content</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_testing.html">7. Fortran Unit Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multi-instance.html">8. Multi-instance component functionality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="workflows.html">9. Workflows</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">10. Directory content</a></li>
 <li class="toctree-l2"><a class="reference internal" href="index.html#indices-and-tables">Indices and tables</a></li>
 </ul>
 </li>
@@ -92,8 +90,8 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="index.html">Case Control System Part 1: Basic Usage</a></li>
-      <li class="breadcrumb-item active"><span class="section-number">12. </span>Directory content</li>
+          <li class="breadcrumb-item"><a href="index.html">Using the Case Control System</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">10. </span>Directory content</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/users_guide/cime-dir.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -104,7 +102,7 @@
            <div itemprop="articleBody">
              
   <section id="directory-content">
-<span id="cime-dir"></span><h1><span class="section-number">12. </span>Directory content<a class="headerlink" href="#directory-content" title="Link to this heading"></a></h1>
+<span id="cime-dir"></span><h1><span class="section-number">10. </span>Directory content<a class="headerlink" href="#directory-content" title="Link to this heading"></a></h1>
 <p>If you use CIME as part of a climate model or standalone, the content of the <strong>cime</strong> directory is the same.</p>
 <p>If you are using it as part of a climate model, <strong>cime</strong> is usually one of the first subdirectories under the main directory.</p>
 <table class="docutils align-default" id="id1">
@@ -135,8 +133,26 @@
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>CMakeLists.txt</p></td>
+<tr class="row-even"><td><p><strong>CIME/</strong></p></td>
+<td><p><strong>The main CIME source</strong></p></td>
+</tr>
+<tr class="row-odd"><td><p>CIME/ParamGen</p></td>
+<td><p>Python tool for generating runtime params</p></td>
+</tr>
+<tr class="row-even"><td><p>CIME/Servers</p></td>
+<td><p>Scripts to interact with input data servers</p></td>
+</tr>
+<tr class="row-odd"><td><p>CIME/SystemTests</p></td>
+<td><p>Scripts for create_test tests.</p></td>
+</tr>
+<tr class="row-even"><td><p>CIME/Tools</p></td>
+<td><p>Auxillary tools, scripts and functions.</p></td>
+</tr>
+<tr class="row-odd"><td><p>CMakeLists.txt</p></td>
 <td><p>For building with CMake</p></td>
+</tr>
+<tr class="row-even"><td><p>CONTRIBUTING.md</p></td>
+<td><p>Guide for contributing to CIME</p></td>
 </tr>
 <tr class="row-odd"><td><p>ChangeLog</p></td>
 <td><p>Developer-maintained record of changes to CIME</p></td>
@@ -147,55 +163,28 @@
 <tr class="row-odd"><td><p>LICENSE.TXT</p></td>
 <td><p>The CIME license</p></td>
 </tr>
-<tr class="row-even"><td><p>README</p></td>
-<td><p>Brief intro to CIME</p></td>
+<tr class="row-even"><td><p>MANIFEST.in</p></td>
+<td></td>
 </tr>
 <tr class="row-odd"><td><p>README.md</p></td>
 <td><p>README in markdown language</p></td>
 </tr>
-<tr class="row-even"><td><p>README.unit_testing</p></td>
-<td><p>Instructions for running unit tests with CIME</p></td>
+<tr class="row-even"><td><p>conftest.py</p></td>
+<td></td>
 </tr>
-<tr class="row-odd"><td><p><strong>config/</strong></p></td>
-<td><p><strong>Shared and model-specific configuration files</strong></p></td>
+<tr class="row-odd"><td><p>doc</p></td>
+<td><p>Documentation for CIME in rst format</p></td>
 </tr>
-<tr class="row-even"><td><p>config/cesm/</p></td>
-<td><p>CESM-specific configuration options</p></td>
+<tr class="row-even"><td><p>docker</p></td>
+<td><p>Container for CIME testing</p></td>
 </tr>
-<tr class="row-odd"><td><p>config/e3sm/</p></td>
-<td><p>E3SM-specific configuration options</p></td>
-</tr>
-<tr class="row-even"><td><p><strong>scripts/</strong></p></td>
+<tr class="row-odd"><td><p><strong>scripts/</strong></p></td>
 <td><p><strong>The CIME user interface</strong></p></td>
 </tr>
-<tr class="row-odd"><td><p>scripts/lib/</p></td>
-<td><p>Infrastructure source code for CIME scripts and functions</p></td>
-</tr>
-<tr class="row-even"><td><p>scripts/Tools/</p></td>
-<td><p>Auxiliary tools; scripts and functions</p></td>
-</tr>
-<tr class="row-odd"><td><p><strong>src/</strong></p></td>
-<td><p><strong>Model source code provided by CIME</strong></p></td>
-</tr>
-<tr class="row-even"><td><p>src/components/</p></td>
-<td><p>CIME-provided components including data and stub models</p></td>
-</tr>
-<tr class="row-odd"><td><p>src/drivers/</p></td>
-<td><p>CIME-provided main driver for a climate model</p></td>
-</tr>
-<tr class="row-even"><td><p>src/externals/</p></td>
-<td><p>Software provided with CIME for building a climate model</p></td>
-</tr>
-<tr class="row-odd"><td><p>src/share/</p></td>
-<td><p>Model source code provided by CIME and used by multiple components</p></td>
-</tr>
-<tr class="row-even"><td><p><strong>tests/</strong></p></td>
-<td><p><strong>Tests</strong></p></td>
-</tr>
-<tr class="row-odd"><td><p><strong>tools/</strong></p></td>
+<tr class="row-even"><td><p><strong>tools/</strong></p></td>
 <td><p><strong>Standalone climate modeling tools</strong></p></td>
 </tr>
-<tr class="row-even"><td><p>utils/</p></td>
+<tr class="row-odd"><td><p>utils/</p></td>
 <td><p>Some Perl source code needed by some prognostic components</p></td>
 </tr>
 </tbody>
@@ -206,7 +195,7 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="workflows.html" class="btn btn-neutral float-left" title="11. Workflows" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="workflows.html" class="btn btn-neutral float-left" title="9. Workflows" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="../build_cpl/index.html" class="btn btn-neutral float-right" title="Building a Coupled Model with CIME" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
