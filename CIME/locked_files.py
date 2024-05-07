@@ -144,6 +144,10 @@ def check_diff(case, filename, env_name, diff):
     # Remove BUILD_COMPLETE, invalid entry in diff
     diff.pop("BUILD_COMPLETE", None)
 
+    # Nothing to process
+    if not diff:
+        return
+
     # List differences
     for key, value in diff.items():
         logger.warning(
