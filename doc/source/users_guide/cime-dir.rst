@@ -25,25 +25,22 @@ CIME's content is split into several subdirectories. Users should start in the *
    ========================== ==================================================================
    Directory or Filename               Description
    ========================== ==================================================================
+   **CIME/**	              **The main CIME source**
+   CIME/ParamGen              Python tool for generating runtime params
+   CIME/Servers		      Scripts to interact with input data servers
+   CIME/SystemTests           Scripts for create_test tests.
+   CIME/Tools		      Auxillary tools, scripts and functions.
    CMakeLists.txt	      For building with CMake
+   CONTRIBUTING.md            Guide for contributing to CIME
    ChangeLog		      Developer-maintained record of changes to CIME
    ChangeLog_template	      Template for an entry in ChangeLog
    LICENSE.TXT		      The CIME license
-   README		      Brief intro to CIME
+   MANIFEST.in                
    README.md		      README in markdown language
-   README.unit_testing	      Instructions for running unit tests with CIME
-   **config/**		      **Shared and model-specific configuration files**
-   config/cesm/	              CESM-specific configuration options
-   config/e3sm/	              E3SM-specific configuration options
+   conftest.py
+   doc			      Documentation for CIME in rst format
+   docker		      Container for CIME testing
    **scripts/**		      **The CIME user interface**
-   scripts/lib/  	      Infrastructure source code for CIME scripts and functions
-   scripts/Tools/	      Auxiliary tools; scripts and functions
-   **src/**		      **Model source code provided by CIME**
-   src/components/	      CIME-provided components including data and stub models
-   src/drivers/  	      CIME-provided main driver for a climate model
-   src/externals/	      Software provided with CIME for building a climate model
-   src/share/    	      Model source code provided by CIME and used by multiple components
-   **tests/**		      **Tests**
    **tools/**		      **Standalone climate modeling tools**
    utils/		      Some Perl source code needed by some prognostic components
    ========================== ==================================================================
