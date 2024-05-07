@@ -52,28 +52,62 @@ def create_fake_env(tempdir):
 
 
 class TestLockedFiles(unittest.TestCase):
-    def test_check_diff_rebuild_trigger(self):
+    def test_check_diff_reset_and_rebuild(self):
         case = mock.MagicMock()
 
-        case.get_values.side_effect = (("CPL", "ATM"), (), ("NTASKS",))
+        # reset triggered by env_mach_pes
+        # rebuild triggered by REBUILD_TRIGGER_ATM and REBUILD_TRIGGER_LND
+        # COMP_CLASSES, REBUILD_TRIGGER_CPL, REBUILD_TRIGGER_ATM, REBUILD_TRIGGER_LND
+        case.get_values.side_effect = (
+            ("CPL", "ATM", "LND"),
+            (),
+            ("NTASKS",),
+            ("NTASKS",),
+        )
 
         diff = {
             "NTASKS": ("32", "16"),
         }
 
-        with self.assertRaisesRegex(
-            CIMEError, "ERROR: For your changes to take effect, run:.*"
-        ):
+        expected_msg = """ERROR: For your changes to take effect, run:
+./case.setup --reset
+./case.build --clean atm lnd
+./case.build"""
+
+        with self.assertRaisesRegex(CIMEError, expected_msg):
             locked_files.check_diff(case, "env_mach_pes.xml", "env_mach_pes", diff)
 
-    def test_check_diff_other_env(self):
+    def test_check_diff_reset_and_rebuild_single(self):
+        case = mock.MagicMock()
+
+        # reset triggered by env_mach_pes
+        # rebuild triggered only by REBUILD_TRIGGER_ATM
+        # COMP_CLASSES, REBUILD_TRIGGER_CPL, REBUILD_TRIGGER_ATM, REBUILD_TRIGGER_LND
+        case.get_values.side_effect = (("CPL", "ATM", "LND"), (), ("NTASKS",), ())
+
+        diff = {
+            "NTASKS": ("32", "16"),
+        }
+
+        expected_msg = """ERROR: For your changes to take effect, run:
+./case.setup --reset
+./case.build --clean atm
+./case.build"""
+
+        with self.assertRaisesRegex(CIMEError, expected_msg):
+            locked_files.check_diff(case, "env_mach_pes.xml", "env_mach_pes", diff)
+
+    def test_check_diff_env_mach_pes(self):
         case = mock.MagicMock()
 
         diff = {
-            "some_key": ("value1", "value2"),
+            "NTASKS": ("32", "16"),
         }
 
-        with self.assertRaises(CIMEError):
+        expected_msg = """ERROR: For your changes to take effect, run:
+./case.setup --reset"""
+
+        with self.assertRaisesRegex(CIMEError, expected_msg):
             locked_files.check_diff(case, "env_mach_pes.xml", "env_mach_pes", diff)
 
     def test_check_diff_env_build_no_diff(self):
@@ -95,10 +129,9 @@ class TestLockedFiles(unittest.TestCase):
 
         expected_msg = """ERROR: For your changes to take effect, run:
 ./case.build --clean-all
-./case.build
-        """
+./case.build"""
 
-        with self.assertRaises(CIMEError, msg=expected_msg):
+        with self.assertRaisesRegex(CIMEError, expected_msg):
             locked_files.check_diff(case, "env_build.xml", "env_build", diff)
 
         case.set_value.assert_any_call("BUILD_COMPLETE", False)
@@ -113,10 +146,9 @@ class TestLockedFiles(unittest.TestCase):
 
         expected_msg = """ERROR: For your changes to take effect, run:
 ./case.build --clean-all
-./case.build
-        """
+./case.build"""
 
-        with self.assertRaises(CIMEError, msg=expected_msg):
+        with self.assertRaisesRegex(CIMEError, expected_msg):
             locked_files.check_diff(case, "env_build.xml", "env_build", diff)
 
         case.set_value.assert_any_call("BUILD_COMPLETE", False)
@@ -129,7 +161,10 @@ class TestLockedFiles(unittest.TestCase):
             "some_key": ("value1", "value2"),
         }
 
-        with self.assertRaises(CIMEError):
+        expected_msg = """ERROR: For your changes to take effect, run:
+./case.setup --reset"""
+
+        with self.assertRaisesRegex(CIMEError, expected_msg):
             locked_files.check_diff(case, "env_batch.xml", "env_batch", diff)
 
     def test_check_diff_env_case(self):
@@ -139,7 +174,11 @@ class TestLockedFiles(unittest.TestCase):
             "some_key": ("value1", "value2"),
         }
 
-        with self.assertRaises(CIMEError):
+        expected_msg = (
+            "ERROR: Cannot change `env_case.xml`, please restore origin 'env_case.xml'"
+        )
+
+        with self.assertRaisesRegex(CIMEError, expected_msg):
             locked_files.check_diff(case, "env_case.xml", "env_case", diff)
 
     def test_diff_lockedfile_detect_difference(self):

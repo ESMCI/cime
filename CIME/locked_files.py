@@ -154,14 +154,18 @@ def check_diff(case, filename, env_name, diff):
             "\t{!r} has changed from {!r} to {!r}".format(key, value[1], value[0])
         )
 
+    reset = False
+    rebuild = False
+    message = ""
+    clean_targets = ""
+    rebuild_components = []
+
     if env_name == "env_case":
         expect(
             False,
             f"Cannot change `env_case.xml`, please restore origin {filename!r}",
         )
     elif env_name == "env_build" and diff:
-        case.set_value("BUILD_COMPLETE", False)
-
         build_status = 1
 
         if "PIO_VERSION" in diff:
@@ -173,37 +177,34 @@ def check_diff(case, filename, env_name, diff):
 
         case.set_value("BUILD_STATUS", build_status)
 
-        expect(
-            False,
-            "For your changes to take effect, run:\n./case.build --clean-all\n./case.build",
-        )
-    elif env_name == "env_batch":
-        expect(
-            False,
-            "Batch configuration has changed, please run `./case.setup --reset`",
-        )
-    elif env_name == "env_mach_pes":
-        expect(False, "For your changes to take effect, run:\n./case.setup --reset")
-    else:
-        toggle_build_status = False
+        rebuild = True
 
-        rebuild_components = []
+        clean_targets = "--clean-all"
+    elif env_name in ("env_batch", "env_mach_pes"):
+        reset = True
 
-        for component in case.get_values("COMP_CLASSES"):
-            triggers = case.get_values(f"REBUILD_TRIGGER_{component}")
+    for component in case.get_values("COMP_CLASSES"):
+        triggers = case.get_values(f"REBUILD_TRIGGER_{component}")
 
-            if any([y.startswith(x) for x in triggers for y in diff.keys()]):
-                toggle_build_status = True
+        if any([y.startswith(x) for x in triggers for y in diff.keys()]):
+            rebuild = True
 
-                rebuild_components.append(component)
+            rebuild_components.append(component)
 
-        if toggle_build_status:
-            case.set_value("BUILD_COMPLETE", False)
+    if reset:
+        message = "For your changes to take effect, run:\n./case.setup --reset\n"
 
-        clean_targets = " ".join([x.lower() for x in rebuild_components])
-        clean_cmd = f"./case.build --clean {clean_targets}"
+    if rebuild:
+        case.set_value("BUILD_COMPLETE", False)
 
-        expect(
-            False,
-            f"A rebuild is required, please run: \n./case.setup --reset\n{clean_cmd}\n./case.build",
-        )
+        if rebuild_components and clean_targets != "--clean-all":
+            clean_targets = " ".join([x.lower() for x in rebuild_components])
+
+            clean_targets = f"--clean {clean_targets}"
+
+        if not reset:
+            message = "For your changes to take effect, run:\n"
+
+        message = f"{message}./case.build {clean_targets}\n./case.build"
+
+    expect(False, message)
