@@ -1,0 +1,21 @@
+CIME.baselines package
+======================
+
+Submodules
+----------
+
+CIME.baselines.performance module
+---------------------------------
+
+.. automodule:: CIME.baselines.performance
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: CIME.baselines
+   :members:
+   :undoc-members:
+   :show-inheritance:
