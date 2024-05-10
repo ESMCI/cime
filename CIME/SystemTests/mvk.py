@@ -38,7 +38,10 @@ class MVKConfig(ConfigBase):
         if self.loaded:
             return
 
-        self._set_attribute("component", "", "Model component name.")
+        self._set_attribute("component", "", "The main component.")
+        self._set_attribute(
+            "components", [], "Components that require namelist customization."
+        )
         self._set_attribute("ninst", 30, "The number of instances.")
         self._set_attribute(
             "critical", 13, "The critical value for rejecting the null hypothese."
@@ -50,7 +53,7 @@ class MVKConfig(ConfigBase):
         self._set_attribute("test_case", "Test", "Name of the test case.")
 
     def write_inst_nml(
-        self, case, set_nml_variable, iinst
+        self, case, set_nml_variable, component, iinst
     ):  # pylint: disable=unused-argument
         """Write per instance namelist.
 
@@ -59,6 +62,7 @@ class MVKConfig(ConfigBase):
         Args:
             case (CIME.case.case.Case): The case instance.
             write_nml_variable (function): Function takes two `str` arguments.
+            component (str): Component the namelist belongs to.
             iinst (int): Instance unique number.
         """
         set_nml_variable("new_random", ".true.")
@@ -159,6 +163,11 @@ class MVK(SystemTestsCommon):
         else:
             self.component = self._config.component
 
+        if self._config.components:
+            self.components = [self.component]
+        else:
+            self.components = self._config.components
+
         if (
             self._case.get_value("RESUBMIT") == 0
             and self._case.get_value("GENERATE_BASELINE") is False
@@ -189,16 +198,19 @@ class MVK(SystemTestsCommon):
             case_setup(self._case, test_mode=False, reset=True)
 
         for iinst in range(1, self._config.ninst + 1):
-            with open(
-                "user_nl_{}_{:04d}".format(self.component, iinst), "w"
-            ) as nml_file:
-                set_nml_variable = (
-                    lambda x: nml_file.write(  # pylint: disable=cell-var-from-loop
-                        f"{x}\n"
+            for component in self.components:
+                with open(
+                    "user_nl_{}_{:04d}".format(component, iinst), "w"
+                ) as nml_file:
+                    set_nml_variable = (
+                        lambda x: nml_file.write(  # pylint: disable=cell-var-from-loop
+                            f"{x}\n"
+                        )
                     )
-                )
 
-                self._config.write_inst_nml(self._case, set_nml_variable, iinst)
+                    self._config.write_inst_nml(
+                        self._case, set_nml_variable, component, iinst
+                    )
 
         self.build_indv(sharedlib_only=sharedlib_only, model_only=model_only)
 
