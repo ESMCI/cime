@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>5. Controlling processors and threads &mdash; CIME master documentation</title>
+  <title>6. Controlling processors and threads &mdash; CIME master documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
@@ -22,8 +22,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="6. Porting and validating CIME on a new platform" href="porting-cime.html" />
-    <link rel="prev" title="4. Defining the machine" href="machine.html" /> 
+    <link rel="next" title="7. Porting and validating CIME on a new platform" href="porting-cime.html" />
+    <link rel="prev" title="5. Defining the machine" href="machine.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -53,21 +53,22 @@
 <li class="toctree-l1"><a class="reference internal" href="index.html">Using the Case Control System</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html#configuring-the-case-control-system">Configuring the Case Control System</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="cime-internals.html">1. Main Configuration File</a></li>
-<li class="toctree-l2"><a class="reference internal" href="compsets.html">2. Component sets</a></li>
-<li class="toctree-l2"><a class="reference internal" href="grids.html">3. Model grids</a></li>
-<li class="toctree-l2"><a class="reference internal" href="machine.html">4. Defining the machine</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">5. Controlling processors and threads</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#pe-settings-for-a-case">5.1. pe-settings for a case</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#setting-the-pe-layout">5.2. Setting the PE layout</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#case-resource-allocation">5.3. Case Resource Allocation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#optimizing-processor-layout">5.4. Optimizing processor layout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="components.html">2. Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compsets.html">3. Component sets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="grids.html">4. Model grids</a></li>
+<li class="toctree-l2"><a class="reference internal" href="machine.html">5. Defining the machine</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">6. Controlling processors and threads</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pe-settings-for-a-case">6.1. pe-settings for a case</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#setting-the-pe-layout">6.2. Setting the PE layout</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#case-resource-allocation">6.3. Case Resource Allocation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#optimizing-processor-layout">6.4. Optimizing processor layout</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="porting-cime.html">6. Porting and validating CIME on a new platform</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_testing.html">7. Fortran Unit Testing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="multi-instance.html">8. Multi-instance component functionality</a></li>
-<li class="toctree-l2"><a class="reference internal" href="workflows.html">9. Workflows</a></li>
-<li class="toctree-l2"><a class="reference internal" href="cime-dir.html">10. Directory content</a></li>
+<li class="toctree-l2"><a class="reference internal" href="porting-cime.html">7. Porting and validating CIME on a new platform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_testing.html">8. Fortran Unit Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multi-instance.html">9. Multi-instance component functionality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="workflows.html">10. Workflows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cime-dir.html">11. Directory content</a></li>
 <li class="toctree-l2"><a class="reference internal" href="index.html#indices-and-tables">Indices and tables</a></li>
 </ul>
 </li>
@@ -97,7 +98,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="index.html">Using the Case Control System</a></li>
-      <li class="breadcrumb-item active"><span class="section-number">5. </span>Controlling processors and threads</li>
+      <li class="breadcrumb-item active"><span class="section-number">6. </span>Controlling processors and threads</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/users_guide/pes-threads.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -108,7 +109,7 @@
            <div itemprop="articleBody">
              
   <section id="controlling-processors-and-threads">
-<span id="pesthreads"></span><h1><span class="section-number">5. </span>Controlling processors and threads<a class="headerlink" href="#controlling-processors-and-threads" title="Link to this heading"></a></h1>
+<span id="pesthreads"></span><h1><span class="section-number">6. </span>Controlling processors and threads<a class="headerlink" href="#controlling-processors-and-threads" title="Link to this heading"></a></h1>
 <p>Once a compset and resolution for a case has been defined, CIME
 provides ways to define the processor layout the case will use.</p>
 <p>CIME cases have significant flexibility with respect to the layout of
@@ -118,7 +119,7 @@ managed independently by the CIME driver, each with a unique MPI
 communicator.  In addition, the driver runs on the union of all
 processors and controls the sequencing and hardware partitioning.</p>
 <section id="pe-settings-for-a-case">
-<span id="defining-pes"></span><h2><span class="section-number">5.1. </span>pe-settings for a case<a class="headerlink" href="#pe-settings-for-a-case" title="Link to this heading"></a></h2>
+<span id="defining-pes"></span><h2><span class="section-number">6.1. </span>pe-settings for a case<a class="headerlink" href="#pe-settings-for-a-case" title="Link to this heading"></a></h2>
 <p>CIME looks at the xml element <code class="docutils literal notranslate"><span class="pre">PES_SPEC_FILE</span></code> in the <strong>$CIMEROOT/config/$model/config_files.xml</strong> file to determine where
 to find the supported out-of-the-box model pe-settings for the primary component (See <a class="reference internal" href="compsets.html#compsets"><span class="std std-ref">Compsets</span></a> for definition of primary component.)</p>
 <p>When your run <a class="reference external" href="../Tools_user/create_newcase.html">create_newcase</a>, CIME identifies the primary component and the setting of the <code class="docutils literal notranslate"><span class="pre">PES_SPEC_FILE</span></code> in the standard output.</p>
@@ -167,7 +168,7 @@ processor setting.</p>
 <p>When <a class="reference external" href="../Tools_user/create_newcase.html">create_newcase</a>  is called, it outputs the matches that are found in determining the best out-of-the-box pe-layout.</p>
 </section>
 <section id="setting-the-pe-layout">
-<h2><span class="section-number">5.2. </span>Setting the PE layout<a class="headerlink" href="#setting-the-pe-layout" title="Link to this heading"></a></h2>
+<h2><span class="section-number">6.2. </span>Setting the PE layout<a class="headerlink" href="#setting-the-pe-layout" title="Link to this heading"></a></h2>
 <p>Optimizing the throughput and efficiency of a CIME experiment often
 involves customizing the processor (PE) layout. (See <a class="reference internal" href="#optimizing-processor-layout"><span class="std std-ref">load
 balancing</span></a>.)  CIME provides significant
@@ -249,7 +250,7 @@ model can also run concurrently with the atmosphere model.</p>
 </div>
 </section>
 <section id="case-resource-allocation">
-<h2><span class="section-number">5.3. </span>Case Resource Allocation<a class="headerlink" href="#case-resource-allocation" title="Link to this heading"></a></h2>
+<h2><span class="section-number">6.3. </span>Case Resource Allocation<a class="headerlink" href="#case-resource-allocation" title="Link to this heading"></a></h2>
 <p>Resources for your case will be allocated according to the following logic.</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">NTASKS</span></code> * <code class="docutils literal notranslate"><span class="pre">NTHRDS</span></code> is the total number of hardware processors allocated to a component.</p></li>
@@ -281,7 +282,7 @@ be allocated but completely idle.</p>
 and job submit commands for your case.</p>
 </section>
 <section id="optimizing-processor-layout">
-<span id="id2"></span><h2><span class="section-number">5.4. </span>Optimizing processor layout<a class="headerlink" href="#optimizing-processor-layout" title="Link to this heading"></a></h2>
+<span id="id2"></span><h2><span class="section-number">6.4. </span>Optimizing processor layout<a class="headerlink" href="#optimizing-processor-layout" title="Link to this heading"></a></h2>
 <p>Load balancing is the practice of specifying a processor layout for a given model configuration
 (compset, grid, and so on) to maximize simulation speed while minimizing processor idle time.
 For a fixed total number of processors, the goal of this optimization is to achieve maximum throughput.
@@ -378,8 +379,8 @@ when running with mixed active and data models.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="machine.html" class="btn btn-neutral float-left" title="4. Defining the machine" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="porting-cime.html" class="btn btn-neutral float-right" title="6. Porting and validating CIME on a new platform" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="machine.html" class="btn btn-neutral float-left" title="5. Defining the machine" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="porting-cime.html" class="btn btn-neutral float-right" title="7. Porting and validating CIME on a new platform" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>6. Porting and validating CIME on a new platform &mdash; CIME master documentation</title>
+  <title>7. Porting and validating CIME on a new platform &mdash; CIME master documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
@@ -22,8 +22,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="7. Fortran Unit Testing" href="unit_testing.html" />
-    <link rel="prev" title="5. Controlling processors and threads" href="pes-threads.html" /> 
+    <link rel="next" title="8. Fortran Unit Testing" href="unit_testing.html" />
+    <link rel="prev" title="6. Controlling processors and threads" href="pes-threads.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -53,23 +53,24 @@
 <li class="toctree-l1"><a class="reference internal" href="index.html">Using the Case Control System</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html#configuring-the-case-control-system">Configuring the Case Control System</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="cime-internals.html">1. Main Configuration File</a></li>
-<li class="toctree-l2"><a class="reference internal" href="compsets.html">2. Component sets</a></li>
-<li class="toctree-l2"><a class="reference internal" href="grids.html">3. Model grids</a></li>
-<li class="toctree-l2"><a class="reference internal" href="machine.html">4. Defining the machine</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pes-threads.html">5. Controlling processors and threads</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">6. Porting and validating CIME on a new platform</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#required-libraries-packages">6.1. Required libraries/packages</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#an-mpi-example">6.2. An MPI example</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#cesm-linux-and-mac-support">6.3. CESM Linux and Mac Support</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#steps-for-porting">6.4. Steps for porting</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#validating-a-cesm-port-with-prognostic-components">6.5. Validating a CESM port with prognostic components</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#performance-tuning-of-a-cesm-port">6.6. Performance tuning of a CESM port</a></li>
+<li class="toctree-l2"><a class="reference internal" href="components.html">2. Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compsets.html">3. Component sets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="grids.html">4. Model grids</a></li>
+<li class="toctree-l2"><a class="reference internal" href="machine.html">5. Defining the machine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pes-threads.html">6. Controlling processors and threads</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">7. Porting and validating CIME on a new platform</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#required-libraries-packages">7.1. Required libraries/packages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#an-mpi-example">7.2. An MPI example</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cesm-linux-and-mac-support">7.3. CESM Linux and Mac Support</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#steps-for-porting">7.4. Steps for porting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#validating-a-cesm-port-with-prognostic-components">7.5. Validating a CESM port with prognostic components</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#performance-tuning-of-a-cesm-port">7.6. Performance tuning of a CESM port</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="unit_testing.html">7. Fortran Unit Testing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="multi-instance.html">8. Multi-instance component functionality</a></li>
-<li class="toctree-l2"><a class="reference internal" href="workflows.html">9. Workflows</a></li>
-<li class="toctree-l2"><a class="reference internal" href="cime-dir.html">10. Directory content</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_testing.html">8. Fortran Unit Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multi-instance.html">9. Multi-instance component functionality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="workflows.html">10. Workflows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cime-dir.html">11. Directory content</a></li>
 <li class="toctree-l2"><a class="reference internal" href="index.html#indices-and-tables">Indices and tables</a></li>
 </ul>
 </li>
@@ -99,7 +100,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="index.html">Using the Case Control System</a></li>
-      <li class="breadcrumb-item active"><span class="section-number">6. </span>Porting and validating CIME on a new platform</li>
+      <li class="breadcrumb-item active"><span class="section-number">7. </span>Porting and validating CIME on a new platform</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/users_guide/porting-cime.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -110,11 +111,11 @@
            <div itemprop="articleBody">
              
   <section id="porting-and-validating-cime-on-a-new-platform">
-<span id="porting"></span><h1><span class="section-number">6. </span>Porting and validating CIME on a new platform<a class="headerlink" href="#porting-and-validating-cime-on-a-new-platform" title="Link to this heading"></a></h1>
+<span id="porting"></span><h1><span class="section-number">7. </span>Porting and validating CIME on a new platform<a class="headerlink" href="#porting-and-validating-cime-on-a-new-platform" title="Link to this heading"></a></h1>
 <p>One of the first steps for many users is getting CIME-based models running on their local machine.
 This section describes that process.</p>
 <section id="required-libraries-packages">
-<h2><span class="section-number">6.1. </span>Required libraries/packages<a class="headerlink" href="#required-libraries-packages" title="Link to this heading"></a></h2>
+<h2><span class="section-number">7.1. </span>Required libraries/packages<a class="headerlink" href="#required-libraries-packages" title="Link to this heading"></a></h2>
 <p>The machine needs to have:</p>
 <ul class="simple">
 <li><p>a functioning MPI environment (unless you plan to run on a single core with the CIME mpi-serial library).</p></li>
@@ -125,7 +126,7 @@ This section describes that process.</p>
 <p>If you are using MPI, make sure you can run a basic MPI parallel program on your machine before you attempt a CIME port. You can use this <a class="reference internal" href="#mpi-example"><span class="std std-ref">MPI example</span></a> to check.</p>
 </section>
 <section id="an-mpi-example">
-<span id="mpi-example"></span><h2><span class="section-number">6.2. </span>An MPI example<a class="headerlink" href="#an-mpi-example" title="Link to this heading"></a></h2>
+<span id="mpi-example"></span><h2><span class="section-number">7.2. </span>An MPI example<a class="headerlink" href="#an-mpi-example" title="Link to this heading"></a></h2>
 <p>It is usually very helpful to assure that you can run a basic mpi parallel program on your machine prior to attempting a CIME port.
 Understanding how to compile and run the program fhello_world_mpi.F90 shown here could potentially save many hours of frustration.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">program</span> <span class="n">fhello_world_mpi</span><span class="o">.</span><span class="n">F90</span>
@@ -169,12 +170,12 @@ Understanding how to compile and run the program fhello_world_mpi.F90 shown here
 </div>
 </section>
 <section id="cesm-linux-and-mac-support">
-<h2><span class="section-number">6.3. </span>CESM Linux and Mac Support<a class="headerlink" href="#cesm-linux-and-mac-support" title="Link to this heading"></a></h2>
+<h2><span class="section-number">7.3. </span>CESM Linux and Mac Support<a class="headerlink" href="#cesm-linux-and-mac-support" title="Link to this heading"></a></h2>
 <p>The distribution of CESM includes machines called <strong>homebrew</strong> and <strong>centos7-linux</strong> in the file <strong>$CIMEROOT/config/cesm/machines/config_machines.xml</strong>.
 Please see the instructions in the file to create the directory structure and use these generic machine definitions.</p>
 </section>
 <section id="steps-for-porting">
-<h2><span class="section-number">6.4. </span>Steps for porting<a class="headerlink" href="#steps-for-porting" title="Link to this heading"></a></h2>
+<h2><span class="section-number">7.4. </span>Steps for porting<a class="headerlink" href="#steps-for-porting" title="Link to this heading"></a></h2>
 <p>Porting CIME involves several steps. The first step is to define your machine. You can do this in one of two ways:</p>
 <ol class="arabic">
 <li><p>You can edit <strong>$CIMEROOT/config/$model/machines/config_machines.xml</strong> and add an appropriate section for your machine.</p></li>
@@ -213,7 +214,7 @@ This performs a number of basic unit tests starting from the simplest and workin
 <p>After running those steps correctly, you are ready to try a case at your target compset and resolution.</p>
 </section>
 <section id="validating-a-cesm-port-with-prognostic-components">
-<h2><span class="section-number">6.5. </span>Validating a CESM port with prognostic components<a class="headerlink" href="#validating-a-cesm-port-with-prognostic-components" title="Link to this heading"></a></h2>
+<h2><span class="section-number">7.5. </span>Validating a CESM port with prognostic components<a class="headerlink" href="#validating-a-cesm-port-with-prognostic-components" title="Link to this heading"></a></h2>
 <p>The following port validation is recommended for any new machine.
 Carrying out these steps does not guarantee the model is running
 properly in all cases nor that the model is scientifically valid on
@@ -255,7 +256,7 @@ Then please go to the <a class="reference external" href="http://www.cesm.ucar.e
 </ol>
 </section>
 <section id="performance-tuning-of-a-cesm-port">
-<h2><span class="section-number">6.6. </span>Performance tuning of a CESM port<a class="headerlink" href="#performance-tuning-of-a-cesm-port" title="Link to this heading"></a></h2>
+<h2><span class="section-number">7.6. </span>Performance tuning of a CESM port<a class="headerlink" href="#performance-tuning-of-a-cesm-port" title="Link to this heading"></a></h2>
 <p>Once you have performed the verification that your port is successful,
 you will want to determine the optimal pe-layout for your target
 configurations (i.e. compset/resolution combinations).  See the file
@@ -284,8 +285,8 @@ intermittently, such as at the end of the month.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="pes-threads.html" class="btn btn-neutral float-left" title="5. Controlling processors and threads" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="unit_testing.html" class="btn btn-neutral float-right" title="7. Fortran Unit Testing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="pes-threads.html" class="btn btn-neutral float-left" title="6. Controlling processors and threads" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="unit_testing.html" class="btn btn-neutral float-right" title="8. Fortran Unit Testing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

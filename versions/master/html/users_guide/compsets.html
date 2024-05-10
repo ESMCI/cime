@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>2. Component sets &mdash; CIME master documentation</title>
+  <title>3. Component sets &mdash; CIME master documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
@@ -22,8 +22,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="3. Model grids" href="grids.html" />
-    <link rel="prev" title="1. Main Configuration File" href="cime-internals.html" /> 
+    <link rel="next" title="4. Model grids" href="grids.html" />
+    <link rel="prev" title="2. Components" href="components.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -53,20 +53,21 @@
 <li class="toctree-l1"><a class="reference internal" href="index.html">Using the Case Control System</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html#configuring-the-case-control-system">Configuring the Case Control System</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="cime-internals.html">1. Main Configuration File</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">2. Component sets</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#compset-longname">2.1. Compset longname</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#component-specific-settings-in-a-compset">2.2. Component specific settings in a compset</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#creating-new-compsets">2.3. Creating New Compsets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="components.html">2. Components</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">3. Component sets</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#compset-longname">3.1. Compset longname</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#component-specific-settings-in-a-compset">3.2. Component specific settings in a compset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#creating-new-compsets">3.3. Creating New Compsets</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="grids.html">3. Model grids</a></li>
-<li class="toctree-l2"><a class="reference internal" href="machine.html">4. Defining the machine</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pes-threads.html">5. Controlling processors and threads</a></li>
-<li class="toctree-l2"><a class="reference internal" href="porting-cime.html">6. Porting and validating CIME on a new platform</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_testing.html">7. Fortran Unit Testing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="multi-instance.html">8. Multi-instance component functionality</a></li>
-<li class="toctree-l2"><a class="reference internal" href="workflows.html">9. Workflows</a></li>
-<li class="toctree-l2"><a class="reference internal" href="cime-dir.html">10. Directory content</a></li>
+<li class="toctree-l2"><a class="reference internal" href="grids.html">4. Model grids</a></li>
+<li class="toctree-l2"><a class="reference internal" href="machine.html">5. Defining the machine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pes-threads.html">6. Controlling processors and threads</a></li>
+<li class="toctree-l2"><a class="reference internal" href="porting-cime.html">7. Porting and validating CIME on a new platform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_testing.html">8. Fortran Unit Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multi-instance.html">9. Multi-instance component functionality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="workflows.html">10. Workflows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cime-dir.html">11. Directory content</a></li>
 <li class="toctree-l2"><a class="reference internal" href="index.html#indices-and-tables">Indices and tables</a></li>
 </ul>
 </li>
@@ -96,7 +97,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="index.html">Using the Case Control System</a></li>
-      <li class="breadcrumb-item active"><span class="section-number">2. </span>Component sets</li>
+      <li class="breadcrumb-item active"><span class="section-number">3. </span>Component sets</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/users_guide/compsets.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -107,7 +108,7 @@
            <div itemprop="articleBody">
              
   <section id="component-sets">
-<span id="compsets"></span><h1><span class="section-number">2. </span>Component sets<a class="headerlink" href="#component-sets" title="Link to this heading"></a></h1>
+<span id="compsets"></span><h1><span class="section-number">3. </span>Component sets<a class="headerlink" href="#component-sets" title="Link to this heading"></a></h1>
 <p>In CIME, multiple components can define compsets that are targeted to their model development needs.</p>
 <p>Each component supports a set of compset longnames that are used in testing and supported in out of the box configurations.</p>
 <p>To determine if the compset name to <a class="reference external" href="../Tools_user/create_newcase.html">create_newcase</a> is a supported component, CIME looks in the <strong>config_files.xml</strong> file and parses the
@@ -139,7 +140,7 @@ land and cice (in prescribed mode) and a data ocean is the atmosphere component 
 is defined, using the above example, in <code class="docutils literal notranslate"><span class="pre">$SRCROOT/components/cam/cime_config/config_compsets.xml</span></code>
 In a compset where all components are prognostic, the primary component will be <strong>allactive</strong>.</p>
 <section id="compset-longname">
-<span id="defining-compsets"></span><h2><span class="section-number">2.1. </span>Compset longname<a class="headerlink" href="#compset-longname" title="Link to this heading"></a></h2>
+<span id="defining-compsets"></span><h2><span class="section-number">3.1. </span>Compset longname<a class="headerlink" href="#compset-longname" title="Link to this heading"></a></h2>
 <p>Each config_compsets.xml file has a list of allowed component sets in the form of a longname and an alias.</p>
 <p>A compset longname has this form:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">TIME_ATM</span><span class="p">[</span><span class="o">%</span><span class="n">phys</span><span class="p">]</span><span class="n">_LND</span><span class="p">[</span><span class="o">%</span><span class="n">phys</span><span class="p">]</span><span class="n">_ICE</span><span class="p">[</span><span class="o">%</span><span class="n">phys</span><span class="p">]</span><span class="n">_OCN</span><span class="p">[</span><span class="o">%</span><span class="n">phys</span><span class="p">]</span><span class="n">_ROF</span><span class="p">[</span><span class="o">%</span><span class="n">phys</span><span class="p">]</span><span class="n">_GLC</span><span class="p">[</span><span class="o">%</span><span class="n">phys</span><span class="p">]</span><span class="n">_WAV</span><span class="p">[</span><span class="o">%</span><span class="n">phys</span><span class="p">]</span><span class="n">_ESP</span><span class="p">[</span><span class="n">_BGC</span><span class="o">%</span><span class="n">phys</span><span class="p">]</span>
@@ -166,7 +167,7 @@ For example, DOCN%DOM is the DOCN data ocean (rather than slab-ocean) mode.
 <strong>All</strong> data models have a %phys option that corresponds to the data model mode.</p>
 </section>
 <section id="component-specific-settings-in-a-compset">
-<span id="defining-component-specific-compset-settings"></span><h2><span class="section-number">2.2. </span>Component specific settings in a compset<a class="headerlink" href="#component-specific-settings-in-a-compset" title="Link to this heading"></a></h2>
+<span id="defining-component-specific-compset-settings"></span><h2><span class="section-number">3.2. </span>Component specific settings in a compset<a class="headerlink" href="#component-specific-settings-in-a-compset" title="Link to this heading"></a></h2>
 <p>Every model component also contains a <strong>config_component.xml</strong> file that has two functions:</p>
 <ol class="arabic simple">
 <li><p>Specifying the component-specific definitions of what can appear after the <code class="docutils literal notranslate"><span class="pre">%</span></code> in the compset longname, (for example, <code class="docutils literal notranslate"><span class="pre">DOM</span></code> in <code class="docutils literal notranslate"><span class="pre">DOCN%DOM</span></code>).</p></li>
@@ -217,7 +218,7 @@ For example, DOCN%DOM is the DOCN data ocean (rather than slab-ocean) mode.
 <p>To list the possible values, use the <a class="reference external" href="../Tools_user/query_config.html">query_config –component datm</a> command.</p>
 </section>
 <section id="creating-new-compsets">
-<span id="id1"></span><h2><span class="section-number">2.3. </span>Creating New Compsets<a class="headerlink" href="#creating-new-compsets" title="Link to this heading"></a></h2>
+<span id="id1"></span><h2><span class="section-number">3.3. </span>Creating New Compsets<a class="headerlink" href="#creating-new-compsets" title="Link to this heading"></a></h2>
 <p>A description of how CIME interprets a compset name is given in the section <a class="reference internal" href="#defining-compsets"><span class="std std-ref">Compset longname</span></a> .</p>
 <p>To create a new compset, you will at a minimum have to:</p>
 <ol class="arabic simple">
@@ -283,8 +284,8 @@ To enable this, you will need to do the following:</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="cime-internals.html" class="btn btn-neutral float-left" title="1. Main Configuration File" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="grids.html" class="btn btn-neutral float-right" title="3. Model grids" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="components.html" class="btn btn-neutral float-left" title="2. Components" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="grids.html" class="btn btn-neutral float-right" title="4. Model grids" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

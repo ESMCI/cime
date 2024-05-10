@@ -66,15 +66,16 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="#configuring-the-case-control-system">Configuring the Case Control System</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="cime-internals.html">1. Main Configuration File</a></li>
-<li class="toctree-l2"><a class="reference internal" href="compsets.html">2. Component sets</a></li>
-<li class="toctree-l2"><a class="reference internal" href="grids.html">3. Model grids</a></li>
-<li class="toctree-l2"><a class="reference internal" href="machine.html">4. Defining the machine</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pes-threads.html">5. Controlling processors and threads</a></li>
-<li class="toctree-l2"><a class="reference internal" href="porting-cime.html">6. Porting and validating CIME on a new platform</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_testing.html">7. Fortran Unit Testing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="multi-instance.html">8. Multi-instance component functionality</a></li>
-<li class="toctree-l2"><a class="reference internal" href="workflows.html">9. Workflows</a></li>
-<li class="toctree-l2"><a class="reference internal" href="cime-dir.html">10. Directory content</a></li>
+<li class="toctree-l2"><a class="reference internal" href="components.html">2. Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compsets.html">3. Component sets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="grids.html">4. Model grids</a></li>
+<li class="toctree-l2"><a class="reference internal" href="machine.html">5. Defining the machine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pes-threads.html">6. Controlling processors and threads</a></li>
+<li class="toctree-l2"><a class="reference internal" href="porting-cime.html">7. Porting and validating CIME on a new platform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_testing.html">8. Fortran Unit Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multi-instance.html">9. Multi-instance component functionality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="workflows.html">10. Workflows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cime-dir.html">11. Directory content</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
 </ul>
 </li>
@@ -191,54 +192,59 @@
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="cime-internals.html">1. Main Configuration File</a></li>
-<li class="toctree-l1"><a class="reference internal" href="compsets.html">2. Component sets</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="compsets.html#compset-longname">2.1. Compset longname</a></li>
-<li class="toctree-l2"><a class="reference internal" href="compsets.html#component-specific-settings-in-a-compset">2.2. Component specific settings in a compset</a></li>
-<li class="toctree-l2"><a class="reference internal" href="compsets.html#creating-new-compsets">2.3. Creating New Compsets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="components.html">2. Components</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="components.html#configuration">2.1. Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="components.html#triggering-a-rebuild">2.2. Triggering a rebuild</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="grids.html">3. Model grids</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="grids.html#grid-longname">3.1. Grid longname</a></li>
-<li class="toctree-l2"><a class="reference internal" href="grids.html#adding-grids">3.2. Adding grids</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compsets.html">3. Component sets</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="compsets.html#compset-longname">3.1. Compset longname</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compsets.html#component-specific-settings-in-a-compset">3.2. Component specific settings in a compset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compsets.html#creating-new-compsets">3.3. Creating New Compsets</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="machine.html">4. Defining the machine</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="machine.html#config-machines-xml-machine-specific-file">4.1. config_machines.xml - machine specific file</a></li>
-<li class="toctree-l2"><a class="reference internal" href="machine.html#batch-system-definition">4.2. Batch system definition</a></li>
-<li class="toctree-l2"><a class="reference internal" href="machine.html#config-batch-xml-batch-directives">4.3. config_batch.xml - batch directives</a></li>
-<li class="toctree-l2"><a class="reference internal" href="machine.html#compiler-settings">4.4. Compiler settings</a></li>
-<li class="toctree-l2"><a class="reference internal" href="machine.html#config-compilers-xml-compiler-paths-and-options-deprecated-use-cmake-macros">4.5. config_compilers.xml - compiler paths and options <strong>DEPRECATED use cmake_macros</strong></a></li>
+<li class="toctree-l1"><a class="reference internal" href="grids.html">4. Model grids</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="grids.html#grid-longname">4.1. Grid longname</a></li>
+<li class="toctree-l2"><a class="reference internal" href="grids.html#adding-grids">4.2. Adding grids</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="pes-threads.html">5. Controlling processors and threads</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="pes-threads.html#pe-settings-for-a-case">5.1. pe-settings for a case</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pes-threads.html#setting-the-pe-layout">5.2. Setting the PE layout</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pes-threads.html#case-resource-allocation">5.3. Case Resource Allocation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pes-threads.html#optimizing-processor-layout">5.4. Optimizing processor layout</a></li>
+<li class="toctree-l1"><a class="reference internal" href="machine.html">5. Defining the machine</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="machine.html#config-machines-xml-machine-specific-file">5.1. config_machines.xml - machine specific file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="machine.html#batch-system-definition">5.2. Batch system definition</a></li>
+<li class="toctree-l2"><a class="reference internal" href="machine.html#config-batch-xml-batch-directives">5.3. config_batch.xml - batch directives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="machine.html#compiler-settings">5.4. Compiler settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="machine.html#config-compilers-xml-compiler-paths-and-options-deprecated-use-cmake-macros">5.5. config_compilers.xml - compiler paths and options <strong>DEPRECATED use cmake_macros</strong></a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="porting-cime.html">6. Porting and validating CIME on a new platform</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="porting-cime.html#required-libraries-packages">6.1. Required libraries/packages</a></li>
-<li class="toctree-l2"><a class="reference internal" href="porting-cime.html#an-mpi-example">6.2. An MPI example</a></li>
-<li class="toctree-l2"><a class="reference internal" href="porting-cime.html#cesm-linux-and-mac-support">6.3. CESM Linux and Mac Support</a></li>
-<li class="toctree-l2"><a class="reference internal" href="porting-cime.html#steps-for-porting">6.4. Steps for porting</a></li>
-<li class="toctree-l2"><a class="reference internal" href="porting-cime.html#validating-a-cesm-port-with-prognostic-components">6.5. Validating a CESM port with prognostic components</a></li>
-<li class="toctree-l2"><a class="reference internal" href="porting-cime.html#performance-tuning-of-a-cesm-port">6.6. Performance tuning of a CESM port</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pes-threads.html">6. Controlling processors and threads</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pes-threads.html#pe-settings-for-a-case">6.1. pe-settings for a case</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pes-threads.html#setting-the-pe-layout">6.2. Setting the PE layout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pes-threads.html#case-resource-allocation">6.3. Case Resource Allocation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pes-threads.html#optimizing-processor-layout">6.4. Optimizing processor layout</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="unit_testing.html">7. Fortran Unit Testing</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="unit_testing.html#introduction">7.1. Introduction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_testing.html#running-cime-s-fortran-unit-tests">7.2. Running CIME’s Fortran unit tests</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_testing.html#how-to-add-unit-testing-support-on-your-machine">7.3. How to add unit testing support on your machine</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_testing.html#how-to-write-a-new-unit-test">7.4. How to write a new unit test</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_testing.html#general-guidelines-for-writing-unit-tests">7.5. General guidelines for writing unit tests</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_testing.html#more-details-on-writing-pfunit-based-unit-tests">7.6. More details on writing pFUnit-based unit tests</a></li>
-<li class="toctree-l2"><a class="reference internal" href="unit_testing.html#finding-more-documentation-and-examples">7.7. Finding more documentation and examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="porting-cime.html">7. Porting and validating CIME on a new platform</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="porting-cime.html#required-libraries-packages">7.1. Required libraries/packages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="porting-cime.html#an-mpi-example">7.2. An MPI example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="porting-cime.html#cesm-linux-and-mac-support">7.3. CESM Linux and Mac Support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="porting-cime.html#steps-for-porting">7.4. Steps for porting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="porting-cime.html#validating-a-cesm-port-with-prognostic-components">7.5. Validating a CESM port with prognostic components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="porting-cime.html#performance-tuning-of-a-cesm-port">7.6. Performance tuning of a CESM port</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="multi-instance.html">8. Multi-instance component functionality</a></li>
-<li class="toctree-l1"><a class="reference internal" href="workflows.html">9. Workflows</a></li>
-<li class="toctree-l1"><a class="reference internal" href="cime-dir.html">10. Directory content</a></li>
+<li class="toctree-l1"><a class="reference internal" href="unit_testing.html">8. Fortran Unit Testing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="unit_testing.html#introduction">8.1. Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_testing.html#running-cime-s-fortran-unit-tests">8.2. Running CIME’s Fortran unit tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_testing.html#how-to-add-unit-testing-support-on-your-machine">8.3. How to add unit testing support on your machine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_testing.html#how-to-write-a-new-unit-test">8.4. How to write a new unit test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_testing.html#general-guidelines-for-writing-unit-tests">8.5. General guidelines for writing unit tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_testing.html#more-details-on-writing-pfunit-based-unit-tests">8.6. More details on writing pFUnit-based unit tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_testing.html#finding-more-documentation-and-examples">8.7. Finding more documentation and examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="multi-instance.html">9. Multi-instance component functionality</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflows.html">10. Workflows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cime-dir.html">11. Directory content</a></li>
 </ul>
 </div>
 <section id="indices-and-tables">

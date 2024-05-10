@@ -300,6 +300,14 @@ CIME.tests.test\_unit\_hist\_utils module
    :undoc-members:
    :show-inheritance:
 
+CIME.tests.test\_unit\_locked\_files module
+-------------------------------------------
+
+.. automodule:: CIME.tests.test_unit_locked_files
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 CIME.tests.test\_unit\_nmlgen module
 ------------------------------------
 

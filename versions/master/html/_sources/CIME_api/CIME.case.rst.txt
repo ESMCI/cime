@@ -76,14 +76,6 @@ CIME.case.check\_input\_data module
    :undoc-members:
    :show-inheritance:
 
-CIME.case.check\_lockedfiles module
------------------------------------
-
-.. automodule:: CIME.case.check_lockedfiles
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 CIME.case.preview\_namelists module
 -----------------------------------
 
