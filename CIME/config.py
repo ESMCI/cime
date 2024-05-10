@@ -83,11 +83,11 @@ class ConfigBase:
         else:
             ignore_pattern = re.compile(f"{customize_path}/(?:tests|conftest|test_)")
 
-            customize_files = customize_path.glob("**/*.py")
-
             # filter out any tests
             customize_files = [
-                x for x in customize_files if ignore_pattern.search(x) is None
+                f"{x}"
+                for x in customize_path.glob("**/*.py")
+                if ignore_pattern.search(x) is None
             ]
 
         customize_module_spec = importlib.machinery.ModuleSpec("cime_customize", None)
