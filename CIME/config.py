@@ -79,10 +79,12 @@ class ConfigBase:
 
         customize_path = Path(customize_path)
 
-        if customize_path.is_file()
+        if customize_path.is_file():
             customize_files = [f"{customize_path}"]
         else:
             ignore_pattern = re.compile(f"{customize_path}/(?:tests|conftest|test_)")
+
+            customize_files = customize_path.glob("**/*.py")
 
             # filter out any tests
             customize_files = [
