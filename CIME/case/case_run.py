@@ -7,6 +7,7 @@ from CIME.utils import gzip_existing_file, new_lid, run_and_log_case_status
 from CIME.utils import run_sub_or_cmd, append_status, safe_copy, model_log, CIMEError
 from CIME.utils import batch_jobid, is_comp_standalone
 from CIME.get_timing import get_timing
+from CIME.locked_files import check_lockedfiles
 
 import shutil, time, sys, os, glob
 
@@ -34,10 +35,14 @@ def _pre_run_check(case, lid, skip_pnl=False, da_cycle=0):
 
     # check for locked files, may impact BUILD_COMPLETE
     skip = None
+
     if case.get_value("EXTERNAL_WORKFLOW"):
         skip = "env_batch"
-    case.check_lockedfiles(skip=skip)
+
+    check_lockedfiles(case, skip=skip)
+
     logger.debug("check_lockedfiles OK")
+
     build_complete = case.get_value("BUILD_COMPLETE")
 
     # check that build is done

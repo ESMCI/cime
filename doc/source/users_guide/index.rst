@@ -36,6 +36,7 @@ Configuring the Case Control System
    :numbered:
 
    cime-internals.rst
+   components.rst
    compsets.rst
    grids.rst
    machine.rst
