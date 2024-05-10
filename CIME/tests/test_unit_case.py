@@ -23,7 +23,7 @@ class TestCaseSubmit(unittest.TestCase):
     def test_check_case(self):
         case = mock.MagicMock()
         # get_value arguments TEST, COMP_WAV, COMP_INTERFACE, BUILD_COMPLETE
-        case.get_value.side_effect = ["", "", True]
+        case.get_value.side_effect = ["/tmp/caseroot", "", "", True]
         case_submit.check_case(case, chksum=True)
 
         case.check_all_input_data.assert_called_with(chksum=True)

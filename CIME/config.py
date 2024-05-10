@@ -1,3 +1,4 @@
+import re
 import sys
 import glob
 import logging
@@ -78,14 +79,14 @@ class ConfigBase:
 
         customize_path = Path(customize_path)
 
-        if customize_path.is_file():
+        if customize_path.is_file()
             customize_files = [f"{customize_path}"]
         else:
-            customize_files = glob.glob(f"{customize_path}/**/*.py", recursive=True)
+            ignore_pattern = re.compile(f"{customize_path}/(?:tests|conftest|test_)")
 
             # filter out any tests
             customize_files = [
-                x for x in customize_files if "tests" not in x and "conftest" not in x
+                x for x in customize_files if ignore_pattern.search(x) is None
             ]
 
         customize_module_spec = importlib.machinery.ModuleSpec("cime_customize", None)

@@ -6,7 +6,7 @@
 .. _users-guide1:
 
 #######################################
-Case Control System Part 1: Basic Usage
+Using the Case Control System
 #######################################
 
 .. toctree::
@@ -22,12 +22,13 @@ Case Control System Part 1: Basic Usage
    cime-change-namelist.rst
    cime-config.rst
    cime-customize.rst
+   testing.rst
    troubleshooting.rst
 
 .. _users-guide2:
 
 #######################################################################################
-Case Control System Part 2: Configuration, Porting, Testing and Use Cases
+Configuring the Case Control System
 #######################################################################################
 
 .. toctree::
@@ -35,13 +36,12 @@ Case Control System Part 2: Configuration, Porting, Testing and Use Cases
    :numbered:
 
    cime-internals.rst
+   components.rst
    compsets.rst
    grids.rst
    machine.rst
    pes-threads.rst
    porting-cime.rst
-   timers.rst
-   testing.rst
    unit_testing.rst
    multi-instance.rst
    workflows.rst

@@ -10,6 +10,8 @@ repos:
         exclude: doc/
       - id: trailing-whitespace
         exclude: doc/
+      - id: debug-statements
+        exclude: doc/|CIME/utils.py
   - repo: https://github.com/psf/black
     rev: 22.3.0
     hooks:

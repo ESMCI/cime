@@ -22,7 +22,7 @@ from CIME.utils import (
 )
 from CIME.utils import batch_jobid
 from CIME.test_status import *
-from CIME.locked_files import unlock_file, lock_file
+from CIME.locked_files import unlock_file, lock_file, check_lockedfiles
 
 import errno, shutil
 
@@ -348,13 +348,15 @@ def _case_setup_impl(
             case.set_value("BUILD_THREADED", case.get_build_threaded())
 
         else:
-            case.check_pelayouts_require_rebuild(models)
+            caseroot = case.get_value("CASEROOT")
 
-            unlock_file("env_build.xml")
-            unlock_file("env_batch.xml")
+            unlock_file("env_build.xml", caseroot)
+
+            unlock_file("env_batch.xml", caseroot)
 
             case.flush()
-            case.check_lockedfiles()
+
+            check_lockedfiles(case, skip=["env_build", "env_mach_pes"])
 
             case.initialize_derived_attributes()
 
@@ -404,9 +406,14 @@ def _case_setup_impl(
             # Make a copy of env_mach_pes.xml in order to be able
             # to check that it does not change once case.setup is invoked
             case.flush()
+
             logger.debug("at copy TOTALPES = {}".format(case.get_value("TOTALPES")))
-            lock_file("env_mach_pes.xml")
-            lock_file("env_batch.xml")
+
+            caseroot = case.get_value("CASEROOT")
+
+            lock_file("env_mach_pes.xml", caseroot)
+
+            lock_file("env_batch.xml", caseroot)
 
         # Create user_nl files for the required number of instances
         if not os.path.exists("user_nl_cpl"):

@@ -90,11 +90,6 @@ class Case(object):
     )
     from CIME.case.case_run import case_run
     from CIME.case.case_cmpgen_namelists import case_cmpgen_namelists
-    from CIME.case.check_lockedfiles import (
-        check_lockedfile,
-        check_lockedfiles,
-        check_pelayouts_require_rebuild,
-    )
     from CIME.case.preview_namelists import create_dirs, create_namelists
     from CIME.case.check_input_data import (
         check_all_input_data,

@@ -17,7 +17,6 @@ from CIME.utils import (
     format_time,
     add_flag_to_cmd,
 )
-from CIME.locked_files import lock_file, unlock_file
 from collections import OrderedDict
 import stat, re, math
 import pathlib
@@ -190,13 +189,19 @@ class EnvBatch(EnvBase):
 
         if batchobj.batch_system_node is not None:
             self.add_child(self.copy(batchobj.batch_system_node))
+
         if batchobj.machine_node is not None:
             self.add_child(self.copy(batchobj.machine_node))
+
+        from CIME.locked_files import lock_file, unlock_file
+
         if os.path.exists(os.path.join(self._caseroot, "LockedFiles", "env_batch.xml")):
-            unlock_file(os.path.basename(batchobj.filename), caseroot=self._caseroot)
+            unlock_file(os.path.basename(batchobj.filename), self._caseroot)
+
         self.set_value("BATCH_SYSTEM", batch_system_type)
+
         if os.path.exists(os.path.join(self._caseroot, "LockedFiles")):
-            lock_file(os.path.basename(batchobj.filename), caseroot=self._caseroot)
+            lock_file(os.path.basename(batchobj.filename), self._caseroot)
 
     def get_job_overrides(self, job, case):
         env_workflow = case.get_env("workflow")
