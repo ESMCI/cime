@@ -131,16 +131,15 @@ according to the test type and return a PASS or FAIL for the test result.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$CIMEROOT/scripts/create_test $test_name
 </pre></div>
 </div>
-<p>For example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$CIMEROOT/scripts/create_test ERP_ne4pg2_oQU480.F2010
-</pre></div>
-</div>
-<p>Everything the test will do is controlled by parsing the test name.  The elements of the test name are
-explained next.</p>
+<p>Everything the test will do is controlled by parsing the test name.</p>
 <section id="testname-syntax">
 <h2><span class="section-number">10.1. </span>Testname syntax<a class="headerlink" href="#testname-syntax" title="Link to this heading"></a></h2>
 <p id="test-naming">Tests must be named with the following forms, [ ]=optional:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">TESTTYPE</span><span class="p">[</span><span class="n">_MODIFIERS</span><span class="p">]</span><span class="o">.</span><span class="n">GRID</span><span class="o">.</span><span class="n">COMPSET</span><span class="p">[</span><span class="o">.</span><span class="n">MACHINE_COMPILER</span><span class="p">][</span><span class="o">.</span><span class="n">GROUP</span><span class="o">-</span><span class="n">TESTMODS</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>For example using the minimum required elements of a testname:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$CIMEROOT/scripts/create_test ERP.ne4pg2_oQU480.F2010
 </pre></div>
 </div>
 <table class="docutils align-default">

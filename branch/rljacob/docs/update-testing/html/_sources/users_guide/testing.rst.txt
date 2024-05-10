@@ -15,12 +15,7 @@ An individual test can be run as::
 
   $CIMEROOT/scripts/create_test $test_name
 
-For example::
-
-   $CIMEROOT/scripts/create_test ERP_ne4pg2_oQU480.F2010
-
-Everything the test will do is controlled by parsing the test name.  The elements of the test name are
-explained next.
+Everything the test will do is controlled by parsing the test name.
 
 =================
 Testname syntax
@@ -30,6 +25,11 @@ Testname syntax
 Tests must be named with the following forms, [ ]=optional::
 
   TESTTYPE[_MODIFIERS].GRID.COMPSET[.MACHINE_COMPILER][.GROUP-TESTMODS]
+
+For example using the minimum required elements of a testname::
+
+   $CIMEROOT/scripts/create_test ERP.ne4pg2_oQU480.F2010
+
 
 =================  =====================================================================================
 NAME PART
