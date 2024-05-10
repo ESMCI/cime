@@ -1,6 +1,5 @@
 import re
 import sys
-import glob
 import logging
 import importlib.machinery
 import importlib.util
