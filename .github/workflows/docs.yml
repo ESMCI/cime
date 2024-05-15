@@ -35,9 +35,9 @@ jobs:
         run: |
           pushd $GITHUB_WORKSPACE/gh-pages
 
-          ls -la "$GITHUB_WORKSPACE/gh-pages/branch"
-
           if [[ -e "$GITHUB_WORKSPACE/gh-pages/branch" ]]; then
+            ls -la "$GITHUB_WORKSPACE/gh-pages/branch"
+
             for name in `ls branch/`
             do
               if [[ -z "$(git show-ref --quiet ${name})" ]]
@@ -53,6 +53,8 @@ jobs:
             git commit -m "Clean up branch previews"
             git push
           fi
+
+          echo "Done cleaning branches"
   build-and-deploy:
     permissions:
       contents: write  #  for peaceiris/actions-gh-pages to push
