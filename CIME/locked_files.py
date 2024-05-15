@@ -55,7 +55,7 @@ def is_locked(filename, caseroot):
     return os.path.exists(os.path.join(caseroot, LOCKED_DIR, filename))
 
 
-def check_lockedfiles(case, skip=None):
+def check_lockedfiles(case, skip=None, quiet=False):
     """
     Check that all lockedfiles match what's in case
 
@@ -77,17 +77,17 @@ def check_lockedfiles(case, skip=None):
         if filename.count(".") > 1 or any([filename.startswith(x) for x in skip]):
             continue
 
-        check_lockedfile(case, filename, caseroot=caseroot)
+        check_lockedfile(case, filename, caseroot=caseroot, quiet=quiet)
 
 
-def check_lockedfile(case, filebase, caseroot=None):
+def check_lockedfile(case, filebase, caseroot=None, quiet=False):
     if caseroot is None:
         caseroot = case.get_value("CASEROOT")
 
     env_name, diff = diff_lockedfile(case, caseroot, filebase)
 
     if diff:
-        check_diff(case, filebase, env_name, diff)
+        check_diff(case, filebase, env_name, diff, quiet=quiet)
 
 
 def diff_lockedfile(case, caseroot, filename):
@@ -138,7 +138,7 @@ def _get_case_env(case, caseroot, locked_file, env_name):
     return l_env, r_env
 
 
-def check_diff(case, filename, env_name, diff):
+def check_diff(case, filename, env_name, diff, quiet=False):
     logger.warning("Detected diff in locked file {!r}".format(filename))
 
     # Remove BUILD_COMPLETE, invalid entry in diff
@@ -207,4 +207,7 @@ def check_diff(case, filename, env_name, diff):
 
         message = f"{message}./case.build {clean_targets}\n./case.build"
 
-    expect(False, message)
+    if quiet:
+        logger.info(message)
+    else:
+        expect(False, message)

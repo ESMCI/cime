@@ -227,7 +227,7 @@ def xmlchange_single_value(
 
         expect(result is not None, 'No variable "%s" found' % xmlid)
 
-        check_lockedfiles(case, skip=["env_case"])
+        check_lockedfiles(case, skip=["env_case"], quiet=True)
     else:
         logger.warning("'%s' = '%s'", xmlid, xmlval)
 
