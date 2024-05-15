@@ -87,7 +87,7 @@ class ConfigBase:
             customize_files = [
                 f"{x}"
                 for x in customize_path.glob("**/*.py")
-                if ignore_pattern.search(x) is None
+                if ignore_pattern.search(f"{x}") is None
             ]
 
         customize_module_spec = importlib.machinery.ModuleSpec("cime_customize", None)
