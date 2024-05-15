@@ -23,7 +23,7 @@ jobs:
       contents: write  #  for git push
     name: Cleanup branch previews
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'push' }}
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     steps:
       - uses: actions/checkout@v3
         with:
