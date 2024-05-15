@@ -35,12 +35,16 @@ jobs:
         run: |
           pushd $GITHUB_WORKSPACE/gh-pages
 
+          ls -la "$GITHUB_WORKSPACE/gh-pages/branch"
+
           if [[ -e "$GITHUB_WORKSPACE/gh-pages/branch" ]]; then
             for name in `ls branch/`
             do
               if [[ -z "$(git show-ref --quiet ${name})" ]]
               then
                 git rm -rf branch/${name}
+
+                echo "Removed $GITHUB_WORKSPACE/gh-pages/branch/${name}"
               fi
             done
 
