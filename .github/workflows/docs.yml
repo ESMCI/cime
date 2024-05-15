@@ -23,7 +23,7 @@ jobs:
       contents: write  #  for git push
     name: Cleanup branch previews
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'push' }}
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     steps:
       - uses: actions/checkout@v3
         with:
@@ -35,18 +35,26 @@ jobs:
         run: |
           pushd $GITHUB_WORKSPACE/gh-pages
 
-          for name in `ls branch/`
-          do
-            if [[ -z "$(git show-ref --quiet ${name})" ]]
-            then
-              git rm -rf branch/${name}
-            fi
-          done
+          if [[ -e "$GITHUB_WORKSPACE/gh-pages/branch" ]]; then
+            ls -la "$GITHUB_WORKSPACE/gh-pages/branch"
 
-          git config user.name github-actions[bot]
-          git config user.email github-actions[bot]@users.noreply.github.com
-          git commit -m "Clean up branch previews"
-          git push
+            for name in `ls branch/`
+            do
+              if [[ -z "$(git show-ref --quiet ${name})" ]]
+              then
+                git rm -rf branch/${name}
+
+                echo "Removed $GITHUB_WORKSPACE/gh-pages/branch/${name}"
+              fi
+            done
+
+            git config user.name github-actions[bot]
+            git config user.email github-actions[bot]@users.noreply.github.com
+            git commit -m "Clean up branch previews"
+            git push
+          fi
+
+          echo "Done cleaning branches"
   build-and-deploy:
     permissions:
       contents: write  #  for peaceiris/actions-gh-pages to push
