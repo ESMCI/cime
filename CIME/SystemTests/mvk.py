@@ -108,6 +108,8 @@ class MVK(SystemTestsCommon):
         """
         SystemTestsCommon.__init__(self, case, **kwargs)
 
+        self._config = None
+
         casebaseid = self._case.get_value("CASEBASEID")
 
         *_, test_mods = parse_test_name(casebaseid)
@@ -163,7 +165,7 @@ class MVK(SystemTestsCommon):
         else:
             self.component = self._config.component
 
-        if self._config.components:
+        if len(self._config.components) == 0:
             self.components = [self.component]
         else:
             self.components = self._config.components
