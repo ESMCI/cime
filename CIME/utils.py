@@ -534,7 +534,9 @@ def get_model():
     if model is None:
         srcroot = get_src_root()
 
-        if os.path.isfile(os.path.join(srcroot, "Externals.cfg")):
+        if os.path.isfile(os.path.join(srcroot, "bin", "git-fleximod")):
+            model = "cesm"
+        elif os.path.isfile(os.path.join(srcroot, "Externals.cfg")):
             model = "cesm"
             with open(os.path.join(srcroot, "Externals.cfg")) as fd:
                 for line in fd:
