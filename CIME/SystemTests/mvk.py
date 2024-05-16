@@ -9,9 +9,7 @@ This class inherits from SystemTestsCommon.
 import os
 import json
 import logging
-
 from distutils import dir_util
-from pathlib import Path
 
 import CIME.test_status
 import CIME.utils
@@ -20,8 +18,7 @@ from CIME.case.case_setup import case_setup
 from CIME.XML.machines import Machines
 from CIME.config import ConfigBase
 from CIME.utils import parse_test_name
-from CIME.utils import CIMEError
-from CIME.XML.files import Files
+from CIME.SystemTests.test_mods import find_test_mods
 
 import evv4esm  # pylint: disable=import-error
 from evv4esm.__main__ import main as evv  # pylint: disable=import-error
@@ -106,51 +103,16 @@ class MVK(SystemTestsCommon):
         """
         initialize an object interface to the MVK test
         """
-        SystemTestsCommon.__init__(self, case, **kwargs)
-
         self._config = None
 
-        casebaseid = self._case.get_value("CASEBASEID")
+        SystemTestsCommon.__init__(self, case, **kwargs)
 
-        *_, test_mods = parse_test_name(casebaseid)
+        *_, test_mods = parse_test_name(self._casebaseid)
 
-        if test_mods:
-            comp_interface = self._case.get_value("COMP_INTERFACE")
+        test_mods_paths = find_test_mods(case.get_value("COMP_INTERFACE"), test_mods)
 
-            files = Files(comp_interface=comp_interface)
-
-            for mod in test_mods:  # pylint: disable=not-an-iterable
-                if mod.find("/") == -1:
-                    raise CIMEError(
-                        "Missing testmod component. Testmods are specified as '${component}-${testmod}"
-                    )
-                else:
-                    component, modpath = mod.split("/", 1)
-
-                testmods_dir = files.get_value(
-                    "TESTS_MODS_DIR", {"component": component}
-                )
-
-                test_mod_file = os.path.join(testmods_dir, component, modpath)
-
-                if not os.path.exists(test_mod_file):
-                    usermods_dir = files.get_value(
-                        "USER_MODS_DIR", {"component": component}
-                    )
-
-                    test_mod_file = os.path.join(usermods_dir, component, modpath)
-
-                    if not os.path.exists(test_mod_file):
-                        raise CIMEError(
-                            "Missing testmod file {!r}, checked {} and {}".format(
-                                modpath, testmods_dir, usermods_dir
-                            )
-                        )
-
-                params_file = Path(test_mod_file, "params.py")
-
-                if params_file.exists():
-                    self._config = MVKConfig.load(test_mod_file)
+        for test_mods_path in test_mods_paths:
+            self._config = MVKConfig.load(test_mods_path)
 
         if self._config is None:
             self._config = MVKConfig()

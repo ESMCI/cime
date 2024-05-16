@@ -30,6 +30,7 @@ from CIME.utils import (
     get_timestamp,
     get_cime_default_driver,
     clear_folder,
+    CIMEError,
 )
 from CIME.config import Config
 from CIME.test_status import *
@@ -47,6 +48,7 @@ from CIME.locked_files import lock_file
 from CIME.cs_status_creator import create_cs_status
 from CIME.hist_utils import generate_teststatus
 from CIME.build import post_build
+from CIME.SystemTests.test_mods import find_test_mods
 
 logger = logging.getLogger(__name__)
 
@@ -697,34 +699,18 @@ class TestScheduler(object):
         if test_mods is not None:
             create_newcase_cmd += " --user-mods-dir "
 
-            for one_test_mod in test_mods:  # pylint: disable=not-an-iterable
-                if one_test_mod.find("/") != -1:
-                    (component, modspath) = one_test_mod.split("/", 1)
-                else:
-                    error = "Missing testmod component. Testmods are specified as '${component}-${testmod}'"
-                    self._log_output(test, error)
-                    return False, error
+            try:
+                test_mods_paths = find_test_mods(self._cime_driver, test_mods)
+            except CIMEError as e:
+                error = f"{e}"
 
-                files = Files(comp_interface=self._cime_driver)
-                testmods_dir = files.get_value(
-                    "TESTS_MODS_DIR", {"component": component}
-                )
-                test_mod_file = os.path.join(testmods_dir, component, modspath)
-                # if no testmod is found check if a usermod of the same name exists and
-                # use it if it does.
-                if not os.path.exists(test_mod_file):
-                    usermods_dir = files.get_value(
-                        "USER_MODS_DIR", {"component": component}
-                    )
-                    test_mod_file = os.path.join(usermods_dir, modspath)
-                    if not os.path.exists(test_mod_file):
-                        error = "Missing testmod file '{}', checked {} and {}".format(
-                            modspath, testmods_dir, usermods_dir
-                        )
-                        self._log_output(test, error)
-                        return False, error
+                self._log_output(test, error)
 
-                create_newcase_cmd += "{} ".format(test_mod_file)
+                return False, error
+            else:
+                test_mods_paths = " ".join(test_mods_paths)
+
+                create_newcase_cmd += f"{test_mods_paths}"
 
         # create_test mpilib option overrides default but not explicitly set case_opt mpilib
         if mpilib is None and self._mpilib is not None:
