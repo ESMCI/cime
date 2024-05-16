@@ -127,10 +127,6 @@ class ArchiveBase(GenericXML):
         # remove when component name is changed
         if model == "fv3gfs":
             model = "fv3"
-        if model == "cice5":
-            model = "cice"
-        if model == "ww3dev":
-            model = "ww3"
 
         hist_files = []
         extensions = self.get_hist_file_extensions(self.get_entry(dmodel))
@@ -237,10 +233,7 @@ def _get_extension(model, filepath, ext_regexes):
     # Remove with component namechange
     if model == "fv3gfs":
         model = "fv3"
-    if model == "cice5":
-        model = "cice"
-    if model == "ww3dev":
-        model = "ww3"
+
     basename = os.path.basename(filepath)
     m = None
     if ext_regexes is None:
