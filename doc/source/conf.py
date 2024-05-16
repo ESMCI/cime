@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# -* coding: utf-8 -*-
 #
 # on documentation build configuration file, created by
 # sphinx-quickstart on Tue Jan 31 19:46:36 2017.
@@ -46,6 +46,7 @@ extensions = [
     "sphinx.ext.todo",
     "sphinxcontrib.programoutput",
     "sphinx_rtd_theme",
+    "sphinx_copybutton",
 ]
 todo_include_todos = True
 
