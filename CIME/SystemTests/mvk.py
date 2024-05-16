@@ -112,7 +112,7 @@ class MVK(SystemTestsCommon):
         test_mods_paths = find_test_mods(case.get_value("COMP_INTERFACE"), test_mods)
 
         for test_mods_path in test_mods_paths:
-            self._config = MVKConfig.load(test_mods_path)
+            self._config = MVKConfig.load(os.path.join(test_mods_path, "params.py"))
 
         if self._config is None:
             self._config = MVKConfig()
@@ -121,16 +121,12 @@ class MVK(SystemTestsCommon):
         if self._config.component == "":
             # TODO remove model specific
             if self._case.get_value("MODEL") == "e3sm":
-                self.component = "eam"
+                self._config.component = "eam"
             else:
-                self.component = "cam"
-        else:
-            self.component = self._config.component
+                self._config.component = "cam"
 
         if len(self._config.components) == 0:
-            self.components = [self.component]
-        else:
-            self.components = self._config.components
+            self._config.components = [self._config.component]
 
         if (
             self._case.get_value("RESUBMIT") == 0
@@ -162,14 +158,12 @@ class MVK(SystemTestsCommon):
             case_setup(self._case, test_mode=False, reset=True)
 
         for iinst in range(1, self._config.ninst + 1):
-            for component in self.components:
+            for component in self._config.components:
                 with open(
                     "user_nl_{}_{:04d}".format(component, iinst), "w"
                 ) as nml_file:
-                    set_nml_variable = (
-                        lambda x: nml_file.write(  # pylint: disable=cell-var-from-loop
-                            f"{x}\n"
-                        )
+                    set_nml_variable = lambda key, value: nml_file.write(  # pylint: disable=cell-var-from-loop
+                        f"{key} = {value}\n"
                     )
 
                     self._config.write_inst_nml(
