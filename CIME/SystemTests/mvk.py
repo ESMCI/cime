@@ -11,14 +11,13 @@ import json
 import logging
 from distutils import dir_util
 
-import CIME.test_status
-import CIME.utils
+from CIME import test_status
+from CIME import utils
 from CIME.SystemTests.system_tests_common import SystemTestsCommon
 from CIME.case.case_setup import case_setup
 from CIME.XML.machines import Machines
 from CIME.config import ConfigBase
-from CIME.utils import parse_test_name
-from CIME.SystemTests.test_mods import find_test_mods
+from CIME.SystemTests import test_mods
 
 import evv4esm  # pylint: disable=import-error
 from evv4esm.__main__ import main as evv  # pylint: disable=import-error
@@ -107,9 +106,11 @@ class MVK(SystemTestsCommon):
 
         SystemTestsCommon.__init__(self, case, **kwargs)
 
-        *_, test_mods = parse_test_name(self._casebaseid)
+        *_, case_test_mods = utils.parse_test_name(self._casebaseid)
 
-        test_mods_paths = find_test_mods(case.get_value("COMP_INTERFACE"), test_mods)
+        test_mods_paths = test_mods.find_test_mods(
+            case.get_value("COMP_INTERFACE"), case_test_mods
+        )
 
         for test_mods_path in test_mods_paths:
             self._config = MVKConfig.load(os.path.join(test_mods_path, "params.py"))
@@ -178,7 +179,7 @@ class MVK(SystemTestsCommon):
         """
         super(MVK, self)._generate_baseline()
 
-        with CIME.utils.SharedArea():
+        with utils.SharedArea():
             basegen_dir = os.path.join(
                 self._case.get_value("BASELINE_ROOT"),
                 self._case.get_value("BASEGEN_CASE"),
@@ -189,17 +190,20 @@ class MVK(SystemTestsCommon):
 
             env_archive = self._case.get_env("archive")
             hists = env_archive.get_all_hist_files(
-                self._case.get_value("CASE"), self.component, rundir, ref_case=ref_case
+                self._case.get_value("CASE"),
+                self._config.component,
+                rundir,
+                ref_case=ref_case,
             )
             logger.debug("MVK additional baseline files: {}".format(hists))
             hists = [os.path.join(rundir, hist) for hist in hists]
             for hist in hists:
-                basename = hist[hist.rfind(self.component) :]
+                basename = hist[hist.rfind(self._config.component) :]
                 baseline = os.path.join(basegen_dir, basename)
                 if os.path.exists(baseline):
                     os.remove(baseline)
 
-                CIME.utils.safe_copy(hist, baseline, preserve_meta=False)
+                utils.safe_copy(hist, baseline, preserve_meta=False)
 
     def _compare_baseline(self):
         with self._test_status:
@@ -208,12 +212,12 @@ class MVK(SystemTestsCommon):
                 # and we only want to compare once the whole run is finished. We
                 # need to return a pass here to continue the submission process.
                 self._test_status.set_status(
-                    CIME.test_status.BASELINE_PHASE, CIME.test_status.TEST_PASS_STATUS
+                    test_status.BASELINE_PHASE, test_status.TEST_PASS_STATUS
                 )
                 return
 
             self._test_status.set_status(
-                CIME.test_status.BASELINE_PHASE, CIME.test_status.TEST_FAIL_STATUS
+                test_status.BASELINE_PHASE, test_status.TEST_FAIL_STATUS
             )
 
             run_dir = self._case.get_value("RUNDIR")
@@ -250,18 +254,18 @@ class MVK(SystemTestsCommon):
                     )
                     if evv_ele["Table"]["data"]["Test status"][0].lower() == "pass":
                         self._test_status.set_status(
-                            CIME.test_status.BASELINE_PHASE,
-                            CIME.test_status.TEST_PASS_STATUS,
+                            test_status.BASELINE_PHASE,
+                            test_status.TEST_PASS_STATUS,
                         )
                     break
 
-            status = self._test_status.get_status(CIME.test_status.BASELINE_PHASE)
+            status = self._test_status.get_status(test_status.BASELINE_PHASE)
             mach_name = self._case.get_value("MACH")
             mach_obj = Machines(machine=mach_name)
-            htmlroot = CIME.utils.get_htmlroot(mach_obj)
-            urlroot = CIME.utils.get_urlroot(mach_obj)
+            htmlroot = utils.get_htmlroot(mach_obj)
+            urlroot = utils.get_urlroot(mach_obj)
             if htmlroot is not None:
-                with CIME.utils.SharedArea():
+                with utils.SharedArea():
                     dir_util.copy_tree(
                         evv_out_dir,
                         os.path.join(htmlroot, "evv", case_name),
@@ -284,7 +288,7 @@ class MVK(SystemTestsCommon):
                 "    {}\n"
                 "    EVV results can be viewed at:\n"
                 "        {}".format(
-                    CIME.test_status.BASELINE_PHASE,
+                    test_status.BASELINE_PHASE,
                     status,
                     test_name,
                     comments,
@@ -292,4 +296,4 @@ class MVK(SystemTestsCommon):
                 )
             )
 
-            CIME.utils.append_testlog(comments, self._orig_caseroot)
+            utils.append_testlog(comments, self._orig_caseroot)

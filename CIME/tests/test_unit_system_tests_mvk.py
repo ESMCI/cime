@@ -14,7 +14,12 @@ from CIME.tests.utils import chdir
 
 
 def create_complex_case(
-    case_name, temp_dir, run_dir, baseline_dir, compare_baseline=False
+    case_name,
+    temp_dir,
+    run_dir,
+    baseline_dir,
+    compare_baseline=False,
+    mock_evv_output=False,
 ):
     case = mock.MagicMock()
 
@@ -50,8 +55,28 @@ def create_complex_case(
 
     evv_output.parent.mkdir(parents=True)
 
+    if mock_evv_output:
+        evv_output_data = {
+            "Page": {
+                "elements": [
+                    {
+                        "Table": {
+                            "data": {
+                                "Test status": ["pass"],
+                                "Variables analyzed": ["v1", "v2"],
+                                "Rejecting": [2],
+                                "Critical value": [12],
+                            }
+                        }
+                    }
+                ]
+            }
+        }
+    else:
+        evv_output_data = {"Page": {"elements": []}}
+
     with open(evv_output, "w") as fd:
-        fd.write(json.dumps({"Page": {"elements": []}}))
+        fd.write(json.dumps(evv_output_data))
 
     return case
 
@@ -75,9 +100,12 @@ def create_simple_case():
 class TestSystemTestsMVK(unittest.TestCase):
     def tearDown(self):
         # reset singleton
-        delattr(MVKConfig, "_instance")
+        try:
+            delattr(MVKConfig, "_instance")
+        except:
+            pass
 
-    @mock.patch("CIME.SystemTests.mvk.find_test_mods")
+    @mock.patch("CIME.SystemTests.mvk.test_mods.find_test_mods")
     @mock.patch("CIME.SystemTests.mvk.evv")
     def test_testmod_complex(self, evv, find_test_mods):
         with contextlib.ExitStack() as stack:
@@ -155,7 +183,7 @@ def test_config(case, run_dir, base_dir, evv_lib_dir):
 
             assert lines == ["var2 = value2\n"]
 
-    @mock.patch("CIME.SystemTests.mvk.find_test_mods")
+    @mock.patch("CIME.SystemTests.mvk.test_mods.find_test_mods")
     @mock.patch("CIME.SystemTests.mvk.evv")
     def test_testmod_simple(self, evv, find_test_mods):
         with contextlib.ExitStack() as stack:
@@ -239,8 +267,9 @@ test_case = "Default"
                 "seed_clock = .true.\n",
             ]
 
+    @mock.patch("CIME.SystemTests.mvk.utils.append_testlog")
     @mock.patch("CIME.SystemTests.mvk.evv")
-    def test__compare_baseline(self, evv):
+    def test__compare_baseline(self, evv, append_testlog):
         with contextlib.ExitStack() as stack:
             temp_dir = stack.enter_context(tempfile.TemporaryDirectory())
 
@@ -253,7 +282,9 @@ test_case = "Default"
 
             case_name = "MVK.f19_g16.S.docker_gnu.20240515_212034_41b5u2"  # CASE
 
-            case = create_complex_case(case_name, temp_dir, run_dir, baseline_dir, True)
+            case = create_complex_case(
+                case_name, temp_dir, run_dir, baseline_dir, True, mock_evv_output=True
+            )
 
             test = MVK(case)
 
@@ -278,11 +309,19 @@ test_case = "Default"
 
             assert config == expected_config
 
+            expected_comments = f"""BASELINE PASS for test '20240515_212034_41b5u2'.
+    Test status: pass; Variables analyzed: v1; Rejecting: 2; Critical value: 12
+    EVV results can be viewed at:
+        {run_dir}/MVK.f19_g16.S.docker_gnu.20240515_212034_41b5u2.evv
+    EVV viewing instructions can be found at:         https://github.com/E3SM-Project/E3SM/blob/master/cime/scripts/climate_reproducibility/README.md#test-passfail-and-extended-output"""
+
+            append_testlog.assert_any_call(
+                expected_comments, str(temp_dir)
+            ), append_testlog.call_args.args
+
     def test_write_inst_nml_multiple_components(self):
         with contextlib.ExitStack() as stack:
             temp_dir = stack.enter_context(tempfile.TemporaryDirectory())
-
-            print(temp_dir)
 
             stack.enter_context(chdir(temp_dir))
 
