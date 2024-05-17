@@ -110,11 +110,11 @@ jobs:
           CIME_DRIVER: "nuopc"
           CIME_TEST_PLATFORM: ubuntu-latest
         run: |
-          pip install -r test-requirements.txt
-
           export SRC_PATH="${GITHUB_WORKSPACE}"
 
           mamba install -y python=${{ matrix.python-version }}
+
+          pip install -r test-requirements.txt
 
           source /entrypoint.sh
 
