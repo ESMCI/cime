@@ -106,7 +106,12 @@
 <div class="viewcode-block" id="create_complex_case">
 <a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_system_tests_mvk.create_complex_case">[docs]</a>
 <span class="k">def</span> <span class="nf">create_complex_case</span><span class="p">(</span>
-    <span class="n">case_name</span><span class="p">,</span> <span class="n">temp_dir</span><span class="p">,</span> <span class="n">run_dir</span><span class="p">,</span> <span class="n">baseline_dir</span><span class="p">,</span> <span class="n">compare_baseline</span><span class="o">=</span><span class="kc">False</span>
+    <span class="n">case_name</span><span class="p">,</span>
+    <span class="n">temp_dir</span><span class="p">,</span>
+    <span class="n">run_dir</span><span class="p">,</span>
+    <span class="n">baseline_dir</span><span class="p">,</span>
+    <span class="n">compare_baseline</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">mock_evv_output</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="n">case</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
 
@@ -142,8 +147,28 @@
 
     <span class="n">evv_output</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
+    <span class="k">if</span> <span class="n">mock_evv_output</span><span class="p">:</span>
+        <span class="n">evv_output_data</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;Page&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;elements&quot;</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;Table&quot;</span><span class="p">:</span> <span class="p">{</span>
+                            <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="p">{</span>
+                                <span class="s2">&quot;Test status&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;pass&quot;</span><span class="p">],</span>
+                                <span class="s2">&quot;Variables analyzed&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;v1&quot;</span><span class="p">,</span> <span class="s2">&quot;v2&quot;</span><span class="p">],</span>
+                                <span class="s2">&quot;Rejecting&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+                                <span class="s2">&quot;Critical value&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">12</span><span class="p">],</span>
+                            <span class="p">}</span>
+                        <span class="p">}</span>
+                    <span class="p">}</span>
+                <span class="p">]</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">evv_output_data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Page&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;elements&quot;</span><span class="p">:</span> <span class="p">[]}}</span>
+
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">evv_output</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
-        <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s2">&quot;Page&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;elements&quot;</span><span class="p">:</span> <span class="p">[]}}))</span>
+        <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">evv_output_data</span><span class="p">))</span>
 
     <span class="k">return</span> <span class="n">case</span></div>
 
@@ -175,12 +200,15 @@
 <a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_system_tests_mvk.TestSystemTestsMVK.tearDown">[docs]</a>
     <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># reset singleton</span>
-        <span class="nb">delattr</span><span class="p">(</span><span class="n">MVKConfig</span><span class="p">,</span> <span class="s2">&quot;_instance&quot;</span><span class="p">)</span></div>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="nb">delattr</span><span class="p">(</span><span class="n">MVKConfig</span><span class="p">,</span> <span class="s2">&quot;_instance&quot;</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">pass</span></div>
 
 
 <div class="viewcode-block" id="TestSystemTestsMVK.test_testmod_complex">
 <a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_system_tests_mvk.TestSystemTestsMVK.test_testmod_complex">[docs]</a>
-    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.mvk.find_test_mods&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.mvk.test_mods.find_test_mods&quot;</span><span class="p">)</span>
     <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.mvk.evv&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">test_testmod_complex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">evv</span><span class="p">,</span> <span class="n">find_test_mods</span><span class="p">):</span>
         <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">ExitStack</span><span class="p">()</span> <span class="k">as</span> <span class="n">stack</span><span class="p">:</span>
@@ -261,7 +289,7 @@
 
 <div class="viewcode-block" id="TestSystemTestsMVK.test_testmod_simple">
 <a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_system_tests_mvk.TestSystemTestsMVK.test_testmod_simple">[docs]</a>
-    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.mvk.find_test_mods&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.mvk.test_mods.find_test_mods&quot;</span><span class="p">)</span>
     <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.mvk.evv&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">test_testmod_simple</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">evv</span><span class="p">,</span> <span class="n">find_test_mods</span><span class="p">):</span>
         <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">ExitStack</span><span class="p">()</span> <span class="k">as</span> <span class="n">stack</span><span class="p">:</span>
@@ -348,8 +376,9 @@
 
 <div class="viewcode-block" id="TestSystemTestsMVK.test__compare_baseline">
 <a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_system_tests_mvk.TestSystemTestsMVK.test__compare_baseline">[docs]</a>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.mvk.utils.append_testlog&quot;</span><span class="p">)</span>
     <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.mvk.evv&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test__compare_baseline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">evv</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">test__compare_baseline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">evv</span><span class="p">,</span> <span class="n">append_testlog</span><span class="p">):</span>
         <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">ExitStack</span><span class="p">()</span> <span class="k">as</span> <span class="n">stack</span><span class="p">:</span>
             <span class="n">temp_dir</span> <span class="o">=</span> <span class="n">stack</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">())</span>
 
@@ -362,7 +391,9 @@
 
             <span class="n">case_name</span> <span class="o">=</span> <span class="s2">&quot;MVK.f19_g16.S.docker_gnu.20240515_212034_41b5u2&quot;</span>  <span class="c1"># CASE</span>
 
-            <span class="n">case</span> <span class="o">=</span> <span class="n">create_complex_case</span><span class="p">(</span><span class="n">case_name</span><span class="p">,</span> <span class="n">temp_dir</span><span class="p">,</span> <span class="n">run_dir</span><span class="p">,</span> <span class="n">baseline_dir</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+            <span class="n">case</span> <span class="o">=</span> <span class="n">create_complex_case</span><span class="p">(</span>
+                <span class="n">case_name</span><span class="p">,</span> <span class="n">temp_dir</span><span class="p">,</span> <span class="n">run_dir</span><span class="p">,</span> <span class="n">baseline_dir</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">mock_evv_output</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span>
 
             <span class="n">test</span> <span class="o">=</span> <span class="n">MVK</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
 
@@ -385,7 +416,17 @@
                 <span class="p">}</span>
             <span class="p">}</span>
 
-            <span class="k">assert</span> <span class="n">config</span> <span class="o">==</span> <span class="n">expected_config</span></div>
+            <span class="k">assert</span> <span class="n">config</span> <span class="o">==</span> <span class="n">expected_config</span>
+
+            <span class="n">expected_comments</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;BASELINE PASS for test &#39;20240515_212034_41b5u2&#39;.</span>
+<span class="s2">    Test status: pass; Variables analyzed: v1; Rejecting: 2; Critical value: 12</span>
+<span class="s2">    EVV results can be viewed at:</span>
+<span class="s2">        </span><span class="si">{</span><span class="n">run_dir</span><span class="si">}</span><span class="s2">/MVK.f19_g16.S.docker_gnu.20240515_212034_41b5u2.evv</span>
+<span class="s2">    EVV viewing instructions can be found at:         https://github.com/E3SM-Project/E3SM/blob/master/cime/scripts/climate_reproducibility/README.md#test-passfail-and-extended-output&quot;&quot;&quot;</span>
+
+            <span class="n">append_testlog</span><span class="o">.</span><span class="n">assert_any_call</span><span class="p">(</span>
+                <span class="n">expected_comments</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">temp_dir</span><span class="p">)</span>
+            <span class="p">),</span> <span class="n">append_testlog</span><span class="o">.</span><span class="n">call_args</span><span class="o">.</span><span class="n">args</span></div>
 
 
 <div class="viewcode-block" id="TestSystemTestsMVK.test_write_inst_nml_multiple_components">
@@ -393,8 +434,6 @@
     <span class="k">def</span> <span class="nf">test_write_inst_nml_multiple_components</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">ExitStack</span><span class="p">()</span> <span class="k">as</span> <span class="n">stack</span><span class="p">:</span>
             <span class="n">temp_dir</span> <span class="o">=</span> <span class="n">stack</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">())</span>
-
-            <span class="nb">print</span><span class="p">(</span><span class="n">temp_dir</span><span class="p">)</span>
 
             <span class="n">stack</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="n">chdir</span><span class="p">(</span><span class="n">temp_dir</span><span class="p">))</span>
 
