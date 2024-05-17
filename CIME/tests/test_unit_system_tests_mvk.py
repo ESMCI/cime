@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import re
 import os
 import json
 import unittest
@@ -162,11 +163,19 @@ def test_config(case, run_dir, base_dir, evv_lib_dir):
 
             expected_config = {
                 "20240515_212034_41b5u2": {
-                    "module": "/opt/conda/lib/python3.10/site-packages/evv4esm/extensions/kso.py",
                     "component": "someother-comp",
                 }
             }
 
+            module = config["20240515_212034_41b5u2"].pop("module")
+
+            assert (
+                re.search(
+                    r"/opt/conda/lib/python.*/site-packages/evv4esm/extensions/kso.py",
+                    module,
+                )
+                is not None
+            )
             assert config == expected_config
 
             nml_files = [x for x in os.listdir(temp_dir) if x.startswith("user_nl")]
@@ -229,7 +238,6 @@ test_case = "Default"
 
             expected_config = {
                 "20240515_212034_41b5u2": {
-                    "module": "/opt/conda/lib/python3.10/site-packages/evv4esm/extensions/ks.py",
                     "test-case": "Default",
                     "test-dir": f"{run_dir}",
                     "ref-case": "Reference",
@@ -241,6 +249,15 @@ test_case = "Default"
                 }
             }
 
+            module = config["20240515_212034_41b5u2"].pop("module")
+
+            assert (
+                re.search(
+                    r"/opt/conda/lib/python.*/site-packages/evv4esm/extensions/ks.py",
+                    module,
+                )
+                is not None
+            )
             assert config == expected_config
 
             nml_files = [x for x in os.listdir(temp_dir) if x.startswith("user_nl")]
@@ -295,7 +312,6 @@ test_case = "Default"
 
             expected_config = {
                 "20240515_212034_41b5u2": {
-                    "module": "/opt/conda/lib/python3.10/site-packages/evv4esm/extensions/ks.py",
                     "test-case": "Test",
                     "test-dir": f"{run_dir}",
                     "ref-case": "Baseline",
@@ -307,6 +323,15 @@ test_case = "Default"
                 }
             }
 
+            module = config["20240515_212034_41b5u2"].pop("module")
+
+            assert (
+                re.search(
+                    r"/opt/conda/lib/python.*/site-packages/evv4esm/extensions/ks.py",
+                    module,
+                )
+                is not None
+            )
             assert config == expected_config
 
             expected_comments = f"""BASELINE PASS for test '20240515_212034_41b5u2'.
