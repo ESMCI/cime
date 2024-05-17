@@ -242,58 +242,76 @@ class MVK(SystemTestsCommon):
             evv_out_dir = os.path.join(run_dir, f"{case_name}.evv")
             evv(["-e", json_file, "-o", evv_out_dir])
 
-            with open(os.path.join(evv_out_dir, "index.json")) as evv_f:
-                evv_status = json.load(evv_f)
+            self.update_testlog(test_name, case_name, evv_out_dir)
 
-            comments = ""
-            for evv_ele in evv_status["Page"]["elements"]:
-                if "Table" in evv_ele:
-                    comments = "; ".join(
-                        "{}: {}".format(key, val[0])
-                        for key, val in evv_ele["Table"]["data"].items()
-                    )
-                    if evv_ele["Table"]["data"]["Test status"][0].lower() == "pass":
-                        self._test_status.set_status(
-                            test_status.BASELINE_PHASE,
-                            test_status.TEST_PASS_STATUS,
-                        )
-                    break
+    def update_testlog(self, test_name, case_name, evv_out_dir):
+        comments = self.process_evv_output(evv_out_dir)
 
-            status = self._test_status.get_status(test_status.BASELINE_PHASE)
-            mach_name = self._case.get_value("MACH")
-            mach_obj = Machines(machine=mach_name)
-            htmlroot = utils.get_htmlroot(mach_obj)
+        status = self._test_status.get_status(test_status.BASELINE_PHASE)
+
+        mach_name = self._case.get_value("MACH")
+
+        mach_obj = Machines(machine=mach_name)
+
+        htmlroot = utils.get_htmlroot(mach_obj)
+
+        if htmlroot is not None:
             urlroot = utils.get_urlroot(mach_obj)
-            if htmlroot is not None:
-                with utils.SharedArea():
-                    dir_util.copy_tree(
-                        evv_out_dir,
-                        os.path.join(htmlroot, "evv", case_name),
-                        preserve_mode=False,
-                    )
-                if urlroot is None:
-                    urlroot = "[{}_URL]".format(mach_name.capitalize())
-                viewing = "{}/evv/{}/index.html".format(urlroot, case_name)
-            else:
-                viewing = (
-                    "{}\n"
-                    "    EVV viewing instructions can be found at: "
-                    "        https://github.com/E3SM-Project/E3SM/blob/master/cime/scripts/"
-                    "climate_reproducibility/README.md#test-passfail-and-extended-output"
-                    "".format(evv_out_dir)
+
+            with utils.SharedArea():
+                dir_util.copy_tree(
+                    evv_out_dir,
+                    os.path.join(htmlroot, "evv", case_name),
+                    preserve_mode=False,
                 )
 
-            comments = (
-                "{} {} for test '{}'.\n"
-                "    {}\n"
-                "    EVV results can be viewed at:\n"
-                "        {}".format(
-                    test_status.BASELINE_PHASE,
-                    status,
-                    test_name,
-                    comments,
-                    viewing,
-                )
+            if urlroot is None:
+                urlroot = "[{}_URL]".format(mach_name.capitalize())
+
+            viewing = "{}/evv/{}/index.html".format(urlroot, case_name)
+        else:
+            viewing = (
+                "{}\n"
+                "    EVV viewing instructions can be found at: "
+                "        https://github.com/E3SM-Project/E3SM/blob/master/cime/scripts/"
+                "climate_reproducibility/README.md#test-passfail-and-extended-output"
+                "".format(evv_out_dir)
             )
 
-            utils.append_testlog(comments, self._orig_caseroot)
+        comments = (
+            "{} {} for test '{}'.\n"
+            "    {}\n"
+            "    EVV results can be viewed at:\n"
+            "        {}".format(
+                test_status.BASELINE_PHASE,
+                status,
+                test_name,
+                comments,
+                viewing,
+            )
+        )
+
+        utils.append_testlog(comments, self._orig_caseroot)
+
+    def process_evv_output(self, evv_out_dir):
+        with open(os.path.join(evv_out_dir, "index.json")) as evv_f:
+            evv_status = json.load(evv_f)
+
+        comments = ""
+
+        for evv_ele in evv_status["Page"]["elements"]:
+            if "Table" in evv_ele:
+                comments = "; ".join(
+                    "{}: {}".format(key, val[0])
+                    for key, val in evv_ele["Table"]["data"].items()
+                )
+
+                if evv_ele["Table"]["data"]["Test status"][0].lower() == "pass":
+                    self._test_status.set_status(
+                        test_status.BASELINE_PHASE,
+                        test_status.TEST_PASS_STATUS,
+                    )
+
+                break
+
+        return comments
