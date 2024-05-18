@@ -56,6 +56,9 @@ class TestTestScheduler(base.BaseTestCase):
             )
 
     def test_testmods(self):
+        if self._config.test_mode == "cesm":
+            self.skipTest("Skipping testmods test. Depends on E3SM settings")
+
         tests = self.get_default_tests()
         ct = test_scheduler.TestScheduler(
             tests,
