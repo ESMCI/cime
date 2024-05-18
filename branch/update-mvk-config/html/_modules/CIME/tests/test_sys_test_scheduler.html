@@ -156,6 +156,9 @@
 <div class="viewcode-block" id="TestTestScheduler.test_testmods">
 <a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_sys_test_scheduler.TestTestScheduler.test_testmods">[docs]</a>
     <span class="k">def</span> <span class="nf">test_testmods</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">test_mode</span> <span class="o">==</span> <span class="s2">&quot;cesm&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">skipTest</span><span class="p">(</span><span class="s2">&quot;Skipping testmods test. Depends on E3SM settings&quot;</span><span class="p">)</span>
+
         <span class="n">tests</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_default_tests</span><span class="p">()</span>
         <span class="n">ct</span> <span class="o">=</span> <span class="n">test_scheduler</span><span class="o">.</span><span class="n">TestScheduler</span><span class="p">(</span>
             <span class="n">tests</span><span class="p">,</span>
