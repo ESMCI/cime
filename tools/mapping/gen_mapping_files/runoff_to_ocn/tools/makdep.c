@@ -51,7 +51,7 @@ static struct node *suffix_list;      /* List of Fortran suffixes to look for */
 static void check (char *, struct node *, char *, int);
 static int already_found (char *, struct node *);
 
-main (int argc, char **argv)
+int main (int argc, char **argv)
 {
   int lastdot;             /* points to the last . in fname */
   int c;                   /* return from getopt */
