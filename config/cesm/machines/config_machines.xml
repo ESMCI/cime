@@ -654,7 +654,7 @@ This allows using a different mpirun command to launch unit tests
     <DESC>NCAR AMD EPYC </DESC>
     <NODENAME_REGEX>de.*.hpc.ucar.edu</NODENAME_REGEX>
     <OS>CNL</OS>
-    <COMPILERS>intel</COMPILERS>
+    <COMPILERS>intel,gnu</COMPILERS>
     <MPILIBS>mpich</MPILIBS>
     <CIME_OUTPUT_ROOT>$ENV{SCRATCH}</CIME_OUTPUT_ROOT>
     <DIN_LOC_ROOT>$ENV{CESMDATAROOT}/inputdata</DIN_LOC_ROOT>
@@ -709,8 +709,8 @@ This allows using a different mpirun command to launch unit tests
         <command name="load">cray-libsci/23.02.1.1</command>
       </modules>
       <modules compiler="gnu">
-        <command name="load">gcc/12.2.0</command>
-        <command name="load">cray-libsci/23.02.1.1</command>
+        <command name="load">gcc/13.2.0</command>
+        <command name="load">cray-libsci/23.09.1.1</command>
       </modules>
       <modules compiler="nvhpc">
         <command name="load">nvhpc/23.7</command>
