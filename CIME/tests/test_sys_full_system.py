@@ -56,7 +56,7 @@ class TestFullSystem(base.BaseTestCase):
             skip_tests=skip_tests,
         )
         print(f"tests are {tests}")
-        self.assertTrue(False,msg="Stop here")
+        self.assertTrue(False, msg="Stop here")
         for test in tests:
             casedir = self.get_casedir(test, cases)
 
