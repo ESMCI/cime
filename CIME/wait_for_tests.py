@@ -658,6 +658,7 @@ def wait_for_tests_impl(
     ###############################################################################
     results = queue.Queue()
 
+    wft_threads = []
     for test_path in test_paths:
         t = threading.Thread(
             target=wait_for_test,
@@ -675,9 +676,10 @@ def wait_for_tests_impl(
         )
         t.daemon = True
         t.start()
+        wft_threads.append(t)
 
-    while threading.active_count() > 1:
-        time.sleep(1)
+    for wft_thread in wft_threads:
+        wft_thread.join()
 
     test_results = {}
     completed_test_paths = []

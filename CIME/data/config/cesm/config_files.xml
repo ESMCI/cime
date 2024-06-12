@@ -170,7 +170,7 @@
     <type>char</type>
     <default_value>unset</default_value>
     <values>
-      <value component="ww3"                         >$SRCROOT/components/ww3/</value>
+      <value component="ww3"   >$SRCROOT/components/ww3/</value>
       <value component="dwav"  >$SRCROOT/components/cdeps/dwav</value>
       <value component="swav"  >$CIMEROOT/CIME/non_py/src/components/stub_comps_$COMP_INTERFACE/swav</value>
       <value component="xwav"  >$CIMEROOT/CIME/non_py/src/components/xcpl_comps_$COMP_INTERFACE/xwav</value>
@@ -281,14 +281,12 @@
       <value component="ufsatm"    >$COMP_ROOT_DIR_ATM/cime_config/config_compsets.xml</value>
       <value component="cism"      >$COMP_ROOT_DIR_GLC/cime_config/config_compsets.xml</value>
       <value component="clm"       >$COMP_ROOT_DIR_LND/cime_config/config_compsets.xml</value>
-      <value component="slim"      >$COMP_ROOT_DIR_LND/cime_config/config_compsets.xml</value>
-      <value component="cice5"     >$COMP_ROOT_DIR_ICE/cime_config/config_compsets.xml</value>
       <value component="cice"      >$COMP_ROOT_DIR_ICE/cime_config/config_compsets.xml</value>
       <value component="pop"       >$COMP_ROOT_DIR_OCN/cime_config/config_compsets.xml</value>
       <value component="mom"       >$COMP_ROOT_DIR_OCN/cime_config/config_compsets.xml</value>
       <value component="nemo"      >$COMP_ROOT_DIR_OCN/cime_config/config_compsets.xml</value>
       <value component="blom"      >$COMP_ROOT_DIR_OCN/cime_config/config_compsets.xml</value>
-      <value component="ww3dev"    >$COMP_ROOT_DIR_WAV/cime_config/config_compsets.xml</value>
+      <value component="ww3"       >$COMP_ROOT_DIR_WAV/cime_config/config_compsets.xml</value>
     </values>
     <group>case_last</group>
     <file>env_case.xml</file>
@@ -306,14 +304,12 @@
       <value component="ufsatm"    >$COMP_ROOT_DIR_ATM/cime_config/config_pes.xml</value>
       <value component="cism"      >$COMP_ROOT_DIR_GLC/cime_config/config_pes.xml</value>
       <value component="clm"       >$COMP_ROOT_DIR_LND/cime_config/config_pes.xml</value>
-      <value component="slim"      >$COMP_ROOT_DIR_LND/cime_config/config_pes.xml</value>
-      <value component="cice5"     >$COMP_ROOT_DIR_ICE/cime_config/config_pes.xml</value>
       <value component="cice"      >$COMP_ROOT_DIR_ICE/cime_config/config_pes.xml</value>
       <value component="pop"       >$COMP_ROOT_DIR_OCN/cime_config/config_pes.xml</value>
       <value component="mom"       >$COMP_ROOT_DIR_OCN/cime_config/config_pes.xml</value>
       <value component="nemo"      >$COMP_ROOT_DIR_OCN/cime_config/config_pes.xml</value>
       <value component="blom"      >$COMP_ROOT_DIR_OCN/cime_config/config_pes.xml</value>
-      <value component="ww3dev"    >$COMP_ROOT_DIR_WAV/cime_config/config_pes.xml</value>
+      <value component="ww3"       >$COMP_ROOT_DIR_WAV/cime_config/config_pes.xml</value>
     </values>
     <group>case_last</group>
     <file>env_case.xml</file>
@@ -338,8 +334,6 @@
       <value component="cam"       >$COMP_ROOT_DIR_ATM/cime_config/config_archive.xml</value>
       <value component="cism"      >$COMP_ROOT_DIR_GLC/cime_config/config_archive.xml</value>
       <value component="clm"       >$COMP_ROOT_DIR_LND/cime_config/config_archive.xml</value>
-      <value component="slim"      >$COMP_ROOT_DIR_LND/cime_config/config_archive.xml</value>
-      <value component="cice5"     >$COMP_ROOT_DIR_ICE/cime_config/config_archive.xml</value>
       <value component="cice"      >$COMP_ROOT_DIR_ICE/cime_config/config_archive.xml</value>
       <value component="pop"       >$COMP_ROOT_DIR_OCN/cime_config/config_archive.xml</value>
       <value component="mom"       >$COMP_ROOT_DIR_OCN/cime_config/config_archive.xml</value>
@@ -348,7 +342,7 @@
       <value component="rtm"       >$COMP_ROOT_DIR_ROF/cime_config/config_archive.xml</value>
       <value component="mosart"    >$COMP_ROOT_DIR_ROF/cime_config/config_archive.xml</value>
       <value component="mizuroute" >$COMP_ROOT_DIR_ROF/cime_config/config_archive.xml</value>
-      <value component="ww3dev"    >$COMP_ROOT_DIR_WAV/cime_config/config_archive.xml</value>
+      <value component="ww3"       >$COMP_ROOT_DIR_WAV/cime_config/config_archive.xml</value>
     </values>
     <group>case_last</group>
     <file>env_case.xml</file>
@@ -361,18 +355,17 @@
     <values>
       <value component="any"       >$CIMEROOT/CIME/SystemTests</value>
       <value component="clm"       >$COMP_ROOT_DIR_LND/cime_config/SystemTests</value>
-      <value component="slim"      >$COMP_ROOT_DIR_LND/cime_config/SystemTests</value>
       <value component="cam"       >$COMP_ROOT_DIR_ATM/cime_config/SystemTests</value>
       <value component="pop"       >$COMP_ROOT_DIR_OCN/cime_config/SystemTests</value>
       <value component="mom"       >$COMP_ROOT_DIR_OCN/cime_config/SystemTests</value>
       <value component="nemo"      >$COMP_ROOT_DIR_OCN/cime_config/SystemTests</value>
       <value component="blom"      >$COMP_ROOT_DIR_OCN/cime_config/SystemTests</value>
-      <value component="cice5"     >$COMP_ROOT_DIR_ICE/cime_config/SystemTests</value>
       <value component="cice"      >$COMP_ROOT_DIR_ICE/cime_config/SystemTests</value>
       <value component="cism"      >$COMP_ROOT_DIR_GLC/cime_config/SystemTests</value>
       <value component="rtm"       >$COMP_ROOT_DIR_ROF/cime_config/SystemTests</value>
       <value component="mosart"    >$COMP_ROOT_DIR_ROF/cime_config/SystemTests</value>
       <value component="mizuroute" >$COMP_ROOT_DIR_ROF/cime_config/SystemTests</value>
+      <value component="ww3"       >$COMP_ROOT_DIR_WAV/cime_config/SystemTests</value>
     </values>
     <group>test</group>
     <file>env_test.xml</file>
@@ -398,7 +391,7 @@
       <value component="rtm"       >$COMP_ROOT_DIR_ROF/cime_config/testdefs/testlist_rtm.xml</value>
       <value component="mosart"    >$COMP_ROOT_DIR_ROF/cime_config/testdefs/testlist_mosart.xml</value>
       <value component="mizuroute" >$COMP_ROOT_DIR_ROF/cime_config/testdefs/testlist_mizuRoute.xml</value>
-      <value component="ww3dev"    >$COMP_ROOT_DIR_WAV/cime_config/testdefs/testlist_ww3dev.xml</value>
+      <value component="ww3"       >$COMP_ROOT_DIR_WAV/cime_config/testdefs/testlist_ww3.xml</value>
       <value component="datm"      >$SRCROOT/components/cdeps/datm/cime_config/testdefs/testlist_datm.xml</value>
       <value component="dice"      >$SRCROOT/components/cdeps/dice/cime_config/testdefs/testlist_dice.xml</value>
       <value component="dlnd"      >$SRCROOT/components/cdeps/dlnd/cime_config/testdefs/testlist_dlnd.xml</value>
