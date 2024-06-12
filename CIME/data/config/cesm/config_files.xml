@@ -28,7 +28,7 @@
     <type>char</type>
     <default_value>$SRCROOT/ccs_config/config_grids.xml</default_value>
     <values>
-      <value comp_interface="nuopc">$SRCROOT/ccs_config/config_grids_nuopc.xml</value>
+      <value >$SRCROOT/ccs_config/config_grids_nuopc.xml</value>
     </values>
     <group>case_last</group>
     <file>env_case.xml</file>
@@ -122,12 +122,10 @@
   <entry id="COMP_ROOT_DIR_ATM">
     <type>char</type>
     <values>
-      <value component="datm" comp_interface="nuopc" >$SRCROOT/components/cdeps/datm</value>
-      <value component="datm" comp_interface="mct"   >$SRCROOT/components/cpl7/components/data_comps_$COMP_INTERFACE/datm</value>
-      <value component="satm" comp_interface="nuopc" >$CIMEROOT/CIME/non_py/src/components/stub_comps_$COMP_INTERFACE/satm</value>
-      <value component="satm" comp_interface="mct"   >$SRCROOT/components/cpl7/components/stub_comps_$COMP_INTERFACE/satm</value>
-      <value component="xatm" comp_interface="nuopc" >$CIMEROOT/CIME/non_py/src/components/xcpl_comps_$COMP_INTERFACE/xatm</value>
-      <value component="xatm" comp_interface="mct"   >$SRCROOT/components/cpl7/components/xcpl_comps_$COMP_INTERFACE/xatm</value>
+      <value component="datm"  >$SRCROOT/components/cdeps/datm</value>
+      <value component="satm"  >$CIMEROOT/CIME/non_py/src/components/stub_comps_$COMP_INTERFACE/satm</value>
+      <value component="xatm"  >$CIMEROOT/CIME/non_py/src/components/xcpl_comps_$COMP_INTERFACE/xatm</value>
+
       <value component="cam"                         >$SRCROOT/components/cam/</value>
       <value component="ufsatm"                      >$SRCROOT/components/fv3/</value>
     </values>
@@ -140,12 +138,9 @@
   <entry id="COMP_ROOT_DIR_CPL">
     <type>char</type>
     <values>
-      <value comp_interface="nuopc"                 >$SRCROOT/components/cmeps</value>
-      <value comp_interface="nuopc" component="cpl" >$SRCROOT/components/cmeps</value>
-      <value comp_interface="nuopc" component="drv" >$SRCROOT/components/cmeps</value>
-      <value comp_interface="mct"                   >$SRCROOT/components/cpl7/driver</value>
-      <value comp_interface="mct" component="cpl"   >$SRCROOT/components/cpl7/driver</value>
-      <value comp_interface="mct" component="drv"   >$SRCROOT/components/cpl7/driver</value>
+      <value                  >$SRCROOT/components/cmeps</value>
+      <value  component="cpl" >$SRCROOT/components/cmeps</value>
+      <value  component="drv" >$SRCROOT/components/cmeps</value>
     </values>
     <group>case_comps</group>
     <file>env_case.xml</file>
@@ -161,12 +156,9 @@
       <value component="mom"                          >$SRCROOT/components/mom/</value>
       <value component="nemo"                         >$SRCROOT/components/nemo/</value>
       <value component="blom"                         >$SRCROOT/components/blom/</value>
-      <value component="docn"  comp_interface="mct"   >$SRCROOT/components/cpl7/components/data_comps_$COMP_INTERFACE/docn</value>
-      <value component="docn"  comp_interface="nuopc" >$SRCROOT/components/cdeps/docn</value>
-      <value component="socn"  comp_interface="mct"   >$SRCROOT/components/cpl7/components/stub_comps_$COMP_INTERFACE/socn</value>
-      <value component="socn"  comp_interface="nuopc" >$CIMEROOT/CIME/non_py/src/components/stub_comps_$COMP_INTERFACE/socn</value>
-      <value component="xocn"  comp_interface="mct"   >$SRCROOT/components/cpl7/components/xcpl_comps_$COMP_INTERFACE/xocn</value>
-      <value component="xocn"  comp_interface="nuopc" >$CIMEROOT/CIME/non_py/src/components/xcpl_comps_$COMP_INTERFACE/xocn</value>
+      <value component="docn"   >$SRCROOT/components/cdeps/docn</value>
+      <value component="socn"   >$CIMEROOT/CIME/non_py/src/components/stub_comps_$COMP_INTERFACE/socn</value>
+      <value component="xocn"   >$CIMEROOT/CIME/non_py/src/components/xcpl_comps_$COMP_INTERFACE/xocn</value>
     </values>
     <group>case_comps</group>
     <file>env_case.xml</file>
@@ -179,13 +171,9 @@
     <default_value>unset</default_value>
     <values>
       <value component="ww3"                         >$SRCROOT/components/ww3/</value>
-      <value component="ww3dev"                      >$SRCROOT/components/ww3dev</value>
-      <value component="dwav" comp_interface="mct"   >$SRCROOT/components/cpl7/components/data_comps_$COMP_INTERFACE/dwav</value>
-      <value component="dwav" comp_interface="nuopc" >$SRCROOT/components/cdeps/dwav</value>
-      <value component="swav" comp_interface="mct"   >$SRCROOT/components/cpl7/components/stub_comps_$COMP_INTERFACE/swav</value>
-      <value component="swav" comp_interface="nuopc" >$CIMEROOT/CIME/non_py/src/components/stub_comps_$COMP_INTERFACE/swav</value>
-      <value component="xwav" comp_interface="mct"   >$SRCROOT/components/cpl7/components/xcpl_comps_$COMP_INTERFACE/xwav</value>
-      <value component="xwav" comp_interface="nuopc" >$CIMEROOT/CIME/non_py/src/components/xcpl_comps_$COMP_INTERFACE/xwav</value>
+      <value component="dwav"  >$SRCROOT/components/cdeps/dwav</value>
+      <value component="swav"  >$CIMEROOT/CIME/non_py/src/components/stub_comps_$COMP_INTERFACE/swav</value>
+      <value component="xwav"  >$CIMEROOT/CIME/non_py/src/components/xcpl_comps_$COMP_INTERFACE/xwav</value>
     </values>
     <group>case_comps</group>
     <file>env_case.xml</file>
@@ -198,12 +186,9 @@
     <default_value>unset</default_value>
     <values>
       <value component="cism"                        >$SRCROOT/components/cism/</value>
-      <value component="dglc" comp_interface="mct"   >$SRCROOT/components/cpl7/components/data_comps_$COMP_INTERFACE/dglc</value>
-      <value component="dglc" comp_interface="nuopc" >$SRCROOT/components/cdeps/dglc</value>
-      <value component="sglc" comp_interface="mct"   >$SRCROOT/components/cpl7/components/stub_comps_$COMP_INTERFACE/sglc</value>
-      <value component="sglc" comp_interface="nuopc" >$CIMEROOT/CIME/non_py/src/components/stub_comps_$COMP_INTERFACE/sglc</value>
-      <value component="xglc" comp_interface="mct"   >$SRCROOT/components/cpl7/components/xcpl_comps_$COMP_INTERFACE/xglc</value>
-      <value component="xglc" comp_interface="nuopc" >$CIMEROOT/CIME/non_py/src/components/xcpl_comps_$COMP_INTERFACE/xglc</value>
+      <value component="dglc"  >$SRCROOT/components/cdeps/dglc</value>
+      <value component="sglc"  >$CIMEROOT/CIME/non_py/src/components/stub_comps_$COMP_INTERFACE/sglc</value>
+      <value component="xglc"  >$CIMEROOT/CIME/non_py/src/components/xcpl_comps_$COMP_INTERFACE/xglc</value>
     </values>
     <group>case_comps</group>
     <file>env_case.xml</file>
@@ -217,12 +202,9 @@
     <values>
       <value component="cice5"                       >$SRCROOT/components/cice5/</value>
       <value component="cice"                        >$SRCROOT/components/cice/</value>
-      <value component="dice" comp_interface="mct"   >$SRCROOT/components/cpl7/components/data_comps_$COMP_INTERFACE/dice</value>
-      <value component="dice" comp_interface="nuopc" >$SRCROOT/components/cdeps/dice</value>
-      <value component="sice" comp_interface="mct"   >$SRCROOT/components/cpl7/components/stub_comps_$COMP_INTERFACE/sice</value>
-      <value component="sice" comp_interface="nuopc" >$CIMEROOT/CIME/non_py/src/components/stub_comps_$COMP_INTERFACE/sice</value>
-      <value component="xice" comp_interface="mct"   >$SRCROOT/components/cpl7/components/xcpl_comps_$COMP_INTERFACE/xice</value>
-      <value component="xice" comp_interface="nuopc" >$CIMEROOT/CIME/non_py/src/components/xcpl_comps_$COMP_INTERFACE/xice</value>
+      <value component="dice"  >$SRCROOT/components/cdeps/dice</value>
+      <value component="sice"  >$CIMEROOT/CIME/non_py/src/components/stub_comps_$COMP_INTERFACE/sice</value>
+      <value component="xice"  >$CIMEROOT/CIME/non_py/src/components/xcpl_comps_$COMP_INTERFACE/xice</value>
     </values>
     <group>case_comps</group>
     <file>env_case.xml</file>
@@ -237,12 +219,9 @@
       <value component="rtm"                         >$SRCROOT/components/rtm/</value>
       <value component="mosart"                      >$SRCROOT/components/mosart/</value>
       <value component="mizuroute"                   >$SRCROOT/components/mizuRoute/</value>
-      <value component="drof" comp_interface="mct"   >$SRCROOT/components/cpl7/components/data_comps_$COMP_INTERFACE/drof</value>
-      <value component="drof" comp_interface="nuopc" >$SRCROOT/components/cdeps/drof</value>
-      <value component="srof" comp_interface="mct"   >$SRCROOT/components/cpl7/components/stub_comps_$COMP_INTERFACE/srof</value>
-      <value component="srof" comp_interface="nuopc" >$CIMEROOT/CIME/non_py/src/components/stub_comps_$COMP_INTERFACE/srof</value>
-      <value component="xrof" comp_interface="mct"   >$SRCROOT/components/cpl7/components/xcpl_comps_$COMP_INTERFACE/xrof</value>
-      <value component="xrof" comp_interface="nuopc" >$CIMEROOT/CIME/non_py/src/components/xcpl_comps_$COMP_INTERFACE/xrof</value>
+      <value component="drof"  >$SRCROOT/components/cdeps/drof</value>
+      <value component="srof"  >$CIMEROOT/CIME/non_py/src/components/stub_comps_$COMP_INTERFACE/srof</value>
+      <value component="xrof"  >$CIMEROOT/CIME/non_py/src/components/xcpl_comps_$COMP_INTERFACE/xrof</value>
     </values>
     <group>case_comps</group>
     <file>env_case.xml</file>
@@ -256,12 +235,9 @@
     <values>
       <value component="clm"                         >$SRCROOT/components/clm/</value>
       <value component="slim"                        >$SRCROOT/components/slim/</value>
-      <value component="dlnd" comp_interface="mct"   >$SRCROOT/components/cpl7/components/data_comps_$COMP_INTERFACE/dlnd</value>
-      <value component="dlnd" comp_interface="nuopc" >$SRCROOT/components/cdeps/dlnd</value>
-      <value component="slnd" comp_interface="mct"   >$SRCROOT/components/cpl7/components/stub_comps_$COMP_INTERFACE/slnd</value>
-      <value component="slnd" comp_interface="nuopc" >$CIMEROOT/CIME/non_py/src/components/stub_comps_$COMP_INTERFACE/slnd</value>
-      <value component="xlnd" comp_interface="mct"   >$SRCROOT/components/cpl7/components/xcpl_comps_$COMP_INTERFACE/xlnd</value>
-      <value component="xlnd" comp_interface="nuopc" >$CIMEROOT/CIME/non_py/src/components/xcpl_comps_$COMP_INTERFACE/xlnd</value>
+      <value component="dlnd"  >$SRCROOT/components/cdeps/dlnd</value>
+      <value component="slnd"  >$CIMEROOT/CIME/non_py/src/components/stub_comps_$COMP_INTERFACE/slnd</value>
+      <value component="xlnd"  >$CIMEROOT/CIME/non_py/src/components/xcpl_comps_$COMP_INTERFACE/xlnd</value>
     </values>
     <group>case_comps</group>
     <file>env_case.xml</file>
@@ -273,10 +249,8 @@
     <type>char</type>
     <default_value>unset</default_value>
     <values>
-      <value component="siac" comp_interface="mct"   >$SRCROOT/components/cpl7/components/stub_comps_$COMP_INTERFACE/siac</value>
-      <value component="siac" comp_interface="nuopc" >$CIMEROOT/CIME/non_py/src/components/stub_comps_$COMP_INTERFACE/siac</value>
-      <value component="xiac" comp_interface="mct"   >$SRCROOT/components/cpl7/components/xcpl_comps_$COMP_INTERFACE/xiac</value>
-      <value component="xiac" comp_interface="nuopc" >$CIMEROOT/CIME/non_py/src/components/xcpl_comps_$COMP_INTERFACE/xiac</value>
+      <value component="siac"  >$CIMEROOT/CIME/non_py/src/components/stub_comps_$COMP_INTERFACE/siac</value>
+      <value component="xiac"  >$CIMEROOT/CIME/non_py/src/components/xcpl_comps_$COMP_INTERFACE/xiac</value>
     </values>
     <group>case_comps</group>
     <file>env_case.xml</file>
@@ -288,10 +262,8 @@
     <type>char</type>
     <default_value>unset</default_value>
     <values>
-      <value component="desp" comp_interface="mct"   >$SRCROOT/components/cpl7/components/data_comps_$COMP_INTERFACE/desp</value>
-      <value component="desp" comp_interface="nuopc" >$CIMEROOT/CIME/non_py/src/components/data_comps_$COMP_INTERFACE/desp</value>
-      <value component="sesp" comp_interface="mct"   >$SRCROOT/components/cpl7/components/stub_comps_$COMP_INTERFACE/sesp</value>
-      <value component="sesp" comp_interface="nuopc" >$CIMEROOT/CIME/non_py/src/components/stub_comps_$COMP_INTERFACE/sesp</value>
+      <value component="desp"  >$CIMEROOT/CIME/non_py/src/components/data_comps_$COMP_INTERFACE/desp</value>
+      <value component="sesp"  >$CIMEROOT/CIME/non_py/src/components/stub_comps_$COMP_INTERFACE/sesp</value>
     </values>
     <group>case_comps</group>
     <file>env_case.xml</file>
@@ -460,13 +432,13 @@
       <value component="mom"       >$COMP_ROOT_DIR_OCN/cime_config/testdefs/testmods_dirs</value>
       <value component="nemo"      >$COMP_ROOT_DIR_OCN/cime_config/testdefs/testmods_dirs</value>
       <value component="blom"      >$COMP_ROOT_DIR_OCN/cime_config/testdefs/testmods_dirs</value>
-      <value component="datm" comp_interface="nuopc" >$SRCROOT/components/cdeps/datm/cime_config/testdefs/testmods_dirs</value>
-      <value component="dice" comp_interface="nuopc" >$SRCROOT/components/cdeps/dice/cime_config/testdefs/testmods_dirs</value>
-      <value component="dlnd" comp_interface="nuopc" >$SRCROOT/components/cdeps/dlnd/cime_config/testdefs/testmods_dirs</value>
-      <value component="docn" comp_interface="nuopc" >$SRCROOT/components/cdeps/docn/cime_config/testdefs/testmods_dirs</value>
-      <value component="drof" comp_interface="nuopc" >$SRCROOT/components/cdeps/drof/cime_config/testdefs/testmods_dirs</value>
-      <value component="dglc" comp_interface="nuopc" >$SRCROOT/components/cdeps/dglc/cime_config/testdefs/testmods_dirs</value>
-      <value component="dwav" comp_interface="nuopc" >$SRCROOT/components/cdeps/dwav/cime_config/testdefs/testmods_dirs</value>
+      <value component="datm"  >$SRCROOT/components/cdeps/datm/cime_config/testdefs/testmods_dirs</value>
+      <value component="dice"  >$SRCROOT/components/cdeps/dice/cime_config/testdefs/testmods_dirs</value>
+      <value component="dlnd"  >$SRCROOT/components/cdeps/dlnd/cime_config/testdefs/testmods_dirs</value>
+      <value component="docn"  >$SRCROOT/components/cdeps/docn/cime_config/testdefs/testmods_dirs</value>
+      <value component="drof"  >$SRCROOT/components/cdeps/drof/cime_config/testdefs/testmods_dirs</value>
+      <value component="dglc"  >$SRCROOT/components/cdeps/dglc/cime_config/testdefs/testmods_dirs</value>
+      <value component="dwav"  >$SRCROOT/components/cdeps/dwav/cime_config/testdefs/testmods_dirs</value>
     </values>
     <group>case_last</group>
     <file>env_case.xml</file>
@@ -551,8 +523,7 @@
   <entry id="CONFIG_CPL_FILE_MODEL_SPECIFIC">
     <type>char</type>
     <values>
-      <value comp_interface="nuopc">$SRCROOT/components/cmeps/cime_config/config_component_$MODEL.xml</value> -->
-      <value comp_interface="mct">$SRCROOT/components/cpl7/driver/cime_config/config_component_$MODEL.xml</value> -->
+      <value>$SRCROOT/components/cmeps/cime_config/config_component_$MODEL.xml</value> -->
     </values>
     <group>case_last</group>
     <file>env_case.xml</file>
