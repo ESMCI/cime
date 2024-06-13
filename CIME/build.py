@@ -338,6 +338,7 @@ def _build_model(
     thread_bad_results = []
     libroot = os.path.join(exeroot, "lib")
     bldroot = None
+    bld_threads = []
     for model, comp, nthrds, _, config_dir in complist:
         if buildlist is not None and model.lower() not in buildlist:
             continue
@@ -391,12 +392,13 @@ def _build_model(
             ),
         )
         t.start()
+        bld_threads.append(t)
 
         logs.append(file_build)
 
     # Wait for threads to finish
-    while threading.active_count() > 1:
-        time.sleep(1)
+    for bld_thread in bld_threads:
+        bld_thread.join()
 
     expect(not thread_bad_results, "\n".join(thread_bad_results))
 

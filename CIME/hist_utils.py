@@ -181,9 +181,6 @@ def _hists_match(model, hists1, hists2, suffix1="", suffix2=""):
     multi_normalized1, multi_normalized2 = [], []
     multiinst = False
 
-    if model == "ww3dev":
-        model = "ww3"
-
     for hists, suffix, normalized, multi_normalized in [
         (hists1, suffix1, normalized1, multi_normalized1),
         (hists2, suffix2, normalized2, multi_normalized2),
@@ -629,9 +626,6 @@ def _generate_baseline_impl(case, baseline_dir=None, allow_baseline_overwrite=Fa
         )
         logger.debug("latest_files: {}".format(hists))
         num_gen += len(hists)
-
-        if model == "ww3dev":
-            model = "ww3"
 
         for hist in hists:
             offset = hist.rfind(model)

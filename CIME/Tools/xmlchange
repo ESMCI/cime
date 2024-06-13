@@ -192,7 +192,7 @@ def parse_command_line(args, description):
 
 
 def xmlchange_single_value(
-    case, xmlid, xmlval, subgroup, append, force, dryrun, env_test
+    case, xmlid, xmlval, subgroup, append, force, dryrun, env_test, caseroot, xmlfile
 ):
     if xmlid in [
         "THREAD_COUNT",
@@ -227,7 +227,12 @@ def xmlchange_single_value(
 
         expect(result is not None, 'No variable "%s" found' % xmlid)
 
-        check_lockedfiles(case, skip=["env_case"])
+        if xmlfile is not None:
+            xmlfile = [xmlfile]
+        # Pass caseroot, in cases where --file is used and case does not have access to env_case.xml
+        check_lockedfiles(
+            case, skip=["env_case"], quiet=True, caseroot=caseroot, whitelist=xmlfile
+        )
     else:
         logger.warning("'%s' = '%s'", xmlid, xmlval)
 
@@ -283,11 +288,29 @@ def xmlchange(
                 )
                 (xmlid, xmlval) = pair
                 xmlchange_single_value(
-                    case, xmlid, xmlval, subgroup, append, force, dryrun, env_test
+                    case,
+                    xmlid,
+                    xmlval,
+                    subgroup,
+                    append,
+                    force,
+                    dryrun,
+                    env_test,
+                    caseroot,
+                    xmlfile,
                 )
         else:
             xmlchange_single_value(
-                case, xmlid, xmlval, subgroup, append, force, dryrun, env_test
+                case,
+                xmlid,
+                xmlval,
+                subgroup,
+                append,
+                force,
+                dryrun,
+                env_test,
+                caseroot,
+                xmlfile,
             )
 
     if not noecho:

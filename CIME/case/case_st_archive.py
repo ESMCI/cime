@@ -533,10 +533,6 @@ def _archive_restarts_date_comp(
     # the compname is drv but the files are named cpl
     if compname == "drv":
         compname = "cpl"
-    if compname == "cice5":
-        compname = "cice"
-    if compname == "ww3dev":
-        compname = "ww3"
 
     # get file_extension suffixes
     for suffix in archive.get_rest_file_extensions(archive_entry):

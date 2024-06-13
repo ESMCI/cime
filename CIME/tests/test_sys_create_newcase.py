@@ -318,7 +318,10 @@ class TestCreateNewcase(base.BaseTestCase):
             self.assertTrue(output == str(STOP_N), msg="%s != %s" % (output, STOP_N))
             cmd = xmlquery + " --non-local BUILD_COMPLETE --value"
             output = utils.run_cmd_no_fail(cmd, from_dir=casedir)
-            self.assertTrue(output == "TRUE", msg="%s != %s" % (output, BUILD_COMPLETE))
+            output = output == "TRUE"
+            self.assertTrue(
+                output == BUILD_COMPLETE, msg="%s != %s" % (output, BUILD_COMPLETE)
+            )
             # we expect DOCN_MODE to be undefined in this X compset
             # this test assures that we do not try to resolve this as a compvar
             cmd = xmlquery + " --non-local DOCN_MODE --value"
