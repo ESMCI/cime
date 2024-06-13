@@ -88,8 +88,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for CIME.locked_files</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">glob</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 
 <span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="n">safe_copy</span>
 <span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="kn">import</span> <span class="o">*</span>
@@ -156,7 +155,7 @@
 
 <div class="viewcode-block" id="check_lockedfiles">
 <a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.locked_files.check_lockedfiles">[docs]</a>
-<span class="k">def</span> <span class="nf">check_lockedfiles</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">skip</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">check_lockedfiles</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">skip</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">caseroot</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">whitelist</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check that all lockedfiles match what&#39;s in case</span>
 
@@ -167,31 +166,38 @@
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">skip</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="n">skip</span> <span class="o">=</span> <span class="p">[</span><span class="n">skip</span><span class="p">]</span>
 
-    <span class="n">caseroot</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">caseroot</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">caseroot</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">)</span>
 
-    <span class="n">lockedfiles</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="n">LOCKED_DIR</span><span class="p">,</span> <span class="s2">&quot;*.xml&quot;</span><span class="p">))</span>
+    <span class="n">locked_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="n">LOCKED_DIR</span><span class="p">)</span>
+
+    <span class="n">lockedfiles</span> <span class="o">=</span> <span class="n">locked_path</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;*.xml&quot;</span><span class="p">)</span>
+
+    <span class="c1"># filter based on whitelist</span>
+    <span class="k">if</span> <span class="n">whitelist</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">lockedfiles</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">lockedfiles</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">stem</span> <span class="ow">in</span> <span class="n">whitelist</span><span class="p">]</span>
 
     <span class="k">for</span> <span class="n">file_path</span> <span class="ow">in</span> <span class="n">lockedfiles</span><span class="p">:</span>
-        <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">file_path</span><span class="o">.</span><span class="n">name</span>
 
         <span class="c1"># Skip files used for tests e.g. env_mach_pes.ERP1.xml or included in skip list</span>
         <span class="k">if</span> <span class="n">filename</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">or</span> <span class="nb">any</span><span class="p">([</span><span class="n">filename</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">skip</span><span class="p">]):</span>
             <span class="k">continue</span>
 
-        <span class="n">check_lockedfile</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">caseroot</span><span class="o">=</span><span class="n">caseroot</span><span class="p">)</span></div>
+        <span class="n">check_lockedfile</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">caseroot</span><span class="o">=</span><span class="n">caseroot</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="n">quiet</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="check_lockedfile">
 <a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.locked_files.check_lockedfile">[docs]</a>
-<span class="k">def</span> <span class="nf">check_lockedfile</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">filebase</span><span class="p">,</span> <span class="n">caseroot</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">check_lockedfile</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">filebase</span><span class="p">,</span> <span class="n">caseroot</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">caseroot</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">caseroot</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">)</span>
 
     <span class="n">env_name</span><span class="p">,</span> <span class="n">diff</span> <span class="o">=</span> <span class="n">diff_lockedfile</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">caseroot</span><span class="p">,</span> <span class="n">filebase</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">diff</span><span class="p">:</span>
-        <span class="n">check_diff</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">filebase</span><span class="p">,</span> <span class="n">env_name</span><span class="p">,</span> <span class="n">diff</span><span class="p">)</span></div>
+        <span class="n">check_diff</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">filebase</span><span class="p">,</span> <span class="n">env_name</span><span class="p">,</span> <span class="n">diff</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="n">quiet</span><span class="p">)</span></div>
 
 
 
@@ -248,7 +254,7 @@
 
 <div class="viewcode-block" id="check_diff">
 <a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.locked_files.check_diff">[docs]</a>
-<span class="k">def</span> <span class="nf">check_diff</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">env_name</span><span class="p">,</span> <span class="n">diff</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">check_diff</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">env_name</span><span class="p">,</span> <span class="n">diff</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Detected diff in locked file </span><span class="si">{!r}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
 
     <span class="c1"># Remove BUILD_COMPLETE, invalid entry in diff</span>
@@ -317,7 +323,10 @@
 
         <span class="n">message</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2">./case.build </span><span class="si">{</span><span class="n">clean_targets</span><span class="si">}</span><span class="se">\n</span><span class="s2">./case.build&quot;</span>
 
-    <span class="n">expect</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span></div>
+    <span class="k">if</span> <span class="n">quiet</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">expect</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span></div>
 
 </pre></div>
 

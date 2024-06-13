@@ -792,6 +792,7 @@
     <span class="c1">###############################################################################</span>
     <span class="n">results</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">Queue</span><span class="p">()</span>
 
+    <span class="n">wft_threads</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">test_path</span> <span class="ow">in</span> <span class="n">test_paths</span><span class="p">:</span>
         <span class="n">t</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span>
             <span class="n">target</span><span class="o">=</span><span class="n">wait_for_test</span><span class="p">,</span>
@@ -809,9 +810,10 @@
         <span class="p">)</span>
         <span class="n">t</span><span class="o">.</span><span class="n">daemon</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="n">t</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="n">wft_threads</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
 
-    <span class="k">while</span> <span class="n">threading</span><span class="o">.</span><span class="n">active_count</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">wft_thread</span> <span class="ow">in</span> <span class="n">wft_threads</span><span class="p">:</span>
+        <span class="n">wft_thread</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
 
     <span class="n">test_results</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">completed_test_paths</span> <span class="o">=</span> <span class="p">[]</span>

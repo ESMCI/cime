@@ -141,6 +141,7 @@
                 <span class="s2">&quot;PRE.f19_f19.ADESP_TEST&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;PRE.f19_f19.ADESP&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;DAE.ww3a.ADWAV&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;IRT_N2_Vmct_Ln9.f19_g16_rx1.A&quot;</span><span class="p">,</span>
             <span class="p">]</span>
         <span class="n">tests</span> <span class="o">=</span> <span class="n">get_tests</span><span class="o">.</span><span class="n">get_test_suite</span><span class="p">(</span>
             <span class="s2">&quot;cime_developer&quot;</span><span class="p">,</span>
@@ -148,7 +149,8 @@
             <span class="n">compiler</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_compiler</span><span class="p">,</span>
             <span class="n">skip_tests</span><span class="o">=</span><span class="n">skip_tests</span><span class="p">,</span>
         <span class="p">)</span>
-
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;tests are </span><span class="si">{</span><span class="n">tests</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Stop here&quot;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">test</span> <span class="ow">in</span> <span class="n">tests</span><span class="p">:</span>
             <span class="n">casedir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_casedir</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="n">cases</span><span class="p">)</span>
 

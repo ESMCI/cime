@@ -112,6 +112,10 @@
 <span class="kn">import</span> <span class="nn">evv4esm</span>  <span class="c1"># pylint: disable=import-error</span>
 <span class="kn">from</span> <span class="nn">evv4esm.__main__</span> <span class="kn">import</span> <span class="n">main</span> <span class="k">as</span> <span class="n">evv</span>  <span class="c1"># pylint: disable=import-error</span>
 
+<span class="n">version</span> <span class="o">=</span> <span class="n">evv4esm</span><span class="o">.</span><span class="n">__version_info__</span>
+
+<span class="k">assert</span> <span class="n">version</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">version</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mi">5</span><span class="p">,</span> <span class="s2">&quot;Please install evv4esm less than 0.5.x&quot;</span>
+
 <span class="n">EVV_LIB_DIR</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">evv4esm</span><span class="o">.</span><span class="vm">__file__</span><span class="p">))</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -245,6 +249,7 @@
         <span class="c1"># so it has to happen there.</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">model_only</span><span class="p">:</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Starting to build multi-instance exe&quot;</span><span class="p">)</span>
+
             <span class="k">for</span> <span class="n">comp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_values</span><span class="p">(</span><span class="s2">&quot;COMP_CLASSES&quot;</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;NTHRDS_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
 
@@ -416,10 +421,11 @@
                 <span class="p">)</span>
 
                 <span class="k">if</span> <span class="n">evv_ele</span><span class="p">[</span><span class="s2">&quot;Table&quot;</span><span class="p">][</span><span class="s2">&quot;data&quot;</span><span class="p">][</span><span class="s2">&quot;Test status&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;pass&quot;</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span>
-                        <span class="n">test_status</span><span class="o">.</span><span class="n">BASELINE_PHASE</span><span class="p">,</span>
-                        <span class="n">test_status</span><span class="o">.</span><span class="n">TEST_PASS_STATUS</span><span class="p">,</span>
-                    <span class="p">)</span>
+                    <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span>
+                            <span class="n">test_status</span><span class="o">.</span><span class="n">BASELINE_PHASE</span><span class="p">,</span>
+                            <span class="n">test_status</span><span class="o">.</span><span class="n">TEST_PASS_STATUS</span><span class="p">,</span>
+                        <span class="p">)</span>
 
                 <span class="k">break</span>
 

@@ -405,6 +405,20 @@
                 <span class="n">locked_files</span><span class="o">.</span><span class="n">check_lockedfiles</span><span class="p">(</span><span class="n">case</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="TestLockedFiles.test_check_lockedfiles_quiet">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_locked_files.TestLockedFiles.test_check_lockedfiles_quiet">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_check_lockedfiles_quiet</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">case</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
+
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tempdir</span><span class="p">:</span>
+            <span class="k">case</span><span class="o">.</span><span class="n">get_value</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="p">(</span><span class="n">tempdir</span><span class="p">,)</span>
+
+            <span class="n">create_fake_env</span><span class="p">(</span><span class="n">tempdir</span><span class="p">)</span>
+
+            <span class="c1"># Should not raise exception</span>
+            <span class="n">locked_files</span><span class="o">.</span><span class="n">check_lockedfiles</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
 <div class="viewcode-block" id="TestLockedFiles.test_is_locked">
 <a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_locked_files.TestLockedFiles.test_is_locked">[docs]</a>
     <span class="k">def</span> <span class="nf">test_is_locked</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

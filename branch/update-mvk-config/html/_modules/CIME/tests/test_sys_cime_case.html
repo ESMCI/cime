@@ -654,8 +654,10 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">test_mode</span> <span class="o">==</span> <span class="s2">&quot;cesm&quot;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">skipTest</span><span class="p">(</span><span class="s2">&quot;Skipping walltime test. Depends on E3SM batch settings&quot;</span><span class="p">)</span>
 
-        <span class="n">test_name</span> <span class="o">=</span> <span class="s2">&quot;SMS_P25600.f19_g16_rx1.A&quot;</span>
-        <span class="n">machine</span><span class="p">,</span> <span class="n">compiler</span> <span class="o">=</span> <span class="s2">&quot;theta&quot;</span><span class="p">,</span> <span class="s2">&quot;gnu&quot;</span>
+        <span class="c1"># Frontier has 56 MAX_MPITASKS_PER_NODE so 5600 should require 100 nodes</span>
+        <span class="c1"># which should land us in 6 hour queue</span>
+        <span class="n">test_name</span> <span class="o">=</span> <span class="s2">&quot;SMS_P5600.f19_g16_rx1.A&quot;</span>
+        <span class="n">machine</span><span class="p">,</span> <span class="n">compiler</span> <span class="o">=</span> <span class="s2">&quot;frontier&quot;</span><span class="p">,</span> <span class="s2">&quot;gnu&quot;</span>
         <span class="n">casedir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_test</span><span class="p">(</span>
             <span class="p">[</span>
                 <span class="s2">&quot;--no-setup&quot;</span><span class="p">,</span>
@@ -673,12 +675,12 @@
             <span class="s2">&quot;./xmlquery JOB_WALLCLOCK_TIME -N --subgroup=case.test --value&quot;</span><span class="p">,</span>
             <span class="n">from_dir</span><span class="o">=</span><span class="n">casedir</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="s2">&quot;09:00:00&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="s2">&quot;06:00:00&quot;</span><span class="p">)</span>
 
         <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_cmd_assert_result</span><span class="p">(</span>
             <span class="s2">&quot;./xmlquery JOB_QUEUE -N --subgroup=case.test --value&quot;</span><span class="p">,</span> <span class="n">from_dir</span><span class="o">=</span><span class="n">casedir</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="s2">&quot;default&quot;</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="s2">&quot;batch&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="TestCimeCase.test_cime_case_test_custom_project">
