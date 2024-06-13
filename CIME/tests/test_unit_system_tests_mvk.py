@@ -50,12 +50,18 @@ def create_complex_case(
 
     case.get_value.side_effect = side_effect
 
-    run_dir.mkdir(parents=True)
+    run_dir.mkdir(parents=True, exist_ok=True)
 
     evv_output = run_dir / f"{case_name}.evv" / "index.json"
 
-    evv_output.parent.mkdir(parents=True)
+    evv_output.parent.mkdir(parents=True, exist_ok=True)
 
+    write_evv_output(evv_output, mock_evv_output=mock_evv_output)
+
+    return case
+
+
+def write_evv_output(evv_output_path, mock_evv_output):
     if mock_evv_output:
         evv_output_data = {
             "Page": {
@@ -76,13 +82,11 @@ def create_complex_case(
     else:
         evv_output_data = {"Page": {"elements": []}}
 
-    with open(evv_output, "w") as fd:
+    with open(evv_output_path, "w") as fd:
         fd.write(json.dumps(evv_output_data))
 
-    return case
 
-
-def create_simple_case():
+def create_simple_case(model="e3sm", resubmit=0, generate_baseline=False):
     case = mock.MagicMock()
 
     case.get_value.side_effect = (
@@ -90,9 +94,9 @@ def create_simple_case():
         "MVK.f19_g16.S.docker_gnu",  # CASEBASEID
         "mct",  # COMP_INTERFACE
         "MVK.f19_g16.S.docker_gnu",  # CASEBASEID
-        "e3sm",  # MODEL
-        0,  # RESUBMIT
-        False,  # GENERATE_BASELINE
+        model,
+        resubmit,
+        generate_baseline,
     )
 
     return case
@@ -192,6 +196,125 @@ def test_config(case, run_dir, base_dir, evv_lib_dir):
 
             assert lines == ["var2 = value2\n"]
 
+    @mock.patch("CIME.SystemTests.mvk.utils.append_testlog")
+    @mock.patch("CIME.SystemTests.mvk.Machines")
+    def test_update_testlog(self, machines, append_testlog):
+        with contextlib.ExitStack() as stack:
+            temp_dir = stack.enter_context(tempfile.TemporaryDirectory())
+
+            stack.enter_context(chdir(temp_dir))
+
+            # convert to Path
+            temp_dir = Path(temp_dir)
+            run_dir = temp_dir / "run"
+            baseline_dir = temp_dir / "baselines"
+
+            run_dir.mkdir(parents=True)
+
+            evv_output_path = run_dir / "index.json"
+
+            write_evv_output(evv_output_path, True)
+
+            case_name = "MVK.f19_g16.S.docker_gnu.20240515_212034_41b5u2"  # CASE
+
+            machines.return_value.get_value.return_value = "docker"
+
+            case = create_complex_case(case_name, temp_dir, run_dir, baseline_dir)
+
+            test = MVK(case)
+
+            test.update_testlog("test1", case_name, str(run_dir))
+
+            append_testlog.assert_any_call(
+                """BASELINE PASS for test 'test1'.
+    Test status: pass; Variables analyzed: v1; Rejecting: 2; Critical value: 12
+    EVV results can be viewed at:
+        docker/evv/MVK.f19_g16.S.docker_gnu.20240515_212034_41b5u2/index.html""",
+                str(temp_dir),
+            )
+
+    @mock.patch("CIME.SystemTests.mvk.utils.get_urlroot")
+    @mock.patch("CIME.SystemTests.mvk.utils.append_testlog")
+    @mock.patch("CIME.SystemTests.mvk.Machines")
+    def test_update_testlog_urlroot_None(self, machines, append_testlog, get_urlroot):
+        with contextlib.ExitStack() as stack:
+            temp_dir = stack.enter_context(tempfile.TemporaryDirectory())
+
+            stack.enter_context(chdir(temp_dir))
+
+            # convert to Path
+            temp_dir = Path(temp_dir)
+            run_dir = temp_dir / "run"
+            baseline_dir = temp_dir / "baselines"
+
+            run_dir.mkdir(parents=True)
+
+            evv_output_path = run_dir / "index.json"
+
+            write_evv_output(evv_output_path, True)
+
+            case_name = "MVK.f19_g16.S.docker_gnu.20240515_212034_41b5u2"  # CASE
+
+            machines.return_value.get_value.return_value = "docker"
+
+            get_urlroot.return_value = None
+
+            case = create_complex_case(case_name, temp_dir, run_dir, baseline_dir)
+
+            test = MVK(case)
+
+            test.update_testlog("test1", case_name, str(run_dir))
+
+            print(append_testlog.call_args_list)
+            append_testlog.assert_any_call(
+                f"""BASELINE PASS for test 'test1'.
+    Test status: pass; Variables analyzed: v1; Rejecting: 2; Critical value: 12
+    EVV results can be viewed at:
+        [{run_dir!s}_URL]/evv/MVK.f19_g16.S.docker_gnu.20240515_212034_41b5u2/index.html""",
+                str(temp_dir),
+            )
+
+    @mock.patch("CIME.SystemTests.mvk.utils.get_htmlroot")
+    @mock.patch("CIME.SystemTests.mvk.utils.append_testlog")
+    @mock.patch("CIME.SystemTests.mvk.Machines")
+    def test_update_testlog_htmlroot(self, machines, append_testlog, get_htmlroot):
+        with contextlib.ExitStack() as stack:
+            temp_dir = stack.enter_context(tempfile.TemporaryDirectory())
+
+            stack.enter_context(chdir(temp_dir))
+
+            # convert to Path
+            temp_dir = Path(temp_dir)
+            run_dir = temp_dir / "run"
+            baseline_dir = temp_dir / "baselines"
+
+            run_dir.mkdir(parents=True)
+
+            evv_output_path = run_dir / "index.json"
+
+            write_evv_output(evv_output_path, True)
+
+            case_name = "MVK.f19_g16.S.docker_gnu.20240515_212034_41b5u2"  # CASE
+
+            machines.return_value.get_value.return_value = "docker"
+
+            get_htmlroot.return_value = None
+
+            case = create_complex_case(case_name, temp_dir, run_dir, baseline_dir)
+
+            test = MVK(case)
+
+            test.update_testlog("test1", case_name, str(run_dir))
+
+            append_testlog.assert_any_call(
+                f"""BASELINE PASS for test 'test1'.
+    Test status: pass; Variables analyzed: v1; Rejecting: 2; Critical value: 12
+    EVV results can be viewed at:
+        {run_dir!s}
+    EVV viewing instructions can be found at:         https://github.com/E3SM-Project/E3SM/blob/master/cime/scripts/climate_reproducibility/README.md#test-passfail-and-extended-output""",
+                str(temp_dir),
+            )
+
     @mock.patch("CIME.SystemTests.mvk.test_mods.find_test_mods")
     @mock.patch("CIME.SystemTests.mvk.evv")
     def test_testmod_simple(self, evv, find_test_mods):
@@ -226,6 +349,7 @@ test_case = "Default"
             case_name = "MVK.f19_g16.S.docker_gnu.20240515_212034_41b5u2"  # CASE
 
             case = create_complex_case(case_name, temp_dir, run_dir, baseline_dir)
+
             test = MVK(case)
 
             stack.enter_context(mock.patch.object(test, "build_indv"))
@@ -283,6 +407,150 @@ test_case = "Default"
                 "seed_custom = 8\n",
                 "seed_clock = .true.\n",
             ]
+
+    @mock.patch("CIME.SystemTests.mvk.case_setup")
+    @mock.patch("CIME.SystemTests.mvk.MVK.build_indv")
+    def test_build_phase(self, build_indv, case_setup):
+        with contextlib.ExitStack() as stack:
+            temp_dir = stack.enter_context(tempfile.TemporaryDirectory())
+
+            stack.enter_context(chdir(temp_dir))
+
+            # convert to Path
+            temp_dir = Path(temp_dir)
+            run_dir = temp_dir / "run"
+            baseline_dir = temp_dir / "baselines"
+
+            case_name = "MVK.f19_g16.S.docker_gnu.20240515_212034_41b5u2"  # CASE
+
+            case = create_complex_case(
+                case_name, temp_dir, run_dir, baseline_dir, True, mock_evv_output=True
+            )
+
+            case.get_values.side_effect = (("CPL", "LND"),)
+
+            side_effect = [x for x in case.get_value.side_effect]
+
+            n = 7
+            side_effect.insert(n, 8)
+            side_effect.insert(n, 16)
+
+            case.get_value.side_effect = side_effect
+
+            test = MVK(case)
+
+            test.build_phase(sharedlib_only=True)
+
+            case.set_value.assert_any_call("NTHRDS_CPL", 1)
+            case.set_value.assert_any_call("NTASKS_CPL", 480)
+            case.set_value.assert_any_call("NTHRDS_LND", 1)
+            case.set_value.assert_any_call("NTASKS_LND", 240)
+            case.set_value.assert_any_call("NINST_LND", 30)
+
+            case.flush.assert_called()
+
+            case_setup.assert_any_call(case, test_mode=False, reset=True)
+
+    @mock.patch("CIME.SystemTests.mvk.SystemTestsCommon._generate_baseline")
+    @mock.patch("CIME.SystemTests.mvk.utils.append_testlog")
+    @mock.patch("CIME.SystemTests.mvk.evv")
+    def test__generate_baseline(self, evv, append_testlog, _generate_baseline):
+        with contextlib.ExitStack() as stack:
+            temp_dir = stack.enter_context(tempfile.TemporaryDirectory())
+
+            stack.enter_context(chdir(temp_dir))
+
+            # convert to Path
+            temp_dir = Path(temp_dir)
+            run_dir = temp_dir / "run"
+            baseline_dir = temp_dir / "baselines"
+
+            case_name = "MVK.f19_g16.S.docker_gnu.20240515_212034_41b5u2"  # CASE
+
+            case = create_complex_case(
+                case_name, temp_dir, run_dir, baseline_dir, True, mock_evv_output=True
+            )
+
+            # use original 5 args
+            side_effect = [x for x in case.get_value.side_effect][:7]
+
+            side_effect.extend(
+                [
+                    str(baseline_dir),
+                    "MVK.f19_g16.S",
+                    str(run_dir),
+                    "MVK.f19_g16.S",
+                    case_name,
+                ]
+            )
+
+            case.get_value.side_effect = side_effect
+
+            case_baseline_dir = baseline_dir / "MVK.f19_g16.S" / "eam"
+
+            case_baseline_dir.mkdir(parents=True, exist_ok=True)
+
+            (run_dir / "eam").mkdir(parents=True, exist_ok=True)
+
+            (run_dir / "eam" / "test1.nc").touch()
+            (run_dir / "eam" / "test2.nc").touch()
+
+            case.get_env.return_value.get_all_hist_files.return_value = (
+                "eam/test1.nc",
+                "eam/test2.nc",
+            )
+
+            test = MVK(case)
+
+            test._generate_baseline()
+
+            files = os.listdir(case_baseline_dir)
+
+            assert files == ["test1.nc", "test2.nc"]
+
+            # reset side_effect
+            case.get_value.side_effect = side_effect
+
+            test = MVK(case)
+
+            # test baseline_dir already exists
+            test._generate_baseline()
+
+            files = os.listdir(case_baseline_dir)
+
+            assert files == ["test1.nc", "test2.nc"]
+
+    @mock.patch("CIME.SystemTests.mvk.utils.append_testlog")
+    @mock.patch("CIME.SystemTests.mvk.evv")
+    def test__compare_baseline_resubmit(self, evv, append_testlog):
+        with contextlib.ExitStack() as stack:
+            temp_dir = stack.enter_context(tempfile.TemporaryDirectory())
+
+            stack.enter_context(chdir(temp_dir))
+
+            # convert to Path
+            temp_dir = Path(temp_dir)
+            run_dir = temp_dir / "run"
+            baseline_dir = temp_dir / "baselines"
+
+            case_name = "MVK.f19_g16.S.docker_gnu.20240515_212034_41b5u2"  # CASE
+
+            case = create_complex_case(
+                case_name, temp_dir, run_dir, baseline_dir, True, mock_evv_output=True
+            )
+
+            side_effect = [x for x in case.get_value.side_effect][:-8]
+
+            side_effect.extend([1, 1])
+
+            case.get_value.side_effect = side_effect
+
+            test = MVK(case)
+
+            with mock.patch.object(test, "_test_status") as _test_status:
+                test._compare_baseline()
+
+            _test_status.set_status.assert_any_call("BASELINE", "PASS")
 
     @mock.patch("CIME.SystemTests.mvk.utils.append_testlog")
     @mock.patch("CIME.SystemTests.mvk.evv")
@@ -402,6 +670,25 @@ test_case = "Default"
                 "seed_clock = .true.\n",
             ]
 
+    def test_compare_baseline(self):
+        case = create_simple_case()
+
+        MVK(case)
+
+        case.set_value.assert_any_call("COMPARE_BASELINE", True)
+
+        case = create_simple_case(generate_baseline=True)
+
+        MVK(case)
+
+        case.set_value.assert_any_call("COMPARE_BASELINE", False)
+
+        case = create_simple_case(resubmit=1, generate_baseline=True)
+
+        MVK(case)
+
+        case.set_value.assert_any_call("COMPARE_BASELINE", False)
+
     def test_mvk(self):
         case = create_simple_case()
 
@@ -409,3 +696,10 @@ test_case = "Default"
 
         assert test._config.component == "eam"
         assert test._config.components == ["eam"]
+
+        case = create_simple_case("cesm")
+
+        test = MVK(case)
+
+        assert test._config.component == "cam"
+        assert test._config.components == ["cam"]

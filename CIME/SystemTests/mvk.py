@@ -146,6 +146,7 @@ class MVK(SystemTestsCommon):
         # so it has to happen there.
         if not model_only:
             logging.warning("Starting to build multi-instance exe")
+
             for comp in self._case.get_values("COMP_CLASSES"):
                 self._case.set_value("NTHRDS_{}".format(comp), 1)
 
@@ -311,10 +312,11 @@ class MVK(SystemTestsCommon):
                 )
 
                 if evv_ele["Table"]["data"]["Test status"][0].lower() == "pass":
-                    self._test_status.set_status(
-                        test_status.BASELINE_PHASE,
-                        test_status.TEST_PASS_STATUS,
-                    )
+                    with self._test_status:
+                        self._test_status.set_status(
+                            test_status.BASELINE_PHASE,
+                            test_status.TEST_PASS_STATUS,
+                        )
 
                 break
 
