@@ -1,4 +1,3 @@
-import glob
 from pathlib import Path
 
 from CIME.utils import safe_copy
@@ -55,7 +54,7 @@ def is_locked(filename, caseroot):
     return os.path.exists(os.path.join(caseroot, LOCKED_DIR, filename))
 
 
-def check_lockedfiles(case, skip=None):
+def check_lockedfiles(case, skip=None, quiet=False, caseroot=None, whitelist=None):
     """
     Check that all lockedfiles match what's in case
 
@@ -66,28 +65,35 @@ def check_lockedfiles(case, skip=None):
     elif isinstance(skip, str):
         skip = [skip]
 
-    caseroot = case.get_value("CASEROOT")
+    if caseroot is None:
+        caseroot = case.get_value("CASEROOT")
 
-    lockedfiles = glob.glob(os.path.join(caseroot, LOCKED_DIR, "*.xml"))
+    locked_path = Path(caseroot, LOCKED_DIR)
+
+    lockedfiles = locked_path.glob("*.xml")
+
+    # filter based on whitelist
+    if whitelist is not None:
+        lockedfiles = [x for x in lockedfiles if x.stem in whitelist]
 
     for file_path in lockedfiles:
-        filename = os.path.basename(file_path)
+        filename = file_path.name
 
         # Skip files used for tests e.g. env_mach_pes.ERP1.xml or included in skip list
         if filename.count(".") > 1 or any([filename.startswith(x) for x in skip]):
             continue
 
-        check_lockedfile(case, filename, caseroot=caseroot)
+        check_lockedfile(case, f"{filename}", caseroot=caseroot, quiet=quiet)
 
 
-def check_lockedfile(case, filebase, caseroot=None):
+def check_lockedfile(case, filebase, caseroot=None, quiet=False):
     if caseroot is None:
         caseroot = case.get_value("CASEROOT")
 
     env_name, diff = diff_lockedfile(case, caseroot, filebase)
 
     if diff:
-        check_diff(case, filebase, env_name, diff)
+        check_diff(case, filebase, env_name, diff, quiet=quiet)
 
 
 def diff_lockedfile(case, caseroot, filename):
@@ -138,7 +144,7 @@ def _get_case_env(case, caseroot, locked_file, env_name):
     return l_env, r_env
 
 
-def check_diff(case, filename, env_name, diff):
+def check_diff(case, filename, env_name, diff, quiet=False):
     logger.warning("Detected diff in locked file {!r}".format(filename))
 
     # Remove BUILD_COMPLETE, invalid entry in diff
@@ -207,4 +213,7 @@ def check_diff(case, filename, env_name, diff):
 
         message = f"{message}./case.build {clean_targets}\n./case.build"
 
-    expect(False, message)
+    if quiet:
+        logger.info(message)
+    else:
+        expect(False, message)

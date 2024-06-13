@@ -47,6 +47,7 @@ class TestFullSystem(base.BaseTestCase):
                 "PRE.f19_f19.ADESP_TEST",
                 "PRE.f19_f19.ADESP",
                 "DAE.ww3a.ADWAV",
+                "IRT_N2_Vmct_Ln9.f19_g16_rx1.A",
             ]
         tests = get_tests.get_test_suite(
             "cime_developer",
@@ -54,7 +55,8 @@ class TestFullSystem(base.BaseTestCase):
             compiler=self._compiler,
             skip_tests=skip_tests,
         )
-
+        print(f"tests are {tests}")
+        self.assertTrue(False, msg="Stop here")
         for test in tests:
             casedir = self.get_casedir(test, cases)
 

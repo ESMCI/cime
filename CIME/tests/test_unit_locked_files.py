@@ -262,6 +262,17 @@ class TestLockedFiles(unittest.TestCase):
             with self.assertRaises(CIMEError):
                 locked_files.check_lockedfiles(case)
 
+    def test_check_lockedfiles_quiet(self):
+        case = mock.MagicMock()
+
+        with tempfile.TemporaryDirectory() as tempdir:
+            case.get_value.side_effect = (tempdir,)
+
+            create_fake_env(tempdir)
+
+            # Should not raise exception
+            locked_files.check_lockedfiles(case, quiet=True)
+
     def test_is_locked(self):
         with tempfile.TemporaryDirectory() as tempdir:
             src_path = Path(tempdir, locked_files.LOCKED_DIR, "env_case.xml")
