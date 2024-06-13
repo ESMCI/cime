@@ -22,6 +22,10 @@ from CIME.SystemTests import test_mods
 import evv4esm  # pylint: disable=import-error
 from evv4esm.__main__ import main as evv  # pylint: disable=import-error
 
+version = evv4esm.__version_info__
+
+assert version[0] <= 0 and version[1] <= 5, "Please install evv4esm less than 0.5.x"
+
 EVV_LIB_DIR = os.path.abspath(os.path.dirname(evv4esm.__file__))
 
 logger = logging.getLogger(__name__)
