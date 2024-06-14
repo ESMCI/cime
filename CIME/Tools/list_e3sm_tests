@@ -72,7 +72,7 @@ def list_tests(term, suites, **_):
         tests = get_tests.get_test_suite(suite)
 
         for test in tests:
-            testcase, _, grid, compset = utils.parse_test_name(test)[:4]
+            testcase, _, grid, compset, *_ = utils.parse_test_name(test)
 
             if term == "compsets":
                 things.add(compset)
@@ -83,7 +83,7 @@ def list_tests(term, suites, **_):
             elif term == "tests":
                 things.add(test)
 
-    print("Tested {} for test suites: {}".format(term, ", ".join(suites)))
+    print(f"Found {term!r} for test suites: {', '.join(suites)}")
 
     for item in sorted(things):
         print("  {}".format(item))
