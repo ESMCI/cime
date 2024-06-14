@@ -34,13 +34,21 @@ I1850ELM"""
 
     utils.setup_standard_logging_options(parser)
 
-    parser.add_argument(
+    subparsers = parser.add_subparsers(dest="subcommand")
+
+    subparsers.add_parser("list", help="Lists available test suites.")
+
+    suites_parser = subparsers.add_parser(
+        "suites", help="List term values for test suites."
+    )
+
+    suites_parser.add_argument(
         "suites",
         nargs="+",
         help="The test suites to list.",
     )
 
-    parser.add_argument(
+    suites_parser.add_argument(
         "-t",
         "--term",
         choices=("compsets", "grids", "testcases", "tests"),
@@ -88,10 +96,22 @@ def list_tests(term, suites, **_):
     print(f"Found {len(things)} {term!r}")
 
 
+def list_suites():
+    test_suites = sorted(get_tests.get_test_suites())
+
+    for suite in test_suites:
+        print(suite)
+
+    print(f"Found {len(test_suites)} test suites")
+
+
 def _main_func():
     args = parse_command_line()
 
-    list_tests(**args)
+    if args["subcommand"] == "list":
+        list_suites()
+    else:
+        list_tests(**args)
 
 
 if __name__ == "__main__":
