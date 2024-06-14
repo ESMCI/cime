@@ -80,10 +80,12 @@ def list_tests(term, suites, **_):
                 elif term == "testcases":
                     things.add(testcase)
 
-    print(f"Found {term!r} for test suites: {', '.join(suites)}")
+    print(f"Listing {term!r} for test suites: {', '.join(suites)}")
 
     for item in sorted(things):
         print("  {}".format(item))
+
+    print(f"Found {len(things)} {term!r}")
 
 
 def _main_func():
