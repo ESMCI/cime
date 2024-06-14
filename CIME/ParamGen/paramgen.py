@@ -279,7 +279,7 @@ class ParamGen:
         return expr
 
     @staticmethod
-    def _is_guarded_dict(data_dict):
+    def is_guarded_dict(data_dict):
         """Returns true if all the keys of a dictionary are logical expressions, i.e., guards.
 
         Parameters
@@ -289,11 +289,11 @@ class ParamGen:
 
         Example
         -------
-        >>> ParamGen._is_guarded_dict({True: 'x', 'False': 'y'})
+        >>> ParamGen.is_guarded_dict({True: 'x', 'False': 'y'})
         True
-        >>> ParamGen._is_guarded_dict({ "'tx0.66v1' == 'tx0.66v1'": 'x', False: 'y'})
+        >>> ParamGen.is_guarded_dict({ "'tx0.66v1' == 'tx0.66v1'": 'x', False: 'y'})
         True
-        >>> ParamGen._is_guarded_dict({'i':'x', 'j':'y'})
+        >>> ParamGen.is_guarded_dict({'i':'x', 'j':'y'})
         False
         """
         if not isinstance(data_dict, dict):
@@ -351,7 +351,7 @@ class ParamGen:
             )
             return guard_evaluated
 
-        if not ParamGen._is_guarded_dict(data_dict):
+        if not ParamGen.is_guarded_dict(data_dict):
             return data_dict
 
         guards_eval_true = []  # list of guards that evaluate to true.
@@ -370,64 +370,36 @@ class ParamGen:
             return data_dict[guards_eval_true[-1]]
         raise RuntimeError("Unknown match option.")
 
-    def _reduce_recursive(self, data_dict, expand_func=None):
-
+    def _reduce_recursive(self, data, expand_func=None):
         """A recursive method to reduce a given data_dict. This method is intended to be called by the reduce method
         only. Check the docstring of the reduce method for more information."""
 
-        # (1) Expand variables in keys, .e.g, "$OCN_GRID" to "gx1v7":
-        def _expand_vars_in_keys(data_dict):
+        if isinstance(data, dict):
+
+            # (1) Expand vars in keys
             if expand_func is not None:
-                new_data_dict = {}
-                for key in data_dict:
-                    new_key = key
-                    if has_unexpanded_var(key):
-                        new_key = ParamGen._expand_vars(key, expand_func)
-                    new_data_dict[new_key] = data_dict[key]
-                return new_data_dict
-            return data_dict
+                data = {
+                    ParamGen._expand_vars(key, expand_func): data[key] for key in data
+                }
 
-        data_dict = _expand_vars_in_keys(data_dict)
+            # (2) Evaulate guards (if applicable)
+            if ParamGen.is_guarded_dict(data):
+                data = self._reduce_recursive(self._impose_guards(data), expand_func)
 
-        # (2) Evaluate the keys if they are all logical expressions, i.e., guards.
-        # Pick the value of the first or last key evaluating to True and drop everything else.
-        while ParamGen._is_guarded_dict(data_dict):
-            data_dict = self._impose_guards(data_dict)
-            if isinstance(data_dict, dict):
-                data_dict = _expand_vars_in_keys(data_dict)
+            # (3) Call _reduce_recursive for all branches of dict
+            else:
+                for key in data:
+                    data[key] = self._reduce_recursive(data[key], expand_func)
 
-        # If the data_dict is reduced to a string, expand vars and eval formulas as a last step.
-        if isinstance(data_dict, str):
+        else:  # data is not a dict, and so is a value.
 
-            # (3) Expand variables in values, .e.g, "$OCN_GRID" to "gx1v7":
-            data_dict = ParamGen._expand_vars(data_dict, expand_func)
+            # (4) Finally, process values by expanding vars and applying formulas
+            if isinstance(data, str):
+                data = ParamGen._expand_vars(data, expand_func)
+            if is_formula(data):
+                data = eval_formula(data.strip()[1:])
 
-            # (4) Evaluate the formulas as values, e.g., "= 3+4", "= [i for i in range(5)]", etc.
-            if is_formula(data_dict):
-                data_dict = eval_formula(data_dict.strip()[1:])
-
-        # Continue reducing the data if it is still a dictionary (nested or not).
-        elif isinstance(data_dict, dict):
-
-            # (3) Expand variables in values, .e.g, "$OCN_GRID" to "gx1v7":
-            for key, val in data_dict.copy().items():
-                if isinstance(val, str):
-                    data_dict[key] = ParamGen._expand_vars(val, expand_func)
-
-            # (4) Evaluate the formulas as values, e.g., "= 3+4", "= [i for i in range(5)]", etc.
-            for key, val in data_dict.copy().items():
-                if is_formula(val):
-                    data_dict[key] = eval_formula(val.strip()[1:])
-
-            # (5) Recursively call _reduce_recursive for the remaining nested dicts before returning
-            keys_of_nested_dicts = []  # i.e., keys of values that are of type dict
-            for key, val in data_dict.items():
-                if isinstance(val, dict):
-                    keys_of_nested_dicts.append(key)
-            for key in keys_of_nested_dicts:
-                data_dict[key] = self._reduce_recursive(data_dict[key], expand_func)
-
-        return data_dict
+        return data
 
     def reduce(self, expand_func=None):
         """
