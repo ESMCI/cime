@@ -41,10 +41,6 @@ I1850ELM"""
     )
 
     parser.add_argument(
-        "-c", action="store_true", help="Prints the count for each value."
-    )
-
-    parser.add_argument(
         "-t",
         "--term",
         choices=("compsets", "grids", "testcases", "tests"),
@@ -71,17 +67,18 @@ def list_tests(term, suites, **_):
     for suite in suites:
         tests = get_tests.get_test_suite(suite)
 
-        for test in tests:
-            testcase, _, grid, compset, *_ = utils.parse_test_name(test)
+        if term == "tests":
+            things |= set(tests)
+        else:
+            for test in tests:
+                testcase, _, grid, compset, *_ = utils.parse_test_name(test)
 
-            if term == "compsets":
-                things.add(compset)
-            elif term == "grids":
-                things.add(grid)
-            elif term == "testcases":
-                things.add(testcase)
-            elif term == "tests":
-                things.add(test)
+                if term == "compsets":
+                    things.add(compset)
+                elif term == "grids":
+                    things.add(grid)
+                elif term == "testcases":
+                    things.add(testcase)
 
     print(f"Found {term!r} for test suites: {', '.join(suites)}")
 
