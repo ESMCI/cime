@@ -370,6 +370,21 @@
     </queues>
   </batch_system>
 
+  <batch_system MACH="derecho-gpu" type="pbs" >
+    <batch_submit>qsub</batch_submit>
+    <submit_args>
+      <arg flag="-l job_priority=" name="$JOB_PRIORITY"/>
+    </submit_args>
+    <directives>
+      <directive default="/bin/bash" > -S {{ shell }}  </directive>
+      <directive> -l select={{ num_nodes }}:ncpus={{ max_tasks_per_node }}:mpiprocs={{ tasks_per_node }}:ompthreads={{ thread_count }}:ngpus=4</directive>
+    </directives>
+    <queues>
+      <queue walltimemax="12:00:00" nodemin="1" nodemax="82" default="true">main</queue>
+      <queue walltimemax="1:00:00" nodemin="1" nodemax="2">develop</queue>
+    </queues>
+  </batch_system>
+
 
   <batch_system MACH="eastwind" type="slurm" >
     <batch_submit>sbatch</batch_submit>
