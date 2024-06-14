@@ -2,6 +2,7 @@
 Common functions used by cime python scripts
 Warning: you cannot use CIME Classes in this module as it causes circular dependencies
 """
+
 import shlex
 import configparser
 import io, logging, gzip, sys, os, time, re, shutil, glob, string, random, importlib, fnmatch
@@ -1666,7 +1667,7 @@ class _LessThanFilter(logging.Filter):
         return 1 if record.levelno < self.max_level else 0
 
 
-def configure_logging(verbose, debug, silent):
+def configure_logging(verbose, debug, silent, **_):
     root_logger = logging.getLogger()
 
     verbose_formatter = logging.Formatter(
