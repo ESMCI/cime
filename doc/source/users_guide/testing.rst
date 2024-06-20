@@ -17,10 +17,11 @@ An individual test can be run as::
 
 Everything the test will do is controlled by parsing the test name.
 
+.. _`Test naming`:
+
 =================
 Testname syntax
 =================
-.. _`Test naming`:
 
 Tests must be named with the following forms, [ ]=optional::
 
@@ -209,11 +210,11 @@ You can combine testtype modifiers::
 
     CIMEROOT/scripts/create_test ERP_D_Ld3.ne4pg2_oQU480.F2010
 
+.. _GROUP-TESTMODS:
+
 -------------------
 Test Case Modifiers
 -------------------
-
-.. _GROUP-TESTMODS:
 
 create_test runs with out-of-the-box compsets and grid sets. Sometimes you may want to run a test with
 modification to a namelist or other setting without creating an entire compset. CCS provides the testmods
@@ -265,6 +266,121 @@ in an F-case test.
 
 The "rrtmpg" directory contains the actual testmods to apply.
 Note; do not use '-' in the testmods directory name because it has a special meaning to create_test.
+
+.. _System Test Mods:
+
+---------------------
+System Test Mods
+---------------------
+`Test Case Modifiers`_ are not only a way to modify a test case but they can also be used to configure certain :ref:`Test types <TESTTYPE>`.
+
+Supported :ref:`test types <TESTTYPE>` can be configured by creating a ``params.py`` file in a :ref:`test case modifier <GROUP-TESTMODS>`.
+
+^^^^^^^^^^^^
+MVK
+^^^^^^^^^^^^
+The `MVK` system test can be configured by defining :ref:`variables <MVK Variables>` and :ref:`methods <MVK Methods>` in ``params.py``.
+
+See :ref:`examples <MVK Examples>` for a simple and complex use case.
+
+.. _MVK Variables:
+
+"""""""""
+Variables
+"""""""""
+Available settings for the MVK test type.
+
+========== ======== ==== ====================================================
+Variable   Default  Type Description                                         
+========== ======== ==== ====================================================
+component           str  The main component.                                 
+components []       list Components that require namelist customization.     
+ninst      30       int  The number of instances.                            
+critical   13       int  The critical value for rejecting the null hypothese.
+var_set    default  str  Name of the variable set to analyze.                
+ref_case   Baseline str  Name of the reference case.                         
+test_case  Test     str  Name of the test case.                              
+========== ======== ==== ====================================================
+
+.. _MVK Methods:
+
+"""""""
+Methods
+"""""""
+Available methods for the MVK test type.
+
+.. code-block::
+
+  def test_config(case, run_dir, base_dir, evv_lib_dir):
+      """
+      Configure the evv test.
+      
+      This method is used to pass the evv4esm configuration to be written for the test.
+      
+      Args:
+          case (CIME.case.case.Case): The case instance.
+          run_dir (str): Path the case's run directory.
+          base_dir (str): Path to the case's baseline directory.
+          evv_lib_dir (str): Path to the evv4esm package root.
+      
+      Returns:
+          dict: Dictionary with test configuration.
+      """
+
+.. code-block::
+
+  def write_inst_nml(case, set_nml_variable, component, iinst):
+      """
+      Write per instance namelist.
+      
+      This method is called once per instance to generate the namelist.
+      
+      Args:
+          case (CIME.case.case.Case): The case instance.
+          write_nml_variable (function): Function takes two `str` arguments.
+          component (str): Component the namelist belongs to.
+          iinst (int): Instance unique number.
+      """
+
+.. _MVK Examples:
+
+""""""""""
+Examples
+""""""""""
+.. _MVK Simple:
+A simple customization of the `MVK` :ref:`test type <TESTTYPE>` would be just defining some :ref:`variables <MVK Variables>` in ``params.py``.
+
+.. code-block::
+
+  component = "eam"
+  # components = [] can be omitted when modifying a single component
+  ninst = 10
+  critical = 21
+
+.. _MVK Complex:
+A complex customization of the `MVK` :ref:`test type <TESTTYPE>` would be defining only the required :ref:`variables <MVK Variables>` and defining some :ref:`methods <MVK Methods>` in ``params.py``.
+
+.. code-block::
+
+  import os
+
+  component = "eam"
+  components = ["eam", "clm"]
+
+  def test_config(case, run_dir, base_dir, evv_lib_dir):
+      return {
+          "module": os.path.join(evv_lib_dir, "extensions", "kso.py"),
+          "component": component,
+      }
+
+  def write_inst_nml(case, set_nml_variable, component, iinst):
+      if component == "eam":
+          set_nml_variable("eam_specific", f"perturb-{iinst}") 
+      elif component == "clm":
+          if iinst % 2 == 0:
+              set_nml_variable("clm_specific", "even")
+          else:
+              set_nml_variable("clm_specific", "odd")
 
 ========================
 Test progress and output

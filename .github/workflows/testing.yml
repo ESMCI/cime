@@ -114,6 +114,8 @@ jobs:
 
           mamba install -y python=${{ matrix.python-version }}
 
+          pip install -r test-requirements.txt
+
           source /entrypoint.sh
 
           # GitHub runner home is different than container
@@ -162,6 +164,8 @@ jobs:
           CIME_DRIVER: ${{ matrix.driver }}
           CIME_TEST_PLATFORM: ubuntu-latest
         run: |
+          pip install -r test-requirements.txt
+
           export SRC_PATH="${GITHUB_WORKSPACE}"
 
           source /entrypoint.sh
