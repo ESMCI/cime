@@ -37,13 +37,5 @@ else()
   include_directories(${SRC_ROOT}/share/include)
 endif()
 
-# esmf_wrf_timemgr not built here because it depends on csm_share.
-if (EXISTS ${SRC_ROOT}/share/esmf_wrf_timemgr)
-  add_subdirectory(${SRC_ROOT}/share/esmf_wrf_timemgr esmf_wrf_timemgr)
-  include_directories(${SRC_ROOT}/share/esmf_wrf_timemgr)
-else()
-  message("esmf_wrf_timemgr not found, assuming you are linking an esmf library")
-endif()
-
 # Now the actual test directories.
 add_subdirectory(${SRC_ROOT}/share/test/unit ${CMAKE_BINARY_DIR}/unittests)
