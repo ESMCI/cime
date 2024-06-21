@@ -27,8 +27,6 @@ customize_path = os.path.join(utils.get_src_root(), "cime_config", "customize")
 
 config = Config.load(customize_path)
 
-supported_comp_interfaces = list(config.driver_choices)
-
 
 def query_grids(files, long_output, xml=False):
     """
@@ -221,6 +219,8 @@ def query_component(name, files, all_components=False, xml=False):
     else:
         component.print_values()
 
+        valid_components
+
 
 def parse_command_line(args, description):
     """
@@ -234,51 +234,32 @@ def parse_command_line(args, description):
 
     utils.setup_standard_logging_options(parser)
 
-    valid_components = ["all"]
-
     parser.add_argument("--xml", action="store_true", help="Output in xml format.")
 
-    files = {}
-    for comp_interface in supported_comp_interfaces:
-        files[comp_interface] = Files(comp_interface=comp_interface)
-        components = files[comp_interface].get_components("COMPSETS_SPEC_FILE")
-        for item in components:
-            valid_components.append(item)
+    files = {x: Files(x) for x in list(config.driver_choices)}
+
+    compset_components = get_compset_components(files)
+    compset_components.extend(["all"])
 
     parser.add_argument(
         "--compsets",
         nargs="?",
         const="all",
-        choices=valid_components,
+        choices=sorted(set(compset_components)),
         help="Query compsets corresponding to the target component for the {} model."
         " If no component is given, lists compsets defined by all components".format(
             cime_model
         ),
     )
 
-    # Loop through the elements for each component class (in config_files.xml)
-    valid_components = ["all"]
-    tmp_comp_interfaces = supported_comp_interfaces
-    for comp_interface in tmp_comp_interfaces:
-        try:
-            components = get_components(files[comp_interface])
-        except Exception:
-            supported_comp_interfaces.remove(comp_interface)
-
-        for comp in components:
-            string = config.xml_component_key.format(comp)
-
-            # determine all components in string
-            components = files[comp_interface].get_components(string)
-            if components:
-                for item in components:
-                    valid_components.append(item)
+    components = get_component_components(files)
+    components.extend(["all"])
 
     parser.add_argument(
         "--components",
         nargs="?",
         const="all",
-        choices=valid_components,
+        choices=sorted(set(components)),
         help="Query component settings corresponding to the target component for {} model."
         "\nIf the option is empty, then the lists settings defined by all components is output".format(
             cime_model
@@ -318,7 +299,7 @@ def parse_command_line(args, description):
 
     parser.add_argument(
         "--comp_interface",
-        choices=supported_comp_interfaces,  # same as config.driver_choices
+        choices=config.driver_choices,
         default="mct",
         action=utils.deprecate_action(", use --driver argument"),
         help="DEPRECATED: Use --driver argument",
@@ -346,6 +327,31 @@ def parse_command_line(args, description):
         args.xml,
         files[args.driver],
     )
+
+
+def get_compset_components(files):
+    values = []
+
+    for file in files.values():
+        components = file.get_components("COMPSETS_SPEC_FILE")
+
+        values.extend([x for x in components if x is not None])
+
+    return values
+
+
+def get_component_components(files):
+    values = []
+
+    for file in files.values():
+        components = get_components(file)
+
+        for comp in components:
+            components = file.get_components(f"COMP_ROOT_DIR_{comp}")
+
+            values.extend([x for x in components if x is not None])
+
+    return values
 
 
 def get_compsets(files):
