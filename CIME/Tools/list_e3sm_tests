@@ -70,26 +70,20 @@ f19_g16_rx1"""
 def list_tests(term, suites, **_):
     things = set()
 
-    for suite in suites:
-        tests = get_tests.get_test_suite(suite)
+    values = [x for s in suites for x in get_tests.get_test_suite(s)]
 
-        if term == "tests":
-            things |= set(tests)
-        else:
-            for test in tests:
-                testcase, _, grid, compset, *_ = utils.parse_test_name(test)
+    if term != "tests":
+        terms = [utils.parse_test_name(x) for x in values]
 
-                if term == "compsets":
-                    things.add(compset)
-                elif term == "grids":
-                    things.add(grid)
-                elif term == "testcases":
-                    things.add(testcase)
+        index_map = {"compsets": 3, "grids": 2, "testcases": 0}
 
-    for item in sorted(things):
-        print(item)
+        index = index_map[term]
 
-    logger.info(f"Found {len(things)!r} {term}")
+        values = set(x[index] for x in terms)
+
+    print("\n".join(sorted(values)))
+
+    logger.info(f"Found {len(values)!r} {term}")
 
 
 def _main_func():
