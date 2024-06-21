@@ -10,7 +10,7 @@ import os
 import sys
 import re
 import logging
-from argparse import RawTextHelpFormatter
+import argparse
 
 from CIME.Tools.standard_script_setup import *
 from CIME import utils
@@ -228,8 +228,8 @@ def parse_command_line(args, description):
     """
     cime_model = utils.get_model()
 
-    parser = ArgumentParser(
-        description=description, formatter_class=RawTextHelpFormatter
+    parser = argparse.ArgumentParser(
+        description=description, formatter_class=argparse.RawTextHelpFormatter
     )
 
     utils.setup_standard_logging_options(parser)
@@ -363,47 +363,6 @@ def get_components(files):
     infile = files.get_value("CONFIG_CPL_FILE")
     config_drv = Component(infile, "CPL")
     return config_drv.get_valid_model_components()
-
-
-class ArgumentParser(argparse.ArgumentParser):
-    """
-    we override the error message from ArgumentParser to have a more helpful
-    message in the case of missing arguments
-    """
-
-    def error(self, message):
-        self.print_usage(sys.stderr)
-        # missing argument
-        # TODO: assumes comp_interface='mct'
-        if "expected one argument" in message:
-            if "compset" in message:
-                components = get_compsets(Files(comp_interface="mct"))
-                self.exit(
-                    2,
-                    "{}: error: {}\nValid input arguments are {}\n".format(
-                        self.prog, message, components
-                    ),
-                )
-            elif "component" in message:
-                files = Files(comp_interface="mct")
-                components = get_components(files)
-                # Loop through the elements for each component class (in config_files.xml)
-                valid_components = []
-                for comp in components:
-                    string = "CONFIG_{}_FILE".format(comp)
-
-                    # determine all components in string
-                    components = files.get_components(string)
-                    for item in components:
-                        valid_components.append(item)
-                self.exit(
-                    2,
-                    "{}: error: {}\nValid input arguments are {}\n".format(
-                        self.prog, message, valid_components
-                    ),
-                )
-        # for all other errors
-        self.exit(2, "{}: error: {}\n".format(self.prog, message))
 
 
 class Machines(CIME.XML.machines.Machines):
