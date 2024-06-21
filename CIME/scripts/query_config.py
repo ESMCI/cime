@@ -18,8 +18,8 @@ from CIME.XML.files import Files
 from CIME.XML.component import Component
 from CIME.XML.compsets import Compsets
 from CIME.XML.grids import Grids
+from CIME.XML.machines import Machines
 from CIME.config import Config
-import CIME.XML.machines
 
 logger = logging.getLogger(__name__)
 
@@ -71,7 +71,7 @@ def query_machines(files, machines, xml=False, **_):
                 )
             )
     else:
-        xml_machines.print_values(machine_name=machines)
+        print_machine_values(xml_machines, machines)
 
 
 def query_compsets(files, compsets, xml=False, **_):
@@ -369,70 +369,65 @@ def get_components(files):
     return config_drv.get_valid_model_components()
 
 
-class Machines(CIME.XML.machines.Machines):
-    """
-    we overide print_values from Machines to add current in machine description
-    """
+def print_machine_values(
+    machine, machine_name="all"
+):  # pylint: disable=arguments-differ
+    # set flag to look for single machine
+    if "all" not in machine_name:
+        single_machine = True
+        if machine_name == "current":
+            machine_name = machine.probe_machine_name(warn=False)
+    else:
+        single_machine = False
 
-    def print_values(self, machine_name="all"):  # pylint: disable=arguments-differ
-        # set flag to look for single machine
-        if "all" not in machine_name:
-            single_machine = True
-            if machine_name == "current":
-                machine_name = self.probe_machine_name(warn=False)
+    # if we can't find the specified machine
+    if single_machine and machine_name is None:
+        files = Files()
+        config_file = files.get_value("MACHINES_SPEC_FILE")
+        print("Machine is not listed in config file: {}".format(config_file))
+    else:  # write out machines
+        if single_machine:
+            machine_names = [machine_name]
         else:
-            single_machine = False
+            machine_names = machine.list_available_machines()
+        print("Machine(s)\n")
+        for name in machine_names:
+            machine.set_machine(name)
+            desc = machine.text(machine.get_child("DESC"))
+            os_ = machine.text(machine.get_child("OS"))
+            compilers = machine.text(machine.get_child("COMPILERS"))
+            mpilibnodes = machine.get_children("MPILIBS", root=machine.machine_node)
+            mpilibs = []
+            for node in mpilibnodes:
+                mpilibs.extend(machine.text(node).split(","))
+            # This does not include the possible depedancy of mpilib on compiler
+            # it simply provides a list of mpilibs available on the machine
+            mpilibs = list(set(mpilibs))
+            max_tasks_per_node = machine.text(machine.get_child("MAX_TASKS_PER_NODE"))
+            mpitasks_node = machine.get_optional_child(
+                "MAX_MPITASKS_PER_NODE", root=machine.machine_node
+            )
+            max_mpitasks_per_node = (
+                machine.text(mpitasks_node) if mpitasks_node else max_tasks_per_node
+            )
+            max_gpus_node = machine.get_optional_child(
+                "MAX_GPUS_PER_NODE", root=machine.machine_node
+            )
+            max_gpus_per_node = machine.text(max_gpus_node) if max_gpus_node else 0
 
-        # if we can't find the specified machine
-        if single_machine and machine_name is None:
-            files = Files()
-            config_file = files.get_value("MACHINES_SPEC_FILE")
-            print("Machine is not listed in config file: {}".format(config_file))
-        else:  # write out machines
-            if single_machine:
-                machine_names = [machine_name]
-            else:
-                machine_names = self.list_available_machines()
-            print("Machine(s)\n")
-            for name in machine_names:
-                self.set_machine(name)
-                desc = self.text(self.get_child("DESC"))
-                os_ = self.text(self.get_child("OS"))
-                compilers = self.text(self.get_child("COMPILERS"))
-                mpilibnodes = self.get_children("MPILIBS", root=self.machine_node)
-                mpilibs = []
-                for node in mpilibnodes:
-                    mpilibs.extend(self.text(node).split(","))
-                # This does not include the possible depedancy of mpilib on compiler
-                # it simply provides a list of mpilibs available on the machine
-                mpilibs = list(set(mpilibs))
-                max_tasks_per_node = self.text(self.get_child("MAX_TASKS_PER_NODE"))
-                mpitasks_node = self.get_optional_child(
-                    "MAX_MPITASKS_PER_NODE", root=self.machine_node
-                )
-                max_mpitasks_per_node = (
-                    self.text(mpitasks_node) if mpitasks_node else max_tasks_per_node
-                )
-                max_gpus_node = self.get_optional_child(
-                    "MAX_GPUS_PER_NODE", root=self.machine_node
-                )
-                max_gpus_per_node = self.text(max_gpus_node) if max_gpus_node else 0
-
-                current_machine = self.probe_machine_name(warn=False)
-                name += (
-                    " (current)" if current_machine and current_machine in name else ""
-                )
-                print("  {} : {} ".format(name, desc))
-                print("      os             ", os_)
-                print("      compilers      ", compilers)
-                print("      mpilibs        ", mpilibs)
-                if max_mpitasks_per_node is not None:
-                    print("      pes/node       ", max_mpitasks_per_node)
-                if max_tasks_per_node is not None:
-                    print("      max_tasks/node ", max_tasks_per_node)
-                if max_gpus_per_node is not None:
-                    print("      max_gpus/node ", max_gpus_per_node)
-                print("")
+            current_machine = machine.probe_machine_name(warn=False)
+            name += " (current)" if current_machine and current_machine in name else ""
+            print("  {} : {} ".format(name, desc))
+            print("      os             ", os_)
+            print("      compilers      ", compilers)
+            print("      mpilibs        ", mpilibs)
+            if max_mpitasks_per_node is not None:
+                print("      pes/node       ", max_mpitasks_per_node)
+            if max_tasks_per_node is not None:
+                print("      max_tasks/node ", max_tasks_per_node)
+            if max_gpus_per_node is not None:
+                print("      max_gpus/node ", max_gpus_per_node)
+            print("")
 
 
 def _main_func(description=None):
