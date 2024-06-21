@@ -8,8 +8,9 @@ list tested grids, compsets, etc.
 from standard_script_setup import *
 from CIME import utils
 from CIME import get_tests
+from CIME.XML.files import Files
+from CIME.XML.compsets import Compsets
 
-import sys
 import argparse
 import logging
 
@@ -44,8 +45,6 @@ f19_g16_rx1"""
         description=description, formatter_class=argparse.RawDescriptionHelpFormatter
     )
 
-    utils.setup_standard_logging_options(parser)
-
     parser.add_argument(
         "suites",
         nargs="*",
@@ -57,8 +56,16 @@ f19_g16_rx1"""
         "--term",
         choices=("compsets", "grids", "testcases", "tests"),
         default="tests",
-        help="The term from a testname to print.",
+        help="Term of the test name to print.",
     )
+
+    compsets_group = parser.add_argument_group("Compset options")
+
+    compsets_group.add_argument(
+        "-l", "--long", action="store_true", help="Prints the longname of compsets."
+    )
+
+    utils.setup_standard_logging_options(parser)
 
     kwargs = vars(parser.parse_args())
 
@@ -67,9 +74,7 @@ f19_g16_rx1"""
     return kwargs
 
 
-def list_tests(term, suites, **_):
-    things = set()
-
+def list_tests(term, suites, long, **_):
     values = [x for s in suites for x in get_tests.get_test_suite(s)]
 
     if term != "tests":
@@ -81,9 +86,29 @@ def list_tests(term, suites, **_):
 
         values = set(x[index] for x in terms)
 
+        if long and term == "compsets":
+            compset_longnames = get_compset_longnames()
+
+            values = set(compset_longnames[x] for x in values)
+
     print("\n".join(sorted(values)))
 
     logger.info(f"Found {len(values)!r} {term}")
+
+
+def get_compset_longnames():
+    files = Files()
+
+    names = files.get_components("COMPSETS_SPEC_FILE")
+
+    values = {}
+
+    for n in names:
+        comp_file = files.get_value("COMPSETS_SPEC_FILE", attribute={"component": n})
+
+        values.update({x for x in Compsets(comp_file)})
+
+    return values
 
 
 def _main_func():

@@ -108,3 +108,23 @@ class Compsets(GenericXML):
         for comp in compset_nodes:
             longnames.append(self.text(self.get_child("lname", root=comp)))
         return longnames
+
+    def __iter__(self):
+        self._index = 0
+        self._compsets = self.get_children("compset")
+
+        return self
+
+    def __next__(self):
+        if self._index >= len(self._compsets):
+            raise StopIteration()
+
+        value = self._compsets[self._index]
+
+        alias = self.text(self.get_child("alias", root=value))
+
+        lname = self.text(self.get_child("lname", root=value))
+
+        self._index += 1
+
+        return alias, lname
