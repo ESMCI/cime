@@ -28,7 +28,7 @@ customize_path = os.path.join(utils.get_src_root(), "cime_config", "customize")
 config = Config.load(customize_path)
 
 
-def query_grids(files, long_output, xml=False):
+def query_grids(files, long, xml=False, **_):
     """
     query all grids.
     """
@@ -41,13 +41,13 @@ def query_grids(files, long_output, xml=False):
     grids = Grids(config_file)
     if xml:
         print("{}".format(grids.get_raw_record().decode("UTF-8")))
-    elif long_output:
-        grids.print_values(long_output=long_output)
+    elif long:
+        grids.print_values(long_output=long)
     else:
         grids.print_values()
 
 
-def query_machines(files, machine_name="all", xml=False):
+def query_machines(files, machines, xml=False, **_):
     """
     query machines. Defaule: all
     """
@@ -57,22 +57,24 @@ def query_machines(files, machine_name="all", xml=False):
         "Cannot find config_file {} on disk".format(config_file),
     )
     # Provide a special machine name indicating no need for a machine name
-    machines = Machines(config_file, machine="Query")
+    xml_machines = Machines(config_file, machine="Query")
     if xml:
-        if machine_name == "all":
+        if machines == "all":
             print("{}".format(machines.get_raw_record().decode("UTF-8")))
         else:
-            machines.set_machine(machine_name)
+            xml_machines.set_machine(machines)
             print(
                 "{}".format(
-                    machines.get_raw_record(root=machines.machine_node).decode("UTF-8")
+                    xml_machines.get_raw_record(root=machines.machine_node).decode(
+                        "UTF-8"
+                    )
                 )
             )
     else:
-        machines.print_values(machine_name=machine_name)
+        xml_machines.print_values(machine_name=machines)
 
 
-def query_compsets(files, name, xml=False):
+def query_compsets(files, compsets, xml=False, **_):
     """
     query compset definition give a compset name
     """
@@ -80,20 +82,20 @@ def query_compsets(files, name, xml=False):
     components = get_compsets(files)
     match_found = None
     all_components = False
-    if re.search("^all$", name):  # print all compsets
-        match_found = name
+    if re.search("^all$", compsets):  # print all compsets
+        match_found = compsets
         all_components = True
     else:
         for component in components:
-            if component == name:
-                match_found = name
+            if component == compsets:
+                match_found = compsets
                 break
 
     # If name is not a valid argument - exit with error
     utils.expect(
         match_found is not None,
         "Invalid input argument {}, valid input arguments are {}".format(
-            name, components
+            compsets, components
         ),
     )
 
@@ -102,7 +104,7 @@ def query_compsets(files, name, xml=False):
             # the all_components flag will only print available components
             print_compset(component, files, all_components=all_components, xml=xml)
     else:
-        print_compset(name, files, xml=xml)
+        print_compset(compsets, files, xml=xml)
 
 
 def print_compset(name, files, all_components=False, xml=False):
@@ -142,7 +144,7 @@ def print_compset(name, files, all_components=False, xml=False):
         compsets.print_values(arg_help=False)
 
 
-def query_all_components(files, xml=False):
+def query_all_components(files, xml=False, **_):
     """
     query all components
     """
@@ -157,7 +159,7 @@ def query_all_components(files, xml=False):
             query_component(item, files, all_components=True, xml=xml)
 
 
-def query_component(name, files, all_components=False, xml=False):
+def query_component(name, files, all_components=False, xml=False, **_):
     """
     query a component by name
     """
@@ -231,8 +233,6 @@ def parse_command_line(args, description):
     parser = argparse.ArgumentParser(
         description=description, formatter_class=argparse.RawTextHelpFormatter
     )
-
-    utils.setup_standard_logging_options(parser)
 
     parser.add_argument("--xml", action="store_true", help="Output in xml format.")
 
@@ -312,21 +312,19 @@ def parse_command_line(args, description):
         help="Coupler/Driver interface",
     )
 
-    args = utils.parse_args_and_handle_standard_logging_options(args, parser)
+    utils.setup_standard_logging_options(parser)
+
+    kwargs = vars(parser.parse_args())
+
+    utils.configure_logging(**kwargs)
 
     # make sure at least one argument has been passed
-    if not (args.grids or args.compsets or args.components or args.machines):
+    if not any([kwargs[x] for x in ["grids", "compsets", "components", "machines"]]):
         parser.print_help(sys.stderr)
 
-    return (
-        args.grids,
-        args.compsets,
-        args.components,
-        args.machines,
-        args.long,
-        args.xml,
-        files[args.driver],
-    )
+    kwargs["files"] = files[kwargs["driver"]]
+
+    return kwargs
 
 
 def get_compset_components(files):
@@ -438,27 +436,22 @@ class Machines(CIME.XML.machines.Machines):
 
 
 def _main_func(description=None):
-    """
-    main function
-    """
-    grids, compsets, components, machines, long_output, xml, files = parse_command_line(
-        sys.argv, description
-    )
+    kwargs = parse_command_line(sys.argv, description)
 
-    if grids:
-        query_grids(files, long_output, xml=xml)
+    if kwargs["grids"]:
+        query_grids(**kwargs)
 
-    if compsets is not None:
-        query_compsets(files, name=compsets, xml=xml)
+    if kwargs["compsets"] is not None:
+        query_compsets(**kwargs)
 
-    if components is not None:
-        if re.search("^all$", components):  # print all compsets
-            query_all_components(files, xml=xml)
+    if kwargs["components"] is not None:
+        if re.search("^all$", kwargs["components"]):  # print all compsets
+            query_all_components(**kwargs)
         else:
-            query_component(components, files, xml=xml)
+            query_component(**kwargs)
 
-    if machines is not None:
-        query_machines(files, machine_name=machines, xml=xml)
+    if kwargs["machines"] is not None:
+        query_machines(**kwargs)
 
 
 # main entry point

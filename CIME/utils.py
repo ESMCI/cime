@@ -1666,7 +1666,7 @@ class _LessThanFilter(logging.Filter):
         return 1 if record.levelno < self.max_level else 0
 
 
-def configure_logging(verbose, debug, silent):
+def configure_logging(verbose, debug, silent, **_):
     root_logger = logging.getLogger()
 
     verbose_formatter = logging.Formatter(
