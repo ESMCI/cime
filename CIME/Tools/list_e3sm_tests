@@ -11,14 +11,23 @@ from CIME import get_tests
 
 import sys
 import argparse
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 def parse_command_line():
-    description = """
-%(prog)r will gather all tests from `suites` and print the unique term values.
+    description = """This tool will print all test suite names.
+
+If any test suite names are provided, then all `term` values for the tests in the suites will be listed.
 
 Examples
 --------
+>>> %(prog)s
+e3sm_developer
+cime_tiny
+
 >>> %(prog)s e3sm_developer
 ERS.f19_g16_rx1.A.docker_gnu
 NCK.f19_g16_rx1.A.docker_gnu
@@ -26,7 +35,10 @@ NCK.f19_g16_rx1.A.docker_gnu
 >>> %(prog)s -t compsets e3sm_developer
 A
 F2010
-I1850ELM"""
+I1850ELM
+
+>>> %(prog)s -t grids e3sm_developer
+f19_g16_rx1"""
 
     parser = argparse.ArgumentParser(
         description=description, formatter_class=argparse.RawDescriptionHelpFormatter
@@ -34,33 +46,19 @@ I1850ELM"""
 
     utils.setup_standard_logging_options(parser)
 
-    subparsers = parser.add_subparsers(dest="subcommand")
-
-    subparsers.add_parser("list", help="Lists available test suites.")
-
-    suites_parser = subparsers.add_parser(
-        "suites", help="List term values for test suites."
-    )
-
-    suites_parser.add_argument(
+    parser.add_argument(
         "suites",
-        nargs="+",
+        nargs="*",
         help="The test suites to list.",
     )
 
-    suites_parser.add_argument(
+    parser.add_argument(
         "-t",
         "--term",
         choices=("compsets", "grids", "testcases", "tests"),
         default="tests",
         help="The term from a testname to print.",
     )
-
-    # Print help instead of usage.
-    if len(sys.argv) == 1:
-        parser.print_help()
-
-        sys.exit(0)
 
     kwargs = vars(parser.parse_args())
 
@@ -88,28 +86,22 @@ def list_tests(term, suites, **_):
                 elif term == "testcases":
                     things.add(testcase)
 
-    print(f"Listing {term!r} for test suites: {', '.join(suites)}")
-
     for item in sorted(things):
-        print("  {}".format(item))
+        print(item)
 
-    print(f"Found {len(things)} {term!r}")
-
-
-def list_suites():
-    test_suites = sorted(get_tests.get_test_suites())
-
-    for suite in test_suites:
-        print(suite)
-
-    print(f"Found {len(test_suites)} test suites")
+    logger.info(f"Found {len(things)!r} {term}")
 
 
 def _main_func():
     args = parse_command_line()
 
-    if args["subcommand"] == "list":
-        list_suites()
+    if len(args["suites"]) == 0:
+        test_suites = sorted(get_tests.get_test_suites())
+
+        for suite in test_suites:
+            print(suite)
+
+        logger.info(f"Found {len(test_suites)!r} test suites")
     else:
         list_tests(**args)
 
