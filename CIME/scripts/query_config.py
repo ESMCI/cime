@@ -231,7 +231,7 @@ def parse_command_line(args, description):
     cime_model = utils.get_model()
 
     parser = argparse.ArgumentParser(
-        description=description, formatter_class=argparse.RawTextHelpFormatter
+        description=description, formatter_class=argparse.RawDescriptionHelpFormatter
     )
 
     parser.add_argument("--xml", action="store_true", help="Output in xml format.")
@@ -430,7 +430,7 @@ def print_machine_values(
             print("")
 
 
-def _main_func(description=None):
+def _main_func(description=__doc__):
     kwargs = parse_command_line(sys.argv, description)
 
     if kwargs["grids"]:
