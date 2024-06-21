@@ -6,22 +6,24 @@ machines. Typically run with one of the arguments --compsets, --settings,
 information will be listed for each.
 """
 
-from CIME.Tools.standard_script_setup import *
+import os
+import sys
 import re
-from CIME.utils import expect, get_cime_default_driver, deprecate_action
+import logging
+from argparse import RawTextHelpFormatter
+
+from CIME.Tools.standard_script_setup import *
+from CIME import utils
 from CIME.XML.files import Files
 from CIME.XML.component import Component
 from CIME.XML.compsets import Compsets
 from CIME.XML.grids import Grids
 from CIME.config import Config
-
-# from CIME.XML.machines  import Machines
 import CIME.XML.machines
-from argparse import RawTextHelpFormatter
 
 logger = logging.getLogger(__name__)
 
-customize_path = os.path.join(CIME.utils.get_src_root(), "cime_config", "customize")
+customize_path = os.path.join(utils.get_src_root(), "cime_config", "customize")
 
 config = Config.load(customize_path)
 
@@ -33,7 +35,7 @@ def query_grids(files, long_output, xml=False):
     query all grids.
     """
     config_file = files.get_value("GRIDS_SPEC_FILE")
-    expect(
+    utils.expect(
         os.path.isfile(config_file),
         "Cannot find config_file {} on disk".format(config_file),
     )
@@ -52,7 +54,7 @@ def query_machines(files, machine_name="all", xml=False):
     query machines. Defaule: all
     """
     config_file = files.get_value("MACHINES_SPEC_FILE")
-    expect(
+    utils.expect(
         os.path.isfile(config_file),
         "Cannot find config_file {} on disk".format(config_file),
     )
@@ -90,7 +92,7 @@ def query_compsets(files, name, xml=False):
                 break
 
     # If name is not a valid argument - exit with error
-    expect(
+    utils.expect(
         match_found is not None,
         "Invalid input argument {}, valid input arguments are {}".format(
             name, components
@@ -115,13 +117,13 @@ def print_compset(name, files, all_components=False, xml=False):
     config_file = files.get_value("COMPSETS_SPEC_FILE", attribute={"component": name})
     # only error out if we aren't printing all otherwise exit quitely
     if not all_components:
-        expect(
+        utils.expect(
             (config_file),
             "Cannot find any config_component.xml file for {}".format(name),
         )
 
         # Check that file exists on disk
-        expect(
+        utils.expect(
             os.path.isfile(config_file),
             "Cannot find config_file {} on disk".format(config_file),
         )
@@ -193,12 +195,14 @@ def query_component(name, files, all_components=False, xml=False):
             break
 
     if not all_components and not config_exists:
-        expect(config_exists, "Cannot find config_file {} on disk".format(config_file))
+        utils.expect(
+            config_exists, "Cannot find config_file {} on disk".format(config_file)
+        )
     elif all_components and not config_exists:
         print("WARNING: Couldn't find config_file {} on disk".format(config_file))
         return
     # If name is not a valid argument - exit with error
-    expect(
+    utils.expect(
         match_found,
         "Invalid input argument {}, valid input arguments are {}".format(
             name, valid_components
@@ -206,7 +210,7 @@ def query_component(name, files, all_components=False, xml=False):
     )
 
     # Check that file exists on disk, if not exit with error
-    expect(
+    utils.expect(
         (config_file), "Cannot find any config_component.xml file for {}".format(name)
     )
 
@@ -222,13 +226,13 @@ def parse_command_line(args, description):
     """
     parse command line arguments
     """
-    cime_model = CIME.utils.get_model()
+    cime_model = utils.get_model()
 
     parser = ArgumentParser(
         description=description, formatter_class=RawTextHelpFormatter
     )
 
-    CIME.utils.setup_standard_logging_options(parser)
+    utils.setup_standard_logging_options(parser)
 
     valid_components = ["all"]
 
@@ -288,7 +292,7 @@ def parse_command_line(args, description):
     )
     # same for all comp_interfaces
     config_file = files["mct"].get_value("MACHINES_SPEC_FILE")
-    expect(
+    utils.expect(
         os.path.isfile(config_file),
         "Cannot find config_file {} on disk".format(config_file),
     )
@@ -316,18 +320,18 @@ def parse_command_line(args, description):
         "--comp_interface",
         choices=supported_comp_interfaces,  # same as config.driver_choices
         default="mct",
-        action=deprecate_action(", use --driver argument"),
+        action=utils.deprecate_action(", use --driver argument"),
         help="DEPRECATED: Use --driver argument",
     )
 
     parser.add_argument(
         "--driver",
         choices=config.driver_choices,
-        default=get_cime_default_driver(),
+        default=utils.get_cime_default_driver(),
         help="Coupler/Driver interface",
     )
 
-    args = CIME.utils.parse_args_and_handle_standard_logging_options(args, parser)
+    args = utils.parse_args_and_handle_standard_logging_options(args, parser)
 
     # make sure at least one argument has been passed
     if not (args.grids or args.compsets or args.components or args.machines):
