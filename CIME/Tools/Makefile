@@ -126,6 +126,13 @@ ifdef USER_INCLDIR
   INCLDIR += $(USER_INCLDIR)
 endif
 
+ifdef FSTDLIB_PKGCONFIG
+  STDLIB_INC  := `pkg-config --cflags fortran_stdlib`
+  STDLIB_LIBS := `pkg-config --libs fortran_stdlib`
+  INCLDIR += $(STDLIB_INC)
+  SLIBS += $(STDLIB_LIBS)
+endif
+
 
 CPPDEFS += -DNUOPC_INTERFACE
 INCLDIR += -I$(SHAREDLIBROOT)/$(SHAREDPATH)/CDEPS/fox/include -I$(SHAREDLIBROOT)/$(SHAREDPATH)/CDEPS/dshr
