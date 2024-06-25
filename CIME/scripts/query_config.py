@@ -28,200 +28,23 @@ customize_path = os.path.join(utils.get_src_root(), "cime_config", "customize")
 config = Config.load(customize_path)
 
 
-def query_grids(files, long, xml=False, **_):
-    """
-    query all grids.
-    """
-    config_file = files.get_value("GRIDS_SPEC_FILE")
-    utils.expect(
-        os.path.isfile(config_file),
-        "Cannot find config_file {} on disk".format(config_file),
-    )
+def _main_func(description=__doc__):
+    kwargs = parse_command_line(sys.argv, description)
 
-    grids = Grids(config_file)
-    if xml:
-        print("{}".format(grids.get_raw_record().decode("UTF-8")))
-    elif long:
-        grids.print_values(long_output=long)
-    else:
-        grids.print_values()
+    if kwargs["grids"]:
+        query_grids(**kwargs)
 
+    if kwargs["compsets"] is not None:
+        query_compsets(**kwargs)
 
-def query_machines(files, machines, xml=False, **_):
-    """
-    query machines. Defaule: all
-    """
-    config_file = files.get_value("MACHINES_SPEC_FILE")
-    utils.expect(
-        os.path.isfile(config_file),
-        "Cannot find config_file {} on disk".format(config_file),
-    )
-    # Provide a special machine name indicating no need for a machine name
-    xml_machines = Machines(config_file, machine="Query")
-    if xml:
-        if machines == "all":
-            print("{}".format(machines.get_raw_record().decode("UTF-8")))
+    if kwargs["components"] is not None:
+        if re.search("^all$", kwargs["components"]):  # print all compsets
+            query_all_components(**kwargs)
         else:
-            xml_machines.set_machine(machines)
-            print(
-                "{}".format(
-                    xml_machines.get_raw_record(root=machines.machine_node).decode(
-                        "UTF-8"
-                    )
-                )
-            )
-    else:
-        print_machine_values(xml_machines, machines)
+            query_component(**kwargs)
 
-
-def query_compsets(files, compsets, xml=False, **_):
-    """
-    query compset definition give a compset name
-    """
-    # Determine valid component values by checking the value attributes for COMPSETS_SPEC_FILE
-    components = get_compsets(files)
-    match_found = None
-    all_components = False
-    if re.search("^all$", compsets):  # print all compsets
-        match_found = compsets
-        all_components = True
-    else:
-        for component in components:
-            if component == compsets:
-                match_found = compsets
-                break
-
-    # If name is not a valid argument - exit with error
-    utils.expect(
-        match_found is not None,
-        "Invalid input argument {}, valid input arguments are {}".format(
-            compsets, components
-        ),
-    )
-
-    if all_components:  # print all compsets
-        for component in components:
-            # the all_components flag will only print available components
-            print_compset(component, files, all_components=all_components, xml=xml)
-    else:
-        print_compset(compsets, files, xml=xml)
-
-
-def print_compset(name, files, all_components=False, xml=False):
-    """
-    print compsets associated with the component name, but if all_components is true only
-    print the details if the associated component is available
-    """
-
-    # Determine the config_file for the target component
-    config_file = files.get_value("COMPSETS_SPEC_FILE", attribute={"component": name})
-    # only error out if we aren't printing all otherwise exit quitely
-    if not all_components:
-        utils.expect(
-            (config_file),
-            "Cannot find any config_component.xml file for {}".format(name),
-        )
-
-        # Check that file exists on disk
-        utils.expect(
-            os.path.isfile(config_file),
-            "Cannot find config_file {} on disk".format(config_file),
-        )
-    elif config_file is None or not os.path.isfile(config_file):
-        return
-
-    if config.test_mode not in ("e3sm", "cesm") and name == "drv":
-        return
-
-    print("\nActive component: {}".format(name))
-    # Now parse the compsets file and write out the compset alias and longname as well as the help text
-    # determine component xml content
-    compsets = Compsets(config_file)
-    # print compsets associated with component without help text
-    if xml:
-        print("{}".format(compsets.get_raw_record().decode("UTF-8")))
-    else:
-        compsets.print_values(arg_help=False)
-
-
-def query_all_components(files, xml=False, **_):
-    """
-    query all components
-    """
-    components = get_components(files)
-    # Loop through the elements for each component class (in config_files.xml)
-    for comp in components:
-        string = "CONFIG_{}_FILE".format(comp)
-
-        # determine all components in string
-        components = files.get_components(string)
-        for item in components:
-            query_component(item, files, all_components=True, xml=xml)
-
-
-def query_component(name, files, all_components=False, xml=False, **_):
-    """
-    query a component by name
-    """
-    # Determine the valid component classes (e.g. atm) for the driver/cpl
-    # These are then stored in comps_array
-    components = get_components(files)
-
-    # Loop through the elements for each component class (in config_files.xml)
-    # and see if there is a match for the the target component in the component attribute
-    match_found = False
-    valid_components = []
-    config_exists = False
-    for comp in components:
-        string = "CONFIG_{}_FILE".format(comp)
-        config_file = None
-        # determine all components in string
-        root_dir_node_name = "COMP_ROOT_DIR_{}".format(comp)
-        components = files.get_components(root_dir_node_name)
-        if components is None:
-            components = files.get_components(string)
-        for item in components:
-            valid_components.append(item)
-        logger.debug("{}: valid_components {}".format(comp, valid_components))
-        # determine if config_file is on disk
-        if name is None:
-            config_file = files.get_value(string)
-        elif name in valid_components:
-            config_file = files.get_value(string, attribute={"component": name})
-            logger.debug("query {}".format(config_file))
-        if config_file is not None:
-            match_found = True
-            config_exists = os.path.isfile(config_file)
-            break
-
-    if not all_components and not config_exists:
-        utils.expect(
-            config_exists, "Cannot find config_file {} on disk".format(config_file)
-        )
-    elif all_components and not config_exists:
-        print("WARNING: Couldn't find config_file {} on disk".format(config_file))
-        return
-    # If name is not a valid argument - exit with error
-    utils.expect(
-        match_found,
-        "Invalid input argument {}, valid input arguments are {}".format(
-            name, valid_components
-        ),
-    )
-
-    # Check that file exists on disk, if not exit with error
-    utils.expect(
-        (config_file), "Cannot find any config_component.xml file for {}".format(name)
-    )
-
-    # determine component xml content
-    component = Component(config_file, "CPL")
-    if xml:
-        print("{}".format(component.get_raw_record().decode("UTF-8")))
-    else:
-        component.print_values()
-
-        valid_components
+    if kwargs["machines"] is not None:
+        query_machines(**kwargs)
 
 
 def parse_command_line(args, description):
@@ -352,13 +175,6 @@ def get_component_components(files):
     return values
 
 
-def get_compsets(files):
-    """
-    Determine valid component values by checking the value attributes for COMPSETS_SPEC_FILE
-    """
-    return files.get_components("COMPSETS_SPEC_FILE")
-
-
 def get_components(files):
     """
     Determine the valid component classes (e.g. atm) for the driver/cpl
@@ -367,6 +183,209 @@ def get_components(files):
     infile = files.get_value("CONFIG_CPL_FILE")
     config_drv = Component(infile, "CPL")
     return config_drv.get_valid_model_components()
+
+
+def query_grids(files, long, xml=False, **_):
+    """
+    query all grids.
+    """
+    config_file = files.get_value("GRIDS_SPEC_FILE")
+    utils.expect(
+        os.path.isfile(config_file),
+        "Cannot find config_file {} on disk".format(config_file),
+    )
+
+    grids = Grids(config_file)
+    if xml:
+        print("{}".format(grids.get_raw_record().decode("UTF-8")))
+    elif long:
+        grids.print_values(long_output=long)
+    else:
+        grids.print_values()
+
+
+def query_compsets(files, compsets, xml=False, **_):
+    """
+    query compset definition give a compset name
+    """
+    # Determine valid component values by checking the value attributes for COMPSETS_SPEC_FILE
+    components = get_compsets(files)
+    match_found = None
+    all_components = False
+    if re.search("^all$", compsets):  # print all compsets
+        match_found = compsets
+        all_components = True
+    else:
+        for component in components:
+            if component == compsets:
+                match_found = compsets
+                break
+
+    # If name is not a valid argument - exit with error
+    utils.expect(
+        match_found is not None,
+        "Invalid input argument {}, valid input arguments are {}".format(
+            compsets, components
+        ),
+    )
+
+    if all_components:  # print all compsets
+        for component in components:
+            # the all_components flag will only print available components
+            print_compset(component, files, all_components=all_components, xml=xml)
+    else:
+        print_compset(compsets, files, xml=xml)
+
+
+def get_compsets(files):
+    """
+    Determine valid component values by checking the value attributes for COMPSETS_SPEC_FILE
+    """
+    return files.get_components("COMPSETS_SPEC_FILE")
+
+
+def print_compset(name, files, all_components=False, xml=False):
+    """
+    print compsets associated with the component name, but if all_components is true only
+    print the details if the associated component is available
+    """
+
+    # Determine the config_file for the target component
+    config_file = files.get_value("COMPSETS_SPEC_FILE", attribute={"component": name})
+    # only error out if we aren't printing all otherwise exit quitely
+    if not all_components:
+        utils.expect(
+            (config_file),
+            "Cannot find any config_component.xml file for {}".format(name),
+        )
+
+        # Check that file exists on disk
+        utils.expect(
+            os.path.isfile(config_file),
+            "Cannot find config_file {} on disk".format(config_file),
+        )
+    elif config_file is None or not os.path.isfile(config_file):
+        return
+
+    if config.test_mode not in ("e3sm", "cesm") and name == "drv":
+        return
+
+    print("\nActive component: {}".format(name))
+    # Now parse the compsets file and write out the compset alias and longname as well as the help text
+    # determine component xml content
+    compsets = Compsets(config_file)
+    # print compsets associated with component without help text
+    if xml:
+        print("{}".format(compsets.get_raw_record().decode("UTF-8")))
+    else:
+        compsets.print_values(arg_help=False)
+
+
+def query_all_components(files, xml=False, **_):
+    """
+    query all components
+    """
+    components = get_components(files)
+    # Loop through the elements for each component class (in config_files.xml)
+    for comp in components:
+        string = "CONFIG_{}_FILE".format(comp)
+
+        # determine all components in string
+        components = files.get_components(string)
+        for item in components:
+            query_component(item, files, all_components=True, xml=xml)
+
+
+def query_component(name, files, all_components=False, xml=False, **_):
+    """
+    query a component by name
+    """
+    # Determine the valid component classes (e.g. atm) for the driver/cpl
+    # These are then stored in comps_array
+    components = get_components(files)
+
+    # Loop through the elements for each component class (in config_files.xml)
+    # and see if there is a match for the the target component in the component attribute
+    match_found = False
+    valid_components = []
+    config_exists = False
+    for comp in components:
+        string = "CONFIG_{}_FILE".format(comp)
+        config_file = None
+        # determine all components in string
+        root_dir_node_name = "COMP_ROOT_DIR_{}".format(comp)
+        components = files.get_components(root_dir_node_name)
+        if components is None:
+            components = files.get_components(string)
+        for item in components:
+            valid_components.append(item)
+        logger.debug("{}: valid_components {}".format(comp, valid_components))
+        # determine if config_file is on disk
+        if name is None:
+            config_file = files.get_value(string)
+        elif name in valid_components:
+            config_file = files.get_value(string, attribute={"component": name})
+            logger.debug("query {}".format(config_file))
+        if config_file is not None:
+            match_found = True
+            config_exists = os.path.isfile(config_file)
+            break
+
+    if not all_components and not config_exists:
+        utils.expect(
+            config_exists, "Cannot find config_file {} on disk".format(config_file)
+        )
+    elif all_components and not config_exists:
+        print("WARNING: Couldn't find config_file {} on disk".format(config_file))
+        return
+    # If name is not a valid argument - exit with error
+    utils.expect(
+        match_found,
+        "Invalid input argument {}, valid input arguments are {}".format(
+            name, valid_components
+        ),
+    )
+
+    # Check that file exists on disk, if not exit with error
+    utils.expect(
+        (config_file), "Cannot find any config_component.xml file for {}".format(name)
+    )
+
+    # determine component xml content
+    component = Component(config_file, "CPL")
+    if xml:
+        print("{}".format(component.get_raw_record().decode("UTF-8")))
+    else:
+        component.print_values()
+
+        valid_components
+
+
+def query_machines(files, machines, xml=False, **_):
+    """
+    query machines. Defaule: all
+    """
+    config_file = files.get_value("MACHINES_SPEC_FILE")
+    utils.expect(
+        os.path.isfile(config_file),
+        "Cannot find config_file {} on disk".format(config_file),
+    )
+    # Provide a special machine name indicating no need for a machine name
+    xml_machines = Machines(config_file, machine="Query")
+    if xml:
+        if machines == "all":
+            print("{}".format(machines.get_raw_record().decode("UTF-8")))
+        else:
+            xml_machines.set_machine(machines)
+            print(
+                "{}".format(
+                    xml_machines.get_raw_record(root=machines.machine_node).decode(
+                        "UTF-8"
+                    )
+                )
+            )
+    else:
+        print_machine_values(xml_machines, machines)
 
 
 def print_machine_values(
@@ -430,25 +449,5 @@ def print_machine_values(
             print("")
 
 
-def _main_func(description=__doc__):
-    kwargs = parse_command_line(sys.argv, description)
-
-    if kwargs["grids"]:
-        query_grids(**kwargs)
-
-    if kwargs["compsets"] is not None:
-        query_compsets(**kwargs)
-
-    if kwargs["components"] is not None:
-        if re.search("^all$", kwargs["components"]):  # print all compsets
-            query_all_components(**kwargs)
-        else:
-            query_component(**kwargs)
-
-    if kwargs["machines"] is not None:
-        query_machines(**kwargs)
-
-
-# main entry point
 if __name__ == "__main__":
     _main_func(__doc__)
