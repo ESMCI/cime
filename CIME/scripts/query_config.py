@@ -29,7 +29,7 @@ config = Config.load(customize_path)
 
 
 def _main_func(description=__doc__):
-    kwargs = parse_command_line(sys.argv, description)
+    kwargs = parse_command_line(description)
 
     if kwargs["grids"]:
         query_grids(**kwargs)
@@ -47,7 +47,7 @@ def _main_func(description=__doc__):
         query_machines(**kwargs)
 
 
-def parse_command_line(args, description):
+def parse_command_line(description):
     """
     parse command line arguments
     """
@@ -357,8 +357,6 @@ def query_component(name, files, all_components=False, xml=False, **_):
         print("{}".format(component.get_raw_record().decode("UTF-8")))
     else:
         component.print_values()
-
-        valid_components
 
 
 def query_machines(files, machines, xml=False, **_):
