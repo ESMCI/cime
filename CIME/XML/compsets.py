@@ -16,6 +16,8 @@ class Compsets(GenericXML):
             files = Files()
         schema = files.get_schema("COMPSETS_SPEC_FILE")
         GenericXML.__init__(self, infile, schema=schema)
+        self._index = 0
+        self._compsets = None
 
     def get_compset_match(self, name):
         """
