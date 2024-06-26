@@ -655,7 +655,7 @@ def _build_checks(
 
     debugdir = "debug" if debug else "nodebug"
     threaddir = "threads" if build_threaded else "nothreads"
-    sharedpath = os.path.join(compiler, mpilib, debugdir, threaddir, comp_interface)
+    sharedpath = os.path.join(compiler, mpilib, debugdir, threaddir)
 
     logger.debug(
         "compiler={} mpilib={} debugdir={} threaddir={}".format(

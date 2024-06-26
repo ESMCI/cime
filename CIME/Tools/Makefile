@@ -64,12 +64,6 @@ else
    DEBUGDIR = nodebug
 endif
 
-ifeq ($(strip $(USE_ESMF_LIB)), TRUE)
-   ESMFDIR = esmf
-else
-   ESMFDIR = noesmf
-endif
-
 SLIBS ?= $(USER_SLIBS)
 
 ifeq ($(strip $(USE_FMS)), TRUE)
@@ -114,7 +108,7 @@ else
 endif
 
 ifeq (,$(SHAREDPATH))
-  SHAREDPATH = $(COMPILER)/$(MPILIB)/$(DEBUGDIR)/$(THREADDIR)/$(COMP_INTERFACE)
+  SHAREDPATH = $(COMPILER)/$(MPILIB)/$(DEBUGDIR)/$(THREADDIR)
   INSTALL_SHAREDPATH = $(EXEROOT)/$(SHAREDPATH)
 endif
 
@@ -391,14 +385,14 @@ else
 endif
 LD := $(MPIFC)
 
-CSM_SHR_INCLUDE:=$(INSTALL_SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/$(NINST_VALUE)/include
+CSM_SHR_INCLUDE:=$(INSTALL_SHAREDPATH)/include
 # This is needed so that dependancies are found
 VPATH+=$(CSM_SHR_INCLUDE)
 
 #===============================================================================
 # Set include paths (needed after override for any model specific builds below)
 #===============================================================================
-INCLDIR += -I$(INSTALL_SHAREDPATH)/include -I$(INSTALL_SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/$(NINST_VALUE)/include -I$(INSTALL_SHAREDPATH)/finclude
+INCLDIR += -I$(INSTALL_SHAREDPATH)/include -I$(INSTALL_SHAREDPATH)/include -I$(INSTALL_SHAREDPATH)/finclude
 
 ifeq ($(NETCDF_SEPARATE), FALSE)
   INCLDIR += -I$(INC_NETCDF)
@@ -546,7 +540,7 @@ endif
 
 ifdef MPAS_LIBDIR
   ABS_INSTALL_SHAREDPATH = $(abspath $(INSTALL_SHAREDPATH))
-  ABS_ESMF_PATH = $(abspath $(INSTALL_SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/$(NINST_VALUE))
+  ABS_ESMF_PATH = $(abspath $(INSTALL_SHAREDPATH))
   ifeq ($(PIO_VERSION),2)
     PIODEF := -DUSE_PIO2
   endif
@@ -657,7 +651,7 @@ PIOLIBNAME = -lpiof -lpioc
 
 GPTLLIB = $(GPTL_LIBDIR)/libgptl.a
 
-ULIBS += -L$(INSTALL_SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/$(NINST_VALUE)/lib
+ULIBS += -L$(INSTALL_SHAREDPATH)/lib
 
 ULIBS += -lcsm_share -L$(INSTALL_SHAREDPATH)/lib $(PIOLIBNAME) -lgptl
 
@@ -832,11 +826,11 @@ ifeq ($(USE_SHARED_CLM),FALSE)
   INCLDIR += -I$(LNDOBJDIR)
 else
   LNDLIB := libclm.a
-  LNDOBJDIR = $(SHAREDLIBROOT)/$(SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/clm/obj
-  LNDLIBDIR = $(EXEROOT)/$(SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/lib
-  INCLDIR += -I$(INSTALL_SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/include
+  LNDOBJDIR = $(SHAREDLIBROOT)/$(SHAREDPATH)/clm/obj
+  LNDLIBDIR = $(EXEROOT)/$(SHAREDPATH)/lib
+  INCLDIR += -I$(INSTALL_SHAREDPATH)/include
   ifeq ($(COMP_NAME),clm)
-    INCLUDE_DIR = $(INSTALL_SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/include
+    INCLUDE_DIR = $(INSTALL_SHAREDPATH)/include
   endif
 endif
 ifeq ($(LND_PRESENT),TRUE)
@@ -874,12 +868,8 @@ endif
 
 # libcsm_share.a is in ULIBDEP, but -lcsm_share is in ULIBS rather than CLIBS,
 # so this needs to be added after creating CLIBS above
-ifeq ($(CIME_MODEL),cesm)
-  ifneq ($(COMP_INTERFACE), nuopc)
-    CSMSHARELIB_CPL7 = $(INSTALL_SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/$(NINST_VALUE)/lib/libcsm_share_cpl7.a
-  endif
-endif
-CSMSHARELIB = $(INSTALL_SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/$(NINST_VALUE)/lib/libcsm_share.a
+
+CSMSHARELIB = $(INSTALL_SHAREDPATH)/lib/libcsm_share.a
 ULIBDEP += $(CSMSHARELIB)
 
 GENF90 ?= $(CIMEROOT)/CIME/non_py/externals/genf90/genf90.pl
@@ -914,9 +904,7 @@ $(PIOLIB) : $(MPISERIAL) $(GPTLLIB)
 $(CSMSHARELIB): $(PIOLIB) $(GPTLLIB)
 
 ifneq ($(findstring csm_share,$(COMP_NAME)),csm_share)
-  $(OBJS):  $(CSMSHARELIB) $(CSMSHARELIB_CPL7)
-else ifeq ($(COMP_NAME),csm_share_cpl7)
-  complib: install_lib_cpl7
+  $(OBJS):  $(CSMSHARELIB)
 else
   complib: install_lib
 endif
@@ -924,10 +912,6 @@ endif
 install_lib: $(COMPLIB)
 	$(CP) -p $(COMPLIB) $(CSMSHARELIB)
 	$(CP) -p *.$(MOD_SUFFIX) *.h $(INCLUDE_DIR)
-
-install_lib_cpl7: $(COMPLIB)
-	$(CP) -p $(COMPLIB) $(CSMSHARELIB_CPL7)
-	$(CP) -p *.$(MOD_SUFFIX) $(INCLUDE_DIR)
 
 # This rule writes the include flags and the link flags used in the $(EXEC_SE) rule below
 # It expects the variable OUTPUT_FILE to be defined
@@ -999,8 +983,7 @@ clean_dependslnd:
 	$(RM) -f $(LNDOBJDIR)/Srcfiles
 
 clean_dependscsmshare:
-	$(RM) -f $(SHAREDLIBROOT)/$(SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/$(NINST_VALUE)/csm_share/Srcfiles
-	$(RM) -f $(SHAREDLIBROOT)/$(SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/$(NINST_VALUE)/csm_share_cpl7/Srcfiles
+	$(RM) -f $(SHAREDLIBROOT)/$(SHAREDPATH)/csm_share/Srcfiles
 
 clean_depends: clean_dependsatm clean_dependscpl clean_dependswav clean_dependsglc clean_dependsice clean_dependsrof clean_dependslnd clean_dependscsmshare clean_dependsesp clean_dependsiac
 
@@ -1046,8 +1029,7 @@ cleanlnd:
 
 cleancsmshare:
 	$(RM) -f $(CSMSHARELIB)
-	$(RM) -fr $(SHAREDLIBROOT)/$(SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/$(NINST_VALUE)/csm_share
-	$(RM) -fr $(SHAREDLIBROOT)/$(SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/$(NINST_VALUE)/csm_share_cpl7
+	$(RM) -fr $(SHAREDLIBROOT)/$(SHAREDPATH)/csm_share
 
 cleanpio:
 	$(RM) -f $(PIO_LIBDIR)/libpio*
