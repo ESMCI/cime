@@ -161,7 +161,6 @@ def generate_makefile_macro(case, caseroot):
     their own macro.
     """
     with CmakeTmpBuildDir(macroloc=caseroot) as cmake_tmp:
-
         # Append CMakeLists.txt with compset specific stuff
         comps = _get_compset_comps(case)
         comps.extend(
@@ -853,13 +852,9 @@ def _build_libraries(
         comp_lnd = case.get_value("COMP_LND")
         if comp_lnd == "clm":
             logging.info("         - Building clm library ")
-            bldroot = os.path.join(
-                sharedlibroot, sharedpath, "clm", "obj"
-            )
+            bldroot = os.path.join(sharedlibroot, sharedpath, "clm", "obj")
             libroot = os.path.join(exeroot, sharedpath, "lib")
-            incroot = os.path.join(
-                exeroot, sharedpath, "include"
-            )
+            incroot = os.path.join(exeroot, sharedpath, "include")
             file_build = os.path.join(exeroot, "lnd.bldlog.{}".format(lid))
             config_lnd_dir = os.path.dirname(case.get_value("CONFIG_LND_FILE"))
 
