@@ -809,7 +809,7 @@ def _build_libraries(
             # csm_share adds its own dir name
             full_lib_path = os.path.join(sharedlibroot, sharedpath)
         elif lib == "mpi-serial":
-            full_lib_path = os.path.join(sharedlibroot, sharedpath, "mct", lib)
+            full_lib_path = os.path.join(sharedlibroot, sharedpath, lib)
         elif lib == "cprnc":
             full_lib_path = os.path.join(sharedlibroot, compiler, "cprnc")
         else:
