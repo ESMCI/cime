@@ -853,13 +853,12 @@ def _build_libraries(
         comp_lnd = case.get_value("COMP_LND")
         if comp_lnd == "clm":
             logging.info("         - Building clm library ")
-            esmfdir = "esmf" if case.get_value("USE_ESMF_LIB") else "noesmf"
             bldroot = os.path.join(
-                sharedlibroot, sharedpath, comp_interface, esmfdir, "clm", "obj"
+                sharedlibroot, sharedpath, "clm", "obj"
             )
-            libroot = os.path.join(exeroot, sharedpath, comp_interface, esmfdir, "lib")
+            libroot = os.path.join(exeroot, sharedpath, "lib")
             incroot = os.path.join(
-                exeroot, sharedpath, comp_interface, esmfdir, "include"
+                exeroot, sharedpath, "include"
             )
             file_build = os.path.join(exeroot, "lnd.bldlog.{}".format(lid))
             config_lnd_dir = os.path.dirname(case.get_value("CONFIG_LND_FILE"))
