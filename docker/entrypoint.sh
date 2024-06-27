@@ -101,9 +101,6 @@ then
     # update CIME submodules
     git submodule update --init "${GIT_SUBMODULE_FLAGS}"
 
-    # fix mct argflags
-    fix_mct_arflags /src/libraries/mct
-
     # link v3 config_machines
     ln -sf /root/.cime/config_machines.v3.xml /root/.cime/config_machines.xml
 fi

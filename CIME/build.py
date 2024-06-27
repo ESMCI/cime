@@ -161,7 +161,6 @@ def generate_makefile_macro(case, caseroot):
     their own macro.
     """
     with CmakeTmpBuildDir(macroloc=caseroot) as cmake_tmp:
-
         # Append CMakeLists.txt with compset specific stuff
         comps = _get_compset_comps(case)
         comps.extend(
@@ -655,7 +654,7 @@ def _build_checks(
 
     debugdir = "debug" if debug else "nodebug"
     threaddir = "threads" if build_threaded else "nothreads"
-    sharedpath = os.path.join(compiler, mpilib, debugdir, threaddir, comp_interface)
+    sharedpath = os.path.join(compiler, mpilib, debugdir, threaddir)
 
     logger.debug(
         "compiler={} mpilib={} debugdir={} threaddir={}".format(
@@ -757,10 +756,8 @@ def _build_libraries(
         logger.info("UFS_DRIVER is set to {}".format(ufs_driver))
     if ufs_driver and ufs_driver == "nems" and not cpl_in_complist:
         libs = []
-    elif case.get_value("MODEL") == "cesm" and comp_interface == "nuopc":
-        libs = ["gptl", "mct", "pio", "csm_share"]
     elif case.get_value("MODEL") == "cesm":
-        libs = ["gptl", "mct", "pio", "csm_share", "csm_share_cpl7"]
+        libs = ["gptl", "pio", "csm_share"]
     elif case.get_value("MODEL") == "e3sm":
         libs = ["gptl", "mct", "spio", "csm_share"]
     else:
@@ -811,7 +808,7 @@ def _build_libraries(
             # csm_share adds its own dir name
             full_lib_path = os.path.join(sharedlibroot, sharedpath)
         elif lib == "mpi-serial":
-            full_lib_path = os.path.join(sharedlibroot, sharedpath, "mct", lib)
+            full_lib_path = os.path.join(sharedlibroot, sharedpath, lib)
         elif lib == "cprnc":
             full_lib_path = os.path.join(sharedlibroot, compiler, "cprnc")
         else:
@@ -855,14 +852,9 @@ def _build_libraries(
         comp_lnd = case.get_value("COMP_LND")
         if comp_lnd == "clm":
             logging.info("         - Building clm library ")
-            esmfdir = "esmf" if case.get_value("USE_ESMF_LIB") else "noesmf"
-            bldroot = os.path.join(
-                sharedlibroot, sharedpath, comp_interface, esmfdir, "clm", "obj"
-            )
-            libroot = os.path.join(exeroot, sharedpath, comp_interface, esmfdir, "lib")
-            incroot = os.path.join(
-                exeroot, sharedpath, comp_interface, esmfdir, "include"
-            )
+            bldroot = os.path.join(sharedlibroot, sharedpath, "clm", "obj")
+            libroot = os.path.join(exeroot, sharedpath, "lib")
+            incroot = os.path.join(exeroot, sharedpath, "include")
             file_build = os.path.join(exeroot, "lnd.bldlog.{}".format(lid))
             config_lnd_dir = os.path.dirname(case.get_value("CONFIG_LND_FILE"))
 

@@ -55,7 +55,7 @@ ifeq ($(strip $(MPILIB)), mpi-serial)
   ifdef MPI_SERIAL_PATH
     INCLDIR += -I$(MPI_SERIAL_PATH)/include
   else
-    INCLDIR += -I$(GPTL_LIBDIR)/../mct/mpi-serial
+    INCLDIR += -I$(GPTL_LIBDIR)/../mpi-serial
   endif
 else
   CC := $(MPICC)
