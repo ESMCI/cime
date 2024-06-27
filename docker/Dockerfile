@@ -81,7 +81,7 @@ RUN curl -L -k -o "${PWD}/pnetcdf.tar.gz" \
 ENV CCS_CONFIG_TAG=ccs_config_cesm0.0.109
 ENV CMEPS_TAG=cmeps0.14.73
 ENV CDEPS_TAG=cdeps1.0.41
-ENV SHARE_TAG=share1.1.1
+ENV SHARE_TAG=share1.1.2
 ENV PARALLELIO_TAG=pio2_6_2
 
 RUN git clone -b ${CCS_CONFIG_TAG} https://github.com/ESMCI/ccs_config_cesm /src/ccs_config && \
