@@ -78,20 +78,16 @@ RUN curl -L -k -o "${PWD}/pnetcdf.tar.gz" \
             rm -rf "${PWD}/pnetcdf"
 
 # CESM dependencies
-ENV CCS_CONFIG_TAG=ccs_config_cesm0.0.88
-ENV CMEPS_TAG=cmeps0.14.47
-ENV CDEPS_TAG=cdeps1.0.26
-ENV CPL7_TAG=cpl77.0.8
-ENV SHARE_TAG=share1.0.18
-ENV MCT_TAG=MCT_2.11.0
+ENV CCS_CONFIG_TAG=ccs_config_cesm0.0.109
+ENV CMEPS_TAG=cmeps0.14.73
+ENV CDEPS_TAG=cdeps1.0.41
+ENV SHARE_TAG=share1.1.1
 ENV PARALLELIO_TAG=pio2_6_2
 
 RUN git clone -b ${CCS_CONFIG_TAG} https://github.com/ESMCI/ccs_config_cesm /src/ccs_config && \
     git clone -b ${CMEPS_TAG} https://github.com/ESCOMP/CMEPS.git /src/components/cmeps && \
     git clone -b ${CDEPS_TAG} https://github.com/ESCOMP/CDEPS.git /src/components/cdeps && \
-    git clone -b ${CPL7_TAG} https://github.com/ESCOMP/CESM_CPL7andDataComps /src/components/cpl7 && \
     git clone -b ${SHARE_TAG} https://github.com/ESCOMP/CESM_share /src/share && \
-    git clone -b ${MCT_TAG} https://github.com/MCSclimate/MCT /src/libraries/mct && \
     git clone -b ${PARALLELIO_TAG} https://github.com/NCAR/ParallelIO /src/libraries/parallelio && \
     mkdir -p /storage/timings
 
