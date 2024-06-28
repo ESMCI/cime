@@ -296,35 +296,35 @@ def query_all_components(files, xml=False, **_):
             query_component(item, files, all_components=True, xml=xml)
 
 
-def query_component(name, files, all_components=False, xml=False, **_):
+def query_component(components, files, all_components=False, xml=False, **_):
     """
     query a component by name
     """
     # Determine the valid component classes (e.g. atm) for the driver/cpl
     # These are then stored in comps_array
-    components = get_components(files)
+    classes = get_components(files)
 
     # Loop through the elements for each component class (in config_files.xml)
     # and see if there is a match for the the target component in the component attribute
     match_found = False
     valid_components = []
     config_exists = False
-    for comp in components:
+    for comp in classes:
         string = "CONFIG_{}_FILE".format(comp)
         config_file = None
         # determine all components in string
         root_dir_node_name = "COMP_ROOT_DIR_{}".format(comp)
-        components = files.get_components(root_dir_node_name)
-        if components is None:
-            components = files.get_components(string)
-        for item in components:
+        classes = files.get_components(root_dir_node_name)
+        if classes is None:
+            classes = files.get_components(string)
+        for item in classes:
             valid_components.append(item)
         logger.debug("{}: valid_components {}".format(comp, valid_components))
         # determine if config_file is on disk
-        if name is None:
+        if components is None:
             config_file = files.get_value(string)
-        elif name in valid_components:
-            config_file = files.get_value(string, attribute={"component": name})
+        elif components in valid_components:
+            config_file = files.get_value(string, attribute={"component": components})
             logger.debug("query {}".format(config_file))
         if config_file is not None:
             match_found = True
@@ -342,13 +342,14 @@ def query_component(name, files, all_components=False, xml=False, **_):
     utils.expect(
         match_found,
         "Invalid input argument {}, valid input arguments are {}".format(
-            name, valid_components
+            components, valid_components
         ),
     )
 
     # Check that file exists on disk, if not exit with error
     utils.expect(
-        (config_file), "Cannot find any config_component.xml file for {}".format(name)
+        (config_file),
+        "Cannot find any config_component.xml file for {}".format(components),
     )
 
     # determine component xml content
