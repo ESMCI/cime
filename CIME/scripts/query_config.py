@@ -48,11 +48,6 @@ def _main_func(description=__doc__):
 
 
 def parse_command_line(description):
-    """
-    parse command line arguments
-    """
-    cime_model = utils.get_model()
-
     files = {x: Files(x) for x in list(config.driver_choices)}
 
     compset_components = get_compset_components(files)
@@ -82,10 +77,7 @@ def parse_command_line(description):
         nargs="?",
         const="all",
         choices=sorted(set(compset_components)),
-        help="Query compsets corresponding to the target component for the {} model."
-        " If no component is given, lists compsets defined by all components".format(
-            cime_model
-        ),
+        help="Query compsets for active component. If no value is passed, compsets for all active components will be printed.",
     )
 
     config_group.add_argument(
@@ -93,16 +85,11 @@ def parse_command_line(description):
         nargs="?",
         const="all",
         choices=sorted(set(components)),
-        help="Query component settings corresponding to the target component for {} model."
-        "\nIf the option is empty, then the lists settings defined by all components is output".format(
-            cime_model
-        ),
+        help="Query settings for component. If not value is passed, settings for all components will be printed.",
     )
 
     config_group.add_argument(
-        "--grids",
-        action="store_true",
-        help="Query supported model grids for {} model.".format(cime_model),
+        "--grids", action="store_true", help="Query grids for model."
     )
 
     config_group.add_argument(
@@ -110,30 +97,26 @@ def parse_command_line(description):
         nargs="?",
         const="all",
         choices=machine_names,
-        help="Query supported machines for {} model."
-        "\nIf option is left empty then all machines are listed,"
-        "\nIf the option is 'current' then only the current machine details are listed.".format(
-            cime_model
-        ),
+        help="Query machines for model. If not value is passed, all machines will be printed.",
     )
 
     output_group = parser.add_argument_group("Output options")
 
     output_group.add_argument(
-        "--long", action="store_true", help="Provide long output for queries"
+        "--long", action="store_true", help="Print extended output for queries."
     )
 
-    output_group.add_argument(
-        "--xml", action="store_true", help="Output in xml format."
-    )
+    output_group.add_argument("--xml", action="store_true", help="Print output in xml.")
 
     filter_group = parser.add_argument_group("Filter options")
+
+    default_driver = config.driver_default
 
     filter_group.add_argument(
         "--driver",
         choices=config.driver_choices,
-        default=utils.get_cime_default_driver(),
-        help="Coupler/Driver interface",
+        default=default_driver,
+        help=f"Filter by driver, defaults to {default_driver!r}.",
     )
 
     filter_group.add_argument(
@@ -218,7 +201,7 @@ def query_compsets(files, compsets, xml=False, **_):
     query compset definition give a compset name
     """
     # Determine valid component values by checking the value attributes for COMPSETS_SPEC_FILE
-    components = get_compsets(files)
+    components = files.get_components("COMPSETS_SPEC_FILE")
     match_found = None
     all_components = False
     if re.search("^all$", compsets):  # print all compsets
@@ -244,13 +227,6 @@ def query_compsets(files, compsets, xml=False, **_):
             print_compset(component, files, all_components=all_components, xml=xml)
     else:
         print_compset(compsets, files, xml=xml)
-
-
-def get_compsets(files):
-    """
-    Determine valid component values by checking the value attributes for COMPSETS_SPEC_FILE
-    """
-    return files.get_components("COMPSETS_SPEC_FILE")
 
 
 def print_compset(name, files, all_components=False, xml=False):
