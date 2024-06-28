@@ -178,9 +178,6 @@ def get_components(files):
 
 
 def query_grids(files, long, xml=False, **_):
-    """
-    query all grids.
-    """
     config_file = files.get_value("GRIDS_SPEC_FILE")
     utils.expect(
         os.path.isfile(config_file),
@@ -197,9 +194,6 @@ def query_grids(files, long, xml=False, **_):
 
 
 def query_compsets(files, compsets, xml=False, **_):
-    """
-    query compset definition give a compset name
-    """
     # Determine valid component values by checking the value attributes for COMPSETS_SPEC_FILE
     components = files.get_components("COMPSETS_SPEC_FILE")
     match_found = None
@@ -267,9 +261,6 @@ def print_compset(name, files, all_components=False, xml=False):
 
 
 def query_all_components(files, xml=False, **_):
-    """
-    query all components
-    """
     components = get_components(files)
     # Loop through the elements for each component class (in config_files.xml)
     for comp in components:
@@ -282,9 +273,6 @@ def query_all_components(files, xml=False, **_):
 
 
 def query_component(components, files, all_components=False, xml=False, **_):
-    """
-    query a component by name
-    """
     # Determine the valid component classes (e.g. atm) for the driver/cpl
     # These are then stored in comps_array
     classes = get_components(files)
@@ -346,9 +334,6 @@ def query_component(components, files, all_components=False, xml=False, **_):
 
 
 def query_machines(files, machines, xml=False, **_):
-    """
-    query machines. Defaule: all
-    """
     config_file = files.get_value("MACHINES_SPEC_FILE")
     utils.expect(
         os.path.isfile(config_file),
