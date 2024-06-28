@@ -53,47 +53,14 @@ def parse_command_line(description):
     """
     cime_model = utils.get_model()
 
-    parser = argparse.ArgumentParser(
-        description=description, formatter_class=argparse.RawDescriptionHelpFormatter
-    )
-
-    parser.add_argument("--xml", action="store_true", help="Output in xml format.")
-
     files = {x: Files(x) for x in list(config.driver_choices)}
 
     compset_components = get_compset_components(files)
     compset_components.extend(["all"])
 
-    parser.add_argument(
-        "--compsets",
-        nargs="?",
-        const="all",
-        choices=sorted(set(compset_components)),
-        help="Query compsets corresponding to the target component for the {} model."
-        " If no component is given, lists compsets defined by all components".format(
-            cime_model
-        ),
-    )
-
     components = get_component_components(files)
     components.extend(["all"])
 
-    parser.add_argument(
-        "--components",
-        nargs="?",
-        const="all",
-        choices=sorted(set(components)),
-        help="Query component settings corresponding to the target component for {} model."
-        "\nIf the option is empty, then the lists settings defined by all components is output".format(
-            cime_model
-        ),
-    )
-
-    parser.add_argument(
-        "--grids",
-        action="store_true",
-        help="Query supported model grids for {} model.".format(cime_model),
-    )
     # same for all comp_interfaces
     config_file = files["mct"].get_value("MACHINES_SPEC_FILE")
     utils.expect(
@@ -104,7 +71,41 @@ def parse_command_line(description):
     machine_names = ["all", "current"]
     machine_names.extend(machines.list_available_machines())
 
-    parser.add_argument(
+    parser = argparse.ArgumentParser(
+        description=description, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+
+    config_group = parser.add_argument_group("Config options")
+
+    config_group.add_argument(
+        "--compsets",
+        nargs="?",
+        const="all",
+        choices=sorted(set(compset_components)),
+        help="Query compsets corresponding to the target component for the {} model."
+        " If no component is given, lists compsets defined by all components".format(
+            cime_model
+        ),
+    )
+
+    config_group.add_argument(
+        "--components",
+        nargs="?",
+        const="all",
+        choices=sorted(set(components)),
+        help="Query component settings corresponding to the target component for {} model."
+        "\nIf the option is empty, then the lists settings defined by all components is output".format(
+            cime_model
+        ),
+    )
+
+    config_group.add_argument(
+        "--grids",
+        action="store_true",
+        help="Query supported model grids for {} model.".format(cime_model),
+    )
+
+    config_group.add_argument(
         "--machines",
         nargs="?",
         const="all",
@@ -116,23 +117,31 @@ def parse_command_line(description):
         ),
     )
 
-    parser.add_argument(
+    output_group = parser.add_argument_group("Output options")
+
+    output_group.add_argument(
         "--long", action="store_true", help="Provide long output for queries"
     )
 
-    parser.add_argument(
+    output_group.add_argument(
+        "--xml", action="store_true", help="Output in xml format."
+    )
+
+    filter_group = parser.add_argument_group("Filter options")
+
+    filter_group.add_argument(
+        "--driver",
+        choices=config.driver_choices,
+        default=utils.get_cime_default_driver(),
+        help="Coupler/Driver interface",
+    )
+
+    filter_group.add_argument(
         "--comp_interface",
         choices=config.driver_choices,
         default="mct",
         action=utils.deprecate_action(", use --driver argument"),
         help="DEPRECATED: Use --driver argument",
-    )
-
-    parser.add_argument(
-        "--driver",
-        choices=config.driver_choices,
-        default=utils.get_cime_default_driver(),
-        help="Coupler/Driver interface",
     )
 
     utils.setup_standard_logging_options(parser)
