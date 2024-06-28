@@ -121,7 +121,7 @@ class Grids(GenericXML):
                 break
         return valid
 
-    def _read_config_grids(self, name, compset, atmnlev, lndnlev):
+    def _read_config_grids(self, name, compset=None, atmnlev=None, lndnlev=None):
         """
         read config_grids.xml with version 2.0 schema
 
@@ -136,10 +136,13 @@ class Grids(GenericXML):
         grid_defaults_node = self.get_child("model_grid_defaults", root=grids_node)
         for grid_node in self.get_children("grid", root=grid_defaults_node):
             name_attrib = self.get(grid_node, "name")
-            compset_attrib = self.get(grid_node, "compset")
-            compset_match = re.search(compset_attrib, compset)
-            if compset_match is not None:
-                model_grid[name_attrib] = self.text(grid_node)
+            if compset is None:
+                model_grid[name_attrib] = "null"
+            else:
+                compset_attrib = self.get(grid_node, "compset")
+                compset_match = re.search(compset_attrib, compset)
+                if compset_match is not None:
+                    model_grid[name_attrib] = self.text(grid_node)
 
         # (2)loop over all of the "model grid" nodes and determine is there an alias match with the
         # input grid name -  if there is an alias match determine if the "compset" and "not_compset"
@@ -616,6 +619,8 @@ class Grids(GenericXML):
             grid_nodes = self.get_children("grid", root=model_grid_node)
             grids = ""
             gridnames = []
+            lname = self._read_config_grids(alias, compset)
+            logger.info("\n{:<7}longname: {}".format(" ", lname))
             for grid_node in grid_nodes:
                 gridnames.append(self.text(grid_node))
                 grids += self.get(grid_node, "name") + ":" + self.text(grid_node) + "  "
@@ -627,7 +632,14 @@ class Grids(GenericXML):
                 gridnames = set(gridnames)
                 for gridname in gridnames:
                     if gridname != "null":
-                        logger.info("    {}".format(domains[gridname]))
+                        try:
+                            logger.info("    {}".format(domains[gridname]))
+                        except KeyError:
+                            logger.info(
+                                "    Could not provide domains for gridname {!r}".format(
+                                    gridname
+                                )
+                            )
 
 
 # ------------------------------------------------------------------------
