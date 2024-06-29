@@ -53,8 +53,8 @@ def parse_command_line(description):
     components = get_component_components(files)
     components.extend(["all"])
 
-    # same for all comp_interfaces
-    config_file = files["mct"].get_value("MACHINES_SPEC_FILE")
+    default_driver = config.driver_default
+    config_file = files[default_driver].get_value("MACHINES_SPEC_FILE")
     utils.expect(
         os.path.isfile(config_file),
         "Cannot find config_file {} on disk".format(config_file),
