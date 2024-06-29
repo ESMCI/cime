@@ -38,10 +38,7 @@ def _main_func(description=__doc__):
         query_compsets(**kwargs)
 
     if kwargs["components"] is not None:
-        if re.search("^all$", kwargs["components"]):  # print all compsets
-            query_all_components(**kwargs)
-        else:
-            query_component(**kwargs)
+        query_component_settings(**kwargs)
 
     if kwargs["machines"] is not None:
         query_machines(**kwargs)
@@ -157,23 +154,21 @@ def get_component_components(files):
     values = []
 
     for file in files.values():
-        components = get_components(file)
+        classes = get_component_classes(file)
 
-        for comp in components:
-            components = file.get_components(f"COMP_ROOT_DIR_{comp}")
+        for c in classes:
+            components = file.get_components(f"COMP_ROOT_DIR_{c}")
 
             values.extend([x for x in components if x is not None])
 
     return values
 
 
-def get_components(files):
-    """
-    Determine the valid component classes (e.g. atm) for the driver/cpl
-    These are then stored in comps_array
-    """
+def get_component_classes(files):
     infile = files.get_value("CONFIG_CPL_FILE")
+
     config_drv = Component(infile, "CPL")
+
     return config_drv.get_valid_model_components()
 
 
@@ -260,22 +255,27 @@ def print_compset(name, files, all_components=False, xml=False):
         compsets.print_values(arg_help=False)
 
 
-def query_all_components(files, xml=False, **_):
-    components = get_components(files)
-    # Loop through the elements for each component class (in config_files.xml)
-    for comp in components:
-        string = "CONFIG_{}_FILE".format(comp)
+def query_component_settings(components, files, xml=False, **_):
+    classes = get_component_classes(files)
 
-        # determine all components in string
-        components = files.get_components(string)
-        for item in components:
-            query_component(item, files, all_components=True, xml=xml)
+    if components == "all":
+        # Loop through the elements for each component class (in config_files.xml)
+        for comp in classes:
+            string = "CONFIG_{}_FILE".format(comp)
+
+            # determine all components in string
+            components = files.get_components(string)
+
+            for item in components:
+                _query_component_settings(item, files, all_components=True, xml=xml)
+    else:
+        _query_component_settings(components, files, xml=xml)
 
 
-def query_component(components, files, all_components=False, xml=False, **_):
+def _query_component_settings(component, files, all_components=False, xml=False, **_):
     # Determine the valid component classes (e.g. atm) for the driver/cpl
     # These are then stored in comps_array
-    classes = get_components(files)
+    classes = get_component_classes(files)
 
     # Loop through the elements for each component class (in config_files.xml)
     # and see if there is a match for the the target component in the component attribute
@@ -287,17 +287,17 @@ def query_component(components, files, all_components=False, xml=False, **_):
         config_file = None
         # determine all components in string
         root_dir_node_name = "COMP_ROOT_DIR_{}".format(comp)
-        classes = files.get_components(root_dir_node_name)
-        if classes is None:
-            classes = files.get_components(string)
-        for item in classes:
+        _components = files.get_components(root_dir_node_name)
+        if _components is None:
+            _components = files.get_components(string)
+        for item in _components:
             valid_components.append(item)
         logger.debug("{}: valid_components {}".format(comp, valid_components))
         # determine if config_file is on disk
-        if components is None:
+        if component is None:
             config_file = files.get_value(string)
-        elif components in valid_components:
-            config_file = files.get_value(string, attribute={"component": components})
+        elif component in valid_components:
+            config_file = files.get_value(string, attribute={"component": component})
             logger.debug("query {}".format(config_file))
         if config_file is not None:
             match_found = True
@@ -315,14 +315,14 @@ def query_component(components, files, all_components=False, xml=False, **_):
     utils.expect(
         match_found,
         "Invalid input argument {}, valid input arguments are {}".format(
-            components, valid_components
+            component, valid_components
         ),
     )
 
     # Check that file exists on disk, if not exit with error
     utils.expect(
         (config_file),
-        "Cannot find any config_component.xml file for {}".format(components),
+        "Cannot find any config_component.xml file for {}".format(component),
     )
 
     # determine component xml content

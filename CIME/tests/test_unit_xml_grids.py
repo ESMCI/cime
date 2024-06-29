@@ -107,18 +107,28 @@ class TestXMLGrids(unittest.TestCase):
 
             assert lname == "a%T62_l%T62_oi%gx3v7_r%rx1_g%null_w%null_z%null_m%gx3v7"
 
-            with self.assertRaisesRegex(CIMEError, "ERROR: grid alias T62_g37 not valid for compset SCREAM"):
+            with self.assertRaisesRegex(
+                CIMEError, "ERROR: grid alias T62_g37 not valid for compset SCREAM"
+            ):
                 grids._read_config_grids("T62_g37", "SCREAM")
 
             lname = grids._read_config_grids("f02_g16", "DATM")
 
-            assert lname == "a%0.23x0.31_l%0.23x0.31_oi%gx1v6_r%r05_g%null_w%null_z%null_m%gx1v6"
+            assert (
+                lname
+                == "a%0.23x0.31_l%0.23x0.31_oi%gx1v6_r%r05_g%null_w%null_z%null_m%gx1v6"
+            )
 
             lname = grids._read_config_grids("f05_g16", "SCREAM")
 
-            assert lname == "a%0.47x0.63_l%0.47x0.63_oi%gx1v6_r%r05_g%null_w%null_z%null_m%gx1v6"
+            assert (
+                lname
+                == "a%0.47x0.63_l%0.47x0.63_oi%gx1v6_r%r05_g%null_w%null_z%null_m%gx1v6"
+            )
 
-            with self.assertRaisesRegex(CIMEError, "ERROR: grid alias f05_g16 not valid for compset DATM"):
+            with self.assertRaisesRegex(
+                CIMEError, "ERROR: grid alias f05_g16 not valid for compset DATM"
+            ):
                 grids._read_config_grids("f05_g16", "DATM")
 
             lname = grids._read_config_grids("T31_g37_rx1", "_DROF")
@@ -127,15 +137,28 @@ class TestXMLGrids(unittest.TestCase):
 
             lname = grids._read_config_grids("f09_g16", "DATM3TEST")
 
-            assert lname == "a%0.9x1.25_l%0.9x1.25_oi%gx1v6_r%r05_g%null_w%null_z%null_m%gx1v6"
+            assert (
+                lname
+                == "a%0.9x1.25_l%0.9x1.25_oi%gx1v6_r%r05_g%null_w%null_z%null_m%gx1v6"
+            )
 
-            with self.assertRaisesRegex(CIMEError, "ERROR: grid alias f09_g16 not valid for compset DATM2TEST"):
+            with self.assertRaisesRegex(
+                CIMEError, "ERROR: grid alias f09_g16 not valid for compset DATM2TEST"
+            ):
                 grids._read_config_grids("f09_g16", "DATM2TEST")
 
             lname = grids._read_config_grids("f19_g16", "DATM")
 
-            assert lname == "a%1.9x2.5_l%1.9x2.5_oi%gx1v6_r%r05_g%null_w%null_z%null_m%gx1v6"
+            assert (
+                lname
+                == "a%1.9x2.5_l%1.9x2.5_oi%gx1v6_r%r05_g%null_w%null_z%null_m%gx1v6"
+            )
 
-            lname = grids._read_config_grids("f19_g16", "DATM", atmnlev="2", lndnlev="4")
+            lname = grids._read_config_grids(
+                "f19_g16", "DATM", atmnlev="2", lndnlev="4"
+            )
 
-            assert lname == "a%1.9x2.5z2_l%1.9x2.5z4_oi%gx1v6_r%r05_g%null_w%null_z%null_m%gx1v6"
+            assert (
+                lname
+                == "a%1.9x2.5z2_l%1.9x2.5z4_oi%gx1v6_r%r05_g%null_w%null_z%null_m%gx1v6"
+            )
