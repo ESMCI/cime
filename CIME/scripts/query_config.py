@@ -172,23 +172,23 @@ def get_component_classes(files):
     return config_drv.get_valid_model_components()
 
 
-def query_grids(files, long, xml=False, **_):
+def query_grids(files, long, xml, **_):
     config_file = files.get_value("GRIDS_SPEC_FILE")
+
     utils.expect(
         os.path.isfile(config_file),
         "Cannot find config_file {} on disk".format(config_file),
     )
 
     grids = Grids(config_file)
+
     if xml:
         print("{}".format(grids.get_raw_record().decode("UTF-8")))
-    elif long:
-        grids.print_values(long_output=long)
     else:
-        grids.print_values()
+        grids.print_values(long=long)
 
 
-def query_compsets(files, compsets, xml=False, **_):
+def query_compsets(files, compsets, **kwargs):
     # Determine valid component values by checking the value attributes for COMPSETS_SPEC_FILE
     components = files.get_components("COMPSETS_SPEC_FILE")
     match_found = None
@@ -213,12 +213,12 @@ def query_compsets(files, compsets, xml=False, **_):
     if all_components:  # print all compsets
         for component in components:
             # the all_components flag will only print available components
-            print_compset(component, files, all_components=all_components, xml=xml)
+            print_compset(all_components=all_components, **kwargs)
     else:
-        print_compset(compsets, files, xml=xml)
+        print_compset(**kwargs)
 
 
-def print_compset(name, files, all_components=False, xml=False):
+def print_compset(name, files, xml=False, all_components=False, **_):
     """
     print compsets associated with the component name, but if all_components is true only
     print the details if the associated component is available
@@ -255,7 +255,7 @@ def print_compset(name, files, all_components=False, xml=False):
         compsets.print_values(arg_help=False)
 
 
-def query_component_settings(components, files, xml=False, **_):
+def query_component_settings(components, files, **kwargs):
     classes = get_component_classes(files)
 
     if components == "all":
@@ -267,12 +267,12 @@ def query_component_settings(components, files, xml=False, **_):
             components = files.get_components(string)
 
             for item in components:
-                _query_component_settings(item, files, all_components=True, xml=xml)
+                _query_component_settings(item, files, all_components=True, **kwargs)
     else:
-        _query_component_settings(components, files, xml=xml)
+        _query_component_settings(components, files, **kwargs)
 
 
-def _query_component_settings(component, files, all_components=False, xml=False, **_):
+def _query_component_settings(component, files, xml=False, all_components=False, **_):
     # Determine the valid component classes (e.g. atm) for the driver/cpl
     # These are then stored in comps_array
     classes = get_component_classes(files)
@@ -333,7 +333,7 @@ def _query_component_settings(component, files, all_components=False, xml=False,
         component.print_values()
 
 
-def query_machines(files, machines, xml=False, **_):
+def query_machines(files, machines, xml, **_):
     config_file = files.get_value("MACHINES_SPEC_FILE")
     utils.expect(
         os.path.isfile(config_file),

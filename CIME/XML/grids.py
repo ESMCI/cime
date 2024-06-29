@@ -555,7 +555,7 @@ class Grids(GenericXML):
         for name, value in these_gridmaps.items():
             _add_grid_info(gridmaps, name, value)
 
-    def print_values(self, long_output=None):
+    def print_values(self, long=False):
         # write out help message
         helptext = self.get_element_text("help")
         logger.info("{} ".format(helptext))
@@ -589,7 +589,7 @@ class Grids(GenericXML):
         )
 
         domains = {}
-        if long_output is not None:
+        if long:
             domain_nodes = self.get_children("domain", root=self.get_child("domains"))
             for domain_node in domain_nodes:
                 name = self.get(domain_node, "name")
@@ -642,7 +642,7 @@ class Grids(GenericXML):
             mask_nodes = self.get_children("mask", root=model_grid_node)
             for mask_node in mask_nodes:
                 logger.info("       mask is: {}".format(self.text(mask_node)))
-            if long_output is not None:
+            if long:
                 gridnames = set(gridnames)
                 for gridname in gridnames:
                     if gridname != "null":
