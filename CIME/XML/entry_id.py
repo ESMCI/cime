@@ -500,7 +500,7 @@ class EntryID(GenericXML):
                                 "{}_{}".format(vid, comp), resolved=False
                             )
                             if f1val != f2val:
-                                xmldiffs[vid] = [f1val, f2val]
+                                xmldiffs[f"{vid}_{comp}"] = [f1val, f2val]
                         else:
                             if node != f2match:
                                 f1value_nodes = self.get_children("value", root=node)
