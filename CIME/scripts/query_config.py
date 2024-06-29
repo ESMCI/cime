@@ -47,10 +47,10 @@ def _main_func(description=__doc__):
 def parse_command_line(description):
     files = {x: Files(x) for x in list(config.driver_choices)}
 
-    compset_components = get_compset_components(files)
-    compset_components.extend(["all"])
+    compset_active_components = get_compset_active_components(files)
+    compset_active_components.extend(["all"])
 
-    components = get_component_components(files)
+    components = get_components(files)
     components.extend(["all"])
 
     default_driver = config.driver_default
@@ -73,7 +73,7 @@ def parse_command_line(description):
         "--compsets",
         nargs="?",
         const="all",
-        choices=sorted(set(compset_components)),
+        choices=sorted(set(compset_active_components)),
         help="Query compsets for active component. If no value is passed, compsets for all active components will be printed.",
     )
 
@@ -139,18 +139,18 @@ def parse_command_line(description):
     return kwargs
 
 
-def get_compset_components(files):
+def get_compset_active_components(files):
     values = []
 
     for file in files.values():
-        components = file.get_components("COMPSETS_SPEC_FILE")
+        active_components = file.get_components("COMPSETS_SPEC_FILE")
 
-        values.extend([x for x in components if x is not None])
+        values.extend([x for x in active_components if x is not None])
 
     return values
 
 
-def get_component_components(files):
+def get_components(files):
     values = []
 
     for file in files.values():
