@@ -229,10 +229,6 @@ def xmlchange_single_value(
 
         if xmlfile is not None:
             xmlfile = [xmlfile]
-        # Pass caseroot, in cases where --file is used and case does not have access to env_case.xml
-        check_lockedfiles(
-            case, skip=["env_case"], quiet=True, caseroot=caseroot, whitelist=xmlfile
-        )
     else:
         logger.warning("'%s' = '%s'", xmlid, xmlval)
 
@@ -312,6 +308,13 @@ def xmlchange(
                 caseroot,
                 xmlfile,
             )
+
+        check_lockedfiles(
+            case,
+            skip=["env_case"],
+            caseroot=caseroot,
+            whitelist=xmlfile,
+        )
 
     if not noecho:
         argstr = ""
