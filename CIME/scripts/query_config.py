@@ -8,7 +8,6 @@ information will be listed for each.
 
 import os
 import sys
-import re
 import logging
 import argparse
 
@@ -189,33 +188,14 @@ def query_grids(files, long, xml, **_):
 
 
 def query_compsets(files, compsets, **kwargs):
-    # Determine valid component values by checking the value attributes for COMPSETS_SPEC_FILE
-    components = files.get_components("COMPSETS_SPEC_FILE")
-    match_found = None
-    all_components = False
-    if re.search("^all$", compsets):  # print all compsets
-        match_found = compsets
-        all_components = True
-    else:
-        for component in components:
-            if component == compsets:
-                match_found = compsets
-                break
+    if compsets == "all":
+        active_components = files.get_components("COMPSETS_SPEC_FILE")
 
-    # If name is not a valid argument - exit with error
-    utils.expect(
-        match_found is not None,
-        "Invalid input argument {}, valid input arguments are {}".format(
-            compsets, components
-        ),
-    )
-
-    if all_components:  # print all compsets
-        for component in components:
+        for component in active_components:
             # the all_components flag will only print available components
-            print_compset(all_components=all_components, **kwargs)
+            print_compset(component, files, all_components=True, **kwargs)
     else:
-        print_compset(**kwargs)
+        print_compset(compsets, files, **kwargs)
 
 
 def print_compset(name, files, xml=False, all_components=False, **_):
