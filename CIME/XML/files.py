@@ -12,6 +12,7 @@ from CIME.utils import (
     get_config_path,
     get_schema_path,
     get_model,
+    get_cime_default_driver,
 )
 
 logger = logging.getLogger(__name__)
@@ -26,19 +27,14 @@ class Files(EntryID):
         >>> files.get_value('CASEFILE_HEADERS',resolved=False)
         '$CIMEROOT/CIME/data/config/config_headers.xml'
         """
-        model = get_model()
         if comp_interface is None:
-            if model == "e3sm":
-                comp_interface = "mct"
-            else:
-                comp_interface = "nuopc"
-                
+            comp_interface = get_cime_default_driver()
         cimeroot = get_cime_root()
         cimeroot_parent = os.path.dirname(cimeroot)
         config_path = get_config_path()
         schema_path = get_schema_path()
 
-        infile = os.path.join(config_path, model, "config_files.xml")
+        infile = os.path.join(config_path, get_model(), "config_files.xml")
         expect(os.path.isfile(infile), "Could not find or open file {}".format(infile))
 
         schema = os.path.join(schema_path, "entry_id.xsd")
