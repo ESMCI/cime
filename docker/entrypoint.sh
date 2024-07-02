@@ -94,14 +94,14 @@ then
 
     git status
 
-    # update CIME submodules
     git submodule update --init "${GIT_SUBMODULE_FLAGS}"
+    git submodule update --init "${GIT_SUBMODULE_FLAGS}" --recursive components/cdeps
 
     pushd cime
 
     fix_gitmodules "${PWD}"
 
-    # checkout submodules
+    # update CIME submodules
     git submodule update --init "${GIT_SUBMODULE_FLAGS}"
 
     # link v3 config_machines
