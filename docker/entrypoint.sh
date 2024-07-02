@@ -56,7 +56,7 @@ then
 
     pushd "${SRC_PATH}/E3SM"
 
-    git config --global --add safe.directory "${PWD}"
+    git config --global --add safe.directory "*"
 
     # fix E3SM gitmodules
     fix_gitmodules "${PWD}"
@@ -74,9 +74,6 @@ then
     # fix CIME gitmodules
     fix_gitmodules "${PWD}"
 
-    git config --global --add safe.directory "${PWD}"
-    git config --global --add safe.directory "${PWD}/CIME/non_py/cprnc"
-
     # checkout submodules
     git submodule update --init "${GIT_SUBMODULE_FLAGS}"
 
@@ -86,19 +83,25 @@ elif [[ "${CIME_MODEL}" == "cesm" ]]
 then
     echo "Setting up CESM"
 
-    # copy pre cloned repos to new source path
-    if [[ "${SRC_PATH}" != "/src/cime" ]]
-    then
-        cp -rf /src/ccs_config /src/components /src/libraries /src/share "${SRC_PATH}/../"
-    fi
+    [[ ! -e "${SRC_PATH}/CESM" ]] && git clone -b ${CESM_BRANCH:-master} ${GIT_FLAGS} ${E3SM_REPO:-https://github.com/ESCOMP/CESM} "${SRC_PATH}/CESM"
 
-    git config --global --add safe.directory "${PWD}"
-    git config --global --add safe.directory "${PWD}/CIME/non_py/cprnc"
+    pushd "${SRC_PATH}/CESM"
+
+    git config --global --add safe.directory "*"
 
     # fix CIME gitmodules
     fix_gitmodules "${PWD}"
 
+    git status
+
     # update CIME submodules
+    git submodule update --init "${GIT_SUBMODULE_FLAGS}"
+
+    pushd cime
+
+    fix_gitmodules "${PWD}"
+
+    # checkout submodules
     git submodule update --init "${GIT_SUBMODULE_FLAGS}"
 
     # link v3 config_machines
