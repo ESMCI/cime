@@ -110,7 +110,6 @@ jobs:
           CIME_DRIVER: "nuopc"
           CIME_TEST_PLATFORM: ubuntu-latest
         run: |
-          export SRC_PATH="${GITHUB_WORKSPACE}"
           export CIME_REMOTE=https://github.com/${{ github.event.pull_request.head.repo.full_name || github.repository }}
           export CIME_BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF##*/}}
 
