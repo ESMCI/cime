@@ -72,13 +72,14 @@ if [[ "${SKIP_MODEL_SETUP}" == "false" ]]; then
         # fix E3SM gitmodules
         fix_gitmodules "${PWD}"
 
-        git status
-
         # checkout submodules
         git submodule update --init "${GIT_SUBMODULE_FLAGS}"
 
         # fix mct arflags flags
         fix_mct_arflags "${SRC_PATH}/E3SM/externals/mct"
+
+        git status
+        git submodule status
 
         pushd cime
     elif [[ "${CIME_MODEL}" == "cesm" ]]; then
@@ -93,6 +94,7 @@ if [[ "${SKIP_MODEL_SETUP}" == "false" ]]; then
         ./bin/git-fleximod update
 
         git status
+        git submodule status
 
         pushd cime
     fi
@@ -114,6 +116,7 @@ if [[ "$(to_lowercase SKIP_CIME_UPDATE)" == "false" ]]; then
 fi
 
 git status
+git submodule status
 
 if [[ "${CIME_MODEL}" == "e3sm" ]]; then
     # link v2 config_machines

@@ -175,7 +175,7 @@ jobs:
 
           pytest -vvv --cov=CIME --machine docker --no-fortran-run --no-teardown CIME/tests/test_sys*
       - uses: mxschmitt/action-tmate@v3
-        if: ${{ !always() }}
+        if: ${{ always() }}
         with:
           limit-access-to-actor: true
       - name: Create testing log archive
