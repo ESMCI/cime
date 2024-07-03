@@ -101,6 +101,8 @@ fi
 git config --global --add safe.directory "`pwd`"
 
 if [[ "$(to_lowercase SKIP_CIME_UPDATE)" == "false" ]]; then
+    fix_gitmodules "${PWD}"
+    
     # Expect current directory to be CIME
     git remote set-url origin "${CIME_REMOTE}"
     git remote set-branches origin "*"
@@ -115,10 +117,10 @@ git status
 
 if [[ "${CIME_MODEL}" == "e3sm" ]]; then
     # link v2 config_machines
-    ln -sf ~/.cime/config_machines.v2.xml ~/.cime/config_machines.xml
+    ln -sf /root/.cime/config_machines.v2.xml /root/.cime/config_machines.xml
 elif [[ "${CIME_MODEL}" == "cesm" ]]; then
     # link v3 config_machines
-    ln -sf ~/.cime/config_machines.v3.xml ~/.cime/config_machines.xml
+    ln -sf /root/.cime/config_machines.v3.xml /root/.cime/config_machines.xml
 fi
 
 # load batch specific entrypoint
