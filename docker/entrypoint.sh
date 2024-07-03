@@ -76,7 +76,7 @@ if [[ "${SKIP_MODEL_SETUP}" == "false" ]]; then
         git submodule update --init "${GIT_SUBMODULE_FLAGS}"
 
         # fix mct arflags flags
-        fix_mct_arflags "${SRC_PATH}/E3SM/externals/mct"
+        # fix_mct_arflags "${SRC_PATH}/E3SM/externals/mct"
 
         git status
         git submodule status
