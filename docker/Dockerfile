@@ -90,14 +90,12 @@ RUN git clone -b ${CIME_BRANCH} ${CIME_REPO} /src/cime
 ENV USER=root
 ENV LOGNAME=root
 ENV ESMFMKFILE=/opt/conda/lib/esmf.mk
+ENV SRC_PATH=/src
 
-WORKDIR /src/cime
+WORKDIR /src
 
 COPY .cime /root/.cime
 COPY entrypoint.sh /entrypoint.sh
-
-# TODO: REMOVE trigger
-ENV TRIGGER=0
 
 ENTRYPOINT [ "/entrypoint.sh" ]
 
