@@ -18,7 +18,7 @@ echo "GIT_SUBMODULE_FLAGS = ${GIT_SUBMODULE_FLAGS}"
 echo "SKIP_MODEL_SETUP = ${SKIP_MODEL_SETUP}"
 echo "CIME_REMOTE = ${CIME_REMOTE}"
 echo "CIME_BRANCH = ${CIME_BRANCH}"
-echo "SKIP_CIME_UDPATE = ${SKIP_CIME_UDPATE}"
+echo "SKIP_CIME_UDPATE = ${SKIP_CIME_UPDATE}"
 
 function to_lowercase() {
     echo "${!1}" | tr -s '[:upper:]' '[:lower:]' 
