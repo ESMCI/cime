@@ -6,9 +6,10 @@ SRC_PATH="${SRC_PATH:-`pwd`}"
 GIT_FLAGS="${GIT_FLAGS:---filter=tree:0}"
 # Shallow submodule checkout
 GIT_SUBMODULE_FLAGS="${GIT_SUBMODULE_FLAGS:---recommend-shallow}"
-SKIP_MODEL_SETUP="${SKIP_MODEL_CHECKOUT:-false}"
+SKIP_MODEL_SETUP="${SKIP_MODEL_SETUP:-false}"
 CIME_REMOTE="${CIME_REMOTE:-https://github.com/ESMCI/cime}"
 CIME_BRANCH="${CIME_BRANCH:-master}"
+SKIP_CIME_UPDATE="${SKIP_CIME_UPDATE:-false}"
 
 echo "DEBUG = ${DEBUG}"
 echo "SRC_PATH = ${SRC_PATH}"
@@ -17,6 +18,7 @@ echo "GIT_SUBMODULE_FLAGS = ${GIT_SUBMODULE_FLAGS}"
 echo "SKIP_MODEL_SETUP = ${SKIP_MODEL_SETUP}"
 echo "CIME_REMOTE = ${CIME_REMOTE}"
 echo "CIME_BRANCH = ${CIME_BRANCH}"
+echo "SKIP_CIME_UDPATE = ${SKIP_CIME_UDPATE}"
 
 function to_lowercase() {
     echo "${!1}" | tr -s '[:upper:]' '[:lower:]' 
@@ -96,14 +98,18 @@ if [[ "${SKIP_MODEL_SETUP}" == "false" ]]; then
     fi
 fi
 
-# Expect current directory to be CIME
-git remote set-url origin "${CIME_REMOTE}"
-git remote set-branches origin "*"
-git fetch origin
-git checkout "${CIME_BRANCH}"
+git config --global --add safe.directory "`pwd`"
 
-# Sync submodules
-git submodule update --init
+if [[ "$(to_lowercase SKIP_CIME_UPDATE)" == "false" ]]; then
+    # Expect current directory to be CIME
+    git remote set-url origin "${CIME_REMOTE}"
+    git remote set-branches origin "*"
+    git fetch origin
+    git checkout "${CIME_BRANCH}"
+
+    # Sync submodules
+    git submodule update --init
+fi
 
 git status
 

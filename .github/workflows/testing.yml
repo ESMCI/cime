@@ -110,6 +110,7 @@ jobs:
           CIME_DRIVER: "nuopc"
           CIME_TEST_PLATFORM: ubuntu-latest
           SKIP_MODEL_SETUP: "true"
+          SKIP_CIME_UPDATE: "true"
         run: |
           export SRC_PATH="${GITHUB_WORKSPACE}"
 
