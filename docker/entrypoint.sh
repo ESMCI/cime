@@ -21,7 +21,7 @@ echo "CIME_BRANCH = ${CIME_BRANCH}"
 echo "SKIP_CIME_UDPATE = ${SKIP_CIME_UPDATE}"
 
 function to_lowercase() {
-    echo "${!1}" | tr -s '[:upper:]' '[:lower:]' 
+    echo "${!1}" | tr -s '[:upper:]' '[:lower:]'
 }
 
 if [[ "$(to_lowercase DEBUG)" == "true" ]]; then
@@ -102,7 +102,7 @@ git config --global --add safe.directory "`pwd`"
 
 if [[ "$(to_lowercase SKIP_CIME_UPDATE)" == "false" ]]; then
     fix_gitmodules "${PWD}"
-    
+
     # Expect current directory to be CIME
     git remote set-url origin "${CIME_REMOTE}"
     git remote set-branches origin "*"

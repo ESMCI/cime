@@ -65,7 +65,7 @@ class BaseTestCase(unittest.TestCase):
         customize_path = os.path.join(utils.get_src_root(), "cime_config", "customize")
         self._config = Config.load(customize_path)
         self._driver = utils.get_cime_default_driver()
-        
+
     def tearDown(self):
         self.kill_subprocesses()
 
