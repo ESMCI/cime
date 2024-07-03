@@ -135,7 +135,7 @@ class ConfigBase:
 
 
 class Config(ConfigBase):
-    @staticmethod
+    @classmethod
     def load_defaults(cls):
         return cls.load(DEFAULT_CUSTOMIZE_PATH)
 
