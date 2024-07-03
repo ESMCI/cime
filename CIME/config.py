@@ -303,7 +303,7 @@ class Config(ConfigBase):
         )
         self._set_attribute(
             "driver_choices",
-            ("nuopc"),
+            ("nuopc",),
             desc="Sets the available driver choices for the model.",
         )
         self._set_attribute(
