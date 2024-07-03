@@ -287,7 +287,7 @@ def parse_command_line(args, description):
         help="Query supported model grids for {} model.".format(cime_model),
     )
     # same for all comp_interfaces
-    config_file = files["mct"].get_value("MACHINES_SPEC_FILE")
+    config_file = files[config.driver_default].get_value("MACHINES_SPEC_FILE")
     expect(
         os.path.isfile(config_file),
         "Cannot find config_file {} on disk".format(config_file),
