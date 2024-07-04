@@ -451,9 +451,7 @@ def get_cime_default_driver():
 
     from CIME.config import Config
 
-    config = Config.instance()
-
-    config.load_defaults()
+    config = Config.load_defaults()
 
     if not driver:
         driver = config.driver_default
