@@ -1,3 +1,4 @@
+import os
 import re
 import sys
 import glob
@@ -8,6 +9,8 @@ import importlib.util
 from CIME import utils
 
 logger = logging.getLogger(__name__)
+
+DEFAULT_CUSTOMIZE_PATH = os.path.join(utils.get_src_root(), "cime_config", "customize")
 
 
 class ConfigBase:
@@ -132,6 +135,10 @@ class ConfigBase:
 
 
 class Config(ConfigBase):
+    @classmethod
+    def load_defaults(cls):
+        return cls.load(DEFAULT_CUSTOMIZE_PATH)
+
     def __init__(self):
         super().__init__()
 
@@ -303,11 +310,16 @@ class Config(ConfigBase):
         )
         self._set_attribute(
             "driver_choices",
-            ("mct", "nuopc"),
+            ("nuopc",),
             desc="Sets the available driver choices for the model.",
         )
         self._set_attribute(
             "mct_path",
             "{srcroot}/libraries/mct",
             desc="Sets the path to the mct library.",
+        )
+        self._set_attribute(
+            "mpi_serial_path",
+            "{srcroot}/libraries/mpi-serial",
+            desc="Sets the path to the mpi-serial library.",
         )

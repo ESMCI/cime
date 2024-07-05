@@ -12,6 +12,7 @@ from CIME.utils import (
     get_config_path,
     get_schema_path,
     get_model,
+    get_cime_default_driver,
 )
 
 logger = logging.getLogger(__name__)
@@ -27,7 +28,7 @@ class Files(EntryID):
         '$CIMEROOT/CIME/data/config/config_headers.xml'
         """
         if comp_interface is None:
-            comp_interface = "mct"
+            comp_interface = get_cime_default_driver()
         cimeroot = get_cime_root()
         cimeroot_parent = os.path.dirname(cimeroot)
         config_path = get_config_path()

@@ -110,7 +110,8 @@ jobs:
           CIME_DRIVER: "nuopc"
           CIME_TEST_PLATFORM: ubuntu-latest
         run: |
-          export SRC_PATH="${GITHUB_WORKSPACE}"
+          export CIME_REMOTE=https://github.com/${{ github.event.pull_request.head.repo.full_name || github.repository }}
+          export CIME_BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF##*/}}
 
           mamba install -y python=${{ matrix.python-version }}
 
@@ -118,8 +119,6 @@ jobs:
 
           # GitHub runner home is different than container
           cp -rf /root/.cime /github/home/
-
-          git status
 
           pytest -vvv --cov=CIME --machine docker --no-fortran-run CIME/tests/test_unit*
 
@@ -162,28 +161,17 @@ jobs:
           CIME_DRIVER: ${{ matrix.driver }}
           CIME_TEST_PLATFORM: ubuntu-latest
         run: |
-          export SRC_PATH="${GITHUB_WORKSPACE}"
+          export CIME_REMOTE=https://github.com/${{ github.event.pull_request.head.repo.full_name || github.repository }}
+          export CIME_BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF##*/}}
 
           source /entrypoint.sh
 
           # GitHub runner home is different than container
           cp -rf /root/.cime /github/home/
 
-          if [[ "${CIME_MODEL}" == "e3sm" ]]; then
-            git remote set-url origin https://github.com/${{ github.event.pull_request.head.repo.full_name || github.repository }}
-            git remote set-branches origin "*"
-            git fetch origin
-            git checkout ${GITHUB_HEAD_REF:-${GITHUB_REF##*/}}
+          source /opt/conda/etc/profile.d/conda.sh
 
-            # sync correct submodules
-            git submodule update
-
-            source /opt/conda/etc/profile.d/conda.sh
-
-            conda activate base
-          fi
-
-          git status
+          conda activate base
 
           pytest -vvv --cov=CIME --machine docker --no-fortran-run --no-teardown CIME/tests/test_sys*
       - uses: mxschmitt/action-tmate@v3

@@ -4,7 +4,10 @@ FROM condaforge/mambaforge:${MAMBAFORGE_VERSION} AS base
 SHELL ["/bin/bash", "-c"]
 
 # First layer as they never change, required for E3SM testing, TODO: fix in unittesting as well
-RUN mkdir -p /storage/inputdata/cpl/gridmaps/oQU240 /storage/inputdata/share/domains && \
+RUN mkdir -p \
+    /storage/inputdata/cpl/gridmaps/oQU240 \
+    /storage/inputdata/share/domains \
+    /storage/timings && \
     wget -O /storage/inputdata/cpl/gridmaps/oQU240/map_oQU240_to_ne4np4_aave.160614.nc https://portal.nersc.gov/project/e3sm/inputdata/cpl/gridmaps/oQU240/map_oQU240_to_ne4np4_aave.160614.nc && \
     wget -O /storage/inputdata/share/domains/domain.ocn.ne4np4_oQU240.160614.nc https://portal.nersc.gov/project/e3sm/inputdata/share/domains/domain.ocn.ne4np4_oQU240.160614.nc && \
     wget -O /storage/inputdata/share/domains/domain.lnd.ne4np4_oQU240.160614.nc https://portal.nersc.gov/project/e3sm/inputdata/share/domains/domain.lnd.ne4np4_oQU240.160614.nc
@@ -77,24 +80,6 @@ RUN curl -L -k -o "${PWD}/pnetcdf.tar.gz" \
             make install && \
             rm -rf "${PWD}/pnetcdf"
 
-# CESM dependencies
-ENV CCS_CONFIG_TAG=ccs_config_cesm0.0.88
-ENV CMEPS_TAG=cmeps0.14.47
-ENV CDEPS_TAG=cdeps1.0.26
-ENV CPL7_TAG=cpl77.0.8
-ENV SHARE_TAG=share1.0.18
-ENV MCT_TAG=MCT_2.11.0
-ENV PARALLELIO_TAG=pio2_6_2
-
-RUN git clone -b ${CCS_CONFIG_TAG} https://github.com/ESMCI/ccs_config_cesm /src/ccs_config && \
-    git clone -b ${CMEPS_TAG} https://github.com/ESCOMP/CMEPS.git /src/components/cmeps && \
-    git clone -b ${CDEPS_TAG} https://github.com/ESCOMP/CDEPS.git /src/components/cdeps && \
-    git clone -b ${CPL7_TAG} https://github.com/ESCOMP/CESM_CPL7andDataComps /src/components/cpl7 && \
-    git clone -b ${SHARE_TAG} https://github.com/ESCOMP/CESM_share /src/share && \
-    git clone -b ${MCT_TAG} https://github.com/MCSclimate/MCT /src/libraries/mct && \
-    git clone -b ${PARALLELIO_TAG} https://github.com/NCAR/ParallelIO /src/libraries/parallelio && \
-    mkdir -p /storage/timings
-
 ARG CIME_BRANCH=master
 ARG CIME_REPO=https://github.com/esmci/cime
 
@@ -103,16 +88,14 @@ RUN git clone -b ${CIME_BRANCH} ${CIME_REPO} /src/cime
 
 # General variables
 ENV USER=root
-ENV LOGNAME=container
+ENV LOGNAME=root
 ENV ESMFMKFILE=/opt/conda/lib/esmf.mk
+ENV SRC_PATH=/src
 
-WORKDIR /src/cime
+WORKDIR /src
 
 COPY .cime /root/.cime
 COPY entrypoint.sh /entrypoint.sh
-
-# TODO: REMOVE trigger
-ENV TRIGGER=0
 
 ENTRYPOINT [ "/entrypoint.sh" ]
 

@@ -16,7 +16,7 @@ class TestManageAndQuery(base.BaseTestCase):
 
     def _run_and_assert_query_testlist(self, extra_args=""):
         """Ensure that query_testlist runs successfully with the given extra arguments"""
-        files = Files()
+        files = Files(self._driver)
         testlist_drv = files.get_value("TESTS_SPEC_FILE", {"component": "drv"})
 
         self.run_cmd_assert_result(
