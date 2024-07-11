@@ -16,6 +16,8 @@ class Compsets(GenericXML):
             files = Files()
         schema = files.get_schema("COMPSETS_SPEC_FILE")
         GenericXML.__init__(self, infile, schema=schema)
+        self._index = 0
+        self._compsets = None
 
     def get_compset_match(self, name):
         """
@@ -108,3 +110,23 @@ class Compsets(GenericXML):
         for comp in compset_nodes:
             longnames.append(self.text(self.get_child("lname", root=comp)))
         return longnames
+
+    def __iter__(self):
+        self._index = 0
+        self._compsets = self.get_children("compset")
+
+        return self
+
+    def __next__(self):
+        if self._index >= len(self._compsets):
+            raise StopIteration()
+
+        value = self._compsets[self._index]
+
+        alias = self.text(self.get_child("alias", root=value))
+
+        lname = self.text(self.get_child("lname", root=value))
+
+        self._index += 1
+
+        return alias, lname

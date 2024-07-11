@@ -645,7 +645,6 @@
       <value lib="pio">$CIMEROOT/CIME/build_scripts/buildlib.pio</value>
       <value lib="mct">$CIMEROOT/CIME/build_scripts/buildlib.mct</value>
       <value lib="csm_share">$SRCROOT/share/buildlib.csm_share</value>
-      <value lib="csm_share_cpl7">$SRCROOT/components/cpl7/buildlib.csm_share_cpl7</value>
       <value lib="mpi-serial">$CIMEROOT/CIME/build_scripts/buildlib.mpi-serial</value>
       <value lib="cprnc">$CIMEROOT/CIME/build_scripts/buildlib.cprnc</value>
     </values>

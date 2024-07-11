@@ -64,6 +64,7 @@ class BaseTestCase(unittest.TestCase):
         self._cprnc = self.MACHINE.get_value("CCSM_CPRNC")
         customize_path = os.path.join(utils.get_src_root(), "cime_config", "customize")
         self._config = Config.load(customize_path)
+        self._driver = utils.get_cime_default_driver()
 
     def tearDown(self):
         self.kill_subprocesses()
@@ -208,8 +209,7 @@ class BaseTestCase(unittest.TestCase):
         the order of the returned list is not guaranteed to match the order of the arguments.
         """
         # All stub model not supported in nuopc driver
-        driver = utils.get_cime_default_driver()
-        if driver == "nuopc" and "cime_developer" in extra_args:
+        if self._driver == "nuopc" and "cime_developer" in extra_args:
             extra_args.append(
                 " ^SMS_Ln3.T42_T42.S ^PRE.f19_f19.ADESP_TEST ^PRE.f19_f19.ADESP ^DAE.ww3a.ADWAV ^IRT_N2_Vmct_Ln9.f19_g16_rx1.A"
             )

@@ -60,9 +60,10 @@ def buildlib(bldroot, installpath, case):
 
     config = Config.load(customize_path)
 
-    mct_path = config.mct_path.format(srcroot=srcroot)
+    mpi_serial_path = config.mpi_serial_path.format(srcroot=srcroot)
+    print(f"mpi_serial_path is {mpi_serial_path}")
 
-    for _file in glob.iglob(os.path.join(mct_path, "mpi-serial", "*.h")):
+    for _file in glob.iglob(os.path.join(mpi_serial_path, "*.h")):
         copyifnewer(_file, os.path.join(bldroot, os.path.basename(_file)))
 
     gmake_opts = "-f {} ".format(os.path.join(caseroot, "Tools", "Makefile"))
@@ -79,10 +80,10 @@ def buildlib(bldroot, installpath, case):
     run_bld_cmd_ensure_logging(cmd, logger)
 
     # Now we run the mpi-serial make command
-    gmake_opts = "-f {} ".format(os.path.join(mct_path, "mpi-serial", "Makefile"))
+    gmake_opts = "-f {} ".format(os.path.join(bldroot, "Makefile"))
     gmake_opts += " -C {} ".format(bldroot)
     gmake_opts += " -j {} ".format(case.get_value("GMAKE_J"))
-    gmake_opts += " SRCDIR={} ".format(os.path.join(mct_path))
+    gmake_opts += " SRCDIR={} ".format(os.path.join(mpi_serial_path))
 
     cmd = "{} {}".format(gmake_cmd, gmake_opts)
     run_bld_cmd_ensure_logging(cmd, logger)
