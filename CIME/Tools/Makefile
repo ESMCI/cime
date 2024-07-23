@@ -64,12 +64,6 @@ else
    DEBUGDIR = nodebug
 endif
 
-ifeq ($(strip $(USE_ESMF_LIB)), TRUE)
-   ESMFDIR = esmf
-else
-   ESMFDIR = noesmf
-endif
-
 SLIBS ?= $(USER_SLIBS)
 
 ifeq ($(strip $(USE_FMS)), TRUE)
@@ -114,7 +108,7 @@ else
 endif
 
 ifeq (,$(SHAREDPATH))
-  SHAREDPATH = $(COMPILER)/$(MPILIB)/$(DEBUGDIR)/$(THREADDIR)/$(COMP_INTERFACE)
+  SHAREDPATH = $(COMPILER)/$(MPILIB)/$(DEBUGDIR)/$(THREADDIR)
   INSTALL_SHAREDPATH = $(EXEROOT)/$(SHAREDPATH)
 endif
 
@@ -126,22 +120,22 @@ ifdef USER_INCLDIR
   INCLDIR += $(USER_INCLDIR)
 endif
 
-ifeq ($(COMP_INTERFACE), nuopc)
-   CPPDEFS += -DNUOPC_INTERFACE
-   INCLDIR += -I$(SHAREDLIBROOT)/$(SHAREDPATH)/CDEPS/fox/include -I$(SHAREDLIBROOT)/$(SHAREDPATH)/CDEPS/dshr
-   # FoX libraries are provided and built by CDEPS
-   FoX_LIBS := -L$(SHAREDLIBROOT)/$(SHAREDPATH)/CDEPS/fox/lib -lFoX_dom -lFoX_sax -lFoX_utils -lFoX_fsys -lFoX_wxml -lFoX_common -lFoX_fsys
-   ULIBS += -L$(SHAREDLIBROOT)/$(SHAREDPATH)/CDEPS/dshr -ldshr -L$(SHAREDLIBROOT)/$(SHAREDPATH)/CDEPS/streams -lstreams
-   SLIBS += $(FoX_LIBS)
-else
-   CPPDEFS += -DMCT_INTERFACE
+ifdef FSTDLIB_PKGCONFIG
+  STDLIB_INC  := `pkg-config --cflags fortran_stdlib`
+  STDLIB_LIBS := `pkg-config --libs fortran_stdlib`
+  INCLDIR += $(STDLIB_INC)
+  SLIBS += $(STDLIB_LIBS)
 endif
 
-ifeq ($(PIO_VERSION),2)
-  CPPDEFS += -DPIO2
-else
-  CPPDEFS += -DPIO1
-endif
+
+CPPDEFS += -DNUOPC_INTERFACE
+INCLDIR += -I$(SHAREDLIBROOT)/$(SHAREDPATH)/CDEPS/fox/include -I$(SHAREDLIBROOT)/$(SHAREDPATH)/CDEPS/dshr
+# FoX libraries are provided and built by CDEPS
+FoX_LIBS := -L$(SHAREDLIBROOT)/$(SHAREDPATH)/CDEPS/fox/lib -lFoX_dom -lFoX_sax -lFoX_utils -lFoX_fsys -lFoX_wxml -lFoX_common -lFoX_fsys
+ULIBS += -L$(SHAREDLIBROOT)/$(SHAREDPATH)/CDEPS/dshr -ldshr -L$(SHAREDLIBROOT)/$(SHAREDPATH)/CDEPS/streams -lstreams
+SLIBS += $(FoX_LIBS)
+
+CPPDEFS += -DPIO2
 
 # Not clear how to escape commas for libraries with their own configure
 # script, and they don't need this defined anyway, so leave this out of
@@ -350,7 +344,7 @@ else
 endif
 
 #===============================================================================
-# Set config args for pio and mct to blank and then enable serial
+# Set config args for pio to blank and then enable serial
 #===============================================================================
 ifndef CONFIG_ARGS
   CONFIG_ARGS :=
@@ -363,7 +357,7 @@ ifeq  ($(findstring pio,$(COMP_NAME)),pio)
 endif
 
 #===============================================================================
-# MPI-serial library (part of MCT)
+# MPI-serial library
 #===============================================================================
 
 ifeq ($(strip $(MPILIB)), mpi-serial)
@@ -374,7 +368,7 @@ ifeq ($(strip $(MPILIB)), mpi-serial)
   MPICC	  := $(SCC)
   MPICXX  := $(SCXX)
   ifndef MPI_SERIAL_PATH
-    CONFIG_ARGS += MCT_PATH=$(SHAREDLIBROOT)/$(SHAREDPATH)/mct/mpi-serial
+    CONFIG_ARGS += MCT_PATH=$(SHAREDLIBROOT)/$(SHAREDPATH)/mpi-serial
   else
     CONFIG_ARGS += MCT_PATH=$(MPI_SERIAL_PATH)
     INC_MPI := $(MPI_SERIAL_PATH)/include
@@ -391,14 +385,14 @@ else
 endif
 LD := $(MPIFC)
 
-CSM_SHR_INCLUDE:=$(INSTALL_SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/$(NINST_VALUE)/include
+CSM_SHR_INCLUDE:=$(INSTALL_SHAREDPATH)/include
 # This is needed so that dependancies are found
 VPATH+=$(CSM_SHR_INCLUDE)
 
 #===============================================================================
 # Set include paths (needed after override for any model specific builds below)
 #===============================================================================
-INCLDIR += -I$(INSTALL_SHAREDPATH)/include -I$(INSTALL_SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/$(NINST_VALUE)/include -I$(INSTALL_SHAREDPATH)/finclude
+INCLDIR += -I$(INSTALL_SHAREDPATH)/include -I$(INSTALL_SHAREDPATH)/include -I$(INSTALL_SHAREDPATH)/finclude
 
 ifeq ($(NETCDF_SEPARATE), FALSE)
   INCLDIR += -I$(INC_NETCDF)
@@ -425,7 +419,6 @@ ifeq ($(COMP_NAME),driver)
   INCLDIR += -I$(EXEROOT)/atm/obj -I$(EXEROOT)/ice/obj -I$(EXEROOT)/ocn/obj -I$(EXEROOT)/glc/obj -I$(EXEROOT)/rof/obj -I$(EXEROOT)/wav/obj -I$(EXEROOT)/esp/obj -I$(EXEROOT)/iac/obj
 # nagfor and gcc have incompatible LDFLAGS.
 # nagfor requires the weird "-Wl,-Wl,," syntax.
-# If done in cmake_macros, we break MCT.
   ifeq ($(strip $(COMPILER)),nag)
      ifeq ($(NETCDF_SEPARATE), false)
        SLIBS += -Wl,-Wl,,-rpath=$(LIB_NETCDF)
@@ -446,10 +439,6 @@ else
        endif
     endif
   endif
-endif
-
-ifndef MCT_LIBDIR
-  MCT_LIBDIR=$(INSTALL_SHAREDPATH)/lib
 endif
 
 ifdef PIO_LIBDIR
@@ -480,9 +469,6 @@ endif
 
 INCLDIR +=	-I$(INSTALL_SHAREDPATH)/include
 
-#
-# Use the MCT dir for the cache for all configure calls because it is the first one
-#
 CFLAGS+=$(CPPDEFS)
 CXXFLAGS+=$(CPPDEFS)
 CONFIG_ARGS +=	CC="$(CC)" FC="$(FC)" MPICC="$(MPICC)" \
@@ -493,7 +479,6 @@ CONFIG_ARGS +=	CC="$(CC)" FC="$(FC)" MPICC="$(MPICC)" \
 ifeq ($(NETCDF_SEPARATE), FALSE)
   CONFIG_ARGS += NETCDF_PATH=$(NETCDF_PATH)
 else ifeq ($(NETCDF_SEPARATE), TRUE)
-  # The mct library needs the NetCDF_C library
   CONFIG_ARGS += NETCDF_PATH=$(NETCDF_C_PATH)
 endif
 
@@ -555,7 +540,7 @@ endif
 
 ifdef MPAS_LIBDIR
   ABS_INSTALL_SHAREDPATH = $(abspath $(INSTALL_SHAREDPATH))
-  ABS_ESMF_PATH = $(abspath $(INSTALL_SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/$(NINST_VALUE))
+  ABS_ESMF_PATH = $(abspath $(INSTALL_SHAREDPATH))
   ifeq ($(PIO_VERSION),2)
     PIODEF := -DUSE_PIO2
   endif
@@ -637,7 +622,7 @@ ifndef MLIBS
 endif
 
 #------------------------------------------------------------------------------
-# Drive configure scripts for support libraries (mct)
+# Drive configure scripts for support libraries
 #------------------------------------------------------------------------------
 
 ifneq ("$(wildcard $(SRCROOT)/libraries)","")
@@ -646,55 +631,29 @@ else
     EXTERN_PATH = $(SRCROOT)/externals
 endif
 
-$(SHAREDLIBROOT)/$(SHAREDPATH)/mct/Makefile.conf:
+$(SHAREDLIBROOT)/$(SHAREDPATH)/mpi-serial/Makefile.conf:
 	@echo "SHAREDLIBROOT |$(SHAREDLIBROOT)| SHAREDPATH |$(SHAREDPATH)|"; \
-	$(CONFIG_SHELL) $(EXTERN_PATH)/mct/configure $(CONFIG_ARGS) --srcdir $(EXTERN_PATH)/mct
-
-$(SHAREDLIBROOT)/$(SHAREDPATH)/mct/mpi-serial/Makefile.conf:
-	@echo "SHAREDLIBROOT |$(SHAREDLIBROOT)| SHAREDPATH |$(SHAREDPATH)|"; \
-	$(CONFIG_SHELL) $(EXTERN_PATH)/mct/mpi-serial/configure $(CONFIG_ARGS) --srcdir $(EXTERN_PATH)/mct/mpi-serial
+	$(CONFIG_SHELL) $(EXTERN_PATH)/mpi-serial/configure $(CONFIG_ARGS) --srcdir $(EXTERN_PATH)/mpi-serial
 
 ifndef IO_LIB_SRCROOT
   ifndef PIO_SRCROOT
     PIO_SRCROOT = $(EXTERN_PATH)
   endif
 
-  ifeq ($(PIO_VERSION),2)
-    PIO_SRC_DIR = $(PIO_SRCROOT)/parallelio
-  else
-    ifneq ("$(wildcard $(PIO_SRCROOT)/pio1/pio)", "")
-      PIO_SRC_DIR = $(PIO_SRCROOT)/pio1
-    else
-      PIO_SRC_DIR = $(PIO_SRCROOT)/pio1/pio
-    endif
-  endif
+  PIO_SRC_DIR = $(PIO_SRCROOT)/parallelio
 else
   PIO_SRC_DIR = $(IO_LIB_SRCROOT)/$(IO_LIB_v$(PIO_VERSION)_SRCDIR)
 endif
 
-ifeq ($(PIO_VERSION),2)
 # This is a pio2 library
-  PIOLIB = $(PIO_LIBDIR)/libpiof.a $(PIO_LIBDIR)/libpioc.a
-  PIOLIBNAME = -lpiof -lpioc
-else
-# This is a pio1 library
-  PIOLIB = $(PIO_LIBDIR)/libpio.a
-  PIOLIBNAME = -lpio
-endif
-
-MCTLIBS = $(MCT_LIBDIR)/libmct.a $(MCT_LIBDIR)/libmpeu.a
+PIOLIB = $(PIO_LIBDIR)/libpiof.a $(PIO_LIBDIR)/libpioc.a
+PIOLIBNAME = -lpiof -lpioc
 
 GPTLLIB = $(GPTL_LIBDIR)/libgptl.a
 
-ULIBS += -L$(INSTALL_SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/$(NINST_VALUE)/lib
+ULIBS += -L$(INSTALL_SHAREDPATH)/lib
 
-ifneq ($(COMP_INTERFACE), nuopc)
-  ifneq ("$(wildcard $(SRCROOT)/components/cpl7)","")
-    ULIBS += -lcsm_share_cpl7
-  endif
-endif
-
-ULIBS += -lcsm_share -L$(INSTALL_SHAREDPATH)/lib $(PIOLIBNAME) -lgptl -lmct -lmpeu
+ULIBS += -lcsm_share -L$(INSTALL_SHAREDPATH)/lib $(PIOLIBNAME) -lgptl
 
 #------------------------------------------------------------------------------
 # Drive cmake script for cism and pio
@@ -867,11 +826,11 @@ ifeq ($(USE_SHARED_CLM),FALSE)
   INCLDIR += -I$(LNDOBJDIR)
 else
   LNDLIB := libclm.a
-  LNDOBJDIR = $(SHAREDLIBROOT)/$(SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/clm/obj
-  LNDLIBDIR = $(EXEROOT)/$(SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/lib
-  INCLDIR += -I$(INSTALL_SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/include
+  LNDOBJDIR = $(SHAREDLIBROOT)/$(SHAREDPATH)/clm/obj
+  LNDLIBDIR = $(EXEROOT)/$(SHAREDPATH)/lib
+  INCLDIR += -I$(INSTALL_SHAREDPATH)/include
   ifeq ($(COMP_NAME),clm)
-    INCLUDE_DIR = $(INSTALL_SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/include
+    INCLUDE_DIR = $(INSTALL_SHAREDPATH)/include
   endif
 endif
 ifeq ($(LND_PRESENT),TRUE)
@@ -909,12 +868,8 @@ endif
 
 # libcsm_share.a is in ULIBDEP, but -lcsm_share is in ULIBS rather than CLIBS,
 # so this needs to be added after creating CLIBS above
-ifeq ($(CIME_MODEL),cesm)
-  ifneq ($(COMP_INTERFACE), nuopc)
-    CSMSHARELIB_CPL7 = $(INSTALL_SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/$(NINST_VALUE)/lib/libcsm_share_cpl7.a
-  endif
-endif
-CSMSHARELIB = $(INSTALL_SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/$(NINST_VALUE)/lib/libcsm_share.a
+
+CSMSHARELIB = $(INSTALL_SHAREDPATH)/lib/libcsm_share.a
 ULIBDEP += $(CSMSHARELIB)
 
 GENF90 ?= $(CIMEROOT)/CIME/non_py/externals/genf90/genf90.pl
@@ -944,16 +899,12 @@ ifeq ($(MPILIB),mpi-serial)
   endif
 endif
 
-$(MCTLIBS)  : $(MPISERIAL)
-
 $(PIOLIB) : $(MPISERIAL) $(GPTLLIB)
 
-$(CSMSHARELIB):  $(MCTLIBS) $(PIOLIB) $(GPTLLIB)
+$(CSMSHARELIB): $(PIOLIB) $(GPTLLIB)
 
 ifneq ($(findstring csm_share,$(COMP_NAME)),csm_share)
-  $(OBJS):  $(CSMSHARELIB) $(CSMSHARELIB_CPL7)
-else ifeq ($(COMP_NAME),csm_share_cpl7)
-  complib: install_lib_cpl7
+  $(OBJS):  $(CSMSHARELIB)
 else
   complib: install_lib
 endif
@@ -961,10 +912,6 @@ endif
 install_lib: $(COMPLIB)
 	$(CP) -p $(COMPLIB) $(CSMSHARELIB)
 	$(CP) -p *.$(MOD_SUFFIX) *.h $(INCLUDE_DIR)
-
-install_lib_cpl7: $(COMPLIB)
-	$(CP) -p $(COMPLIB) $(CSMSHARELIB_CPL7)
-	$(CP) -p *.$(MOD_SUFFIX) $(INCLUDE_DIR)
 
 # This rule writes the include flags and the link flags used in the $(EXEC_SE) rule below
 # It expects the variable OUTPUT_FILE to be defined
@@ -983,7 +930,7 @@ write_include_and_link_flags:
 	@echo CIME_F90_LDFLAGS = $(F90_LDFLAGS) >> $(OUTPUT_FILE)
 
 # If variables are added to this rule, similar changes should be made in the write_link_flags rule above
-$(EXEC_SE): $(OBJS) $(ULIBDEP) $(CSMSHARELIB) $(MCTLIBS) $(PIOLIB) $(GPTLLIB)
+$(EXEC_SE): $(OBJS) $(ULIBDEP) $(CSMSHARELIB) $(PIOLIB) $(GPTLLIB)
 	$(LD) -o $(EXEC_SE) $(OBJS) $(CLIBS) $(ULIBS) $(SLIBS) $(MLIBS) $(F90_LDFLAGS)
 
 $(COMPLIB): $(OBJS)
@@ -1036,8 +983,7 @@ clean_dependslnd:
 	$(RM) -f $(LNDOBJDIR)/Srcfiles
 
 clean_dependscsmshare:
-	$(RM) -f $(SHAREDLIBROOT)/$(SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/$(NINST_VALUE)/csm_share/Srcfiles
-	$(RM) -f $(SHAREDLIBROOT)/$(SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/$(NINST_VALUE)/csm_share_cpl7/Srcfiles
+	$(RM) -f $(SHAREDLIBROOT)/$(SHAREDPATH)/csm_share/Srcfiles
 
 clean_depends: clean_dependsatm clean_dependscpl clean_dependswav clean_dependsglc clean_dependsice clean_dependsrof clean_dependslnd clean_dependscsmshare clean_dependsesp clean_dependsiac
 
@@ -1083,16 +1029,11 @@ cleanlnd:
 
 cleancsmshare:
 	$(RM) -f $(CSMSHARELIB)
-	$(RM) -fr $(SHAREDLIBROOT)/$(SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/$(NINST_VALUE)/csm_share
-	$(RM) -fr $(SHAREDLIBROOT)/$(SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/$(NINST_VALUE)/csm_share_cpl7
+	$(RM) -fr $(SHAREDLIBROOT)/$(SHAREDPATH)/csm_share
 
 cleanpio:
 	$(RM) -f $(PIO_LIBDIR)/libpio*
 	$(RM) -fr $(SHAREDLIBROOT)/$(SHAREDPATH)/pio
-
-cleanmct:
-	$(RM) -f $(MCTLIBS)
-	$(RM) -fr $(SHAREDLIBROOT)/$(SHAREDPATH)/mct
 
 cleangptl:
 	$(RM) -f $(GPTLLIB)
@@ -1100,7 +1041,7 @@ cleangptl:
 
 clean: cleanatm cleanocn cleanwav cleanglc cleanice cleanrof cleanlnd cleanesp cleaniac
 
-realclean: clean cleancsmshare cleanpio cleanmct cleangptl
+realclean: clean cleancsmshare cleanpio cleangptl
 
 # the if-tests prevent DEPS files from being created when they're not needed
 ifneq ($(MAKECMDGOALS), db_files)

@@ -368,23 +368,13 @@ class TestCreateNewcase(base.BaseTestCase):
         cls._testdirs.append(testdir)
 
         if self._config.test_mode == "cesm":
-            if utils.get_cime_default_driver() == "nuopc":
-                pesfile = os.path.join(
-                    utils.get_src_root(),
-                    "components",
-                    "cmeps",
-                    "cime_config",
-                    "config_pes.xml",
-                )
-            else:
-                pesfile = os.path.join(
-                    utils.get_src_root(),
-                    "components",
-                    "cpl7",
-                    "driver",
-                    "cime_config",
-                    "config_pes.xml",
-                )
+            pesfile = os.path.join(
+                utils.get_src_root(),
+                "components",
+                "cmeps",
+                "cime_config",
+                "config_pes.xml",
+            )
         else:
             pesfile = os.path.join(
                 utils.get_src_root(), "driver-mct", "cime_config", "config_pes.xml"
