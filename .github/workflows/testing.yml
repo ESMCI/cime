@@ -117,6 +117,8 @@ jobs:
 
           pip install -r test-requirements.txt
 
+          export DEBUG=true
+
           source /entrypoint.sh
 
           # GitHub runner home is different than container
