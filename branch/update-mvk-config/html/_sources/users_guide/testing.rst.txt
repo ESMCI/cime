@@ -296,7 +296,6 @@ Variable   Default  Type Description
 component           str  The main component.                                 
 components []       list Components that require namelist customization.     
 ninst      30       int  The number of instances.                            
-critical   13       int  The critical value for rejecting the null hypothese.
 var_set    default  str  Name of the variable set to analyze.                
 ref_case   Baseline str  Name of the reference case.                         
 test_case  Test     str  Name of the test case.                              

@@ -88,7 +88,8 @@
            <div itemprop="articleBody">
              
   <h1>Source code for CIME.config</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">re</span>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">importlib.machinery</span>
@@ -99,6 +100,8 @@
 <span class="kn">from</span> <span class="nn">CIME</span> <span class="kn">import</span> <span class="n">utils</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">DEFAULT_CUSTOMIZE_PATH</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">get_src_root</span><span class="p">(),</span> <span class="s2">&quot;cime_config&quot;</span><span class="p">,</span> <span class="s2">&quot;customize&quot;</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="print_rst_header">
@@ -306,6 +309,13 @@
 <div class="viewcode-block" id="Config">
 <a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.config.Config">[docs]</a>
 <span class="k">class</span> <span class="nc">Config</span><span class="p">(</span><span class="n">ConfigBase</span><span class="p">):</span>
+<div class="viewcode-block" id="Config.load_defaults">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.config.Config.load_defaults">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">load_defaults</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">DEFAULT_CUSTOMIZE_PATH</span><span class="p">)</span></div>
+
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
@@ -477,13 +487,18 @@
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_attribute</span><span class="p">(</span>
             <span class="s2">&quot;driver_choices&quot;</span><span class="p">,</span>
-            <span class="p">(</span><span class="s2">&quot;mct&quot;</span><span class="p">,</span> <span class="s2">&quot;nuopc&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;nuopc&quot;</span><span class="p">,),</span>
             <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Sets the available driver choices for the model.&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_attribute</span><span class="p">(</span>
             <span class="s2">&quot;mct_path&quot;</span><span class="p">,</span>
             <span class="s2">&quot;</span><span class="si">{srcroot}</span><span class="s2">/libraries/mct&quot;</span><span class="p">,</span>
             <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Sets the path to the mct library.&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_attribute</span><span class="p">(</span>
+            <span class="s2">&quot;mpi_serial_path&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;</span><span class="si">{srcroot}</span><span class="s2">/libraries/mpi-serial&quot;</span><span class="p">,</span>
+            <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Sets the path to the mpi-serial library.&quot;</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 </pre></div>

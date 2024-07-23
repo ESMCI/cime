@@ -111,7 +111,7 @@
 
     <span class="k">def</span> <span class="nf">_run_and_assert_query_testlist</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">extra_args</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Ensure that query_testlist runs successfully with the given extra arguments&quot;&quot;&quot;</span>
-        <span class="n">files</span> <span class="o">=</span> <span class="n">Files</span><span class="p">()</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="n">Files</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_driver</span><span class="p">)</span>
         <span class="n">testlist_drv</span> <span class="o">=</span> <span class="n">files</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;TESTS_SPEC_FILE&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;component&quot;</span><span class="p">:</span> <span class="s2">&quot;drv&quot;</span><span class="p">})</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">run_cmd_assert_result</span><span class="p">(</span>

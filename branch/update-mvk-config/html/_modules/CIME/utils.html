@@ -92,6 +92,7 @@
 <span class="sd">Common functions used by cime python scripts</span>
 <span class="sd">Warning: you cannot use CIME Classes in this module as it causes circular dependencies</span>
 <span class="sd">&quot;&quot;&quot;</span>
+
 <span class="kn">import</span> <span class="nn">shlex</span>
 <span class="kn">import</span> <span class="nn">configparser</span>
 <span class="kn">import</span> <span class="nn">io</span><span class="o">,</span> <span class="nn">logging</span><span class="o">,</span> <span class="nn">gzip</span><span class="o">,</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">time</span><span class="o">,</span> <span class="nn">re</span><span class="o">,</span> <span class="nn">shutil</span><span class="o">,</span> <span class="nn">glob</span><span class="o">,</span> <span class="nn">string</span><span class="o">,</span> <span class="nn">random</span><span class="o">,</span> <span class="nn">importlib</span><span class="o">,</span> <span class="nn">fnmatch</span>
@@ -615,7 +616,7 @@
 
     <span class="kn">from</span> <span class="nn">CIME.config</span> <span class="kn">import</span> <span class="n">Config</span>
 
-    <span class="n">config</span> <span class="o">=</span> <span class="n">Config</span><span class="o">.</span><span class="n">instance</span><span class="p">()</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">Config</span><span class="o">.</span><span class="n">load_defaults</span><span class="p">()</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">driver</span><span class="p">:</span>
         <span class="n">driver</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">driver_default</span>
@@ -1926,7 +1927,7 @@
 
 <div class="viewcode-block" id="configure_logging">
 <a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.utils.configure_logging">[docs]</a>
-<span class="k">def</span> <span class="nf">configure_logging</span><span class="p">(</span><span class="n">verbose</span><span class="p">,</span> <span class="n">debug</span><span class="p">,</span> <span class="n">silent</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">configure_logging</span><span class="p">(</span><span class="n">verbose</span><span class="p">,</span> <span class="n">debug</span><span class="p">,</span> <span class="n">silent</span><span class="p">,</span> <span class="o">**</span><span class="n">_</span><span class="p">):</span>
     <span class="n">root_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
 
     <span class="n">verbose_formatter</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span>

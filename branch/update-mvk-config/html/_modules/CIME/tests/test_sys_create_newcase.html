@@ -489,23 +489,13 @@
         <span class="bp">cls</span><span class="o">.</span><span class="n">_testdirs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">testdir</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">test_mode</span> <span class="o">==</span> <span class="s2">&quot;cesm&quot;</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_cime_default_driver</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;nuopc&quot;</span><span class="p">:</span>
-                <span class="n">pesfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                    <span class="n">utils</span><span class="o">.</span><span class="n">get_src_root</span><span class="p">(),</span>
-                    <span class="s2">&quot;components&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;cmeps&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;cime_config&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;config_pes.xml&quot;</span><span class="p">,</span>
-                <span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">pesfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                    <span class="n">utils</span><span class="o">.</span><span class="n">get_src_root</span><span class="p">(),</span>
-                    <span class="s2">&quot;components&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;cpl7&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;driver&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;cime_config&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;config_pes.xml&quot;</span><span class="p">,</span>
-                <span class="p">)</span>
+            <span class="n">pesfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="n">utils</span><span class="o">.</span><span class="n">get_src_root</span><span class="p">(),</span>
+                <span class="s2">&quot;components&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;cmeps&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;cime_config&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;config_pes.xml&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">pesfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
                 <span class="n">utils</span><span class="o">.</span><span class="n">get_src_root</span><span class="p">(),</span> <span class="s2">&quot;driver-mct&quot;</span><span class="p">,</span> <span class="s2">&quot;cime_config&quot;</span><span class="p">,</span> <span class="s2">&quot;config_pes.xml&quot;</span>

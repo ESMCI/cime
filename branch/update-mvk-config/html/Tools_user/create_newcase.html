@@ -161,7 +161,7 @@ usage: create_newcase [-h] [-d] [-v] [-s] --case CASENAME --compset COMPSET
                       [--output-root OUTPUT_ROOT] [--run-unsupported]
                       [--walltime WALLTIME] [-q QUEUE]
                       [--handle-preexisting-dirs {a,r,u}] [-i INPUT_DIR]
-                      [--driver {mct,nuopc}] [-n]
+                      [--driver {nuopc}] [-n]
                       [--extra-machines-dir EXTRA_MACHINES_DIR]
                       [--case-group CASE_GROUP]
                       [--ngpus-per-node NGPUS_PER_NODE] [--gpu-type GPU_TYPE]
@@ -240,7 +240,7 @@ options:
                         This can be useful if you need to run create_newcase non-iteractively.
   -i INPUT_DIR, --input-dir INPUT_DIR
                         Use a non-default location for input files. This will change the xml value of DIN_LOC_ROOT.
-  --driver {mct,nuopc}  Override the top level driver type and use this one (changes xml variable COMP_INTERFACE) [this is an advanced option]
+  --driver {nuopc}      Override the top level driver type and use this one (changes xml variable COMP_INTERFACE) [this is an advanced option]
   -n, --non-local       Use when you&#39;ve requested a machine that you aren&#39;t on. Will reduce errors for missing directories etc.
   --extra-machines-dir EXTRA_MACHINES_DIR
                         Optional path to a directory containing one or more of:

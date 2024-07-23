@@ -397,7 +397,7 @@
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Query supported model grids for </span><span class="si">{}</span><span class="s2"> model.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cime_model</span><span class="p">),</span>
     <span class="p">)</span>
     <span class="c1"># same for all comp_interfaces</span>
-    <span class="n">config_file</span> <span class="o">=</span> <span class="n">files</span><span class="p">[</span><span class="s2">&quot;mct&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MACHINES_SPEC_FILE&quot;</span><span class="p">)</span>
+    <span class="n">config_file</span> <span class="o">=</span> <span class="n">files</span><span class="p">[</span><span class="n">config</span><span class="o">.</span><span class="n">driver_default</span><span class="p">]</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MACHINES_SPEC_FILE&quot;</span><span class="p">)</span>
     <span class="n">expect</span><span class="p">(</span>
         <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">config_file</span><span class="p">),</span>
         <span class="s2">&quot;Cannot find config_file </span><span class="si">{}</span><span class="s2"> on disk&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">config_file</span><span class="p">),</span>
