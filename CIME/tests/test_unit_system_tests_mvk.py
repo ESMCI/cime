@@ -339,7 +339,6 @@ def test_config(case, run_dir, base_dir, evv_lib_dir):
 component = "new-comp"
 components = ["new-comp", "second-comp"]
 ninst = 8
-critical = 32
 var_set = "special"
 ref_case = "Reference"
 test_case = "Default"
@@ -368,7 +367,6 @@ test_case = "Default"
                     "ref-dir": f"{baseline_dir}/",
                     "var-set": "special",
                     "ninst": 8,
-                    "critical": 32,
                     "component": "new-comp",
                 }
             }
@@ -586,7 +584,6 @@ test_case = "Default"
                     "ref-dir": f"{baseline_dir}/",
                     "var-set": "default",
                     "ninst": 30,
-                    "critical": 13,
                     "component": "eam",
                 }
             }

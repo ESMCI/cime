@@ -44,9 +44,6 @@ class MVKConfig(ConfigBase):
         )
         self._set_attribute("ninst", 30, "The number of instances.")
         self._set_attribute(
-            "critical", 13, "The critical value for rejecting the null hypothese."
-        )
-        self._set_attribute(
             "var_set", "default", "Name of the variable set to analyze."
         )
         self._set_attribute("ref_case", "Baseline", "Name of the reference case.")
@@ -94,7 +91,6 @@ class MVKConfig(ConfigBase):
             "ref-dir": base_dir,
             "var-set": self.var_set,
             "ninst": self.ninst,
-            "critical": self.critical,
             "component": self.component,
         }
 
