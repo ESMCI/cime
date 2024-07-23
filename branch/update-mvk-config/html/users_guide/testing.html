@@ -546,7 +546,7 @@ Note; do not use ‘-’ in the testmods directory name because it has a special
 <section id="methods">
 <span id="mvk-methods"></span><h5><span class="section-number">10.1.4.1.2. </span>Methods<a class="headerlink" href="#methods" title="Link to this heading"></a></h5>
 <p>Available methods for the MVK test type.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">test_config</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">run_dir</span><span class="p">,</span> <span class="n">base_dir</span><span class="p">,</span> <span class="n">evv_lib_dir</span><span class="p">):</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">evv_test_config</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">run_dir</span><span class="p">,</span> <span class="n">base_dir</span><span class="p">,</span> <span class="n">evv_lib_dir</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Configure the evv test.</span>
 
@@ -593,7 +593,7 @@ Note; do not use ‘-’ in the testmods directory name because it has a special
 <span class="n">component</span> <span class="o">=</span> <span class="s2">&quot;eam&quot;</span>
 <span class="n">components</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;eam&quot;</span><span class="p">,</span> <span class="s2">&quot;clm&quot;</span><span class="p">]</span>
 
-<span class="k">def</span> <span class="nf">test_config</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">run_dir</span><span class="p">,</span> <span class="n">base_dir</span><span class="p">,</span> <span class="n">evv_lib_dir</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">evv_test_config</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">run_dir</span><span class="p">,</span> <span class="n">base_dir</span><span class="p">,</span> <span class="n">evv_lib_dir</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">{</span>
         <span class="s2">&quot;module&quot;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">evv_lib_dir</span><span class="p">,</span> <span class="s2">&quot;extensions&quot;</span><span class="p">,</span> <span class="s2">&quot;kso.py&quot;</span><span class="p">),</span>
         <span class="s2">&quot;component&quot;</span><span class="p">:</span> <span class="n">component</span><span class="p">,</span>

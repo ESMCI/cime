@@ -162,9 +162,9 @@
         <span class="n">set_nml_variable</span><span class="p">(</span><span class="s2">&quot;seed_clock&quot;</span><span class="p">,</span> <span class="s2">&quot;.true.&quot;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="MVKConfig.test_config">
-<a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.mvk.MVKConfig.test_config">[docs]</a>
-    <span class="k">def</span> <span class="nf">test_config</span><span class="p">(</span>
+<div class="viewcode-block" id="MVKConfig.evv_test_config">
+<a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.mvk.MVKConfig.evv_test_config">[docs]</a>
+    <span class="k">def</span> <span class="nf">evv_test_config</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">run_dir</span><span class="p">,</span> <span class="n">base_dir</span><span class="p">,</span> <span class="n">evv_lib_dir</span>
     <span class="p">):</span>  <span class="c1"># pylint: disable=unused-argument</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Configure the evv test.</span>
@@ -334,7 +334,7 @@
 
             <span class="n">test_name</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">case_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
 
-            <span class="n">test_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">test_config</span><span class="p">(</span>
+            <span class="n">test_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">evv_test_config</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="p">,</span> <span class="n">run_dir</span><span class="p">,</span> <span class="n">base_dir</span><span class="p">,</span> <span class="n">EVV_LIB_DIR</span>
             <span class="p">)</span>
 
