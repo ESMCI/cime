@@ -144,7 +144,7 @@ def write_inst_nml(case, set_nml_variable, component, iinst):
     elif component == "secondary-comp":
         set_nml_variable("var2", "value2")
 
-def test_config(case, run_dir, base_dir, evv_lib_dir):
+def evv_test_config(case, run_dir, base_dir, evv_lib_dir):
     return {
         "module": os.path.join(evv_lib_dir, "extensions", "kso.py"),
         "component": "someother-comp"

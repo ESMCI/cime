@@ -67,7 +67,7 @@ class MVKConfig(ConfigBase):
         set_nml_variable("seed_custom", f"{iinst}")
         set_nml_variable("seed_clock", ".true.")
 
-    def test_config(
+    def evv_test_config(
         self, case, run_dir, base_dir, evv_lib_dir
     ):  # pylint: disable=unused-argument
         """Configure the evv test.
@@ -230,7 +230,7 @@ class MVK(SystemTestsCommon):
 
             test_name = "{}".format(case_name.split(".")[-1])
 
-            test_config = self._config.test_config(
+            test_config = self._config.evv_test_config(
                 self._case, run_dir, base_dir, EVV_LIB_DIR
             )
 

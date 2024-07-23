@@ -310,7 +310,7 @@ Available methods for the MVK test type.
 
 .. code-block::
 
-  def test_config(case, run_dir, base_dir, evv_lib_dir):
+  def evv_test_config(case, run_dir, base_dir, evv_lib_dir):
       """
       Configure the evv test.
       
@@ -366,7 +366,7 @@ A complex customization of the `MVK` :ref:`test type <TESTTYPE>` would be defini
   component = "eam"
   components = ["eam", "clm"]
 
-  def test_config(case, run_dir, base_dir, evv_lib_dir):
+  def evv_test_config(case, run_dir, base_dir, evv_lib_dir):
       return {
           "module": os.path.join(evv_lib_dir, "extensions", "kso.py"),
           "component": component,
