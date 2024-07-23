@@ -24,7 +24,7 @@ from evv4esm.__main__ import main as evv  # pylint: disable=import-error
 
 version = evv4esm.__version_info__
 
-assert version[0] <= 0 and version[1] <= 5, "Please install evv4esm less than 0.5.x"
+assert version >= (0, 5, 0), "Please install evv4esm greater or equal to 0.5.0"
 
 EVV_LIB_DIR = os.path.abspath(os.path.dirname(evv4esm.__file__))
 
