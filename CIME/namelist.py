@@ -1070,7 +1070,7 @@ class Namelist(object):
             ),
         )
         gn = string_in_list(group_name, self._groups)
-        if not gn:
+        if gn is None:
             gn = group_name
             self._groups[gn] = {}
 
