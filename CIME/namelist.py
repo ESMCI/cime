@@ -102,6 +102,7 @@ groups are separated by (optional) whitespace and comments, and nothing else.
 
 import re
 import collections
+from contextlib import contextmanager
 
 # Disable these because this is our standard setup
 # pylint: disable=wildcard-import,unused-wildcard-import
@@ -936,6 +937,13 @@ class Namelist(object):
                     self._groups[group_name][variable_name] = groups[group_name][
                         variable_name
                     ]
+
+    @contextmanager
+    def __call__(self, filename):
+        try:
+            yield self
+        finally:
+            self.write(filename)
 
     def clean_groups(self):
         self._groups = collections.OrderedDict()
