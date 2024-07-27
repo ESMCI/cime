@@ -106,11 +106,13 @@
 
 <div class="viewcode-block" id="print_rst_header">
 <a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.config.print_rst_header">[docs]</a>
-<span class="k">def</span> <span class="nf">print_rst_header</span><span class="p">(</span><span class="n">header</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">print_rst_header</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="n">anchor</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s1">&#39;&quot;&#39;</span><span class="p">):</span>
     <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="n">n</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">anchor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;.. _</span><span class="si">{</span><span class="n">anchor</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">separator</span> <span class="o">*</span> <span class="n">n</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="n">n</span><span class="p">)</span></div>
+    <span class="nb">print</span><span class="p">(</span><span class="n">separator</span> <span class="o">*</span> <span class="n">n</span><span class="p">)</span></div>
 
 
 
@@ -258,7 +260,7 @@
 <div class="viewcode-block" id="ConfigBase.print_variable_rst">
 <a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.config.ConfigBase.print_variable_rst">[docs]</a>
     <span class="k">def</span> <span class="nf">print_variable_rst</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">print_rst_header</span><span class="p">(</span><span class="s2">&quot;Variables&quot;</span><span class="p">)</span>
+        <span class="n">print_rst_header</span><span class="p">(</span><span class="s2">&quot;Variables&quot;</span><span class="p">,</span> <span class="n">anchor</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> Variables:&quot;</span><span class="p">)</span>
 
         <span class="n">headers</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;Variable&quot;</span><span class="p">,</span> <span class="s2">&quot;Default&quot;</span><span class="p">,</span> <span class="s2">&quot;Type&quot;</span><span class="p">,</span> <span class="s2">&quot;Description&quot;</span><span class="p">)</span>
 
@@ -273,7 +275,7 @@
 <div class="viewcode-block" id="ConfigBase.print_method_rst">
 <a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.config.ConfigBase.print_method_rst">[docs]</a>
     <span class="k">def</span> <span class="nf">print_method_rst</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">print_rst_header</span><span class="p">(</span><span class="s2">&quot;Methods&quot;</span><span class="p">)</span>
+        <span class="n">print_rst_header</span><span class="p">(</span><span class="s2">&quot;Methods&quot;</span><span class="p">,</span> <span class="n">anchor</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> Methods:&quot;</span><span class="p">)</span>
 
         <span class="n">methods</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getmembers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inspect</span><span class="o">.</span><span class="n">ismethod</span><span class="p">)</span>
 
@@ -296,6 +298,8 @@
         <span class="p">]</span>
 
         <span class="k">for</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">sig</span><span class="p">,</span> <span class="n">doc</span><span class="p">)</span> <span class="ow">in</span> <span class="n">child_methods</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">doc</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">continue</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;.. code-block::</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  def </span><span class="si">{</span><span class="n">name</span><span class="si">}{</span><span class="n">sig</span><span class="si">!s}</span><span class="s2">:&quot;</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;      &quot;&quot;&quot;&#39;</span><span class="p">)</span>

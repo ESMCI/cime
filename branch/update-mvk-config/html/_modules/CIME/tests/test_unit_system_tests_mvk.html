@@ -239,22 +239,28 @@
                 <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
 <span class="w">                    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">import os</span>
+<span class="sd">from CIME.namelist import Namelist</span>
+<span class="sd">from CIME.SystemTests.mvk import EVV_LIB_DIR</span>
 
 <span class="sd">component = &quot;new-comp&quot;</span>
 <span class="sd">components = [&quot;new-comp&quot;, &quot;secondary-comp&quot;]</span>
 <span class="sd">ninst = 8</span>
 
-<span class="sd">def write_inst_nml(case, set_nml_variable, component, iinst):</span>
-<span class="sd">    if component == &quot;new-comp&quot;:</span>
-<span class="sd">        set_nml_variable(&quot;var1&quot;, &quot;value1&quot;)</span>
-<span class="sd">    elif component == &quot;secondary-comp&quot;:</span>
-<span class="sd">        set_nml_variable(&quot;var2&quot;, &quot;value2&quot;)</span>
+<span class="sd">def generate_namelist(case, component, i, filename):</span>
+<span class="sd">    nml = Namelist()</span>
 
-<span class="sd">def evv_test_config(case, run_dir, base_dir, evv_lib_dir):</span>
-<span class="sd">    return {</span>
-<span class="sd">        &quot;module&quot;: os.path.join(evv_lib_dir, &quot;extensions&quot;, &quot;kso.py&quot;),</span>
-<span class="sd">        &quot;component&quot;: &quot;someother-comp&quot;</span>
-<span class="sd">    }</span>
+<span class="sd">    if component == &quot;new-comp&quot;:</span>
+<span class="sd">        nml.set_variable_value(&quot;&quot;, &quot;var1&quot;, &quot;value1&quot;)</span>
+<span class="sd">    elif component == &quot;secondary-comp&quot;:</span>
+<span class="sd">        nml.set_variable_value(&quot;&quot;, &quot;var2&quot;, &quot;value2&quot;)</span>
+
+<span class="sd">    nml.write(filename)</span>
+
+<span class="sd">def evv_test_config(case, config):</span>
+<span class="sd">    config[&quot;module&quot;] = os.path.join(EVV_LIB_DIR, &quot;extensions&quot;, &quot;kso.py&quot;)</span>
+<span class="sd">    config[&quot;component&quot;] = &quot;someother-comp&quot;</span>
+
+<span class="sd">    return config</span>
 <span class="sd">                         &quot;&quot;&quot;</span>
                 <span class="p">)</span>
 
@@ -274,6 +280,12 @@
             <span class="n">expected_config</span> <span class="o">=</span> <span class="p">{</span>
                 <span class="s2">&quot;20240515_212034_41b5u2&quot;</span><span class="p">:</span> <span class="p">{</span>
                     <span class="s2">&quot;component&quot;</span><span class="p">:</span> <span class="s2">&quot;someother-comp&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;ninst&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+                    <span class="s2">&quot;ref-case&quot;</span><span class="p">:</span> <span class="s2">&quot;Baseline&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;ref-dir&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">temp_dir</span><span class="si">}</span><span class="s2">/baselines/&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;test-case&quot;</span><span class="p">:</span> <span class="s2">&quot;Test&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;test-dir&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">temp_dir</span><span class="si">}</span><span class="s2">/run&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;var-set&quot;</span><span class="p">:</span> <span class="s2">&quot;default&quot;</span><span class="p">,</span>
                 <span class="p">}</span>
             <span class="p">}</span>
 
@@ -510,8 +522,8 @@
             <span class="k">assert</span> <span class="n">lines</span> <span class="o">==</span> <span class="p">[</span>
                 <span class="s2">&quot;new_random = .true.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;pertlim = 1.0e-10</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;seed_custom = 1</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;seed_clock = .true.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;seed_custom = 1</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
             <span class="p">]</span>
 
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">nml_files</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
@@ -520,8 +532,8 @@
             <span class="k">assert</span> <span class="n">lines</span> <span class="o">==</span> <span class="p">[</span>
                 <span class="s2">&quot;new_random = .true.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;pertlim = 1.0e-10</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;seed_custom = 8</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;seed_clock = .true.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;seed_custom = 8</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
             <span class="p">]</span></div>
 
 
@@ -740,9 +752,9 @@
             <span class="p">),</span> <span class="n">append_testlog</span><span class="o">.</span><span class="n">call_args</span><span class="o">.</span><span class="n">args</span></div>
 
 
-<div class="viewcode-block" id="TestSystemTestsMVK.test_write_inst_nml_multiple_components">
-<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_system_tests_mvk.TestSystemTestsMVK.test_write_inst_nml_multiple_components">[docs]</a>
-    <span class="k">def</span> <span class="nf">test_write_inst_nml_multiple_components</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestSystemTestsMVK.test_generate_namelist_multiple_components">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_system_tests_mvk.TestSystemTestsMVK.test_generate_namelist_multiple_components">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_generate_namelist_multiple_components</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">ExitStack</span><span class="p">()</span> <span class="k">as</span> <span class="n">stack</span><span class="p">:</span>
             <span class="n">temp_dir</span> <span class="o">=</span> <span class="n">stack</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">())</span>
 
@@ -768,14 +780,14 @@
             <span class="k">assert</span> <span class="n">lines</span> <span class="o">==</span> <span class="p">[</span>
                 <span class="s2">&quot;new_random = .true.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;pertlim = 1.0e-10</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;seed_custom = 1</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;seed_clock = .true.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;seed_custom = 1</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
             <span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="TestSystemTestsMVK.test_write_inst_nml">
-<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_system_tests_mvk.TestSystemTestsMVK.test_write_inst_nml">[docs]</a>
-    <span class="k">def</span> <span class="nf">test_write_inst_nml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestSystemTestsMVK.test_generate_namelist">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_system_tests_mvk.TestSystemTestsMVK.test_generate_namelist">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_generate_namelist</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">ExitStack</span><span class="p">()</span> <span class="k">as</span> <span class="n">stack</span><span class="p">:</span>
             <span class="n">temp_dir</span> <span class="o">=</span> <span class="n">stack</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">())</span>
 
@@ -799,8 +811,8 @@
             <span class="k">assert</span> <span class="n">lines</span> <span class="o">==</span> <span class="p">[</span>
                 <span class="s2">&quot;new_random = .true.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;pertlim = 1.0e-10</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;seed_custom = 1</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;seed_clock = .true.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;seed_custom = 1</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
             <span class="p">]</span></div>
 
 

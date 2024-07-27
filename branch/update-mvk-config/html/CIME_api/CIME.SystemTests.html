@@ -513,14 +513,14 @@ phase.</p>
 <dd><p>Bases: <a class="reference internal" href="CIME.html#CIME.config.ConfigBase" title="CIME.config.ConfigBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConfigBase</span></code></a></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="CIME.SystemTests.mvk.MVKConfig.evv_test_config">
-<span class="sig-name descname"><span class="pre">evv_test_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">case</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">evv_lib_dir</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/SystemTests/mvk.html#MVKConfig.evv_test_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.SystemTests.mvk.MVKConfig.evv_test_config" title="Link to this definition"></a></dt>
-<dd><p>Configure the evv test.</p>
-<p>This method is used to pass the evv4esm configuration to be written for the test.</p>
+<span class="sig-name descname"><span class="pre">evv_test_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">case</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/SystemTests/mvk.html#MVKConfig.evv_test_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.SystemTests.mvk.MVKConfig.evv_test_config" title="Link to this definition"></a></dt>
+<dd><p>Customize the evv4esm configuration.</p>
+<p>This method is used to customize the default evv4esm configuration
+or generate a completely new one.</p>
+<p>The return configuration will be written to <cite>$RUNDIR/$CASE.json</cite>.</p>
 <dl class="simple">
 <dt>Args:</dt><dd><p>case (CIME.case.case.Case): The case instance.
-run_dir (str): Path the case’s run directory.
-base_dir (str): Path to the case’s baseline directory.
-evv_lib_dir (str): Path to the evv4esm package root.</p>
+config (dict): Default evv4esm configuration.</p>
 </dd>
 <dt>Returns:</dt><dd><p>dict: Dictionary with test configuration.</p>
 </dd>
@@ -528,15 +528,16 @@ evv_lib_dir (str): Path to the evv4esm package root.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="CIME.SystemTests.mvk.MVKConfig.write_inst_nml">
-<span class="sig-name descname"><span class="pre">write_inst_nml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">case</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">set_nml_variable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">component</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iinst</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/SystemTests/mvk.html#MVKConfig.write_inst_nml"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.SystemTests.mvk.MVKConfig.write_inst_nml" title="Link to this definition"></a></dt>
-<dd><p>Write per instance namelist.</p>
-<p>This method is called once per instance to generate the namelist.</p>
+<dt class="sig sig-object py" id="CIME.SystemTests.mvk.MVKConfig.generate_namelist">
+<span class="sig-name descname"><span class="pre">generate_namelist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">case</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">component</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/SystemTests/mvk.html#MVKConfig.generate_namelist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.SystemTests.mvk.MVKConfig.generate_namelist" title="Link to this definition"></a></dt>
+<dd><p>Generate per instance namelist.</p>
+<p>This method is called for each instance to generate the desired
+modifications.</p>
 <dl class="simple">
 <dt>Args:</dt><dd><p>case (CIME.case.case.Case): The case instance.
-write_nml_variable (function): Function takes two <cite>str</cite> arguments.
 component (str): Component the namelist belongs to.
-iinst (int): Instance unique number.</p>
+i (int): Instance unique number.
+filename (str): Name of the namelist that needs to be created.</p>
 </dd>
 </dl>
 </dd></dl>

@@ -192,6 +192,7 @@
 
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">contextmanager</span>
 
 <span class="c1"># Disable these because this is our standard setup</span>
 <span class="c1"># pylint: disable=wildcard-import,unused-wildcard-import</span>
@@ -244,6 +245,20 @@
 <span class="n">FORTRAN_LITERAL_REGEXES</span><span class="p">[</span><span class="s2">&quot;logical&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^\.?[tf][^=/ \n]*$&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">)</span>
 <span class="c1"># Repeated value prefix.</span>
 <span class="n">FORTRAN_REPEAT_PREFIX_REGEX</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^[0-9]*[1-9]+[0-9]*\*&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="convert_bool">
+<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.namelist.convert_bool">[docs]</a>
+<span class="k">def</span> <span class="nf">convert_bool</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;.</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">.&quot;</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;.</span><span class="si">{</span><span class="n">value</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">.&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unable to convert </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">value</span></div>
+
 
 
 <div class="viewcode-block" id="is_valid_fortran_name">
@@ -1057,6 +1072,13 @@
                         <span class="n">variable_name</span>
                     <span class="p">]</span>
 
+    <span class="nd">@contextmanager</span>
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="bp">self</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+
 <div class="viewcode-block" id="Namelist.clean_groups">
 <a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.namelist.Namelist.clean_groups">[docs]</a>
     <span class="k">def</span> <span class="nf">clean_groups</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1192,6 +1214,11 @@
 <span class="sd">        &gt;&gt;&gt; x.get_variable_value(&#39;foo&#39;, &#39;red&#39;)</span>
 <span class="sd">        [&#39;&#39;, &#39;2&#39;, &#39;&#39;, &#39;4&#39;, &#39;&#39;, &#39;6&#39;]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">set</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">value</span><span class="p">,</span>
+            <span class="p">]</span>
+
         <span class="n">minindex</span><span class="p">,</span> <span class="n">maxindex</span><span class="p">,</span> <span class="n">step</span> <span class="o">=</span> <span class="n">get_fortran_variable_indices</span><span class="p">(</span><span class="n">variable_name</span><span class="p">,</span> <span class="n">var_size</span><span class="p">)</span>
         <span class="n">variable_name</span> <span class="o">=</span> <span class="n">get_fortran_name_only</span><span class="p">(</span><span class="n">variable_name</span><span class="p">)</span>
 
@@ -1202,7 +1229,7 @@
             <span class="p">),</span>
         <span class="p">)</span>
         <span class="n">gn</span> <span class="o">=</span> <span class="n">string_in_list</span><span class="p">(</span><span class="n">group_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">gn</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">gn</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">gn</span> <span class="o">=</span> <span class="n">group_name</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="p">[</span><span class="n">gn</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
 
@@ -1372,7 +1399,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">group_names</span> <span class="o">=</span> <span class="n">groups</span>
         <span class="k">for</span> <span class="n">group_name</span> <span class="ow">in</span> <span class="n">group_names</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">format_</span> <span class="o">==</span> <span class="s2">&quot;nml&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">group_name</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span> <span class="ow">and</span> <span class="n">format_</span> <span class="o">==</span> <span class="s2">&quot;nml&quot;</span><span class="p">:</span>
                 <span class="n">out_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;&amp;</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">group_name</span><span class="p">))</span>
             <span class="c1"># allow empty group</span>
             <span class="k">if</span> <span class="n">group_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="p">:</span>
@@ -1388,18 +1415,23 @@
 
                     <span class="c1"># To prettify things for long lists of values, build strings</span>
                     <span class="c1"># line-by-line.</span>
-                    <span class="k">if</span> <span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;True&quot;</span> <span class="ow">or</span> <span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;False&quot;</span><span class="p">:</span>
-                        <span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-                            <span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-                            <span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;True&quot;</span><span class="p">,</span> <span class="s2">&quot;.true.&quot;</span><span class="p">)</span>
-                            <span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;False&quot;</span><span class="p">,</span> <span class="s2">&quot;.false.&quot;</span><span class="p">)</span>
-                        <span class="p">)</span>
-                    <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;  </span><span class="si">{}{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">equals</span><span class="p">,</span> <span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">bool</span><span class="p">)</span> <span class="ow">or</span> <span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span>
+                        <span class="s2">&quot;true&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;false&quot;</span><span class="p">,</span>
+                    <span class="p">):</span>
+                        <span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">convert_bool</span><span class="p">(</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+                    <span class="k">if</span> <span class="n">group_name</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+                        <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;</span><span class="si">{}{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">equals</span><span class="p">,</span> <span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;  </span><span class="si">{}{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">equals</span><span class="p">,</span> <span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span>
                     <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">values</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
-                        <span class="k">if</span> <span class="n">value</span> <span class="o">==</span> <span class="s2">&quot;True&quot;</span> <span class="ow">or</span> <span class="n">value</span> <span class="o">==</span> <span class="s2">&quot;False&quot;</span><span class="p">:</span>
-                            <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;True&quot;</span><span class="p">,</span> <span class="s2">&quot;.true.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
-                                <span class="s2">&quot;False&quot;</span><span class="p">,</span> <span class="s2">&quot;.false.&quot;</span>
-                            <span class="p">)</span>
+                        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span> <span class="ow">or</span> <span class="n">value</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span>
+                            <span class="s2">&quot;true&quot;</span><span class="p">,</span>
+                            <span class="s2">&quot;false&quot;</span><span class="p">,</span>
+                        <span class="p">):</span>
+                            <span class="n">value</span> <span class="o">=</span> <span class="n">convert_bool</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
                         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">77</span><span class="p">:</span>
                             <span class="n">lines</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="s2">&quot;, &quot;</span> <span class="o">+</span> <span class="n">value</span>
                         <span class="k">else</span><span class="p">:</span>
@@ -1408,7 +1440,7 @@
                     <span class="n">lines</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
                     <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
                         <span class="n">out_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">format_</span> <span class="o">==</span> <span class="s2">&quot;nml&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">group_name</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span> <span class="ow">and</span> <span class="n">format_</span> <span class="o">==</span> <span class="s2">&quot;nml&quot;</span><span class="p">:</span>
                 <span class="n">out_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;/</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">format_</span> <span class="o">==</span> <span class="s2">&quot;nmlcontents&quot;</span><span class="p">:</span>
                 <span class="n">out_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>

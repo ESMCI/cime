@@ -207,6 +207,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#CIME.namelist.Namelist"><code class="docutils literal notranslate"><span class="pre">Namelist</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#CIME.namelist.character_literal_to_string"><code class="docutils literal notranslate"><span class="pre">character_literal_to_string()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#CIME.namelist.compress_literal_list"><code class="docutils literal notranslate"><span class="pre">compress_literal_list()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#CIME.namelist.convert_bool"><code class="docutils literal notranslate"><span class="pre">convert_bool()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#CIME.namelist.expand_literal_list"><code class="docutils literal notranslate"><span class="pre">expand_literal_list()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#CIME.namelist.fortran_namelist_base_value"><code class="docutils literal notranslate"><span class="pre">fortran_namelist_base_value()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#CIME.namelist.get_fortran_name_only"><code class="docutils literal notranslate"><span class="pre">get_fortran_name_only()</span></code></a></li>
@@ -611,7 +612,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.SystemTests.html#CIME.SystemTests.mvk.MVKConfig"><code class="docutils literal notranslate"><span class="pre">MVKConfig</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.html#CIME.SystemTests.mvk.MVKConfig.evv_test_config"><code class="docutils literal notranslate"><span class="pre">MVKConfig.evv_test_config()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.html#CIME.SystemTests.mvk.MVKConfig.write_inst_nml"><code class="docutils literal notranslate"><span class="pre">MVKConfig.write_inst_nml()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.html#CIME.SystemTests.mvk.MVKConfig.generate_namelist"><code class="docutils literal notranslate"><span class="pre">MVKConfig.generate_namelist()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -2137,14 +2138,14 @@
 <li class="toctree-l4"><a class="reference internal" href="CIME.tests.html#CIME.tests.test_unit_system_tests_mvk.TestSystemTestsMVK.test__generate_baseline"><code class="docutils literal notranslate"><span class="pre">TestSystemTestsMVK.test__generate_baseline()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="CIME.tests.html#CIME.tests.test_unit_system_tests_mvk.TestSystemTestsMVK.test_build_phase"><code class="docutils literal notranslate"><span class="pre">TestSystemTestsMVK.test_build_phase()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="CIME.tests.html#CIME.tests.test_unit_system_tests_mvk.TestSystemTestsMVK.test_compare_baseline"><code class="docutils literal notranslate"><span class="pre">TestSystemTestsMVK.test_compare_baseline()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.tests.html#CIME.tests.test_unit_system_tests_mvk.TestSystemTestsMVK.test_generate_namelist"><code class="docutils literal notranslate"><span class="pre">TestSystemTestsMVK.test_generate_namelist()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.tests.html#CIME.tests.test_unit_system_tests_mvk.TestSystemTestsMVK.test_generate_namelist_multiple_components"><code class="docutils literal notranslate"><span class="pre">TestSystemTestsMVK.test_generate_namelist_multiple_components()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="CIME.tests.html#CIME.tests.test_unit_system_tests_mvk.TestSystemTestsMVK.test_mvk"><code class="docutils literal notranslate"><span class="pre">TestSystemTestsMVK.test_mvk()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="CIME.tests.html#CIME.tests.test_unit_system_tests_mvk.TestSystemTestsMVK.test_testmod_complex"><code class="docutils literal notranslate"><span class="pre">TestSystemTestsMVK.test_testmod_complex()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="CIME.tests.html#CIME.tests.test_unit_system_tests_mvk.TestSystemTestsMVK.test_testmod_simple"><code class="docutils literal notranslate"><span class="pre">TestSystemTestsMVK.test_testmod_simple()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="CIME.tests.html#CIME.tests.test_unit_system_tests_mvk.TestSystemTestsMVK.test_update_testlog"><code class="docutils literal notranslate"><span class="pre">TestSystemTestsMVK.test_update_testlog()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="CIME.tests.html#CIME.tests.test_unit_system_tests_mvk.TestSystemTestsMVK.test_update_testlog_htmlroot"><code class="docutils literal notranslate"><span class="pre">TestSystemTestsMVK.test_update_testlog_htmlroot()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="CIME.tests.html#CIME.tests.test_unit_system_tests_mvk.TestSystemTestsMVK.test_update_testlog_urlroot_None"><code class="docutils literal notranslate"><span class="pre">TestSystemTestsMVK.test_update_testlog_urlroot_None()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="CIME.tests.html#CIME.tests.test_unit_system_tests_mvk.TestSystemTestsMVK.test_write_inst_nml"><code class="docutils literal notranslate"><span class="pre">TestSystemTestsMVK.test_write_inst_nml()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="CIME.tests.html#CIME.tests.test_unit_system_tests_mvk.TestSystemTestsMVK.test_write_inst_nml_multiple_components"><code class="docutils literal notranslate"><span class="pre">TestSystemTestsMVK.test_write_inst_nml_multiple_components()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.tests.html#CIME.tests.test_unit_system_tests_mvk.create_complex_case"><code class="docutils literal notranslate"><span class="pre">create_complex_case()</span></code></a></li>
@@ -2641,7 +2642,7 @@ there was at least one FAIL result.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="CIME.config.print_rst_header">
-<span class="sig-prename descclassname"><span class="pre">CIME.config.</span></span><span class="sig-name descname"><span class="pre">print_rst_header</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">header</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/config.html#print_rst_header"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.config.print_rst_header" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">CIME.config.</span></span><span class="sig-name descname"><span class="pre">print_rst_header</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">header</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anchor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">separator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'&quot;'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/config.html#print_rst_header"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.config.print_rst_header" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
@@ -3550,6 +3551,11 @@ the <cite>groups</cite> argument specifies a subset of all groups to write out.<
 </pre></div>
 </div>
 </dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="CIME.namelist.convert_bool">
+<span class="sig-prename descclassname"><span class="pre">CIME.namelist.</span></span><span class="sig-name descname"><span class="pre">convert_bool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/namelist.html#convert_bool"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.namelist.convert_bool" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="CIME.namelist.expand_literal_list">
@@ -5041,7 +5047,7 @@ Unlike strptime, this does support %H &gt;= 24</p>
 4. default to same value as PROJECT</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">CIME</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">CIME.XML.machines</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">machobj</span> <span class="o">=</span> <span class="n">CIME</span><span class="o">.</span><span class="n">XML</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">Machines</span><span class="p">(</span><span class="n">machine</span><span class="o">=</span><span class="s2">&quot;theta&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">machobj</span> <span class="o">=</span> <span class="n">CIME</span><span class="o">.</span><span class="n">XML</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">Machines</span><span class="p">(</span><span class="n">machine</span><span class="o">=</span><span class="s2">&quot;docker&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">project</span> <span class="o">=</span> <span class="n">get_project</span><span class="p">(</span><span class="n">machobj</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">charge_account</span> <span class="o">=</span> <span class="n">get_charge_account</span><span class="p">(</span><span class="n">machobj</span><span class="p">,</span> <span class="n">project</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">project</span> <span class="o">==</span> <span class="n">charge_account</span>
