@@ -348,18 +348,18 @@ Methods
 """""""
 .. code-block::
 
-  def evv_test_config(case, run_dir, base_dir, evv_lib_dir):
+  def evv_test_config(case, config):
       """
-      Generate the evv4esm configuration file.
+      Customize the evv4esm configuration.
       
-      This method is used to generate the evv4esm configuration that will
-      be written to `$RUNDIR/$CASE.json`.
+      This method is used to customize the default evv4esm configuration
+      or generate a completely new one.
+      
+      The return configuration will be written to `$RUNDIR/$CASE.json`.
       
       Args:
           case (CIME.case.case.Case): The case instance.
-          run_dir (str): Path the case's run directory.
-          base_dir (str): Path to the case's baseline directory.
-          evv_lib_dir (str): Path to the evv4esm package root.
+          config (dict): Default evv4esm configuration.
       
       Returns:
           dict: Dictionary with test configuration.
@@ -370,7 +370,7 @@ Methods
       """
       Generate per instance namelist.
       
-      This method is called for each instance to generate the desired 
+      This method is called for each instance to generate the desired
       modifications.
       
       Args:
@@ -402,25 +402,35 @@ For this case the default ``evv_test_config`` and ``generate_namelist`` function
 If more control over the evv4esm configuration file or the per instance configuration is desired then
 the ``evv_test_config`` and ``generate_namelist`` functions can be overridden in the ``params.py`` file.
 
-The only required variables is ``components``.
+The :ref:`variables <MVKConfig Variables>` will still need to be defined to generate the default
+evv4esm config or ``config`` in the ``evv_test_config`` function can be ignored and a completely new
+dictionary can be returned.
 
-In the following example, customizes the default evv4esm test config and writes out different 
-namelist and customized files per instance.
+In the following example, the default ``module`` is changed as well as ``component`` and ``ninst``.
+The ``generate_namelist`` function creates namelists for certain components while running a shell
+command to customize others.
+
+Note; this is a toy example, no scientific usage.
 
 .. code-block::
 
   import os
+  from CIME.SystemTests.mvk import EVV_LIB_DIR
   from CIME.namelist import Namelist
   from CIME.utils import run_cmd
 
+  component "eam"
+  # The generate_namelist function will be called `ninst` times per component
   components = ["eam", "clm", "eamxx"]
+  ninst = 30
 
-  def evv_test_config(case, run_dir, base_dir, evv_lib_dir):
-    return {
-        "module": os.path.join(evv_lib_dir, "extensions", "kso.py"),
-        "component": "eam"
-        "ninst": 20,
-    }
+  # This can be omitted if the default evv4esm configuration is sufficient
+  def evv_test_config(case, config):
+    config["module"] = os.path.join(EVV_LIB_DIR, "extensions", "kso.py")
+    config["component"] = "clm"
+    config["ninst"] = 20
+
+    return config
 
   def generate_namelist(case, component, i, filename):
     namelist = Namelist()

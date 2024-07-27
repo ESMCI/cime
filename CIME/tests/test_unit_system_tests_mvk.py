@@ -134,6 +134,7 @@ class TestSystemTestsMVK(unittest.TestCase):
                     """
 import os
 from CIME.namelist import Namelist
+from CIME.SystemTests.mvk import EVV_LIB_DIR
 
 component = "new-comp"
 components = ["new-comp", "secondary-comp"]
@@ -149,11 +150,11 @@ def generate_namelist(case, component, i, filename):
 
     nml.write(filename)
 
-def evv_test_config(case, run_dir, base_dir, evv_lib_dir):
-    return {
-        "module": os.path.join(evv_lib_dir, "extensions", "kso.py"),
-        "component": "someother-comp"
-    }
+def evv_test_config(case, config):
+    config["module"] = os.path.join(EVV_LIB_DIR, "extensions", "kso.py")
+    config["component"] = "someother-comp"
+
+    return config
                          """
                 )
 
@@ -173,6 +174,12 @@ def evv_test_config(case, run_dir, base_dir, evv_lib_dir):
             expected_config = {
                 "20240515_212034_41b5u2": {
                     "component": "someother-comp",
+                    "ninst": 8,
+                    "ref-case": "Baseline",
+                    "ref-dir": f"{temp_dir}/baselines/",
+                    "test-case": "Test",
+                    "test-dir": f"{temp_dir}/run",
+                    "var-set": "default",
                 }
             }
 

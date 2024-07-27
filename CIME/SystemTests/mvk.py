@@ -72,23 +72,24 @@ class MVKConfig(ConfigBase):
             nml.set_variable_value("", "seed_custom", f"{i}")
             nml.set_variable_value("", "seed_clock", True)
 
-    def evv_test_config(
-        self, case, run_dir, base_dir, evv_lib_dir
-    ):  # pylint: disable=unused-argument
-        """Generate the evv4esm configuration file.
+    def evv_test_config(self, case, config):  # pylint: disable=unused-argument
+        """Customize the evv4esm configuration.
 
-        This method is used to generate the evv4esm configuration that will
-        be written to `$RUNDIR/$CASE.json`.
+        This method is used to customize the default evv4esm configuration
+        or generate a completely new one.
+
+        The return configuration will be written to `$RUNDIR/$CASE.json`.
 
         Args:
             case (CIME.case.case.Case): The case instance.
-            run_dir (str): Path the case's run directory.
-            base_dir (str): Path to the case's baseline directory.
-            evv_lib_dir (str): Path to the evv4esm package root.
+            config (dict): Default evv4esm configuration.
 
         Returns:
             dict: Dictionary with test configuration.
         """
+        return config
+
+    def _default_evv_test_config(self, run_dir, base_dir, evv_lib_dir):
         config = {
             "module": os.path.join(evv_lib_dir, "extensions", "ks.py"),
             "test-case": self.test_case,
@@ -234,8 +235,15 @@ class MVK(SystemTestsCommon):
 
             test_name = "{}".format(case_name.split(".")[-1])
 
+            default_config = self._config._default_evv_test_config(
+                run_dir,
+                base_dir,
+                EVV_LIB_DIR,
+            )
+
             test_config = self._config.evv_test_config(
-                self._case, run_dir, base_dir, EVV_LIB_DIR
+                self._case,
+                default_config,
             )
 
             evv_config = {test_name: test_config}

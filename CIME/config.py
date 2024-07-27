@@ -186,6 +186,8 @@ class ConfigBase:
         ]
 
         for (name, sig, doc) in child_methods:
+            if doc is None:
+                continue
             print(".. code-block::\n")
             print(f"  def {name}{sig!s}:")
             print('      """')
