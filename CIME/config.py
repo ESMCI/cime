@@ -14,11 +14,13 @@ logger = logging.getLogger(__name__)
 DEFAULT_CUSTOMIZE_PATH = os.path.join(utils.get_src_root(), "cime_config", "customize")
 
 
-def print_rst_header(header):
+def print_rst_header(header, anchor=None, separator='"'):
     n = len(header)
-    print("-" * n)
+    if anchor is not None:
+        print(f".. _{anchor}\n")
+    print(separator * n)
     print(header)
-    print("-" * n)
+    print(separator * n)
 
 
 def print_rst_table(headers, *rows):
@@ -149,7 +151,7 @@ class ConfigBase:
         self.print_method_rst()
 
     def print_variable_rst(self):
-        print_rst_header("Variables")
+        print_rst_header("Variables", anchor=f"{self.__class__.__name__} Variables:")
 
         headers = ("Variable", "Default", "Type", "Description")
 
@@ -161,7 +163,7 @@ class ConfigBase:
         print_rst_table(headers, *rows)
 
     def print_method_rst(self):
-        print_rst_header("Methods")
+        print_rst_header("Methods", anchor=f"{self.__class__.__name__} Methods:")
 
         methods = inspect.getmembers(self, inspect.ismethod)
 

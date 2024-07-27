@@ -133,16 +133,21 @@ class TestSystemTestsMVK(unittest.TestCase):
                 fd.write(
                     """
 import os
+from CIME.namelist import Namelist
 
 component = "new-comp"
 components = ["new-comp", "secondary-comp"]
 ninst = 8
 
-def write_inst_nml(case, set_nml_variable, component, iinst):
+def generate_namelist(case, component, i, filename):
+    nml = Namelist()
+
     if component == "new-comp":
-        set_nml_variable("var1", "value1")
+        nml.set_variable_value("", "var1", "value1")
     elif component == "secondary-comp":
-        set_nml_variable("var2", "value2")
+        nml.set_variable_value("", "var2", "value2")
+
+    nml.write(filename)
 
 def evv_test_config(case, run_dir, base_dir, evv_lib_dir):
     return {
@@ -392,8 +397,8 @@ test_case = "Default"
             assert lines == [
                 "new_random = .true.\n",
                 "pertlim = 1.0e-10\n",
-                "seed_custom = 1\n",
                 "seed_clock = .true.\n",
+                "seed_custom = 1\n",
             ]
 
             with open(sorted(nml_files)[-1], "r") as fd:
@@ -402,8 +407,8 @@ test_case = "Default"
             assert lines == [
                 "new_random = .true.\n",
                 "pertlim = 1.0e-10\n",
-                "seed_custom = 8\n",
                 "seed_clock = .true.\n",
+                "seed_custom = 8\n",
             ]
 
     @mock.patch("CIME.SystemTests.mvk.case_setup")
@@ -609,7 +614,7 @@ test_case = "Default"
                 expected_comments, str(temp_dir)
             ), append_testlog.call_args.args
 
-    def test_write_inst_nml_multiple_components(self):
+    def test_generate_namelist_multiple_components(self):
         with contextlib.ExitStack() as stack:
             temp_dir = stack.enter_context(tempfile.TemporaryDirectory())
 
@@ -635,11 +640,11 @@ test_case = "Default"
             assert lines == [
                 "new_random = .true.\n",
                 "pertlim = 1.0e-10\n",
-                "seed_custom = 1\n",
                 "seed_clock = .true.\n",
+                "seed_custom = 1\n",
             ]
 
-    def test_write_inst_nml(self):
+    def test_generate_namelist(self):
         with contextlib.ExitStack() as stack:
             temp_dir = stack.enter_context(tempfile.TemporaryDirectory())
 
@@ -663,8 +668,8 @@ test_case = "Default"
             assert lines == [
                 "new_random = .true.\n",
                 "pertlim = 1.0e-10\n",
-                "seed_custom = 1\n",
                 "seed_clock = .true.\n",
+                "seed_custom = 1\n",
             ]
 
     def test_compare_baseline(self):

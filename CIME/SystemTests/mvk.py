@@ -18,6 +18,7 @@ from CIME.case.case_setup import case_setup
 from CIME.XML.machines import Machines
 from CIME.config import ConfigBase
 from CIME.SystemTests import test_mods
+from CIME.namelist import Namelist
 
 import evv4esm  # pylint: disable=import-error
 from evv4esm.__main__ import main as evv  # pylint: disable=import-error
@@ -49,30 +50,35 @@ class MVKConfig(ConfigBase):
         self._set_attribute("ref_case", "Baseline", "Name of the reference case.")
         self._set_attribute("test_case", "Test", "Name of the test case.")
 
-    def write_inst_nml(
-        self, case, set_nml_variable, component, iinst
+    def generate_namelist(
+        self, case, component, i, filename
     ):  # pylint: disable=unused-argument
-        """Write per instance namelist.
+        """Generate per instance namelist.
 
-        This method is called once per instance to generate the namelist.
+        This method is called for each instance to generate the desired
+        modifications.
 
         Args:
             case (CIME.case.case.Case): The case instance.
-            write_nml_variable (function): Function takes two `str` arguments.
             component (str): Component the namelist belongs to.
-            iinst (int): Instance unique number.
+            i (int): Instance unique number.
+            filename (str): Name of the namelist that needs to be created.
         """
-        set_nml_variable("new_random", ".true.")
-        set_nml_variable("pertlim", "1.0e-10")
-        set_nml_variable("seed_custom", f"{iinst}")
-        set_nml_variable("seed_clock", ".true.")
+        namelist = Namelist()
+
+        with namelist(filename) as nml:
+            nml.set_variable_value("", "new_random", True)
+            nml.set_variable_value("", "pertlim", "1.0e-10")
+            nml.set_variable_value("", "seed_custom", f"{i}")
+            nml.set_variable_value("", "seed_clock", True)
 
     def evv_test_config(
         self, case, run_dir, base_dir, evv_lib_dir
     ):  # pylint: disable=unused-argument
-        """Configure the evv test.
+        """Generate the evv4esm configuration file.
 
-        This method is used to pass the evv4esm configuration to be written for the test.
+        This method is used to generate the evv4esm configuration that will
+        be written to `$RUNDIR/$CASE.json`.
 
         Args:
             case (CIME.case.case.Case): The case instance.
@@ -128,6 +134,11 @@ class MVK(SystemTestsCommon):
 
         if len(self._config.components) == 0:
             self._config.components = [self._config.component]
+        elif (
+            self._config.component != ""
+            and self._config.component not in self._config.components
+        ):
+            self._config.components.extend([self._config.component])
 
         if (
             self._case.get_value("RESUBMIT") == 0
@@ -159,18 +170,11 @@ class MVK(SystemTestsCommon):
 
             case_setup(self._case, test_mode=False, reset=True)
 
-        for iinst in range(1, self._config.ninst + 1):
+        for i in range(1, self._config.ninst + 1):
             for component in self._config.components:
-                with open(
-                    "user_nl_{}_{:04d}".format(component, iinst), "w"
-                ) as nml_file:
-                    set_nml_variable = lambda key, value: nml_file.write(  # pylint: disable=cell-var-from-loop
-                        f"{key} = {value}\n"
-                    )
+                filename = "user_nl_{}_{:04d}".format(component, i)
 
-                    self._config.write_inst_nml(
-                        self._case, set_nml_variable, component, iinst
-                    )
+                self._config.generate_namelist(self._case, component, i, filename)
 
         self.build_indv(sharedlib_only=sharedlib_only, model_only=model_only)
 
@@ -317,3 +321,8 @@ class MVK(SystemTestsCommon):
                 break
 
         return comments
+
+
+if __name__ == "__main__":
+    _config = MVKConfig()
+    _config.print_rst_table()
