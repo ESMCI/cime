@@ -706,6 +706,20 @@
     </queues>
   </batch_system>
 
+  <batch_system MACH="vista" type="slurm" >
+    <batch_submit>ssh login1.vista.tacc.utexas.edu sbatch  </batch_submit>
+    <jobid_pattern>Submitted batch job (\d+)$</jobid_pattern>
+    <submit_args>
+      <arg flag="--time" name="$JOB_WALLCLOCK_TIME"/>
+      <arg flag="-p" name="$JOB_QUEUE"/>
+      <arg flag="--account" name="$PROJECT"/>
+    </submit_args>
+    <queues>
+      <queue walltimemax="2:00:00" nodemin="1" nodemax="32" default="true">gg</queue>
+      <queue walltimemax="2:00:00" nodemin="1" nodemax="29">gg-4k</queue>
+    </queues>
+  </batch_system>
+
   <batch_system MACH="zeus" type="lsf">
     <batch_env>-env</batch_env>
     <submit_args>
