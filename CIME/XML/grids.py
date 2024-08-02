@@ -121,25 +121,13 @@ class Grids(GenericXML):
                 break
         return valid
 
-    def _read_config_grids(self, name, compset, atmnlev, lndnlev):
+    def _read_config_grids(self, name, compset, atmnlev=None, lndnlev=None):
         """
         read config_grids.xml with version 2.0 schema
 
         Returns a grid long name given the alias ('name' argument)
         """
-        model_grid = {}
-        for comp_gridname in self._comp_gridnames:
-            model_grid[comp_gridname] = None
-
-        # (1) set array of component grid defaults that match current compset
         grids_node = self.get_child("grids")
-        grid_defaults_node = self.get_child("model_grid_defaults", root=grids_node)
-        for grid_node in self.get_children("grid", root=grid_defaults_node):
-            name_attrib = self.get(grid_node, "name")
-            compset_attrib = self.get(grid_node, "compset")
-            compset_match = re.search(compset_attrib, compset)
-            if compset_match is not None:
-                model_grid[name_attrib] = self.text(grid_node)
 
         # (2)loop over all of the "model grid" nodes and determine is there an alias match with the
         # input grid name -  if there is an alias match determine if the "compset" and "not_compset"
@@ -200,37 +188,65 @@ class Grids(GenericXML):
             foundcompset, "grid alias {} not valid for compset {}".format(name, compset)
         )
 
-        # for the match - find all of the component grid settings
+        return self.get_grid_longname(
+            grids_node, model_gridnode, compset, atmnlev, lndnlev
+        )
+
+    def get_grid_longname(
+        self, grids_node, model_gridnode, compset=None, atmnlev=None, lndnlev=None
+    ):
+        model_grid = {}
+
+        for comp_gridname in self._comp_gridnames:
+            model_grid[comp_gridname] = None
+
+        if compset is not None:
+            grid_defaults_node = self.get_child("model_grid_defaults", root=grids_node)
+
+            for grid_node in self.get_children("grid", root=grid_defaults_node):
+                name_attrib = self.get(grid_node, "name")
+                compset_attrib = self.get(grid_node, "compset")
+                compset_match = re.search(compset_attrib, compset)
+
+                if compset_match is not None:
+                    model_grid[name_attrib] = self.text(grid_node)
+
         grid_nodes = self.get_children("grid", root=model_gridnode)
+
         for grid_node in grid_nodes:
             name = self.get(grid_node, "name")
             value = self.text(grid_node)
+
             if model_grid[name] != "null":
                 model_grid[name] = value
+
         mask_node = self.get_optional_child("mask", root=model_gridnode)
+
         if mask_node is not None:
             model_grid["mask"] = self.text(mask_node)
         else:
             model_grid["mask"] = model_grid["ocnice"]
 
         lname = ""
+
         for component_gridname in self._comp_gridnames:
             if lname:
                 lname = lname + "_" + grid_prefix[component_gridname]
             else:
                 lname = grid_prefix[component_gridname]
+
             if model_grid[component_gridname] is not None:
                 lname += model_grid[component_gridname]
+
                 if component_gridname == "atm" and atmnlev is not None:
                     if not ("a{:n}ull" in lname):
                         lname += "z" + atmnlev
-
                 elif component_gridname == "lnd" and lndnlev is not None:
                     if not ("l{:n}ull" in lname):
                         lname += "z" + lndnlev
-
             else:
                 lname += "null"
+
         return lname
 
     def _get_domains(self, component_grids, atmlevregex, lndlevregex, driver):
@@ -539,7 +555,7 @@ class Grids(GenericXML):
         for name, value in these_gridmaps.items():
             _add_grid_info(gridmaps, name, value)
 
-    def print_values(self, long_output=None):
+    def print_values(self, long=False):
         # write out help message
         helptext = self.get_element_text("help")
         logger.info("{} ".format(helptext))
@@ -573,7 +589,7 @@ class Grids(GenericXML):
         )
 
         domains = {}
-        if long_output is not None:
+        if long:
             domain_nodes = self.get_children("domain", root=self.get_child("domains"))
             for domain_node in domain_nodes:
                 name = self.get(domain_node, "name")
@@ -599,7 +615,8 @@ class Grids(GenericXML):
                     desc, files
                 )
 
-        model_grid_nodes = self.get_children("model_grid", root=self.get_child("grids"))
+        grids_node = self.get_child("grids")
+        model_grid_nodes = self.get_children("model_grid", root=grids_node)
         for model_grid_node in model_grid_nodes:
             alias = self.get(model_grid_node, "alias")
             compset = self.get(model_grid_node, "compset")
@@ -616,6 +633,8 @@ class Grids(GenericXML):
             grid_nodes = self.get_children("grid", root=model_grid_node)
             grids = ""
             gridnames = []
+            lname = self.get_grid_longname(grids_node, model_grid_node)
+            logger.info("\n{:<7}longname: {}".format(" ", lname))
             for grid_node in grid_nodes:
                 gridnames.append(self.text(grid_node))
                 grids += self.get(grid_node, "name") + ":" + self.text(grid_node) + "  "
@@ -623,11 +642,18 @@ class Grids(GenericXML):
             mask_nodes = self.get_children("mask", root=model_grid_node)
             for mask_node in mask_nodes:
                 logger.info("       mask is: {}".format(self.text(mask_node)))
-            if long_output is not None:
+            if long:
                 gridnames = set(gridnames)
                 for gridname in gridnames:
                     if gridname != "null":
-                        logger.info("    {}".format(domains[gridname]))
+                        try:
+                            logger.info("    {}".format(domains[gridname]))
+                        except KeyError:
+                            logger.info(
+                                "    Could not provide domains for gridname {!r}".format(
+                                    gridname
+                                )
+                            )
 
 
 # ------------------------------------------------------------------------
