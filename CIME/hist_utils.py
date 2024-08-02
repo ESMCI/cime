@@ -339,6 +339,10 @@ def _compare_hists(
             if not ".nc" in hist1:
                 logger.info("Ignoring non-netcdf file {}".format(hist1))
                 continue
+
+            success = False
+            cprnc_log_file = None
+
             try:
                 success, cprnc_log_file, cprnc_comment = cprnc(
                     model,
@@ -350,10 +354,10 @@ def _compare_hists(
                     outfile_suffix=outfile_suffix,
                     ignore_fieldlist_diffs=ignore_fieldlist_diffs,
                 )
-            except:
-                cprnc_comment = "CPRNC executable not found"
-                cprnc_log_file = None
-                success = False
+            except CIMEError as e:
+                cprnc_comment = str(e)
+            except Exception as e:
+                cprnc_comment = f"Unknown CRPRC error: {e!s}"
 
             if success:
                 comments += "    {} matched {}\n".format(hist1, hist2)
@@ -512,7 +516,10 @@ def cprnc(
                     comment = CPRNC_FIELDLISTS_DIFFER
             elif "files seem to be IDENTICAL" in out:
                 files_match = True
+            elif "Failed to open file" in out:
+                raise CIMEError("Failed to open file")
             else:
+                # TODO convert to CIMEError
                 expect(
                     False,
                     "Did not find an expected summary string in cprnc output:\n{}".format(
