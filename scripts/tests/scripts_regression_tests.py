@@ -303,21 +303,21 @@ class J_TestCreateNewcase(unittest.TestCase):
         self.assertTrue(os.path.exists(os.path.join(testdir, "case.setup")))
 
         run_cmd_assert_result(self, "./case.setup", from_dir=testdir)
-        run_cmd_assert_result(self, "./case.build --skip-provenance-check", from_dir=testdir)
+        run_cmd_assert_result(self, "./case.build", from_dir=testdir)
 
         with Case(testdir, read_only=False) as case:
             ntasks = case.get_value("NTASKS_ATM")
             case.set_value("NTASKS_ATM", ntasks+1)
         # this should fail with a locked file issue
-        run_cmd_assert_result(self, "./case.build --skip-provenance-check",
+        run_cmd_assert_result(self, "./case.build",
                               from_dir=testdir, expected_stat=1)
 
         run_cmd_assert_result(self, "./case.setup --reset", from_dir=testdir)
-        run_cmd_assert_result(self, "./case.build --skip-provenance-check", from_dir=testdir)
+        run_cmd_assert_result(self, "./case.build", from_dir=testdir)
         with Case(testdir, read_only=False) as case:
             case.set_value("CHARGE_ACCOUNT", "fred")
         # this should not fail with a locked file issue
-        run_cmd_assert_result(self, "./case.build --skip-provenance-check",from_dir=testdir, expected_stat=0)
+        run_cmd_assert_result(self, "./case.build",from_dir=testdir, expected_stat=0)
 
         run_cmd_assert_result(self, "./case.st_archive --test-all", from_dir=testdir)
 
@@ -488,7 +488,7 @@ class J_TestCreateNewcase(unittest.TestCase):
 
         run_cmd_assert_result(self, "%s/create_newcase %s"%(SCRIPT_DIR, args), from_dir=SCRIPT_DIR)
         run_cmd_assert_result(self, "./case.setup", from_dir=testdir)
-        run_cmd_assert_result(self, "./case.build --skip-provenance-check", from_dir=testdir)
+        run_cmd_assert_result(self, "./case.build", from_dir=testdir)
 
         cls._do_teardown.append(testdir)
 

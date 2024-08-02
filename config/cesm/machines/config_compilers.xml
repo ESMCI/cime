@@ -629,8 +629,8 @@ using a fortran linker.
   </FFLAGS>
   <SUPPORTS_CXX>TRUE</SUPPORTS_CXX>
   <SLIBS>
-    <append> -L$ENV{NETCDF_PATH}/lib -lnetcdff -lnetcdf </append>
-    <append MPILIB="openmpi"> -L$ENV{PNETCDF_PATH}/lib -lpnetcdf</append>
+    <append> -Wl,-rpath,$(NETCDF_PATH)/lib -L$ENV{NETCDF_PATH}/lib -lnetcdff -lnetcdf </append>
+    <append MPILIB="openmpi"> -Wl,-rpath,$(PNETCDF_PATH)/lib -L$ENV{PNETCDF_PATH}/lib -lpnetcdf</append>
   </SLIBS>
 </compiler>
 
