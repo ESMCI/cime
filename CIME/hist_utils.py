@@ -1,6 +1,11 @@
 """
 Functions for actions pertaining to history files.
 """
+import logging
+import os
+import re
+import filecmp
+
 from CIME.XML.standard_module_setup import *
 from CIME.config import Config
 from CIME.test_status import TEST_NO_BASELINES_COMMENT, TEST_STATUS_FILENAME
@@ -11,8 +16,7 @@ from CIME.utils import (
     SharedArea,
     parse_test_name,
 )
-
-import logging, os, re, filecmp
+from CIME.utils import CIMEError
 
 logger = logging.getLogger(__name__)
 
