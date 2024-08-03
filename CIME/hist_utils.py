@@ -774,7 +774,7 @@ def get_ts_synopsis(comments):
             TEST_NO_BASELINES_COMMENT
         )
     elif open_fail:
-        synopsis = "ERROR failed to open files"
+        synopsis = "ERROR CPRNC failed to open files"
     else:
         synopsis = "Could not interpret CPRNC output"
 
