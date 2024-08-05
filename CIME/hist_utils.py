@@ -735,7 +735,7 @@ def get_ts_synopsis(comments):
     >>> get_ts_synopsis('File foo had no compare counterpart in bar with suffix baz\n File foo had no original counterpart in bar with suffix baz\n')
     'DIFF'
     >>> get_ts_synopsis('file1=\nfile2=\nFailed to open file\n')
-    'ERROR failed to open files'
+    'ERROR CPRNC failed to open files'
     >>> get_ts_synopsis('file1=\nfile2=\nSome other error\n')
     'Could not interpret CPRNC output'
     """
