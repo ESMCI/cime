@@ -284,6 +284,7 @@ def submit(
             caseroot=caseroot,
             custom_success_msg_functor=lambda x: x.split(":")[-1],
             is_batch=is_batch,
+            gitinterface=self._gitinterface,
         )
     except BaseException:  # Want to catch KeyboardInterrupt too
         # If something failed in the batch system, make sure to mark

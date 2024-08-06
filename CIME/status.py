@@ -1,6 +1,6 @@
 # These routines were moved from utils.py to avoid circular dependancies
 import time, os, sys, logging
-import CIME.utils
+from CIME.utils import Timeout, CASE_SUCCESS, CASE_FAILURE
 
 logger = logging.getLogger(__name__)
 
@@ -30,7 +30,7 @@ def append_case_status(phase, status, msg=None, caseroot=".", gitinterface=None)
     """
     Update CaseStatus file
     """
-    msg = msg if msg else "no message provided"
+    msg = msg if msg else ""
     append_status(
         "{} {}{}".format(phase, status, msg),
         "CaseStatus",
@@ -38,10 +38,15 @@ def append_case_status(phase, status, msg=None, caseroot=".", gitinterface=None)
     )
     if gitinterface:
         filelist = gitinterface.git_operation("ls-files", "--others", "--modified", "--deleted", "--exclude-standard").splitlines()
+        # Files that should not be added should have been excluded by the .gitignore file
         for f in filelist:
-            logger.info("adding file {}".format(f))
+            logger.debug("adding file {}".format(f))
             gitinterface.git_operation("add",f)
         gitinterface.git_operation("commit","-m","\""+msg+"\"")
+        remote = gitinterface.git_operation("remote")
+        if remote:
+            with Timeout(30):
+                gitinterface.git_operation("push",remote)
     
 def run_and_log_case_status(
         func,
@@ -76,7 +81,7 @@ def run_and_log_case_status(
             )
         e = sys.exc_info()[1]
         append_case_status(
-            phase, CIME.utils.CASE_FAILURE, msg=("\n{}".format(e)), caseroot=caseroot, gitinterface=gitinterface
+            phase, CASE_FAILURE, msg=("\n{}".format(e)), caseroot=caseroot, gitinterface=gitinterface
         )
         raise
     else:
@@ -88,7 +93,7 @@ def run_and_log_case_status(
                 phase, "starting", msg=custom_success_msg, caseroot=caseroot, gitinterface=gitinterface
             )
         append_case_status(
-            phase, CIME.utils.CASE_SUCCESS, msg=custom_success_msg, caseroot=caseroot, gitinterface=gitinterface
+            phase, CASE_SUCCESS, msg=custom_success_msg, caseroot=caseroot, gitinterface=gitinterface
         )
 
     return rv
