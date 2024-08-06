@@ -1385,7 +1385,6 @@ class EnvBatch(EnvBase):
             template = case.get_resolved_value(
                 env_workflow.get_value("template", subgroup=job)
             )
-            print(f"template {template} job {job}")
             if os.path.isabs(template):
                 input_batch_script = template
             else:

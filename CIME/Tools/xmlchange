@@ -266,9 +266,6 @@ def xmlchange_single_value(
         with Timeout(30):
             case._gitinterface.git_operation("remote", "add", "origin", xmlval)
             case._gitinterface.git_operation("push","--set-upstream","origin", branch)
-
-
-                
                 
 def xmlchange(
     caseroot,
