@@ -13,16 +13,17 @@ from CIME.BuildTools.configure import (
     copy_depends_files,
 )
 from CIME.utils import (
-    run_and_log_case_status,
     get_batch_script_for_job,
     safe_copy,
     file_contains_python_function,
     import_from_file,
     copy_local_macros_to_dir,
 )
+from CIME.status import run_and_log_case_status, append_case_status
 from CIME.utils import batch_jobid
 from CIME.test_status import *
 from CIME.locked_files import unlock_file, lock_file, check_lockedfiles
+from CIME.gitinterface import GitInterface
 
 import errno, shutil
 
@@ -487,7 +488,7 @@ def case_setup(self, clean=False, test_mode=False, reset=False, keep=None):
     if is_batch:
         jobid = batch_jobid()
         msg_func = lambda *args: jobid if jobid is not None else ""
-
+        
     if self.get_value("TEST") and not test_mode:
         test_name = casebaseid if casebaseid is not None else self.get_value("CASE")
         with TestStatus(test_dir=caseroot, test_name=test_name) as ts:
@@ -517,3 +518,12 @@ def case_setup(self, clean=False, test_mode=False, reset=False, keep=None):
             caseroot=caseroot,
             is_batch=is_batch,
         )
+    if not os.path.exists(os.path.join(caseroot, ".git")):
+        self._create_case_repo(caseroot)
+
+def _create_case_repo(self, caseroot):
+    self._gitinterface = GitInterface(caseroot,logger,branch=self.get_value("CASE"))
+    safe_copy(os.path.join(self.get_value("CIMEROOT"), "CIME","non_py","gitignore.template"), os.path.join(caseroot,".gitignore"))
+    # add all files in caseroot to local repository
+    self._gitinterface._git_command("add","*")
+    append_case_status("", "", "local git repository created", gitinterface=self._gitinterface)

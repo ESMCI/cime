@@ -7,7 +7,8 @@ from CIME.XML.standard_module_setup import *
 
 from CIME.compare_namelists import is_namelist_file, compare_namelist_files
 from CIME.simple_compare import compare_files, compare_runconfigfiles
-from CIME.utils import append_status, safe_copy, SharedArea
+from CIME.utils import safe_copy, SharedArea
+from CIME.status import append_status
 from CIME.test_status import *
 
 import os, shutil, traceback, stat, glob
@@ -186,7 +187,7 @@ kept in the baselines are pre-RUN namelists."""
                 NAMELIST_PHASE, TEST_PASS_STATUS if success else TEST_FAIL_STATUS
             )
             try:
-                append_status(output, logfile_name, caseroot=caseroot)
+                append_status(output, logfile_name, caseroot=caseroot, gitinterface=self._gitinterface)
             except IOError:
                 pass
 

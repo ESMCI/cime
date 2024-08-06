@@ -8,13 +8,13 @@ import shutil, glob, re, os
 
 from CIME.XML.standard_module_setup import *
 from CIME.utils import (
-    run_and_log_case_status,
     ls_sorted_by_mtime,
     symlink_force,
     safe_copy,
     find_files,
+    batch_jobid,
 )
-from CIME.utils import batch_jobid
+from CIME.status import run_and_log_case_status
 from CIME.date import get_file_date
 from CIME.XML.archive import Archive
 from CIME.XML.files import Files
@@ -1050,6 +1050,7 @@ def case_st_archive(
         custom_success_msg_functor=msg_func,
         caseroot=caseroot,
         is_batch=is_batch,
+        gitinterface=self._gitinterface
     )
 
     logger.info("st_archive completed")

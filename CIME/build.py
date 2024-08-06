@@ -4,11 +4,11 @@ functions for building CIME models
 import glob, shutil, time, threading, subprocess
 from pathlib import Path
 from CIME.XML.standard_module_setup import *
+from CIME.status import run_and_log_case_status
 from CIME.utils import (
     get_model,
     analyze_build_log,
     stringify_bool,
-    run_and_log_case_status,
     get_timestamp,
     run_sub_or_cmd,
     run_cmd,
@@ -1318,7 +1318,7 @@ def case_build(
         cb = cb + " (SHAREDLIB_BUILD)"
     if model_only == True:
         cb = cb + " (MODEL_BUILD)"
-    return run_and_log_case_status(functor, cb, caseroot=caseroot)
+    return run_and_log_case_status(functor, cb, caseroot=caseroot, gitinterface=case._gitinterface)
 
 
 ###############################################################################
