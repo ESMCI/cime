@@ -1,5 +1,5 @@
-ARG MAMBAFORGE_VERSION=4.14.0-0
-FROM condaforge/mambaforge:${MAMBAFORGE_VERSION} AS base
+ARG BASE_TAG=24.3.0-0
+FROM condaforge/miniforge3:${BASE_TAG} AS base
 
 SHELL ["/bin/bash", "-c"]
 
@@ -14,6 +14,7 @@ RUN mkdir -p \
 
 # Install common packages
 RUN mamba install --yes -c conda-forge \
+            'git>=2.28' \
             cmake \
             make \
             wget \
@@ -99,7 +100,7 @@ COPY entrypoint.sh /entrypoint.sh
 
 ENTRYPOINT [ "/entrypoint.sh" ]
 
-FROM base as slurm
+FROM base AS slurm
 
 RUN apt-get update && \
             DEBIAN_FRONTEND=noninteractive \
@@ -112,7 +113,7 @@ COPY slurm/slurm.conf /etc/slurm-llnl/
 COPY slurm/config_batch.xml /root/.cime/
 COPY slurm/entrypoint_batch.sh /entrypoint_batch.sh
 
-FROM base as pbs
+FROM base AS pbs
 
 RUN apt-get update && \
             DEBIAN_FRONTEND=noninteractive \
