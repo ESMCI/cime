@@ -1326,5 +1326,5 @@ def clean(case, cleanlist=None, clean_all=False, clean_depends=None):
     ###############################################################################
     functor = lambda: _clean_impl(case, cleanlist, clean_all, clean_depends)
     return run_and_log_case_status(
-        functor, "build.clean", caseroot=case.get_value("CASEROOT")
+        functor, "build.clean", caseroot=case.get_value("CASEROOT"), gitinterface=case._gitinterface
     )

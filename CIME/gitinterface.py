@@ -38,7 +38,7 @@ class GitInterface:
             except Exception as e:
                 sys.exit(e)
         else:
-            return ["git", "-C", str(self.repo_path), operation] + list(args)
+            return ["git","-C", str(self.repo_path), operation] + list(args)
 
     def _init_git_repo(self, branch=None):
         if self._use_module:
@@ -46,17 +46,17 @@ class GitInterface:
             if branch:
                 self.git_operation("checkout", "-b",branch)
         else:
-            command = ("git", "-C", str(self.repo_path), "init")
+            command = ["git", "-C", str(self.repo_path), "init"]
             if branch:
-                command.extend("-b", branch)
-            utils.execute_subprocess(command)
+                command.extend(["-b", branch])
+            utils.run_cmd_no_fail(" ".join(command))
 
     # pylint: disable=unused-argument
     def git_operation(self, operation, *args, **kwargs):
         command = self._git_command(operation, *args)
         if isinstance(command, list):
             try:
-                return utils.execute_subprocess(command, output_to_caller=True)
+                return utils.run_cmd_no_fail(" ".join(command))
             except Exception as e:
                 sys.exit(e)
         else:
@@ -72,7 +72,7 @@ class GitInterface:
             return val
         else:
             cmd = ("git", "-C", str(self.repo_path), "config", "--get", f"{section}.{name}")
-            output = utils.execute_subprocess(cmd, output_to_caller=True)
+            output = utils.run_cmd_no_fail(cmd)
             return output.strip()
 
     def config_set_value(self, section, name, value):
@@ -83,4 +83,4 @@ class GitInterface:
         else:
             cmd = ("git", "-C", str(self.repo_path), "config", f"{section}.{name}", value)
             self.logger.debug(cmd)
-            utils.execute_subprocess(cmd, output_to_caller=True)
+            utils.run_cmd_no_fail(cmd)

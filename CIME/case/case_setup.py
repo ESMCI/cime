@@ -517,13 +517,14 @@ def case_setup(self, clean=False, test_mode=False, reset=False, keep=None):
             custom_success_msg_functor=msg_func,
             caseroot=caseroot,
             is_batch=is_batch,
+            
         )
-    if not os.path.exists(os.path.join(caseroot, ".git")):
         self._create_case_repo(caseroot)
 
 def _create_case_repo(self, caseroot):
     self._gitinterface = GitInterface(caseroot,logger,branch=self.get_value("CASE"))
-    safe_copy(os.path.join(self.get_value("CIMEROOT"), "CIME","non_py","gitignore.template"), os.path.join(caseroot,".gitignore"))
+    if not os.path.exists(os.path.join(caseroot, ".gitignore")):
+        safe_copy(os.path.join(self.get_value("CIMEROOT"), "CIME","non_py","gitignore.template"), os.path.join(caseroot,".gitignore"))
     # add all files in caseroot to local repository
     self._gitinterface._git_command("add","*")
     append_case_status("", "", "local git repository created", gitinterface=self._gitinterface)
