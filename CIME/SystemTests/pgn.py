@@ -16,7 +16,7 @@ import shutil
 import logging
 
 from collections import OrderedDict
-from distutils import dir_util
+from shutils import copytree
 
 import pandas as pd
 import numpy as np
@@ -24,6 +24,7 @@ import numpy as np
 
 import CIME.test_status
 import CIME.utils
+from CIME.status import append_testlog
 from CIME.SystemTests.system_tests_common import SystemTestsCommon
 from CIME.case.case_setup import case_setup
 from CIME.XML.machines import Machines
@@ -80,7 +81,7 @@ class PGN(SystemTestsCommon):
             if not model_only:
                 # Lay all of the components out concurrently
                 logger.debug(
-                    "PGN_INFO: Updating NINST for multi-instance in " "env_mach_pes.xml"
+                    "PGN_INFO: Updating NINST for multi-instance in env_mach_pes.xml"
                 )
                 for comp in ["ATM", "OCN", "WAV", "GLC", "ICE", "ROF", "LND"]:
                     ntasks = self._case.get_value("NTASKS_{}".format(comp))
@@ -224,10 +225,9 @@ class PGN(SystemTestsCommon):
             urlroot = CIME.utils.get_urlroot(mach_obj)
             if htmlroot is not None:
                 with CIME.utils.SharedArea():
-                    dir_util.copy_tree(
+                    copytree(
                         evv_out_dir,
                         os.path.join(htmlroot, "evv", case_name),
-                        preserve_mode=False,
                     )
                 if urlroot is None:
                     urlroot = "[{}_URL]".format(mach_name.capitalize())
@@ -253,7 +253,7 @@ class PGN(SystemTestsCommon):
                 )
             )
 
-            CIME.utils.append_testlog(comments, self._orig_caseroot)
+            append_testlog(comments, self._orig_caseroot)
 
     def run_phase(self):
         logger.debug("PGN_INFO: RUN PHASE")
