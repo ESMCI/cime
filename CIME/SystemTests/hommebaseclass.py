@@ -4,11 +4,11 @@ CIME HOMME test. This class inherits from SystemTestsCommon
 from CIME.XML.standard_module_setup import *
 from CIME.SystemTests.system_tests_common import SystemTestsCommon
 from CIME.build import post_build
-from CIME.utils import append_testlog, SharedArea
+from CIME.status import append_testlog
+from CIME.utils import SharedArea
 from CIME.test_status import *
 
 import shutil
-from distutils import dir_util
 
 logger = logging.getLogger(__name__)
 
@@ -97,10 +97,9 @@ class HommeBase(SystemTestsCommon):
                     shutil.rmtree(full_baseline_dir)
 
                 with SharedArea():
-                    dir_util.copy_tree(
+                    shutil.copytree(
                         os.path.join(exeroot, "tests", "baseline"),
                         full_baseline_dir,
-                        preserve_mode=False,
                     )
 
         elif compare:
