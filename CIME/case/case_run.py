@@ -16,6 +16,7 @@ TERMINATION_TEXT = ("HAS ENDED", "END OF MODEL RUN", "SUCCESSFUL TERMINATION")
 
 logger = logging.getLogger(__name__)
 
+
 ###############################################################################
 def _pre_run_check(case, lid, skip_pnl=False, da_cycle=0):
     ###############################################################################
@@ -181,7 +182,7 @@ def _run_model_impl(case, lid, skip_pnl=False, da_cycle=0):
                 custom_success_msg_functor=msg_func,
                 caseroot=case.get_value("CASEROOT"),
                 is_batch=is_batch,
-                gitinterface=case._gitinterface
+                gitinterface=case._gitinterface,
             )
             cmd_success = True
         except CIMEError:

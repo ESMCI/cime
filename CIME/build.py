@@ -1318,7 +1318,9 @@ def case_build(
         cb = cb + " (SHAREDLIB_BUILD)"
     if model_only == True:
         cb = cb + " (MODEL_BUILD)"
-    return run_and_log_case_status(functor, cb, caseroot=caseroot, gitinterface=case._gitinterface)
+    return run_and_log_case_status(
+        functor, cb, caseroot=caseroot, gitinterface=case._gitinterface
+    )
 
 
 ###############################################################################
@@ -1326,5 +1328,8 @@ def clean(case, cleanlist=None, clean_all=False, clean_depends=None):
     ###############################################################################
     functor = lambda: _clean_impl(case, cleanlist, clean_all, clean_depends)
     return run_and_log_case_status(
-        functor, "build.clean", caseroot=case.get_value("CASEROOT"), gitinterface=case._gitinterface
+        functor,
+        "build.clean",
+        caseroot=case.get_value("CASEROOT"),
+        gitinterface=case._gitinterface,
     )

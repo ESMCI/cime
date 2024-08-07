@@ -1,7 +1,7 @@
-import os
 import sys
-from . import utils
+from CIME.utils import run_cmd_no_fail
 from pathlib import Path
+
 
 class GitInterface:
     def __init__(self, repo_path, logger, branch=None):
@@ -38,25 +38,25 @@ class GitInterface:
             except Exception as e:
                 sys.exit(e)
         else:
-            return ["git","-C", str(self.repo_path), operation] + list(args)
+            return ["git", "-C", str(self.repo_path), operation] + list(args)
 
     def _init_git_repo(self, branch=None):
         if self._use_module:
             self.repo = self.git.Repo.init(str(self.repo_path))
             if branch:
-                self.git_operation("checkout", "-b",branch)
+                self.git_operation("checkout", "-b", branch)
         else:
             command = ["git", "-C", str(self.repo_path), "init"]
             if branch:
                 command.extend(["-b", branch])
-            utils.run_cmd_no_fail(" ".join(command))
+            run_cmd_no_fail(" ".join(command))
 
     # pylint: disable=unused-argument
     def git_operation(self, operation, *args, **kwargs):
         command = self._git_command(operation, *args)
         if isinstance(command, list):
             try:
-                return utils.run_cmd_no_fail(" ".join(command))
+                return run_cmd_no_fail(" ".join(command))
             except Exception as e:
                 sys.exit(e)
         else:
@@ -71,8 +71,15 @@ class GitInterface:
                 val = None
             return val
         else:
-            cmd = ("git", "-C", str(self.repo_path), "config", "--get", f"{section}.{name}")
-            output = utils.run_cmd_no_fail(cmd)
+            cmd = (
+                "git",
+                "-C",
+                str(self.repo_path),
+                "config",
+                "--get",
+                f"{section}.{name}",
+            )
+            output = run_cmd_no_fail(cmd)
             return output.strip()
 
     def config_set_value(self, section, name, value):
@@ -81,6 +88,13 @@ class GitInterface:
                 writer.set_value(section, name, value)
             writer.release()  # Ensure changes are saved
         else:
-            cmd = ("git", "-C", str(self.repo_path), "config", f"{section}.{name}", value)
+            cmd = (
+                "git",
+                "-C",
+                str(self.repo_path),
+                "config",
+                f"{section}.{name}",
+                value,
+            )
             self.logger.debug(cmd)
-            utils.run_cmd_no_fail(cmd)
+            run_cmd_no_fail(cmd)

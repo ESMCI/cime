@@ -25,6 +25,7 @@ GLOBAL = {}
 CASE_SUCCESS = "success"
 CASE_FAILURE = "error"
 
+
 def deprecate_action(message):
     class ActionStoreDeprecated(Action):
         def __call__(self, parser, namespace, values, option_string=None):
@@ -1749,7 +1750,6 @@ def convert_to_type(value, type_str, vid=""):
     vid is only for generating better error messages.
     """
     if value is not None:
-
         if type_str == "char":
             pass
 
@@ -1795,7 +1795,6 @@ def convert_to_unknown_type(value):
     Convert value to it's real type by probing conversions.
     """
     if value is not None:
-
         # Attempt to convert to logical
         if value.upper() in ["TRUE", "FALSE"]:
             return value.upper() == "TRUE"

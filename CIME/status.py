@@ -4,7 +4,8 @@ from CIME.utils import Timeout, CASE_SUCCESS, CASE_FAILURE
 
 logger = logging.getLogger(__name__)
 
-def append_status(msg, sfile, caseroot=".", gitinterface=None):
+
+def append_status(msg, sfile, caseroot="."):
     """
     Append msg to sfile in caseroot
     """
@@ -13,17 +14,17 @@ def append_status(msg, sfile, caseroot=".", gitinterface=None):
     # Reduce empty lines in CaseStatus. It's a very concise file
     # and does not need extra newlines for readability
     line_ending = "\n"
-    
+
     with open(os.path.join(caseroot, sfile), "a") as fd:
         fd.write(ctime + msg + line_ending)
         fd.write(" ---------------------------------------------------" + line_ending)
-    
 
-def append_testlog(msg, caseroot=".", gitinterface=None):
+
+def append_testlog(msg, caseroot="."):
     """
     Add to TestStatus.log file
     """
-    append_status(msg, "TestStatus.log", caseroot, gitinterface=gitinterface)
+    append_status(msg, "TestStatus.log", caseroot)
 
 
 def append_case_status(phase, status, msg=None, caseroot=".", gitinterface=None):
@@ -37,31 +38,36 @@ def append_case_status(phase, status, msg=None, caseroot=".", gitinterface=None)
         caseroot,
     )
     if gitinterface:
-        filelist = gitinterface.git_operation("ls-files", "--deleted", "--exclude-standard").splitlines()
+        filelist = gitinterface.git_operation(
+            "ls-files", "--deleted", "--exclude-standard"
+        ).splitlines()
         # First delete files that have been removed
         for f in filelist:
             logger.debug("removing file {}".format(f))
-            gitinterface.git_operation("rm",f)
-        filelist = gitinterface.git_operation("ls-files", "--others", "--modified", "--exclude-standard").splitlines()
+            gitinterface.git_operation("rm", f)
+        filelist = gitinterface.git_operation(
+            "ls-files", "--others", "--modified", "--exclude-standard"
+        ).splitlines()
         # Files that should not be added should have been excluded by the .gitignore file
         for f in filelist:
             logger.debug("adding file {}".format(f))
-            gitinterface.git_operation("add",f)
+            gitinterface.git_operation("add", f)
         msg = msg if msg else " no message provided"
-        gitinterface.git_operation("commit","-m","\""+msg+"\"")
+        gitinterface.git_operation("commit", "-m", '"' + msg + '"')
         remote = gitinterface.git_operation("remote")
         if remote:
             with Timeout(30):
-                gitinterface.git_operation("push",remote)
-    
+                gitinterface.git_operation("push", remote)
+
+
 def run_and_log_case_status(
-        func,
-        phase,
-        caseroot=".",
-        custom_starting_msg_functor=None,
-        custom_success_msg_functor=None,
-        is_batch=False,
-        gitinterface = None,
+    func,
+    phase,
+    caseroot=".",
+    custom_starting_msg_functor=None,
+    custom_success_msg_functor=None,
+    is_batch=False,
+    gitinterface=None,
 ):
     starting_msg = None
 
@@ -71,7 +77,13 @@ def run_and_log_case_status(
     # Delay appending "starting" on "case.subsmit" phase when batch system is
     # present since we don't have the jobid yet
     if phase != "case.submit" or not is_batch:
-        append_case_status(phase, "starting", msg=starting_msg, caseroot=caseroot, gitinterface=gitinterface)
+        append_case_status(
+            phase,
+            "starting",
+            msg=starting_msg,
+            caseroot=caseroot,
+            gitinterface=gitinterface,
+        )
     rv = None
     try:
         rv = func()
@@ -83,11 +95,19 @@ def run_and_log_case_status(
         )
         if phase == "case.submit" and is_batch:
             append_case_status(
-                phase, "starting", msg=custom_success_msg, caseroot=caseroot, gitinterface=gitinterface
+                phase,
+                "starting",
+                msg=custom_success_msg,
+                caseroot=caseroot,
+                gitinterface=gitinterface,
             )
         e = sys.exc_info()[1]
         append_case_status(
-            phase, CASE_FAILURE, msg=("\n{}".format(e)), caseroot=caseroot, gitinterface=gitinterface
+            phase,
+            CASE_FAILURE,
+            msg=("\n{}".format(e)),
+            caseroot=caseroot,
+            gitinterface=gitinterface,
         )
         raise
     else:
@@ -96,12 +116,18 @@ def run_and_log_case_status(
         )
         if phase == "case.submit" and is_batch:
             append_case_status(
-                phase, "starting", msg=custom_success_msg, caseroot=caseroot, gitinterface=gitinterface
+                phase,
+                "starting",
+                msg=custom_success_msg,
+                caseroot=caseroot,
+                gitinterface=gitinterface,
             )
         append_case_status(
-            phase, CASE_SUCCESS, msg=custom_success_msg, caseroot=caseroot, gitinterface=gitinterface
+            phase,
+            CASE_SUCCESS,
+            msg=custom_success_msg,
+            caseroot=caseroot,
+            gitinterface=gitinterface,
         )
 
     return rv
-
-

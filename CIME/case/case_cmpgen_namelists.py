@@ -12,7 +12,6 @@ from CIME.status import append_status
 from CIME.test_status import *
 
 import os, shutil, traceback, stat, glob
-from distutils import dir_util
 
 logger = logging.getLogger(__name__)
 
@@ -94,7 +93,7 @@ def _do_full_nl_gen_impl(case, test, generate_name, baseline_root=None):
     if os.path.isdir(baseline_casedocs):
         shutil.rmtree(baseline_casedocs)
 
-    dir_util.copy_tree(casedoc_dir, baseline_casedocs, preserve_mode=False)
+    shutil.copytree(casedoc_dir, baseline_casedocs)
 
     for item in glob.glob(os.path.join(test_dir, "user_nl*")):
         preexisting_baseline = os.path.join(baseline_dir, os.path.basename(item))
@@ -187,7 +186,11 @@ kept in the baselines are pre-RUN namelists."""
                 NAMELIST_PHASE, TEST_PASS_STATUS if success else TEST_FAIL_STATUS
             )
             try:
-                append_status(output, logfile_name, caseroot=caseroot, gitinterface=self._gitinterface)
+                append_status(
+                    output,
+                    logfile_name,
+                    caseroot=caseroot,
+                )
             except IOError:
                 pass
 

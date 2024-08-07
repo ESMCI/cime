@@ -919,7 +919,6 @@ class EnvBatch(EnvBase):
         resubmit_immediate=False,
         workflow=True,
     ):
-
         if not dry_run:
             logger.warning("Submit job {}".format(job))
         batch_system = self.get_value("BATCH_SYSTEM", subgroup=None)
@@ -1080,14 +1079,14 @@ class EnvBatch(EnvBase):
                 submitargs,
                 run_args,
                 batchredirect,
-                os.path.join(self._caseroot,get_batch_script_for_job(job)),
+                os.path.join(self._caseroot, get_batch_script_for_job(job)),
             )
         else:
             sequence = (
                 batchsubmit,
                 submitargs,
                 batchredirect,
-                os.path.join(self._caseroot,get_batch_script_for_job(job)),
+                os.path.join(self._caseroot, get_batch_script_for_job(job)),
                 run_args,
             )
 

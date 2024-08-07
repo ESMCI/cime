@@ -100,7 +100,6 @@ class Case(object):
     )
 
     def __init__(self, case_root=None, read_only=True, record=False, non_local=False):
-
         if case_root is None:
             case_root = os.getcwd()
         expect(
@@ -201,12 +200,13 @@ class Case(object):
                             mach == probed_machine,
                             f"Current machine {probed_machine} does not match case machine {mach}.",
                         )
-                if os.path.exists(os.path.join(self.get_value("CASEROOT"),".git")):
-                    self._gitinterface = GitInterface(self.get_value("CASEROOT"),logger)
-
+                if os.path.exists(os.path.join(self.get_value("CASEROOT"), ".git")):
+                    self._gitinterface = GitInterface(
+                        self.get_value("CASEROOT"), logger
+                    )
 
             self.initialize_derived_attributes()
-            
+
     def get_baseline_dir(self):
         baseline_root = self.get_value("BASELINE_ROOT")
 
@@ -687,7 +687,6 @@ class Case(object):
         # Loop through all of the files listed in COMPSETS_SPEC_FILE and find the file
         # that has a match for either the alias or the longname in that order
         for component in components:
-
             # Determine the compsets file for this component
             compsets_filename = files.get_value(
                 "COMPSETS_SPEC_FILE", {"component": component}
@@ -1289,7 +1288,6 @@ class Case(object):
         gpu_type=None,
         gpu_offload=None,
     ):
-
         expect(
             check_name(compset_name, additional_chars="."),
             "Invalid compset name {}".format(compset_name),

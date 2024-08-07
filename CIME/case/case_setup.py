@@ -488,7 +488,7 @@ def case_setup(self, clean=False, test_mode=False, reset=False, keep=None):
     if is_batch:
         jobid = batch_jobid()
         msg_func = lambda *args: jobid if jobid is not None else ""
-        
+
     if self.get_value("TEST") and not test_mode:
         test_name = casebaseid if casebaseid is not None else self.get_value("CASE")
         with TestStatus(test_dir=caseroot, test_name=test_name) as ts:
@@ -517,14 +517,21 @@ def case_setup(self, clean=False, test_mode=False, reset=False, keep=None):
             custom_success_msg_functor=msg_func,
             caseroot=caseroot,
             is_batch=is_batch,
-            
         )
         self._create_case_repo(caseroot)
 
+
 def _create_case_repo(self, caseroot):
-    self._gitinterface = GitInterface(caseroot,logger,branch=self.get_value("CASE"))
+    self._gitinterface = GitInterface(caseroot, logger, branch=self.get_value("CASE"))
     if not os.path.exists(os.path.join(caseroot, ".gitignore")):
-        safe_copy(os.path.join(self.get_value("CIMEROOT"), "CIME","non_py","gitignore.template"), os.path.join(caseroot,".gitignore"))
+        safe_copy(
+            os.path.join(
+                self.get_value("CIMEROOT"), "CIME", "non_py", "gitignore.template"
+            ),
+            os.path.join(caseroot, ".gitignore"),
+        )
     # add all files in caseroot to local repository
-    self._gitinterface._git_command("add","*")
-    append_case_status("", "", "local git repository created", gitinterface=self._gitinterface)
+    self._gitinterface._git_command("add", "*")
+    append_case_status(
+        "", "", "local git repository created", gitinterface=self._gitinterface
+    )
