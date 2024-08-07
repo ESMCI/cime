@@ -37,7 +37,12 @@ def append_case_status(phase, status, msg=None, caseroot=".", gitinterface=None)
         caseroot,
     )
     if gitinterface:
-        filelist = gitinterface.git_operation("ls-files", "--others", "--modified", "--deleted", "--exclude-standard").splitlines()
+        filelist = gitinterface.git_operation("ls-files", "--deleted", "--exclude-standard").splitlines()
+        # First delete files that have been removed
+        for f in filelist:
+            logger.debug("removing file {}".format(f))
+            gitinterface.git_operation("rm",f)
+        filelist = gitinterface.git_operation("ls-files", "--others", "--modified", "--exclude-standard").splitlines()
         # Files that should not be added should have been excluded by the .gitignore file
         for f in filelist:
             logger.debug("adding file {}".format(f))
