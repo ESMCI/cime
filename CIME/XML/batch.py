@@ -34,6 +34,8 @@ class Batch(GenericXML):
         if infile is None:
             infile = files.get_value("BATCH_SPEC_FILE")
 
+        config_dir = os.path.dirname(infile)
+
         schema = files.get_schema("BATCH_SPEC_FILE")
 
         GenericXML.__init__(self, infile, schema=schema)
@@ -50,12 +52,20 @@ class Batch(GenericXML):
         #
         # This could cause problems if node matches are repeated when only one is expected.
         infile = os.path.join(os.environ.get("HOME"), ".cime", "config_batch.xml")
+        usehome = False
         if os.path.exists(infile):
             GenericXML.read(self, infile)
+            usehome = True
+        useextra = False
         if extra_machines_dir:
             infile = os.path.join(extra_machines_dir, "config_batch.xml")
             if os.path.exists(infile):
                 GenericXML.read(self, infile)
+                useextra = True
+        if not usehome and not useextra:
+            batchfile = os.path.join(config_dir, self.machine, "config_batch.xml")
+            if os.path.exists(batchfile):
+                GenericXML.read(self, batchfile)
 
         if self.batch_system is not None:
             self.set_batch_system(self.batch_system, machine=machine)
