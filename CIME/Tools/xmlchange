@@ -21,7 +21,7 @@ Examples:
       ./xmlchange --id REST_N --val 4
 
    To set a variable in which the value has commas, you'll need to use
-   the alternaltive syntax:
+   the alternative syntax:
       ./xmlchange --id VARNAME --val "one,two"
 
    Several xml variables that have settings for each component have somewhat special treatment.
