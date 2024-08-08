@@ -536,7 +536,11 @@ def _create_case_repo(self, caseroot):
         if not os.path.exists(os.path.join(caseroot, ".gitignore")):
             safe_copy(
                 os.path.join(
-                    self.get_value("CIMEROOT"), "CIME", "non_py", "gitignore.template"
+                    self.get_value("CIMEROOT"),
+                    "CIME",
+                    "data",
+                    "templates",
+                    "gitignore.template",
                 ),
                 os.path.join(caseroot, ".gitignore"),
             )
