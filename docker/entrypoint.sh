@@ -135,15 +135,11 @@ then
 fi
 
 function create_environment() {
-    conda env export -n base --no-build > base.yaml
-
-    sed -i"" "s/\(.*- python=\).*/\1$1/g" base.yaml
-
-    conda env create -n base-$1 --file base.yaml
+    mamba create -n cime-$1 --file /cime.yaml python=$1
 
     source /opt/conda/etc/profile.d/conda.sh
 
-    conda activate base-$1
+    conda activate cime-$1
 }
 
 exec "${@}"
