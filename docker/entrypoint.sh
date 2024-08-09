@@ -134,4 +134,14 @@ then
     . "/entrypoint_batch.sh"
 fi
 
+function create_environment() {
+    conda env export -n base --no-build > base.yaml
+
+    sed -i"" "s/\(.*- python=\).*/\1$1/g" base.yaml
+
+    conda env create -n base-$1 --file base.yaml
+
+    conda activate base-$1
+}
+
 exec "${@}"
