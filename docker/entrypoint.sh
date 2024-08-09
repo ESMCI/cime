@@ -141,6 +141,8 @@ function create_environment() {
 
     conda env create -n base-$1 --file base.yaml
 
+    source /opt/conda/etc/profile.d/conda.sh
+
     conda activate base-$1
 }
 
