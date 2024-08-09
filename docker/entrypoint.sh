@@ -135,7 +135,8 @@ then
 fi
 
 function create_environment() {
-    mamba create -n cime-$1 --file /cime.yaml python=$1
+    mamba create -n cime-$1 python=$1
+    mamba env update -n cime-$1 -f /cime.yaml
 
     source /opt/conda/etc/profile.d/conda.sh
 
