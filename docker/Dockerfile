@@ -12,53 +12,14 @@ RUN mkdir -p \
     wget -O /storage/inputdata/share/domains/domain.ocn.ne4np4_oQU240.160614.nc https://portal.nersc.gov/project/e3sm/inputdata/share/domains/domain.ocn.ne4np4_oQU240.160614.nc && \
     wget -O /storage/inputdata/share/domains/domain.lnd.ne4np4_oQU240.160614.nc https://portal.nersc.gov/project/e3sm/inputdata/share/domains/domain.lnd.ne4np4_oQU240.160614.nc
 
-# Install common packages
-RUN mamba install --yes -c conda-forge \
-            'git>=2.28' \
-            cmake \
-            make \
-            wget \
-            curl \
-            subversion \
-            m4 \
-            pytest \
-            pytest-cov\
-            pyyaml \
-            vim \
-            rsync \
-            openssh && \
-            rm -rf /opt/conda/pkgs/*
+COPY cime.yaml /cime.yaml
 
-# Compilers and libraries
-ARG LIBNETCDF_VERSION=4.9.1
-ENV LIBNETCDF_VERSION=${LIBNETCDF_VERSION}
-ARG NETCDF_FORTRAN_VERSION=*
-ENV NETCDF_FORTRAN_VERSION=${NETCDF_FORTRAN_VERSION}
-ARG ESMF_VERSION=*
-ENV ESMF_VERSION=${ESMF_VERSION}
-ARG GCC_VERSION=10.*
-ENV GCC_VERSION=${GCC_VERSION}
-
-# Install version locked packages
-# gcc, gxx, gfortran provide symlinks for x86_64-conda-linux-gnu-*
-# ar and ranlib are not symlinked
-RUN mamba install --yes -c conda-forge \
-            lapack \
-            blas \
-            libnetcdf=${LIBNETCDF_VERSION}=*openmpi* \
-            netcdf-fortran=${NETCDF_FORTRAN_VERSION}=*openmpi* \
-            esmf=${ESMF_VERSION}=*openmpi* \
-            gcc_linux-64=${GCC_VERSION} \
-            gxx_linux-64=${GCC_VERSION} \
-            openmpi-mpifort \
-            gfortran_linux-64=${GCC_VERSION} \
-            gcc \
-            gxx \
-            gfortran && \
-            rm -rf /opt/conda/pkgs/* && \
-            ln -sf /opt/conda/bin/x86_64-conda-linux-gnu-ar /opt/conda/bin/ar && \
-            ln -sf /opt/conda/bin/x86_64-conda-linux-gnu-ranlib /opt/conda/bin/ranlib && \
-            cpan install XML::LibXML Switch
+RUN mamba env update -f /cime.yaml && \
+    rm -rf /opt/conda/pkgs/* && \
+    ln -sf /opt/conda/bin/x86_64-conda-linux-gnu-ar /opt/conda/bin/ar && \
+    ln -sf /opt/conda/bin/x86_64-conda-linux-gnu-ranlib /opt/conda/bin/ranlib && \
+    # need compilers
+    cpan install XML::LibXML Switch
 
 ARG PNETCDF_VERSION=1.12.3
 ENV PNETCDF_VERSION=${PNETCDF_VERSION}
