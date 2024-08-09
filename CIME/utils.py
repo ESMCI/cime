@@ -22,6 +22,8 @@ logger = logging.getLogger(__name__)
 # Fix to pass user defined `srcroot` to `CIME.XML.generic_xml.GenericXML`
 # where it's used to resolve $SRCROOT in XML config files.
 GLOBAL = {}
+CASE_SUCCESS = "success"
+CASE_FAILURE = "error"
 
 
 def deprecate_action(message):
@@ -1748,7 +1750,6 @@ def convert_to_type(value, type_str, vid=""):
     vid is only for generating better error messages.
     """
     if value is not None:
-
         if type_str == "char":
             pass
 
@@ -1794,7 +1795,6 @@ def convert_to_unknown_type(value):
     Convert value to it's real type by probing conversions.
     """
     if value is not None:
-
         # Attempt to convert to logical
         if value.upper() in ["TRUE", "FALSE"]:
             return value.upper() == "TRUE"
@@ -2054,39 +2054,6 @@ def format_time(time_format, input_format, input_time):
             output_time += "0" * min_len_spec[spec]
         output_time += field[1:]
     return output_time
-
-
-def append_status(msg, sfile, caseroot="."):
-    """
-    Append msg to sfile in caseroot
-    """
-    ctime = time.strftime("%Y-%m-%d %H:%M:%S: ")
-
-    # Reduce empty lines in CaseStatus. It's a very concise file
-    # and does not need extra newlines for readability
-    line_ending = "\n"
-
-    with open(os.path.join(caseroot, sfile), "a") as fd:
-        fd.write(ctime + msg + line_ending)
-        fd.write(" ---------------------------------------------------" + line_ending)
-
-
-def append_testlog(msg, caseroot="."):
-    """
-    Add to TestStatus.log file
-    """
-    append_status(msg, "TestStatus.log", caseroot)
-
-
-def append_case_status(phase, status, msg=None, caseroot="."):
-    """
-    Update CaseStatus file
-    """
-    append_status(
-        "{} {}{}".format(phase, status, " {}".format(msg if msg else "")),
-        "CaseStatus",
-        caseroot,
-    )
 
 
 def does_file_have_string(filepath, text):
@@ -2455,60 +2422,6 @@ def indent_string(the_string, indent_level):
 
 def verbatim_success_msg(return_val):
     return return_val
-
-
-CASE_SUCCESS = "success"
-CASE_FAILURE = "error"
-
-
-def run_and_log_case_status(
-    func,
-    phase,
-    caseroot=".",
-    custom_starting_msg_functor=None,
-    custom_success_msg_functor=None,
-    is_batch=False,
-):
-    starting_msg = None
-
-    if custom_starting_msg_functor is not None:
-        starting_msg = custom_starting_msg_functor()
-
-    # Delay appending "starting" on "case.subsmit" phase when batch system is
-    # present since we don't have the jobid yet
-    if phase != "case.submit" or not is_batch:
-        append_case_status(phase, "starting", msg=starting_msg, caseroot=caseroot)
-    rv = None
-    try:
-        rv = func()
-    except BaseException:
-        custom_success_msg = (
-            custom_success_msg_functor(rv)
-            if custom_success_msg_functor and rv is not None
-            else None
-        )
-        if phase == "case.submit" and is_batch:
-            append_case_status(
-                phase, "starting", msg=custom_success_msg, caseroot=caseroot
-            )
-        e = sys.exc_info()[1]
-        append_case_status(
-            phase, CASE_FAILURE, msg=("\n{}".format(e)), caseroot=caseroot
-        )
-        raise
-    else:
-        custom_success_msg = (
-            custom_success_msg_functor(rv) if custom_success_msg_functor else None
-        )
-        if phase == "case.submit" and is_batch:
-            append_case_status(
-                phase, "starting", msg=custom_success_msg, caseroot=caseroot
-            )
-        append_case_status(
-            phase, CASE_SUCCESS, msg=custom_success_msg, caseroot=caseroot
-        )
-
-    return rv
 
 
 def _check_for_invalid_args(args):

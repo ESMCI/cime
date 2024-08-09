@@ -1,5 +1,6 @@
 import CIME.compare_namelists, CIME.simple_compare
-from CIME.utils import append_status, EnvironmentContext, parse_test_name
+from CIME.status import append_status
+from CIME.utils import EnvironmentContext, parse_test_name
 from CIME.test_status import *
 from CIME.hist_utils import compare_baseline, get_ts_synopsis
 from CIME.case import Case

@@ -8,19 +8,20 @@ import shutil, glob, re, os
 
 from CIME.XML.standard_module_setup import *
 from CIME.utils import (
-    run_and_log_case_status,
     ls_sorted_by_mtime,
     symlink_force,
     safe_copy,
     find_files,
+    batch_jobid,
 )
-from CIME.utils import batch_jobid
+from CIME.status import run_and_log_case_status
 from CIME.date import get_file_date
 from CIME.XML.archive import Archive
 from CIME.XML.files import Files
 from os.path import isdir, join
 
 logger = logging.getLogger(__name__)
+
 
 ###############################################################################
 def _get_archive_fn_desc(archive_fn):
@@ -179,7 +180,6 @@ def _archive_rpointer_files(
         # Generate rpointer file(s) for interim restarts for the one datename and each
         # possible value of ninst_strings
         if save_interim_restart_files:
-
             # parse env_archive.xml to determine the rpointer files
             # and contents for the given archive_entry tag
             rpointer_items = archive.get_rpointer_contents(archive_entry)
@@ -445,7 +445,7 @@ def _archive_restarts_date(
 
     histfiles_savein_rundir_by_compname = {}
 
-    for (archive_entry, compname, compclass) in _get_component_archive_entries(
+    for archive_entry, compname, compclass in _get_component_archive_entries(
         components, archive
     ):
         if compclass:
@@ -879,7 +879,7 @@ def _archive_process(
 
     # archive history files
 
-    for (_, compname, compclass) in _get_component_archive_entries(components, archive):
+    for _, compname, compclass in _get_component_archive_entries(components, archive):
         if compclass:
             logger.info(
                 "Archiving history files for {} ({})".format(compname, compclass)
@@ -1050,6 +1050,7 @@ def case_st_archive(
         custom_success_msg_functor=msg_func,
         caseroot=caseroot,
         is_batch=is_batch,
+        gitinterface=self._gitinterface,
     )
 
     logger.info("st_archive completed")

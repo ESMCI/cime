@@ -4,8 +4,8 @@ Base class for CIME system tests
 from CIME.XML.standard_module_setup import *
 from CIME.XML.env_run import EnvRun
 from CIME.XML.env_test import EnvTest
+from CIME.status import append_testlog
 from CIME.utils import (
-    append_testlog,
     get_model,
     safe_copy,
     get_timestamp,

@@ -5,7 +5,8 @@ the fortran unit tests; grid and compset are ignored.
 from CIME.XML.standard_module_setup import *
 from CIME.SystemTests.system_tests_common import SystemTestsCommon
 from CIME.build import post_build
-from CIME.utils import append_testlog, get_cime_root
+from CIME.status import append_testlog
+from CIME.utils import get_cime_root
 from CIME.test_status import *
 
 logger = logging.getLogger(__name__)
