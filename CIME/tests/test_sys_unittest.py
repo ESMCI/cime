@@ -24,6 +24,7 @@ class TestUnitTest(base.BaseTestCase):
 
     def _has_unit_test_support(self):
         cmake_macros_dir = Files().get_value("CMAKE_MACROS_DIR")
+        cmake_machine_macros_dir = os.path.join(cmake_macros_dir, "..", self._machine)
 
         macros_to_check = [
             os.path.join(
@@ -39,6 +40,11 @@ class TestUnitTest(base.BaseTestCase):
             os.path.join(
                 os.environ.get("HOME"), ".cime", "{}.cmake".format(self._machine)
             ),
+            os.path.join(
+                cmake_machine_macros_dir,
+                "{}_{}.cmake".format(self._compiler, self._machine),
+            ),
+            os.path.join(cmake_machine_macros_dir, "{}.cmake".format(self._machine)),
         ]
 
         for macro_to_check in macros_to_check:

@@ -160,9 +160,13 @@ def _create_macros_cmake(
     ]
     for macro in macros:
         repo_macro = os.path.join(cmake_macros_dir, macro)
+        mach_repo_macro = os.path.join(cmake_macros_dir, "..", mach, macro)
         case_macro = os.path.join(case_cmake_path, macro)
-        if not os.path.exists(case_macro) and os.path.exists(repo_macro):
-            safe_copy(repo_macro, case_cmake_path)
+        if not os.path.exists(case_macro):
+            if os.path.exists(mach_repo_macro):
+                safe_copy(mach_repo_macro, case_cmake_path)
+            elif os.path.exists(repo_macro):
+                safe_copy(repo_macro, case_cmake_path)
 
     copy_depends_files(mach, mach_obj.machines_dir, caseroot, compiler)
 
