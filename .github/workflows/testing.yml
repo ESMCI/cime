@@ -113,9 +113,10 @@ jobs:
           export CIME_REMOTE=https://github.com/${{ github.event.pull_request.head.repo.full_name || github.repository }}
           export CIME_BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF##*/}}
 
-          mamba install -y python=${{ matrix.python-version }}
-
           source /entrypoint.sh
+
+          # from 'entrypoint.sh', create and activate new environment
+          create_environment ${{ matrix.python-version }}
 
           # GitHub runner home is different than container
           cp -rf /root/.cime /github/home/
