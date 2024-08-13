@@ -352,6 +352,7 @@ def xmlchange(
             skip=["env_case"],
             caseroot=caseroot,
             whitelist=xmlfile,
+            quiet=True
         )
 
     if not noecho:
