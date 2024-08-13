@@ -66,6 +66,7 @@ import re
 # Set logger
 logger = logging.getLogger("xmlchange")
 
+
 ###############################################################################
 def parse_command_line(args, description):
     ###############################################################################
@@ -259,7 +260,6 @@ def xmlchange(
     dryrun,
     non_local,
 ):
-
     with Case(caseroot, read_only=False, record=True, non_local=non_local) as case:
         comp_classes = case.get_values("COMP_CLASSES")
         env_test = None
@@ -279,7 +279,6 @@ def xmlchange(
 
             # Change values
             for setting in listofsettings:
-
                 pair = setting.split("=", 1)
                 expect(
                     len(pair) == 2,
@@ -314,10 +313,7 @@ def xmlchange(
             )
 
         check_lockedfiles(
-            case,
-            skip=["env_case"],
-            caseroot=caseroot,
-            whitelist=xmlfile,
+            case, skip=["env_case"], caseroot=caseroot, whitelist=xmlfile, quiet=True
         )
 
     if not noecho:
