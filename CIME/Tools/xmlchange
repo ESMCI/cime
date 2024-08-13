@@ -348,11 +348,7 @@ def xmlchange(
             )
 
         check_lockedfiles(
-            case,
-            skip=["env_case"],
-            caseroot=caseroot,
-            whitelist=xmlfile,
-            quiet=True
+            case, skip=["env_case"], caseroot=caseroot, whitelist=xmlfile, quiet=True
         )
 
     if not noecho:
