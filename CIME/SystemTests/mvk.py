@@ -10,10 +10,11 @@ import os
 import json
 import logging
 
-from distutils import dir_util
+from shutils import copytree
 
 import CIME.test_status
 import CIME.utils
+from CIME.status import append_testlog
 from CIME.SystemTests.system_tests_common import SystemTestsCommon
 from CIME.case.case_setup import case_setup
 from CIME.XML.machines import Machines
@@ -173,10 +174,9 @@ class MVK(SystemTestsCommon):
             urlroot = CIME.utils.get_urlroot(mach_obj)
             if htmlroot is not None:
                 with CIME.utils.SharedArea():
-                    dir_util.copy_tree(
+                    copytree(
                         evv_out_dir,
                         os.path.join(htmlroot, "evv", case_name),
-                        preserve_mode=False,
                     )
                 if urlroot is None:
                     urlroot = "[{}_URL]".format(mach_name.capitalize())
@@ -203,4 +203,4 @@ class MVK(SystemTestsCommon):
                 )
             )
 
-            CIME.utils.append_testlog(comments, self._orig_caseroot)
+            append_testlog(comments, self._orig_caseroot)

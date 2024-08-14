@@ -919,7 +919,6 @@ class EnvBatch(EnvBase):
         resubmit_immediate=False,
         workflow=True,
     ):
-
         if not dry_run:
             logger.warning("Submit job {}".format(job))
         batch_system = self.get_value("BATCH_SYSTEM", subgroup=None)
@@ -1080,19 +1079,19 @@ class EnvBatch(EnvBase):
                 submitargs,
                 run_args,
                 batchredirect,
-                get_batch_script_for_job(job),
+                os.path.join(self._caseroot, get_batch_script_for_job(job)),
             )
         else:
             sequence = (
                 batchsubmit,
                 submitargs,
                 batchredirect,
-                get_batch_script_for_job(job),
+                os.path.join(self._caseroot, get_batch_script_for_job(job)),
                 run_args,
             )
 
         submitcmd = " ".join(s.strip() for s in sequence if s is not None)
-        if submitcmd.startswith("ssh"):
+        if submitcmd.startswith("ssh") and "$CASEROOT" in submitcmd:
             # add ` before cd $CASEROOT and at end of command
             submitcmd = submitcmd.replace("cd $CASEROOT", "'cd $CASEROOT") + "'"
 
@@ -1385,7 +1384,6 @@ class EnvBatch(EnvBase):
             template = case.get_resolved_value(
                 env_workflow.get_value("template", subgroup=job)
             )
-
             if os.path.isabs(template):
                 input_batch_script = template
             else:
