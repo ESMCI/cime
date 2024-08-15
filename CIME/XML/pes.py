@@ -33,7 +33,7 @@ class Pes(GenericXML):
         # Get any override nodes
         overrides = self.get_optional_child("overrides")
         ocomments = None
-        
+
         if overrides is not None:
             o_grid_nodes = self.get_children("grid", root=overrides)
             (
@@ -91,8 +91,16 @@ class Pes(GenericXML):
         logger.info("Pes other settings append: {}".format(os_append))
         if comments is not None:
             logger.info("Pes comments: {}".format(comments))
-            
-        return pes_ntasks, pes_nthrds, pes_rootpe, pes_pstrid, other_settings, os_append, comments
+
+        return (
+            pes_ntasks,
+            pes_nthrds,
+            pes_rootpe,
+            pes_pstrid,
+            other_settings,
+            os_append,
+            comments,
+        )
 
     def _find_matches(
         self, grid_nodes, grid, compset, machine, pesize_opts, override=False
@@ -133,7 +141,6 @@ class Pes(GenericXML):
                                 compset_match == "any"
                                 or re.search(compset_match, compset)
                             ):
-
                                 points = (
                                     int(grid_match != "any") * 3
                                     + int(mach_match != "any") * 7
@@ -169,7 +176,9 @@ class Pes(GenericXML):
                                         # if the value is already upper case its something else we are trying to set
                                         else:
                                             other_settings[vid] = self.text(node)
-                                            append[vid] = self.get(node,"append",default="false")
+                                            append[vid] = self.get(
+                                                node, "append", default="false"
+                                            )
                                 else:
                                     if points > max_points:
                                         pe_select = pes_node
@@ -236,4 +245,12 @@ class Pes(GenericXML):
             if pesize_choice != "any" or logger.isEnabledFor(logging.DEBUG):
                 logger.info("Pes setting: pesize match  is {} ".format(pesize_choice))
 
-        return pes_ntasks, pes_nthrds, pes_rootpe, pes_pstrid, other_settings, append, comment
+        return (
+            pes_ntasks,
+            pes_nthrds,
+            pes_rootpe,
+            pes_pstrid,
+            other_settings,
+            append,
+            comment,
+        )

@@ -1219,14 +1219,23 @@ class Case(object):
         mach_pes_obj.add_comment(comment)
 
         if other is not None:
-            logger.info("setting additional fields from config_pes: {}, append {}".format(other,append))
+            logger.info(
+                "setting additional fields from config_pes: {}, append {}".format(
+                    other, append
+                )
+            )
             for key, value in list(other.items()):
                 ovalue = ""
-                if value.startswith('"') and value.endswith('"') or value.startswith('\'') and value.endswith('\''):
+                if (
+                    value.startswith('"')
+                    and value.endswith('"')
+                    or value.startswith("'")
+                    and value.endswith("'")
+                ):
                     value = value[1:-1]
                 if append[key]:
                     ovalue = self.get_value(key)
-                
+
                 self.set_value(key, value + " " + ovalue)
 
         totaltasks = []
