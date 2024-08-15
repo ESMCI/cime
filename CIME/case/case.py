@@ -1163,6 +1163,7 @@ class Case(object):
         pes_rootpe = {}
         pes_pstrid = {}
         other = {}
+        append = {}
         comment = None
         force_tasks = None
         force_thrds = None
