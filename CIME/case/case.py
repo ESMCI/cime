@@ -270,10 +270,10 @@ class Case(object):
             self.tasks_per_node = env_mach_pes.get_tasks_per_node(
                 self.total_tasks, self.thread_count
             )
-
             self.num_nodes, self.spare_nodes = env_mach_pes.get_total_nodes(
                 self.total_tasks, self.thread_count
             )
+
             self.num_nodes += self.spare_nodes
 
         logger.debug(

@@ -234,6 +234,8 @@ def submit(
     caseroot = self.get_value("CASEROOT")
     if self.get_value("TEST"):
         casebaseid = self.get_value("CASEBASEID")
+        if os.path.exists(os.path.join(caseroot, "env_test.xml")):
+            self.set_initial_test_values()
         # This should take care of the race condition where the submitted job
         # begins immediately and tries to set RUN phase. We proactively assume
         # a passed SUBMIT phase. If this state is already PASS, don't set it again
