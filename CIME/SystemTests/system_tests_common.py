@@ -117,7 +117,8 @@ class SystemTestsCommon(object):
         self._dry_run = False
         self._user_separate_builds = False
         self._expected_num_cmp = None
-
+        self._rest_n = None
+        
     def _set_restart_interval(self):
         stop_n = self._case.get_value("STOP_N")
         stop_option = self._case.get_value("STOP_OPTION")
