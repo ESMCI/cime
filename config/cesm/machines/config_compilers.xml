@@ -311,7 +311,7 @@ using a fortran linker.
   <SFC> nagfor </SFC>
 </compiler>
 
-<compiler COMPILER="pgi">
+<compiler COMPILER="nvhpc">
   <CFLAGS>
     <base> -gopt  -time </base>
     <append compile_threaded="true"> -mp </append>
@@ -615,19 +615,23 @@ using a fortran linker.
   </CFLAGS>
 </compiler>
 
-<compiler MACH="bluewaters" COMPILER="pgi">
+<compiler MACH="vista" COMPILER="nvhpc">
   <CFLAGS>
     <append DEBUG="FALSE"> -O2 </append>
     <append> -nofma </append>
   </CFLAGS>
   <CXX_LIBS>
-    <base> -lmpichf90_pgi $ENV{PGI_PATH}/linux86-64/$ENV{PGI_VERSION}/lib/f90main.o </base>
+    <base>  </base>
   </CXX_LIBS>
   <FFLAGS>
     <append DEBUG="FALSE"> -O2 </append>
     <append> -nofma </append>
   </FFLAGS>
   <SUPPORTS_CXX>TRUE</SUPPORTS_CXX>
+  <SLIBS>
+    <append> -Wl,-rpath,$(NETCDF_PATH)/lib -L$ENV{NETCDF_PATH}/lib -lnetcdff -lnetcdf </append>
+    <append MPILIB="openmpi"> -Wl,-rpath,$(PNETCDF_PATH)/lib -L$ENV{PNETCDF_PATH}/lib -lpnetcdf</append>
+  </SLIBS>
 </compiler>
 
 

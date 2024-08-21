@@ -603,7 +603,7 @@ class EnvBatch(EnvBase):
         if batch_system is None or batch_system == "none" or no_batch:
             logger.info("Starting job script {}".format(job))
             function_name = job.replace(".", "_")
-            job_name = "."+job
+            job_name = os.path.join(self._caseroot,job)
             if not dry_run:
                 args = self._build_run_args(job, True, skip_pnl=skip_pnl, set_continue_run=resubmit_immediate,
                                             submit_resubmits=not resubmit_immediate)
@@ -688,16 +688,16 @@ class EnvBatch(EnvBase):
         if batch_system == 'lsf' and batch_env_flag == 'none':
             sequence = (run_args, batchsubmit, submitargs, batchredirect, get_batch_script_for_job(job))
         elif batch_env_flag:
-            sequence = (batchsubmit, submitargs, run_args, batchredirect, get_batch_script_for_job(job))
+            sequence = (batchsubmit, submitargs, run_args, batchredirect, os.path.join(self._caseroot,get_batch_script_for_job(job)))
         else:
-            sequence = (batchsubmit, submitargs, batchredirect, get_batch_script_for_job(job), run_args)
+            sequence = (batchsubmit, submitargs, batchredirect, os.path.join(self._caseroot,get_batch_script_for_job(job)), run_args)
 
         submitcmd = " ".join(s.strip() for s in sequence if s is not None)
         if dry_run:
             return submitcmd
         else:
             logger.info("Submitting job script {}".format(submitcmd))
-            output = run_cmd_no_fail(submitcmd, combine_output=True)
+            s, output, _ = run_cmd(submitcmd, combine_output=True)
             jobid = self.get_job_id(output)
             logger.info("Submitted job id is {}".format(jobid))
             return jobid

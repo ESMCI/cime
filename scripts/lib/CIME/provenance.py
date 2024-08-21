@@ -83,7 +83,7 @@ def _save_build_provenance_cesm(case, lid): # pylint: disable=unused-argument
     manic = os.path.join("manage_externals","checkout_externals")
     manic_full_path = os.path.join(srcroot, manic)
     out = None
-    if os.path.exists(manic_full_path):
+    if shutil.which('svn') and os.path.exists(manic_full_path):
         args = " --status --verbose --no-logging"
         stat, out, err = run_cmd(manic_full_path + args, from_dir=srcroot)
         errmsg = """Error gathering provenance information from manage_externals.
