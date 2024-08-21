@@ -207,10 +207,13 @@ def _hists_match(model, hists1, hists2, suffix1="", suffix2=""):
                     : len(normalized_name) - len(suffix) - 1
                 ]
 
-            m = re.search("(.+)_[0-9]{4}(.+.nc)", normalized_name)
+            m = re.search("(.+)_[0-9]{4}(.*.nc)", normalized_name)
             if m is not None:
                 multiinst = True
-                multi_normalized.append(m.group(1) + m.group(2))
+                if m.group(1).endswith(".") and m.group(2).startswith("."):
+                    multi_normalized.append(m.group(1) + m.group(2)[1:])
+                else:
+                    multi_normalized.append(m.group(1) + m.group(2))
 
             normalized.append(normalized_name)
 
