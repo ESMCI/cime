@@ -44,7 +44,7 @@ def _run_pylint(all_files, interactive):
     #     cmd_options +=",relative-import"
 
     # add init-hook option
-    cmd_options += ' --init-hook=\'sys.path.extend(("%s","%s","%s","%s"))\'' % (
+    cmd_options += ' --init-hook=\'import sys; sys.path.extend(("%s","%s","%s","%s"))\'' % (
         os.path.join(cimeroot, "CIME"),
         os.path.join(cimeroot, "CIME", "Tools"),
         os.path.join(cimeroot, "scripts", "fortran_unit_testing", "python"),
