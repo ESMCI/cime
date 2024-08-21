@@ -27,11 +27,13 @@ class Pes(GenericXML):
         opes_pstrid = {}
         oother_settings = {}
         other_settings = {}
+        append = {}
         o_grid_nodes = []
         comments = None
         # Get any override nodes
         overrides = self.get_optional_child("overrides")
         ocomments = None
+
         if overrides is not None:
             o_grid_nodes = self.get_children("grid", root=overrides)
             (
@@ -40,11 +42,11 @@ class Pes(GenericXML):
                 opes_rootpe,
                 opes_pstrid,
                 oother_settings,
+                append,
                 ocomments,
             ) = self._find_matches(
                 o_grid_nodes, grid, compset, machine, pesize_opts, True
             )
-
         # Get all the nodes
         grid_nodes = self.get_children("grid")
         if o_grid_nodes:
@@ -59,6 +61,7 @@ class Pes(GenericXML):
             pes_rootpe,
             pes_pstrid,
             other_settings,
+            os_append,
             comments,
         ) = self._find_matches(grid_nodes, grid, compset, machine, pesize_opts, False)
         pes_ntasks.update(opes_ntasks)
@@ -66,6 +69,7 @@ class Pes(GenericXML):
         pes_rootpe.update(opes_rootpe)
         pes_pstrid.update(opes_pstrid)
         other_settings.update(oother_settings)
+        os_append.update(append)
         if ocomments is not None:
             comments = ocomments
 
@@ -84,10 +88,19 @@ class Pes(GenericXML):
         logger.info("Pes setting: rootpe      is {} ".format(pes_rootpe))
         logger.info("Pes setting: pstrid      is {} ".format(pes_pstrid))
         logger.info("Pes other settings: {}".format(other_settings))
+        logger.info("Pes other settings append: {}".format(os_append))
         if comments is not None:
             logger.info("Pes comments: {}".format(comments))
 
-        return pes_ntasks, pes_nthrds, pes_rootpe, pes_pstrid, other_settings, comments
+        return (
+            pes_ntasks,
+            pes_nthrds,
+            pes_rootpe,
+            pes_pstrid,
+            other_settings,
+            os_append,
+            comments,
+        )
 
     def _find_matches(
         self, grid_nodes, grid, compset, machine, pesize_opts, override=False
@@ -97,7 +110,8 @@ class Pes(GenericXML):
         compset_choice = None
         pesize_choice = None
         max_points = -1
-        pes_ntasks, pes_nthrds, pes_rootpe, pes_pstrid, other_settings = (
+        pes_ntasks, pes_nthrds, pes_rootpe, pes_pstrid, other_settings, append = (
+            {},
             {},
             {},
             {},
@@ -127,7 +141,6 @@ class Pes(GenericXML):
                                 compset_match == "any"
                                 or re.search(compset_match, compset)
                             ):
-
                                 points = (
                                     int(grid_match != "any") * 3
                                     + int(mach_match != "any") * 7
@@ -161,9 +174,11 @@ class Pes(GenericXML):
                                                     self.name(child).upper()
                                                 ] = int(self.text(child))
                                         # if the value is already upper case its something else we are trying to set
-                                        elif vid == self.name(node):
+                                        else:
                                             other_settings[vid] = self.text(node)
-
+                                            append[vid] = self.get(
+                                                node, "append", default="false"
+                                            )
                                 else:
                                     if points > max_points:
                                         pe_select = pes_node
@@ -230,4 +245,12 @@ class Pes(GenericXML):
             if pesize_choice != "any" or logger.isEnabledFor(logging.DEBUG):
                 logger.info("Pes setting: pesize match  is {} ".format(pesize_choice))
 
-        return pes_ntasks, pes_nthrds, pes_rootpe, pes_pstrid, other_settings, comment
+        return (
+            pes_ntasks,
+            pes_nthrds,
+            pes_rootpe,
+            pes_pstrid,
+            other_settings,
+            append,
+            comment,
+        )

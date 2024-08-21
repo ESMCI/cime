@@ -1163,6 +1163,7 @@ class Case(object):
         pes_rootpe = {}
         pes_pstrid = {}
         other = {}
+        append = {}
         comment = None
         force_tasks = None
         force_thrds = None
@@ -1191,6 +1192,7 @@ class Case(object):
                 pes_rootpe,
                 pes_pstrid,
                 other,
+                append,
                 comment,
             ) = pesobj.find_pes_layout(
                 self._gridname,
@@ -1218,9 +1220,24 @@ class Case(object):
         mach_pes_obj.add_comment(comment)
 
         if other is not None:
-            logger.info("setting additional fields from config_pes: {}".format(other))
+            logger.info(
+                "setting additional fields from config_pes: {}, append {}".format(
+                    other, append
+                )
+            )
             for key, value in list(other.items()):
-                self.set_value(key, value)
+                ovalue = ""
+                if (
+                    value.startswith('"')
+                    and value.endswith('"')
+                    or value.startswith("'")
+                    and value.endswith("'")
+                ):
+                    value = value[1:-1]
+                if append[key]:
+                    ovalue = self.get_value(key)
+
+                self.set_value(key, value + " " + ovalue)
 
         totaltasks = []
         for comp_class in self._component_classes:
