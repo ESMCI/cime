@@ -169,7 +169,6 @@ class Case(object):
         # Command Line user_mods are handled seperately
 
         # Derived attributes
-        self.mem_per_node = None
         self.thread_count = None
         self.total_tasks = None
         self.tasks_per_node = None
@@ -266,11 +265,10 @@ class Case(object):
             self.tasks_per_node = env_mach_pes.get_tasks_per_node(
                 self.total_tasks, self.thread_count
             )
-            self.mem_per_node = 230 / max_mpitasks_per_node * self.tasks_per_node
-
             self.num_nodes, self.spare_nodes = env_mach_pes.get_total_nodes(
                 self.total_tasks, self.thread_count
             )
+
             self.num_nodes += self.spare_nodes
 
         logger.debug(

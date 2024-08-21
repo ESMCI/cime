@@ -28,7 +28,7 @@ class ERR(RestartTest):
     def _case_one_setup(self):
         super(ERR, self)._case_one_setup()
         self._case.set_value("DOUT_S", True)
-        
+
     def _case_two_setup(self):
         super(ERR, self)._case_two_setup()
         self._case.set_value("DOUT_S", False)

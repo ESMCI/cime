@@ -14,7 +14,7 @@ class ERS(SystemTestsCommon):
         initialize an object interface to the ERS system test
         """
         SystemTestsCommon.__init__(self, case, **kwargs)
-        
+
     def _ers_first_phase(self):
         self._rest_n = self._set_restart_interval()
         self.run_indv()
