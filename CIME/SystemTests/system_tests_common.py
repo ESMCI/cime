@@ -185,7 +185,8 @@ class SystemTestsCommon(object):
             )
         )
         self._case.set_value("REST_N", rest_n)
-        
+        return rest_n
+    
     def _init_environment(self, caseroot):
         """
         Do initializations of environment variables that are needed in __init__

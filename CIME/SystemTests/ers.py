@@ -16,19 +16,18 @@ class ERS(SystemTestsCommon):
         SystemTestsCommon.__init__(self, case, **kwargs)
         
     def _ers_first_phase(self):
-        self._set_restart_interval()
+        self._rest_n = self._set_restart_interval()
         self.run_indv()
 
     def _ers_second_phase(self):
         stop_n = self._case.get_value("STOP_N")
         stop_option = self._case.get_value("STOP_OPTION")
 
-        rest_n = int(stop_n / 2 + 1)
-        stop_new = stop_n - rest_n
+        stop_new = stop_n - self._rest_n
         expect(
             stop_new > 0,
             "ERROR: stop_n value {:d} too short {:d} {:d}".format(
-                stop_new, stop_n, rest_n
+                stop_new, stop_n, self._rest_n
             ),
         )
         rundir = self._case.get_value("RUNDIR")
