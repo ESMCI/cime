@@ -1,6 +1,7 @@
 """
 Base class for CIME system tests
 """
+
 from CIME.XML.standard_module_setup import *
 from CIME.XML.env_run import EnvRun
 from CIME.XML.env_test import EnvTest
@@ -118,7 +119,7 @@ class SystemTestsCommon(object):
         self._user_separate_builds = False
         self._expected_num_cmp = None
         self._rest_n = None
-        
+
     def _set_restart_interval(self):
         stop_n = self._case.get_value("STOP_N")
         stop_option = self._case.get_value("STOP_OPTION")
@@ -127,7 +128,6 @@ class SystemTestsCommon(object):
         # value that makes sense for all components
         maxncpl = 10000
         minncpl = 0
-        maxcomp = None
         for comp in self._case.get_values("COMP_CLASSES"):
             if comp == "CPL":
                 continue
@@ -141,7 +141,6 @@ class SystemTestsCommon(object):
 
             if ncpl and maxncpl > ncpl:
                 maxncpl = ncpl
-                maxcomp = comp
             if ncpl and minncpl < ncpl:
                 minncpl = ncpl
 
@@ -175,8 +174,8 @@ class SystemTestsCommon(object):
             expect(False, f"stop_option {stop_option} not available for this test")
 
         stop_n = int(stop_n * factor // coupling_secs)
-        rest_n = int((stop_n//2 + 1) * coupling_secs / factor)
-                        
+        rest_n = int((stop_n // 2 + 1) * coupling_secs / factor)
+
         expect(stop_n > 0, "Bad STOP_N: {:d}".format(stop_n))
 
         expect(stop_n > 2, "ERROR: stop_n value {:d} too short".format(stop_n))
@@ -187,7 +186,7 @@ class SystemTestsCommon(object):
         )
         self._case.set_value("REST_N", rest_n)
         return rest_n
-    
+
     def _init_environment(self, caseroot):
         """
         Do initializations of environment variables that are needed in __init__
