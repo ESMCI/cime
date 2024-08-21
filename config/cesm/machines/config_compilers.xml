@@ -125,10 +125,10 @@ using a fortran linker.
     <base>  -fconvert=big-endian -ffree-line-length-none -ffixed-line-length-none </base>
     <append compile_threaded="true"> -fopenmp </append>
     <!-- Ideally, we would also have 'invalid' in the ffpe-trap list. But at
-	 least with some versions of gfortran (confirmed with 5.4.0, 6.3.0 and
-	 7.1.0), gfortran's isnan (which is called in cime via the
-	 CPRGNU-specific shr_infnan_isnan) causes a floating point exception
-	 when called on a signaling NaN. -->
+         least with some versions of gfortran (confirmed with 5.4.0, 6.3.0 and
+         7.1.0), gfortran's isnan (which is called in cime via the
+         CPRGNU-specific shr_infnan_isnan) causes a floating point exception
+         when called on a signaling NaN. -->
     <append DEBUG="TRUE"> -g -Wall -Og -fbacktrace -ffpe-trap=zero,overflow -fcheck=bounds </append>
     <append DEBUG="FALSE"> -O </append>
   </FFLAGS>
@@ -749,19 +749,36 @@ using a fortran linker.
 </compiler>
 
 <compiler MACH="derecho">
-  <CFLAGS>
-    <base>  -qno-opt-dynamic-align -fp-model precise -std=gnu99 </base>
-    <append MODEL="mpi-serial"> -std=gnu89 </append>
-  </CFLAGS>
   <NETCDF_PATH>$ENV{NETCDF}</NETCDF_PATH>
   <PNETCDF_PATH>$ENV{PNETCDF}</PNETCDF_PATH>
   <SLIBS>
-    <append> -lnetcdff -lnetcdf </append>
+    <append> -Wl,--copy-dt-needed-entries -lnetcdff -lnetcdf </append>
   </SLIBS>
 </compiler>
 
 <compiler MACH="derecho" COMPILER="intel">
   <CFLAGS>
+    <base>  -qno-opt-dynamic-align -fp-model precise -std=gnu99 </base>
+    <append MODEL="mpi-serial"> -std=gnu89 </append>
+    <append> -march=core-avx2 -no-fma</append>
+  </CFLAGS>
+  <FFLAGS>
+    <append> -march=core-avx2 -no-fma</append>
+  </FFLAGS>
+</compiler>
+
+<compiler MACH="derecho-gpu">
+  <NETCDF_PATH>$ENV{NETCDF}</NETCDF_PATH>
+  <PNETCDF_PATH>$ENV{PNETCDF}</PNETCDF_PATH>
+  <SLIBS>
+    <append> -Wl,--copy-dt-needed-entries -lnetcdff -lnetcdf </append>
+  </SLIBS>
+</compiler>
+
+<compiler MACH="derecho-gpu" COMPILER="intel">
+  <CFLAGS>
+    <base>  -qno-opt-dynamic-align -fp-model precise -std=gnu99 </base>
+    <append MODEL="mpi-serial"> -std=gnu89 </append>
     <append> -march=core-avx2 -no-fma</append>
   </CFLAGS>
   <FFLAGS>
@@ -771,7 +788,7 @@ using a fortran linker.
 
 <compiler MACH="perlmutter" >
   <FFLAGS>
-    <append> -march=core-avx2 -no-fma</append>
+    <append> -march=core-avx2 -no-fma </append>
   </FFLAGS>
   <CFLAGS>
     <append> -march=core-avx2 -no-fma -qno-opt-dynamic-align -fp-model precise -std=gnu99 </append>
@@ -782,6 +799,7 @@ using a fortran linker.
     <append MODEL="^mpi-serial"> -L$(PNETCDF_PATH)/lib -lpnetcdf</append>
   </SLIBS>
 </compiler>
+
 
 
 
@@ -1054,7 +1072,7 @@ using a fortran linker.
 <compiler MACH="homebrew" COMPILER="gnu">
   <LDFLAGS>
     <!-- These LDFLAGS provide lapack and blas support on a Mac. This
-	 may require installation of the Apple Developer Tools. -->
+         may require installation of the Apple Developer Tools. -->
     <append> -framework Accelerate </append>
   </LDFLAGS>
 </compiler>

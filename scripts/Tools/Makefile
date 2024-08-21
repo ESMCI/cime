@@ -217,6 +217,7 @@ else
     endif
   endif
 endif
+
 # Set PETSc info if it is being used
 ifeq ($(strip $(USE_PETSC)), TRUE)
   ifdef PETSC_PATH
@@ -545,6 +546,16 @@ ifdef LIB_MPI
       SLIBS += -L$(LIB_MPI) -l$(MPI_LIB_NAME)
    endif
 endif
+
+# Set python info if it is being used
+ifeq ($(strip $(USE_CONDA)), True)
+  ifdef CONDA_PREFIX
+    SLIBS += -L$(CONDA_PREFIX)/lib -lpython3 -Wl,-rpath,$(CONDA_PREFIX)/lib
+  else
+    $(error CONDA_PREFIX must be defined when USE_CONDA is TRUE)
+  endif
+endif
+
 
 ifdef XIOS_PATH
   SLIBS += -L$(XIOS_PATH)/lib -lxios -lstdc++
