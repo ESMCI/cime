@@ -478,8 +478,74 @@ This is the subclass’ extension point if they need to define a custom run phas
 </dd></dl>
 
 </section>
-<section id="cime-systemtests-mvk-module">
-<h2>CIME.SystemTests.mvk module<a class="headerlink" href="#cime-systemtests-mvk-module" title="Link to this heading"></a></h2>
+<section id="module-CIME.SystemTests.mvk">
+<span id="cime-systemtests-mvk-module"></span><h2>CIME.SystemTests.mvk module<a class="headerlink" href="#module-CIME.SystemTests.mvk" title="Link to this heading"></a></h2>
+<p>Multivariate test for climate reproducibility using the Kolmogrov-Smirnov (K-S)
+test and based on The CESM/E3SM model’s multi-instance capability is used to
+conduct an ensemble of simulations starting from different initial conditions.</p>
+<p>This class inherits from SystemTestsCommon.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="CIME.SystemTests.mvk.MVK">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">CIME.SystemTests.mvk.</span></span><span class="sig-name descname"><span class="pre">MVK</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">case</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/SystemTests/mvk.html#MVK"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.SystemTests.mvk.MVK" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#CIME.SystemTests.system_tests_common.SystemTestsCommon" title="CIME.SystemTests.system_tests_common.SystemTestsCommon"><code class="xref py py-class docutils literal notranslate"><span class="pre">SystemTestsCommon</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="CIME.SystemTests.mvk.MVK.build_phase">
+<span class="sig-name descname"><span class="pre">build_phase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sharedlib_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/SystemTests/mvk.html#MVK.build_phase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.SystemTests.mvk.MVK.build_phase" title="Link to this definition"></a></dt>
+<dd><p>This is the default build phase implementation, it just does an individual build.
+This is the subclass’ extension point if they need to define a custom build
+phase.</p>
+<p>PLEASE THROW EXCEPTION ON FAIL</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CIME.SystemTests.mvk.MVK.process_evv_output">
+<span class="sig-name descname"><span class="pre">process_evv_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">evv_out_dir</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/SystemTests/mvk.html#MVK.process_evv_output"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.SystemTests.mvk.MVK.process_evv_output" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CIME.SystemTests.mvk.MVK.update_testlog">
+<span class="sig-name descname"><span class="pre">update_testlog</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">test_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">case_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">evv_out_dir</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/SystemTests/mvk.html#MVK.update_testlog"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.SystemTests.mvk.MVK.update_testlog" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="CIME.SystemTests.mvk.MVKConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">CIME.SystemTests.mvk.</span></span><span class="sig-name descname"><span class="pre">MVKConfig</span></span><a class="reference internal" href="../_modules/CIME/SystemTests/mvk.html#MVKConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.SystemTests.mvk.MVKConfig" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="CIME.html#CIME.config.ConfigBase" title="CIME.config.ConfigBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConfigBase</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="CIME.SystemTests.mvk.MVKConfig.evv_test_config">
+<span class="sig-name descname"><span class="pre">evv_test_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">case</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/SystemTests/mvk.html#MVKConfig.evv_test_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.SystemTests.mvk.MVKConfig.evv_test_config" title="Link to this definition"></a></dt>
+<dd><p>Customize the evv4esm configuration.</p>
+<p>This method is used to customize the default evv4esm configuration
+or generate a completely new one.</p>
+<p>The return configuration will be written to <cite>$RUNDIR/$CASE.json</cite>.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>case (CIME.case.case.Case): The case instance.
+config (dict): Default evv4esm configuration.</p>
+</dd>
+<dt>Returns:</dt><dd><p>dict: Dictionary with test configuration.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CIME.SystemTests.mvk.MVKConfig.generate_namelist">
+<span class="sig-name descname"><span class="pre">generate_namelist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">case</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">component</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/SystemTests/mvk.html#MVKConfig.generate_namelist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.SystemTests.mvk.MVKConfig.generate_namelist" title="Link to this definition"></a></dt>
+<dd><p>Generate per instance namelist.</p>
+<p>This method is called for each instance to generate the desired
+modifications.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>case (CIME.case.case.Case): The case instance.
+component (str): Component the namelist belongs to.
+i (int): Instance unique number.
+filename (str): Name of the namelist that needs to be created.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 <section id="module-CIME.SystemTests.nck">
 <span id="cime-systemtests-nck-module"></span><h2>CIME.SystemTests.nck module<a class="headerlink" href="#module-CIME.SystemTests.nck" title="Link to this heading"></a></h2>
