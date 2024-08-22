@@ -317,7 +317,7 @@
 
 <div class="viewcode-block" id="TestSystemTestsMVK.test_update_testlog">
 <a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_system_tests_mvk.TestSystemTestsMVK.test_update_testlog">[docs]</a>
-    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.mvk.utils.append_testlog&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.mvk.status.append_testlog&quot;</span><span class="p">)</span>
     <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.mvk.Machines&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">test_update_testlog</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">machines</span><span class="p">,</span> <span class="n">append_testlog</span><span class="p">):</span>
         <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">ExitStack</span><span class="p">()</span> <span class="k">as</span> <span class="n">stack</span><span class="p">:</span>
@@ -358,7 +358,7 @@
 <div class="viewcode-block" id="TestSystemTestsMVK.test_update_testlog_urlroot_None">
 <a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_system_tests_mvk.TestSystemTestsMVK.test_update_testlog_urlroot_None">[docs]</a>
     <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.mvk.utils.get_urlroot&quot;</span><span class="p">)</span>
-    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.mvk.utils.append_testlog&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.mvk.status.append_testlog&quot;</span><span class="p">)</span>
     <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.mvk.Machines&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">test_update_testlog_urlroot_None</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">machines</span><span class="p">,</span> <span class="n">append_testlog</span><span class="p">,</span> <span class="n">get_urlroot</span><span class="p">):</span>
         <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">ExitStack</span><span class="p">()</span> <span class="k">as</span> <span class="n">stack</span><span class="p">:</span>
@@ -402,7 +402,7 @@
 <div class="viewcode-block" id="TestSystemTestsMVK.test_update_testlog_htmlroot">
 <a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_system_tests_mvk.TestSystemTestsMVK.test_update_testlog_htmlroot">[docs]</a>
     <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.mvk.utils.get_htmlroot&quot;</span><span class="p">)</span>
-    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.mvk.utils.append_testlog&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.mvk.status.append_testlog&quot;</span><span class="p">)</span>
     <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.mvk.Machines&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">test_update_testlog_htmlroot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">machines</span><span class="p">,</span> <span class="n">append_testlog</span><span class="p">,</span> <span class="n">get_htmlroot</span><span class="p">):</span>
         <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">ExitStack</span><span class="p">()</span> <span class="k">as</span> <span class="n">stack</span><span class="p">:</span>
@@ -586,7 +586,7 @@
 <div class="viewcode-block" id="TestSystemTestsMVK.test__generate_baseline">
 <a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_system_tests_mvk.TestSystemTestsMVK.test__generate_baseline">[docs]</a>
     <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.mvk.SystemTestsCommon._generate_baseline&quot;</span><span class="p">)</span>
-    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.mvk.utils.append_testlog&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.mvk.status.append_testlog&quot;</span><span class="p">)</span>
     <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.mvk.evv&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">test__generate_baseline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">evv</span><span class="p">,</span> <span class="n">append_testlog</span><span class="p">,</span> <span class="n">_generate_baseline</span><span class="p">):</span>
         <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">ExitStack</span><span class="p">()</span> <span class="k">as</span> <span class="n">stack</span><span class="p">:</span>
@@ -657,7 +657,7 @@
 
 <div class="viewcode-block" id="TestSystemTestsMVK.test__compare_baseline_resubmit">
 <a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_system_tests_mvk.TestSystemTestsMVK.test__compare_baseline_resubmit">[docs]</a>
-    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.mvk.utils.append_testlog&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.mvk.status.append_testlog&quot;</span><span class="p">)</span>
     <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.mvk.evv&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">test__compare_baseline_resubmit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">evv</span><span class="p">,</span> <span class="n">append_testlog</span><span class="p">):</span>
         <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">ExitStack</span><span class="p">()</span> <span class="k">as</span> <span class="n">stack</span><span class="p">:</span>
@@ -692,7 +692,7 @@
 
 <div class="viewcode-block" id="TestSystemTestsMVK.test__compare_baseline">
 <a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_system_tests_mvk.TestSystemTestsMVK.test__compare_baseline">[docs]</a>
-    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.mvk.utils.append_testlog&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.mvk.status.append_testlog&quot;</span><span class="p">)</span>
     <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.mvk.evv&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">test__compare_baseline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">evv</span><span class="p">,</span> <span class="n">append_testlog</span><span class="p">):</span>
         <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">ExitStack</span><span class="p">()</span> <span class="k">as</span> <span class="n">stack</span><span class="p">:</span>
