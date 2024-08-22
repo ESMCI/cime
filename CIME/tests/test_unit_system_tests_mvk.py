@@ -208,7 +208,7 @@ def evv_test_config(case, config):
 
             assert lines == ["var2 = value2\n"]
 
-    @mock.patch("CIME.SystemTests.mvk.utils.append_testlog")
+    @mock.patch("CIME.SystemTests.mvk.status.append_testlog")
     @mock.patch("CIME.SystemTests.mvk.Machines")
     def test_update_testlog(self, machines, append_testlog):
         with contextlib.ExitStack() as stack:
@@ -246,7 +246,7 @@ def evv_test_config(case, config):
             )
 
     @mock.patch("CIME.SystemTests.mvk.utils.get_urlroot")
-    @mock.patch("CIME.SystemTests.mvk.utils.append_testlog")
+    @mock.patch("CIME.SystemTests.mvk.status.append_testlog")
     @mock.patch("CIME.SystemTests.mvk.Machines")
     def test_update_testlog_urlroot_None(self, machines, append_testlog, get_urlroot):
         with contextlib.ExitStack() as stack:
@@ -287,7 +287,7 @@ def evv_test_config(case, config):
             )
 
     @mock.patch("CIME.SystemTests.mvk.utils.get_htmlroot")
-    @mock.patch("CIME.SystemTests.mvk.utils.append_testlog")
+    @mock.patch("CIME.SystemTests.mvk.status.append_testlog")
     @mock.patch("CIME.SystemTests.mvk.Machines")
     def test_update_testlog_htmlroot(self, machines, append_testlog, get_htmlroot):
         with contextlib.ExitStack() as stack:
@@ -462,7 +462,7 @@ test_case = "Default"
             case_setup.assert_any_call(case, test_mode=False, reset=True)
 
     @mock.patch("CIME.SystemTests.mvk.SystemTestsCommon._generate_baseline")
-    @mock.patch("CIME.SystemTests.mvk.utils.append_testlog")
+    @mock.patch("CIME.SystemTests.mvk.status.append_testlog")
     @mock.patch("CIME.SystemTests.mvk.evv")
     def test__generate_baseline(self, evv, append_testlog, _generate_baseline):
         with contextlib.ExitStack() as stack:
@@ -530,7 +530,7 @@ test_case = "Default"
 
             assert files == ["test1.nc", "test2.nc"]
 
-    @mock.patch("CIME.SystemTests.mvk.utils.append_testlog")
+    @mock.patch("CIME.SystemTests.mvk.status.append_testlog")
     @mock.patch("CIME.SystemTests.mvk.evv")
     def test__compare_baseline_resubmit(self, evv, append_testlog):
         with contextlib.ExitStack() as stack:
@@ -562,7 +562,7 @@ test_case = "Default"
 
             _test_status.set_status.assert_any_call("BASELINE", "PASS")
 
-    @mock.patch("CIME.SystemTests.mvk.utils.append_testlog")
+    @mock.patch("CIME.SystemTests.mvk.status.append_testlog")
     @mock.patch("CIME.SystemTests.mvk.evv")
     def test__compare_baseline(self, evv, append_testlog):
         with contextlib.ExitStack() as stack:

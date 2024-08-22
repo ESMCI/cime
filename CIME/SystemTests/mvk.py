@@ -13,6 +13,7 @@ from shutil import copytree
 
 from CIME import test_status
 from CIME import utils
+from CIME.status import append_testlog
 from CIME.SystemTests.system_tests_common import SystemTestsCommon
 from CIME.case.case_setup import case_setup
 from CIME.XML.machines import Machines
@@ -303,7 +304,7 @@ class MVK(SystemTestsCommon):
             )
         )
 
-        utils.append_testlog(comments, self._orig_caseroot)
+        append_testlog(comments, self._orig_caseroot)
 
     def process_evv_output(self, evv_out_dir):
         with open(os.path.join(evv_out_dir, "index.json")) as evv_f:
