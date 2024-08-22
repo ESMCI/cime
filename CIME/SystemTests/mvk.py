@@ -275,7 +275,6 @@ class MVK(SystemTestsCommon):
                 copytree(
                     evv_out_dir,
                     os.path.join(htmlroot, "evv", case_name),
-                    preserve_mode=False,
                 )
 
             if urlroot is None:
