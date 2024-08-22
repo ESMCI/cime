@@ -586,7 +586,14 @@
                 <span class="k">elif</span> <span class="n">phase</span> <span class="ow">in</span> <span class="p">[</span><span class="n">BASELINE_PHASE</span><span class="p">,</span> <span class="n">THROUGHPUT_PHASE</span><span class="p">,</span> <span class="n">MEMCOMP_PHASE</span><span class="p">]:</span>
                     <span class="k">if</span> <span class="n">rv</span> <span class="ow">in</span> <span class="p">[</span><span class="n">NAMELIST_FAIL_STATUS</span><span class="p">,</span> <span class="n">TEST_PASS_STATUS</span><span class="p">]:</span>
                         <span class="n">phase_responsible_for_status</span> <span class="o">=</span> <span class="n">phase</span>
-                        <span class="n">rv</span> <span class="o">=</span> <span class="n">TEST_DIFF_STATUS</span>
+                        <span class="c1"># need to further inspect message to determine</span>
+                        <span class="c1"># phase status</span>
+                        <span class="k">if</span> <span class="s2">&quot;DIFF&quot;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                            <span class="n">rv</span> <span class="o">=</span> <span class="n">TEST_DIFF_STATUS</span>
+                        <span class="k">elif</span> <span class="s2">&quot;ERROR&quot;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                            <span class="n">rv</span> <span class="o">=</span> <span class="n">TEST_FAIL_STATUS</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">rv</span> <span class="o">=</span> <span class="n">TEST_DIFF_STATUS</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="k">pass</span>  <span class="c1"># a DIFF does not trump a FAIL</span>
 

@@ -404,6 +404,14 @@ CIME.tests.test\_unit\_xml\_env\_mach\_specific module
    :undoc-members:
    :show-inheritance:
 
+CIME.tests.test\_unit\_xml\_grids module
+----------------------------------------
+
+.. automodule:: CIME.tests.test_unit_xml_grids
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 CIME.tests.test\_unit\_xml\_machines module
 -------------------------------------------
 

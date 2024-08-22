@@ -176,6 +176,10 @@ Examples:
    compatibility; only works for a single variable at a time):
       ./xmlchange --id REST_N --val 4
 
+   To set a variable in which the value has commas, you&#39;ll need to use
+   the alternative syntax:
+      ./xmlchange --id VARNAME --val &quot;one,two&quot;
+
    Several xml variables that have settings for each component have somewhat special treatment.
    The variables that this currently applies to are:
     NTASKS, NTHRDS, ROOTPE, PIO_TYPENAME, PIO_STRIDE, PIO_NUMTASKS, PIO_ASYNC_INTERFACE

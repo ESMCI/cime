@@ -103,10 +103,12 @@
 <span class="c1"># pylint: disable=import-error,redefined-builtin</span>
 <span class="kn">from</span> <span class="nn">CIME</span> <span class="kn">import</span> <span class="n">utils</span>
 <span class="kn">from</span> <span class="nn">CIME.config</span> <span class="kn">import</span> <span class="n">Config</span>
-<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="n">expect</span><span class="p">,</span> <span class="n">get_cime_root</span><span class="p">,</span> <span class="n">append_status</span>
+<span class="kn">from</span> <span class="nn">CIME.status</span> <span class="kn">import</span> <span class="n">append_status</span>
+<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="n">expect</span><span class="p">,</span> <span class="n">get_cime_root</span>
 <span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="n">convert_to_type</span><span class="p">,</span> <span class="n">get_model</span><span class="p">,</span> <span class="n">set_model</span>
 <span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="n">get_project</span><span class="p">,</span> <span class="n">get_charge_account</span><span class="p">,</span> <span class="n">check_name</span>
 <span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="n">get_current_commit</span><span class="p">,</span> <span class="n">safe_copy</span><span class="p">,</span> <span class="n">get_cime_default_driver</span>
+<span class="kn">from</span> <span class="nn">CIME.gitinterface</span> <span class="kn">import</span> <span class="n">GitInterface</span>
 <span class="kn">from</span> <span class="nn">CIME.locked_files</span> <span class="kn">import</span> <span class="n">LOCKED_DIR</span><span class="p">,</span> <span class="n">lock_file</span>
 <span class="kn">from</span> <span class="nn">CIME.XML.machines</span> <span class="kn">import</span> <span class="n">Machines</span>
 <span class="kn">from</span> <span class="nn">CIME.XML.pes</span> <span class="kn">import</span> <span class="n">Pes</span>
@@ -169,7 +171,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="kn">from</span> <span class="nn">CIME.case.case_setup</span> <span class="kn">import</span> <span class="n">case_setup</span>
+    <span class="kn">from</span> <span class="nn">CIME.case.case_setup</span> <span class="kn">import</span> <span class="n">case_setup</span><span class="p">,</span> <span class="n">_create_case_repo</span>
     <span class="kn">from</span> <span class="nn">CIME.case.case_clone</span> <span class="kn">import</span> <span class="n">create_clone</span><span class="p">,</span> <span class="n">_copy_user_modified_to_clone</span>
     <span class="kn">from</span> <span class="nn">CIME.case.case_test</span> <span class="kn">import</span> <span class="n">case_test</span>
     <span class="kn">from</span> <span class="nn">CIME.case.case_submit</span> <span class="kn">import</span> <span class="n">check_DA_settings</span><span class="p">,</span> <span class="n">check_case</span><span class="p">,</span> <span class="n">submit</span>
@@ -190,7 +192,6 @@
     <span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case_root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">record</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">non_local</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-
         <span class="k">if</span> <span class="n">case_root</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">case_root</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
         <span class="n">expect</span><span class="p">(</span>
@@ -256,7 +257,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_component_description</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_is_env_loaded</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_loaded_envs</span> <span class="o">=</span> <span class="kc">None</span>
-
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gitinterface</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="c1"># these are user_mods as defined in the compset</span>
         <span class="c1"># Command Line user_mods are handled seperately</span>
 
@@ -291,6 +292,10 @@
                             <span class="n">mach</span> <span class="o">==</span> <span class="n">probed_machine</span><span class="p">,</span>
                             <span class="sa">f</span><span class="s2">&quot;Current machine </span><span class="si">{</span><span class="n">probed_machine</span><span class="si">}</span><span class="s2"> does not match case machine </span><span class="si">{</span><span class="n">mach</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">,</span>
                         <span class="p">)</span>
+                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">),</span> <span class="s2">&quot;.git&quot;</span><span class="p">)):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_gitinterface</span> <span class="o">=</span> <span class="n">GitInterface</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">),</span> <span class="n">logger</span>
+                    <span class="p">)</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">initialize_derived_attributes</span><span class="p">()</span>
 
@@ -365,10 +370,10 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">tasks_per_node</span> <span class="o">=</span> <span class="n">env_mach_pes</span><span class="o">.</span><span class="n">get_tasks_per_node</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">total_tasks</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">thread_count</span>
             <span class="p">)</span>
-
             <span class="bp">self</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">spare_nodes</span> <span class="o">=</span> <span class="n">env_mach_pes</span><span class="o">.</span><span class="n">get_total_nodes</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">total_tasks</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">thread_count</span>
             <span class="p">)</span>
+
             <span class="bp">self</span><span class="o">.</span><span class="n">num_nodes</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">spare_nodes</span>
 
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
@@ -828,7 +833,6 @@
         <span class="c1"># Loop through all of the files listed in COMPSETS_SPEC_FILE and find the file</span>
         <span class="c1"># that has a match for either the alias or the longname in that order</span>
         <span class="k">for</span> <span class="n">component</span> <span class="ow">in</span> <span class="n">components</span><span class="p">:</span>
-
             <span class="c1"># Determine the compsets file for this component</span>
             <span class="n">compsets_filename</span> <span class="o">=</span> <span class="n">files</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span>
                 <span class="s2">&quot;COMPSETS_SPEC_FILE&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;component&quot;</span><span class="p">:</span> <span class="n">component</span><span class="p">}</span>
@@ -1317,6 +1321,7 @@
         <span class="n">pes_rootpe</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">pes_pstrid</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">other</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">append</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">comment</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">force_tasks</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">force_thrds</span> <span class="o">=</span> <span class="kc">None</span>
@@ -1345,6 +1350,7 @@
                 <span class="n">pes_rootpe</span><span class="p">,</span>
                 <span class="n">pes_pstrid</span><span class="p">,</span>
                 <span class="n">other</span><span class="p">,</span>
+                <span class="n">append</span><span class="p">,</span>
                 <span class="n">comment</span><span class="p">,</span>
             <span class="p">)</span> <span class="o">=</span> <span class="n">pesobj</span><span class="o">.</span><span class="n">find_pes_layout</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_gridname</span><span class="p">,</span>
@@ -1372,9 +1378,24 @@
         <span class="n">mach_pes_obj</span><span class="o">.</span><span class="n">add_comment</span><span class="p">(</span><span class="n">comment</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">other</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;setting additional fields from config_pes: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">other</span><span class="p">))</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="s2">&quot;setting additional fields from config_pes: </span><span class="si">{}</span><span class="s2">, append </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">other</span><span class="p">,</span> <span class="n">append</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
             <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+                <span class="n">ovalue</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="n">value</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">)</span>
+                    <span class="ow">and</span> <span class="n">value</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">)</span>
+                    <span class="ow">or</span> <span class="n">value</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;&#39;&quot;</span><span class="p">)</span>
+                    <span class="ow">and</span> <span class="n">value</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;&#39;&quot;</span><span class="p">)</span>
+                <span class="p">):</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">append</span><span class="p">[</span><span class="n">key</span><span class="p">]:</span>
+                    <span class="n">ovalue</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">ovalue</span><span class="p">)</span>
 
         <span class="n">totaltasks</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">comp_class</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_component_classes</span><span class="p">:</span>
@@ -1444,7 +1465,6 @@
         <span class="n">gpu_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">gpu_offload</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-
         <span class="n">expect</span><span class="p">(</span>
             <span class="n">check_name</span><span class="p">(</span><span class="n">compset_name</span><span class="p">,</span> <span class="n">additional_chars</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">),</span>
             <span class="s2">&quot;Invalid compset name </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">compset_name</span><span class="p">),</span>

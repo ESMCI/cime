@@ -1050,7 +1050,6 @@
         <span class="n">resubmit_immediate</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">workflow</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
-
         <span class="k">if</span> <span class="ow">not</span> <span class="n">dry_run</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Submit job </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">job</span><span class="p">))</span>
         <span class="n">batch_system</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;BATCH_SYSTEM&quot;</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
@@ -1211,19 +1210,19 @@
                 <span class="n">submitargs</span><span class="p">,</span>
                 <span class="n">run_args</span><span class="p">,</span>
                 <span class="n">batchredirect</span><span class="p">,</span>
-                <span class="n">get_batch_script_for_job</span><span class="p">(</span><span class="n">job</span><span class="p">),</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_caseroot</span><span class="p">,</span> <span class="n">get_batch_script_for_job</span><span class="p">(</span><span class="n">job</span><span class="p">)),</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">sequence</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">batchsubmit</span><span class="p">,</span>
                 <span class="n">submitargs</span><span class="p">,</span>
                 <span class="n">batchredirect</span><span class="p">,</span>
-                <span class="n">get_batch_script_for_job</span><span class="p">(</span><span class="n">job</span><span class="p">),</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_caseroot</span><span class="p">,</span> <span class="n">get_batch_script_for_job</span><span class="p">(</span><span class="n">job</span><span class="p">)),</span>
                 <span class="n">run_args</span><span class="p">,</span>
             <span class="p">)</span>
 
         <span class="n">submitcmd</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">sequence</span> <span class="k">if</span> <span class="n">s</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">submitcmd</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;ssh&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">submitcmd</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;ssh&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">&quot;$CASEROOT&quot;</span> <span class="ow">in</span> <span class="n">submitcmd</span><span class="p">:</span>
             <span class="c1"># add ` before cd $CASEROOT and at end of command</span>
             <span class="n">submitcmd</span> <span class="o">=</span> <span class="n">submitcmd</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;cd $CASEROOT&quot;</span><span class="p">,</span> <span class="s2">&quot;&#39;cd $CASEROOT&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;&#39;&quot;</span>
 
@@ -1557,7 +1556,6 @@
             <span class="n">template</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_resolved_value</span><span class="p">(</span>
                 <span class="n">env_workflow</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;template&quot;</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="n">job</span><span class="p">)</span>
             <span class="p">)</span>
-
             <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="n">template</span><span class="p">):</span>
                 <span class="n">input_batch_script</span> <span class="o">=</span> <span class="n">template</span>
             <span class="k">else</span><span class="p">:</span>

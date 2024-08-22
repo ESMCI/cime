@@ -91,11 +91,12 @@
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Base class for CIME system tests</span>
 <span class="sd">&quot;&quot;&quot;</span>
+
 <span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">CIME.XML.env_run</span> <span class="kn">import</span> <span class="n">EnvRun</span>
 <span class="kn">from</span> <span class="nn">CIME.XML.env_test</span> <span class="kn">import</span> <span class="n">EnvTest</span>
+<span class="kn">from</span> <span class="nn">CIME.status</span> <span class="kn">import</span> <span class="n">append_testlog</span>
 <span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">append_testlog</span><span class="p">,</span>
     <span class="n">get_model</span><span class="p">,</span>
     <span class="n">safe_copy</span><span class="p">,</span>
     <span class="n">get_timestamp</span><span class="p">,</span>
@@ -215,6 +216,74 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_dry_run</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_user_separate_builds</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_expected_num_cmp</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rest_n</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">_set_restart_interval</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">stop_n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;STOP_N&quot;</span><span class="p">)</span>
+        <span class="n">stop_option</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;STOP_OPTION&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;REST_OPTION&quot;</span><span class="p">,</span> <span class="n">stop_option</span><span class="p">)</span>
+        <span class="c1"># We need to make sure the run is long enough and to set REST_N to a</span>
+        <span class="c1"># value that makes sense for all components</span>
+        <span class="n">maxncpl</span> <span class="o">=</span> <span class="mi">10000</span>
+        <span class="n">minncpl</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">comp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_values</span><span class="p">(</span><span class="s2">&quot;COMP_CLASSES&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">comp</span> <span class="o">==</span> <span class="s2">&quot;CPL&quot;</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">compname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;COMP_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">))</span>
+
+            <span class="c1"># ignore stub components in this test.</span>
+            <span class="k">if</span> <span class="n">compname</span> <span class="o">==</span> <span class="s2">&quot;s</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="o">.</span><span class="n">lower</span><span class="p">()):</span>
+                <span class="n">ncpl</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ncpl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_NCPL&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">))</span>
+
+            <span class="k">if</span> <span class="n">ncpl</span> <span class="ow">and</span> <span class="n">maxncpl</span> <span class="o">&gt;</span> <span class="n">ncpl</span><span class="p">:</span>
+                <span class="n">maxncpl</span> <span class="o">=</span> <span class="n">ncpl</span>
+            <span class="k">if</span> <span class="n">ncpl</span> <span class="ow">and</span> <span class="n">minncpl</span> <span class="o">&lt;</span> <span class="n">ncpl</span><span class="p">:</span>
+                <span class="n">minncpl</span> <span class="o">=</span> <span class="n">ncpl</span>
+
+        <span class="n">ncpl_base_period</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;NCPL_BASE_PERIOD&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ncpl_base_period</span> <span class="o">==</span> <span class="s2">&quot;hour&quot;</span><span class="p">:</span>
+            <span class="n">coupling_secs</span> <span class="o">=</span> <span class="mi">3600</span> <span class="o">/</span> <span class="n">maxncpl</span>
+            <span class="n">timestep</span> <span class="o">=</span> <span class="mi">3600</span> <span class="o">/</span> <span class="n">minncpl</span>
+        <span class="k">elif</span> <span class="n">ncpl_base_period</span> <span class="o">==</span> <span class="s2">&quot;day&quot;</span><span class="p">:</span>
+            <span class="n">coupling_secs</span> <span class="o">=</span> <span class="mi">86400</span> <span class="o">/</span> <span class="n">maxncpl</span>
+            <span class="n">timestep</span> <span class="o">=</span> <span class="mi">86400</span> <span class="o">/</span> <span class="n">minncpl</span>
+        <span class="k">elif</span> <span class="n">ncpl_base_period</span> <span class="o">==</span> <span class="s2">&quot;year&quot;</span><span class="p">:</span>
+            <span class="n">coupling_secs</span> <span class="o">=</span> <span class="mi">31536000</span> <span class="o">/</span> <span class="n">maxncpl</span>
+            <span class="n">timestep</span> <span class="o">=</span> <span class="mi">31536000</span> <span class="o">/</span> <span class="n">minncpl</span>
+        <span class="k">elif</span> <span class="n">ncpl_base_period</span> <span class="o">==</span> <span class="s2">&quot;decade&quot;</span><span class="p">:</span>
+            <span class="n">coupling_secs</span> <span class="o">=</span> <span class="mi">315360000</span> <span class="o">/</span> <span class="n">maxncpl</span>
+            <span class="n">timestep</span> <span class="o">=</span> <span class="mi">315360000</span> <span class="o">/</span> <span class="n">minncpl</span>
+
+        <span class="c1"># Convert stop_n to units of coupling intervals</span>
+        <span class="n">factor</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">stop_option</span> <span class="o">==</span> <span class="s2">&quot;nsteps&quot;</span><span class="p">:</span>
+            <span class="n">factor</span> <span class="o">=</span> <span class="n">timestep</span>
+        <span class="k">elif</span> <span class="n">stop_option</span> <span class="o">==</span> <span class="s2">&quot;nminutes&quot;</span><span class="p">:</span>
+            <span class="n">factor</span> <span class="o">=</span> <span class="mi">60</span>
+        <span class="k">elif</span> <span class="n">stop_option</span> <span class="o">==</span> <span class="s2">&quot;nhours&quot;</span><span class="p">:</span>
+            <span class="n">factor</span> <span class="o">=</span> <span class="mi">3600</span>
+        <span class="k">elif</span> <span class="n">stop_option</span> <span class="o">==</span> <span class="s2">&quot;ndays&quot;</span><span class="p">:</span>
+            <span class="n">factor</span> <span class="o">=</span> <span class="mi">86400</span>
+        <span class="k">elif</span> <span class="n">stop_option</span> <span class="o">==</span> <span class="s2">&quot;nyears&quot;</span><span class="p">:</span>
+            <span class="n">factor</span> <span class="o">=</span> <span class="mi">315360000</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">expect</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;stop_option </span><span class="si">{</span><span class="n">stop_option</span><span class="si">}</span><span class="s2"> not available for this test&quot;</span><span class="p">)</span>
+
+        <span class="n">stop_n</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">stop_n</span> <span class="o">*</span> <span class="n">factor</span> <span class="o">//</span> <span class="n">coupling_secs</span><span class="p">)</span>
+        <span class="n">rest_n</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">stop_n</span> <span class="o">//</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">coupling_secs</span> <span class="o">/</span> <span class="n">factor</span><span class="p">)</span>
+
+        <span class="n">expect</span><span class="p">(</span><span class="n">stop_n</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;Bad STOP_N: </span><span class="si">{:d}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">stop_n</span><span class="p">))</span>
+
+        <span class="n">expect</span><span class="p">(</span><span class="n">stop_n</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;ERROR: stop_n value </span><span class="si">{:d}</span><span class="s2"> too short&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">stop_n</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="s2">&quot;doing an </span><span class="si">{0}</span><span class="s2"> </span><span class="si">{1}</span><span class="s2"> initial test with restart file at </span><span class="si">{2}</span><span class="s2"> </span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">stop_n</span><span class="p">),</span> <span class="n">stop_option</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">rest_n</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;REST_N&quot;</span><span class="p">,</span> <span class="n">rest_n</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">rest_n</span>
 
     <span class="k">def</span> <span class="nf">_init_environment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caseroot</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>

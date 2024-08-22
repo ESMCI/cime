@@ -118,7 +118,7 @@
 <span class="kn">from</span> <span class="nn">CIME.XML.files</span> <span class="kn">import</span> <span class="n">Files</span>
 <span class="kn">from</span> <span class="nn">CIME.build</span> <span class="kn">import</span> <span class="n">CmakeTmpBuildDir</span>
 
-<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">shutil</span><span class="o">,</span> <span class="nn">glob</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -164,6 +164,12 @@
         <span class="n">output_cmake_macros_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="s2">&quot;cmake_macros&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">output_cmake_macros_dir</span><span class="p">):</span>
             <span class="n">shutil</span><span class="o">.</span><span class="n">copytree</span><span class="p">(</span><span class="n">new_cmake_macros_dir</span><span class="p">,</span> <span class="n">output_cmake_macros_dir</span><span class="p">)</span>
+            <span class="n">ccs_mach_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="n">new_cmake_macros_dir</span><span class="p">,</span> <span class="s2">&quot;..&quot;</span><span class="p">,</span> <span class="n">machobj</span><span class="o">.</span><span class="n">get_machine_name</span><span class="p">()</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">iglob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ccs_mach_dir</span><span class="p">,</span> <span class="s2">&quot;*.cmake&quot;</span><span class="p">)):</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;copying </span><span class="si">{</span><span class="n">f</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">output_dir</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">safe_copy</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">)</span>
 
         <span class="n">copy_local_macros_to_dir</span><span class="p">(</span>
             <span class="n">output_cmake_macros_dir</span><span class="p">,</span> <span class="n">extra_machdir</span><span class="o">=</span><span class="n">extra_machines_dir</span>

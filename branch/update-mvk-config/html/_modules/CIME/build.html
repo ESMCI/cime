@@ -94,11 +94,11 @@
 <span class="kn">import</span> <span class="nn">glob</span><span class="o">,</span> <span class="nn">shutil</span><span class="o">,</span> <span class="nn">time</span><span class="o">,</span> <span class="nn">threading</span><span class="o">,</span> <span class="nn">subprocess</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">CIME.status</span> <span class="kn">import</span> <span class="n">run_and_log_case_status</span>
 <span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">get_model</span><span class="p">,</span>
     <span class="n">analyze_build_log</span><span class="p">,</span>
     <span class="n">stringify_bool</span><span class="p">,</span>
-    <span class="n">run_and_log_case_status</span><span class="p">,</span>
     <span class="n">get_timestamp</span><span class="p">,</span>
     <span class="n">run_sub_or_cmd</span><span class="p">,</span>
     <span class="n">run_cmd</span><span class="p">,</span>
@@ -1437,7 +1437,9 @@
         <span class="n">cb</span> <span class="o">=</span> <span class="n">cb</span> <span class="o">+</span> <span class="s2">&quot; (SHAREDLIB_BUILD)&quot;</span>
     <span class="k">if</span> <span class="n">model_only</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
         <span class="n">cb</span> <span class="o">=</span> <span class="n">cb</span> <span class="o">+</span> <span class="s2">&quot; (MODEL_BUILD)&quot;</span>
-    <span class="k">return</span> <span class="n">run_and_log_case_status</span><span class="p">(</span><span class="n">functor</span><span class="p">,</span> <span class="n">cb</span><span class="p">,</span> <span class="n">caseroot</span><span class="o">=</span><span class="n">caseroot</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">run_and_log_case_status</span><span class="p">(</span>
+        <span class="n">functor</span><span class="p">,</span> <span class="n">cb</span><span class="p">,</span> <span class="n">caseroot</span><span class="o">=</span><span class="n">caseroot</span><span class="p">,</span> <span class="n">gitinterface</span><span class="o">=</span><span class="n">case</span><span class="o">.</span><span class="n">_gitinterface</span>
+    <span class="p">)</span></div>
 
 
 
@@ -1448,7 +1450,10 @@
     <span class="c1">###############################################################################</span>
     <span class="n">functor</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">_clean_impl</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">cleanlist</span><span class="p">,</span> <span class="n">clean_all</span><span class="p">,</span> <span class="n">clean_depends</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">run_and_log_case_status</span><span class="p">(</span>
-        <span class="n">functor</span><span class="p">,</span> <span class="s2">&quot;build.clean&quot;</span><span class="p">,</span> <span class="n">caseroot</span><span class="o">=</span><span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">)</span>
+        <span class="n">functor</span><span class="p">,</span>
+        <span class="s2">&quot;build.clean&quot;</span><span class="p">,</span>
+        <span class="n">caseroot</span><span class="o">=</span><span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">),</span>
+        <span class="n">gitinterface</span><span class="o">=</span><span class="n">case</span><span class="o">.</span><span class="n">_gitinterface</span><span class="p">,</span>
     <span class="p">)</span></div>
 
 </pre></div>

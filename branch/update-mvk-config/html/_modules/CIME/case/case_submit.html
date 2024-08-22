@@ -98,7 +98,8 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">configparser</span>
 <span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="n">expect</span><span class="p">,</span> <span class="n">run_and_log_case_status</span><span class="p">,</span> <span class="n">CIMEError</span><span class="p">,</span> <span class="n">get_time_in_seconds</span>
+<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="n">expect</span><span class="p">,</span> <span class="n">CIMEError</span><span class="p">,</span> <span class="n">get_time_in_seconds</span>
+<span class="kn">from</span> <span class="nn">CIME.status</span> <span class="kn">import</span> <span class="n">run_and_log_case_status</span>
 <span class="kn">from</span> <span class="nn">CIME.locked_files</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">unlock_file</span><span class="p">,</span>
     <span class="n">lock_file</span><span class="p">,</span>
@@ -325,6 +326,8 @@
     <span class="n">caseroot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;TEST&quot;</span><span class="p">):</span>
         <span class="n">casebaseid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEBASEID&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="s2">&quot;env_test.xml&quot;</span><span class="p">)):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_initial_test_values</span><span class="p">()</span>
         <span class="c1"># This should take care of the race condition where the submitted job</span>
         <span class="c1"># begins immediately and tries to set RUN phase. We proactively assume</span>
         <span class="c1"># a passed SUBMIT phase. If this state is already PASS, don&#39;t set it again</span>
@@ -375,6 +378,7 @@
             <span class="n">caseroot</span><span class="o">=</span><span class="n">caseroot</span><span class="p">,</span>
             <span class="n">custom_success_msg_functor</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
             <span class="n">is_batch</span><span class="o">=</span><span class="n">is_batch</span><span class="p">,</span>
+            <span class="n">gitinterface</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_gitinterface</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="k">except</span> <span class="ne">BaseException</span><span class="p">:</span>  <span class="c1"># Want to catch KeyboardInterrupt too</span>
         <span class="c1"># If something failed in the batch system, make sure to mark</span>

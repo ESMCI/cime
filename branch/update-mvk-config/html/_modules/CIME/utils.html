@@ -112,6 +112,8 @@
 <span class="c1"># Fix to pass user defined `srcroot` to `CIME.XML.generic_xml.GenericXML`</span>
 <span class="c1"># where it&#39;s used to resolve $SRCROOT in XML config files.</span>
 <span class="n">GLOBAL</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">CASE_SUCCESS</span> <span class="o">=</span> <span class="s2">&quot;success&quot;</span>
+<span class="n">CASE_FAILURE</span> <span class="o">=</span> <span class="s2">&quot;error&quot;</span>
 
 
 <div class="viewcode-block" id="deprecate_action">
@@ -2017,7 +2019,6 @@
 <span class="sd">    vid is only for generating better error messages.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-
         <span class="k">if</span> <span class="n">type_str</span> <span class="o">==</span> <span class="s2">&quot;char&quot;</span><span class="p">:</span>
             <span class="k">pass</span>
 
@@ -2066,7 +2067,6 @@
 <span class="sd">    Convert value to it&#39;s real type by probing conversions.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-
         <span class="c1"># Attempt to convert to logical</span>
         <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;TRUE&quot;</span><span class="p">,</span> <span class="s2">&quot;FALSE&quot;</span><span class="p">]:</span>
             <span class="k">return</span> <span class="n">value</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;TRUE&quot;</span>
@@ -2344,48 +2344,6 @@
             <span class="n">output_time</span> <span class="o">+=</span> <span class="s2">&quot;0&quot;</span> <span class="o">*</span> <span class="n">min_len_spec</span><span class="p">[</span><span class="n">spec</span><span class="p">]</span>
         <span class="n">output_time</span> <span class="o">+=</span> <span class="n">field</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
     <span class="k">return</span> <span class="n">output_time</span></div>
-
-
-
-<div class="viewcode-block" id="append_status">
-<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.utils.append_status">[docs]</a>
-<span class="k">def</span> <span class="nf">append_status</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">sfile</span><span class="p">,</span> <span class="n">caseroot</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Append msg to sfile in caseroot</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">ctime</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:%S: &quot;</span><span class="p">)</span>
-
-    <span class="c1"># Reduce empty lines in CaseStatus. It&#39;s a very concise file</span>
-    <span class="c1"># and does not need extra newlines for readability</span>
-    <span class="n">line_ending</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
-
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="n">sfile</span><span class="p">),</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
-        <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">ctime</span> <span class="o">+</span> <span class="n">msg</span> <span class="o">+</span> <span class="n">line_ending</span><span class="p">)</span>
-        <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot; ---------------------------------------------------&quot;</span> <span class="o">+</span> <span class="n">line_ending</span><span class="p">)</span></div>
-
-
-
-<div class="viewcode-block" id="append_testlog">
-<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.utils.append_testlog">[docs]</a>
-<span class="k">def</span> <span class="nf">append_testlog</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">caseroot</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Add to TestStatus.log file</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">append_status</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="s2">&quot;TestStatus.log&quot;</span><span class="p">,</span> <span class="n">caseroot</span><span class="p">)</span></div>
-
-
-
-<div class="viewcode-block" id="append_case_status">
-<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.utils.append_case_status">[docs]</a>
-<span class="k">def</span> <span class="nf">append_case_status</span><span class="p">(</span><span class="n">phase</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">caseroot</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Update CaseStatus file</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">append_status</span><span class="p">(</span>
-        <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> </span><span class="si">{}{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">phase</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="s2">&quot; </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">msg</span> <span class="k">if</span> <span class="n">msg</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">)),</span>
-        <span class="s2">&quot;CaseStatus&quot;</span><span class="p">,</span>
-        <span class="n">caseroot</span><span class="p">,</span>
-    <span class="p">)</span></div>
 
 
 
@@ -2808,63 +2766,6 @@
 <a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.utils.verbatim_success_msg">[docs]</a>
 <span class="k">def</span> <span class="nf">verbatim_success_msg</span><span class="p">(</span><span class="n">return_val</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">return_val</span></div>
-
-
-
-<span class="n">CASE_SUCCESS</span> <span class="o">=</span> <span class="s2">&quot;success&quot;</span>
-<span class="n">CASE_FAILURE</span> <span class="o">=</span> <span class="s2">&quot;error&quot;</span>
-
-
-<div class="viewcode-block" id="run_and_log_case_status">
-<a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.utils.run_and_log_case_status">[docs]</a>
-<span class="k">def</span> <span class="nf">run_and_log_case_status</span><span class="p">(</span>
-    <span class="n">func</span><span class="p">,</span>
-    <span class="n">phase</span><span class="p">,</span>
-    <span class="n">caseroot</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">,</span>
-    <span class="n">custom_starting_msg_functor</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">custom_success_msg_functor</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">is_batch</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-<span class="p">):</span>
-    <span class="n">starting_msg</span> <span class="o">=</span> <span class="kc">None</span>
-
-    <span class="k">if</span> <span class="n">custom_starting_msg_functor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">starting_msg</span> <span class="o">=</span> <span class="n">custom_starting_msg_functor</span><span class="p">()</span>
-
-    <span class="c1"># Delay appending &quot;starting&quot; on &quot;case.subsmit&quot; phase when batch system is</span>
-    <span class="c1"># present since we don&#39;t have the jobid yet</span>
-    <span class="k">if</span> <span class="n">phase</span> <span class="o">!=</span> <span class="s2">&quot;case.submit&quot;</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">is_batch</span><span class="p">:</span>
-        <span class="n">append_case_status</span><span class="p">(</span><span class="n">phase</span><span class="p">,</span> <span class="s2">&quot;starting&quot;</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="n">starting_msg</span><span class="p">,</span> <span class="n">caseroot</span><span class="o">=</span><span class="n">caseroot</span><span class="p">)</span>
-    <span class="n">rv</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">rv</span> <span class="o">=</span> <span class="n">func</span><span class="p">()</span>
-    <span class="k">except</span> <span class="ne">BaseException</span><span class="p">:</span>
-        <span class="n">custom_success_msg</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">custom_success_msg_functor</span><span class="p">(</span><span class="n">rv</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">custom_success_msg_functor</span> <span class="ow">and</span> <span class="n">rv</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-            <span class="k">else</span> <span class="kc">None</span>
-        <span class="p">)</span>
-        <span class="k">if</span> <span class="n">phase</span> <span class="o">==</span> <span class="s2">&quot;case.submit&quot;</span> <span class="ow">and</span> <span class="n">is_batch</span><span class="p">:</span>
-            <span class="n">append_case_status</span><span class="p">(</span>
-                <span class="n">phase</span><span class="p">,</span> <span class="s2">&quot;starting&quot;</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="n">custom_success_msg</span><span class="p">,</span> <span class="n">caseroot</span><span class="o">=</span><span class="n">caseroot</span>
-            <span class="p">)</span>
-        <span class="n">e</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span>
-        <span class="n">append_case_status</span><span class="p">(</span>
-            <span class="n">phase</span><span class="p">,</span> <span class="n">CASE_FAILURE</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">)),</span> <span class="n">caseroot</span><span class="o">=</span><span class="n">caseroot</span>
-        <span class="p">)</span>
-        <span class="k">raise</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">custom_success_msg</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">custom_success_msg_functor</span><span class="p">(</span><span class="n">rv</span><span class="p">)</span> <span class="k">if</span> <span class="n">custom_success_msg_functor</span> <span class="k">else</span> <span class="kc">None</span>
-        <span class="p">)</span>
-        <span class="k">if</span> <span class="n">phase</span> <span class="o">==</span> <span class="s2">&quot;case.submit&quot;</span> <span class="ow">and</span> <span class="n">is_batch</span><span class="p">:</span>
-            <span class="n">append_case_status</span><span class="p">(</span>
-                <span class="n">phase</span><span class="p">,</span> <span class="s2">&quot;starting&quot;</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="n">custom_success_msg</span><span class="p">,</span> <span class="n">caseroot</span><span class="o">=</span><span class="n">caseroot</span>
-            <span class="p">)</span>
-        <span class="n">append_case_status</span><span class="p">(</span>
-            <span class="n">phase</span><span class="p">,</span> <span class="n">CASE_SUCCESS</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="n">custom_success_msg</span><span class="p">,</span> <span class="n">caseroot</span><span class="o">=</span><span class="n">caseroot</span>
-        <span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">rv</span></div>
 
 
 

@@ -126,6 +126,8 @@
         <span class="k">if</span> <span class="n">infile</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">infile</span> <span class="o">=</span> <span class="n">files</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;BATCH_SPEC_FILE&quot;</span><span class="p">)</span>
 
+        <span class="n">config_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">infile</span><span class="p">)</span>
+
         <span class="n">schema</span> <span class="o">=</span> <span class="n">files</span><span class="o">.</span><span class="n">get_schema</span><span class="p">(</span><span class="s2">&quot;BATCH_SPEC_FILE&quot;</span><span class="p">)</span>
 
         <span class="n">GenericXML</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infile</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">)</span>
@@ -142,12 +144,20 @@
         <span class="c1">#</span>
         <span class="c1"># This could cause problems if node matches are repeated when only one is expected.</span>
         <span class="n">infile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;HOME&quot;</span><span class="p">),</span> <span class="s2">&quot;.cime&quot;</span><span class="p">,</span> <span class="s2">&quot;config_batch.xml&quot;</span><span class="p">)</span>
+        <span class="n">usehome</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">infile</span><span class="p">):</span>
             <span class="n">GenericXML</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infile</span><span class="p">)</span>
+            <span class="n">usehome</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">useextra</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">if</span> <span class="n">extra_machines_dir</span><span class="p">:</span>
             <span class="n">infile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">extra_machines_dir</span><span class="p">,</span> <span class="s2">&quot;config_batch.xml&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">infile</span><span class="p">):</span>
                 <span class="n">GenericXML</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infile</span><span class="p">)</span>
+                <span class="n">useextra</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">usehome</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">useextra</span><span class="p">:</span>
+            <span class="n">batchfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">config_dir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">machine</span><span class="p">,</span> <span class="s2">&quot;config_batch.xml&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">batchfile</span><span class="p">):</span>
+                <span class="n">GenericXML</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batchfile</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_system</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">set_batch_system</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_system</span><span class="p">,</span> <span class="n">machine</span><span class="o">=</span><span class="n">machine</span><span class="p">)</span>

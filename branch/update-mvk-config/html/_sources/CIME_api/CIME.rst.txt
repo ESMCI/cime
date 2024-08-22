@@ -142,6 +142,14 @@ CIME.get\_timing module
    :undoc-members:
    :show-inheritance:
 
+CIME.gitinterface module
+------------------------
+
+.. automodule:: CIME.gitinterface
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 CIME.hist\_utils module
 -----------------------
 
@@ -194,6 +202,14 @@ CIME.simple\_compare module
 ---------------------------
 
 .. automodule:: CIME.simple_compare
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+CIME.status module
+------------------
+
+.. automodule:: CIME.status
    :members:
    :undoc-members:
    :show-inheritance:

@@ -114,6 +114,7 @@
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
+
 <span class="c1">###############################################################################</span>
 <span class="k">def</span> <span class="nf">_run_pylint</span><span class="p">(</span><span class="n">all_files</span><span class="p">,</span> <span class="n">interactive</span><span class="p">):</span>
     <span class="c1">###############################################################################</span>
@@ -134,11 +135,14 @@
     <span class="c1">#     cmd_options +=&quot;,relative-import&quot;</span>
 
     <span class="c1"># add init-hook option</span>
-    <span class="n">cmd_options</span> <span class="o">+=</span> <span class="s1">&#39; --init-hook=</span><span class="se">\&#39;</span><span class="s1">sys.path.extend((&quot;</span><span class="si">%s</span><span class="s1">&quot;,&quot;</span><span class="si">%s</span><span class="s1">&quot;,&quot;</span><span class="si">%s</span><span class="s1">&quot;,&quot;</span><span class="si">%s</span><span class="s1">&quot;))</span><span class="se">\&#39;</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cimeroot</span><span class="p">,</span> <span class="s2">&quot;CIME&quot;</span><span class="p">),</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cimeroot</span><span class="p">,</span> <span class="s2">&quot;CIME&quot;</span><span class="p">,</span> <span class="s2">&quot;Tools&quot;</span><span class="p">),</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cimeroot</span><span class="p">,</span> <span class="s2">&quot;scripts&quot;</span><span class="p">,</span> <span class="s2">&quot;fortran_unit_testing&quot;</span><span class="p">,</span> <span class="s2">&quot;python&quot;</span><span class="p">),</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">srcroot</span><span class="p">,</span> <span class="s2">&quot;components&quot;</span><span class="p">,</span> <span class="s2">&quot;cmeps&quot;</span><span class="p">,</span> <span class="s2">&quot;cime_config&quot;</span><span class="p">,</span> <span class="s2">&quot;runseq&quot;</span><span class="p">),</span>
+    <span class="n">cmd_options</span> <span class="o">+=</span> <span class="p">(</span>
+        <span class="s1">&#39; --init-hook=</span><span class="se">\&#39;</span><span class="s1">import sys; sys.path.extend((&quot;</span><span class="si">%s</span><span class="s1">&quot;,&quot;</span><span class="si">%s</span><span class="s1">&quot;,&quot;</span><span class="si">%s</span><span class="s1">&quot;,&quot;</span><span class="si">%s</span><span class="s1">&quot;))</span><span class="se">\&#39;</span><span class="s1">&#39;</span>
+        <span class="o">%</span> <span class="p">(</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cimeroot</span><span class="p">,</span> <span class="s2">&quot;CIME&quot;</span><span class="p">),</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cimeroot</span><span class="p">,</span> <span class="s2">&quot;CIME&quot;</span><span class="p">,</span> <span class="s2">&quot;Tools&quot;</span><span class="p">),</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cimeroot</span><span class="p">,</span> <span class="s2">&quot;scripts&quot;</span><span class="p">,</span> <span class="s2">&quot;fortran_unit_testing&quot;</span><span class="p">,</span> <span class="s2">&quot;python&quot;</span><span class="p">),</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">srcroot</span><span class="p">,</span> <span class="s2">&quot;components&quot;</span><span class="p">,</span> <span class="s2">&quot;cmeps&quot;</span><span class="p">,</span> <span class="s2">&quot;cime_config&quot;</span><span class="p">,</span> <span class="s2">&quot;runseq&quot;</span><span class="p">),</span>
+        <span class="p">)</span>
     <span class="p">)</span>
 
     <span class="n">files</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">all_files</span><span class="p">)</span>
@@ -169,16 +173,6 @@
         <span class="n">result</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="n">k</span><span class="p">]))</span>
 
     <span class="k">return</span> <span class="n">result</span>
-
-    <span class="c1"># if stat != 0:</span>
-    <span class="c1">#     if interactive:</span>
-    <span class="c1">#         logger.info(&quot;File %s has pylint problems, please fix\n    Use command: %s&quot; % (on_file, cmd))</span>
-    <span class="c1">#         logger.info(out + &quot;\n&quot; + err)</span>
-    <span class="c1">#     return (on_file, out + &quot;\n&quot; + err)</span>
-    <span class="c1"># else:</span>
-    <span class="c1">#     if interactive:</span>
-    <span class="c1">#         logger.info(&quot;File %s has no pylint problems&quot; % on_file)</span>
-    <span class="c1">#     return (on_file, &quot;&quot;)</span>
 
 
 <span class="c1">###############################################################################</span>

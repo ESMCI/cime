@@ -103,16 +103,18 @@
     <span class="n">copy_depends_files</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">run_and_log_case_status</span><span class="p">,</span>
     <span class="n">get_batch_script_for_job</span><span class="p">,</span>
     <span class="n">safe_copy</span><span class="p">,</span>
     <span class="n">file_contains_python_function</span><span class="p">,</span>
     <span class="n">import_from_file</span><span class="p">,</span>
     <span class="n">copy_local_macros_to_dir</span><span class="p">,</span>
+    <span class="n">batch_jobid</span><span class="p">,</span>
+    <span class="n">run_cmd_no_fail</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="n">batch_jobid</span>
+<span class="kn">from</span> <span class="nn">CIME.status</span> <span class="kn">import</span> <span class="n">run_and_log_case_status</span><span class="p">,</span> <span class="n">append_case_status</span>
 <span class="kn">from</span> <span class="nn">CIME.test_status</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">CIME.locked_files</span> <span class="kn">import</span> <span class="n">unlock_file</span><span class="p">,</span> <span class="n">lock_file</span><span class="p">,</span> <span class="n">check_lockedfiles</span>
+<span class="kn">from</span> <span class="nn">CIME.gitinterface</span> <span class="kn">import</span> <span class="n">GitInterface</span>
 
 <span class="kn">import</span> <span class="nn">errno</span><span class="o">,</span> <span class="nn">shutil</span>
 
@@ -250,9 +252,13 @@
     <span class="p">]</span>
     <span class="k">for</span> <span class="n">macro</span> <span class="ow">in</span> <span class="n">macros</span><span class="p">:</span>
         <span class="n">repo_macro</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cmake_macros_dir</span><span class="p">,</span> <span class="n">macro</span><span class="p">)</span>
+        <span class="n">mach_repo_macro</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cmake_macros_dir</span><span class="p">,</span> <span class="s2">&quot;..&quot;</span><span class="p">,</span> <span class="n">mach</span><span class="p">,</span> <span class="n">macro</span><span class="p">)</span>
         <span class="n">case_macro</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">case_cmake_path</span><span class="p">,</span> <span class="n">macro</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">case_macro</span><span class="p">)</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">repo_macro</span><span class="p">):</span>
-            <span class="n">safe_copy</span><span class="p">(</span><span class="n">repo_macro</span><span class="p">,</span> <span class="n">case_cmake_path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">case_macro</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">mach_repo_macro</span><span class="p">):</span>
+                <span class="n">safe_copy</span><span class="p">(</span><span class="n">mach_repo_macro</span><span class="p">,</span> <span class="n">case_cmake_path</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">repo_macro</span><span class="p">):</span>
+                <span class="n">safe_copy</span><span class="p">(</span><span class="n">repo_macro</span><span class="p">,</span> <span class="n">case_cmake_path</span><span class="p">)</span>
 
     <span class="n">copy_depends_files</span><span class="p">(</span><span class="n">mach</span><span class="p">,</span> <span class="n">mach_obj</span><span class="o">.</span><span class="n">machines_dir</span><span class="p">,</span> <span class="n">caseroot</span><span class="p">,</span> <span class="n">compiler</span><span class="p">)</span>
 
@@ -608,8 +614,46 @@
             <span class="n">custom_success_msg_functor</span><span class="o">=</span><span class="n">msg_func</span><span class="p">,</span>
             <span class="n">caseroot</span><span class="o">=</span><span class="n">caseroot</span><span class="p">,</span>
             <span class="n">is_batch</span><span class="o">=</span><span class="n">is_batch</span><span class="p">,</span>
-        <span class="p">)</span></div>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_create_case_repo</span><span class="p">(</span><span class="n">caseroot</span><span class="p">)</span></div>
 
+
+
+<span class="k">def</span> <span class="nf">_create_case_repo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caseroot</span><span class="p">):</span>
+    <span class="n">version</span> <span class="o">=</span> <span class="n">run_cmd_no_fail</span><span class="p">(</span><span class="s2">&quot;git --version&quot;</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;([0-9]+)\.([0-9]+)\.?[0-9]*&quot;</span><span class="p">,</span> <span class="n">version</span><span class="p">)</span>
+    <span class="n">major</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">minor</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="c1"># gitinterface needs git version 2.28 or newer</span>
+    <span class="k">if</span> <span class="n">major</span> <span class="o">&gt;</span> <span class="mi">2</span> <span class="ow">or</span> <span class="p">(</span><span class="n">major</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">minor</span> <span class="o">&gt;=</span> <span class="mi">28</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gitinterface</span> <span class="o">=</span> <span class="n">GitInterface</span><span class="p">(</span>
+            <span class="n">caseroot</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">branch</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASE&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="s2">&quot;.gitignore&quot;</span><span class="p">)):</span>
+            <span class="n">safe_copy</span><span class="p">(</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CIMEROOT&quot;</span><span class="p">),</span>
+                    <span class="s2">&quot;CIME&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;data&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;templates&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;gitignore.template&quot;</span><span class="p">,</span>
+                <span class="p">),</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="s2">&quot;.gitignore&quot;</span><span class="p">),</span>
+            <span class="p">)</span>
+            <span class="n">append_case_status</span><span class="p">(</span>
+                <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;local git repository created&quot;</span><span class="p">,</span> <span class="n">gitinterface</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_gitinterface</span>
+            <span class="p">)</span>
+        <span class="c1"># add all files in caseroot to local repository</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gitinterface</span><span class="o">.</span><span class="n">_git_command</span><span class="p">(</span><span class="s2">&quot;add&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;git interface requires git version 2.28 or newer&quot;</span><span class="p">)</span>
+
+        <span class="n">append_case_status</span><span class="p">(</span>
+            <span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;local git version too old for cime git interface </span><span class="si">{</span><span class="n">major</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">minor</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
 </pre></div>
 
            </div>

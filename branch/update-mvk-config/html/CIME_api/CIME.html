@@ -173,6 +173,10 @@
 <li class="toctree-l4"><a class="reference internal" href="#CIME.get_timing.get_timing"><code class="docutils literal notranslate"><span class="pre">get_timing()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="#module-CIME.gitinterface">CIME.gitinterface module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#CIME.gitinterface.GitInterface"><code class="docutils literal notranslate"><span class="pre">GitInterface</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#module-CIME.hist_utils">CIME.hist_utils module</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#CIME.hist_utils.compare_baseline"><code class="docutils literal notranslate"><span class="pre">compare_baseline()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#CIME.hist_utils.compare_test"><code class="docutils literal notranslate"><span class="pre">compare_test()</span></code></a></li>
@@ -238,6 +242,13 @@
 <li class="toctree-l4"><a class="reference internal" href="#CIME.simple_compare.findDiff"><code class="docutils literal notranslate"><span class="pre">findDiff()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="#module-CIME.status">CIME.status module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#CIME.status.append_case_status"><code class="docutils literal notranslate"><span class="pre">append_case_status()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#CIME.status.append_status"><code class="docutils literal notranslate"><span class="pre">append_status()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#CIME.status.append_testlog"><code class="docutils literal notranslate"><span class="pre">append_testlog()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#CIME.status.run_and_log_case_status"><code class="docutils literal notranslate"><span class="pre">run_and_log_case_status()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#module-CIME.test_scheduler">CIME.test_scheduler module</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#CIME.test_scheduler.TestScheduler"><code class="docutils literal notranslate"><span class="pre">TestScheduler</span></code></a></li>
 </ul>
@@ -266,9 +277,6 @@
 <li class="toctree-l4"><a class="reference internal" href="#CIME.utils.add_flag_to_cmd"><code class="docutils literal notranslate"><span class="pre">add_flag_to_cmd()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#CIME.utils.add_mail_type_args"><code class="docutils literal notranslate"><span class="pre">add_mail_type_args()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#CIME.utils.analyze_build_log"><code class="docutils literal notranslate"><span class="pre">analyze_build_log()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#CIME.utils.append_case_status"><code class="docutils literal notranslate"><span class="pre">append_case_status()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#CIME.utils.append_status"><code class="docutils literal notranslate"><span class="pre">append_status()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#CIME.utils.append_testlog"><code class="docutils literal notranslate"><span class="pre">append_testlog()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#CIME.utils.batch_jobid"><code class="docutils literal notranslate"><span class="pre">batch_jobid()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#CIME.utils.check_name"><code class="docutils literal notranslate"><span class="pre">check_name()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#CIME.utils.clear_folder"><code class="docutils literal notranslate"><span class="pre">clear_folder()</span></code></a></li>
@@ -342,7 +350,6 @@
 <li class="toctree-l4"><a class="reference internal" href="#CIME.utils.redirect_stdout_stderr"><code class="docutils literal notranslate"><span class="pre">redirect_stdout_stderr()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#CIME.utils.reset_cime_config"><code class="docutils literal notranslate"><span class="pre">reset_cime_config()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#CIME.utils.resolve_mail_type_args"><code class="docutils literal notranslate"><span class="pre">resolve_mail_type_args()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#CIME.utils.run_and_log_case_status"><code class="docutils literal notranslate"><span class="pre">run_and_log_case_status()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#CIME.utils.run_bld_cmd_ensure_logging"><code class="docutils literal notranslate"><span class="pre">run_bld_cmd_ensure_logging()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#CIME.utils.run_cmd"><code class="docutils literal notranslate"><span class="pre">run_cmd()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#CIME.utils.run_cmd_no_fail"><code class="docutils literal notranslate"><span class="pre">run_cmd_no_fail()</span></code></a></li>
@@ -603,20 +610,7 @@
 <li class="toctree-l3"><a class="reference internal" href="CIME.SystemTests.html#CIME.SystemTests.mcc.MCC"><code class="docutils literal notranslate"><span class="pre">MCC</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="CIME.SystemTests.html#module-CIME.SystemTests.mvk">CIME.SystemTests.mvk module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="CIME.SystemTests.html#CIME.SystemTests.mvk.MVK"><code class="docutils literal notranslate"><span class="pre">MVK</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.html#CIME.SystemTests.mvk.MVK.build_phase"><code class="docutils literal notranslate"><span class="pre">MVK.build_phase()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.html#CIME.SystemTests.mvk.MVK.process_evv_output"><code class="docutils literal notranslate"><span class="pre">MVK.process_evv_output()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.html#CIME.SystemTests.mvk.MVK.update_testlog"><code class="docutils literal notranslate"><span class="pre">MVK.update_testlog()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="CIME.SystemTests.html#CIME.SystemTests.mvk.MVKConfig"><code class="docutils literal notranslate"><span class="pre">MVKConfig</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.html#CIME.SystemTests.mvk.MVKConfig.evv_test_config"><code class="docutils literal notranslate"><span class="pre">MVKConfig.evv_test_config()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.html#CIME.SystemTests.mvk.MVKConfig.generate_namelist"><code class="docutils literal notranslate"><span class="pre">MVKConfig.generate_namelist()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="CIME.SystemTests.html#cime-systemtests-mvk-module">CIME.SystemTests.mvk module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.SystemTests.html#module-CIME.SystemTests.nck">CIME.SystemTests.nck module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="CIME.SystemTests.html#CIME.SystemTests.nck.NCK"><code class="docutils literal notranslate"><span class="pre">NCK</span></code></a></li>
 </ul>
@@ -651,15 +645,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="CIME.SystemTests.html#module-CIME.SystemTests.pgn">CIME.SystemTests.pgn module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="CIME.SystemTests.html#CIME.SystemTests.pgn.PGN"><code class="docutils literal notranslate"><span class="pre">PGN</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.html#CIME.SystemTests.pgn.PGN.build_phase"><code class="docutils literal notranslate"><span class="pre">PGN.build_phase()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.html#CIME.SystemTests.pgn.PGN.get_var_list"><code class="docutils literal notranslate"><span class="pre">PGN.get_var_list()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.html#CIME.SystemTests.pgn.PGN.run_phase"><code class="docutils literal notranslate"><span class="pre">PGN.run_phase()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="CIME.SystemTests.html#cime-systemtests-pgn-module">CIME.SystemTests.pgn module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.SystemTests.html#module-CIME.SystemTests.pre">CIME.SystemTests.pre module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="CIME.SystemTests.html#CIME.SystemTests.pre.PRE"><code class="docutils literal notranslate"><span class="pre">PRE</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.html#CIME.SystemTests.pre.PRE.run_phase"><code class="docutils literal notranslate"><span class="pre">PRE.run_phase()</span></code></a></li>
@@ -1107,6 +1093,7 @@
 <li class="toctree-l2"><a class="reference internal" href="CIME.XML.html#module-CIME.XML.grids">CIME.XML.grids module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="CIME.XML.html#CIME.XML.grids.Grids"><code class="docutils literal notranslate"><span class="pre">Grids</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="CIME.XML.html#CIME.XML.grids.Grids.get_grid_info"><code class="docutils literal notranslate"><span class="pre">Grids.get_grid_info()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.html#CIME.XML.grids.Grids.get_grid_longname"><code class="docutils literal notranslate"><span class="pre">Grids.get_grid_longname()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="CIME.XML.html#CIME.XML.grids.Grids.print_values"><code class="docutils literal notranslate"><span class="pre">Grids.print_values()</span></code></a></li>
 </ul>
 </li>
@@ -1429,20 +1416,13 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.scripts.html#module-CIME.scripts.query_config">CIME.scripts.query_config module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="CIME.scripts.html#CIME.scripts.query_config.ArgumentParser"><code class="docutils literal notranslate"><span class="pre">ArgumentParser</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="CIME.scripts.html#CIME.scripts.query_config.ArgumentParser.error"><code class="docutils literal notranslate"><span class="pre">ArgumentParser.error()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="CIME.scripts.html#CIME.scripts.query_config.Machines"><code class="docutils literal notranslate"><span class="pre">Machines</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="CIME.scripts.html#CIME.scripts.query_config.Machines.print_values"><code class="docutils literal notranslate"><span class="pre">Machines.print_values()</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.scripts.html#CIME.scripts.query_config.get_component_classes"><code class="docutils literal notranslate"><span class="pre">get_component_classes()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.scripts.html#CIME.scripts.query_config.get_components"><code class="docutils literal notranslate"><span class="pre">get_components()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="CIME.scripts.html#CIME.scripts.query_config.get_compsets"><code class="docutils literal notranslate"><span class="pre">get_compsets()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.scripts.html#CIME.scripts.query_config.get_compset_active_components"><code class="docutils literal notranslate"><span class="pre">get_compset_active_components()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.scripts.html#CIME.scripts.query_config.parse_command_line"><code class="docutils literal notranslate"><span class="pre">parse_command_line()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.scripts.html#CIME.scripts.query_config.print_compset"><code class="docutils literal notranslate"><span class="pre">print_compset()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="CIME.scripts.html#CIME.scripts.query_config.query_all_components"><code class="docutils literal notranslate"><span class="pre">query_all_components()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="CIME.scripts.html#CIME.scripts.query_config.query_component"><code class="docutils literal notranslate"><span class="pre">query_component()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.scripts.html#CIME.scripts.query_config.print_machine_values"><code class="docutils literal notranslate"><span class="pre">print_machine_values()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.scripts.html#CIME.scripts.query_config.query_component_settings"><code class="docutils literal notranslate"><span class="pre">query_component_settings()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.scripts.html#CIME.scripts.query_config.query_compsets"><code class="docutils literal notranslate"><span class="pre">query_compsets()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.scripts.html#CIME.scripts.query_config.query_grids"><code class="docutils literal notranslate"><span class="pre">query_grids()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.scripts.html#CIME.scripts.query_config.query_machines"><code class="docutils literal notranslate"><span class="pre">query_machines()</span></code></a></li>
@@ -2130,29 +2110,7 @@
 <li class="toctree-l3"><a class="reference internal" href="CIME.tests.html#CIME.tests.test_unit_system_tests.create_mock_case"><code class="docutils literal notranslate"><span class="pre">create_mock_case()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="CIME.tests.html#module-CIME.tests.test_unit_system_tests_mvk">CIME.tests.test_unit_system_tests_mvk module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="CIME.tests.html#CIME.tests.test_unit_system_tests_mvk.TestSystemTestsMVK"><code class="docutils literal notranslate"><span class="pre">TestSystemTestsMVK</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="CIME.tests.html#CIME.tests.test_unit_system_tests_mvk.TestSystemTestsMVK.tearDown"><code class="docutils literal notranslate"><span class="pre">TestSystemTestsMVK.tearDown()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="CIME.tests.html#CIME.tests.test_unit_system_tests_mvk.TestSystemTestsMVK.test__compare_baseline"><code class="docutils literal notranslate"><span class="pre">TestSystemTestsMVK.test__compare_baseline()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="CIME.tests.html#CIME.tests.test_unit_system_tests_mvk.TestSystemTestsMVK.test__compare_baseline_resubmit"><code class="docutils literal notranslate"><span class="pre">TestSystemTestsMVK.test__compare_baseline_resubmit()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="CIME.tests.html#CIME.tests.test_unit_system_tests_mvk.TestSystemTestsMVK.test__generate_baseline"><code class="docutils literal notranslate"><span class="pre">TestSystemTestsMVK.test__generate_baseline()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="CIME.tests.html#CIME.tests.test_unit_system_tests_mvk.TestSystemTestsMVK.test_build_phase"><code class="docutils literal notranslate"><span class="pre">TestSystemTestsMVK.test_build_phase()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="CIME.tests.html#CIME.tests.test_unit_system_tests_mvk.TestSystemTestsMVK.test_compare_baseline"><code class="docutils literal notranslate"><span class="pre">TestSystemTestsMVK.test_compare_baseline()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="CIME.tests.html#CIME.tests.test_unit_system_tests_mvk.TestSystemTestsMVK.test_generate_namelist"><code class="docutils literal notranslate"><span class="pre">TestSystemTestsMVK.test_generate_namelist()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="CIME.tests.html#CIME.tests.test_unit_system_tests_mvk.TestSystemTestsMVK.test_generate_namelist_multiple_components"><code class="docutils literal notranslate"><span class="pre">TestSystemTestsMVK.test_generate_namelist_multiple_components()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="CIME.tests.html#CIME.tests.test_unit_system_tests_mvk.TestSystemTestsMVK.test_mvk"><code class="docutils literal notranslate"><span class="pre">TestSystemTestsMVK.test_mvk()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="CIME.tests.html#CIME.tests.test_unit_system_tests_mvk.TestSystemTestsMVK.test_testmod_complex"><code class="docutils literal notranslate"><span class="pre">TestSystemTestsMVK.test_testmod_complex()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="CIME.tests.html#CIME.tests.test_unit_system_tests_mvk.TestSystemTestsMVK.test_testmod_simple"><code class="docutils literal notranslate"><span class="pre">TestSystemTestsMVK.test_testmod_simple()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="CIME.tests.html#CIME.tests.test_unit_system_tests_mvk.TestSystemTestsMVK.test_update_testlog"><code class="docutils literal notranslate"><span class="pre">TestSystemTestsMVK.test_update_testlog()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="CIME.tests.html#CIME.tests.test_unit_system_tests_mvk.TestSystemTestsMVK.test_update_testlog_htmlroot"><code class="docutils literal notranslate"><span class="pre">TestSystemTestsMVK.test_update_testlog_htmlroot()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="CIME.tests.html#CIME.tests.test_unit_system_tests_mvk.TestSystemTestsMVK.test_update_testlog_urlroot_None"><code class="docutils literal notranslate"><span class="pre">TestSystemTestsMVK.test_update_testlog_urlroot_None()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="CIME.tests.html#CIME.tests.test_unit_system_tests_mvk.create_complex_case"><code class="docutils literal notranslate"><span class="pre">create_complex_case()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="CIME.tests.html#CIME.tests.test_unit_system_tests_mvk.create_simple_case"><code class="docutils literal notranslate"><span class="pre">create_simple_case()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="CIME.tests.html#CIME.tests.test_unit_system_tests_mvk.write_evv_output"><code class="docutils literal notranslate"><span class="pre">write_evv_output()</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="CIME.tests.html#cime-tests-test-unit-system-tests-mvk-module">CIME.tests.test_unit_system_tests_mvk module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.tests.html#module-CIME.tests.test_unit_test_status">CIME.tests.test_unit_test_status module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="CIME.tests.html#CIME.tests.test_unit_test_status.TestTestStatus"><code class="docutils literal notranslate"><span class="pre">TestTestStatus</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="CIME.tests.html#CIME.tests.test_unit_test_status.TestTestStatus.setUp"><code class="docutils literal notranslate"><span class="pre">TestTestStatus.setUp()</span></code></a></li>
@@ -2305,6 +2263,14 @@
 <li class="toctree-l4"><a class="reference internal" href="CIME.tests.html#CIME.tests.test_unit_xml_env_mach_specific.TestXMLEnvMachSpecific.test_init_path"><code class="docutils literal notranslate"><span class="pre">TestXMLEnvMachSpecific.test_init_path()</span></code></a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="CIME.tests.html#module-CIME.tests.test_unit_xml_grids">CIME.tests.test_unit_xml_grids module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="CIME.tests.html#CIME.tests.test_unit_xml_grids.TestXMLGrids"><code class="docutils literal notranslate"><span class="pre">TestXMLGrids</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="CIME.tests.html#CIME.tests.test_unit_xml_grids.TestXMLGrids.test_read_config_grids"><code class="docutils literal notranslate"><span class="pre">TestXMLGrids.test_read_config_grids()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.tests.html#CIME.tests.test_unit_xml_grids.write_config_grids"><code class="docutils literal notranslate"><span class="pre">write_config_grids()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.tests.html#module-CIME.tests.test_unit_xml_machines">CIME.tests.test_unit_xml_machines module</a><ul>
@@ -3051,6 +3017,30 @@ information from a run.</p>
 <dd></dd></dl>
 
 </section>
+<section id="module-CIME.gitinterface">
+<span id="cime-gitinterface-module"></span><h2>CIME.gitinterface module<a class="headerlink" href="#module-CIME.gitinterface" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="CIME.gitinterface.GitInterface">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">CIME.gitinterface.</span></span><span class="sig-name descname"><span class="pre">GitInterface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">repo_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">branch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/gitinterface.html#GitInterface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.gitinterface.GitInterface" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="CIME.gitinterface.GitInterface.config_get_value">
+<span class="sig-name descname"><span class="pre">config_get_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">section</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/gitinterface.html#GitInterface.config_get_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.gitinterface.GitInterface.config_get_value" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CIME.gitinterface.GitInterface.config_set_value">
+<span class="sig-name descname"><span class="pre">config_set_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">section</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/gitinterface.html#GitInterface.config_set_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.gitinterface.GitInterface.config_set_value" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CIME.gitinterface.GitInterface.git_operation">
+<span class="sig-name descname"><span class="pre">git_operation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">operation</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/gitinterface.html#GitInterface.git_operation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.gitinterface.GitInterface.git_operation" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
 <section id="module-CIME.hist_utils">
 <span id="cime-hist-utils-module"></span><h2>CIME.hist_utils module<a class="headerlink" href="#module-CIME.hist_utils" title="Link to this heading"></a></h2>
 <p>Functions for actions pertaining to history files.</p>
@@ -3157,6 +3147,10 @@ to this function came from compare_baseline, not compare_tests.</p>
 <span class="go">&#39;DIFF&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">get_ts_synopsis</span><span class="p">(</span><span class="s1">&#39;File foo had no compare counterpart in bar with suffix baz</span><span class="se">\n</span><span class="s1"> File foo had no original counterpart in bar with suffix baz</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
 <span class="go">&#39;DIFF&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_ts_synopsis</span><span class="p">(</span><span class="s1">&#39;file1=</span><span class="se">\n</span><span class="s1">file2=</span><span class="se">\n</span><span class="s1">Failed to open file</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="go">&#39;ERROR CPRNC failed to open files&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_ts_synopsis</span><span class="p">(</span><span class="s1">&#39;file1=</span><span class="se">\n</span><span class="s1">file2=</span><span class="se">\n</span><span class="s1">Some other error</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="go">&#39;Could not interpret CPRNC output&#39;</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -4374,6 +4368,32 @@ file, which will have the input data files added to it.</p>
 <dd></dd></dl>
 
 </section>
+<section id="module-CIME.status">
+<span id="cime-status-module"></span><h2>CIME.status module<a class="headerlink" href="#module-CIME.status" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="CIME.status.append_case_status">
+<span class="sig-prename descclassname"><span class="pre">CIME.status.</span></span><span class="sig-name descname"><span class="pre">append_case_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phase</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">msg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">caseroot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gitinterface</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/status.html#append_case_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.status.append_case_status" title="Link to this definition"></a></dt>
+<dd><p>Update CaseStatus file</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="CIME.status.append_status">
+<span class="sig-prename descclassname"><span class="pre">CIME.status.</span></span><span class="sig-name descname"><span class="pre">append_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">caseroot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/status.html#append_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.status.append_status" title="Link to this definition"></a></dt>
+<dd><p>Append msg to sfile in caseroot</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="CIME.status.append_testlog">
+<span class="sig-prename descclassname"><span class="pre">CIME.status.</span></span><span class="sig-name descname"><span class="pre">append_testlog</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">caseroot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/status.html#append_testlog"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.status.append_testlog" title="Link to this definition"></a></dt>
+<dd><p>Add to TestStatus.log file</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="CIME.status.run_and_log_case_status">
+<span class="sig-prename descclassname"><span class="pre">CIME.status.</span></span><span class="sig-name descname"><span class="pre">run_and_log_case_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">caseroot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_starting_msg_functor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_success_msg_functor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_batch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gitinterface</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/status.html#run_and_log_case_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.status.run_and_log_case_status" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
 <section id="module-CIME.test_scheduler">
 <span id="cime-test-scheduler-module"></span><h2>CIME.test_scheduler module<a class="headerlink" href="#module-CIME.test_scheduler" title="Link to this heading"></a></h2>
 <p>A library for scheduling/running through the phases of a set
@@ -4787,24 +4807,6 @@ Provided None as seconds makes this class a no-op</p>
 <span class="sig-prename descclassname"><span class="pre">CIME.utils.</span></span><span class="sig-name descname"><span class="pre">analyze_build_log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">comp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compiler</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#analyze_build_log"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.utils.analyze_build_log" title="Link to this definition"></a></dt>
 <dd><p>Capture and report warning count,
 capture and report errors and undefined references.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="CIME.utils.append_case_status">
-<span class="sig-prename descclassname"><span class="pre">CIME.utils.</span></span><span class="sig-name descname"><span class="pre">append_case_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phase</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">msg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">caseroot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#append_case_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.utils.append_case_status" title="Link to this definition"></a></dt>
-<dd><p>Update CaseStatus file</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="CIME.utils.append_status">
-<span class="sig-prename descclassname"><span class="pre">CIME.utils.</span></span><span class="sig-name descname"><span class="pre">append_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">caseroot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#append_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.utils.append_status" title="Link to this definition"></a></dt>
-<dd><p>Append msg to sfile in caseroot</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="CIME.utils.append_testlog">
-<span class="sig-prename descclassname"><span class="pre">CIME.utils.</span></span><span class="sig-name descname"><span class="pre">append_testlog</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">caseroot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#append_testlog"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.utils.append_testlog" title="Link to this definition"></a></dt>
-<dd><p>Add to TestStatus.log file</p>
 </dd></dl>
 
 <dl class="py function">
@@ -5509,11 +5511,6 @@ result is None, as for other optional components.)</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="CIME.utils.resolve_mail_type_args">
 <span class="sig-prename descclassname"><span class="pre">CIME.utils.</span></span><span class="sig-name descname"><span class="pre">resolve_mail_type_args</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#resolve_mail_type_args"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.utils.resolve_mail_type_args" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="CIME.utils.run_and_log_case_status">
-<span class="sig-prename descclassname"><span class="pre">CIME.utils.</span></span><span class="sig-name descname"><span class="pre">run_and_log_case_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">caseroot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_starting_msg_functor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_success_msg_functor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_batch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#run_and_log_case_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.utils.run_and_log_case_status" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py function">

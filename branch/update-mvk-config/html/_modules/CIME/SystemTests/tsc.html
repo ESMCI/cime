@@ -101,10 +101,11 @@
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 
-<span class="kn">from</span> <span class="nn">distutils</span> <span class="kn">import</span> <span class="n">dir_util</span>
+<span class="kn">from</span> <span class="nn">shutil</span> <span class="kn">import</span> <span class="n">copytree</span>
 
 <span class="kn">import</span> <span class="nn">CIME.test_status</span>
 <span class="kn">import</span> <span class="nn">CIME.utils</span>
+<span class="kn">from</span> <span class="nn">CIME.status</span> <span class="kn">import</span> <span class="n">append_testlog</span>
 <span class="kn">from</span> <span class="nn">CIME.SystemTests.system_tests_common</span> <span class="kn">import</span> <span class="n">SystemTestsCommon</span>
 <span class="kn">from</span> <span class="nn">CIME.case.case_setup</span> <span class="kn">import</span> <span class="n">case_setup</span>
 <span class="kn">from</span> <span class="nn">CIME.hist_utils</span> <span class="kn">import</span> <span class="n">rename_all_hist_files</span>
@@ -311,10 +312,9 @@
             <span class="n">urlroot</span> <span class="o">=</span> <span class="n">CIME</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_urlroot</span><span class="p">(</span><span class="n">mach_obj</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">htmlroot</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">with</span> <span class="n">CIME</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">SharedArea</span><span class="p">():</span>
-                    <span class="n">dir_util</span><span class="o">.</span><span class="n">copy_tree</span><span class="p">(</span>
+                    <span class="n">copytree</span><span class="p">(</span>
                         <span class="n">evv_out_dir</span><span class="p">,</span>
                         <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">htmlroot</span><span class="p">,</span> <span class="s2">&quot;evv&quot;</span><span class="p">,</span> <span class="n">case_name</span><span class="p">),</span>
-                        <span class="n">preserve_mode</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                     <span class="p">)</span>
                 <span class="k">if</span> <span class="n">urlroot</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="n">urlroot</span> <span class="o">=</span> <span class="s2">&quot;[</span><span class="si">{}</span><span class="s2">_URL]&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mach_name</span><span class="o">.</span><span class="n">capitalize</span><span class="p">())</span>
@@ -341,7 +341,7 @@
                 <span class="p">)</span>
             <span class="p">)</span>
 
-            <span class="n">CIME</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">append_testlog</span><span class="p">(</span><span class="n">comments</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_orig_caseroot</span><span class="p">)</span>
+            <span class="n">append_testlog</span><span class="p">(</span><span class="n">comments</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_orig_caseroot</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_generate_baseline</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">TSC</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">_generate_baseline</span><span class="p">()</span>
