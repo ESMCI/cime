@@ -9,7 +9,7 @@ This class inherits from SystemTestsCommon.
 import os
 import json
 import logging
-from shutils import copytree
+from shutil import copytree
 
 from CIME import test_status
 from CIME import utils
