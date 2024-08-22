@@ -13,16 +13,18 @@ from CIME.BuildTools.configure import (
     copy_depends_files,
 )
 from CIME.utils import (
-    run_and_log_case_status,
     get_batch_script_for_job,
     safe_copy,
     file_contains_python_function,
     import_from_file,
     copy_local_macros_to_dir,
+    batch_jobid,
+    run_cmd_no_fail,
 )
-from CIME.utils import batch_jobid
+from CIME.status import run_and_log_case_status, append_case_status
 from CIME.test_status import *
 from CIME.locked_files import unlock_file, lock_file, check_lockedfiles
+from CIME.gitinterface import GitInterface
 
 import errno, shutil
 
@@ -160,9 +162,13 @@ def _create_macros_cmake(
     ]
     for macro in macros:
         repo_macro = os.path.join(cmake_macros_dir, macro)
+        mach_repo_macro = os.path.join(cmake_macros_dir, "..", mach, macro)
         case_macro = os.path.join(case_cmake_path, macro)
-        if not os.path.exists(case_macro) and os.path.exists(repo_macro):
-            safe_copy(repo_macro, case_cmake_path)
+        if not os.path.exists(case_macro):
+            if os.path.exists(mach_repo_macro):
+                safe_copy(mach_repo_macro, case_cmake_path)
+            elif os.path.exists(repo_macro):
+                safe_copy(repo_macro, case_cmake_path)
 
     copy_depends_files(mach, mach_obj.machines_dir, caseroot, compiler)
 
@@ -516,4 +522,42 @@ def case_setup(self, clean=False, test_mode=False, reset=False, keep=None):
             custom_success_msg_functor=msg_func,
             caseroot=caseroot,
             is_batch=is_batch,
+        )
+        self._create_case_repo(caseroot)
+
+
+def _create_case_repo(self, caseroot):
+    version = run_cmd_no_fail("git --version")
+    result = re.findall(r"([0-9]+)\.([0-9]+)\.?[0-9]*", version)
+    major = int(result[0][0])
+    minor = int(result[0][1])
+
+    # gitinterface needs git version 2.28 or newer
+    if major > 2 or (major == 2 and minor >= 28):
+        self._gitinterface = GitInterface(
+            caseroot, logger, branch=self.get_value("CASE")
+        )
+        if not os.path.exists(os.path.join(caseroot, ".gitignore")):
+            safe_copy(
+                os.path.join(
+                    self.get_value("CIMEROOT"),
+                    "CIME",
+                    "data",
+                    "templates",
+                    "gitignore.template",
+                ),
+                os.path.join(caseroot, ".gitignore"),
+            )
+            append_case_status(
+                "", "", "local git repository created", gitinterface=self._gitinterface
+            )
+        # add all files in caseroot to local repository
+        self._gitinterface._git_command("add", "*")
+    else:
+        logger.warning("git interface requires git version 2.28 or newer")
+
+        append_case_status(
+            "",
+            "",
+            f"local git version too old for cime git interface {major}.{minor}",
         )

@@ -134,4 +134,13 @@ then
     . "/entrypoint_batch.sh"
 fi
 
+function create_environment() {
+    mamba create -n cime-$1 python=$1
+    mamba env update -n cime-$1 -f /cime.yaml
+
+    source /opt/conda/etc/profile.d/conda.sh
+
+    conda activate cime-$1
+}
+
 exec "${@}"

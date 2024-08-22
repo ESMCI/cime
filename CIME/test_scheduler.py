@@ -14,9 +14,8 @@ from collections import OrderedDict
 
 from CIME.XML.standard_module_setup import *
 from CIME.get_tests import get_recommended_test_time, get_build_groups, is_perf_test
+from CIME.status import append_status, append_testlog
 from CIME.utils import (
-    append_status,
-    append_testlog,
     TESTS_FAILED_ERR_CODE,
     parse_test_name,
     get_full_test_name,

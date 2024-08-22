@@ -8,7 +8,8 @@ submit, check_case and check_da_settings are members of class Case in file case.
 """
 import configparser
 from CIME.XML.standard_module_setup import *
-from CIME.utils import expect, run_and_log_case_status, CIMEError, get_time_in_seconds
+from CIME.utils import expect, CIMEError, get_time_in_seconds
+from CIME.status import run_and_log_case_status
 from CIME.locked_files import (
     unlock_file,
     lock_file,
@@ -233,6 +234,8 @@ def submit(
     caseroot = self.get_value("CASEROOT")
     if self.get_value("TEST"):
         casebaseid = self.get_value("CASEBASEID")
+        if os.path.exists(os.path.join(caseroot, "env_test.xml")):
+            self.set_initial_test_values()
         # This should take care of the race condition where the submitted job
         # begins immediately and tries to set RUN phase. We proactively assume
         # a passed SUBMIT phase. If this state is already PASS, don't set it again
@@ -283,6 +286,7 @@ def submit(
             caseroot=caseroot,
             custom_success_msg_functor=lambda x: x.split(":")[-1],
             is_batch=is_batch,
+            gitinterface=self._gitinterface,
         )
     except BaseException:  # Want to catch KeyboardInterrupt too
         # If something failed in the batch system, make sure to mark

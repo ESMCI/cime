@@ -467,7 +467,14 @@ class TestStatus(object):
                 elif phase in [BASELINE_PHASE, THROUGHPUT_PHASE, MEMCOMP_PHASE]:
                     if rv in [NAMELIST_FAIL_STATUS, TEST_PASS_STATUS]:
                         phase_responsible_for_status = phase
-                        rv = TEST_DIFF_STATUS
+                        # need to further inspect message to determine
+                        # phase status
+                        if "DIFF" in data[1]:
+                            rv = TEST_DIFF_STATUS
+                        elif "ERROR" in data[1]:
+                            rv = TEST_FAIL_STATUS
+                        else:
+                            rv = TEST_DIFF_STATUS
                     else:
                         pass  # a DIFF does not trump a FAIL
 

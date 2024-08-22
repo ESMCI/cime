@@ -3,6 +3,7 @@
 import os
 import shutil
 import sys
+import re
 
 from CIME import utils
 from CIME.tests import base
@@ -24,6 +25,7 @@ class TestUnitTest(base.BaseTestCase):
 
     def _has_unit_test_support(self):
         cmake_macros_dir = Files().get_value("CMAKE_MACROS_DIR")
+        cmake_machine_macros_dir = os.path.join(cmake_macros_dir, "..", self._machine)
 
         macros_to_check = [
             os.path.join(
@@ -39,13 +41,33 @@ class TestUnitTest(base.BaseTestCase):
             os.path.join(
                 os.environ.get("HOME"), ".cime", "{}.cmake".format(self._machine)
             ),
+            os.path.join(
+                cmake_machine_macros_dir,
+                "{}_{}.cmake".format(self._compiler, self._machine),
+            ),
+            os.path.join(cmake_machine_macros_dir, "{}.cmake".format(self._machine)),
         ]
+        env_ref_re = re.compile(r"\$ENV\{(\w+)\}")
 
         for macro_to_check in macros_to_check:
             if os.path.exists(macro_to_check):
-                macro_text = open(macro_to_check, "r").read()
-                if "PFUNIT_PATH" in macro_text:
-                    return True
+                with open(macro_to_check, "r") as f:
+                    while True:
+                        line = f.readline().strip()
+                        if not line:
+                            break
+                        if "PFUNIT_PATH" in line:
+                            path = line.split(" ")[1][1:-2]
+                            m = env_ref_re.match(path)
+                            if m:
+                                env_var = m.groups()[0]
+                                env_var_exists = env_var in os.environ
+                                if env_var_exists:
+                                    path = path.replace(
+                                        "$ENV{" + env_var + "}", os.environ[env_var]
+                                    )
+                            if os.path.exists(path):
+                                return True
 
         return False
 

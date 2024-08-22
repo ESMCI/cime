@@ -66,10 +66,6 @@ endif
 
 SLIBS ?= $(USER_SLIBS)
 
-ifeq ($(strip $(USE_FMS)), TRUE)
-  SLIBS += -lfms
-endif
-
 ifndef MOD_SUFFIX
    MOD_SUFFIX := mod
 endif
@@ -125,6 +121,11 @@ ifdef FSTDLIB_PKGCONFIG
   STDLIB_LIBS := `pkg-config --libs fortran_stdlib`
   INCLDIR += $(STDLIB_INC)
   SLIBS += $(STDLIB_LIBS)
+endif
+
+ifeq ($(strip $(USE_FMS)), TRUE)
+  SLIBS += -lfms
+  INCLDIR += -I$(SHAREDLIBROOT)/$(SHAREDPATH)/FMS/
 endif
 
 

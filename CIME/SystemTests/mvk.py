@@ -9,7 +9,7 @@ This class inherits from SystemTestsCommon.
 import os
 import json
 import logging
-from distutils import dir_util
+from shutils import copytree
 
 from CIME import test_status
 from CIME import utils
@@ -272,7 +272,7 @@ class MVK(SystemTestsCommon):
             urlroot = utils.get_urlroot(mach_obj)
 
             with utils.SharedArea():
-                dir_util.copy_tree(
+                copytree(
                     evv_out_dir,
                     os.path.join(htmlroot, "evv", case_name),
                     preserve_mode=False,

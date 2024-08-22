@@ -1,6 +1,11 @@
 """
 Functions for actions pertaining to history files.
 """
+import logging
+import os
+import re
+import filecmp
+
 from CIME.XML.standard_module_setup import *
 from CIME.config import Config
 from CIME.test_status import TEST_NO_BASELINES_COMMENT, TEST_STATUS_FILENAME
@@ -11,8 +16,7 @@ from CIME.utils import (
     SharedArea,
     parse_test_name,
 )
-
-import logging, os, re, filecmp
+from CIME.utils import CIMEError
 
 logger = logging.getLogger(__name__)
 
@@ -32,6 +36,7 @@ NO_COMPARE = "had no compare counterpart"
 NO_ORIGINAL = "had no original counterpart"
 FIELDLISTS_DIFFER = "had a different field list from"
 DIFF_COMMENT = "did NOT match"
+FAILED_OPEN = "Failed to open file"
 # COMPARISON_COMMENT_OPTIONS should include all of the above: these are any of the special
 # comment strings that describe the reason for a comparison failure
 COMPARISON_COMMENT_OPTIONS = set(
@@ -202,10 +207,13 @@ def _hists_match(model, hists1, hists2, suffix1="", suffix2=""):
                     : len(normalized_name) - len(suffix) - 1
                 ]
 
-            m = re.search("(.+)_[0-9]{4}(.+.nc)", normalized_name)
+            m = re.search("(.+)_[0-9]{4}(.*.nc)", normalized_name)
             if m is not None:
                 multiinst = True
-                multi_normalized.append(m.group(1) + m.group(2))
+                if m.group(1).endswith(".") and m.group(2).startswith("."):
+                    multi_normalized.append(m.group(1) + m.group(2)[1:])
+                else:
+                    multi_normalized.append(m.group(1) + m.group(2))
 
             normalized.append(normalized_name)
 
@@ -335,6 +343,10 @@ def _compare_hists(
             if not ".nc" in hist1:
                 logger.info("Ignoring non-netcdf file {}".format(hist1))
                 continue
+
+            success = False
+            cprnc_log_file = None
+
             try:
                 success, cprnc_log_file, cprnc_comment = cprnc(
                     model,
@@ -346,10 +358,10 @@ def _compare_hists(
                     outfile_suffix=outfile_suffix,
                     ignore_fieldlist_diffs=ignore_fieldlist_diffs,
                 )
-            except:
-                cprnc_comment = "CPRNC executable not found"
-                cprnc_log_file = None
-                success = False
+            except CIMEError as e:
+                cprnc_comment = str(e)
+            except Exception as e:
+                cprnc_comment = f"Unknown CRPRC error: {e!s}"
 
             if success:
                 comments += "    {} matched {}\n".format(hist1, hist2)
@@ -508,7 +520,10 @@ def cprnc(
                     comment = CPRNC_FIELDLISTS_DIFFER
             elif "files seem to be IDENTICAL" in out:
                 files_match = True
+            elif "Failed to open file" in out:
+                raise CIMEError("Failed to open file")
             else:
+                # TODO convert to CIMEError
                 expect(
                     False,
                     "Did not find an expected summary string in cprnc output:\n{}".format(
@@ -722,44 +737,48 @@ def get_ts_synopsis(comments):
     'DIFF'
     >>> get_ts_synopsis('File foo had no compare counterpart in bar with suffix baz\n File foo had no original counterpart in bar with suffix baz\n')
     'DIFF'
+    >>> get_ts_synopsis('file1=\nfile2=\nFailed to open file\n')
+    'ERROR CPRNC failed to open files'
+    >>> get_ts_synopsis('file1=\nfile2=\nSome other error\n')
+    'Could not interpret CPRNC output'
     """
-    if not comments:
-        return ""
-    elif "\n" not in comments.strip():
-        return comments.strip()
-    else:
-        has_fieldlist_differences = False
-        has_bfails = False
-        has_real_fails = False
-        for line in comments.splitlines():
-            if FIELDLISTS_DIFFER in line:
-                has_fieldlist_differences = True
-            if NO_COMPARE in line:
-                has_bfails = True
-            for comparison_failure_comment in COMPARISON_FAILURE_COMMENT_OPTIONS:
-                if comparison_failure_comment in line:
-                    has_real_fails = True
+    comments = comments.strip()
 
-        if has_real_fails:
-            # If there are any real differences, we just report that: we assume that the
-            # user cares much more about those real differences than fieldlist or bfail
-            # issues, and we don't want to complicate the matter by trying to report all
-            # issues in this case.
-            return "DIFF"
-        else:
-            if has_fieldlist_differences and has_bfails:
-                # It's not clear which of these (if either) the user would care more
-                # about, so we report both. We deliberately avoid printing the keywords
-                # 'FIELDLIST' or TEST_NO_BASELINES_COMMENT (i.e., 'BFAIL'): if we printed
-                # those, then (e.g.) a 'grep -v FIELDLIST' (which the user might do if
-                # (s)he was expecting fieldlist differences) would also filter out this
-                # line, which we don't want.
-                return "MULTIPLE ISSUES: field lists differ and some baseline files were missing"
-            elif has_fieldlist_differences:
-                return "FIELDLIST field lists differ (otherwise bit-for-bit)"
-            elif has_bfails:
-                return "ERROR {} some baseline files were missing".format(
-                    TEST_NO_BASELINES_COMMENT
-                )
-            else:
-                return ""
+    if comments == "" or "\n" not in comments:
+        return comments
+
+    fieldlist_differences = re.search(FIELDLISTS_DIFFER, comments) is not None
+    baseline_fail = re.search(NO_COMPARE, comments) is not None
+    real_fail = [
+        re.search(x, comments) is not None for x in COMPARISON_FAILURE_COMMENT_OPTIONS
+    ]
+    open_fail = re.search(FAILED_OPEN, comments) is not None
+
+    if any(real_fail):
+        # If there are any real differences, we just report that: we assume that the
+        # user cares much more about those real differences than fieldlist or bfail
+        # issues, and we don't want to complicate the matter by trying to report all
+        # issues in this case.
+        synopsis = "DIFF"
+    elif fieldlist_differences and baseline_fail:
+        # It's not clear which of these (if either) the user would care more
+        # about, so we report both. We deliberately avoid printing the keywords
+        # 'FIELDLIST' or TEST_NO_BASELINES_COMMENT (i.e., 'BFAIL'): if we printed
+        # those, then (e.g.) a 'grep -v FIELDLIST' (which the user might do if
+        # (s)he was expecting fieldlist differences) would also filter out this
+        # line, which we don't want.
+        synopsis = (
+            "MULTIPLE ISSUES: field lists differ and some baseline files were missing"
+        )
+    elif fieldlist_differences:
+        synopsis = "FIELDLIST field lists differ (otherwise bit-for-bit)"
+    elif baseline_fail:
+        synopsis = "ERROR {} some baseline files were missing".format(
+            TEST_NO_BASELINES_COMMENT
+        )
+    elif open_fail:
+        synopsis = "ERROR CPRNC failed to open files"
+    else:
+        synopsis = "Could not interpret CPRNC output"
+
+    return synopsis

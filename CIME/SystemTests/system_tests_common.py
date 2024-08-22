@@ -1,11 +1,12 @@
 """
 Base class for CIME system tests
 """
+
 from CIME.XML.standard_module_setup import *
 from CIME.XML.env_run import EnvRun
 from CIME.XML.env_test import EnvTest
+from CIME.status import append_testlog
 from CIME.utils import (
-    append_testlog,
     get_model,
     safe_copy,
     get_timestamp,
@@ -117,6 +118,74 @@ class SystemTestsCommon(object):
         self._dry_run = False
         self._user_separate_builds = False
         self._expected_num_cmp = None
+        self._rest_n = None
+
+    def _set_restart_interval(self):
+        stop_n = self._case.get_value("STOP_N")
+        stop_option = self._case.get_value("STOP_OPTION")
+        self._case.set_value("REST_OPTION", stop_option)
+        # We need to make sure the run is long enough and to set REST_N to a
+        # value that makes sense for all components
+        maxncpl = 10000
+        minncpl = 0
+        for comp in self._case.get_values("COMP_CLASSES"):
+            if comp == "CPL":
+                continue
+            compname = self._case.get_value("COMP_{}".format(comp))
+
+            # ignore stub components in this test.
+            if compname == "s{}".format(comp.lower()):
+                ncpl = None
+            else:
+                ncpl = self._case.get_value("{}_NCPL".format(comp))
+
+            if ncpl and maxncpl > ncpl:
+                maxncpl = ncpl
+            if ncpl and minncpl < ncpl:
+                minncpl = ncpl
+
+        ncpl_base_period = self._case.get_value("NCPL_BASE_PERIOD")
+        if ncpl_base_period == "hour":
+            coupling_secs = 3600 / maxncpl
+            timestep = 3600 / minncpl
+        elif ncpl_base_period == "day":
+            coupling_secs = 86400 / maxncpl
+            timestep = 86400 / minncpl
+        elif ncpl_base_period == "year":
+            coupling_secs = 31536000 / maxncpl
+            timestep = 31536000 / minncpl
+        elif ncpl_base_period == "decade":
+            coupling_secs = 315360000 / maxncpl
+            timestep = 315360000 / minncpl
+
+        # Convert stop_n to units of coupling intervals
+        factor = 1
+        if stop_option == "nsteps":
+            factor = timestep
+        elif stop_option == "nminutes":
+            factor = 60
+        elif stop_option == "nhours":
+            factor = 3600
+        elif stop_option == "ndays":
+            factor = 86400
+        elif stop_option == "nyears":
+            factor = 315360000
+        else:
+            expect(False, f"stop_option {stop_option} not available for this test")
+
+        stop_n = int(stop_n * factor // coupling_secs)
+        rest_n = int((stop_n // 2 + 1) * coupling_secs / factor)
+
+        expect(stop_n > 0, "Bad STOP_N: {:d}".format(stop_n))
+
+        expect(stop_n > 2, "ERROR: stop_n value {:d} too short".format(stop_n))
+        logger.info(
+            "doing an {0} {1} initial test with restart file at {2} {1}".format(
+                str(stop_n), stop_option, str(rest_n)
+            )
+        )
+        self._case.set_value("REST_N", rest_n)
+        return rest_n
 
     def _init_environment(self, caseroot):
         """
