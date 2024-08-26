@@ -531,33 +531,3 @@ def _create_case_repo(self, caseroot):
     result = re.findall(r"([0-9]+)\.([0-9]+)\.?[0-9]*", version)
     major = int(result[0][0])
     minor = int(result[0][1])
-
-    # gitinterface needs git version 2.28 or newer
-    if major > 2 or (major == 2 and minor >= 28):
-        self._gitinterface = GitInterface(
-            caseroot, logger, branch=self.get_value("CASE")
-        )
-        if not os.path.exists(os.path.join(caseroot, ".gitignore")):
-            safe_copy(
-                os.path.join(
-                    self.get_value("CIMEROOT"),
-                    "CIME",
-                    "data",
-                    "templates",
-                    "gitignore.template",
-                ),
-                os.path.join(caseroot, ".gitignore"),
-            )
-            append_case_status(
-                "", "", "local git repository created", gitinterface=self._gitinterface
-            )
-        # add all files in caseroot to local repository
-        self._gitinterface._git_command("add", "*")
-    else:
-        logger.warning("git interface requires git version 2.28 or newer")
-
-        append_case_status(
-            "",
-            "",
-            f"local git version too old for cime git interface {major}.{minor}",
-        )
