@@ -1,9 +1,9 @@
 # pylint: disable=import-error
-from shutil import which
+from distutils.spawn import find_executable
 
-has_gftp = which("globus-url-copy")
-has_svn = which("svn")
-has_wget = which("wget")
+has_gftp = find_executable("globus-url-copy")
+has_svn = find_executable("svn")
+has_wget = find_executable("wget")
 has_ftp = True
 try:
     from ftplib import FTP
