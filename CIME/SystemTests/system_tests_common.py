@@ -37,6 +37,7 @@ from CIME.baselines.performance import (
     load_coupler_customization,
 )
 import CIME.build as build
+from datetime import datetime, timedelta, calendar
 
 import glob, gzip, time, traceback, os, math
 from contextlib import ExitStack
@@ -172,19 +173,66 @@ class SystemTestsCommon(object):
             factor = 315360000
         else:
             expect(False, f"stop_option {stop_option} not available for this test")
-
-        stop_n = int(stop_n * factor // coupling_secs)
+        stop_n = stop_n * factor // coupling_secs
         rest_n = math.ceil((stop_n // 2 + 1) * coupling_secs / factor)
-
         expect(stop_n > 0, "Bad STOP_N: {:d}".format(stop_n))
-
         expect(stop_n > 2, "ERROR: stop_n value {:d} too short".format(stop_n))
+
+        startdate = self._case.get_value("RUN_STARTDATE")
+        starttime = self._case.get_value("START_TOD")
+
+        startdatetime = datetime.fromisoformat(startdate) + timedelta(
+            seconds=int(starttime)
+        )
+
+        if stop_option == "nsteps":
+            rtd = timedelta(seconds=rest_n)
+        elif stop_option == "nminutes":
+            rtd = timedelta(minutes=rest_n)
+        elif stop_option == "nhours":
+            rtd = timedelta(hours=rest_n)
+        elif stop_option == "ndays":
+            rtd = timedelta(days=rest_n)
+        elif stop_option == "nyears":
+            rtd = timedelta(yeads=rest_n)
+        else:
+            expect(False, f"stop_option {stop_option} not available for this test")
+        restdatetime = startdatetime + rtd
+
+        cal = self._case.get_value("CALENDAR")
+        if cal == "NO_LEAP":
+            dayscorrected = 0
+            syr = startdatetime.year
+            smon = startdatetime.month
+            ryr = restdatetime.year
+            rmon = restdatetime.month
+            while ryr > syr:
+                if rmon > 2 and calendar.isleap(ryr):
+                    dayscorrected += 1
+                ryr = ryr - 1
+            if rmon > 2 and smon <= 2:
+                if calendar.isleap(syr):
+                    dayscorrected += 1
+            restdatetime = restdatetime - timedelta(days=dayscorrected)
+        rest_time = (
+            f"{restdatetime.year:04d}-{restdatetime.month:02d}-{restdatetime.day:02d}-"
+        )
+        h = restdatetime.hour
+        m = restdatetime.minute
+        s = restdatetime.second
+        rest_time += f"{(h*3600+m*60+s):05d}"
+
         logger.info(
             "doing an {0} {1} initial test with restart file at {2} {1}".format(
                 str(stop_n), stop_option, str(rest_n)
             )
         )
         self._case.set_value("REST_N", rest_n)
+        if hasattr(self, "_case2"):
+            self._case2.set_value("RESTART_TIME", rest_time)
+        else:
+            self._case.set_value("RESTART_TIME", rest_time)
+
         return rest_n
 
     def _init_environment(self, caseroot):
