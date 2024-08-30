@@ -1234,7 +1234,7 @@ class Case(object):
                     and value.endswith("'")
                 ):
                     value = value[1:-1]
-                if append[key]:
+                if key in append and append[key]:
                     ovalue = self.get_value(key)
 
                 self.set_value(key, value + " " + ovalue)
