@@ -37,9 +37,9 @@ from CIME.baselines.performance import (
     load_coupler_customization,
 )
 import CIME.build as build
-from datetime import datetime, timedelta, calendar
+from datetime import datetime, timedelta
+import glob, gzip, time, traceback, os, math, calendar
 
-import glob, gzip, time, traceback, os, math
 from contextlib import ExitStack
 
 logger = logging.getLogger(__name__)
@@ -173,7 +173,7 @@ class SystemTestsCommon(object):
             factor = 315360000
         else:
             expect(False, f"stop_option {stop_option} not available for this test")
-        stop_n = stop_n * factor // coupling_secs
+        stop_n = int(stop_n * factor // coupling_secs)
         rest_n = math.ceil((stop_n // 2 + 1) * coupling_secs / factor)
         expect(stop_n > 0, "Bad STOP_N: {:d}".format(stop_n))
         expect(stop_n > 2, "ERROR: stop_n value {:d} too short".format(stop_n))
@@ -229,9 +229,9 @@ class SystemTestsCommon(object):
         )
         self._case.set_value("REST_N", rest_n)
         if hasattr(self, "_case2"):
-            self._case2.set_value("RESTART_TIME", rest_time)
+            self._case2.set_value("DRV_RESTART_POINTER", "rpointer.cpl." + rest_time)
         else:
-            self._case.set_value("RESTART_TIME", rest_time)
+            self._case.set_value("DRV_RESTART_POINTER", "rpointer.cpl." + rest_time)
 
         return rest_n
 
