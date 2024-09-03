@@ -260,6 +260,11 @@ def parse_command_line(args, description):
             "\nNOTE: this can also be done after the fact with bless_test_results",
         )
 
+        parser.add_argument(
+            "--driver",
+            help="Override driver specified in tests and use this one.",
+        )
+
     default = get_default_setting(config, "COMPILER", None, check_main=True)
 
     parser.add_argument(
@@ -775,6 +780,7 @@ def parse_command_line(args, description):
         args.workflow,
         args.chksum,
         args.force_rebuild,
+        args.driver,
     )
 
 
@@ -936,6 +942,7 @@ def create_test(
     workflow,
     chksum,
     force_rebuild,
+    driver,
 ):
     ###############################################################################
     impl = TestScheduler(
@@ -977,6 +984,7 @@ def create_test(
         workflow=workflow,
         chksum=chksum,
         force_rebuild=force_rebuild,
+        driver=driver,
     )
 
     success = impl.run_tests(
@@ -1081,6 +1089,7 @@ def _main_func(description=None):
         workflow,
         chksum,
         force_rebuild,
+        driver,
     ) = parse_command_line(sys.argv, description)
 
     success = False
@@ -1134,6 +1143,7 @@ def _main_func(description=None):
             workflow,
             chksum,
             force_rebuild,
+            driver,
         )
         run_count += 1
 
