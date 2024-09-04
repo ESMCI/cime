@@ -127,7 +127,7 @@ def _translate_test_names_for_new_pecount(test_names, force_procs, force_threads
     return new_test_names
 
 
-_TIME_CACHE = {}
+_TIME_CACHE = { }
 ###############################################################################
 def _get_time_est(test, baseline_root, as_int=False, use_cache=False, raw=False):
     ###############################################################################
