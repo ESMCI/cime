@@ -16,7 +16,7 @@ import shutil
 import logging
 
 from collections import OrderedDict
-from shutils import copytree
+from shutil import copytree
 
 import pandas as pd
 import numpy as np
