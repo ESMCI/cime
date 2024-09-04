@@ -10,7 +10,7 @@ import os
 import json
 import logging
 
-from shutils import copytree
+from shutil import copytree
 
 import CIME.test_status
 import CIME.utils
