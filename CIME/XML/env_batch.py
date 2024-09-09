@@ -260,7 +260,18 @@ class EnvBatch(EnvBase):
         )
         env_workflow = case.get_env("workflow")
         self._hidden_batch_script[job] = env_workflow.get_value("hidden", subgroup=job)
-        output_name = get_batch_script_for_job(job, hidden=self._hidden_batch_script[job]) if outfile is None else outfile
+        output_name = (
+            get_batch_script_for_job(
+                job,
+                hidden=(
+                    self._hidden_batch_script[job]
+                    if job in self._hidden_batch_script
+                    else None
+                ),
+            )
+            if outfile is None
+            else outfile
+        )
         logger.info("Creating file {}".format(output_name))
         with open(output_name, "w") as fd:
             fd.write(output_text)
@@ -748,7 +759,17 @@ class EnvBatch(EnvBase):
         alljobs = [
             j
             for j in alljobs
-            if os.path.isfile(os.path.join(self._caseroot, get_batch_script_for_job(j, hidden=self._hidden_batch_script[j])))
+            if os.path.isfile(
+                os.path.join(
+                    self._caseroot,
+                    get_batch_script_for_job(
+                        j,
+                        hidden=self._hidden_batch_script[j]
+                        if j in self._hidden_batch_script
+                        else None,
+                    ),
+                )
+            )
         ]
 
         startindex = 0
@@ -1074,7 +1095,14 @@ class EnvBatch(EnvBase):
                 batchsubmit,
                 submitargs,
                 batchredirect,
-                get_batch_script_for_job(job, hidden=self._hidden_batch_script[job]),
+                get_batch_script_for_job(
+                    job,
+                    hidden=(
+                        self._hidden_batch_script[job]
+                        if job in self._hidden_batch_script
+                        else None
+                    ),
+                ),
             )
         elif batch_env_flag:
             sequence = (
@@ -1082,14 +1110,34 @@ class EnvBatch(EnvBase):
                 submitargs,
                 run_args,
                 batchredirect,
-                os.path.join(self._caseroot, get_batch_script_for_job(job, hidden=self._hidden_batch_script[job])),
+                os.path.join(
+                    self._caseroot,
+                    get_batch_script_for_job(
+                        job,
+                        hidden=(
+                            self._hidden_batch_script[job]
+                            if job in self._hidden_batch_script
+                            else None
+                        ),
+                    ),
+                ),
             )
         else:
             sequence = (
                 batchsubmit,
                 submitargs,
                 batchredirect,
-                os.path.join(self._caseroot, get_batch_script_for_job(job, hidden=self._hidden_batch_script[job])),
+                os.path.join(
+                    self._caseroot,
+                    get_batch_script_for_job(
+                        job,
+                        hidden=(
+                            self._hidden_batch_script[job]
+                            if job in self._hidden_batch_script
+                            else None
+                        ),
+                    ),
+                ),
                 run_args,
             )
 
