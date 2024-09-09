@@ -468,8 +468,8 @@ class TestStatus(object):
                     if rv in [NAMELIST_FAIL_STATUS, TEST_PASS_STATUS]:
                         phase_responsible_for_status = phase
                         # need to further inspect message to determine
-                        # phase status
-                        if "DIFF" in data[1]:
+                        # phase status. BFAILs need to be a DIFF
+                        if "DIFF" in data[1] or TEST_NO_BASELINES_COMMENT in data[1]:
                             rv = TEST_DIFF_STATUS
                         elif "ERROR" in data[1]:
                             rv = TEST_FAIL_STATUS
