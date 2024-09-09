@@ -2530,8 +2530,11 @@ def run_bld_cmd_ensure_logging(cmd, arg_logger, from_dir=None, timeout=None):
     expect(stat == 0, filter_unicode(errput))
 
 
-def get_batch_script_for_job(job):
-    return job if "st_archive" in job else "." + job
+def get_batch_script_for_job(job, hidden="True"):
+    # this if statement is for backward compatibility
+    if job == "case.st_archive" and not hidden:
+        hidden = "False"
+    return "." + job if not hidden or hidden == "True" else job
 
 
 def string_in_list(_string, _list):

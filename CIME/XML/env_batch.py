@@ -32,6 +32,7 @@ class EnvBatch(EnvBase):
         initialize an object interface to file env_batch.xml in the case directory
         """
         self._batchtype = None
+        self._hidden_batch_script = {}
         # This arbitrary setting should always be overwritten
         self._default_walltime = "00:20:00"
         schema = os.path.join(utils.get_schema_path(), "env_batch.xsd")
@@ -257,7 +258,9 @@ class EnvBatch(EnvBase):
             subgroup=job,
             overrides=overrides,
         )
-        output_name = get_batch_script_for_job(job) if outfile is None else outfile
+        env_workflow = case.get_env("workflow")
+        self._hidden_batch_script[job] = env_workflow.get_value("hidden", subgroup=job)
+        output_name = get_batch_script_for_job(job, hidden=self._hidden_batch_script[job]) if outfile is None else outfile
         logger.info("Creating file {}".format(output_name))
         with open(output_name, "w") as fd:
             fd.write(output_text)
@@ -745,7 +748,7 @@ class EnvBatch(EnvBase):
         alljobs = [
             j
             for j in alljobs
-            if os.path.isfile(os.path.join(self._caseroot, get_batch_script_for_job(j)))
+            if os.path.isfile(os.path.join(self._caseroot, get_batch_script_for_job(j, hidden=self._hidden_batch_script[j])))
         ]
 
         startindex = 0
@@ -1071,7 +1074,7 @@ class EnvBatch(EnvBase):
                 batchsubmit,
                 submitargs,
                 batchredirect,
-                get_batch_script_for_job(job),
+                get_batch_script_for_job(job, hidden=self._hidden_batch_script[job]),
             )
         elif batch_env_flag:
             sequence = (
@@ -1079,14 +1082,14 @@ class EnvBatch(EnvBase):
                 submitargs,
                 run_args,
                 batchredirect,
-                os.path.join(self._caseroot, get_batch_script_for_job(job)),
+                os.path.join(self._caseroot, get_batch_script_for_job(job, hidden=self._hidden_batch_script[job])),
             )
         else:
             sequence = (
                 batchsubmit,
                 submitargs,
                 batchredirect,
-                os.path.join(self._caseroot, get_batch_script_for_job(job)),
+                os.path.join(self._caseroot, get_batch_script_for_job(job, hidden=self._hidden_batch_script[job])),
                 run_args,
             )
 
