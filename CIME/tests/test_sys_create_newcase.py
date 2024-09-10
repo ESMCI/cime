@@ -74,7 +74,7 @@ class TestCreateNewcase(base.BaseTestCase):
         # on systems (like github workflow) that do not have batch, set this for the next test
         if batch_system == "none":
             self.run_cmd_assert_result(
-                './xmlchange --subgroup case.run BATCH_COMMAND_FLAGS="-q \$JOB_QUEUE"',
+                r'./xmlchange --subgroup case.run BATCH_COMMAND_FLAGS="-q \$JOB_QUEUE"',
                 from_dir=testdir,
             )
 
