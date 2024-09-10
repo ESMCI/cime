@@ -259,7 +259,13 @@ class EnvBatch(EnvBase):
             overrides=overrides,
         )
         env_workflow = case.get_env("workflow")
-        self._hidden_batch_script[job] = env_workflow.get_value("hidden", subgroup=job)
+
+        hidden = env_workflow.get_value("hidden", subgroup=job)
+        if hidden is None or hidden == "True" or hidden == "true":
+            self._hidden_batch_script[job] = True
+        else:
+            self._hidden_batch_script[job] = False
+
         output_name = (
             get_batch_script_for_job(
                 job,

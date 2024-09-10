@@ -13,7 +13,7 @@
 
   <!-- simple elements -->
   <xs:element name="template" type="xs:anyURI"/>
-  <xs:element name="hidden" type="xs:string" default="True"/>
+  <xs:element name="hidden" type="xs:string"/>
   <xs:element name="task_count" type="xs:string"/>
   <xs:element name="tasks_per_node" type="xs:string"/>
   <xs:element name="walltime" type="xs:string"/>
