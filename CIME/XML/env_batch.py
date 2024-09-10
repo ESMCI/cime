@@ -261,7 +261,12 @@ class EnvBatch(EnvBase):
         env_workflow = case.get_env("workflow")
 
         hidden = env_workflow.get_value("hidden", subgroup=job)
-        if hidden is None or hidden == "True" or hidden == "true":
+        # case.st_archive is not hidden for backward compatibility
+        if (
+            (job != "case.st_archive" and hidden is None)
+            or hidden == "True"
+            or hidden == "true"
+        ):
             self._hidden_batch_script[job] = True
         else:
             self._hidden_batch_script[job] = False
