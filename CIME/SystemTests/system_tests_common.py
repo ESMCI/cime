@@ -112,6 +112,7 @@ class SystemTestsCommon(object):
         self._init_environment(caseroot)
         self._init_locked_files(caseroot, expected)
         self._skip_pnl = False
+        self._rest_time = None
         self._cpllog = (
             "med" if self._case.get_value("COMP_INTERFACE") == "nuopc" else "cpl"
         )
@@ -215,13 +216,13 @@ class SystemTestsCommon(object):
                 if calendar.isleap(syr):
                     dayscorrected += 1
             restdatetime = restdatetime - timedelta(days=dayscorrected)
-        rest_time = (
+        self._rest_time = (
             f".{restdatetime.year:04d}-{restdatetime.month:02d}-{restdatetime.day:02d}-"
         )
         h = restdatetime.hour
         m = restdatetime.minute
         s = restdatetime.second
-        rest_time += f"{(h*3600+m*60+s):05d}"
+        self._rest_time += f"{(h*3600+m*60+s):05d}"
 
         logger.info(
             "doing an {0} {1} initial test with restart file at {2} {1}".format(
@@ -229,16 +230,6 @@ class SystemTestsCommon(object):
             )
         )
         self._case.set_value("REST_N", rest_n)
-        ninst = self._case.get_value("NINST")
-        drvrest = "rpointer.cpl"
-        if ninst > 1:
-            drvrest += "_0001"
-        drvrest += rest_time
-
-        if hasattr(self, "_case2"):
-            self._case2.set_value("DRV_RESTART_POINTER", drvrest)
-        else:
-            self._case.set_value("DRV_RESTART_POINTER", drvrest)
 
         return rest_n
 
