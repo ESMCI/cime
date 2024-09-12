@@ -184,9 +184,10 @@ class SystemTestsCommon(object):
         startdatetime = datetime.fromisoformat(startdate) + timedelta(
             seconds=int(starttime)
         )
+        cal = self._case.get_value("CALENDAR")
 
         if stop_option == "nsteps":
-            rtd = timedelta(seconds=rest_n)
+            rtd = timedelta(seconds=rest_n * factor)
         elif stop_option == "nminutes":
             rtd = timedelta(minutes=rest_n)
         elif stop_option == "nhours":
@@ -194,12 +195,12 @@ class SystemTestsCommon(object):
         elif stop_option == "ndays":
             rtd = timedelta(days=rest_n)
         elif stop_option == "nyears":
-            rtd = timedelta(yeads=rest_n)
+            rtd = timedelta(days=rest_n * 365)
         else:
             expect(False, f"stop_option {stop_option} not available for this test")
+
         restdatetime = startdatetime + rtd
 
-        cal = self._case.get_value("CALENDAR")
         if cal == "NO_LEAP":
             dayscorrected = 0
             syr = startdatetime.year
@@ -215,7 +216,7 @@ class SystemTestsCommon(object):
                     dayscorrected += 1
             restdatetime = restdatetime - timedelta(days=dayscorrected)
         rest_time = (
-            f"{restdatetime.year:04d}-{restdatetime.month:02d}-{restdatetime.day:02d}-"
+            f".{restdatetime.year:04d}-{restdatetime.month:02d}-{restdatetime.day:02d}-"
         )
         h = restdatetime.hour
         m = restdatetime.minute
@@ -228,10 +229,16 @@ class SystemTestsCommon(object):
             )
         )
         self._case.set_value("REST_N", rest_n)
+        ninst = self._case.get_value("NINST")
+        drvrest = "rpointer.cpl"
+        if ninst > 1:
+            drvrest += "_0001"
+        drvrest += rest_time
+
         if hasattr(self, "_case2"):
-            self._case2.set_value("DRV_RESTART_POINTER", "rpointer.cpl." + rest_time)
+            self._case2.set_value("DRV_RESTART_POINTER", drvrest)
         else:
-            self._case.set_value("DRV_RESTART_POINTER", "rpointer.cpl." + rest_time)
+            self._case.set_value("DRV_RESTART_POINTER", drvrest)
 
         return rest_n
 
