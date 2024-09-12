@@ -32,7 +32,6 @@ class EnvBatch(EnvBase):
         initialize an object interface to file env_batch.xml in the case directory
         """
         self._batchtype = None
-        self._hidden_batch_script = {}
         # This arbitrary setting should always be overwritten
         self._default_walltime = "00:20:00"
         schema = os.path.join(utils.get_schema_path(), "env_batch.xsd")
@@ -213,6 +212,7 @@ class EnvBatch(EnvBase):
             thread_count,
             ngpus_per_node,
         ) = env_workflow.get_job_specs(case, job)
+
         overrides = {}
 
         if total_tasks:
@@ -258,18 +258,6 @@ class EnvBatch(EnvBase):
             subgroup=job,
             overrides=overrides,
         )
-        env_workflow = case.get_env("workflow")
-
-        hidden = env_workflow.get_value("hidden", subgroup=job)
-        # case.st_archive is not hidden for backward compatibility
-        if (
-            (job != "case.st_archive" and hidden is None)
-            or hidden == "True"
-            or hidden == "true"
-        ):
-            self._hidden_batch_script[job] = True
-        else:
-            self._hidden_batch_script[job] = False
 
         output_name = (
             get_batch_script_for_job(
@@ -509,6 +497,7 @@ class EnvBatch(EnvBase):
         """ """
         result = []
         directive_prefix = None
+        self._hidden_batch_script[job] = self.hidden_status(case, job)
 
         roots = self.get_children("batch_system")
         queue = case.get_value("JOB_QUEUE", subgroup=job)
@@ -774,10 +763,7 @@ class EnvBatch(EnvBase):
                 os.path.join(
                     self._caseroot,
                     get_batch_script_for_job(
-                        j,
-                        hidden=self._hidden_batch_script[j]
-                        if j in self._hidden_batch_script
-                        else None,
+                        j, hidden=env_workflow.hidden_job(case, j)
                     ),
                 )
             )
@@ -1100,6 +1086,7 @@ class EnvBatch(EnvBase):
             set_continue_run=resubmit_immediate,
             submit_resubmits=workflow and not resubmit_immediate,
         )
+        env_workflow = case.get_env("workflow")
         if batch_system == "lsf" and not batch_env_flag:
             sequence = (
                 run_args,
@@ -1108,11 +1095,7 @@ class EnvBatch(EnvBase):
                 batchredirect,
                 get_batch_script_for_job(
                     job,
-                    hidden=(
-                        self._hidden_batch_script[job]
-                        if job in self._hidden_batch_script
-                        else None
-                    ),
+                    hidden=env_workflow.hidden_job(case, job),
                 ),
             )
         elif batch_env_flag:
@@ -1125,11 +1108,7 @@ class EnvBatch(EnvBase):
                     self._caseroot,
                     get_batch_script_for_job(
                         job,
-                        hidden=(
-                            self._hidden_batch_script[job]
-                            if job in self._hidden_batch_script
-                            else None
-                        ),
+                        hidden=env_workflow.hidden_job(case, job),
                     ),
                 ),
             )
@@ -1142,11 +1121,7 @@ class EnvBatch(EnvBase):
                     self._caseroot,
                     get_batch_script_for_job(
                         job,
-                        hidden=(
-                            self._hidden_batch_script[job]
-                            if job in self._hidden_batch_script
-                            else None
-                        ),
+                        hidden=env_workflow.hidden_job(case, job),
                     ),
                 ),
                 run_args,
