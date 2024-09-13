@@ -1020,10 +1020,14 @@ class TestScheduler(object):
                 from_dir=test_dir,
                 env=env,
             )
-            expect(
-                cmdstat in [0, TESTS_FAILED_ERR_CODE],
-                "Fatal error in case.cmpgen_namelists: {}".format(output),
-            )
+            try:
+                expect(
+                    cmdstat in [0, TESTS_FAILED_ERR_CODE],
+                    "Fatal error in case.cmpgen_namelists: {}".format(output),
+                )
+            except Exception:
+                self._update_test_status_file(test, SETUP_PHASE, TEST_FAIL_STATUS)
+                raise
 
         if self._single_exe:
             with Case(self._get_test_dir(test), read_only=False) as case:
