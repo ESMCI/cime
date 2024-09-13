@@ -260,6 +260,8 @@ class EnvBatch(EnvBase):
             subgroup=job,
             overrides=overrides,
         )
+        if not self._env_workflow:
+            self._env_workflow = case.get_env("workflow")
 
         output_name = (
             get_batch_script_for_job(
@@ -285,6 +287,8 @@ class EnvBatch(EnvBase):
         if self._batchtype == "none":
             return
 
+        if not self._env_workflow:
+            self._env_workflow = case.get_env("workflow")
         known_jobs = self._env_workflow.get_jobs()
 
         for job, jsect in batch_jobs:
