@@ -83,7 +83,7 @@ class ERI(SystemTestsCommon):
         start_1 = run_startdate
 
         stop_n2 = stop_n - stop_n1
-        rest_n2 = int(stop_n2 / 2 + 1)
+
         hist_n = stop_n2
 
         start_1_year, start_1_month, start_1_day = [
@@ -93,11 +93,31 @@ class ERI(SystemTestsCommon):
         start_2 = "{:04d}-{:02d}-{:02d}".format(
             start_2_year, start_1_month, start_1_day
         )
+        rest_n2 = self._set_restart_interval(
+            stop_n=stop_n2,
+            stop_option=stop_option,
+            startdate=start_2,
+            starttime=start_tod,
+        )
 
         stop_n3 = stop_n2 - rest_n2
-        rest_n3 = int(stop_n3 / 2 + 1)
 
+        ninst = self._case.get_value("NINST")
+        drvrest = "rpointer.cpl"
+        if ninst > 1:
+            drvrest += "_0001"
+        drvrest += self._rest_time
+        self._case.set_value("DRV_RESTART_POINTER", drvrest)
+
+        rest_n3 = self._set_restart_interval(
+            stop_n=stop_n3,
+            stop_option=stop_option,
+            startdate=start_2,
+            starttime=start_tod,
+        )
         stop_n4 = stop_n3 - rest_n3
+
+        logger.info("setting DRV_RESTART_POINTER={}".format(drvrest))
 
         expect(stop_n4 >= 1 and stop_n1 >= 1, "Run length too short")
 

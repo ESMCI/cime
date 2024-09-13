@@ -122,9 +122,14 @@ class SystemTestsCommon(object):
         self._expected_num_cmp = None
         self._rest_n = None
 
-    def _set_restart_interval(self):
-        stop_n = self._case.get_value("STOP_N")
-        stop_option = self._case.get_value("STOP_OPTION")
+    def _set_restart_interval(
+        self, stop_n=None, stop_option=None, startdate=None, starttime=None
+    ):
+        if not stop_n:
+            stop_n = self._case.get_value("STOP_N")
+        if not stop_option:
+            stop_option = self._case.get_value("STOP_OPTION")
+
         self._case.set_value("REST_OPTION", stop_option)
         # We need to make sure the run is long enough and to set REST_N to a
         # value that makes sense for all components
@@ -178,9 +183,10 @@ class SystemTestsCommon(object):
         rest_n = math.ceil((stop_n // 2 + 1) * coupling_secs / factor)
         expect(stop_n > 0, "Bad STOP_N: {:d}".format(stop_n))
         expect(stop_n > 2, "ERROR: stop_n value {:d} too short".format(stop_n))
-
-        startdate = self._case.get_value("RUN_STARTDATE")
-        starttime = self._case.get_value("START_TOD")
+        if not startdate:
+            startdate = self._case.get_value("RUN_STARTDATE")
+        if not starttime:
+            starttime = self._case.get_value("START_TOD")
 
         startdatetime = datetime.fromisoformat(startdate) + timedelta(
             seconds=int(starttime)
