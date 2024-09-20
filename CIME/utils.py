@@ -820,12 +820,10 @@ def run_cmd(
     # or build a relative path and append `sys.path` to import
     # `standard_script_setup`. Providing `PYTHONPATH` fixes protential
     # broken paths in external python.
-    env.update(
-        {
-            "CIMEROOT": f"{get_cime_root()}",
-            "PYTHONPATH": f"{get_cime_root()}:{get_tools_path()}",
-        }
-    )
+    env_pythonpath = os.environ.get("PYTHONPATH", "").split(":")
+    cime_pythonpath = [f"{get_cime_root()}", f"{get_tools_path()}"] + env_pythonpath
+    env["PYTHONPATH"] = ":".join(filter(None, cime_pythonpath))
+    env["CIMEROOT"] = f"{get_cime_root()}"
 
     if timeout:
         with Timeout(timeout):
