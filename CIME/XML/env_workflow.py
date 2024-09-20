@@ -5,6 +5,7 @@ Interface to the env_workflow.xml file.  This class inherits from EnvBase
 from CIME.XML.standard_module_setup import *
 from CIME.XML.env_base import EnvBase
 from CIME.utils import get_cime_root
+
 import re, math
 
 logger = logging.getLogger(__name__)
@@ -21,6 +22,7 @@ class EnvWorkflow(EnvBase):
         #        schema = os.path.join(get_cime_root(), "CIME", "config", "xml_schemas", "env_workflow.xsd")
         # TODO: define schema for this file
         schema = None
+        self._hidden = {}
         super(EnvWorkflow, self).__init__(
             case_root, infile, schema=schema, read_only=read_only
         )
@@ -89,7 +91,17 @@ class EnvWorkflow(EnvBase):
                     )
         return type_info
 
+    def hidden_job(self, case, job):
+        if job not in self._hidden:
+            self.get_job_specs(case, job)
+        return self._hidden[job]
+
     def get_job_specs(self, case, job):
+        hidden = self.get_value("hidden", subgroup=job)
+        self._hidden[job] = (hidden is None and job != "case.st_archive") or (
+            hidden is not None and hidden.lower() == "true"
+        )
+
         task_count = case.get_resolved_value(self.get_value("task_count", subgroup=job))
         tasks_per_node = case.get_resolved_value(
             self.get_value("tasks_per_node", subgroup=job)
