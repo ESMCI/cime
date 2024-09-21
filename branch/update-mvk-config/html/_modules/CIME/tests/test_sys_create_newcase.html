@@ -174,7 +174,7 @@
         <span class="c1"># on systems (like github workflow) that do not have batch, set this for the next test</span>
         <span class="k">if</span> <span class="n">batch_system</span> <span class="o">==</span> <span class="s2">&quot;none&quot;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">run_cmd_assert_result</span><span class="p">(</span>
-                <span class="s1">&#39;./xmlchange --subgroup case.run BATCH_COMMAND_FLAGS=&quot;-q \$JOB_QUEUE&quot;&#39;</span><span class="p">,</span>
+                <span class="sa">r</span><span class="s1">&#39;./xmlchange --subgroup case.run BATCH_COMMAND_FLAGS=&quot;-q \$JOB_QUEUE&quot;&#39;</span><span class="p">,</span>
                 <span class="n">from_dir</span><span class="o">=</span><span class="n">testdir</span><span class="p">,</span>
             <span class="p">)</span>
 

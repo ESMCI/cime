@@ -1008,12 +1008,10 @@
     <span class="c1"># or build a relative path and append `sys.path` to import</span>
     <span class="c1"># `standard_script_setup`. Providing `PYTHONPATH` fixes protential</span>
     <span class="c1"># broken paths in external python.</span>
-    <span class="n">env</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
-        <span class="p">{</span>
-            <span class="s2">&quot;CIMEROOT&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">get_cime_root</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;PYTHONPATH&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">get_cime_root</span><span class="p">()</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">get_tools_path</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-        <span class="p">}</span>
-    <span class="p">)</span>
+    <span class="n">env_pythonpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;PYTHONPATH&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
+    <span class="n">cime_pythonpath</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">get_cime_root</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">get_tools_path</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">env_pythonpath</span>
+    <span class="n">env</span><span class="p">[</span><span class="s2">&quot;PYTHONPATH&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;:&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">cime_pythonpath</span><span class="p">))</span>
+    <span class="n">env</span><span class="p">[</span><span class="s2">&quot;CIMEROOT&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">get_cime_root</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
 
     <span class="k">if</span> <span class="n">timeout</span><span class="p">:</span>
         <span class="k">with</span> <span class="n">Timeout</span><span class="p">(</span><span class="n">timeout</span><span class="p">):</span>
@@ -2898,8 +2896,11 @@
 
 <div class="viewcode-block" id="get_batch_script_for_job">
 <a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.utils.get_batch_script_for_job">[docs]</a>
-<span class="k">def</span> <span class="nf">get_batch_script_for_job</span><span class="p">(</span><span class="n">job</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">job</span> <span class="k">if</span> <span class="s2">&quot;st_archive&quot;</span> <span class="ow">in</span> <span class="n">job</span> <span class="k">else</span> <span class="s2">&quot;.&quot;</span> <span class="o">+</span> <span class="n">job</span></div>
+<span class="k">def</span> <span class="nf">get_batch_script_for_job</span><span class="p">(</span><span class="n">job</span><span class="p">,</span> <span class="n">hidden</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="c1"># this if statement is for backward compatibility</span>
+    <span class="k">if</span> <span class="n">hidden</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">hidden</span> <span class="o">=</span> <span class="n">job</span> <span class="o">!=</span> <span class="s2">&quot;case.st_archive&quot;</span>
+    <span class="k">return</span> <span class="s2">&quot;.&quot;</span> <span class="o">+</span> <span class="n">job</span> <span class="k">if</span> <span class="n">hidden</span> <span class="k">else</span> <span class="n">job</span></div>
 
 
 

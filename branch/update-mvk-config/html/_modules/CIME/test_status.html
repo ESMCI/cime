@@ -587,8 +587,8 @@
                     <span class="k">if</span> <span class="n">rv</span> <span class="ow">in</span> <span class="p">[</span><span class="n">NAMELIST_FAIL_STATUS</span><span class="p">,</span> <span class="n">TEST_PASS_STATUS</span><span class="p">]:</span>
                         <span class="n">phase_responsible_for_status</span> <span class="o">=</span> <span class="n">phase</span>
                         <span class="c1"># need to further inspect message to determine</span>
-                        <span class="c1"># phase status</span>
-                        <span class="k">if</span> <span class="s2">&quot;DIFF&quot;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                        <span class="c1"># phase status. BFAILs need to be a DIFF</span>
+                        <span class="k">if</span> <span class="s2">&quot;DIFF&quot;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">or</span> <span class="n">TEST_NO_BASELINES_COMMENT</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
                             <span class="n">rv</span> <span class="o">=</span> <span class="n">TEST_DIFF_STATUS</span>
                         <span class="k">elif</span> <span class="s2">&quot;ERROR&quot;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
                             <span class="n">rv</span> <span class="o">=</span> <span class="n">TEST_FAIL_STATUS</span>

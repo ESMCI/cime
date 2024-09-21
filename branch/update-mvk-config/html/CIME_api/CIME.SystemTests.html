@@ -654,8 +654,41 @@ This is the subclass’ extension point if they need to define a custom run phas
 </dd></dl>
 
 </section>
-<section id="cime-systemtests-pgn-module">
-<h2>CIME.SystemTests.pgn module<a class="headerlink" href="#cime-systemtests-pgn-module" title="Link to this heading"></a></h2>
+<section id="module-CIME.SystemTests.pgn">
+<span id="cime-systemtests-pgn-module"></span><h2>CIME.SystemTests.pgn module<a class="headerlink" href="#module-CIME.SystemTests.pgn" title="Link to this heading"></a></h2>
+<p>Perturbation Growth New (PGN) - The CESM/ACME model’s
+multi-instance capability is used to conduct an ensemble
+of simulations starting from different initial conditions.</p>
+<p>This class inherits from SystemTestsCommon.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="CIME.SystemTests.pgn.PGN">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">CIME.SystemTests.pgn.</span></span><span class="sig-name descname"><span class="pre">PGN</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">case</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/SystemTests/pgn.html#PGN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.SystemTests.pgn.PGN" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#CIME.SystemTests.system_tests_common.SystemTestsCommon" title="CIME.SystemTests.system_tests_common.SystemTestsCommon"><code class="xref py py-class docutils literal notranslate"><span class="pre">SystemTestsCommon</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="CIME.SystemTests.pgn.PGN.build_phase">
+<span class="sig-name descname"><span class="pre">build_phase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sharedlib_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/SystemTests/pgn.html#PGN.build_phase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.SystemTests.pgn.PGN.build_phase" title="Link to this definition"></a></dt>
+<dd><p>This is the default build phase implementation, it just does an individual build.
+This is the subclass’ extension point if they need to define a custom build
+phase.</p>
+<p>PLEASE THROW EXCEPTION ON FAIL</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CIME.SystemTests.pgn.PGN.get_var_list">
+<span class="sig-name descname"><span class="pre">get_var_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/SystemTests/pgn.html#PGN.get_var_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.SystemTests.pgn.PGN.get_var_list" title="Link to this definition"></a></dt>
+<dd><p>Get variable list for pergro specific output vars</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CIME.SystemTests.pgn.PGN.run_phase">
+<span class="sig-name descname"><span class="pre">run_phase</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/SystemTests/pgn.html#PGN.run_phase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.SystemTests.pgn.PGN.run_phase" title="Link to this definition"></a></dt>
+<dd><p>This is the default run phase implementation, it just does an individual run.
+This is the subclass’ extension point if they need to define a custom run phase.</p>
+<p>PLEASE THROW AN EXCEPTION ON FAIL</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 <section id="module-CIME.SystemTests.pre">
 <span id="cime-systemtests-pre-module"></span><h2>CIME.SystemTests.pre module<a class="headerlink" href="#module-CIME.SystemTests.pre" title="Link to this heading"></a></h2>

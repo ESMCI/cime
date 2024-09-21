@@ -897,7 +897,8 @@
         <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">run_cmd_assert_result</span><span class="p">(</span>
-            <span class="s2">&quot;./xmlchange CCSM_CPRNC=this_is_a_broken_cprnc&quot;</span><span class="p">,</span> <span class="n">from_dir</span><span class="o">=</span><span class="n">casedir</span>
+            <span class="s2">&quot;./xmlchange CCSM_CPRNC=this_is_a_broken_cprnc --file env_test.xml&quot;</span><span class="p">,</span>
+            <span class="n">from_dir</span><span class="o">=</span><span class="n">casedir</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">run_cmd_assert_result</span><span class="p">(</span><span class="s2">&quot;./case.build&quot;</span><span class="p">,</span> <span class="n">from_dir</span><span class="o">=</span><span class="n">casedir</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">run_cmd_assert_result</span><span class="p">(</span><span class="s2">&quot;./case.submit&quot;</span><span class="p">,</span> <span class="n">from_dir</span><span class="o">=</span><span class="n">casedir</span><span class="p">)</span>
