@@ -731,7 +731,8 @@ class TestCimeCase(base.BaseTestCase):
         )
 
         self.run_cmd_assert_result(
-            "./xmlchange CCSM_CPRNC=this_is_a_broken_cprnc", from_dir=casedir
+            "./xmlchange CCSM_CPRNC=this_is_a_broken_cprnc --file env_test.xml",
+            from_dir=casedir,
         )
         self.run_cmd_assert_result("./case.build", from_dir=casedir)
         self.run_cmd_assert_result("./case.submit", from_dir=casedir)

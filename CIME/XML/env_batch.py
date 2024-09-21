@@ -39,6 +39,7 @@ class EnvBatch(EnvBase):
             case_root, infile, schema=schema, read_only=read_only
         )
         self._batchtype = self.get_batch_system_type()
+        self._env_workflow = None
 
     # pylint: disable=arguments-differ
     def set_value(self, item, value, subgroup=None, ignore_type=False):
@@ -204,14 +205,16 @@ class EnvBatch(EnvBase):
             lock_file(os.path.basename(batchobj.filename), self._caseroot)
 
     def get_job_overrides(self, job, case):
-        env_workflow = case.get_env("workflow")
+        if not self._env_workflow:
+            self._env_workflow = case.get_env("workflow")
         (
             total_tasks,
             num_nodes,
             tasks_per_node,
             thread_count,
             ngpus_per_node,
-        ) = env_workflow.get_job_specs(case, job)
+        ) = self._env_workflow.get_job_specs(case, job)
+
         overrides = {}
 
         if total_tasks:
@@ -257,7 +260,16 @@ class EnvBatch(EnvBase):
             subgroup=job,
             overrides=overrides,
         )
-        output_name = get_batch_script_for_job(job) if outfile is None else outfile
+        if not self._env_workflow:
+            self._env_workflow = case.get_env("workflow")
+
+        output_name = (
+            get_batch_script_for_job(
+                job, hidden=self._env_workflow.hidden_job(case, job)
+            )
+            if outfile is None
+            else outfile
+        )
         logger.info("Creating file {}".format(output_name))
         with open(output_name, "w") as fd:
             fd.write(output_text)
@@ -274,8 +286,10 @@ class EnvBatch(EnvBase):
 
         if self._batchtype == "none":
             return
-        env_workflow = case.get_env("workflow")
-        known_jobs = env_workflow.get_jobs()
+
+        if not self._env_workflow:
+            self._env_workflow = case.get_env("workflow")
+        known_jobs = self._env_workflow.get_jobs()
 
         for job, jsect in batch_jobs:
             if job not in known_jobs:
@@ -432,11 +446,13 @@ class EnvBatch(EnvBase):
                 seconds = convert_to_seconds(walltime)
                 full_bab_time = convert_to_babylonian_time(seconds)
                 walltime = format_time(walltime_format, "%H:%M:%S", full_bab_time)
+            if not self._env_workflow:
+                self._env_workflow = case.get_env("workflow")
 
-            env_workflow.set_value(
+            self._env_workflow.set_value(
                 "JOB_QUEUE", self.text(queue), subgroup=job, ignore_type=False
             )
-            env_workflow.set_value("JOB_WALLCLOCK_TIME", walltime, subgroup=job)
+            self._env_workflow.set_value("JOB_WALLCLOCK_TIME", walltime, subgroup=job)
             logger.debug(
                 "Job {} queue {} walltime {}".format(job, self.text(queue), walltime)
             )
@@ -739,13 +755,22 @@ class EnvBatch(EnvBase):
               waiting to resubmit at the end of the first sequence
         workflow is a logical indicating whether only "job" is submitted or the workflow sequence starting with "job" is submitted
         """
-        env_workflow = case.get_env("workflow")
+
         external_workflow = case.get_value("EXTERNAL_WORKFLOW")
-        alljobs = env_workflow.get_jobs()
+        if not self._env_workflow:
+            self._env_workflow = case.get_env("workflow")
+        alljobs = self._env_workflow.get_jobs()
         alljobs = [
             j
             for j in alljobs
-            if os.path.isfile(os.path.join(self._caseroot, get_batch_script_for_job(j)))
+            if os.path.isfile(
+                os.path.join(
+                    self._caseroot,
+                    get_batch_script_for_job(
+                        j, hidden=self._env_workflow.hidden_job(case, j)
+                    ),
+                )
+            )
         ]
 
         startindex = 0
@@ -761,7 +786,9 @@ class EnvBatch(EnvBase):
             if index < startindex:
                 continue
             try:
-                prereq = env_workflow.get_value("prereq", subgroup=job, resolved=False)
+                prereq = self._env_workflow.get_value(
+                    "prereq", subgroup=job, resolved=False
+                )
                 if (
                     external_workflow
                     or prereq is None
@@ -780,7 +807,9 @@ class EnvBatch(EnvBase):
                     ),
                 )
             if prereq:
-                jobs.append((job, env_workflow.get_value("dependency", subgroup=job)))
+                jobs.append(
+                    (job, self._env_workflow.get_value("dependency", subgroup=job))
+                )
 
             if self._batchtype == "cobalt":
                 break
@@ -1065,13 +1094,17 @@ class EnvBatch(EnvBase):
             set_continue_run=resubmit_immediate,
             submit_resubmits=workflow and not resubmit_immediate,
         )
+
         if batch_system == "lsf" and not batch_env_flag:
             sequence = (
                 run_args,
                 batchsubmit,
                 submitargs,
                 batchredirect,
-                get_batch_script_for_job(job),
+                get_batch_script_for_job(
+                    job,
+                    hidden=self._env_workflow.hidden_job(case, job),
+                ),
             )
         elif batch_env_flag:
             sequence = (
@@ -1079,14 +1112,26 @@ class EnvBatch(EnvBase):
                 submitargs,
                 run_args,
                 batchredirect,
-                os.path.join(self._caseroot, get_batch_script_for_job(job)),
+                os.path.join(
+                    self._caseroot,
+                    get_batch_script_for_job(
+                        job,
+                        hidden=self._env_workflow.hidden_job(case, job),
+                    ),
+                ),
             )
         else:
             sequence = (
                 batchsubmit,
                 submitargs,
                 batchredirect,
-                os.path.join(self._caseroot, get_batch_script_for_job(job)),
+                os.path.join(
+                    self._caseroot,
+                    get_batch_script_for_job(
+                        job,
+                        hidden=self._env_workflow.hidden_job(case, job),
+                    ),
+                ),
                 run_args,
             )
 
@@ -1377,12 +1422,13 @@ class EnvBatch(EnvBase):
 
     def make_all_batch_files(self, case):
         machdir = case.get_value("MACHDIR")
-        env_workflow = case.get_env("workflow")
         logger.info("Creating batch scripts")
-        jobs = env_workflow.get_jobs()
+        if not self._env_workflow:
+            self._env_workflow = case.get_env("workflow")
+        jobs = self._env_workflow.get_jobs()
         for job in jobs:
             template = case.get_resolved_value(
-                env_workflow.get_value("template", subgroup=job)
+                self._env_workflow.get_value("template", subgroup=job)
             )
             if os.path.isabs(template):
                 input_batch_script = template

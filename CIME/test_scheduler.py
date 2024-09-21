@@ -211,11 +211,12 @@ class TestScheduler(object):
         workflow=None,
         chksum=False,
         force_rebuild=False,
+        driver=None,
     ):
         ###########################################################################
         self._cime_root = get_cime_root()
         self._cime_model = get_model()
-        self._cime_driver = get_cime_default_driver()
+        self._cime_driver = driver if driver is not None else get_cime_default_driver()
         self._save_timing = save_timing
         self._queue = queue
         self._test_data = (
@@ -651,6 +652,7 @@ class TestScheduler(object):
         mpilib = None
         ninst = 1
         ncpl = 1
+        driver = self._cime_driver
         if case_opts is not None:
             for case_opt in case_opts:  # pylint: disable=not-an-iterable
                 if case_opt.startswith("M"):
@@ -683,15 +685,16 @@ class TestScheduler(object):
                         )
                     )
                 elif case_opt.startswith("V"):
-                    self._cime_driver = case_opt[1:]
-                    create_newcase_cmd += " --driver {}".format(self._cime_driver)
+                    driver = case_opt[1:]
+
+        create_newcase_cmd += " --driver {}".format(driver)
 
         if (
             "--ninst" in create_newcase_cmd
             and not "--multi-driver" in create_newcase_cmd
         ):
             if "--driver nuopc" in create_newcase_cmd or (
-                "--driver" not in create_newcase_cmd and self._cime_driver == "nuopc"
+                "--driver" not in create_newcase_cmd and driver == "nuopc"
             ):
                 expect(False, "_N option not supported by nuopc driver, use _C instead")
 
@@ -769,9 +772,16 @@ class TestScheduler(object):
         test_dir = self._get_test_dir(test)
         envtest = EnvTest(test_dir)
 
+        # Find driver. It may be different for the current test if V testopt is used
+        driver = self._cime_driver
+        if case_opts is not None:
+            for case_opt in case_opts:  # pylint: disable=not-an-iterable
+                if case_opt.startswith("V"):
+                    driver = case_opt[1:]
+
         # Determine list of component classes that this coupler/driver knows how
         # to deal with. This list follows the same order as compset longnames follow.
-        files = Files(comp_interface=self._cime_driver)
+        files = Files(comp_interface=driver)
         ufs_driver = os.environ.get("UFS_DRIVER")
         attribute = None
         if ufs_driver:
@@ -779,13 +789,11 @@ class TestScheduler(object):
 
         drv_config_file = files.get_value("CONFIG_CPL_FILE", attribute=attribute)
 
-        if self._cime_driver == "nuopc" and not os.path.exists(drv_config_file):
+        if driver == "nuopc" and not os.path.exists(drv_config_file):
             drv_config_file = files.get_value("CONFIG_CPL_FILE", {"component": "cpl"})
         expect(
             os.path.exists(drv_config_file),
-            "File {} not found, cime driver {}".format(
-                drv_config_file, self._cime_driver
-            ),
+            "File {} not found, cime driver {}".format(drv_config_file, driver),
         )
 
         drv_comp = Component(drv_config_file, "CPL")
@@ -910,7 +918,9 @@ class TestScheduler(object):
                 elif opt.startswith("A"):
                     # A option is for testing in ASYNC IO mode, only available with nuopc driver and pio2
                     envtest.set_test_parameter("PIO_ASYNC_INTERFACE", "TRUE")
-                    envtest.set_test_parameter("CIME_DRIVER", "nuopc")
+                    expect(
+                        driver == "nuopc", "ASYNC IO mode only works with nuopc driver"
+                    )
                     envtest.set_test_parameter("PIO_VERSION", "2")
                     match = re.match("A([0-9]+)x?([0-9])*", opt)
                     envtest.set_test_parameter("PIO_NUMTASKS_CPL", match.group(1))
@@ -996,10 +1006,14 @@ class TestScheduler(object):
                 from_dir=test_dir,
                 env=env,
             )
-            expect(
-                cmdstat in [0, TESTS_FAILED_ERR_CODE],
-                "Fatal error in case.cmpgen_namelists: {}".format(output),
-            )
+            try:
+                expect(
+                    cmdstat in [0, TESTS_FAILED_ERR_CODE],
+                    "Fatal error in case.cmpgen_namelists: {}".format(output),
+                )
+            except Exception:
+                self._update_test_status_file(test, SETUP_PHASE, TEST_FAIL_STATUS)
+                raise
 
         if self._single_exe:
             with Case(self._get_test_dir(test), read_only=False) as case:

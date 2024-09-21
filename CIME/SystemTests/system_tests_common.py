@@ -38,7 +38,7 @@ from CIME.baselines.performance import (
 )
 import CIME.build as build
 
-import glob, gzip, time, traceback, os
+import glob, gzip, time, traceback, os, math
 from contextlib import ExitStack
 
 logger = logging.getLogger(__name__)
@@ -174,7 +174,7 @@ class SystemTestsCommon(object):
             expect(False, f"stop_option {stop_option} not available for this test")
 
         stop_n = int(stop_n * factor // coupling_secs)
-        rest_n = int((stop_n // 2 + 1) * coupling_secs / factor)
+        rest_n = math.ceil((stop_n // 2 + 1) * coupling_secs / factor)
 
         expect(stop_n > 0, "Bad STOP_N: {:d}".format(stop_n))
 
