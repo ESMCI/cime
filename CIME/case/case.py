@@ -79,7 +79,7 @@ class Case(object):
 
     """
 
-    from CIME.case.case_setup import case_setup
+    from CIME.case.case_setup import case_setup, _create_case_repo
     from CIME.case.case_clone import create_clone, _copy_user_modified_to_clone
     from CIME.case.case_test import case_test
     from CIME.case.case_submit import check_DA_settings, check_case, submit
