@@ -41,7 +41,7 @@ class GitInterface:
             if not (self.repo_path / ".git").exists():
                 self._init_git_repo(branch=branch)
             msg = "Using shell interface to git"
-        self.logger.debug(msg)
+        logger.debug(msg)
 
     def _git_command(self, operation, *args):
         self.logger.debug(operation)
