@@ -1,10 +1,23 @@
-import sys
+import sys, shutil, re
 from CIME.utils import run_cmd_no_fail
 from pathlib import Path
 
 
 class GitInterface:
     def __init__(self, repo_path, logger, branch=None):
+        major = 0
+        minor = 0
+        if shutil.which("git"):
+            version = run_cmd_no_fail("git --version")
+            result = re.findall(r"([0-9]+)\.([0-9]+)\.?[0-9]*", version)
+            major = int(result[0][0])
+            minor = int(result[0][1])
+        if major < 2 or (major == 2 and minor < 28):
+            logger.warning(
+                "Git not found or git version too old for cesm git interface"
+            )
+            return None
+
         logger.debug("Initialize GitInterface for {}".format(repo_path))
         if isinstance(repo_path, str):
             self.repo_path = Path(repo_path).resolve()
