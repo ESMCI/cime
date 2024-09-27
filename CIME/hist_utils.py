@@ -740,7 +740,7 @@ def get_ts_synopsis(comments):
     >>> get_ts_synopsis('file1=\nfile2=\nFailed to open file\n')
     'ERROR CPRNC failed to open files'
     >>> get_ts_synopsis('file1=\nfile2=\nSome other error\n')
-    'Could not interpret CPRNC output'
+    'ERROR Could not interpret CPRNC output'
     """
     comments = comments.strip()
 
@@ -779,6 +779,6 @@ def get_ts_synopsis(comments):
     elif open_fail:
         synopsis = "ERROR CPRNC failed to open files"
     else:
-        synopsis = "Could not interpret CPRNC output"
+        synopsis = "ERROR Could not interpret CPRNC output"
 
     return synopsis
