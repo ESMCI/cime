@@ -1569,55 +1569,70 @@ class Case(object):
         #        3. if ngpus-per-node argument is equal to 0, it will be updated to 1 automatically.
         # ----------------------------------------------------------------------------------------------------------
         max_gpus_per_node = self.get_value("MAX_GPUS_PER_NODE")
-        if gpu_type and str(gpu_type).lower() != "none":
-            expect(
-                max_gpus_per_node,
-                f"GPUS are not defined for machine={machine_name} and compiler={compiler}",
-            )
-            expect(
-                gpu_offload,
-                "Both gpu-type and gpu-offload must be defined if either is defined",
-            )
-            expect(
-                compiler in ["nvhpc", "cray"],
-                f"Only nvhpc and cray compilers are expected for a GPU run; the user given compiler is {compiler}, ",
-            )
-            valid_gpu_type = self.get_value("GPU_TYPE").split(",")
-            valid_gpu_type.remove("none")
-            expect(
-                gpu_type in valid_gpu_type,
-                f"Unsupported GPU type is given: {gpu_type} ; valid values are {valid_gpu_type}",
-            )
-            valid_gpu_offload = self.get_value("GPU_OFFLOAD").split(",")
-            valid_gpu_offload.remove("none")
-            expect(
-                gpu_offload in valid_gpu_offload,
-                f"Unsupported GPU programming model is given: {gpu_offload} ; valid values are {valid_gpu_offload}",
-            )
-            self.gpu_enabled = True
-            if ngpus_per_node >= 0:
-                self.set_value(
-                    "NGPUS_PER_NODE",
-                    max(1, ngpus_per_node)
-                    if ngpus_per_node <= max_gpus_per_node
-                    else max_gpus_per_node,
-                )
-        elif gpu_offload and str(gpu_offload).lower() != "none":
-            expect(
-                False,
-                "Both gpu-type and gpu-offload must be defined if either is defined",
-            )
-        elif ngpus_per_node != 0:
-            expect(
-                False,
-                f"ngpus_per_node is expected to be 0 for a pure CPU run ; {ngpus_per_node} is provided instead ;",
-            )
-
         # Set these two GPU XML variables here to overwrite the default values
         # Only set them for "cesm" model
         if self._cime_model == "cesm":
+            if gpu_type and str(gpu_type).lower() != "none":
+                expect(
+                    max_gpus_per_node,
+                    f"GPUS are not defined for machine={machine_name} and compiler={compiler}",
+                )
+                expect(
+                    gpu_offload,
+                    "Both gpu-type and gpu-offload must be defined if either is defined",
+                )
+                expect(
+                    compiler in ["nvhpc", "cray"],
+                    f"Only nvhpc and cray compilers are expected for a GPU run; the user given compiler is {compiler}, ",
+                )
+                valid_gpu_type = self.get_value("GPU_TYPE").split(",")
+                valid_gpu_type.remove("none")
+                expect(
+                    gpu_type in valid_gpu_type,
+                    f"Unsupported GPU type is given: {gpu_type} ; valid values are {valid_gpu_type}",
+                )
+                valid_gpu_offload = self.get_value("GPU_OFFLOAD").split(",")
+                valid_gpu_offload.remove("none")
+                expect(
+                    gpu_offload in valid_gpu_offload,
+                    f"Unsupported GPU programming model is given: {gpu_offload} ; valid values are {valid_gpu_offload}",
+                )
+                self.gpu_enabled = True
+                if ngpus_per_node >= 0:
+                    self.set_value(
+                        "NGPUS_PER_NODE",
+                        max(1, ngpus_per_node)
+                        if ngpus_per_node <= max_gpus_per_node
+                        else max_gpus_per_node,
+                    )
+            elif gpu_offload and str(gpu_offload).lower() != "none":
+                expect(
+                    False,
+                    "Both gpu-type and gpu-offload must be defined if either is defined",
+                )
+            elif ngpus_per_node != 0:
+                expect(
+                    False,
+                    f"ngpus_per_node is expected to be 0 for a pure CPU run ; {ngpus_per_node} is provided instead ;",
+                )
             self.set_value("GPU_TYPE", str(gpu_type).lower())
             self.set_value("GPU_OFFLOAD", str(gpu_offload).lower())
+        else:
+            # Assume it is SCREAM or E3SM
+            if "gpu" not in compiler.lower():
+                expect(
+                    ngpus_per_node == 0,
+                    f"ngpus_per_node is expected to be 0 for a pure CPU run; {ngpus_per_node} is provided instead;",
+                )
+            else:
+                self.gpu_enabled = True
+                if ngpus_per_node >= 0:
+                    self.set_value(
+                        "NGPUS_PER_NODE",
+                        max(1, ngpus_per_node)
+                        if ngpus_per_node <= max_gpus_per_node
+                        else max_gpus_per_node,
+                    ) 
 
         self.initialize_derived_attributes()
 
