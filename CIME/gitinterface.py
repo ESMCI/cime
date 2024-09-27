@@ -16,7 +16,9 @@ class GitInterface:
             minor = int(result[0][1])
         if major < 2 or (major == 2 and minor < 28):
             logger.warning(
-                "Git not found or git version too old for cesm git interface"
+                "Git not found or git version too old for cesm git interface {} {}".format(
+                    major, minor
+                )
             )
             return
 
