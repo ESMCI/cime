@@ -183,14 +183,19 @@ class SystemTestsCommon(object):
         rest_n = math.ceil((stop_n // 2 + 1) * coupling_secs / factor)
         expect(stop_n > 0, "Bad STOP_N: {:d}".format(stop_n))
         expect(stop_n > 2, "ERROR: stop_n value {:d} too short".format(stop_n))
-        if not startdate:
-            startdate = self._case.get_value("RUN_STARTDATE")
         if not starttime:
             starttime = self._case.get_value("START_TOD")
+        if not startdate:
+            startdate = self._case.get_value("RUN_STARTDATE")
+        if "-" in startdate:
+            startdatetime = datetime.fromisoformat(startdate) + timedelta(
+                seconds=int(starttime)
+            )
+        else:
+            startdatetime = datetime.strptime(startdate, "%Y%m%d") + timedelta(
+                seconds=int(starttime)
+            )
 
-        startdatetime = datetime.strptime(startdate, "%Y%m%d") + timedelta(
-            seconds=int(starttime)
-        )
         cal = self._case.get_value("CALENDAR")
 
         if stop_option == "nsteps":
@@ -313,7 +318,9 @@ class SystemTestsCommon(object):
                         sharedlib_only=(phase_name == SHAREDLIB_BUILD_PHASE),
                         model_only=(phase_name == MODEL_BUILD_PHASE),
                     )
-                except BaseException as e:  # We want KeyboardInterrupts to generate FAIL status
+                except (
+                    BaseException
+                ) as e:  # We want KeyboardInterrupts to generate FAIL status
                     success = False
                     if isinstance(e, CIMEError):
                         # Don't want to print stacktrace for a build failure since that
