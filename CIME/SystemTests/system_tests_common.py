@@ -188,7 +188,7 @@ class SystemTestsCommon(object):
         if not starttime:
             starttime = self._case.get_value("START_TOD")
 
-        startdatetime = datetime.fromisoformat(startdate) + timedelta(
+        startdatetime = datetime.strptime(startdate, "%Y%m%d") + timedelta(
             seconds=int(starttime)
         )
         cal = self._case.get_value("CALENDAR")
