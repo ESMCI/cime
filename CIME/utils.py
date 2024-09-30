@@ -1417,10 +1417,15 @@ def safe_copy(src_path, tgt_path, preserve_meta=True):
             # I am not the owner, just copy file contents
             shutil.copyfile(src_path, tgt_path)
 
-    else:
+    elif preserve_meta:
         # We are making a new file, copy file contents, permissions, and metadata.
         # This can fail if the underlying directory is not writable by current user.
         shutil.copy2(
+            src_path,
+            tgt_path,
+        )
+    else:
+        shutil.copy(
             src_path,
             tgt_path,
         )
