@@ -212,7 +212,6 @@ class SystemTestsCommon(object):
             expect(False, f"stop_option {stop_option} not available for this test")
 
         restdatetime = startdatetime + rtd
-
         if cal == "NO_LEAP":
             dayscorrected = 0
             syr = startdatetime.year
@@ -226,7 +225,7 @@ class SystemTestsCommon(object):
             if rmon > 2 and smon <= 2:
                 if calendar.isleap(syr):
                     dayscorrected += 1
-            restdatetime = restdatetime - timedelta(days=dayscorrected)
+            restdatetime = restdatetime + timedelta(days=dayscorrected)
         self._rest_time = (
             f".{restdatetime.year:04d}-{restdatetime.month:02d}-{restdatetime.day:02d}-"
         )
