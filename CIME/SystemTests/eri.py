@@ -243,8 +243,10 @@ class ERI(SystemTestsCommon):
         self._case.set_value("GET_REFCASE", False)
         self._case.set_value("CONTINUE_RUN", False)
         self._case.set_value("STOP_N", stop_n3)
-        self._case.set_value("REST_OPTION", stop_option)
-        self._case.set_value("REST_N", rest_n3)
+        self._set_restart_interval(
+            stop_n=stop_n3, startdate=refdate_3, starttime=refsec_3
+        )
+
         self._case.set_value("HIST_OPTION", stop_option)
         self._case.set_value("HIST_N", stop_n2)
         self._case.set_value("DOUT_S", False)
@@ -286,6 +288,12 @@ class ERI(SystemTestsCommon):
         self._case.set_value("DOUT_S", False)
         self._case.set_value("HIST_OPTION", stop_option)
         self._case.set_value("HIST_N", hist_n)
+        drvrest = "rpointer.cpl"
+        if ninst > 1:
+            drvrest += "_0001"
+        drvrest += self._rest_time
+
+        self._case.set_value("DRV_RESTART_POINTER", drvrest)
         self._case.flush()
 
         # do the restart run (short term archiving is off)
