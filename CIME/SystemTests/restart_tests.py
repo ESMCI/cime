@@ -55,5 +55,4 @@ class RestartTest(SystemTestsCompareTwo):
         if ninst > 1:
             drvrest += "_0001"
         drvrest += self._rest_time
-
-        self._case.set_value("DRV_RESTART_POINTER", drvrest)
+        self._set_drv_restart_pointer(drvrest)

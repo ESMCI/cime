@@ -107,7 +107,7 @@ class ERI(SystemTestsCommon):
         if ninst > 1:
             drvrest += "_0001"
         drvrest += self._rest_time
-        self._case.set_value("DRV_RESTART_POINTER", drvrest)
+        self._set_drv_restart_pointer(drvrest)
 
         rest_n3 = self._set_restart_interval(
             stop_n=stop_n3,
@@ -116,8 +116,6 @@ class ERI(SystemTestsCommon):
             starttime=start_tod,
         )
         stop_n4 = stop_n3 - rest_n3
-
-        logger.info("setting DRV_RESTART_POINTER={}".format(drvrest))
 
         expect(stop_n4 >= 1 and stop_n1 >= 1, "Run length too short")
 
@@ -293,7 +291,7 @@ class ERI(SystemTestsCommon):
             drvrest += "_0001"
         drvrest += self._rest_time
 
-        self._case.set_value("DRV_RESTART_POINTER", drvrest)
+        self._set_drv_restart_pointer(drvrest)
         self._case.flush()
 
         # do the restart run (short term archiving is off)

@@ -42,8 +42,7 @@ class ERS(SystemTestsCommon):
             drvrest += "_0001"
         drvrest += self._rest_time
 
-        self._case.set_value("DRV_RESTART_POINTER", drvrest)
-
+        self._set_drv_restart_pointer(drvrest)
         self._case.set_value("HIST_N", stop_n)
         self._case.set_value("STOP_N", stop_new)
         self._case.set_value("CONTINUE_RUN", True)

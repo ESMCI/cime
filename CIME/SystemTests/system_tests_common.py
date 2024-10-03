@@ -121,6 +121,13 @@ class SystemTestsCommon(object):
         self._user_separate_builds = False
         self._expected_num_cmp = None
         self._rest_n = None
+        # Does the model support this variable?
+        self._drv_restart_pointer = self._case.get_value("DRV_RESTART_POINTER")
+
+    def _set_drv_restart_pointer(self, value):
+        if self._drv_restart_pointer:
+            logger.info("setting DRV_RESTART_POINTER={}".format(value))
+            self._case.set_value("DRV_RESTART_POINTER", value)
 
     def _set_restart_interval(
         self, stop_n=None, stop_option=None, startdate=None, starttime=None
