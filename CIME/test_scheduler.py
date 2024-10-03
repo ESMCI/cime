@@ -670,18 +670,6 @@ class TestScheduler(object):
                 elif case_opt.startswith("P"):
                     pesize = case_opt[1:]
                     create_newcase_cmd += " --pecount {}".format(pesize)
-                elif case_opt.startswith("G"):
-                    if "-" in case_opt:
-                        ngpus_per_node, gpu_type, gpu_offload = case_opt[1:].split("-")
-                    else:
-                        error = "GPU test argument format is ngpus_per_node-gpu_type-gpu_offload"
-                        self._log_output(test, error)
-                        return False, error
-                    create_newcase_cmd += (
-                        " --ngpus-per-node {} --gpu-type {} --gpu-offload {}".format(
-                            ngpus_per_node, gpu_type, gpu_offload
-                        )
-                    )
                 elif case_opt.startswith("V"):
                     driver = case_opt[1:]
 

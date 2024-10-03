@@ -44,6 +44,7 @@ class EnvMachPes(EnvBase):
         max_mpitasks_per_node=None,
         max_cputasks_per_gpu_node=None,
         ngpus_per_node=None,
+        oversubscribe_gpu=False
     ):  # pylint: disable=arguments-differ
         # Special variable NINST_MAX is used to determine the number of
         # drivers in multi-driver mode.
@@ -177,17 +178,27 @@ class EnvMachPes(EnvBase):
         )
         if self._comp_interface == "nuopc" and self.get_value("ESMF_AWARE_THREADING"):
             if self.get_value("NGPUS_PER_NODE") > 0:
-                tasks_per_node = self.get_value("MAX_CPUTASKS_PER_GPU_NODE")
+                if self.get_value("OVERSUBSCRIBE_GPU"):
+                    tasks_per_node = self.get_value("MAX_CPUTASKS_PER_GPU_NODE")
+                else:
+                    tasks_per_node = self.get_value("NGPUS_PER_NODE")
             else:
                 tasks_per_node = self.get_value("MAX_MPITASKS_PER_NODE")
         else:
             ngpus_per_node = self.get_value("NGPUS_PER_NODE")
             if ngpus_per_node and ngpus_per_node > 0:
-                tasks_per_node = min(
-                    self.get_value("MAX_TASKS_PER_NODE") // max_thread_count,
-                    self.get_value("MAX_CPUTASKS_PER_GPU_NODE"),
-                    total_tasks,
-                )
+                if self.get_value("OVERSUBSCRIBE_GPU"):
+                    tasks_per_node = min(
+                        self.get_value("MAX_TASKS_PER_NODE") // max_thread_count,
+                        self.get_value("MAX_CPUTASKS_PER_GPU_NODE"),
+                        total_tasks,
+                    )
+                else:
+                    tasks_per_node = min(
+                        self.get_value("MAX_TASKS_PER_NODE") // max_thread_count,
+                        self.get_value("NGPUS_PER_NODE"),
+                        total_tasks,
+                    ) 
             else:
                 tasks_per_node = min(
                     self.get_value("MAX_TASKS_PER_NODE") // max_thread_count,
