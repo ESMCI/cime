@@ -39,20 +39,20 @@ jobs:
       packages: write
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
+        uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
       - name: Login to DockerHub
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Docker meta
         id: meta
-        uses: docker/metadata-action@v4
+        uses: docker/metadata-action@v5
         with:
           images: ghcr.io/ESMCI/cime
           tags: |
@@ -60,7 +60,7 @@ jobs:
             type=ref,event=pr,enable=${{ github.event_name == 'pull_request' }}
             type=sha,format=long
       - name: Build and push
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v6
         with:
           target: base
           context: docker/
@@ -76,7 +76,7 @@ jobs:
     timeout-minutes: 2
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Set up python
         uses: actions/setup-python@v2
         with:
@@ -102,7 +102,7 @@ jobs:
         python-version: ['3.8', '3.9', '3.10']
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Run tests
         shell: bash
         env:
@@ -149,7 +149,7 @@ jobs:
             driver: "mct"
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Cache inputdata
         uses: actions/cache@v2
         with:
@@ -173,6 +173,14 @@ jobs:
           source /opt/conda/etc/profile.d/conda.sh
 
           conda activate base
+
+          # container libnetcdf is 4.9.2 as cesm requires esmf >8.6.1
+          # e3sm scorpio incompatible with 4.9.2, downgrade to 4.9.1
+          # only reference found about scorpio incompatibility with 4.9.2 (https://github.com/E3SM-Project/scorpio/issues/554#issuecomment-1877361470)
+          # TODO open scorpio issue, possible solutions; 1. support two conda environments in container 2. maybe move from conda to spack? build all libraries in image
+          if [[ "${CIME_MODEL}" == "e3sm" ]]; then
+            mamba install -y 'libnetcdf=4.9.1'
+          fi
 
           pytest -vvv --cov=CIME --machine docker --no-fortran-run --no-teardown CIME/tests/test_sys*
       - uses: mxschmitt/action-tmate@v3
