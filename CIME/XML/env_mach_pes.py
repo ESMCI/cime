@@ -177,7 +177,8 @@ class EnvMachPes(EnvBase):
             "totaltasks > 0 expected, totaltasks = {}".format(total_tasks),
         )
         if self._comp_interface == "nuopc" and self.get_value("ESMF_AWARE_THREADING"):
-            if self.get_value("NGPUS_PER_NODE") > 0:
+            ngpus_per_node = self.get_value("NGPUS_PER_NODE")
+            if ngpus_per_node and ngpus_per_node > 0:
                 if self.get_value("OVERSUBSCRIBE_GPU"):
                     tasks_per_node = self.get_value("MAX_CPUTASKS_PER_GPU_NODE")
                 else:

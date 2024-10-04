@@ -403,7 +403,7 @@ def _case_setup_impl(
             kokkos_gpu_offload = case.get_value("KOKKOS_GPU_OFFLOAD")
             gpu_offload = (openacc_gpu_offload or openmp_gpu_offload or kokkos_gpu_offload)
             ngpus_per_node = case.get_value("NGPUS_PER_NODE")
-            if str(gpu_type).lower() != "none":
+            if gpu_type and str(gpu_type).lower() != "none":
                 if max_gpus_per_node <= 0:
                     raise RuntimeError(f"MAX_GPUS_PER_NODE must be larger than 0 for machine={mach} and compiler={compiler} in order to configure a GPU run")
                 if not gpu_offload:
@@ -418,7 +418,7 @@ def _case_setup_impl(
                     )
             elif gpu_offload:
                 raise RuntimeError(f"GPU_TYPE is not defined but at least one GPU OFFLOAD option is enabled")
-            elif ngpus_per_node != 0:
+            elif ngpus_per_node and ngpus_per_node != 0:
                 raise RuntimeError(f"ngpus_per_node is expected to be 0 for a pure CPU run ; {ngpus_per_node} is provided instead ;")
 
             # May need to select new batch settings if pelayout changed (e.g. problem is now too big for prev-selected queue)
