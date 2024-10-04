@@ -249,7 +249,8 @@ def get_standard_cmake_args(case, sharedpath):
     gpu_type = case.get_value("GPU_TYPE")
     openacc_gpu_offload = case.get_value("OPENACC_GPU_OFFLOAD")
     openmp_gpu_offload = case.get_value("OPENMP_GPU_OFFLOAD")
-    cmake_args += f" -DGPU_TYPE={gpu_type} -DOPENACC_GPU_OFFLOAD={openacc_gpu_offload} -DOPENMP_GPU_OFFLOAD={openmp_gpu_offload} "
+    kokkos_gpu_offload = case.get_value("KOKKOS_GPU_OFFLOAD")
+    cmake_args += f" -DGPU_TYPE={gpu_type} -DOPENACC_GPU_OFFLOAD={openacc_gpu_offload} -DOPENMP_GPU_OFFLOAD={openmp_gpu_offload} -DKOKKOS_GPU_OFFLOAD={kokkos_gpu_offload} "
 
     ocn_model = case.get_value("COMP_OCN")
     atm_dycore = case.get_value("CAM_DYCORE")

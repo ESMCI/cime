@@ -44,7 +44,7 @@ class EnvMachPes(EnvBase):
         max_mpitasks_per_node=None,
         max_cputasks_per_gpu_node=None,
         ngpus_per_node=None,
-        oversubscribe_gpu=False
+        oversubscribe_gpu=False,
     ):  # pylint: disable=arguments-differ
         # Special variable NINST_MAX is used to determine the number of
         # drivers in multi-driver mode.
