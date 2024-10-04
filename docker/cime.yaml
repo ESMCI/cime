@@ -16,12 +16,12 @@ dependencies:
   - openssh
   - lapack
   - blas
-  - libnetcdf=4.9.1=*openmpi*
+  - libnetcdf=4.9.2=*openmpi*
   - netcdf-fortran=*=*openmpi*
   - esmf=*=*openmpi*
-  - gcc_linux-64=10.*
-  - gxx_linux-64=10.*
-  - gfortran_linux-64=10.*
+  - gcc_linux-64=12.*
+  - gxx_linux-64=12.*
+  - gfortran_linux-64=12.*
   - openmpi-mpifort
   - gcc
   - gxx
