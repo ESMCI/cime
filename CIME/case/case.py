@@ -1569,9 +1569,10 @@ class Case(object):
         gpu_type = self.get_value("GPU_TYPE")
         openacc_gpu_offload = self.get_value("OPENACC_GPU_OFFLOAD")
         openmp_gpu_offload = self.get_value("OPENMP_GPU_OFFLOAD")
-        gpu_offload = (openacc_gpu_offload or openmp_gpu_offload)
+        kokkos_gpu_offload = self.get_value("KOKKOS_GPU_OFFLOAD")
+        gpu_offload = (openacc_gpu_offload or openmp_gpu_offload or kokkos_gpu_offload)
         ngpus_per_node = self.get_value("NGPUS_PER_NODE")
-        if gpu_type and str(gpu_type).lower() != "none":
+        if str(gpu_type).lower() != "none":
             expect(
                 max_gpus_per_node,
                 f"MAX_GPUS_PER_NODE is not defined for machine={machine_name} and compiler={compiler}",
@@ -1579,10 +1580,6 @@ class Case(object):
             expect(
                 gpu_offload,
                 "GPU_TYPE is defined but none of the GPU OFFLOAD options are enabled",
-            )
-            expect(
-                compiler in ["gnu", "nvhpc", "cray"],
-                f"Only gnu, nvhpc and cray compilers are expected for a GPU run; the user given compiler is {compiler}, ",
             )
             self.gpu_enabled = True
             if ngpus_per_node >= 0:

@@ -182,6 +182,7 @@ class EnvMachPes(EnvBase):
                     tasks_per_node = self.get_value("MAX_CPUTASKS_PER_GPU_NODE")
                 else:
                     tasks_per_node = self.get_value("NGPUS_PER_NODE")
+                    self.set_value("MAX_CPUTASKS_PER_GPU_NODE", tasks_per_node)
             else:
                 tasks_per_node = self.get_value("MAX_MPITASKS_PER_NODE")
         else:
@@ -198,7 +199,8 @@ class EnvMachPes(EnvBase):
                         self.get_value("MAX_TASKS_PER_NODE") // max_thread_count,
                         self.get_value("NGPUS_PER_NODE"),
                         total_tasks,
-                    ) 
+                    )
+                    self.set_value("MAX_CPUTASKS_PER_GPU_NODE", tasks_per_node)
             else:
                 tasks_per_node = min(
                     self.get_value("MAX_TASKS_PER_NODE") // max_thread_count,
