@@ -1558,48 +1558,6 @@ class Case(object):
         if test:
             self.set_value("TEST", True)
 
-        # ----------------------------------------------------------------------------------------------------------
-        # Sanity check for a GPU run:
-        #        1. GPU_TYPE and GPU_OFFLOAD must both be defined to use GPUs
-        #        2. If the NGPUS_PER_NODE XML variable in the env_mach_pes.xml file is larger than 
-        #           the value of MAX_GPUS_PER_NODE, set it to MAX_GPUS_PER_NODE automatically.
-        #        3. If the NGPUS_PER_NODE XML variable is equal to 0, it will be updated to 1 automatically.
-        # ----------------------------------------------------------------------------------------------------------
-        max_gpus_per_node = self.get_value("MAX_GPUS_PER_NODE")
-        gpu_type = self.get_value("GPU_TYPE")
-        openacc_gpu_offload = self.get_value("OPENACC_GPU_OFFLOAD")
-        openmp_gpu_offload = self.get_value("OPENMP_GPU_OFFLOAD")
-        kokkos_gpu_offload = self.get_value("KOKKOS_GPU_OFFLOAD")
-        gpu_offload = (openacc_gpu_offload or openmp_gpu_offload or kokkos_gpu_offload)
-        ngpus_per_node = self.get_value("NGPUS_PER_NODE")
-        if str(gpu_type).lower() != "none":
-            expect(
-                max_gpus_per_node,
-                f"MAX_GPUS_PER_NODE is not defined for machine={machine_name} and compiler={compiler}",
-            )
-            expect(
-                gpu_offload,
-                "GPU_TYPE is defined but none of the GPU OFFLOAD options are enabled",
-            )
-            self.gpu_enabled = True
-            if ngpus_per_node >= 0:
-                self.set_value(
-                    "NGPUS_PER_NODE",
-                    max(1, ngpus_per_node)
-                    if ngpus_per_node <= max_gpus_per_node
-                    else max_gpus_per_node,
-                )
-        elif gpu_offload:
-            expect(
-                False,
-                "GPU_TYPE is not defined but at least one GPU OFFLOAD option is enabled",
-            )
-        elif ngpus_per_node != 0:
-            expect(
-                False,
-                f"ngpus_per_node is expected to be 0 for a pure CPU run ; {ngpus_per_node} is provided instead ;",
-            )
-
         self.initialize_derived_attributes()
 
         # --------------------------------------------
