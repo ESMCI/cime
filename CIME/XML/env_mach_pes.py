@@ -183,7 +183,6 @@ class EnvMachPes(EnvBase):
                     tasks_per_node = self.get_value("MAX_CPUTASKS_PER_GPU_NODE")
                 else:
                     tasks_per_node = self.get_value("NGPUS_PER_NODE")
-                    self.set_value("MAX_CPUTASKS_PER_GPU_NODE", tasks_per_node)
             else:
                 tasks_per_node = self.get_value("MAX_MPITASKS_PER_NODE")
         else:
@@ -201,7 +200,6 @@ class EnvMachPes(EnvBase):
                         self.get_value("NGPUS_PER_NODE"),
                         total_tasks,
                     )
-                    self.set_value("MAX_CPUTASKS_PER_GPU_NODE", tasks_per_node)
             else:
                 tasks_per_node = min(
                     self.get_value("MAX_TASKS_PER_NODE") // max_thread_count,
@@ -218,7 +216,12 @@ class EnvMachPes(EnvBase):
         if self._comp_interface == "nuopc" and self.get_value("ESMF_AWARE_THREADING"):
             max_thread_count = 1
         tasks_per_node = self.get_tasks_per_node(total_tasks, max_thread_count)
-        num_nodes = int(math.ceil(float(total_tasks) / tasks_per_node))
+        if self.get_value("OVERSUBSCRIBE_GPU"):
+            num_nodes = int(math.ceil(float(total_tasks) / tasks_per_node))
+        else:
+            ngpus_per_node = self.get_value("NGPUS_PER_NODE")
+            if ngpus_per_node and ngpus_per_node > 0:
+                num_nodes = int(math.ceil(float(total_tasks) / ngpus_per_node))
         return num_nodes, self.get_spare_nodes(num_nodes)
 
     def get_spare_nodes(self, num_nodes):
