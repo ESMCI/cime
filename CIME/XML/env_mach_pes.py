@@ -222,6 +222,8 @@ class EnvMachPes(EnvBase):
             ngpus_per_node = self.get_value("NGPUS_PER_NODE")
             if ngpus_per_node and ngpus_per_node > 0:
                 num_nodes = int(math.ceil(float(total_tasks) / ngpus_per_node))
+            else:
+                num_nodes = int(math.ceil(float(total_tasks) / tasks_per_node))
         return num_nodes, self.get_spare_nodes(num_nodes)
 
     def get_spare_nodes(self, num_nodes):
