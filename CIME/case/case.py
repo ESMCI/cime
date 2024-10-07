@@ -1301,9 +1301,6 @@ class Case(object):
         non_local=False,
         extra_machines_dir=None,
         case_group=None,
-        ngpus_per_node=0,
-        gpu_type=None,
-        gpu_offload=None,
     ):
         expect(
             check_name(compset_name, additional_chars="."),
@@ -1560,64 +1557,6 @@ class Case(object):
 
         if test:
             self.set_value("TEST", True)
-
-        # ----------------------------------------------------------------------------------------------------------
-        # Sanity check for a GPU run:
-        #        1. GPU_TYPE and GPU_OFFLOAD must both be defined to use GPUS
-        #        2. if ngpus_per_node argument is larger than the value of MAX_GPUS_PER_NODE, the NGPUS_PER_NODE
-        #             XML variable in the env_mach_pes.xml file would be set to MAX_GPUS_PER_NODE automatically.
-        #        3. if ngpus-per-node argument is equal to 0, it will be updated to 1 automatically.
-        # ----------------------------------------------------------------------------------------------------------
-        max_gpus_per_node = self.get_value("MAX_GPUS_PER_NODE")
-        if gpu_type and str(gpu_type).lower() != "none":
-            expect(
-                max_gpus_per_node,
-                f"GPUS are not defined for machine={machine_name} and compiler={compiler}",
-            )
-            expect(
-                gpu_offload,
-                "Both gpu-type and gpu-offload must be defined if either is defined",
-            )
-            expect(
-                compiler in ["nvhpc", "cray"],
-                f"Only nvhpc and cray compilers are expected for a GPU run; the user given compiler is {compiler}, ",
-            )
-            valid_gpu_type = self.get_value("GPU_TYPE").split(",")
-            valid_gpu_type.remove("none")
-            expect(
-                gpu_type in valid_gpu_type,
-                f"Unsupported GPU type is given: {gpu_type} ; valid values are {valid_gpu_type}",
-            )
-            valid_gpu_offload = self.get_value("GPU_OFFLOAD").split(",")
-            valid_gpu_offload.remove("none")
-            expect(
-                gpu_offload in valid_gpu_offload,
-                f"Unsupported GPU programming model is given: {gpu_offload} ; valid values are {valid_gpu_offload}",
-            )
-            self.gpu_enabled = True
-            if ngpus_per_node >= 0:
-                self.set_value(
-                    "NGPUS_PER_NODE",
-                    max(1, ngpus_per_node)
-                    if ngpus_per_node <= max_gpus_per_node
-                    else max_gpus_per_node,
-                )
-        elif gpu_offload and str(gpu_offload).lower() != "none":
-            expect(
-                False,
-                "Both gpu-type and gpu-offload must be defined if either is defined",
-            )
-        elif ngpus_per_node != 0:
-            expect(
-                False,
-                f"ngpus_per_node is expected to be 0 for a pure CPU run ; {ngpus_per_node} is provided instead ;",
-            )
-
-        # Set these two GPU XML variables here to overwrite the default values
-        # Only set them for "cesm" model
-        if self._cime_model == "cesm":
-            self.set_value("GPU_TYPE", str(gpu_type).lower())
-            self.set_value("GPU_OFFLOAD", str(gpu_offload).lower())
 
         self.initialize_derived_attributes()
 
@@ -2440,9 +2379,6 @@ directory, NOT in this subdirectory."""
         non_local=False,
         extra_machines_dir=None,
         case_group=None,
-        ngpus_per_node=0,
-        gpu_type=None,
-        gpu_offload=None,
     ):
         try:
             # Set values for env_case.xml
@@ -2515,9 +2451,6 @@ directory, NOT in this subdirectory."""
                 non_local=non_local,
                 extra_machines_dir=extra_machines_dir,
                 case_group=case_group,
-                ngpus_per_node=ngpus_per_node,
-                gpu_type=gpu_type,
-                gpu_offload=gpu_offload,
             )
 
             self.create_caseroot()

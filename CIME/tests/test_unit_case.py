@@ -253,9 +253,6 @@ class TestCase(unittest.TestCase):
                     non_local=False,
                     extra_machines_dir=None,
                     case_group=None,
-                    ngpus_per_node=0,
-                    gpu_type=None,
-                    gpu_offload=None,
                 )
                 create_caseroot.assert_called()
                 apply_user_mods.assert_called()
@@ -330,9 +327,6 @@ class TestCase(unittest.TestCase):
                     non_local=False,
                     extra_machines_dir=None,
                     case_group=None,
-                    ngpus_per_node=0,
-                    gpu_type=None,
-                    gpu_offload=None,
                 )
                 create_caseroot.assert_called()
                 apply_user_mods.assert_called()
