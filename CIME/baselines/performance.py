@@ -431,6 +431,8 @@ def read_baseline_file(baseline_file):
     str
         Value stored in baseline file without comments.
     """
+    if not os.path.exists(baseline_file):
+        return "\nNO file {} found".format(baseline_file)
     with open(baseline_file) as fd:
         lines = [x.strip() for x in fd.readlines() if not x.startswith("#") and x != ""]
 
