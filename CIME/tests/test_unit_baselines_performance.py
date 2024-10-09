@@ -139,6 +139,8 @@ class TestUnitBaselinesPerformance(unittest.TestCase):
         assert baseline == "sha:1df0 date:2023 1000.0\nsha:3b05 date:2023 2000.0"
 
     def test_read_baseline_file_content(self):
+        if not os.path.exists("/tmp/cpl-mem.log"):
+            os.mknod("/tmp/cpl-mem.log")
         with mock.patch(
             "builtins.open", mock.mock_open(read_data="sha:1df0 date:2023 1000.0")
         ) as mock_file:
