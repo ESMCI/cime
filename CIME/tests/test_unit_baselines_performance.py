@@ -3,6 +3,7 @@
 import gzip
 import tempfile
 import unittest
+import os
 from unittest import mock
 from pathlib import Path
 
