@@ -62,7 +62,9 @@ def parse_command_line(args, description):
     parser.add_argument(
         "--prereq",
         help="Specify a prerequisite job id, this job will not start until the\n"
-        "job with this id is completed (batch mode only).",
+        "job with this id is completed (batch mode only). This feature overrides the\n"
+        "CONTINUE_RUN=TRUE check for the existance of restart files and assumes that the\n"
+        "files will be present when the case starts.",
     )
 
     parser.add_argument(
@@ -97,7 +99,10 @@ def parse_command_line(args, description):
     CIME.utils.add_mail_type_args(parser)
 
     parser.add_argument(
-        "-a", "--batch-args", help="Used to pass additional arguments to batch system."
+        "-a",
+        "--batch-args",
+        help="Used to pass additional arguments to batch system.\n"
+        "Do not use this feature to specify job prerequisites, use the --prereq feature instead.",
     )
 
     parser.add_argument(
