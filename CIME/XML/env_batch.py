@@ -223,6 +223,9 @@ class EnvBatch(EnvBase):
             overrides["tasks_per_node"] = tasks_per_node
             if thread_count:
                 overrides["thread_count"] = thread_count
+                total_tasks = total_tasks * thread_count
+            else:
+                total_tasks = total_tasks * case.thread_count
         else:
             # Total PES accounts for threads as well as mpi tasks
             total_tasks = case.get_value("TOTALPES")
