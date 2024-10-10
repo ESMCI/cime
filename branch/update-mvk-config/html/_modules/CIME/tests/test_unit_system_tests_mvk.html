@@ -85,12 +85,12 @@
   <h1>Source code for CIME.tests.test_unit_system_tests_mvk</h1><div class="highlight"><pre>
 <span></span><span class="ch">#!/usr/bin/env python3</span>
 
-<span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">unittest</span>
 <span class="kn">import</span> <span class="nn">tempfile</span>
 <span class="kn">import</span> <span class="nn">contextlib</span>
+<span class="kn">import</span> <span class="nn">sysconfig</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">unittest</span> <span class="kn">import</span> <span class="n">mock</span>
 
@@ -287,12 +287,10 @@
             <span class="n">module</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;20240515_212034_41b5u2&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;module&quot;</span><span class="p">)</span>
 
             <span class="k">assert</span> <span class="p">(</span>
-                <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span>
-                    <span class="sa">r</span><span class="s2">&quot;/opt/conda/lib/python.*/site-packages/evv4esm/extensions/kso.py&quot;</span><span class="p">,</span>
-                    <span class="n">module</span><span class="p">,</span>
-                <span class="p">)</span>
-                <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">sysconfig</span><span class="o">.</span><span class="n">get_paths</span><span class="p">()[</span><span class="s2">&quot;purelib&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">/evv4esm/extensions/kso.py&#39;</span>
+                <span class="o">==</span> <span class="n">module</span>
             <span class="p">)</span>
+
             <span class="k">assert</span> <span class="n">config</span> <span class="o">==</span> <span class="n">expected_config</span>
 
             <span class="n">nml_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">temp_dir</span><span class="p">)</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;user_nl&quot;</span><span class="p">)]</span>
@@ -499,12 +497,9 @@
             <span class="n">module</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;20240515_212034_41b5u2&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;module&quot;</span><span class="p">)</span>
 
             <span class="k">assert</span> <span class="p">(</span>
-                <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span>
-                    <span class="sa">r</span><span class="s2">&quot;/opt/conda/lib/python.*/site-packages/evv4esm/extensions/ks.py&quot;</span><span class="p">,</span>
-                    <span class="n">module</span><span class="p">,</span>
-                <span class="p">)</span>
-                <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">sysconfig</span><span class="o">.</span><span class="n">get_paths</span><span class="p">()[</span><span class="s2">&quot;purelib&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">/evv4esm/extensions/ks.py&#39;</span> <span class="o">==</span> <span class="n">module</span>
             <span class="p">)</span>
+
             <span class="k">assert</span> <span class="n">config</span> <span class="o">==</span> <span class="n">expected_config</span>
 
             <span class="n">nml_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">temp_dir</span><span class="p">)</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;user_nl&quot;</span><span class="p">)]</span>
@@ -635,7 +630,7 @@
 
             <span class="n">files</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">case_baseline_dir</span><span class="p">)</span>
 
-            <span class="k">assert</span> <span class="n">files</span> <span class="o">==</span> <span class="p">[</span><span class="s2">&quot;test1.nc&quot;</span><span class="p">,</span> <span class="s2">&quot;test2.nc&quot;</span><span class="p">]</span>
+            <span class="k">assert</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">files</span><span class="p">)</span> <span class="o">==</span> <span class="nb">sorted</span><span class="p">([</span><span class="s2">&quot;test1.nc&quot;</span><span class="p">,</span> <span class="s2">&quot;test2.nc&quot;</span><span class="p">])</span>
 
             <span class="c1"># reset side_effect</span>
             <span class="k">case</span><span class="o">.</span><span class="n">get_value</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">side_effect</span>
@@ -647,7 +642,7 @@
 
             <span class="n">files</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">case_baseline_dir</span><span class="p">)</span>
 
-            <span class="k">assert</span> <span class="n">files</span> <span class="o">==</span> <span class="p">[</span><span class="s2">&quot;test1.nc&quot;</span><span class="p">,</span> <span class="s2">&quot;test2.nc&quot;</span><span class="p">]</span></div>
+            <span class="k">assert</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">files</span><span class="p">)</span> <span class="o">==</span> <span class="nb">sorted</span><span class="p">([</span><span class="s2">&quot;test1.nc&quot;</span><span class="p">,</span> <span class="s2">&quot;test2.nc&quot;</span><span class="p">])</span></div>
 
 
 <div class="viewcode-block" id="TestSystemTestsMVK.test__compare_baseline_resubmit">
@@ -728,12 +723,9 @@
             <span class="n">module</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;20240515_212034_41b5u2&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;module&quot;</span><span class="p">)</span>
 
             <span class="k">assert</span> <span class="p">(</span>
-                <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span>
-                    <span class="sa">r</span><span class="s2">&quot;/opt/conda/lib/python.*/site-packages/evv4esm/extensions/ks.py&quot;</span><span class="p">,</span>
-                    <span class="n">module</span><span class="p">,</span>
-                <span class="p">)</span>
-                <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">sysconfig</span><span class="o">.</span><span class="n">get_paths</span><span class="p">()[</span><span class="s2">&quot;purelib&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">/evv4esm/extensions/ks.py&#39;</span> <span class="o">==</span> <span class="n">module</span>
             <span class="p">)</span>
+
             <span class="k">assert</span> <span class="n">config</span> <span class="o">==</span> <span class="n">expected_config</span>
 
             <span class="n">expected_comments</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;BASELINE PASS for test &#39;20240515_212034_41b5u2&#39;.</span>
