@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 
-import re
 import os
 import json
 import unittest
 import tempfile
 import contextlib
+import sysconfig
 from pathlib import Path
 from unittest import mock
 
@@ -186,12 +186,10 @@ def evv_test_config(case, config):
             module = config["20240515_212034_41b5u2"].pop("module")
 
             assert (
-                re.search(
-                    r"/opt/conda/lib/python.*/site-packages/evv4esm/extensions/kso.py",
-                    module,
-                )
-                is not None
+                f'{sysconfig.get_paths()["purelib"]}/evv4esm/extensions/kso.py'
+                == module
             )
+
             assert config == expected_config
 
             nml_files = [x for x in os.listdir(temp_dir) if x.startswith("user_nl")]
@@ -386,12 +384,9 @@ test_case = "Default"
             module = config["20240515_212034_41b5u2"].pop("module")
 
             assert (
-                re.search(
-                    r"/opt/conda/lib/python.*/site-packages/evv4esm/extensions/ks.py",
-                    module,
-                )
-                is not None
+                f'{sysconfig.get_paths()["purelib"]}/evv4esm/extensions/ks.py' == module
             )
+
             assert config == expected_config
 
             nml_files = [x for x in os.listdir(temp_dir) if x.startswith("user_nl")]
@@ -516,7 +511,7 @@ test_case = "Default"
 
             files = os.listdir(case_baseline_dir)
 
-            assert files == ["test1.nc", "test2.nc"]
+            assert sorted(files) == sorted(["test1.nc", "test2.nc"])
 
             # reset side_effect
             case.get_value.side_effect = side_effect
@@ -528,7 +523,7 @@ test_case = "Default"
 
             files = os.listdir(case_baseline_dir)
 
-            assert files == ["test1.nc", "test2.nc"]
+            assert sorted(files) == sorted(["test1.nc", "test2.nc"])
 
     @mock.patch("CIME.SystemTests.mvk.append_testlog")
     @mock.patch("CIME.SystemTests.mvk.evv")
@@ -603,12 +598,9 @@ test_case = "Default"
             module = config["20240515_212034_41b5u2"].pop("module")
 
             assert (
-                re.search(
-                    r"/opt/conda/lib/python.*/site-packages/evv4esm/extensions/ks.py",
-                    module,
-                )
-                is not None
+                f'{sysconfig.get_paths()["purelib"]}/evv4esm/extensions/ks.py' == module
             )
+
             assert config == expected_config
 
             expected_comments = f"""BASELINE PASS for test '20240515_212034_41b5u2'.
