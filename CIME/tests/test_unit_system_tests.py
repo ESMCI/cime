@@ -103,6 +103,7 @@ class TestUnitSystemTests(unittest.TestCase):
                 str(caseroot),
                 "ERIO.ne30_g16_rx1.A.docker_gnu",
                 "mct",
+                "rpointer.cpl",
                 0.01,
             )
 
@@ -156,6 +157,7 @@ class TestUnitSystemTests(unittest.TestCase):
                 str(caseroot),
                 "ERIO.ne30_g16_rx1.A.docker_gnu",
                 "mct",
+                None,
                 0.01,
             )
 
@@ -211,6 +213,7 @@ class TestUnitSystemTests(unittest.TestCase):
                 str(caseroot),
                 "ERIO.ne30_g16_rx1.A.docker_gnu",
                 "mct",
+                None,
                 0.01,
             )
 
@@ -268,6 +271,7 @@ class TestUnitSystemTests(unittest.TestCase):
                 str(caseroot),
                 "ERIO.ne30_g16_rx1.A.docker_gnu",
                 "mct",
+                None,
                 0.01,
             )
 
@@ -300,6 +304,7 @@ class TestUnitSystemTests(unittest.TestCase):
                 str(Path(tempdir) / "caseroot"),
                 "ERIO.ne30_g16_rx1.A.docker_gnu",
                 "mct",
+                None,
             )
 
             common = SystemTestsCommon(case)
@@ -329,6 +334,7 @@ class TestUnitSystemTests(unittest.TestCase):
                 str(Path(tempdir) / "caseroot"),
                 "ERIO.ne30_g16_rx1.A.docker_gnu",
                 "mct",
+                "rpointer.cpl.0001-01-01",
             )
 
             common = SystemTestsCommon(case)
@@ -358,6 +364,7 @@ class TestUnitSystemTests(unittest.TestCase):
                 str(Path(tempdir) / "caseroot"),
                 "ERIO.ne30_g16_rx1.A.docker_gnu",
                 "mct",
+                None,
             )
 
             common = SystemTestsCommon(case)
@@ -388,6 +395,7 @@ class TestUnitSystemTests(unittest.TestCase):
                 str(caseroot),
                 "ERIO.ne30_g16_rx1.A.docker_gnu",
                 "mct",
+                "rpointer.cpl",
             )
 
             common = SystemTestsCommon(case)
@@ -403,7 +411,7 @@ class TestUnitSystemTests(unittest.TestCase):
 
     @mock.patch("CIME.SystemTests.system_tests_common.perf_compare_memory_baseline")
     @mock.patch("CIME.SystemTests.system_tests_common.append_testlog")
-    def test_compare_memory_erorr_diff(
+    def test_compare_memory_error_diff(
         self, append_testlog, perf_compare_memory_baseline
     ):
         perf_compare_memory_baseline.return_value = (None, "Error diff value")
@@ -417,6 +425,7 @@ class TestUnitSystemTests(unittest.TestCase):
                 str(caseroot),
                 "ERIO.ne30_g16_rx1.A.docker_gnu",
                 "mct",
+                None,
             )
 
             common = SystemTestsCommon(case)
@@ -429,7 +438,7 @@ class TestUnitSystemTests(unittest.TestCase):
 
     @mock.patch("CIME.SystemTests.system_tests_common.perf_compare_memory_baseline")
     @mock.patch("CIME.SystemTests.system_tests_common.append_testlog")
-    def test_compare_memory_erorr_fail(
+    def test_compare_memory_error_fail(
         self, append_testlog, perf_compare_memory_baseline
     ):
         perf_compare_memory_baseline.return_value = (
@@ -446,6 +455,7 @@ class TestUnitSystemTests(unittest.TestCase):
                 str(caseroot),
                 "ERIO.ne30_g16_rx1.A.docker_gnu",
                 "mct",
+                "rpointer.cpl",
             )
 
             common = SystemTestsCommon(case)
@@ -469,6 +479,7 @@ class TestUnitSystemTests(unittest.TestCase):
                 str(caseroot),
                 "ERIO.ne30_g16_rx1.A.docker_gnu",
                 "mct",
+                None,
                 str(run_dir),
                 "case.std",
                 str(baseline_root),
@@ -500,7 +511,6 @@ class TestUnitSystemTests(unittest.TestCase):
             common._generate_baseline()
 
             baseline_dir = baseline_root / "master" / "ERIO.ne30_g16_rx1.A.docker_gnu"
-
             assert (baseline_dir / "cpl.log.gz").exists()
             assert (baseline_dir / "cpl-tput.log").exists()
             assert (baseline_dir / "cpl-mem.log").exists()
@@ -577,6 +587,7 @@ class TestUnitSystemTests(unittest.TestCase):
             "/caseroot",
             "SMS.f19_g16.S",
             "cpl",
+            None,
             "/caseroot",
             "SMS.f19_g16.S",
         )
@@ -595,6 +606,7 @@ class TestUnitSystemTests(unittest.TestCase):
             "/caseroot",
             "SMS.f19_g16.S",
             "cpl",
+            "rpointer.cpl",
             "/caseroot",
             "SMS.f19_g16.S",
         )
