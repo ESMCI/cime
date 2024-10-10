@@ -5,6 +5,7 @@ import signal
 import shutil
 import sys
 import time
+import contextlib
 from collections.abc import Iterable
 
 from CIME import utils
@@ -48,6 +49,17 @@ MACRO_PRESERVE_ENV = [
     "STRINGS",
     "STRIP",
 ]
+
+
+@contextlib.contextmanager
+def chdir(path):
+    old_path = os.getcwd()
+    os.chdir(path)
+
+    try:
+        yield
+    finally:
+        os.chdir(old_path)
 
 
 def parse_test_status(line):
