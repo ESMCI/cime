@@ -10,7 +10,6 @@
 <xs:attribute name="mpilib" type="xs:string"/>
 <xs:attribute name="comp_interface" type="xs:string"/>
 <xs:attribute name="gpu_type" type="xs:string"/>
-<xs:attribute name="gpu_offload" type="xs:string"/>
 <xs:attribute name="BUILD_THREADED" type="xs:string"/>
 <xs:attribute name="value" type="xs:string"/>
 <xs:attribute name="unit_testing" type="xs:boolean"/>
@@ -105,7 +104,6 @@
       <xs:attribute ref="mpilib"/>
       <xs:attribute ref="comp_interface"/>
       <xs:attribute ref="gpu_type"/>
-      <xs:attribute ref="gpu_offload"/>
     </xs:complexType>
   </xs:element>
 

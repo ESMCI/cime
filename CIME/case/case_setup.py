@@ -389,6 +389,48 @@ def _case_setup_impl(
                     + case.iotasks,
                 )
 
+            # ----------------------------------------------------------------------------------------------------------
+            # Sanity check for a GPU run:
+            #        1. GPU_TYPE and GPU_OFFLOAD must both be defined to use GPUs
+            #        2. If the NGPUS_PER_NODE XML variable in the env_mach_pes.xml file is larger than
+            #           the value of MAX_GPUS_PER_NODE, set it to MAX_GPUS_PER_NODE automatically.
+            #        3. If the NGPUS_PER_NODE XML variable is equal to 0, it will be updated to 1 automatically.
+            # ----------------------------------------------------------------------------------------------------------
+            max_gpus_per_node = case.get_value("MAX_GPUS_PER_NODE")
+            gpu_type = case.get_value("GPU_TYPE")
+            openacc_gpu_offload = case.get_value("OPENACC_GPU_OFFLOAD")
+            openmp_gpu_offload = case.get_value("OPENMP_GPU_OFFLOAD")
+            kokkos_gpu_offload = case.get_value("KOKKOS_GPU_OFFLOAD")
+            gpu_offload = (
+                openacc_gpu_offload or openmp_gpu_offload or kokkos_gpu_offload
+            )
+            ngpus_per_node = case.get_value("NGPUS_PER_NODE")
+            if gpu_type and str(gpu_type).lower() != "none":
+                if max_gpus_per_node <= 0:
+                    raise RuntimeError(
+                        f"MAX_GPUS_PER_NODE must be larger than 0 for machine={mach} and compiler={compiler} in order to configure a GPU run"
+                    )
+                if not gpu_offload:
+                    raise RuntimeError(
+                        "GPU_TYPE is defined but none of the GPU OFFLOAD options are enabled"
+                    )
+                case.gpu_enabled = True
+                if ngpus_per_node >= 0:
+                    case.set_value(
+                        "NGPUS_PER_NODE",
+                        max(1, ngpus_per_node)
+                        if ngpus_per_node <= max_gpus_per_node
+                        else max_gpus_per_node,
+                    )
+            elif gpu_offload:
+                raise RuntimeError(
+                    "GPU_TYPE is not defined but at least one GPU OFFLOAD option is enabled"
+                )
+            elif ngpus_per_node and ngpus_per_node != 0:
+                raise RuntimeError(
+                    f"ngpus_per_node is expected to be 0 for a pure CPU run ; {ngpus_per_node} is provided instead ;"
+                )
+
             # May need to select new batch settings if pelayout changed (e.g. problem is now too big for prev-selected queue)
             env_batch = case.get_env("batch")
             env_batch.set_job_defaults([(case.get_primary_job(), {})], case)
@@ -527,37 +569,26 @@ def case_setup(self, clean=False, test_mode=False, reset=False, keep=None):
 
 
 def _create_case_repo(self, caseroot):
-    version = run_cmd_no_fail("git --version")
-    result = re.findall(r"([0-9]+)\.([0-9]+)\.?[0-9]*", version)
-    major = int(result[0][0])
-    minor = int(result[0][1])
-
-    # gitinterface needs git version 2.28 or newer
-    if major > 2 or (major == 2 and minor >= 28):
-        self._gitinterface = GitInterface(
-            caseroot, logger, branch=self.get_value("CASE")
+    self._gitinterface = GitInterface(caseroot, logger, branch=self.get_value("CASE"))
+    if self._gitinterface and not os.path.exists(os.path.join(caseroot, ".gitignore")):
+        safe_copy(
+            os.path.join(
+                self.get_value("CIMEROOT"),
+                "CIME",
+                "data",
+                "templates",
+                "gitignore.template",
+            ),
+            os.path.join(caseroot, ".gitignore"),
         )
-        if not os.path.exists(os.path.join(caseroot, ".gitignore")):
-            safe_copy(
-                os.path.join(
-                    self.get_value("CIMEROOT"),
-                    "CIME",
-                    "data",
-                    "templates",
-                    "gitignore.template",
-                ),
-                os.path.join(caseroot, ".gitignore"),
-            )
-            append_case_status(
-                "", "", "local git repository created", gitinterface=self._gitinterface
-            )
+        append_case_status(
+            "", "", "local git repository created", gitinterface=self._gitinterface
+        )
         # add all files in caseroot to local repository
         self._gitinterface._git_command("add", "*")
-    else:
-        logger.warning("git interface requires git version 2.28 or newer")
-
+    elif not self._gitinterface:
         append_case_status(
             "",
             "",
-            f"local git version too old for cime git interface {major}.{minor}",
+            "Local git version too old for cime git interface, version 2.28 or newer required.",
         )
