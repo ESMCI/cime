@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../../../">
 <head>
@@ -5,22 +7,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CIME.case.case_setup &mdash; CIME master documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
       <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../_static/documentation_options.js?v=30d551ce"></script>
-        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
-        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
-        <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
-        <script src="../../../_static/copybutton.js?v=f281be69"></script>
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=30d551ce"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -37,9 +35,6 @@
           <a href="../../../index.html" class="icon icon-home">
             CIME
           </a>
-              <div class="version">
-                master
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -479,6 +474,48 @@
                     <span class="o">+</span> <span class="n">case</span><span class="o">.</span><span class="n">iotasks</span><span class="p">,</span>
                 <span class="p">)</span>
 
+            <span class="c1"># ----------------------------------------------------------------------------------------------------------</span>
+            <span class="c1"># Sanity check for a GPU run:</span>
+            <span class="c1">#        1. GPU_TYPE and GPU_OFFLOAD must both be defined to use GPUs</span>
+            <span class="c1">#        2. If the NGPUS_PER_NODE XML variable in the env_mach_pes.xml file is larger than</span>
+            <span class="c1">#           the value of MAX_GPUS_PER_NODE, set it to MAX_GPUS_PER_NODE automatically.</span>
+            <span class="c1">#        3. If the NGPUS_PER_NODE XML variable is equal to 0, it will be updated to 1 automatically.</span>
+            <span class="c1"># ----------------------------------------------------------------------------------------------------------</span>
+            <span class="n">max_gpus_per_node</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MAX_GPUS_PER_NODE&quot;</span><span class="p">)</span>
+            <span class="n">gpu_type</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;GPU_TYPE&quot;</span><span class="p">)</span>
+            <span class="n">openacc_gpu_offload</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;OPENACC_GPU_OFFLOAD&quot;</span><span class="p">)</span>
+            <span class="n">openmp_gpu_offload</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;OPENMP_GPU_OFFLOAD&quot;</span><span class="p">)</span>
+            <span class="n">kokkos_gpu_offload</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;KOKKOS_GPU_OFFLOAD&quot;</span><span class="p">)</span>
+            <span class="n">gpu_offload</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">openacc_gpu_offload</span> <span class="ow">or</span> <span class="n">openmp_gpu_offload</span> <span class="ow">or</span> <span class="n">kokkos_gpu_offload</span>
+            <span class="p">)</span>
+            <span class="n">ngpus_per_node</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;NGPUS_PER_NODE&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">gpu_type</span> <span class="ow">and</span> <span class="nb">str</span><span class="p">(</span><span class="n">gpu_type</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;none&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">max_gpus_per_node</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;MAX_GPUS_PER_NODE must be larger than 0 for machine=</span><span class="si">{</span><span class="n">mach</span><span class="si">}</span><span class="s2"> and compiler=</span><span class="si">{</span><span class="n">compiler</span><span class="si">}</span><span class="s2"> in order to configure a GPU run&quot;</span>
+                    <span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">gpu_offload</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                        <span class="s2">&quot;GPU_TYPE is defined but none of the GPU OFFLOAD options are enabled&quot;</span>
+                    <span class="p">)</span>
+                <span class="k">case</span><span class="o">.</span><span class="n">gpu_enabled</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">if</span> <span class="n">ngpus_per_node</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span>
+                        <span class="s2">&quot;NGPUS_PER_NODE&quot;</span><span class="p">,</span>
+                        <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">ngpus_per_node</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">ngpus_per_node</span> <span class="o">&lt;=</span> <span class="n">max_gpus_per_node</span>
+                        <span class="k">else</span> <span class="n">max_gpus_per_node</span><span class="p">,</span>
+                    <span class="p">)</span>
+            <span class="k">elif</span> <span class="n">gpu_offload</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                    <span class="s2">&quot;GPU_TYPE is not defined but at least one GPU OFFLOAD option is enabled&quot;</span>
+                <span class="p">)</span>
+            <span class="k">elif</span> <span class="n">ngpus_per_node</span> <span class="ow">and</span> <span class="n">ngpus_per_node</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;ngpus_per_node is expected to be 0 for a pure CPU run ; </span><span class="si">{</span><span class="n">ngpus_per_node</span><span class="si">}</span><span class="s2"> is provided instead ;&quot;</span>
+                <span class="p">)</span>
+
             <span class="c1"># May need to select new batch settings if pelayout changed (e.g. problem is now too big for prev-selected queue)</span>
             <span class="n">env_batch</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_env</span><span class="p">(</span><span class="s2">&quot;batch&quot;</span><span class="p">)</span>
             <span class="n">env_batch</span><span class="o">.</span><span class="n">set_job_defaults</span><span class="p">([(</span><span class="n">case</span><span class="o">.</span><span class="n">get_primary_job</span><span class="p">(),</span> <span class="p">{})],</span> <span class="n">case</span><span class="p">)</span>
@@ -620,39 +657,28 @@
 
 
 <span class="k">def</span> <span class="nf">_create_case_repo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caseroot</span><span class="p">):</span>
-    <span class="n">version</span> <span class="o">=</span> <span class="n">run_cmd_no_fail</span><span class="p">(</span><span class="s2">&quot;git --version&quot;</span><span class="p">)</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;([0-9]+)\.([0-9]+)\.?[0-9]*&quot;</span><span class="p">,</span> <span class="n">version</span><span class="p">)</span>
-    <span class="n">major</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
-    <span class="n">minor</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
-
-    <span class="c1"># gitinterface needs git version 2.28 or newer</span>
-    <span class="k">if</span> <span class="n">major</span> <span class="o">&gt;</span> <span class="mi">2</span> <span class="ow">or</span> <span class="p">(</span><span class="n">major</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">minor</span> <span class="o">&gt;=</span> <span class="mi">28</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_gitinterface</span> <span class="o">=</span> <span class="n">GitInterface</span><span class="p">(</span>
-            <span class="n">caseroot</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">branch</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASE&quot;</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_gitinterface</span> <span class="o">=</span> <span class="n">GitInterface</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">branch</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASE&quot;</span><span class="p">))</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gitinterface</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="s2">&quot;.gitignore&quot;</span><span class="p">)):</span>
+        <span class="n">safe_copy</span><span class="p">(</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CIMEROOT&quot;</span><span class="p">),</span>
+                <span class="s2">&quot;CIME&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;data&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;templates&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;gitignore.template&quot;</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="s2">&quot;.gitignore&quot;</span><span class="p">),</span>
         <span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="s2">&quot;.gitignore&quot;</span><span class="p">)):</span>
-            <span class="n">safe_copy</span><span class="p">(</span>
-                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CIMEROOT&quot;</span><span class="p">),</span>
-                    <span class="s2">&quot;CIME&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;data&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;templates&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;gitignore.template&quot;</span><span class="p">,</span>
-                <span class="p">),</span>
-                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="s2">&quot;.gitignore&quot;</span><span class="p">),</span>
-            <span class="p">)</span>
-            <span class="n">append_case_status</span><span class="p">(</span>
-                <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;local git repository created&quot;</span><span class="p">,</span> <span class="n">gitinterface</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_gitinterface</span>
-            <span class="p">)</span>
+        <span class="n">append_case_status</span><span class="p">(</span>
+            <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;local git repository created&quot;</span><span class="p">,</span> <span class="n">gitinterface</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_gitinterface</span>
+        <span class="p">)</span>
         <span class="c1"># add all files in caseroot to local repository</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_gitinterface</span><span class="o">.</span><span class="n">_git_command</span><span class="p">(</span><span class="s2">&quot;add&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;git interface requires git version 2.28 or newer&quot;</span><span class="p">)</span>
-
+    <span class="k">elif</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gitinterface</span><span class="p">:</span>
         <span class="n">append_case_status</span><span class="p">(</span>
             <span class="s2">&quot;&quot;</span><span class="p">,</span>
             <span class="s2">&quot;&quot;</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;local git version too old for cime git interface </span><span class="si">{</span><span class="n">major</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">minor</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Local git version too old for cime git interface, version 2.28 or newer required.&quot;</span><span class="p">,</span>
         <span class="p">)</span>
 </pre></div>
 

@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../../">
 <head>
@@ -5,22 +7,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CIME.build &mdash; CIME master documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../../_static/jquery.js?v=5d32c60e"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=30d551ce"></script>
-        <script src="../../_static/doctools.js?v=9a2dae69"></script>
-        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
-        <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
-        <script src="../../_static/copybutton.js?v=f281be69"></script>
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=30d551ce"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -37,9 +35,6 @@
           <a href="../../index.html" class="icon icon-home">
             CIME
           </a>
-              <div class="version">
-                master
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -354,18 +349,10 @@
     <span class="p">)</span>
     <span class="c1"># check settings for GPU</span>
     <span class="n">gpu_type</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;GPU_TYPE&quot;</span><span class="p">)</span>
-    <span class="n">gpu_offload</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;GPU_OFFLOAD&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">gpu_type</span> <span class="o">!=</span> <span class="s2">&quot;none&quot;</span><span class="p">:</span>
-        <span class="n">expect</span><span class="p">(</span>
-            <span class="n">gpu_offload</span> <span class="o">!=</span> <span class="s2">&quot;none&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Both GPU_TYPE and GPU_OFFLOAD must be defined if either is&quot;</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="n">cmake_args</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; -DGPU_TYPE=</span><span class="si">{</span><span class="n">gpu_type</span><span class="si">}</span><span class="s2"> -DGPU_OFFLOAD=</span><span class="si">{</span><span class="n">gpu_offload</span><span class="si">}</span><span class="s2">&quot;</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">expect</span><span class="p">(</span>
-            <span class="n">gpu_offload</span> <span class="o">==</span> <span class="s2">&quot;none&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Both GPU_TYPE and GPU_OFFLOAD must be defined if either is&quot;</span><span class="p">,</span>
-        <span class="p">)</span>
+    <span class="n">openacc_gpu_offload</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;OPENACC_GPU_OFFLOAD&quot;</span><span class="p">)</span>
+    <span class="n">openmp_gpu_offload</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;OPENMP_GPU_OFFLOAD&quot;</span><span class="p">)</span>
+    <span class="n">kokkos_gpu_offload</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;KOKKOS_GPU_OFFLOAD&quot;</span><span class="p">)</span>
+    <span class="n">cmake_args</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; -DGPU_TYPE=</span><span class="si">{</span><span class="n">gpu_type</span><span class="si">}</span><span class="s2"> -DOPENACC_GPU_OFFLOAD=</span><span class="si">{</span><span class="n">openacc_gpu_offload</span><span class="si">}</span><span class="s2"> -DOPENMP_GPU_OFFLOAD=</span><span class="si">{</span><span class="n">openmp_gpu_offload</span><span class="si">}</span><span class="s2"> -DKOKKOS_GPU_OFFLOAD=</span><span class="si">{</span><span class="n">kokkos_gpu_offload</span><span class="si">}</span><span class="s2"> &quot;</span>
 
     <span class="n">ocn_model</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;COMP_OCN&quot;</span><span class="p">)</span>
     <span class="n">atm_dycore</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CAM_DYCORE&quot;</span><span class="p">)</span>
