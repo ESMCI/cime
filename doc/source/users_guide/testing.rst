@@ -395,7 +395,6 @@ For this case the default ``evv_test_config`` and ``generate_namelist`` function
   component = "eam"
   # components = [] can be omitted when modifying a single component
   ninst = 10
-  critical = 21
 
 .. _MVK Complex:
 
