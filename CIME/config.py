@@ -1,16 +1,56 @@
 import os
 import re
 import sys
-import glob
 import logging
 import importlib.machinery
 import importlib.util
+import inspect
+from pathlib import Path
 
 from CIME import utils
 
 logger = logging.getLogger(__name__)
 
 DEFAULT_CUSTOMIZE_PATH = os.path.join(utils.get_src_root(), "cime_config", "customize")
+
+
+def print_rst_header(header, anchor=None, separator='"'):
+    n = len(header)
+    if anchor is not None:
+        print(f".. _{anchor}\n")
+    print(separator * n)
+    print(header)
+    print(separator * n)
+
+
+def print_rst_table(headers, *rows):
+    column_widths = []
+
+    columns = [[rows[y][x] for y in range(len(rows))] for x in range(len(rows[0]))]
+
+    for header, column in zip(headers, columns):
+        column_widths.append(
+            max(
+                [
+                    len(x)
+                    for x in [
+                        header,
+                    ]
+                    + column
+                ]
+            )
+        )
+
+    divider = " ".join([f"{'=' * x}" for x in column_widths])
+
+    print(divider)
+    print(" ".join(f"{y}{' ' * (x - len(y))}" for x, y in zip(column_widths, headers)))
+    print(divider)
+
+    for row in rows:
+        print(" ".join([f"{y}{' ' * (x-len(y))}" for x, y in zip(column_widths, row)]))
+
+    print(divider)
 
 
 class ConfigBase:
@@ -41,14 +81,19 @@ class ConfigBase:
 
         logger.debug("Searching %r for files to load", customize_path)
 
-        customize_files = glob.glob(f"{customize_path}/**/*.py", recursive=True)
+        customize_path = Path(customize_path)
 
-        ignore_pattern = re.compile(f"{customize_path}/(?:tests|conftest|test_)")
+        if customize_path.is_file():
+            customize_files = [f"{customize_path}"]
+        else:
+            ignore_pattern = re.compile(f"{customize_path}/(?:tests|conftest|test_)")
 
-        # filter out any tests
-        customize_files = [
-            x for x in customize_files if ignore_pattern.search(x) is None
-        ]
+            # filter out any tests
+            customize_files = [
+                f"{x}"
+                for x in customize_path.glob("**/*.py")
+                if ignore_pattern.search(f"{x}") is None
+            ]
 
         customize_module_spec = importlib.machinery.ModuleSpec("cime_customize", None)
 
@@ -99,39 +144,56 @@ class ConfigBase:
         }
 
     def print_rst_table(self):
-        max_variable = max([len(x) for x in self._attribute_config.keys()])
-        max_default = max(
-            [len(str(x["default"])) for x in self._attribute_config.values()]
-        )
-        max_type = max(
-            [len(type(x["default"]).__name__) for x in self._attribute_config.values()]
-        )
-        max_desc = max([len(x["desc"]) for x in self._attribute_config.values()])
+        self.print_variable_rst()
 
-        divider_row = (
-            f"{'='*max_variable}  {'='*max_default}  {'='*max_type}  {'='*max_desc}"
+        print("")
+
+        self.print_method_rst()
+
+    def print_variable_rst(self):
+        print_rst_header("Variables", anchor=f"{self.__class__.__name__} Variables:")
+
+        headers = ("Variable", "Default", "Type", "Description")
+
+        rows = (
+            (x, str(y["default"]), type(y["default"]).__name__, y["desc"])
+            for x, y in self._attribute_config.items()
         )
 
-        rows = [
-            divider_row,
-            f"Variable{' '*(max_variable-8)}  Default{' '*(max_default-7)}  Type{' '*(max_type-4)}  Description{' '*(max_desc-11)}",
-            divider_row,
+        print_rst_table(headers, *rows)
+
+    def print_method_rst(self):
+        print_rst_header("Methods", anchor=f"{self.__class__.__name__} Methods:")
+
+        methods = inspect.getmembers(self, inspect.ismethod)
+
+        ignore = (
+            "__init__",
+            "loaded",
+            "load",
+            "instance",
+            "_load_file",
+            "_set_attribute",
+            "print_rst_table",
+            "print_method_rst",
+            "print_variable_rst",
+        )
+
+        child_methods = [
+            (x[0], inspect.signature(x[1]), inspect.getdoc(x[1]))
+            for x in methods
+            if x[1].__class__ != Config and x[0] not in ignore
         ]
 
-        for variable, value in sorted(
-            self._attribute_config.items(), key=lambda x: x[0]
-        ):
-            variable_fill = max_variable - len(variable)
-            default_fill = max_default - len(str(value["default"]))
-            type_fill = max_type - len(type(value["default"]).__name__)
-
-            rows.append(
-                f"{variable}{' '*variable_fill}  {value['default']}{' '*default_fill}  {type(value['default']).__name__}{' '*type_fill}  {value['desc']}"
-            )
-
-        rows.append(divider_row)
-
-        print("\n".join(rows))
+        for (name, sig, doc) in child_methods:
+            if doc is None:
+                continue
+            print(".. code-block::\n")
+            print(f"  def {name}{sig!s}:")
+            print('      """')
+            for line in doc.split("\n"):
+                print(f"      {line}")
+            print('      """')
 
 
 class Config(ConfigBase):

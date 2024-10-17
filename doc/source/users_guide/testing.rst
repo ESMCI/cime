@@ -4,32 +4,34 @@
 Testing Cases
 **************
 
-`create_test <../Tools_user/create_test.html>`_
-is a powerful system testing capability provided by the CIME Case Control System.
-create_test can, in one command, create a case, setup, build and run the case
-according to the test type and return a PASS or FAIL for the test result.
+The `create_test <../Tools_user/create_test.html>`_ command provides
+a powerful tool capable of testing a Case. The command can create, 
+setup, build and run a case according to the :ref:`testname <testname syntax>` syntax, returning 
+a PASS or FAIL result.
 
 .. _individual:
 
 An individual test can be run as::
 
-  $CIMEROOT/scripts/create_test $test_name
+  $CIMEROOT/scripts/create_test <testname>
 
-Everything the test will do is controlled by parsing the test name.
+Everything the test will do is controlled by the :ref:`testname <testname syntax>`.
 
-=================
+.. _`testname syntax`:
+
+================
 Testname syntax
-=================
-.. _`Test naming`:
+================
 
-Tests must be named with the following forms, [ ]=optional::
+Tests are defined by the following format, where anything enclosed in ``[]`` is optional::
 
   TESTTYPE[_MODIFIERS].GRID.COMPSET[.MACHINE_COMPILER][.GROUP-TESTMODS]
 
-For example using the minimum required elements of a testname::
+For example using the minimum TESTTYPE_, `GRID <../users_guide/grids.html>`_, and `COMPSET <../users_guide/compsets.html>`_::
 
-   $CIMEROOT/scripts/create_test ERP.ne4pg2_oQU480.F2010
+  ERP.ne4pg2_oQU480.F2010
 
+Below is a break-down of the different parts of the ``testname`` syntax.
 
 =================  =====================================================================================
 NAME PART
@@ -165,7 +167,7 @@ elements of the test through a test type modifier.
 .. _MODIFIERS:
 
 -------------------
-Testtype Modifiers
+MODIFIERS
 -------------------
 
 ============ =====================================================================================
@@ -199,72 +201,255 @@ MODIFIERS    Description
 
 For example, this will run the ERP test with debugging turned on during compilation::
 
-    CIMEROOT/scripts/create_test ERP_D.ne4pg2_oQU480.F2010
+    $CIMEROOT/scripts/create_test ERP_D.ne4pg2_oQU480.F2010
 
 This will run the ERP test for 3 days instead of the default 11 days::
 
-    CIMEROOT/scripts/create_test ERP_Ld3.ne4pg2_oQU480.F2010
+    $CIMEROOT/scripts/create_test ERP_Ld3.ne4pg2_oQU480.F2010
 
 You can combine testtype modifiers::
 
-    CIMEROOT/scripts/create_test ERP_D_Ld3.ne4pg2_oQU480.F2010
-
--------------------
-Test Case Modifiers
--------------------
+    $CIMEROOT/scripts/create_test ERP_D_Ld3.ne4pg2_oQU480.F2010
 
 .. _GROUP-TESTMODS:
 
-create_test runs with out-of-the-box compsets and grid sets. Sometimes you may want to run a test with
-modification to a namelist or other setting without creating an entire compset. CCS provides the testmods
-capability for this situation.
+-------------------
+GROUP-TESTMODS
+-------------------
 
-A testmod is a string at the end of the full testname (including machine and compiler)
-with the form GROUP-TESTMODS which are parsed by create_test as follows:
+The `create_test <../Tools_user/create_test.html>`_ command runs with out-of-the-box compsets and grid sets. 
+Sometimes you may want to run a test with modification to a namelist or other setting without creating an 
+entire compset. Case Control System (CCS) provides the testmods capability for this situation.
 
-
-============ =====================================================================================
-TESTMOD      Description
-============ =====================================================================================
-GROUP        Define the subdirectory of testmods_dirs and the parent directory of various testmods.
-
-TESTMODS     A subdirectory of GROUP containing files which set non-default values
-             of the set-up and run-time variables via namelists or xml_change commands.
-             Example:
-
-              | GROUP-TESTMODS = cam-outfrq9s points to
-              |    $cesm/components/cam/cime_config/testdefs/testmods_dirs/cam/outfrq9s
-              | while allactive-defaultio points to
-              |    $cesm/cime_config/testmods_dirs/allactive/defaultio
+The ``GROUP-TESTMODS`` string is at the end of the full :ref:`testname <testname syntax>` (including machine and compiler).
+The form ``GROUP-TESTMODS`` are parsed as follows.
 
 ============ =====================================================================================
+PART         Description
+============ =====================================================================================
+GROUP        Name of the directory under ``TESTS_MODS_DIR`` that contains ``TESTMODS``.
 
-For example, the ERP test for an E3SM F-case can be modified to use a different radiation scheme::
+TESTMODS     Any combination of `user_nl_* <USER_NL_>`_, `shell_commands <SHELL_COMMANDS_>`_, 
+             `user_mods <USER_MODS_>`_, or `params.py <TESTYPE_MOD_>`_ in a directory under the 
+             ``GROUP`` directory.
+============ =====================================================================================
 
-    CIMEROOT/scripts/create_test ERP_D_Ld3.ne4pg2_oQU480.F2010.pm-cpu_intel.eam-rrtmgp
+For example, the *ERP* test for an E3SM *F-case* can be modified to use a different radiation scheme by using ``eam-rrtmgp``::
 
-This tells create_test to look in $e3sm/components/eam/cime_config/testdefs/testmods_dirs/eam/rrtmpg
-where it finds the following lines in the shell_commands file::
+  ERP_D_Ld3.ne4pg2_oQU480.F2010.pm-cpu_intel.eam-rrtmgp
 
-    #!/bin/bash
-    ./xmlchange --append CAM_CONFIG_OPTS='-rad rrtmgp'
+If ``TESTS_MODS_DIR`` was set to ``$E3SM/components/eam/cime_config/testdefs/testmods_dirs`` then the
+directory containg the testmods woulc be ``$E3SM/components/eam/cime_config/testdefs/testmods_dirs/eam/rrtmpg``.
+
+In this directory you'd find a `shell_commands`` file containing the following::
+
+  #!/bin/bash
+  ./xmlchange --append CAM_CONFIG_OPTS='-rad rrtmgp'
 
 These commands are applied after the testcase is created and case.setup is called.
 
-The contents of each testmods directory can include
+Note; do not use '-' in the testmods directory name because it has a special meaning to create_test.
+
+.. _USER_NL:
+
+````````
+Example *user_nl_<component>*
+````````
+
+A components namelist can be modified by providing a ``user_nl_*`` file in a GROUP-TESTMODS_ directory.
+For example, to change the namelist for the *eam* component a file name ``user_nl_eam`` could be used.
+
 ::
 
-    user_nl_$components    namelist variable=value pairs
-    shell_commands         xmlchange commands
-    user_mods              a list of other GROUP-TESTMODS which should be imported
-                           but at a lower precedence than the local testmods.
+  # user_nl_eam
+  deep_scheme        = 'off',
+  zmconv_microp      = .false.
+  shallow_scheme     = 'CLUBB_SGS',
+  l_tracer_aero      = .false.
+  l_rayleigh         = .false.
+  l_gw_drag          = .false.
+  l_ac_energy_chk    = .true.
+  l_bc_energy_fix    = .true.
+  l_dry_adj          = .false.
+  l_st_mac           = .true.
+  l_st_mic           = .false.
+  l_rad              = .false.
 
-eam/cime_config/testdefs/testmods_dirs/eam contains modifications for eam in an F-case test.  You
-might make a directory called eam/cime_config/testdefs/testmods_dirs/elm to modify the land model
-in an F-case test.
+.. _SHELL_COMMANDS:
 
-The "rrtmpg" directory contains the actual testmods to apply.
-Note; do not use '-' in the testmods directory name because it has a special meaning to create_test.
+``````````````
+Example *shell_commands*
+``````````````
+
+A test can be modified by providing a ``shell_commands`` file in a GROUP-TESTMODS_ directory.
+This shell file can contain any arbitrary commands, for example::
+
+  # shell_commands
+  #!/bin/bash
+
+  # Remove exe if chem pp exe (campp) already exists (it ensures that exe is always built)
+  /bin/rm -f $CIMEROOT/../components/eam/chem_proc/campp
+
+  # Invoke campp (using v3 mechanism file)
+  ./xmlchange --append CAM_CONFIG_OPTS='-usr_mech_infile $CIMEROOT/../components/eam/chem_proc/inputs/pp_chemUCI_linozv3_mam5_vbs.in'
+
+  # Assuming atmchange is available via $PATH
+  atmchange initial_conditions::perturbation_random_seed = 32
+
+.. _USER_MODS:
+
+`````````
+Example *user_mods*
+`````````
+
+Additional GROUP_TESTMODS_ can be applied by providing a list in a ``user_mods`` file in a GROUP-TESTMODS_ directory.
+
+::
+
+  # user_mods
+  eam/cosp
+  eam/hommexx
+
+.. _TESTYPE_MOD:
+
+``````````````````````
+Example *params.py*
+``````````````````````
+
+Supported TESTYPES_ can further be modified by providing a ``params.py`` file in the GROUP-TESTMODS_ directory.
+
+^^^^^^^^^^^^
+MVK
+^^^^^^^^^^^^
+The `MVK` system test can be configured by defining :ref:`variables <MVKConfig Variables>` and :ref:`methods <MVKConfig Methods>` in ``params.py``.
+
+See :ref:`examples <MVK Examples>` for a simple and complex use case.
+
+.. _MVKConfig Variables:
+
+"""""""""
+Variables
+"""""""""
+========== ======== ==== ===============================================
+Variable   Default  Type Description                                    
+========== ======== ==== ===============================================
+component           str  The main component.                            
+components []       list Components that require namelist customization.
+ninst      30       int  The number of instances.                       
+var_set    default  str  Name of the variable set to analyze.           
+ref_case   Baseline str  Name of the reference case.                    
+test_case  Test     str  Name of the test case.                         
+========== ======== ==== ===============================================
+
+.. _MVKConfig Methods:
+
+"""""""
+Methods
+"""""""
+.. code-block::
+
+  def evv_test_config(case, config):
+      """
+      Customize the evv4esm configuration.
+      
+      This method is used to customize the default evv4esm configuration
+      or generate a completely new one.
+      
+      The return configuration will be written to `$RUNDIR/$CASE.json`.
+      
+      Args:
+          case (CIME.case.case.Case): The case instance.
+          config (dict): Default evv4esm configuration.
+      
+      Returns:
+          dict: Dictionary with test configuration.
+      """
+.. code-block::
+
+  def generate_namelist(case, component, i, filename):
+      """
+      Generate per instance namelist.
+      
+      This method is called for each instance to generate the desired
+      modifications.
+      
+      Args:
+          case (CIME.case.case.Case): The case instance.
+          component (str): Component the namelist belongs to.
+          i (int): Instance unique number.
+          filename (str): Name of the namelist that needs to be created.
+      """
+
+.. _MVK Examples:
+
+""""""""""
+Examples
+""""""""""
+.. _MVK Simple:
+In the simplest form just :ref:`variables <MVKConfig Variables>` need to be defined in ``params.py``.
+
+For this case the default ``evv_test_config`` and ``generate_namelist`` functions will be called.
+
+.. code-block::
+
+  component = "eam"
+  # components = [] can be omitted when modifying a single component
+  ninst = 10
+
+.. _MVK Complex:
+
+If more control over the evv4esm configuration file or the per instance configuration is desired then
+the ``evv_test_config`` and ``generate_namelist`` functions can be overridden in the ``params.py`` file.
+
+The :ref:`variables <MVKConfig Variables>` will still need to be defined to generate the default
+evv4esm config or ``config`` in the ``evv_test_config`` function can be ignored and a completely new
+dictionary can be returned.
+
+In the following example, the default ``module`` is changed as well as ``component`` and ``ninst``.
+The ``generate_namelist`` function creates namelists for certain components while running a shell
+command to customize others.
+
+Note; this is a toy example, no scientific usage.
+
+.. code-block::
+
+  import os
+  from CIME.SystemTests.mvk import EVV_LIB_DIR
+  from CIME.namelist import Namelist
+  from CIME.utils import safe_copy
+  from CIME.utils import run_cmd
+
+  component "eam"
+  # The generate_namelist function will be called `ninst` times per component
+  components = ["eam", "clm", "eamxx"]
+  ninst = 30
+
+  # This can be omitted if the default evv4esm configuration is sufficient
+  def evv_test_config(case, config):
+    config["module"] = os.path.join(EVV_LIB_DIR, "extensions", "kso.py")
+    config["component"] = "clm"
+    config["ninst"] = 20
+
+    return config
+
+  def generate_namelist(case, component, i, filename):
+    namelist = Namelist()
+
+    if component in ["eam", "clm"]:
+      with namelist(filename) as nml:
+        if component == "eam":
+          # arguments group, key, value
+          nml.set_variable_value("", "eam_specific", f"perturn-{i}")
+        elif component == "clm":
+          if i % 2 == 0:
+            nml.set_variable_value("", "clm_specific", "even")
+          else:
+            nml.set_variable_value("", "clm_specific", "odd")
+    else:
+      stat, output, err = run_cmd(f"atmchange initial_conditions::perturbation_random_seed = {i*32}")
+
+      safe_copy("namelist_scream.xml", f"namelist_scream_{i:04}.xml")
+
 
 ========================
 Test progress and output
