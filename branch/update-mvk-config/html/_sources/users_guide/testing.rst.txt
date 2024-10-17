@@ -395,7 +395,6 @@ For this case the default ``evv_test_config`` and ``generate_namelist`` function
   component = "eam"
   # components = [] can be omitted when modifying a single component
   ninst = 10
-  critical = 21
 
 .. _MVK Complex:
 
@@ -417,6 +416,7 @@ Note; this is a toy example, no scientific usage.
   import os
   from CIME.SystemTests.mvk import EVV_LIB_DIR
   from CIME.namelist import Namelist
+  from CIME.utils import safe_copy
   from CIME.utils import run_cmd
 
   component "eam"
@@ -438,14 +438,17 @@ Note; this is a toy example, no scientific usage.
     if component in ["eam", "clm"]:
       with namelist(filename) as nml:
         if component == "eam":
-          nml.set_variable_value("eam_specific", f"perturn-{i}")
+          # arguments group, key, value
+          nml.set_variable_value("", "eam_specific", f"perturn-{i}")
         elif component == "clm":
           if i % 2 == 0:
-            nml.set_variable_value("clm_specific", "even")
+            nml.set_variable_value("", "clm_specific", "even")
           else:
-            nml.set_variable_value("clm_specific", "odd")
+            nml.set_variable_value("", "clm_specific", "odd")
     else:
       stat, output, err = run_cmd(f"atmchange initial_conditions::perturbation_random_seed = {i*32}")
+
+      safe_copy("namelist_scream.xml", f"namelist_scream_{i:04}.xml")
 
 
 ========================

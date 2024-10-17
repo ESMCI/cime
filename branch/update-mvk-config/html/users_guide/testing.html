@@ -602,7 +602,6 @@ atmchange initial_conditions::perturbation_random_seed = 32
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">component</span> <span class="o">=</span> <span class="s2">&quot;eam&quot;</span>
 <span class="c1"># components = [] can be omitted when modifying a single component</span>
 <span class="n">ninst</span> <span class="o">=</span> <span class="mi">10</span>
-<span class="n">critical</span> <span class="o">=</span> <span class="mi">21</span>
 </pre></div>
 </div>
 <p id="mvk-complex">If more control over the evv4esm configuration file or the per instance configuration is desired then
@@ -617,6 +616,7 @@ command to customize others.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">CIME.SystemTests.mvk</span> <span class="kn">import</span> <span class="n">EVV_LIB_DIR</span>
 <span class="kn">from</span> <span class="nn">CIME.namelist</span> <span class="kn">import</span> <span class="n">Namelist</span>
+<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="n">safe_copy</span>
 <span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="n">run_cmd</span>
 
 <span class="n">component</span> <span class="s2">&quot;eam&quot;</span>
@@ -638,14 +638,17 @@ command to customize others.</p>
   <span class="k">if</span> <span class="n">component</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;eam&quot;</span><span class="p">,</span> <span class="s2">&quot;clm&quot;</span><span class="p">]:</span>
     <span class="k">with</span> <span class="n">namelist</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">nml</span><span class="p">:</span>
       <span class="k">if</span> <span class="n">component</span> <span class="o">==</span> <span class="s2">&quot;eam&quot;</span><span class="p">:</span>
-        <span class="n">nml</span><span class="o">.</span><span class="n">set_variable_value</span><span class="p">(</span><span class="s2">&quot;eam_specific&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;perturn-</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="c1"># arguments group, key, value</span>
+        <span class="n">nml</span><span class="o">.</span><span class="n">set_variable_value</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;eam_specific&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;perturn-</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
       <span class="k">elif</span> <span class="n">component</span> <span class="o">==</span> <span class="s2">&quot;clm&quot;</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-          <span class="n">nml</span><span class="o">.</span><span class="n">set_variable_value</span><span class="p">(</span><span class="s2">&quot;clm_specific&quot;</span><span class="p">,</span> <span class="s2">&quot;even&quot;</span><span class="p">)</span>
+          <span class="n">nml</span><span class="o">.</span><span class="n">set_variable_value</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;clm_specific&quot;</span><span class="p">,</span> <span class="s2">&quot;even&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-          <span class="n">nml</span><span class="o">.</span><span class="n">set_variable_value</span><span class="p">(</span><span class="s2">&quot;clm_specific&quot;</span><span class="p">,</span> <span class="s2">&quot;odd&quot;</span><span class="p">)</span>
+          <span class="n">nml</span><span class="o">.</span><span class="n">set_variable_value</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;clm_specific&quot;</span><span class="p">,</span> <span class="s2">&quot;odd&quot;</span><span class="p">)</span>
   <span class="k">else</span><span class="p">:</span>
     <span class="n">stat</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">run_cmd</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;atmchange initial_conditions::perturbation_random_seed = </span><span class="si">{</span><span class="n">i</span><span class="o">*</span><span class="mi">32</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">safe_copy</span><span class="p">(</span><span class="s2">&quot;namelist_scream.xml&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;namelist_scream_</span><span class="si">{</span><span class="n">i</span><span class="si">:</span><span class="s2">04</span><span class="si">}</span><span class="s2">.xml&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>

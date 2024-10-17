@@ -333,11 +333,34 @@
             <span class="n">overrides</span><span class="p">[</span><span class="s2">&quot;tasks_per_node&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tasks_per_node</span>
             <span class="k">if</span> <span class="n">thread_count</span><span class="p">:</span>
                 <span class="n">overrides</span><span class="p">[</span><span class="s2">&quot;thread_count&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">thread_count</span>
+                <span class="n">total_tasks</span> <span class="o">=</span> <span class="n">total_tasks</span> <span class="o">*</span> <span class="n">thread_count</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">total_tasks</span> <span class="o">=</span> <span class="n">total_tasks</span> <span class="o">*</span> <span class="n">case</span><span class="o">.</span><span class="n">thread_count</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">total_tasks</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;TOTALPES&quot;</span><span class="p">)</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">case</span><span class="o">.</span><span class="n">thread_count</span><span class="p">)</span>
+            <span class="c1"># Total PES accounts for threads as well as mpi tasks</span>
+            <span class="n">total_tasks</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;TOTALPES&quot;</span><span class="p">)</span>
             <span class="n">thread_count</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">thread_count</span>
-        <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">total_tasks</span><span class="p">)</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">thread_count</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MAX_TASKS_PER_NODE&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">total_tasks</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MAX_TASKS_PER_NODE&quot;</span><span class="p">):</span>
             <span class="n">overrides</span><span class="p">[</span><span class="s2">&quot;max_tasks_per_node&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">total_tasks</span><span class="p">)</span>
+
+        <span class="c1"># when developed this variable was only needed on derecho, but I have tried to</span>
+        <span class="c1"># make it general enough that it can be used on other systems by defining MEM_PER_TASK and MAX_MEM_PER_NODE in config_machines.xml</span>
+        <span class="c1"># and adding {{ mem_per_node }} in config_batch.xml</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">mem_per_task</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MEM_PER_TASK&quot;</span><span class="p">)</span>
+            <span class="n">max_mem_per_node</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MAX_MEM_PER_NODE&quot;</span><span class="p">)</span>
+            <span class="n">mem_per_node</span> <span class="o">=</span> <span class="n">total_tasks</span>
+
+            <span class="k">if</span> <span class="n">mem_per_node</span> <span class="o">&lt;</span> <span class="n">mem_per_task</span><span class="p">:</span>
+                <span class="n">mem_per_node</span> <span class="o">=</span> <span class="n">mem_per_task</span>
+            <span class="k">elif</span> <span class="n">mem_per_node</span> <span class="o">&gt;</span> <span class="n">max_mem_per_node</span><span class="p">:</span>
+                <span class="n">mem_per_node</span> <span class="o">=</span> <span class="n">max_mem_per_node</span>
+            <span class="n">overrides</span><span class="p">[</span><span class="s2">&quot;mem_per_node&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">mem_per_node</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="c1"># ignore this, the variables are not defined for this machine</span>
+            <span class="k">pass</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;An exception occured:&quot;</span><span class="p">,</span> <span class="n">error</span><span class="p">)</span>
 
         <span class="n">overrides</span><span class="p">[</span><span class="s2">&quot;ngpus_per_node&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ngpus_per_node</span>
         <span class="n">overrides</span><span class="p">[</span><span class="s2">&quot;mpirun&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_mpirun_cmd</span><span class="p">(</span><span class="n">job</span><span class="o">=</span><span class="n">job</span><span class="p">,</span> <span class="n">overrides</span><span class="o">=</span><span class="n">overrides</span><span class="p">)</span>

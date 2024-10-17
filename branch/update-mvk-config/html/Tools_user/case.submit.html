@@ -180,7 +180,9 @@ options:
                         Only this job will be run, workflow and RESUBMIT are ignored.  Default is case.run.
   --no-batch            Do not submit jobs to batch system, run locally.
   --prereq PREREQ       Specify a prerequisite job id, this job will not start until the
-                        job with this id is completed (batch mode only).
+                        job with this id is completed (batch mode only). This feature overrides the
+                        CONTINUE_RUN=TRUE check for the existance of restart files and assumes that the
+                        files will be present when the case starts.
   --prereq-allow-failure
                         Allows starting the run even if the prerequisite fails.
                         This also allows resubmits to run if the original failed and the
@@ -199,6 +201,7 @@ options:
                         You can specify multiple types with either comma-separated args or multiple -M flags.
   -a BATCH_ARGS, --batch-args BATCH_ARGS
                         Used to pass additional arguments to batch system.
+                        Do not use this feature to specify job prerequisites, use the --prereq feature instead.
   --chksum              Verifies input data checksums.
 
 Logging options:
