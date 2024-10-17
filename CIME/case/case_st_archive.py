@@ -305,15 +305,41 @@ def _archive_history_files(
                 )
                 archive_file_fn(srcfile, destfile)
 
-        sfxhst = casename + r"_[0-9][mdy]_" + r"[0-9]*"
+        sfxhst = casename + r"_\d{1,2}(?:ts|[hdmy])_(?:\d{8})_(?:\d{8})"
         pfile = re.compile(sfxhst)
         hstfiles = [f for f in os.listdir(rundir) if pfile.search(f)]
         logger.debug("hstfiles = {} ".format(hstfiles))
 
+        run_date = ""
         if hstfiles:
             for hstfile in hstfiles:
                 srcfile = join(rundir, hstfile)
                 destfile = join(archive_histdir, hstfile)
+                logger.info(
+                    "{} {} to {} ".format(
+                        _get_archive_fn_desc(archive_file_fn), srcfile, destfile
+                    )
+                )
+                archive_file_fn(srcfile, destfile)
+                if len(run_date)==0:
+                    mtch = re.search(casename+r"_\d{1,2}(?:ts|[hdmy])_(\d{8})_(\d{8})_grid_(?:[TUVWF])", srcfile)
+                    if mtch and len(mtch.groups())==2:
+                        d1 = mtch.groups()[0]
+                        d2 = mtch.groups()[1]
+                        if d1==d2:
+                            run_date = d1
+                        else:
+                            run_date = d1+"_"+d2
+
+        sfxhst = r"run.stat*"
+        pfile = re.compile(sfxhst)
+        hstfiles = [f for f in os.listdir(rundir) if pfile.search(f)]
+        logger.debug("statfiles = {} ".format(hstfiles))
+
+        if hstfiles:
+            for hstfile in hstfiles:
+                srcfile = join(rundir, hstfile)
+                destfile = join(archive_histdir, re.sub(r"\.stat", r".stat_"+run_date, hstfile))
                 logger.info(
                     "{} {} to {} ".format(
                         _get_archive_fn_desc(archive_file_fn), srcfile, destfile

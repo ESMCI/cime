@@ -125,6 +125,10 @@ def create_namelists(self, component=None):
         "*maps.rc",
         "*cism*.config*",
         "nuopc.runseq",
+        "namelist_*ref",
+        "namelist_*cfg",
+        "*nemo*.xml",
+        "iodef.xml",
     ]:
         for file_to_copy in glob.glob(os.path.join(rundir, cpglob)):
             logger.debug("Copy file from '{}' to '{}'".format(file_to_copy, docdir))
