@@ -34,6 +34,7 @@ CIME does **not** contain the source code for any Earth System Model drivers or 
     :titlesonly:
 
     ccs/index
+    system_testing
     users_guide/index.rst
     build_cpl/index.rst
 

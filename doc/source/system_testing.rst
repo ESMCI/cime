@@ -1,27 +1,33 @@
 .. _testing:
 
-**************
-Testing Cases
-**************
+==============
+System Testing
+==============
 
-The `create_test <../Tools_user/create_test.html>`_ command provides
-a powerful tool capable of testing a Case. The command can create, 
-setup, build and run a case according to the :ref:`testname <testname syntax>` syntax, returning 
-a PASS or FAIL result.
+.. contents::
+    :local:
+
+--------------
+Testing Cases
+--------------
+
+`create_test <../Tools_user/create_test.html>`_
+is a powerful system testing capability provided by the CIME Case Control System.
+create_test can, in one command, create a case, setup, build and run the case
+according to the test type and return a PASS or FAIL for the test result.
 
 .. _individual:
 
 An individual test can be run as::
 
-  $CIMEROOT/scripts/create_test <testname>
+  $CIMEROOT/scripts/create_test $test_name
 
-Everything the test will do is controlled by the :ref:`testname <testname syntax>`.
+Everything the test will do is controlled by parsing the test name.
 
-.. _`testname syntax`:
-
-================
+-----------------
 Testname syntax
-================
+-----------------
+.. _`Test naming`:
 
 Tests are defined by the following format, where anything enclosed in ``[]`` is optional::
 
@@ -250,210 +256,9 @@ These commands are applied after the testcase is created and case.setup is calle
 
 Note; do not use '-' in the testmods directory name because it has a special meaning to create_test.
 
-.. _USER_NL:
-
-````````
-Example *user_nl_<component>*
-````````
-
-A components namelist can be modified by providing a ``user_nl_*`` file in a GROUP-TESTMODS_ directory.
-For example, to change the namelist for the *eam* component a file name ``user_nl_eam`` could be used.
-
-::
-
-  # user_nl_eam
-  deep_scheme        = 'off',
-  zmconv_microp      = .false.
-  shallow_scheme     = 'CLUBB_SGS',
-  l_tracer_aero      = .false.
-  l_rayleigh         = .false.
-  l_gw_drag          = .false.
-  l_ac_energy_chk    = .true.
-  l_bc_energy_fix    = .true.
-  l_dry_adj          = .false.
-  l_st_mac           = .true.
-  l_st_mic           = .false.
-  l_rad              = .false.
-
-.. _SHELL_COMMANDS:
-
-``````````````
-Example *shell_commands*
-``````````````
-
-A test can be modified by providing a ``shell_commands`` file in a GROUP-TESTMODS_ directory.
-This shell file can contain any arbitrary commands, for example::
-
-  # shell_commands
-  #!/bin/bash
-
-  # Remove exe if chem pp exe (campp) already exists (it ensures that exe is always built)
-  /bin/rm -f $CIMEROOT/../components/eam/chem_proc/campp
-
-  # Invoke campp (using v3 mechanism file)
-  ./xmlchange --append CAM_CONFIG_OPTS='-usr_mech_infile $CIMEROOT/../components/eam/chem_proc/inputs/pp_chemUCI_linozv3_mam5_vbs.in'
-
-  # Assuming atmchange is available via $PATH
-  atmchange initial_conditions::perturbation_random_seed = 32
-
-.. _USER_MODS:
-
-`````````
-Example *user_mods*
-`````````
-
-Additional GROUP_TESTMODS_ can be applied by providing a list in a ``user_mods`` file in a GROUP-TESTMODS_ directory.
-
-::
-
-  # user_mods
-  eam/cosp
-  eam/hommexx
-
-.. _TESTYPE_MOD:
-
-``````````````````````
-Example *params.py*
-``````````````````````
-
-Supported TESTYPES_ can further be modified by providing a ``params.py`` file in the GROUP-TESTMODS_ directory.
-
-^^^^^^^^^^^^
-MVK
-^^^^^^^^^^^^
-The `MVK` system test can be configured by defining :ref:`variables <MVKConfig Variables>` and :ref:`methods <MVKConfig Methods>` in ``params.py``.
-
-See :ref:`examples <MVK Examples>` for a simple and complex use case.
-
-.. _MVKConfig Variables:
-
-"""""""""
-Variables
-"""""""""
-========== ======== ==== ===============================================
-Variable   Default  Type Description                                    
-========== ======== ==== ===============================================
-component           str  The main component.                            
-components []       list Components that require namelist customization.
-ninst      30       int  The number of instances.                       
-var_set    default  str  Name of the variable set to analyze.           
-ref_case   Baseline str  Name of the reference case.                    
-test_case  Test     str  Name of the test case.                         
-========== ======== ==== ===============================================
-
-.. _MVKConfig Methods:
-
-"""""""
-Methods
-"""""""
-.. code-block::
-
-  def evv_test_config(case, config):
-      """
-      Customize the evv4esm configuration.
-      
-      This method is used to customize the default evv4esm configuration
-      or generate a completely new one.
-      
-      The return configuration will be written to `$RUNDIR/$CASE.json`.
-      
-      Args:
-          case (CIME.case.case.Case): The case instance.
-          config (dict): Default evv4esm configuration.
-      
-      Returns:
-          dict: Dictionary with test configuration.
-      """
-.. code-block::
-
-  def generate_namelist(case, component, i, filename):
-      """
-      Generate per instance namelist.
-      
-      This method is called for each instance to generate the desired
-      modifications.
-      
-      Args:
-          case (CIME.case.case.Case): The case instance.
-          component (str): Component the namelist belongs to.
-          i (int): Instance unique number.
-          filename (str): Name of the namelist that needs to be created.
-      """
-
-.. _MVK Examples:
-
-""""""""""
-Examples
-""""""""""
-.. _MVK Simple:
-In the simplest form just :ref:`variables <MVKConfig Variables>` need to be defined in ``params.py``.
-
-For this case the default ``evv_test_config`` and ``generate_namelist`` functions will be called.
-
-.. code-block::
-
-  component = "eam"
-  # components = [] can be omitted when modifying a single component
-  ninst = 10
-
-.. _MVK Complex:
-
-If more control over the evv4esm configuration file or the per instance configuration is desired then
-the ``evv_test_config`` and ``generate_namelist`` functions can be overridden in the ``params.py`` file.
-
-The :ref:`variables <MVKConfig Variables>` will still need to be defined to generate the default
-evv4esm config or ``config`` in the ``evv_test_config`` function can be ignored and a completely new
-dictionary can be returned.
-
-In the following example, the default ``module`` is changed as well as ``component`` and ``ninst``.
-The ``generate_namelist`` function creates namelists for certain components while running a shell
-command to customize others.
-
-Note; this is a toy example, no scientific usage.
-
-.. code-block::
-
-  import os
-  from CIME.SystemTests.mvk import EVV_LIB_DIR
-  from CIME.namelist import Namelist
-  from CIME.utils import safe_copy
-  from CIME.utils import run_cmd
-
-  component "eam"
-  # The generate_namelist function will be called `ninst` times per component
-  components = ["eam", "clm", "eamxx"]
-  ninst = 30
-
-  # This can be omitted if the default evv4esm configuration is sufficient
-  def evv_test_config(case, config):
-    config["module"] = os.path.join(EVV_LIB_DIR, "extensions", "kso.py")
-    config["component"] = "clm"
-    config["ninst"] = 20
-
-    return config
-
-  def generate_namelist(case, component, i, filename):
-    namelist = Namelist()
-
-    if component in ["eam", "clm"]:
-      with namelist(filename) as nml:
-        if component == "eam":
-          # arguments group, key, value
-          nml.set_variable_value("", "eam_specific", f"perturn-{i}")
-        elif component == "clm":
-          if i % 2 == 0:
-            nml.set_variable_value("", "clm_specific", "even")
-          else:
-            nml.set_variable_value("", "clm_specific", "odd")
-    else:
-      stat, output, err = run_cmd(f"atmchange initial_conditions::perturbation_random_seed = {i*32}")
-
-      safe_copy("namelist_scream.xml", f"namelist_scream_{i:04}.xml")
-
-
-========================
+------------------------
 Test progress and output
-========================
+------------------------
 
 Each test run by `create_test <../Tools_user/create_test.html>`_  includes the following mandatory steps:
 
@@ -481,9 +286,9 @@ Each phase within the test may be in one of the following states:
 * FAIL: We attempted to execute this phase, but it failed. If this phase is mandatory, no further progress will be made on this test. A detailed explanation of the failure should be in TestStatus.log.
 * PEND: This phase will be run or is currently running but not complete
 
-======================================================
+------------------------------------------------------
 Running multiple tests and other command line examples
-======================================================
+------------------------------------------------------
 
 Multiple tests can be run by listing all of the test names on the command line::
 
@@ -524,9 +329,9 @@ To run a test and force it to go into a certain batch queue::
 The Case Control System supports more sophisticated ways to specify a suite of tests and
 how they should be run.  One approach uses XML files and the other uses python dictionaries.
 
-===========================
+---------------------------
 Test control with XML files
-===========================
+---------------------------
 .. _query_testlists:
 
 A pre-defined suite of tests can by run using the ``--xml`` options to create_test,
@@ -582,9 +387,9 @@ Testlists and testmods live in different paths for cime, drv, and components.
 If this test will only be run as a single test, you can now create a test name
 and follow the individual_ test instructions for create_test.
 
-=====================================
+-------------------------------------
 Test control with python dictionaries
-=====================================
+-------------------------------------
 .. _`python dict testing`:
 
 One can also define suites of tests in a file called tests.py typically located in $MODEL/cime_config/tests.py
@@ -616,9 +421,9 @@ For example::
 
 Will list all the compsets tested in the e3sm_developer test suite.
 
-============================
+----------------------------
 Create_test output
-============================
+----------------------------
 
 Interpreting test output is pretty easy. Looking at an example::
 
@@ -676,9 +481,9 @@ be put in the file $CASEDIR/TestStatus.log
 
 A cs.status.$testid script will also be put in the test root. This script will allow you to see the
 
-==============================
+------------------------------
 Baselines and Baseline Testing
-==============================
+------------------------------
 .. _`Baselines`:
 
 A big part of testing is managing your baselines (sometimes called gold results) and doing additional tests against
