@@ -11,7 +11,7 @@ The Common Infrastructure for Modeling the Earth (CIME - pronounced
 Earth System Models, and a framework for system testing an Earth System Model.
 
 Case Control System (CCS)
-*************************
+-------------------------
 There are three components that make the Case Control System.
 
 1. XML files that describe the models, model configuration (components, grids, input-data, etc) and machines.
@@ -19,19 +19,21 @@ There are three components that make the Case Control System.
 3. Addition stand-alone tools useful for Earth System Modeling.
 
 System Testing
-**************
+--------------
 CIME provides tooling to run system testing on an Earth System Model. Each test type is defined to exercise a specific behavior
 of the model. The tooling provides the ability to create and compare baselines as well as reporting the results of testing.
 
 *NOTE*
-******
+------
 CIME does **not** contain the source code for any Earth System Model drivers or components. It is typically included alongside the source code of a host model. However, CIME does include pointers to external repositories that contain drivers, data models and other test components. These external components can be easily assembled to facilitate end-to-end system tests of the CIME infrastructure, which are defined in the CIME repository.
 
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 1
     :hidden:
     :caption: For Users
+    :titlesonly:
 
+    ccs/index
     users_guide/index.rst
     build_cpl/index.rst
 

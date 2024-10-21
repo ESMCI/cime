@@ -1,8 +1,7 @@
 .. _creating-a-case:
 
-*********************************
 Creating a Case
-*********************************
+===============
 
 This and following sections provide more detail about the basic commands of the CIME Case Control System: **create_newcase**,
 **case.setup**, **case.build** and **case.submit**. On a supported system, you can configure, build and run many complex
@@ -14,9 +13,9 @@ To see if your machine is supported try::
 
 If you are not on an out-of-the box CIME-supported platform, you will need to :ref:`port <porting>` CIME to your system before proceeding.
 
-===================================
+-----------------------------------
 Calling **create_newcase**
-===================================
+-----------------------------------
 
 The first step in creating a CIME-based experiment is to use `create_newcase  <../Tools_user/create_newcase.html>`_.
 
@@ -44,9 +43,9 @@ the directory where you execute create_newcase. If ``CASENAME`` is a relative or
 path, ``CASEROOT`` is created there, and the name of the case will be the last component
 of the path.
 
-======================================
+--------------------------------------
 Results of calling **create_newcase**
-======================================
+--------------------------------------
 
 Suppose **create_newcase** was called as follows.
 Here, $CIMEROOT is the full pathname of the root directory of the CIME distribution::
@@ -166,9 +165,9 @@ Running `create_newcase  <../Tools_user/create_newcase.html>`_ creates the follo
 - Tools/
    Work directory containing support utility scripts. You should never need to edit the contents of this directory."
 
-===================================
+-----------------------------------
 Locked files in your case directory
-===================================
+-----------------------------------
 
 The ``$CASEROOT`` xml files are organized so that variables can be
 locked at certain points after they have been resolved (used) in other
@@ -194,9 +193,9 @@ CIME locks your ``$CASEROOT`` files according to the following rules:
 
 - There are some exceptions in the **env_batch.xml** file.
 
-===================================
+-----------------------------------
 Adding a --user-mods-dir argument to **create_newcase**
-===================================
+-----------------------------------
 
 A user may want to customize a target case with a combination of
 ``user_nl_xxx`` file modifications and/or ``SourceMods`` for some
