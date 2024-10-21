@@ -37,19 +37,11 @@ CIME does **not** contain the source code for any Earth System Model drivers or 
     system_testing
     model/index
     glossary
+    tools/index
 
 .. toctree::
     :maxdepth: 2
     :hidden:
     :caption: For Developers/Contributors
 
-    misc_tools/index.rst
-    glossary/index.rst
-    Tools_user/index.rst
-    xml_files/index.rst
-    CIME_api/modules.rst
-    Tools_api/modules.rst
-
-CIME is developed by the
-`E3SM <https://climatemodeling.science.energy.gov/projects/energy-exascale-earth-system-model>`_ and
-`CESM <http://www.cesm.ucar.edu/>`_ projects.
+CIME is developed by the `E3SM <https://climatemodeling.science.energy.gov/projects/energy-exascale-earth-system-model>`_ and `CESM <http://www.cesm.ucar.edu/>`_ projects.
