@@ -233,7 +233,6 @@ For more details on how CIME determines the output for query_config, see :ref:`C
 .. toctree::
     :maxdepth: 2
     :hidden:
-    :caption: manage case
 
     create-a-case.rst
     setting-up-a-case.rst
