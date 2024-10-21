@@ -36,6 +36,7 @@ CIME does **not** contain the source code for any Earth System Model drivers or 
     ccs/index
     system_testing
     model/index
+    glossary
 
 .. toctree::
     :maxdepth: 2
