@@ -243,5 +243,6 @@ For more details on how CIME determines the output for query_config, see :ref:`C
     cime-change-namelist.rst
     cime-config.rst
     cime-customize.rst
+    timers.rst
     testing.rst
     troubleshooting.rst
