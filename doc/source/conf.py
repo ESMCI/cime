@@ -40,9 +40,20 @@ extensions = [
     "sphinx.ext.githubpages",
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
+    # "sphinx.ext.viewcode",
+    "sphinx.ext.linkcode",
     "sphinx_rtd_theme",
     "sphinx_copybutton",
 ]
+
+def linkcode_resolve(domain, info):
+    if domain != 'py' or not info['module']:
+        return None
+
+    filename = info['module'].replace('.', '/')
+
+    return f"https://github.com/esmci/cime/blob/master/{filename}.py"
+
 todo_include_todos = True
 
 # Add any paths that contain templates here, relative to this directory.
