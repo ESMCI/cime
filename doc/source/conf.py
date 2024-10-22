@@ -37,13 +37,9 @@ sys.path.insert(2, os.path.abspath("../../CIME"))
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    "sphinx.ext.coverage",
     "sphinx.ext.githubpages",
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
-    "sphinx.ext.viewcode",
-    "sphinx.ext.todo",
-    "sphinxcontrib.programoutput",
     "sphinx_rtd_theme",
     "sphinx_copybutton",
 ]
