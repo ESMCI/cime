@@ -44,4 +44,6 @@ CIME does **not** contain the source code for any Earth System Model drivers or 
     :hidden:
     :caption: For Developers/Contributors
 
+    api
+
 CIME is developed by the `E3SM <https://climatemodeling.science.energy.gov/projects/energy-exascale-earth-system-model>`_ and `CESM <http://www.cesm.ucar.edu/>`_ projects.

@@ -32,7 +32,7 @@ Tools_user:
 # It's too easy to forget to run 'make api' before running 'make html',
 # so add a rule that ensures that the api documentation is regenerated
 # whenever regenerating the html.
-html: api
+html:
 
 clean: clean_api
 
