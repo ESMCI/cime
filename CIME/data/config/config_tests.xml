@@ -322,6 +322,7 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
     <HIST_OPTION>$STOP_OPTION</HIST_OPTION>
     <RESUBMIT>1</RESUBMIT>
     <CONTINUE_RUN>FALSE</CONTINUE_RUN>
+    <DOUT_S_SAVE_INTERIM_RESTART_FILES>TRUE</DOUT_S_SAVE_INTERIM_RESTART_FILES>
   </test>
 
   <test NAME="ERRI">
