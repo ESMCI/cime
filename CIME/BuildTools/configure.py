@@ -76,7 +76,7 @@ def configure(
                 new_cmake_macros_dir, "..", machobj.get_machine_name()
             )
             for f in glob.iglob(os.path.join(ccs_mach_dir, "*.cmake")):
-                print(f"copying {f} to {output_dir}")
+                print(f"copying {f} to {output_cmake_macros_dir}")
                 safe_copy(f, output_cmake_macros_dir)
 
         copy_local_macros_to_dir(
