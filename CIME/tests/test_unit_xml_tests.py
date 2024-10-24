@@ -71,6 +71,7 @@ class TestXMLTests(unittest.TestCase):
                 f"{caseroot}",
                 "ERP.f19_g16.S",
                 "cpl",
+                None,
                 "ERP.f19_g16.S",
                 f"{caseroot}",
                 "ERP.f19_g16.S",

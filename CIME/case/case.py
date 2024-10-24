@@ -1846,13 +1846,15 @@ directory, NOT in this subdirectory."""
                 component_class in self._component_description
                 and len(self._component_description[component_class]) > 0
             ):
-                append_status(
-                    "Component {} is {}".format(
-                        component_class, self._component_description[component_class]
-                    ),
-                    "README.case",
-                    caseroot=self._caseroot,
-                )
+                if "Stub" not in self._component_description[component_class]:
+                    append_status(
+                        "Component {} is {}".format(
+                            component_class,
+                            self._component_description[component_class],
+                        ),
+                        "README.case",
+                        caseroot=self._caseroot,
+                    )
             if component_class == "CPL":
                 append_status(
                     "Using %s coupler instances" % (self.get_value("NINST_CPL")),
@@ -1861,12 +1863,13 @@ directory, NOT in this subdirectory."""
                 )
                 continue
             comp_grid = "{}_GRID".format(component_class)
-
-            append_status(
-                "{} is {}".format(comp_grid, self.get_value(comp_grid)),
-                "README.case",
-                caseroot=self._caseroot,
-            )
+            grid_val = self.get_value(comp_grid)
+            if grid_val is not "null":
+                append_status(
+                    "{} is {}".format(comp_grid, self.get_value(comp_grid)),
+                    "README.case",
+                    caseroot=self._caseroot,
+                )
             comp = str(self.get_value("COMP_{}".format(component_class)))
             user_mods = self._get_comp_user_mods(comp)
             if user_mods is not None:

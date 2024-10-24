@@ -83,7 +83,6 @@ def copy_histfiles(case, suffix, match_suffix=None):
             )
 
             continue
-        comments += "  Copying hist files for model '{}'\n".format(model)
         test_hists = archive.get_latest_hist_files(
             casename, model, rundir, suffix=match_suffix, ref_case=ref_case
         )
@@ -93,6 +92,14 @@ def copy_histfiles(case, suffix, match_suffix=None):
             if not test_hist.endswith(".nc") or "once" in os.path.basename(test_hist):
                 logger.info("Will not compare non-netcdf file {}".format(test_hist))
                 continue
+            if model == "mom":
+                if "ocean_geometry" in test_hist:
+                    comments += "    skipping '{}'\n".format(test_hist)
+                    continue
+                if "mom6.ic" in test_hist:
+                    comments += "    skipping '{}'\n".format(test_hist)
+                    continue
+            comments += "  Copying hist files for model '{}'\n".format(model)
             new_file = "{}.{}".format(test_hist, suffix)
             if os.path.exists(new_file):
                 os.remove(new_file)
