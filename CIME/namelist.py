@@ -102,6 +102,7 @@ groups are separated by (optional) whitespace and comments, and nothing else.
 
 import re
 import collections
+from contextlib import contextmanager
 
 # Disable these because this is our standard setup
 # pylint: disable=wildcard-import,unused-wildcard-import
@@ -154,6 +155,17 @@ FORTRAN_LITERAL_REGEXES["character"] = re.compile(
 FORTRAN_LITERAL_REGEXES["logical"] = re.compile(r"^\.?[tf][^=/ \n]*$", re.IGNORECASE)
 # Repeated value prefix.
 FORTRAN_REPEAT_PREFIX_REGEX = re.compile(r"^[0-9]*[1-9]+[0-9]*\*")
+
+
+def convert_bool(value):
+    if isinstance(value, bool):
+        value = f".{str(value).lower()}."
+    elif isinstance(value, str):
+        value = f".{value.lower()}."
+    else:
+        raise ValueError("Unable to convert {}".format(value))
+
+    return value
 
 
 def is_valid_fortran_name(string):
@@ -926,6 +938,13 @@ class Namelist(object):
                         variable_name
                     ]
 
+    @contextmanager
+    def __call__(self, filename):
+        try:
+            yield self
+        finally:
+            self.write(filename)
+
     def clean_groups(self):
         self._groups = collections.OrderedDict()
 
@@ -1044,6 +1063,11 @@ class Namelist(object):
         >>> x.get_variable_value('foo', 'red')
         ['', '2', '', '4', '', '6']
         """
+        if not isinstance(value, (set, list)):
+            value = [
+                value,
+            ]
+
         minindex, maxindex, step = get_fortran_variable_indices(variable_name, var_size)
         variable_name = get_fortran_name_only(variable_name)
 
@@ -1054,7 +1078,7 @@ class Namelist(object):
             ),
         )
         gn = string_in_list(group_name, self._groups)
-        if not gn:
+        if gn is None:
             gn = group_name
             self._groups[gn] = {}
 
@@ -1211,7 +1235,7 @@ class Namelist(object):
         else:
             group_names = groups
         for group_name in group_names:
-            if format_ == "nml":
+            if group_name != "" and format_ == "nml":
                 out_file.write("&{}\n".format(group_name))
             # allow empty group
             if group_name in self._groups:
@@ -1227,18 +1251,23 @@ class Namelist(object):
 
                     # To prettify things for long lists of values, build strings
                     # line-by-line.
-                    if values[0] == "True" or values[0] == "False":
-                        values[0] = (
-                            values[0]
-                            .replace("True", ".true.")
-                            .replace("False", ".false.")
-                        )
-                    lines = ["  {}{} {}".format(name, equals, values[0])]
+                    if isinstance(values[0], bool) or values[0].lower() in (
+                        "true",
+                        "false",
+                    ):
+                        values[0] = convert_bool(values[0])
+
+                    if group_name == "":
+                        lines = ["{}{} {}".format(name, equals, values[0])]
+                    else:
+                        lines = ["  {}{} {}".format(name, equals, values[0])]
                     for value in values[1:]:
-                        if value == "True" or value == "False":
-                            value = value.replace("True", ".true.").replace(
-                                "False", ".false."
-                            )
+                        if isinstance(value, bool) or value.lower() in (
+                            "true",
+                            "false",
+                        ):
+                            value = convert_bool(value)
+
                         if len(lines[-1]) + len(value) <= 77:
                             lines[-1] += ", " + value
                         else:
@@ -1247,7 +1276,7 @@ class Namelist(object):
                     lines[-1] += "\n"
                     for line in lines:
                         out_file.write(line)
-            if format_ == "nml":
+            if group_name != "" and format_ == "nml":
                 out_file.write("/\n")
             if format_ == "nmlcontents":
                 out_file.write("\n")

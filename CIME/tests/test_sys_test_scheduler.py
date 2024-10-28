@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import re
 import glob
 import logging
 import os
@@ -14,6 +15,22 @@ from CIME.tests import base
 
 
 class TestTestScheduler(base.BaseTestCase):
+    def get_default_tests(self):
+        # exclude the MEMLEAK tests here.
+        return get_tests.get_full_test_names(
+            [
+                "cime_test_only",
+                "^TESTMEMLEAKFAIL_P1.f09_g16.X",
+                "^TESTMEMLEAKPASS_P1.f09_g16.X",
+                "^TESTRUNSTARCFAIL_P1.f19_g16_rx1.A",
+                "^TESTTESTDIFF_P1.f19_g16_rx1.A",
+                "^TESTBUILDFAILEXC_P1.f19_g16_rx1.A",
+                "^TESTRUNFAILEXC_P1.f19_g16_rx1.A",
+            ],
+            self._machine,
+            self._compiler,
+        )
+
     @mock.patch("time.strftime", return_value="00:00:00")
     def test_chksum(self, strftime):  # pylint: disable=unused-argument
         if self._config.test_mode == "e3sm":
@@ -38,21 +55,77 @@ class TestTestScheduler(base.BaseTestCase):
                 from_dir="/tests/SEQ_Ln9.f19_g16_rx1.A.perlmutter_gnu.00:00:00",
             )
 
-    def test_a_phases(self):
-        # exclude the MEMLEAK tests here.
-        tests = get_tests.get_full_test_names(
-            [
-                "cime_test_only",
-                "^TESTMEMLEAKFAIL_P1.f09_g16.X",
-                "^TESTMEMLEAKPASS_P1.f09_g16.X",
-                "^TESTRUNSTARCFAIL_P1.f19_g16_rx1.A",
-                "^TESTTESTDIFF_P1.f19_g16_rx1.A",
-                "^TESTBUILDFAILEXC_P1.f19_g16_rx1.A",
-                "^TESTRUNFAILEXC_P1.f19_g16_rx1.A",
-            ],
-            self._machine,
-            self._compiler,
+    def test_testmods(self):
+        if self._config.test_mode == "cesm":
+            self.skipTest("Skipping testmods test. Depends on E3SM settings")
+
+        tests = self.get_default_tests()
+        ct = test_scheduler.TestScheduler(
+            tests,
+            test_root=self._testroot,
+            output_root=self._testroot,
+            compiler=self._compiler,
+            mpilib=self.TEST_MPILIB,
+            machine_name=self.MACHINE.get_machine_name(),
         )
+
+        with mock.patch.object(ct, "_shell_cmd_for_phase"):
+            ct._create_newcase_phase(
+                "TESTRUNPASS_P1.f19_g16_rx1.A.docker_gnu.eam-rrtmgp"
+            )
+
+            create_newcase_cmd = ct._shell_cmd_for_phase.call_args.args[1]
+
+            assert (
+                re.search(r"--user-mods-dir .*eam/rrtmgp", create_newcase_cmd)
+                is not None
+            ), create_newcase_cmd
+
+    def test_testmods_malformed(self):
+        tests = self.get_default_tests()
+        ct = test_scheduler.TestScheduler(
+            tests,
+            test_root=self._testroot,
+            output_root=self._testroot,
+            compiler=self._compiler,
+            mpilib=self.TEST_MPILIB,
+            machine_name=self.MACHINE.get_machine_name(),
+        )
+
+        with mock.patch.object(ct, "_shell_cmd_for_phase"):
+            success, message = ct._create_newcase_phase(
+                "TESTRUNPASS_P1.f19_g16_rx1.A.docker_gnu.notacomponent?fun"
+            )
+
+            assert not success
+            assert (
+                message
+                == "Invalid testmod, format should be `${component}-${testmod}`, got 'notacomponent?fun'"
+            ), message
+
+    def test_testmods_missing(self):
+        tests = self.get_default_tests()
+        ct = test_scheduler.TestScheduler(
+            tests,
+            test_root=self._testroot,
+            output_root=self._testroot,
+            compiler=self._compiler,
+            mpilib=self.TEST_MPILIB,
+            machine_name=self.MACHINE.get_machine_name(),
+        )
+
+        with mock.patch.object(ct, "_shell_cmd_for_phase"):
+            success, message = ct._create_newcase_phase(
+                "TESTRUNPASS_P1.f19_g16_rx1.A.docker_gnu.notacomponent-fun"
+            )
+
+            assert not success
+            assert (
+                re.search("Could not locate testmod 'fun'", message) is not None
+            ), message
+
+    def test_a_phases(self):
+        tests = self.get_default_tests()
         self.assertEqual(len(tests), 3)
         ct = test_scheduler.TestScheduler(
             tests,
