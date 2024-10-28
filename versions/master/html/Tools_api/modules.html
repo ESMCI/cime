@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../">
 <head>
@@ -6,19 +8,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Tools &mdash; CIME master documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
       <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../_static/jquery.js?v=5d32c60e"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=30d551ce"></script>
-        <script src="../_static/doctools.js?v=9a2dae69"></script>
-        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=30d551ce"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -37,9 +38,6 @@
           <a href="../index.html" class="icon icon-home">
             CIME
           </a>
-              <div class="version">
-                master
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -96,9 +94,23 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="Tools.html">Tools package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="Tools.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools.html#tools-generate-cylc-workflow-module">Tools.generate_cylc_workflow module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools.html#tools-standard-script-setup-module">Tools.standard_script_setup module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools.html#tools-testreporter-module">Tools.testreporter module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tools.html#module-Tools.generate_cylc_workflow">Tools.generate_cylc_workflow module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Tools.html#Tools.generate_cylc_workflow.cylc_batch_job_template"><code class="docutils literal notranslate"><span class="pre">cylc_batch_job_template()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Tools.html#Tools.generate_cylc_workflow.cylc_get_case_path_string"><code class="docutils literal notranslate"><span class="pre">cylc_get_case_path_string()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Tools.html#Tools.generate_cylc_workflow.cylc_get_ensemble_first_and_last"><code class="docutils literal notranslate"><span class="pre">cylc_get_ensemble_first_and_last()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Tools.html#Tools.generate_cylc_workflow.cylc_script_job_template"><code class="docutils literal notranslate"><span class="pre">cylc_script_job_template()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Tools.html#Tools.generate_cylc_workflow.parse_command_line"><code class="docutils literal notranslate"><span class="pre">parse_command_line()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Tools.html#module-Tools.standard_script_setup">Tools.standard_script_setup module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Tools.html#Tools.standard_script_setup.check_minimum_python_version"><code class="docutils literal notranslate"><span class="pre">check_minimum_python_version()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Tools.html#module-Tools.testreporter">Tools.testreporter module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Tools.html#Tools.testreporter.get_testreporter_xml"><code class="docutils literal notranslate"><span class="pre">get_testreporter_xml()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Tools.html#Tools.testreporter.parse_command_line"><code class="docutils literal notranslate"><span class="pre">parse_command_line()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="Tools.html#module-Tools">Module contents</a></li>
 </ul>
 </li>

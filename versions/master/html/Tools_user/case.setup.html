@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../">
 <head>
@@ -6,19 +8,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>case.setup &mdash; CIME master documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
       <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../_static/jquery.js?v=5d32c60e"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=30d551ce"></script>
-        <script src="../_static/doctools.js?v=9a2dae69"></script>
-        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=30d551ce"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -37,9 +38,6 @@
           <a href="../index.html" class="icon icon-home">
             CIME
           </a>
-              <div class="version">
-                master
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -148,14 +146,44 @@
 <div class="toctree-wrapper compound">
 </div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ ./case.setup --help
-Traceback (most recent call last):
-  File &quot;/home/runner/work/cime/cime/CIME/Tools/./case.setup&quot;, line 19, in &lt;module&gt;
-    from standard_script_setup import *
-  File &quot;/home/runner/work/cime/cime/CIME/Tools/standard_script_setup.py&quot;, line 42, in &lt;module&gt;
-    import CIME.utils
-  File &quot;/home/runner/work/cime/cime/CIME/utils.py&quot;, line 15, in &lt;module&gt;
-    from distutils import file_util
-ModuleNotFoundError: No module named &#39;distutils&#39;
+usage: case.setup [-h] [-d] [-v] [-s] [-c] [-t] [-r] [-k KEEP] [-N] [caseroot]
+
+Creates various files and directories needed in order to build the case,
+create namelists and run the case.
+
+Any changes to env_mach_pes.xml and env_mach_specific.xml must be made
+before running this.
+
+This must be run before running case.build.
+
+To run this initially for the case, simply run:
+   ./case.setup
+
+To rerun after making changes to env_mach_pes.xml or env_mach_specific.xml, run:
+   ./case.setup --reset
+
+positional arguments:
+  caseroot              Case directory to setup.
+                        Default is current directory.
+
+options:
+  -h, --help            show this help message and exit
+  -c, --clean           Removes the batch run script for target machine.
+                        If the testmode argument is present then keep the test
+                        script if it is present - otherwise remove it.
+                        The user_nl_xxx and Macros files are never removed by case.setup -
+                        you must remove them manually.
+  -t, --test-mode       Keeps the test script when the --clean argument is used.
+  -r, --reset           Does a clean followed by setup.
+                        This flag should be used when rerunning case.setup after it
+                        has already been run for this case.
+  -k KEEP, --keep KEEP  When cleaning/resetting a case, do not remove/refresh files in this list. Choices are batch script, env_mach_specific.xml, Macros.make, Macros.cmake. Use should use this if you have local modifications to these files that you want to keep.
+  -N, --non-local       Use when you&#39;ve requested a machine that you aren&#39;t on. Will reduce errors for missing directories etc.
+
+Logging options:
+  -d, --debug           Print debug information (very verbose) to file /home/runner/work/cime/cime/CIME/Tools/case.setup.log
+  -v, --verbose         Add additional context (time and file) to log messages
+  -s, --silent          Print only warnings and error messages
 </pre></div>
 </div>
 </section>

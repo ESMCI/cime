@@ -292,6 +292,14 @@ CIME.SystemTests.system\_tests\_compare\_two module
    :undoc-members:
    :show-inheritance:
 
+CIME.SystemTests.test\_mods module
+----------------------------------
+
+.. automodule:: CIME.SystemTests.test_mods
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 CIME.SystemTests.tsc module
 ---------------------------
 

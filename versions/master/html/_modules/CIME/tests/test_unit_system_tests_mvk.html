@@ -1,0 +1,915 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CIME.tests.test_unit_system_tests_mvk &mdash; CIME master documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=30d551ce"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            CIME
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../what_cime/index.html">What is CIME?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../users_guide/index.html">Using the Case Control System</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../users_guide/index.html#configuring-the-case-control-system">Configuring the Case Control System</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../build_cpl/index.html">Building a Coupled Model with CIME</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../misc_tools/index.html">Miscellaneous Tools</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../glossary/index.html">Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Tools_user/index.html">User Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../xml_files/index.html">XML Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../CIME_api/modules.html">CIME</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Tools_api/modules.html">Tools</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">CIME</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">CIME.tests.test_unit_system_tests_mvk</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for CIME.tests.test_unit_system_tests_mvk</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">unittest</span>
+<span class="kn">import</span> <span class="nn">tempfile</span>
+<span class="kn">import</span> <span class="nn">contextlib</span>
+<span class="kn">import</span> <span class="nn">sysconfig</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">unittest</span> <span class="kn">import</span> <span class="n">mock</span>
+
+<span class="kn">from</span> <span class="nn">CIME.SystemTests.mvk</span> <span class="kn">import</span> <span class="n">MVK</span>
+<span class="kn">from</span> <span class="nn">CIME.SystemTests.mvk</span> <span class="kn">import</span> <span class="n">MVKConfig</span>
+<span class="kn">from</span> <span class="nn">CIME.tests.utils</span> <span class="kn">import</span> <span class="n">chdir</span>
+
+
+<div class="viewcode-block" id="create_complex_case">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_system_tests_mvk.create_complex_case">[docs]</a>
+<span class="k">def</span> <span class="nf">create_complex_case</span><span class="p">(</span>
+    <span class="n">case_name</span><span class="p">,</span>
+    <span class="n">temp_dir</span><span class="p">,</span>
+    <span class="n">run_dir</span><span class="p">,</span>
+    <span class="n">baseline_dir</span><span class="p">,</span>
+    <span class="n">compare_baseline</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">mock_evv_output</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="n">case</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
+
+    <span class="n">side_effect</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="nb">str</span><span class="p">(</span><span class="n">temp_dir</span><span class="p">),</span>  <span class="c1"># CASEROOT</span>
+        <span class="s2">&quot;MVK.f19_g16.S.docker_gnu&quot;</span><span class="p">,</span>  <span class="c1"># CASEBASEID</span>
+        <span class="s2">&quot;mct&quot;</span><span class="p">,</span>  <span class="c1"># COMP_INTERFACE</span>
+        <span class="s2">&quot;mct&quot;</span><span class="p">,</span>  <span class="c1"># COMP_INTERFACE</span>
+    <span class="p">]</span>
+
+    <span class="c1"># single extra call for _compare_baseline</span>
+    <span class="k">if</span> <span class="n">compare_baseline</span><span class="p">:</span>
+        <span class="n">side_effect</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;e3sm&quot;</span><span class="p">)</span>  <span class="c1"># MODEL</span>
+
+    <span class="n">side_effect</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+        <span class="p">[</span>
+            <span class="mi">0</span><span class="p">,</span>  <span class="c1"># RESUBMIT</span>
+            <span class="kc">False</span><span class="p">,</span>  <span class="c1"># GENERATE_BASELINE</span>
+            <span class="mi">0</span><span class="p">,</span>  <span class="c1"># RESUBMIT</span>
+            <span class="nb">str</span><span class="p">(</span><span class="n">run_dir</span><span class="p">),</span>  <span class="c1"># RUNDIR</span>
+            <span class="n">case_name</span><span class="p">,</span>  <span class="c1"># CASE</span>
+            <span class="nb">str</span><span class="p">(</span><span class="n">baseline_dir</span><span class="p">),</span>  <span class="c1"># BASELINE_ROOT</span>
+            <span class="s2">&quot;&quot;</span><span class="p">,</span>  <span class="c1"># BASECMP_CASE</span>
+            <span class="s2">&quot;docker&quot;</span><span class="p">,</span>  <span class="c1"># MACH</span>
+        <span class="p">]</span>
+    <span class="p">)</span>
+
+    <span class="k">case</span><span class="o">.</span><span class="n">get_value</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">side_effect</span>
+
+    <span class="n">run_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">evv_output</span> <span class="o">=</span> <span class="n">run_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">case_name</span><span class="si">}</span><span class="s2">.evv&quot;</span> <span class="o">/</span> <span class="s2">&quot;index.json&quot;</span>
+
+    <span class="n">evv_output</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">write_evv_output</span><span class="p">(</span><span class="n">evv_output</span><span class="p">,</span> <span class="n">mock_evv_output</span><span class="o">=</span><span class="n">mock_evv_output</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">case</span></div>
+
+
+
+<div class="viewcode-block" id="write_evv_output">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_system_tests_mvk.write_evv_output">[docs]</a>
+<span class="k">def</span> <span class="nf">write_evv_output</span><span class="p">(</span><span class="n">evv_output_path</span><span class="p">,</span> <span class="n">mock_evv_output</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">mock_evv_output</span><span class="p">:</span>
+        <span class="n">evv_output_data</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;Page&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;elements&quot;</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;Table&quot;</span><span class="p">:</span> <span class="p">{</span>
+                            <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="p">{</span>
+                                <span class="s2">&quot;Test status&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;pass&quot;</span><span class="p">],</span>
+                                <span class="s2">&quot;Variables analyzed&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;v1&quot;</span><span class="p">,</span> <span class="s2">&quot;v2&quot;</span><span class="p">],</span>
+                                <span class="s2">&quot;Rejecting&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+                                <span class="s2">&quot;Critical value&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">12</span><span class="p">],</span>
+                            <span class="p">}</span>
+                        <span class="p">}</span>
+                    <span class="p">}</span>
+                <span class="p">]</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">evv_output_data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Page&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;elements&quot;</span><span class="p">:</span> <span class="p">[]}}</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">evv_output_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
+        <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">evv_output_data</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="create_simple_case">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_system_tests_mvk.create_simple_case">[docs]</a>
+<span class="k">def</span> <span class="nf">create_simple_case</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="s2">&quot;e3sm&quot;</span><span class="p">,</span> <span class="n">resubmit</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">generate_baseline</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="n">case</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
+
+    <span class="k">case</span><span class="o">.</span><span class="n">get_value</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;/tmp/case&quot;</span><span class="p">,</span>  <span class="c1"># CASEROOT</span>
+        <span class="s2">&quot;MVK.f19_g16.S.docker_gnu&quot;</span><span class="p">,</span>  <span class="c1"># CASEBASEID</span>
+        <span class="s2">&quot;mct&quot;</span><span class="p">,</span>  <span class="c1"># COMP_INTERFACE</span>
+        <span class="s2">&quot;MVK.f19_g16.S.docker_gnu&quot;</span><span class="p">,</span>  <span class="c1"># CASEBASEID</span>
+        <span class="n">model</span><span class="p">,</span>
+        <span class="n">resubmit</span><span class="p">,</span>
+        <span class="n">generate_baseline</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">case</span></div>
+
+
+
+<div class="viewcode-block" id="TestSystemTestsMVK">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_system_tests_mvk.TestSystemTestsMVK">[docs]</a>
+<span class="k">class</span> <span class="nc">TestSystemTestsMVK</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestSystemTestsMVK.tearDown">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_system_tests_mvk.TestSystemTestsMVK.tearDown">[docs]</a>
+    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># reset singleton</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="nb">delattr</span><span class="p">(</span><span class="n">MVKConfig</span><span class="p">,</span> <span class="s2">&quot;_instance&quot;</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="TestSystemTestsMVK.test_testmod_complex">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_system_tests_mvk.TestSystemTestsMVK.test_testmod_complex">[docs]</a>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.mvk.test_mods.find_test_mods&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.mvk.evv&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_testmod_complex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">evv</span><span class="p">,</span> <span class="n">find_test_mods</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">ExitStack</span><span class="p">()</span> <span class="k">as</span> <span class="n">stack</span><span class="p">:</span>
+            <span class="n">temp_dir</span> <span class="o">=</span> <span class="n">stack</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">())</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">temp_dir</span><span class="p">)</span>
+
+            <span class="n">stack</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="n">chdir</span><span class="p">(</span><span class="n">temp_dir</span><span class="p">))</span>
+
+            <span class="c1"># convert to Path</span>
+            <span class="n">temp_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">temp_dir</span><span class="p">)</span>
+            <span class="n">run_dir</span> <span class="o">=</span> <span class="n">temp_dir</span> <span class="o">/</span> <span class="s2">&quot;run&quot;</span>
+            <span class="n">baseline_dir</span> <span class="o">=</span> <span class="n">temp_dir</span> <span class="o">/</span> <span class="s2">&quot;baselines&quot;</span>
+            <span class="n">testmods_dir</span> <span class="o">=</span> <span class="n">temp_dir</span> <span class="o">/</span> <span class="s2">&quot;testmods&quot;</span> <span class="o">/</span> <span class="s2">&quot;eam&quot;</span>
+
+            <span class="n">testmods_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="n">find_test_mods</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">testmods_dir</span><span class="p">)]</span>
+
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">testmods_dir</span> <span class="o">/</span> <span class="s2">&quot;params.py&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
+                <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
+<span class="w">                    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">import os</span>
+<span class="sd">from CIME.namelist import Namelist</span>
+<span class="sd">from CIME.SystemTests.mvk import EVV_LIB_DIR</span>
+
+<span class="sd">component = &quot;new-comp&quot;</span>
+<span class="sd">components = [&quot;new-comp&quot;, &quot;secondary-comp&quot;]</span>
+<span class="sd">ninst = 8</span>
+
+<span class="sd">def generate_namelist(case, component, i, filename):</span>
+<span class="sd">    nml = Namelist()</span>
+
+<span class="sd">    if component == &quot;new-comp&quot;:</span>
+<span class="sd">        nml.set_variable_value(&quot;&quot;, &quot;var1&quot;, &quot;value1&quot;)</span>
+<span class="sd">    elif component == &quot;secondary-comp&quot;:</span>
+<span class="sd">        nml.set_variable_value(&quot;&quot;, &quot;var2&quot;, &quot;value2&quot;)</span>
+
+<span class="sd">    nml.write(filename)</span>
+
+<span class="sd">def evv_test_config(case, config):</span>
+<span class="sd">    config[&quot;module&quot;] = os.path.join(EVV_LIB_DIR, &quot;extensions&quot;, &quot;kso.py&quot;)</span>
+<span class="sd">    config[&quot;component&quot;] = &quot;someother-comp&quot;</span>
+
+<span class="sd">    return config</span>
+<span class="sd">                         &quot;&quot;&quot;</span>
+                <span class="p">)</span>
+
+            <span class="n">case_name</span> <span class="o">=</span> <span class="s2">&quot;MVK.f19_g16.S.docker_gnu.20240515_212034_41b5u2&quot;</span>  <span class="c1"># CASE</span>
+
+            <span class="n">case</span> <span class="o">=</span> <span class="n">create_complex_case</span><span class="p">(</span><span class="n">case_name</span><span class="p">,</span> <span class="n">temp_dir</span><span class="p">,</span> <span class="n">run_dir</span><span class="p">,</span> <span class="n">baseline_dir</span><span class="p">)</span>
+            <span class="n">test</span> <span class="o">=</span> <span class="n">MVK</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
+
+            <span class="n">stack</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="n">mock</span><span class="o">.</span><span class="n">patch</span><span class="o">.</span><span class="n">object</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="s2">&quot;build_indv&quot;</span><span class="p">))</span>
+
+            <span class="n">test</span><span class="o">.</span><span class="n">build_phase</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+            <span class="n">test</span><span class="o">.</span><span class="n">_compare_baseline</span><span class="p">()</span>
+
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">run_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">case_name</span><span class="si">}</span><span class="s2">.json&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
+                <span class="n">config</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fd</span><span class="p">)</span>
+
+            <span class="n">expected_config</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;20240515_212034_41b5u2&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;component&quot;</span><span class="p">:</span> <span class="s2">&quot;someother-comp&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;ninst&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+                    <span class="s2">&quot;ref-case&quot;</span><span class="p">:</span> <span class="s2">&quot;Baseline&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;ref-dir&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">temp_dir</span><span class="si">}</span><span class="s2">/baselines/&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;test-case&quot;</span><span class="p">:</span> <span class="s2">&quot;Test&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;test-dir&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">temp_dir</span><span class="si">}</span><span class="s2">/run&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;var-set&quot;</span><span class="p">:</span> <span class="s2">&quot;default&quot;</span><span class="p">,</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+
+            <span class="n">module</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;20240515_212034_41b5u2&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;module&quot;</span><span class="p">)</span>
+
+            <span class="k">assert</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">sysconfig</span><span class="o">.</span><span class="n">get_paths</span><span class="p">()[</span><span class="s2">&quot;purelib&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">/evv4esm/extensions/kso.py&#39;</span>
+                <span class="o">==</span> <span class="n">module</span>
+            <span class="p">)</span>
+
+            <span class="k">assert</span> <span class="n">config</span> <span class="o">==</span> <span class="n">expected_config</span>
+
+            <span class="n">nml_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">temp_dir</span><span class="p">)</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;user_nl&quot;</span><span class="p">)]</span>
+
+            <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">nml_files</span><span class="p">)</span> <span class="o">==</span> <span class="mi">16</span>
+
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">nml_files</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
+                <span class="n">lines</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+
+            <span class="k">assert</span> <span class="n">lines</span> <span class="o">==</span> <span class="p">[</span><span class="s2">&quot;var1 = value1</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">]</span>
+
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">nml_files</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
+                <span class="n">lines</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+
+            <span class="k">assert</span> <span class="n">lines</span> <span class="o">==</span> <span class="p">[</span><span class="s2">&quot;var2 = value2</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="TestSystemTestsMVK.test_update_testlog">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_system_tests_mvk.TestSystemTestsMVK.test_update_testlog">[docs]</a>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.mvk.append_testlog&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.mvk.Machines&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_update_testlog</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">machines</span><span class="p">,</span> <span class="n">append_testlog</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">ExitStack</span><span class="p">()</span> <span class="k">as</span> <span class="n">stack</span><span class="p">:</span>
+            <span class="n">temp_dir</span> <span class="o">=</span> <span class="n">stack</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">())</span>
+
+            <span class="n">stack</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="n">chdir</span><span class="p">(</span><span class="n">temp_dir</span><span class="p">))</span>
+
+            <span class="c1"># convert to Path</span>
+            <span class="n">temp_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">temp_dir</span><span class="p">)</span>
+            <span class="n">run_dir</span> <span class="o">=</span> <span class="n">temp_dir</span> <span class="o">/</span> <span class="s2">&quot;run&quot;</span>
+            <span class="n">baseline_dir</span> <span class="o">=</span> <span class="n">temp_dir</span> <span class="o">/</span> <span class="s2">&quot;baselines&quot;</span>
+
+            <span class="n">run_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="n">evv_output_path</span> <span class="o">=</span> <span class="n">run_dir</span> <span class="o">/</span> <span class="s2">&quot;index.json&quot;</span>
+
+            <span class="n">write_evv_output</span><span class="p">(</span><span class="n">evv_output_path</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+            <span class="n">case_name</span> <span class="o">=</span> <span class="s2">&quot;MVK.f19_g16.S.docker_gnu.20240515_212034_41b5u2&quot;</span>  <span class="c1"># CASE</span>
+
+            <span class="n">machines</span><span class="o">.</span><span class="n">return_value</span><span class="o">.</span><span class="n">get_value</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="s2">&quot;docker&quot;</span>
+
+            <span class="n">case</span> <span class="o">=</span> <span class="n">create_complex_case</span><span class="p">(</span><span class="n">case_name</span><span class="p">,</span> <span class="n">temp_dir</span><span class="p">,</span> <span class="n">run_dir</span><span class="p">,</span> <span class="n">baseline_dir</span><span class="p">)</span>
+
+            <span class="n">test</span> <span class="o">=</span> <span class="n">MVK</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
+
+            <span class="n">test</span><span class="o">.</span><span class="n">update_testlog</span><span class="p">(</span><span class="s2">&quot;test1&quot;</span><span class="p">,</span> <span class="n">case_name</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">run_dir</span><span class="p">))</span>
+
+            <span class="n">append_testlog</span><span class="o">.</span><span class="n">assert_any_call</span><span class="p">(</span>
+<span class="w">                </span><span class="sd">&quot;&quot;&quot;BASELINE PASS for test &#39;test1&#39;.</span>
+<span class="sd">    Test status: pass; Variables analyzed: v1; Rejecting: 2; Critical value: 12</span>
+<span class="sd">    EVV results can be viewed at:</span>
+<span class="sd">        docker/evv/MVK.f19_g16.S.docker_gnu.20240515_212034_41b5u2/index.html&quot;&quot;&quot;</span><span class="p">,</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">temp_dir</span><span class="p">),</span>
+            <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestSystemTestsMVK.test_update_testlog_urlroot_None">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_system_tests_mvk.TestSystemTestsMVK.test_update_testlog_urlroot_None">[docs]</a>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.mvk.utils.get_urlroot&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.mvk.append_testlog&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.mvk.Machines&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_update_testlog_urlroot_None</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">machines</span><span class="p">,</span> <span class="n">append_testlog</span><span class="p">,</span> <span class="n">get_urlroot</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">ExitStack</span><span class="p">()</span> <span class="k">as</span> <span class="n">stack</span><span class="p">:</span>
+            <span class="n">temp_dir</span> <span class="o">=</span> <span class="n">stack</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">())</span>
+
+            <span class="n">stack</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="n">chdir</span><span class="p">(</span><span class="n">temp_dir</span><span class="p">))</span>
+
+            <span class="c1"># convert to Path</span>
+            <span class="n">temp_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">temp_dir</span><span class="p">)</span>
+            <span class="n">run_dir</span> <span class="o">=</span> <span class="n">temp_dir</span> <span class="o">/</span> <span class="s2">&quot;run&quot;</span>
+            <span class="n">baseline_dir</span> <span class="o">=</span> <span class="n">temp_dir</span> <span class="o">/</span> <span class="s2">&quot;baselines&quot;</span>
+
+            <span class="n">run_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="n">evv_output_path</span> <span class="o">=</span> <span class="n">run_dir</span> <span class="o">/</span> <span class="s2">&quot;index.json&quot;</span>
+
+            <span class="n">write_evv_output</span><span class="p">(</span><span class="n">evv_output_path</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+            <span class="n">case_name</span> <span class="o">=</span> <span class="s2">&quot;MVK.f19_g16.S.docker_gnu.20240515_212034_41b5u2&quot;</span>  <span class="c1"># CASE</span>
+
+            <span class="n">machines</span><span class="o">.</span><span class="n">return_value</span><span class="o">.</span><span class="n">get_value</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="s2">&quot;docker&quot;</span>
+
+            <span class="n">get_urlroot</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="kc">None</span>
+
+            <span class="n">case</span> <span class="o">=</span> <span class="n">create_complex_case</span><span class="p">(</span><span class="n">case_name</span><span class="p">,</span> <span class="n">temp_dir</span><span class="p">,</span> <span class="n">run_dir</span><span class="p">,</span> <span class="n">baseline_dir</span><span class="p">)</span>
+
+            <span class="n">test</span> <span class="o">=</span> <span class="n">MVK</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
+
+            <span class="n">test</span><span class="o">.</span><span class="n">update_testlog</span><span class="p">(</span><span class="s2">&quot;test1&quot;</span><span class="p">,</span> <span class="n">case_name</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">run_dir</span><span class="p">))</span>
+
+            <span class="nb">print</span><span class="p">(</span><span class="n">append_testlog</span><span class="o">.</span><span class="n">call_args_list</span><span class="p">)</span>
+            <span class="n">append_testlog</span><span class="o">.</span><span class="n">assert_any_call</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;&quot;&quot;BASELINE PASS for test &#39;test1&#39;.</span>
+<span class="s2">    Test status: pass; Variables analyzed: v1; Rejecting: 2; Critical value: 12</span>
+<span class="s2">    EVV results can be viewed at:</span>
+<span class="s2">        [</span><span class="si">{</span><span class="n">run_dir</span><span class="si">!s}</span><span class="s2">_URL]/evv/MVK.f19_g16.S.docker_gnu.20240515_212034_41b5u2/index.html&quot;&quot;&quot;</span><span class="p">,</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">temp_dir</span><span class="p">),</span>
+            <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestSystemTestsMVK.test_update_testlog_htmlroot">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_system_tests_mvk.TestSystemTestsMVK.test_update_testlog_htmlroot">[docs]</a>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.mvk.utils.get_htmlroot&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.mvk.append_testlog&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.mvk.Machines&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_update_testlog_htmlroot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">machines</span><span class="p">,</span> <span class="n">append_testlog</span><span class="p">,</span> <span class="n">get_htmlroot</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">ExitStack</span><span class="p">()</span> <span class="k">as</span> <span class="n">stack</span><span class="p">:</span>
+            <span class="n">temp_dir</span> <span class="o">=</span> <span class="n">stack</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">())</span>
+
+            <span class="n">stack</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="n">chdir</span><span class="p">(</span><span class="n">temp_dir</span><span class="p">))</span>
+
+            <span class="c1"># convert to Path</span>
+            <span class="n">temp_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">temp_dir</span><span class="p">)</span>
+            <span class="n">run_dir</span> <span class="o">=</span> <span class="n">temp_dir</span> <span class="o">/</span> <span class="s2">&quot;run&quot;</span>
+            <span class="n">baseline_dir</span> <span class="o">=</span> <span class="n">temp_dir</span> <span class="o">/</span> <span class="s2">&quot;baselines&quot;</span>
+
+            <span class="n">run_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="n">evv_output_path</span> <span class="o">=</span> <span class="n">run_dir</span> <span class="o">/</span> <span class="s2">&quot;index.json&quot;</span>
+
+            <span class="n">write_evv_output</span><span class="p">(</span><span class="n">evv_output_path</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+            <span class="n">case_name</span> <span class="o">=</span> <span class="s2">&quot;MVK.f19_g16.S.docker_gnu.20240515_212034_41b5u2&quot;</span>  <span class="c1"># CASE</span>
+
+            <span class="n">machines</span><span class="o">.</span><span class="n">return_value</span><span class="o">.</span><span class="n">get_value</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="s2">&quot;docker&quot;</span>
+
+            <span class="n">get_htmlroot</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="kc">None</span>
+
+            <span class="n">case</span> <span class="o">=</span> <span class="n">create_complex_case</span><span class="p">(</span><span class="n">case_name</span><span class="p">,</span> <span class="n">temp_dir</span><span class="p">,</span> <span class="n">run_dir</span><span class="p">,</span> <span class="n">baseline_dir</span><span class="p">)</span>
+
+            <span class="n">test</span> <span class="o">=</span> <span class="n">MVK</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
+
+            <span class="n">test</span><span class="o">.</span><span class="n">update_testlog</span><span class="p">(</span><span class="s2">&quot;test1&quot;</span><span class="p">,</span> <span class="n">case_name</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">run_dir</span><span class="p">))</span>
+
+            <span class="n">append_testlog</span><span class="o">.</span><span class="n">assert_any_call</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;&quot;&quot;BASELINE PASS for test &#39;test1&#39;.</span>
+<span class="s2">    Test status: pass; Variables analyzed: v1; Rejecting: 2; Critical value: 12</span>
+<span class="s2">    EVV results can be viewed at:</span>
+<span class="s2">        </span><span class="si">{</span><span class="n">run_dir</span><span class="si">!s}</span>
+<span class="s2">    EVV viewing instructions can be found at:         https://github.com/E3SM-Project/E3SM/blob/master/cime/scripts/climate_reproducibility/README.md#test-passfail-and-extended-output&quot;&quot;&quot;</span><span class="p">,</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">temp_dir</span><span class="p">),</span>
+            <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestSystemTestsMVK.test_testmod_simple">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_system_tests_mvk.TestSystemTestsMVK.test_testmod_simple">[docs]</a>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.mvk.test_mods.find_test_mods&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.mvk.evv&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_testmod_simple</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">evv</span><span class="p">,</span> <span class="n">find_test_mods</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">ExitStack</span><span class="p">()</span> <span class="k">as</span> <span class="n">stack</span><span class="p">:</span>
+            <span class="n">temp_dir</span> <span class="o">=</span> <span class="n">stack</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">())</span>
+
+            <span class="n">stack</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="n">chdir</span><span class="p">(</span><span class="n">temp_dir</span><span class="p">))</span>
+
+            <span class="c1"># convert to Path</span>
+            <span class="n">temp_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">temp_dir</span><span class="p">)</span>
+            <span class="n">run_dir</span> <span class="o">=</span> <span class="n">temp_dir</span> <span class="o">/</span> <span class="s2">&quot;run&quot;</span>
+            <span class="n">baseline_dir</span> <span class="o">=</span> <span class="n">temp_dir</span> <span class="o">/</span> <span class="s2">&quot;baselines&quot;</span>
+            <span class="n">testmods_dir</span> <span class="o">=</span> <span class="n">temp_dir</span> <span class="o">/</span> <span class="s2">&quot;testmods&quot;</span> <span class="o">/</span> <span class="s2">&quot;eam&quot;</span>
+
+            <span class="n">testmods_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="n">find_test_mods</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">testmods_dir</span><span class="p">)]</span>
+
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">testmods_dir</span> <span class="o">/</span> <span class="s2">&quot;params.py&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
+                <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
+<span class="w">                    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">component = &quot;new-comp&quot;</span>
+<span class="sd">components = [&quot;new-comp&quot;, &quot;second-comp&quot;]</span>
+<span class="sd">ninst = 8</span>
+<span class="sd">var_set = &quot;special&quot;</span>
+<span class="sd">ref_case = &quot;Reference&quot;</span>
+<span class="sd">test_case = &quot;Default&quot;</span>
+<span class="sd">                         &quot;&quot;&quot;</span>
+                <span class="p">)</span>
+
+            <span class="n">case_name</span> <span class="o">=</span> <span class="s2">&quot;MVK.f19_g16.S.docker_gnu.20240515_212034_41b5u2&quot;</span>  <span class="c1"># CASE</span>
+
+            <span class="n">case</span> <span class="o">=</span> <span class="n">create_complex_case</span><span class="p">(</span><span class="n">case_name</span><span class="p">,</span> <span class="n">temp_dir</span><span class="p">,</span> <span class="n">run_dir</span><span class="p">,</span> <span class="n">baseline_dir</span><span class="p">)</span>
+
+            <span class="n">test</span> <span class="o">=</span> <span class="n">MVK</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
+
+            <span class="n">stack</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="n">mock</span><span class="o">.</span><span class="n">patch</span><span class="o">.</span><span class="n">object</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="s2">&quot;build_indv&quot;</span><span class="p">))</span>
+
+            <span class="n">test</span><span class="o">.</span><span class="n">build_phase</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+            <span class="n">test</span><span class="o">.</span><span class="n">_compare_baseline</span><span class="p">()</span>
+
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">run_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">case_name</span><span class="si">}</span><span class="s2">.json&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
+                <span class="n">config</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fd</span><span class="p">)</span>
+
+            <span class="n">expected_config</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;20240515_212034_41b5u2&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;test-case&quot;</span><span class="p">:</span> <span class="s2">&quot;Default&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;test-dir&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">run_dir</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;ref-case&quot;</span><span class="p">:</span> <span class="s2">&quot;Reference&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;ref-dir&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">baseline_dir</span><span class="si">}</span><span class="s2">/&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;var-set&quot;</span><span class="p">:</span> <span class="s2">&quot;special&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;ninst&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+                    <span class="s2">&quot;component&quot;</span><span class="p">:</span> <span class="s2">&quot;new-comp&quot;</span><span class="p">,</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+
+            <span class="n">module</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;20240515_212034_41b5u2&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;module&quot;</span><span class="p">)</span>
+
+            <span class="k">assert</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">sysconfig</span><span class="o">.</span><span class="n">get_paths</span><span class="p">()[</span><span class="s2">&quot;purelib&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">/evv4esm/extensions/ks.py&#39;</span> <span class="o">==</span> <span class="n">module</span>
+            <span class="p">)</span>
+
+            <span class="k">assert</span> <span class="n">config</span> <span class="o">==</span> <span class="n">expected_config</span>
+
+            <span class="n">nml_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">temp_dir</span><span class="p">)</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;user_nl&quot;</span><span class="p">)]</span>
+
+            <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">nml_files</span><span class="p">)</span> <span class="o">==</span> <span class="mi">16</span>
+
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">nml_files</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
+                <span class="n">lines</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+
+            <span class="k">assert</span> <span class="n">lines</span> <span class="o">==</span> <span class="p">[</span>
+                <span class="s2">&quot;new_random = .true.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;pertlim = 1.0e-10</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;seed_clock = .true.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;seed_custom = 1</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="p">]</span>
+
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">nml_files</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
+                <span class="n">lines</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+
+            <span class="k">assert</span> <span class="n">lines</span> <span class="o">==</span> <span class="p">[</span>
+                <span class="s2">&quot;new_random = .true.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;pertlim = 1.0e-10</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;seed_clock = .true.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;seed_custom = 8</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="TestSystemTestsMVK.test_build_phase">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_system_tests_mvk.TestSystemTestsMVK.test_build_phase">[docs]</a>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.mvk.case_setup&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.mvk.MVK.build_indv&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_build_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">build_indv</span><span class="p">,</span> <span class="n">case_setup</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">ExitStack</span><span class="p">()</span> <span class="k">as</span> <span class="n">stack</span><span class="p">:</span>
+            <span class="n">temp_dir</span> <span class="o">=</span> <span class="n">stack</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">())</span>
+
+            <span class="n">stack</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="n">chdir</span><span class="p">(</span><span class="n">temp_dir</span><span class="p">))</span>
+
+            <span class="c1"># convert to Path</span>
+            <span class="n">temp_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">temp_dir</span><span class="p">)</span>
+            <span class="n">run_dir</span> <span class="o">=</span> <span class="n">temp_dir</span> <span class="o">/</span> <span class="s2">&quot;run&quot;</span>
+            <span class="n">baseline_dir</span> <span class="o">=</span> <span class="n">temp_dir</span> <span class="o">/</span> <span class="s2">&quot;baselines&quot;</span>
+
+            <span class="n">case_name</span> <span class="o">=</span> <span class="s2">&quot;MVK.f19_g16.S.docker_gnu.20240515_212034_41b5u2&quot;</span>  <span class="c1"># CASE</span>
+
+            <span class="n">case</span> <span class="o">=</span> <span class="n">create_complex_case</span><span class="p">(</span>
+                <span class="n">case_name</span><span class="p">,</span> <span class="n">temp_dir</span><span class="p">,</span> <span class="n">run_dir</span><span class="p">,</span> <span class="n">baseline_dir</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">mock_evv_output</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span>
+
+            <span class="k">case</span><span class="o">.</span><span class="n">get_values</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="p">((</span><span class="s2">&quot;CPL&quot;</span><span class="p">,</span> <span class="s2">&quot;LND&quot;</span><span class="p">),)</span>
+
+            <span class="n">side_effect</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="o">.</span><span class="n">side_effect</span><span class="p">]</span>
+
+            <span class="n">n</span> <span class="o">=</span> <span class="mi">7</span>
+            <span class="n">side_effect</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+            <span class="n">side_effect</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span>
+
+            <span class="k">case</span><span class="o">.</span><span class="n">get_value</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">side_effect</span>
+
+            <span class="n">test</span> <span class="o">=</span> <span class="n">MVK</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
+
+            <span class="n">test</span><span class="o">.</span><span class="n">build_phase</span><span class="p">(</span><span class="n">sharedlib_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="k">case</span><span class="o">.</span><span class="n">set_value</span><span class="o">.</span><span class="n">assert_any_call</span><span class="p">(</span><span class="s2">&quot;NTHRDS_CPL&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="k">case</span><span class="o">.</span><span class="n">set_value</span><span class="o">.</span><span class="n">assert_any_call</span><span class="p">(</span><span class="s2">&quot;NTASKS_CPL&quot;</span><span class="p">,</span> <span class="mi">480</span><span class="p">)</span>
+            <span class="k">case</span><span class="o">.</span><span class="n">set_value</span><span class="o">.</span><span class="n">assert_any_call</span><span class="p">(</span><span class="s2">&quot;NTHRDS_LND&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="k">case</span><span class="o">.</span><span class="n">set_value</span><span class="o">.</span><span class="n">assert_any_call</span><span class="p">(</span><span class="s2">&quot;NTASKS_LND&quot;</span><span class="p">,</span> <span class="mi">240</span><span class="p">)</span>
+            <span class="k">case</span><span class="o">.</span><span class="n">set_value</span><span class="o">.</span><span class="n">assert_any_call</span><span class="p">(</span><span class="s2">&quot;NINST_LND&quot;</span><span class="p">,</span> <span class="mi">30</span><span class="p">)</span>
+
+            <span class="k">case</span><span class="o">.</span><span class="n">flush</span><span class="o">.</span><span class="n">assert_called</span><span class="p">()</span>
+
+            <span class="n">case_setup</span><span class="o">.</span><span class="n">assert_any_call</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">test_mode</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestSystemTestsMVK.test__generate_baseline">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_system_tests_mvk.TestSystemTestsMVK.test__generate_baseline">[docs]</a>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.mvk.SystemTestsCommon._generate_baseline&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.mvk.append_testlog&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.mvk.evv&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test__generate_baseline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">evv</span><span class="p">,</span> <span class="n">append_testlog</span><span class="p">,</span> <span class="n">_generate_baseline</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">ExitStack</span><span class="p">()</span> <span class="k">as</span> <span class="n">stack</span><span class="p">:</span>
+            <span class="n">temp_dir</span> <span class="o">=</span> <span class="n">stack</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">())</span>
+
+            <span class="n">stack</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="n">chdir</span><span class="p">(</span><span class="n">temp_dir</span><span class="p">))</span>
+
+            <span class="c1"># convert to Path</span>
+            <span class="n">temp_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">temp_dir</span><span class="p">)</span>
+            <span class="n">run_dir</span> <span class="o">=</span> <span class="n">temp_dir</span> <span class="o">/</span> <span class="s2">&quot;run&quot;</span>
+            <span class="n">baseline_dir</span> <span class="o">=</span> <span class="n">temp_dir</span> <span class="o">/</span> <span class="s2">&quot;baselines&quot;</span>
+
+            <span class="n">case_name</span> <span class="o">=</span> <span class="s2">&quot;MVK.f19_g16.S.docker_gnu.20240515_212034_41b5u2&quot;</span>  <span class="c1"># CASE</span>
+
+            <span class="n">case</span> <span class="o">=</span> <span class="n">create_complex_case</span><span class="p">(</span>
+                <span class="n">case_name</span><span class="p">,</span> <span class="n">temp_dir</span><span class="p">,</span> <span class="n">run_dir</span><span class="p">,</span> <span class="n">baseline_dir</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">mock_evv_output</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span>
+
+            <span class="c1"># use original 5 args</span>
+            <span class="n">side_effect</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="o">.</span><span class="n">side_effect</span><span class="p">][:</span><span class="mi">7</span><span class="p">]</span>
+
+            <span class="n">side_effect</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+                <span class="p">[</span>
+                    <span class="nb">str</span><span class="p">(</span><span class="n">baseline_dir</span><span class="p">),</span>
+                    <span class="s2">&quot;MVK.f19_g16.S&quot;</span><span class="p">,</span>
+                    <span class="nb">str</span><span class="p">(</span><span class="n">run_dir</span><span class="p">),</span>
+                    <span class="s2">&quot;MVK.f19_g16.S&quot;</span><span class="p">,</span>
+                    <span class="n">case_name</span><span class="p">,</span>
+                <span class="p">]</span>
+            <span class="p">)</span>
+
+            <span class="k">case</span><span class="o">.</span><span class="n">get_value</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">side_effect</span>
+
+            <span class="n">case_baseline_dir</span> <span class="o">=</span> <span class="n">baseline_dir</span> <span class="o">/</span> <span class="s2">&quot;MVK.f19_g16.S&quot;</span> <span class="o">/</span> <span class="s2">&quot;eam&quot;</span>
+
+            <span class="n">case_baseline_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="p">(</span><span class="n">run_dir</span> <span class="o">/</span> <span class="s2">&quot;eam&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="p">(</span><span class="n">run_dir</span> <span class="o">/</span> <span class="s2">&quot;eam&quot;</span> <span class="o">/</span> <span class="s2">&quot;test1.nc&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">touch</span><span class="p">()</span>
+            <span class="p">(</span><span class="n">run_dir</span> <span class="o">/</span> <span class="s2">&quot;eam&quot;</span> <span class="o">/</span> <span class="s2">&quot;test2.nc&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">touch</span><span class="p">()</span>
+
+            <span class="k">case</span><span class="o">.</span><span class="n">get_env</span><span class="o">.</span><span class="n">return_value</span><span class="o">.</span><span class="n">get_all_hist_files</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;eam/test1.nc&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;eam/test2.nc&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="n">test</span> <span class="o">=</span> <span class="n">MVK</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
+
+            <span class="n">test</span><span class="o">.</span><span class="n">_generate_baseline</span><span class="p">()</span>
+
+            <span class="n">files</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">case_baseline_dir</span><span class="p">)</span>
+
+            <span class="k">assert</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">files</span><span class="p">)</span> <span class="o">==</span> <span class="nb">sorted</span><span class="p">([</span><span class="s2">&quot;test1.nc&quot;</span><span class="p">,</span> <span class="s2">&quot;test2.nc&quot;</span><span class="p">])</span>
+
+            <span class="c1"># reset side_effect</span>
+            <span class="k">case</span><span class="o">.</span><span class="n">get_value</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">side_effect</span>
+
+            <span class="n">test</span> <span class="o">=</span> <span class="n">MVK</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
+
+            <span class="c1"># test baseline_dir already exists</span>
+            <span class="n">test</span><span class="o">.</span><span class="n">_generate_baseline</span><span class="p">()</span>
+
+            <span class="n">files</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">case_baseline_dir</span><span class="p">)</span>
+
+            <span class="k">assert</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">files</span><span class="p">)</span> <span class="o">==</span> <span class="nb">sorted</span><span class="p">([</span><span class="s2">&quot;test1.nc&quot;</span><span class="p">,</span> <span class="s2">&quot;test2.nc&quot;</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="TestSystemTestsMVK.test__compare_baseline_resubmit">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_system_tests_mvk.TestSystemTestsMVK.test__compare_baseline_resubmit">[docs]</a>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.mvk.append_testlog&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.mvk.evv&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test__compare_baseline_resubmit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">evv</span><span class="p">,</span> <span class="n">append_testlog</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">ExitStack</span><span class="p">()</span> <span class="k">as</span> <span class="n">stack</span><span class="p">:</span>
+            <span class="n">temp_dir</span> <span class="o">=</span> <span class="n">stack</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">())</span>
+
+            <span class="n">stack</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="n">chdir</span><span class="p">(</span><span class="n">temp_dir</span><span class="p">))</span>
+
+            <span class="c1"># convert to Path</span>
+            <span class="n">temp_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">temp_dir</span><span class="p">)</span>
+            <span class="n">run_dir</span> <span class="o">=</span> <span class="n">temp_dir</span> <span class="o">/</span> <span class="s2">&quot;run&quot;</span>
+            <span class="n">baseline_dir</span> <span class="o">=</span> <span class="n">temp_dir</span> <span class="o">/</span> <span class="s2">&quot;baselines&quot;</span>
+
+            <span class="n">case_name</span> <span class="o">=</span> <span class="s2">&quot;MVK.f19_g16.S.docker_gnu.20240515_212034_41b5u2&quot;</span>  <span class="c1"># CASE</span>
+
+            <span class="n">case</span> <span class="o">=</span> <span class="n">create_complex_case</span><span class="p">(</span>
+                <span class="n">case_name</span><span class="p">,</span> <span class="n">temp_dir</span><span class="p">,</span> <span class="n">run_dir</span><span class="p">,</span> <span class="n">baseline_dir</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">mock_evv_output</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span>
+
+            <span class="n">side_effect</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="o">.</span><span class="n">side_effect</span><span class="p">][:</span><span class="o">-</span><span class="mi">8</span><span class="p">]</span>
+
+            <span class="n">side_effect</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+
+            <span class="k">case</span><span class="o">.</span><span class="n">get_value</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">side_effect</span>
+
+            <span class="n">test</span> <span class="o">=</span> <span class="n">MVK</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
+
+            <span class="k">with</span> <span class="n">mock</span><span class="o">.</span><span class="n">patch</span><span class="o">.</span><span class="n">object</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="s2">&quot;_test_status&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">_test_status</span><span class="p">:</span>
+                <span class="n">test</span><span class="o">.</span><span class="n">_compare_baseline</span><span class="p">()</span>
+
+            <span class="n">_test_status</span><span class="o">.</span><span class="n">set_status</span><span class="o">.</span><span class="n">assert_any_call</span><span class="p">(</span><span class="s2">&quot;BASELINE&quot;</span><span class="p">,</span> <span class="s2">&quot;PASS&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestSystemTestsMVK.test__compare_baseline">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_system_tests_mvk.TestSystemTestsMVK.test__compare_baseline">[docs]</a>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.mvk.append_testlog&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.SystemTests.mvk.evv&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test__compare_baseline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">evv</span><span class="p">,</span> <span class="n">append_testlog</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">ExitStack</span><span class="p">()</span> <span class="k">as</span> <span class="n">stack</span><span class="p">:</span>
+            <span class="n">temp_dir</span> <span class="o">=</span> <span class="n">stack</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">())</span>
+
+            <span class="n">stack</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="n">chdir</span><span class="p">(</span><span class="n">temp_dir</span><span class="p">))</span>
+
+            <span class="c1"># convert to Path</span>
+            <span class="n">temp_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">temp_dir</span><span class="p">)</span>
+            <span class="n">run_dir</span> <span class="o">=</span> <span class="n">temp_dir</span> <span class="o">/</span> <span class="s2">&quot;run&quot;</span>
+            <span class="n">baseline_dir</span> <span class="o">=</span> <span class="n">temp_dir</span> <span class="o">/</span> <span class="s2">&quot;baselines&quot;</span>
+
+            <span class="n">case_name</span> <span class="o">=</span> <span class="s2">&quot;MVK.f19_g16.S.docker_gnu.20240515_212034_41b5u2&quot;</span>  <span class="c1"># CASE</span>
+
+            <span class="n">case</span> <span class="o">=</span> <span class="n">create_complex_case</span><span class="p">(</span>
+                <span class="n">case_name</span><span class="p">,</span> <span class="n">temp_dir</span><span class="p">,</span> <span class="n">run_dir</span><span class="p">,</span> <span class="n">baseline_dir</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">mock_evv_output</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span>
+
+            <span class="n">test</span> <span class="o">=</span> <span class="n">MVK</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
+
+            <span class="n">test</span><span class="o">.</span><span class="n">_compare_baseline</span><span class="p">()</span>
+
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">run_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">case_name</span><span class="si">}</span><span class="s2">.json&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
+                <span class="n">config</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fd</span><span class="p">)</span>
+
+            <span class="n">expected_config</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;20240515_212034_41b5u2&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;test-case&quot;</span><span class="p">:</span> <span class="s2">&quot;Test&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;test-dir&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">run_dir</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;ref-case&quot;</span><span class="p">:</span> <span class="s2">&quot;Baseline&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;ref-dir&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">baseline_dir</span><span class="si">}</span><span class="s2">/&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;var-set&quot;</span><span class="p">:</span> <span class="s2">&quot;default&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;ninst&quot;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span>
+                    <span class="s2">&quot;component&quot;</span><span class="p">:</span> <span class="s2">&quot;eam&quot;</span><span class="p">,</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+
+            <span class="n">module</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;20240515_212034_41b5u2&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;module&quot;</span><span class="p">)</span>
+
+            <span class="k">assert</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">sysconfig</span><span class="o">.</span><span class="n">get_paths</span><span class="p">()[</span><span class="s2">&quot;purelib&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">/evv4esm/extensions/ks.py&#39;</span> <span class="o">==</span> <span class="n">module</span>
+            <span class="p">)</span>
+
+            <span class="k">assert</span> <span class="n">config</span> <span class="o">==</span> <span class="n">expected_config</span>
+
+            <span class="n">expected_comments</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;BASELINE PASS for test &#39;20240515_212034_41b5u2&#39;.</span>
+<span class="s2">    Test status: pass; Variables analyzed: v1; Rejecting: 2; Critical value: 12</span>
+<span class="s2">    EVV results can be viewed at:</span>
+<span class="s2">        </span><span class="si">{</span><span class="n">run_dir</span><span class="si">}</span><span class="s2">/MVK.f19_g16.S.docker_gnu.20240515_212034_41b5u2.evv</span>
+<span class="s2">    EVV viewing instructions can be found at:         https://github.com/E3SM-Project/E3SM/blob/master/cime/scripts/climate_reproducibility/README.md#test-passfail-and-extended-output&quot;&quot;&quot;</span>
+
+            <span class="n">append_testlog</span><span class="o">.</span><span class="n">assert_any_call</span><span class="p">(</span>
+                <span class="n">expected_comments</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">temp_dir</span><span class="p">)</span>
+            <span class="p">),</span> <span class="n">append_testlog</span><span class="o">.</span><span class="n">call_args</span><span class="o">.</span><span class="n">args</span></div>
+
+
+<div class="viewcode-block" id="TestSystemTestsMVK.test_generate_namelist_multiple_components">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_system_tests_mvk.TestSystemTestsMVK.test_generate_namelist_multiple_components">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_generate_namelist_multiple_components</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">ExitStack</span><span class="p">()</span> <span class="k">as</span> <span class="n">stack</span><span class="p">:</span>
+            <span class="n">temp_dir</span> <span class="o">=</span> <span class="n">stack</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">())</span>
+
+            <span class="n">stack</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="n">chdir</span><span class="p">(</span><span class="n">temp_dir</span><span class="p">))</span>
+
+            <span class="n">case</span> <span class="o">=</span> <span class="n">create_simple_case</span><span class="p">()</span>
+
+            <span class="n">test</span> <span class="o">=</span> <span class="n">MVK</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
+
+            <span class="n">stack</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="n">mock</span><span class="o">.</span><span class="n">patch</span><span class="o">.</span><span class="n">object</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="s2">&quot;build_indv&quot;</span><span class="p">))</span>
+
+            <span class="n">test</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">components</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;eam&quot;</span><span class="p">,</span> <span class="s2">&quot;elm&quot;</span><span class="p">]</span>
+
+            <span class="n">test</span><span class="o">.</span><span class="n">build_phase</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+            <span class="n">nml_files</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">temp_dir</span><span class="p">)</span>
+
+            <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">nml_files</span><span class="p">)</span> <span class="o">==</span> <span class="mi">60</span>
+
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">nml_files</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
+                <span class="n">lines</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+
+            <span class="k">assert</span> <span class="n">lines</span> <span class="o">==</span> <span class="p">[</span>
+                <span class="s2">&quot;new_random = .true.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;pertlim = 1.0e-10</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;seed_clock = .true.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;seed_custom = 1</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="TestSystemTestsMVK.test_generate_namelist">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_system_tests_mvk.TestSystemTestsMVK.test_generate_namelist">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_generate_namelist</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">ExitStack</span><span class="p">()</span> <span class="k">as</span> <span class="n">stack</span><span class="p">:</span>
+            <span class="n">temp_dir</span> <span class="o">=</span> <span class="n">stack</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">())</span>
+
+            <span class="n">stack</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="n">chdir</span><span class="p">(</span><span class="n">temp_dir</span><span class="p">))</span>
+
+            <span class="n">case</span> <span class="o">=</span> <span class="n">create_simple_case</span><span class="p">()</span>
+
+            <span class="n">test</span> <span class="o">=</span> <span class="n">MVK</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
+
+            <span class="n">stack</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="n">mock</span><span class="o">.</span><span class="n">patch</span><span class="o">.</span><span class="n">object</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="s2">&quot;build_indv&quot;</span><span class="p">))</span>
+
+            <span class="n">test</span><span class="o">.</span><span class="n">build_phase</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+            <span class="n">nml_files</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">temp_dir</span><span class="p">)</span>
+
+            <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">nml_files</span><span class="p">)</span> <span class="o">==</span> <span class="mi">30</span>
+
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">nml_files</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
+                <span class="n">lines</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+
+            <span class="k">assert</span> <span class="n">lines</span> <span class="o">==</span> <span class="p">[</span>
+                <span class="s2">&quot;new_random = .true.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;pertlim = 1.0e-10</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;seed_clock = .true.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;seed_custom = 1</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="TestSystemTestsMVK.test_compare_baseline">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_system_tests_mvk.TestSystemTestsMVK.test_compare_baseline">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_compare_baseline</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">case</span> <span class="o">=</span> <span class="n">create_simple_case</span><span class="p">()</span>
+
+        <span class="n">MVK</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
+
+        <span class="k">case</span><span class="o">.</span><span class="n">set_value</span><span class="o">.</span><span class="n">assert_any_call</span><span class="p">(</span><span class="s2">&quot;COMPARE_BASELINE&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">case</span> <span class="o">=</span> <span class="n">create_simple_case</span><span class="p">(</span><span class="n">generate_baseline</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">MVK</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
+
+        <span class="k">case</span><span class="o">.</span><span class="n">set_value</span><span class="o">.</span><span class="n">assert_any_call</span><span class="p">(</span><span class="s2">&quot;COMPARE_BASELINE&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+        <span class="n">case</span> <span class="o">=</span> <span class="n">create_simple_case</span><span class="p">(</span><span class="n">resubmit</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">generate_baseline</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">MVK</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
+
+        <span class="k">case</span><span class="o">.</span><span class="n">set_value</span><span class="o">.</span><span class="n">assert_any_call</span><span class="p">(</span><span class="s2">&quot;COMPARE_BASELINE&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestSystemTestsMVK.test_mvk">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_system_tests_mvk.TestSystemTestsMVK.test_mvk">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_mvk</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">case</span> <span class="o">=</span> <span class="n">create_simple_case</span><span class="p">()</span>
+
+        <span class="n">test</span> <span class="o">=</span> <span class="n">MVK</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="n">test</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">component</span> <span class="o">==</span> <span class="s2">&quot;eam&quot;</span>
+        <span class="k">assert</span> <span class="n">test</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">components</span> <span class="o">==</span> <span class="p">[</span><span class="s2">&quot;eam&quot;</span><span class="p">]</span>
+
+        <span class="n">case</span> <span class="o">=</span> <span class="n">create_simple_case</span><span class="p">(</span><span class="s2">&quot;cesm&quot;</span><span class="p">)</span>
+
+        <span class="n">test</span> <span class="o">=</span> <span class="n">MVK</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="n">test</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">component</span> <span class="o">==</span> <span class="s2">&quot;cam&quot;</span>
+        <span class="k">assert</span> <span class="n">test</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">components</span> <span class="o">==</span> <span class="p">[</span><span class="s2">&quot;cam&quot;</span><span class="p">]</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
+     
+<script>var version_json_loc = "../../../../../versions.json";</script>
+
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+
+  <script type="text/javascript">
+    let baseUriRegex = /(.*\/cime)\/.*/g;
+    let parsedUri = baseUriRegex.exec(document.baseURI);
+
+    if (parsedUri != null && parsedUri.length == 2) {
+      let baseUri = parsedUri[1];
+
+      $.get(`${baseUri}/versions/versions.json`, function(data) {
+        let versionElement = $("#versions");
+
+        Object.keys(data).forEach(function(key) {
+          let value = data[key];
+
+          let item = `<dd><a href="${baseUri}/versions/${key}/html/">${value}</a></dd>`
+
+          versionElement.append(item);
+        });
+      });
+    }
+  </script>
+  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      <span class="fa fa-book"> Read the Docs</span>
+      v: master
+      <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+      
+      <dl id="versions">
+        <dt>Versions</dt>
+      </dl>
+      
+      
+    </div>
+  </div>
+<script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

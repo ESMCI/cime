@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../">
 <head>
@@ -6,19 +8,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>create_newcase &mdash; CIME master documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
       <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../_static/jquery.js?v=5d32c60e"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=30d551ce"></script>
-        <script src="../_static/doctools.js?v=9a2dae69"></script>
-        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=30d551ce"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -37,9 +38,6 @@
           <a href="../index.html" class="icon icon-home">
             CIME
           </a>
-              <div class="version">
-                master
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -148,16 +146,107 @@
 <div class="toctree-wrapper compound">
 </div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ ./create_newcase --help
-Traceback (most recent call last):
-  File &quot;/home/runner/work/cime/cime/scripts/./create_newcase&quot;, line 15, in &lt;module&gt;
-    from CIME.scripts.create_newcase import _main_func
-  File &quot;/home/runner/work/cime/cime/CIME/scripts/create_newcase.py&quot;, line 9, in &lt;module&gt;
-    from CIME.Tools.standard_script_setup import *
-  File &quot;/home/runner/work/cime/cime/CIME/Tools/standard_script_setup.py&quot;, line 42, in &lt;module&gt;
-    import CIME.utils
-  File &quot;/home/runner/work/cime/cime/CIME/utils.py&quot;, line 15, in &lt;module&gt;
-    from distutils import file_util
-ModuleNotFoundError: No module named &#39;distutils&#39;
+usage: create_newcase [-h] [-d] [-v] [-s] --case CASENAME --compset COMPSET
+                      --res GRID [--machine MACHINE] [--compiler COMPILER]
+                      [--multi-driver] [--ninst NINST] [--mpilib MPILIB]
+                      [--project PROJECT] [--pecount PECOUNT]
+                      [--user-mods-dirs [USER_MODS_DIRS ...]]
+                      [--pesfile PESFILE] [--gridfile GRIDFILE]
+                      [--workflow WORKFLOW] [--srcroot SRCROOT]
+                      [--output-root OUTPUT_ROOT] [--run-unsupported]
+                      [--walltime WALLTIME] [-q QUEUE]
+                      [--handle-preexisting-dirs {a,r,u}] [-i INPUT_DIR]
+                      [--driver {nuopc}] [-n]
+                      [--extra-machines-dir EXTRA_MACHINES_DIR]
+                      [--case-group CASE_GROUP]
+
+options:
+  -h, --help            show this help message and exit
+  --case CASENAME, -case CASENAME
+                        (required) Specify the case name. 
+                        If this is simply a name (not a path), the case directory is created in the current working directory.
+                        This can also be a relative or absolute path specifying where the case should be created;
+                        with this usage, the name of the case will be the last component of the path.
+  --compset COMPSET, -compset COMPSET
+                        (required) Specify a compset. 
+                        To see list of current compsets, use the utility ./query_config --compsets in this directory.
+  --res GRID, -res GRID
+                        (required) Specify a model grid resolution. 
+                        To see list of current model resolutions, use the utility 
+                        ./query_config --grids in this directory.
+  --machine MACHINE, -mach MACHINE
+                        Specify a machine. The default value is the match to NODENAME_REGEX in config_machines.xml. To see 
+                        the list of current machines, invoke ./query_config --machines.
+  --compiler COMPILER, -compiler COMPILER
+                        Specify a compiler. 
+                        To see list of supported compilers for each machine, use the utility 
+                        ./query_config --machines in this directory. 
+                        The default value will be the first one listed.
+  --multi-driver        Specify that --ninst should modify the number of driver/coupler instances. 
+                        The default is to have one driver/coupler supporting multiple component instances.
+  --ninst NINST         Specify number of model ensemble instances. 
+                        The default is multiple components and one driver/coupler. 
+                        Use --multi-driver to run multiple driver/couplers in the ensemble.
+  --mpilib MPILIB, -mpilib MPILIB
+                        Specify the MPI library. To see list of supported mpilibs for each machine, invoke ./query_config --machines.
+                        The default is the first listing in MPILIBS in config_machines.xml.
+  --project PROJECT, -project PROJECT
+                        Specify a project id for the case (optional).
+                        Used for accounting and directory permissions when on a batch system.
+                        The default is user or machine specified by PROJECT.
+                        Accounting (only) may be overridden by user or machine specified CHARGE_ACCOUNT.
+  --pecount PECOUNT, -pecount PECOUNT
+                        Specify a target size description for the number of cores. 
+                        This is used to query the appropriate config_pes.xml file and find the 
+                        optimal PE-layout for your case - if it exists there. 
+                        Allowed options are  (&#39;S&#39;,&#39;M&#39;,&#39;L&#39;,&#39;X1&#39;,&#39;X2&#39;,&#39;[0-9]x[0-9]&#39;,&#39;[0-9]&#39;).
+  --user-mods-dirs [USER_MODS_DIRS ...], --user-mods-dir [USER_MODS_DIRS ...]
+                        Full pathname to a directory containing any combination of user_nl_* files 
+                        and a shell_commands script (typically containing xmlchange commands). 
+                        The directory can also contain an SourceMods/ directory with the same structure 
+                        as would be found in a case directory.
+                        It can also contain a file named &#39;include_user_mods&#39; which gives the path to
+                        one or more other directories that should be included.
+                        Multiple directories can be given to the --user-mods-dirs argument,
+                        in which case changes from all of them are applied.
+                        (If there are conflicts, later directories take precedence.)
+                        (Care is needed if multiple directories include the same directory via &#39;include_user_mods&#39;:
+                        in this case, the included directory will be applied multiple times.)
+  --pesfile PESFILE     Full pathname of an optional pes specification file. 
+                        The file can follow either the config_pes.xml or the env_mach_pes.xml format.
+  --gridfile GRIDFILE   Full pathname of config grid file to use. 
+                        This should be a copy of config/config_grids.xml with the new user grid changes added to it. 
+  --workflow WORKFLOW   A workflow from config_workflow.xml to apply to this case. 
+  --srcroot SRCROOT     Alternative pathname for source root directory. The default is /home/runner/work/cime
+  --output-root OUTPUT_ROOT
+                        Alternative pathname for the directory where case output is written.
+  --run-unsupported     Force the creation of a case that is not tested or supported by CESM developers.
+  --walltime WALLTIME   Set the wallclock limit for this case in the format (the usual format is HH:MM:SS). 
+                        You may use env var CIME_GLOBAL_WALLTIME to set this. 
+                        If CIME_GLOBAL_WALLTIME is not defined in the environment, then the walltime
+                        will be the maximum allowed time defined for the queue in config_batch.xml.
+  -q QUEUE, --queue QUEUE
+                        Force batch system to use the specified queue. 
+  --handle-preexisting-dirs {a,r,u}
+                        Do not query how to handle pre-existing bld/exe dirs. 
+                        Valid options are (a)bort (r)eplace or (u)se existing. 
+                        This can be useful if you need to run create_newcase non-iteractively.
+  -i INPUT_DIR, --input-dir INPUT_DIR
+                        Use a non-default location for input files. This will change the xml value of DIN_LOC_ROOT.
+  --driver {nuopc}      Override the top level driver type and use this one (changes xml variable COMP_INTERFACE) [this is an advanced option]
+  -n, --non-local       Use when you&#39;ve requested a machine that you aren&#39;t on. Will reduce errors for missing directories etc.
+  --extra-machines-dir EXTRA_MACHINES_DIR
+                        Optional path to a directory containing one or more of:
+                        config_machines.xml, config_batch.xml.
+                        If provided, the contents of these files will be appended to
+                        the standard machine files (and any files in ~/.cime).
+  --case-group CASE_GROUP
+                        Add this case to a case group
+
+Logging options:
+  -d, --debug           Print debug information (very verbose) to file /home/runner/work/cime/cime/scripts/create_newcase.log
+  -v, --verbose         Add additional context (time and file) to log messages
+  -s, --silent          Print only warnings and error messages
 </pre></div>
 </div>
 </section>

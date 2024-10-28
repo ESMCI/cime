@@ -1,0 +1,912 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CIME.tests.test_unit_baselines_performance &mdash; CIME master documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=30d551ce"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            CIME
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../what_cime/index.html">What is CIME?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../users_guide/index.html">Using the Case Control System</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../users_guide/index.html#configuring-the-case-control-system">Configuring the Case Control System</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../build_cpl/index.html">Building a Coupled Model with CIME</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../misc_tools/index.html">Miscellaneous Tools</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../glossary/index.html">Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Tools_user/index.html">User Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../xml_files/index.html">XML Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../CIME_api/modules.html">CIME</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Tools_api/modules.html">Tools</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">CIME</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">CIME.tests.test_unit_baselines_performance</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for CIME.tests.test_unit_baselines_performance</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+
+<span class="kn">import</span> <span class="nn">gzip</span>
+<span class="kn">import</span> <span class="nn">tempfile</span>
+<span class="kn">import</span> <span class="nn">unittest</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">unittest</span> <span class="kn">import</span> <span class="n">mock</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">from</span> <span class="nn">CIME.baselines</span> <span class="kn">import</span> <span class="n">performance</span>
+<span class="kn">from</span> <span class="nn">CIME.tests.test_unit_system_tests</span> <span class="kn">import</span> <span class="n">CPLLOG</span>
+
+
+<div class="viewcode-block" id="create_mock_case">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_baselines_performance.create_mock_case">[docs]</a>
+<span class="k">def</span> <span class="nf">create_mock_case</span><span class="p">(</span><span class="n">tempdir</span><span class="p">,</span> <span class="n">get_latest_cpl_logs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">caseroot</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">tempdir</span><span class="p">,</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="s2">&quot;caseroot&quot;</span><span class="p">)</span>
+
+    <span class="n">rundir</span> <span class="o">=</span> <span class="n">caseroot</span> <span class="o">/</span> <span class="s2">&quot;run&quot;</span>
+
+    <span class="k">if</span> <span class="n">get_latest_cpl_logs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">get_latest_cpl_logs</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">rundir</span> <span class="o">/</span> <span class="s2">&quot;cpl.log.gz&quot;</span><span class="p">),)</span>
+
+    <span class="n">baseline_root</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">tempdir</span><span class="p">,</span> <span class="s2">&quot;baselines&quot;</span><span class="p">)</span>
+
+    <span class="n">baseline_root</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="n">case</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">case</span><span class="p">,</span> <span class="n">caseroot</span><span class="p">,</span> <span class="n">rundir</span><span class="p">,</span> <span class="n">baseline_root</span></div>
+
+
+
+<div class="viewcode-block" id="TestUnitBaselinesPerformance">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_baselines_performance.TestUnitBaselinesPerformance">[docs]</a>
+<span class="k">class</span> <span class="nc">TestUnitBaselinesPerformance</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestUnitBaselinesPerformance.test_perf_get_memory_default">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_baselines_performance.TestUnitBaselinesPerformance.test_perf_get_memory_default">[docs]</a>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.baselines.performance._perf_get_memory&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_perf_get_memory_default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_perf_get_memory</span><span class="p">):</span>
+        <span class="n">_perf_get_memory</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;1000&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span>
+
+        <span class="n">case</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
+
+        <span class="n">config</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
+
+        <span class="n">config</span><span class="o">.</span><span class="n">perf_get_memory</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="ne">AttributeError</span>
+
+        <span class="n">mem</span> <span class="o">=</span> <span class="n">performance</span><span class="o">.</span><span class="n">perf_get_memory</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="n">mem</span> <span class="o">==</span> <span class="p">(</span><span class="s2">&quot;1000&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestUnitBaselinesPerformance.test_perf_get_memory">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_baselines_performance.TestUnitBaselinesPerformance.test_perf_get_memory">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_perf_get_memory</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">case</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
+
+        <span class="n">config</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
+
+        <span class="n">config</span><span class="o">.</span><span class="n">perf_get_memory</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;1000&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span>
+
+        <span class="n">mem</span> <span class="o">=</span> <span class="n">performance</span><span class="o">.</span><span class="n">perf_get_memory</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="n">mem</span> <span class="o">==</span> <span class="p">(</span><span class="s2">&quot;1000&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestUnitBaselinesPerformance.test_perf_get_throughput_default">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_baselines_performance.TestUnitBaselinesPerformance.test_perf_get_throughput_default">[docs]</a>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.baselines.performance._perf_get_throughput&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_perf_get_throughput_default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_perf_get_throughput</span><span class="p">):</span>
+        <span class="n">_perf_get_throughput</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;100&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span>
+
+        <span class="n">case</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
+
+        <span class="n">config</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
+
+        <span class="n">config</span><span class="o">.</span><span class="n">perf_get_throughput</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="ne">AttributeError</span>
+
+        <span class="n">tput</span> <span class="o">=</span> <span class="n">performance</span><span class="o">.</span><span class="n">perf_get_throughput</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="n">tput</span> <span class="o">==</span> <span class="p">(</span><span class="s2">&quot;100&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestUnitBaselinesPerformance.test_perf_get_throughput">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_baselines_performance.TestUnitBaselinesPerformance.test_perf_get_throughput">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_perf_get_throughput</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">case</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
+
+        <span class="n">config</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
+
+        <span class="n">config</span><span class="o">.</span><span class="n">perf_get_throughput</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;100&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span>
+
+        <span class="n">tput</span> <span class="o">=</span> <span class="n">performance</span><span class="o">.</span><span class="n">perf_get_throughput</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="n">tput</span> <span class="o">==</span> <span class="p">(</span><span class="s2">&quot;100&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestUnitBaselinesPerformance.test_get_cpl_throughput_no_file">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_baselines_performance.TestUnitBaselinesPerformance.test_get_cpl_throughput_no_file">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_get_cpl_throughput_no_file</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">throughput</span> <span class="o">=</span> <span class="n">performance</span><span class="o">.</span><span class="n">get_cpl_throughput</span><span class="p">(</span><span class="s2">&quot;/tmp/cpl.log&quot;</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="n">throughput</span> <span class="ow">is</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="TestUnitBaselinesPerformance.test_get_cpl_throughput">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_baselines_performance.TestUnitBaselinesPerformance.test_get_cpl_throughput">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_get_cpl_throughput</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tempdir</span><span class="p">:</span>
+            <span class="n">cpl_log_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">tempdir</span><span class="p">,</span> <span class="s2">&quot;cpl.log.gz&quot;</span><span class="p">)</span>
+
+            <span class="k">with</span> <span class="n">gzip</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">cpl_log_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
+                <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">CPLLOG</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span>
+
+            <span class="n">throughput</span> <span class="o">=</span> <span class="n">performance</span><span class="o">.</span><span class="n">get_cpl_throughput</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">cpl_log_path</span><span class="p">))</span>
+
+        <span class="k">assert</span> <span class="n">throughput</span> <span class="o">==</span> <span class="mf">719.635</span></div>
+
+
+<div class="viewcode-block" id="TestUnitBaselinesPerformance.test_get_cpl_mem_usage_gz">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_baselines_performance.TestUnitBaselinesPerformance.test_get_cpl_mem_usage_gz">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_get_cpl_mem_usage_gz</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tempdir</span><span class="p">:</span>
+            <span class="n">cpl_log_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">tempdir</span><span class="p">,</span> <span class="s2">&quot;cpl.log.gz&quot;</span><span class="p">)</span>
+
+            <span class="k">with</span> <span class="n">gzip</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">cpl_log_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
+                <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">CPLLOG</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span>
+
+            <span class="n">mem_usage</span> <span class="o">=</span> <span class="n">performance</span><span class="o">.</span><span class="n">get_cpl_mem_usage</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">cpl_log_path</span><span class="p">))</span>
+
+        <span class="k">assert</span> <span class="n">mem_usage</span> <span class="o">==</span> <span class="p">[</span>
+            <span class="p">(</span><span class="mf">10102.0</span><span class="p">,</span> <span class="mf">1673.89</span><span class="p">),</span>
+            <span class="p">(</span><span class="mf">10103.0</span><span class="p">,</span> <span class="mf">1673.89</span><span class="p">),</span>
+            <span class="p">(</span><span class="mf">10104.0</span><span class="p">,</span> <span class="mf">1673.89</span><span class="p">),</span>
+            <span class="p">(</span><span class="mf">10105.0</span><span class="p">,</span> <span class="mf">1673.89</span><span class="p">),</span>
+        <span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="TestUnitBaselinesPerformance.test_get_cpl_mem_usage">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_baselines_performance.TestUnitBaselinesPerformance.test_get_cpl_mem_usage">[docs]</a>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.baselines.performance.os.path.isfile&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_get_cpl_mem_usage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">isfile</span><span class="p">):</span>
+        <span class="n">isfile</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">with</span> <span class="n">mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span>
+            <span class="s2">&quot;builtins.open&quot;</span><span class="p">,</span> <span class="n">mock</span><span class="o">.</span><span class="n">mock_open</span><span class="p">(</span><span class="n">read_data</span><span class="o">=</span><span class="n">CPLLOG</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span>
+        <span class="p">)</span> <span class="k">as</span> <span class="n">mock_file</span><span class="p">:</span>
+            <span class="n">mem_usage</span> <span class="o">=</span> <span class="n">performance</span><span class="o">.</span><span class="n">get_cpl_mem_usage</span><span class="p">(</span><span class="s2">&quot;/tmp/cpl.log&quot;</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="n">mem_usage</span> <span class="o">==</span> <span class="p">[</span>
+            <span class="p">(</span><span class="mf">10102.0</span><span class="p">,</span> <span class="mf">1673.89</span><span class="p">),</span>
+            <span class="p">(</span><span class="mf">10103.0</span><span class="p">,</span> <span class="mf">1673.89</span><span class="p">),</span>
+            <span class="p">(</span><span class="mf">10104.0</span><span class="p">,</span> <span class="mf">1673.89</span><span class="p">),</span>
+            <span class="p">(</span><span class="mf">10105.0</span><span class="p">,</span> <span class="mf">1673.89</span><span class="p">),</span>
+        <span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="TestUnitBaselinesPerformance.test_read_baseline_file_multi_line">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_baselines_performance.TestUnitBaselinesPerformance.test_read_baseline_file_multi_line">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_read_baseline_file_multi_line</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span>
+            <span class="s2">&quot;builtins.open&quot;</span><span class="p">,</span>
+            <span class="n">mock</span><span class="o">.</span><span class="n">mock_open</span><span class="p">(</span>
+                <span class="n">read_data</span><span class="o">=</span><span class="s2">&quot;sha:1df0 date:2023 1000.0</span><span class="se">\n</span><span class="s2">sha:3b05 date:2023 2000.0&quot;</span>
+            <span class="p">),</span>
+        <span class="p">)</span> <span class="k">as</span> <span class="n">mock_file</span><span class="p">:</span>
+            <span class="n">baseline</span> <span class="o">=</span> <span class="n">performance</span><span class="o">.</span><span class="n">read_baseline_file</span><span class="p">(</span><span class="s2">&quot;/tmp/cpl-mem.log&quot;</span><span class="p">)</span>
+
+        <span class="n">mock_file</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="s2">&quot;/tmp/cpl-mem.log&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">baseline</span> <span class="o">==</span> <span class="s2">&quot;sha:1df0 date:2023 1000.0</span><span class="se">\n</span><span class="s2">sha:3b05 date:2023 2000.0&quot;</span></div>
+
+
+<div class="viewcode-block" id="TestUnitBaselinesPerformance.test_read_baseline_file_content">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_baselines_performance.TestUnitBaselinesPerformance.test_read_baseline_file_content">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_read_baseline_file_content</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s2">&quot;/tmp/cpl-mem.log&quot;</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">mknod</span><span class="p">(</span><span class="s2">&quot;/tmp/cpl-mem.log&quot;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span>
+            <span class="s2">&quot;builtins.open&quot;</span><span class="p">,</span> <span class="n">mock</span><span class="o">.</span><span class="n">mock_open</span><span class="p">(</span><span class="n">read_data</span><span class="o">=</span><span class="s2">&quot;sha:1df0 date:2023 1000.0&quot;</span><span class="p">)</span>
+        <span class="p">)</span> <span class="k">as</span> <span class="n">mock_file</span><span class="p">:</span>
+            <span class="n">baseline</span> <span class="o">=</span> <span class="n">performance</span><span class="o">.</span><span class="n">read_baseline_file</span><span class="p">(</span><span class="s2">&quot;/tmp/cpl-mem.log&quot;</span><span class="p">)</span>
+
+        <span class="n">mock_file</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="s2">&quot;/tmp/cpl-mem.log&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">baseline</span> <span class="o">==</span> <span class="s2">&quot;sha:1df0 date:2023 1000.0&quot;</span></div>
+
+
+<div class="viewcode-block" id="TestUnitBaselinesPerformance.test_write_baseline_file">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_baselines_performance.TestUnitBaselinesPerformance.test_write_baseline_file">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_write_baseline_file</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;builtins.open&quot;</span><span class="p">,</span> <span class="n">mock</span><span class="o">.</span><span class="n">mock_open</span><span class="p">())</span> <span class="k">as</span> <span class="n">mock_file</span><span class="p">:</span>
+            <span class="n">performance</span><span class="o">.</span><span class="n">write_baseline_file</span><span class="p">(</span><span class="s2">&quot;/tmp/cpl-tput.log&quot;</span><span class="p">,</span> <span class="s2">&quot;1000&quot;</span><span class="p">)</span>
+
+        <span class="n">mock_file</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="s2">&quot;/tmp/cpl-tput.log&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestUnitBaselinesPerformance.test__perf_get_throughput">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_baselines_performance.TestUnitBaselinesPerformance.test__perf_get_throughput">[docs]</a>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.baselines.performance.get_cpl_throughput&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.baselines.performance.get_latest_cpl_logs&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test__perf_get_throughput</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">get_latest_cpl_logs</span><span class="p">,</span> <span class="n">get_cpl_throughput</span><span class="p">):</span>
+        <span class="n">get_cpl_throughput</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="ne">FileNotFoundError</span><span class="p">()</span>
+
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tempdir</span><span class="p">:</span>
+            <span class="n">case</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">baseline_root</span> <span class="o">=</span> <span class="n">create_mock_case</span><span class="p">(</span><span class="n">tempdir</span><span class="p">,</span> <span class="n">get_latest_cpl_logs</span><span class="p">)</span>
+
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">):</span>
+                <span class="n">performance</span><span class="o">.</span><span class="n">_perf_get_throughput</span><span class="p">(</span><span class="n">case</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestUnitBaselinesPerformance.test__perf_get_memory_override">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_baselines_performance.TestUnitBaselinesPerformance.test__perf_get_memory_override">[docs]</a>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.baselines.performance.get_cpl_mem_usage&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.baselines.performance.get_latest_cpl_logs&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test__perf_get_memory_override</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">get_latest_cpl_logs</span><span class="p">,</span> <span class="n">get_cpl_mem_usage</span><span class="p">):</span>
+        <span class="n">get_cpl_mem_usage</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="ne">FileNotFoundError</span><span class="p">()</span>
+
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tempdir</span><span class="p">:</span>
+            <span class="n">case</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">baseline_root</span> <span class="o">=</span> <span class="n">create_mock_case</span><span class="p">(</span><span class="n">tempdir</span><span class="p">,</span> <span class="n">get_latest_cpl_logs</span><span class="p">)</span>
+
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">):</span>
+                <span class="n">performance</span><span class="o">.</span><span class="n">_perf_get_memory</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="s2">&quot;/tmp/override&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestUnitBaselinesPerformance.test__perf_get_memory">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_baselines_performance.TestUnitBaselinesPerformance.test__perf_get_memory">[docs]</a>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.baselines.performance.get_cpl_mem_usage&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.baselines.performance.get_latest_cpl_logs&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test__perf_get_memory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">get_latest_cpl_logs</span><span class="p">,</span> <span class="n">get_cpl_mem_usage</span><span class="p">):</span>
+        <span class="n">get_cpl_mem_usage</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="ne">FileNotFoundError</span><span class="p">()</span>
+
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tempdir</span><span class="p">:</span>
+            <span class="n">case</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">baseline_root</span> <span class="o">=</span> <span class="n">create_mock_case</span><span class="p">(</span><span class="n">tempdir</span><span class="p">,</span> <span class="n">get_latest_cpl_logs</span><span class="p">)</span>
+
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">):</span>
+                <span class="n">performance</span><span class="o">.</span><span class="n">_perf_get_memory</span><span class="p">(</span><span class="n">case</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestUnitBaselinesPerformance.test_write_baseline_skip">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_baselines_performance.TestUnitBaselinesPerformance.test_write_baseline_skip">[docs]</a>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.baselines.performance.write_baseline_file&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.baselines.performance.perf_get_memory&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.baselines.performance.perf_get_throughput&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_write_baseline_skip</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">perf_get_throughput</span><span class="p">,</span> <span class="n">perf_get_memory</span><span class="p">,</span> <span class="n">write_baseline_file</span>
+    <span class="p">):</span>
+        <span class="n">perf_get_throughput</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="s2">&quot;100&quot;</span>
+
+        <span class="n">perf_get_memory</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="s2">&quot;1000&quot;</span>
+
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tempdir</span><span class="p">:</span>
+            <span class="n">case</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">baseline_root</span> <span class="o">=</span> <span class="n">create_mock_case</span><span class="p">(</span><span class="n">tempdir</span><span class="p">)</span>
+
+            <span class="n">performance</span><span class="o">.</span><span class="n">perf_write_baseline</span><span class="p">(</span>
+                <span class="n">case</span><span class="p">,</span>
+                <span class="n">baseline_root</span><span class="p">,</span>
+                <span class="kc">False</span><span class="p">,</span>
+                <span class="kc">False</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="n">perf_get_throughput</span><span class="o">.</span><span class="n">assert_not_called</span><span class="p">()</span>
+        <span class="n">perf_get_memory</span><span class="o">.</span><span class="n">assert_not_called</span><span class="p">()</span>
+        <span class="n">write_baseline_file</span><span class="o">.</span><span class="n">assert_not_called</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="TestUnitBaselinesPerformance.test_write_baseline_runtimeerror">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_baselines_performance.TestUnitBaselinesPerformance.test_write_baseline_runtimeerror">[docs]</a>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.baselines.performance.write_baseline_file&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.baselines.performance.perf_get_memory&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.baselines.performance.perf_get_throughput&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_write_baseline_runtimeerror</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">perf_get_throughput</span><span class="p">,</span> <span class="n">perf_get_memory</span><span class="p">,</span> <span class="n">write_baseline_file</span>
+    <span class="p">):</span>
+        <span class="n">perf_get_throughput</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="ne">RuntimeError</span>
+
+        <span class="n">perf_get_memory</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="ne">RuntimeError</span>
+
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tempdir</span><span class="p">:</span>
+            <span class="n">case</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">baseline_root</span> <span class="o">=</span> <span class="n">create_mock_case</span><span class="p">(</span><span class="n">tempdir</span><span class="p">)</span>
+
+            <span class="n">performance</span><span class="o">.</span><span class="n">perf_write_baseline</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">baseline_root</span><span class="p">)</span>
+
+        <span class="n">perf_get_throughput</span><span class="o">.</span><span class="n">assert_called</span><span class="p">()</span>
+        <span class="n">perf_get_memory</span><span class="o">.</span><span class="n">assert_called</span><span class="p">()</span>
+        <span class="n">write_baseline_file</span><span class="o">.</span><span class="n">assert_not_called</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="TestUnitBaselinesPerformance.test_perf_write_baseline">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_baselines_performance.TestUnitBaselinesPerformance.test_perf_write_baseline">[docs]</a>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.baselines.performance.write_baseline_file&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.baselines.performance.perf_get_memory&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.baselines.performance.perf_get_throughput&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_perf_write_baseline</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">perf_get_throughput</span><span class="p">,</span> <span class="n">perf_get_memory</span><span class="p">,</span> <span class="n">write_baseline_file</span>
+    <span class="p">):</span>
+        <span class="n">perf_get_throughput</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;100&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span>
+
+        <span class="n">perf_get_memory</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;1000&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tempdir</span><span class="p">:</span>
+            <span class="n">case</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">baseline_root</span> <span class="o">=</span> <span class="n">create_mock_case</span><span class="p">(</span><span class="n">tempdir</span><span class="p">)</span>
+
+            <span class="n">performance</span><span class="o">.</span><span class="n">perf_write_baseline</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">baseline_root</span><span class="p">)</span>
+
+        <span class="n">perf_get_throughput</span><span class="o">.</span><span class="n">assert_called</span><span class="p">()</span>
+        <span class="n">perf_get_memory</span><span class="o">.</span><span class="n">assert_called</span><span class="p">()</span>
+        <span class="n">write_baseline_file</span><span class="o">.</span><span class="n">assert_any_call</span><span class="p">(</span>
+            <span class="nb">str</span><span class="p">(</span><span class="n">baseline_root</span> <span class="o">/</span> <span class="s2">&quot;cpl-tput.log&quot;</span><span class="p">),</span> <span class="s2">&quot;100&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span>
+        <span class="p">)</span>
+        <span class="n">write_baseline_file</span><span class="o">.</span><span class="n">assert_any_call</span><span class="p">(</span>
+            <span class="nb">str</span><span class="p">(</span><span class="n">baseline_root</span> <span class="o">/</span> <span class="s2">&quot;cpl-mem.log&quot;</span><span class="p">),</span> <span class="s2">&quot;1000&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestUnitBaselinesPerformance.test_perf_compare_throughput_baseline_no_baseline_file">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_baselines_performance.TestUnitBaselinesPerformance.test_perf_compare_throughput_baseline_no_baseline_file">[docs]</a>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.baselines.performance._perf_get_throughput&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.baselines.performance.read_baseline_file&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.baselines.performance.get_latest_cpl_logs&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_perf_compare_throughput_baseline_no_baseline_file</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">get_latest_cpl_logs</span><span class="p">,</span> <span class="n">read_baseline_file</span><span class="p">,</span> <span class="n">_perf_get_throughput</span>
+    <span class="p">):</span>
+        <span class="n">read_baseline_file</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="ne">FileNotFoundError</span>
+
+        <span class="n">_perf_get_throughput</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="mi">504</span>
+
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tempdir</span><span class="p">:</span>
+            <span class="n">case</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">baseline_root</span> <span class="o">=</span> <span class="n">create_mock_case</span><span class="p">(</span><span class="n">tempdir</span><span class="p">,</span> <span class="n">get_latest_cpl_logs</span><span class="p">)</span>
+
+            <span class="k">case</span><span class="o">.</span><span class="n">get_value</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">baseline_root</span><span class="p">),</span>
+                <span class="s2">&quot;master/ERIO.ne30_g16_rx1.A.docker_gnu&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;/tmp/components/cpl&quot;</span><span class="p">,</span>
+                <span class="mf">0.05</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">FileNotFoundError</span><span class="p">):</span>
+                <span class="n">performance</span><span class="o">.</span><span class="n">perf_compare_throughput_baseline</span><span class="p">(</span><span class="n">case</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestUnitBaselinesPerformance.test_perf_compare_throughput_baseline_no_baseline">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_baselines_performance.TestUnitBaselinesPerformance.test_perf_compare_throughput_baseline_no_baseline">[docs]</a>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.baselines.performance._perf_get_throughput&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.baselines.performance.read_baseline_file&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.baselines.performance.get_latest_cpl_logs&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_perf_compare_throughput_baseline_no_baseline</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">get_latest_cpl_logs</span><span class="p">,</span> <span class="n">read_baseline_file</span><span class="p">,</span> <span class="n">_perf_get_throughput</span>
+    <span class="p">):</span>
+        <span class="n">read_baseline_file</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="n">_perf_get_throughput</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;504&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tempdir</span><span class="p">:</span>
+            <span class="n">case</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">baseline_root</span> <span class="o">=</span> <span class="n">create_mock_case</span><span class="p">(</span><span class="n">tempdir</span><span class="p">,</span> <span class="n">get_latest_cpl_logs</span><span class="p">)</span>
+
+            <span class="k">case</span><span class="o">.</span><span class="n">get_baseline_dir</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span>
+                <span class="n">baseline_root</span> <span class="o">/</span> <span class="s2">&quot;master&quot;</span> <span class="o">/</span> <span class="s2">&quot;ERIO.ne30_g16_rx1.A.docker_gnu&quot;</span>
+            <span class="p">)</span>
+
+            <span class="k">case</span><span class="o">.</span><span class="n">get_value</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;/tmp/components/cpl&quot;</span><span class="p">,</span>
+                <span class="mf">0.05</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="p">(</span><span class="n">below_tolerance</span><span class="p">,</span> <span class="n">comment</span><span class="p">)</span> <span class="o">=</span> <span class="n">performance</span><span class="o">.</span><span class="n">perf_compare_throughput_baseline</span><span class="p">(</span>
+                <span class="k">case</span>
+            <span class="p">)</span>
+
+        <span class="k">assert</span> <span class="n">below_tolerance</span> <span class="ow">is</span> <span class="kc">None</span>
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="n">comment</span>
+            <span class="o">==</span> <span class="s2">&quot;Could not compare throughput to baseline, as baseline had no value.&quot;</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestUnitBaselinesPerformance.test_perf_compare_throughput_baseline_no_tolerance">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_baselines_performance.TestUnitBaselinesPerformance.test_perf_compare_throughput_baseline_no_tolerance">[docs]</a>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.baselines.performance._perf_get_throughput&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.baselines.performance.read_baseline_file&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.baselines.performance.get_latest_cpl_logs&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_perf_compare_throughput_baseline_no_tolerance</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">get_latest_cpl_logs</span><span class="p">,</span> <span class="n">read_baseline_file</span><span class="p">,</span> <span class="n">_perf_get_throughput</span>
+    <span class="p">):</span>
+        <span class="n">read_baseline_file</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="s2">&quot;500&quot;</span>
+
+        <span class="n">_perf_get_throughput</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;504&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tempdir</span><span class="p">:</span>
+            <span class="n">case</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">baseline_root</span> <span class="o">=</span> <span class="n">create_mock_case</span><span class="p">(</span><span class="n">tempdir</span><span class="p">,</span> <span class="n">get_latest_cpl_logs</span><span class="p">)</span>
+
+            <span class="k">case</span><span class="o">.</span><span class="n">get_baseline_dir</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span>
+                <span class="n">baseline_root</span> <span class="o">/</span> <span class="s2">&quot;master&quot;</span> <span class="o">/</span> <span class="s2">&quot;ERIO.ne30_g16_rx1.A.docker_gnu&quot;</span>
+            <span class="p">)</span>
+
+            <span class="k">case</span><span class="o">.</span><span class="n">get_value</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;/tmp/components/cpl&quot;</span><span class="p">,</span>
+                <span class="kc">None</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="p">(</span><span class="n">below_tolerance</span><span class="p">,</span> <span class="n">comment</span><span class="p">)</span> <span class="o">=</span> <span class="n">performance</span><span class="o">.</span><span class="n">perf_compare_throughput_baseline</span><span class="p">(</span>
+                <span class="k">case</span>
+            <span class="p">)</span>
+
+        <span class="k">assert</span> <span class="n">below_tolerance</span>
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="n">comment</span>
+            <span class="o">==</span> <span class="s2">&quot;TPUTCOMP: Throughput changed by -0.80%: baseline=500.000 sypd, tolerance=10%, current=504.000 sypd&quot;</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestUnitBaselinesPerformance.test_perf_compare_throughput_baseline_above_threshold">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_baselines_performance.TestUnitBaselinesPerformance.test_perf_compare_throughput_baseline_above_threshold">[docs]</a>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.baselines.performance._perf_get_throughput&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.baselines.performance.read_baseline_file&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.baselines.performance.get_latest_cpl_logs&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_perf_compare_throughput_baseline_above_threshold</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">get_latest_cpl_logs</span><span class="p">,</span> <span class="n">read_baseline_file</span><span class="p">,</span> <span class="n">_perf_get_throughput</span>
+    <span class="p">):</span>
+        <span class="n">read_baseline_file</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="s2">&quot;1000&quot;</span>
+
+        <span class="n">_perf_get_throughput</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;504&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tempdir</span><span class="p">:</span>
+            <span class="n">case</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">baseline_root</span> <span class="o">=</span> <span class="n">create_mock_case</span><span class="p">(</span><span class="n">tempdir</span><span class="p">,</span> <span class="n">get_latest_cpl_logs</span><span class="p">)</span>
+
+            <span class="k">case</span><span class="o">.</span><span class="n">get_baseline_dir</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span>
+                <span class="n">baseline_root</span> <span class="o">/</span> <span class="s2">&quot;master&quot;</span> <span class="o">/</span> <span class="s2">&quot;ERIO.ne30_g16_rx1.A.docker_gnu&quot;</span>
+            <span class="p">)</span>
+
+            <span class="k">case</span><span class="o">.</span><span class="n">get_value</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;/tmp/components/cpl&quot;</span><span class="p">,</span>
+                <span class="mf">0.05</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="p">(</span><span class="n">below_tolerance</span><span class="p">,</span> <span class="n">comment</span><span class="p">)</span> <span class="o">=</span> <span class="n">performance</span><span class="o">.</span><span class="n">perf_compare_throughput_baseline</span><span class="p">(</span>
+                <span class="k">case</span>
+            <span class="p">)</span>
+
+        <span class="k">assert</span> <span class="ow">not</span> <span class="n">below_tolerance</span>
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="n">comment</span>
+            <span class="o">==</span> <span class="s2">&quot;Error: TPUTCOMP: Throughput changed by 49.60%: baseline=1000.000 sypd, tolerance=5%, current=504.000 sypd&quot;</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestUnitBaselinesPerformance.test_perf_compare_throughput_baseline">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_baselines_performance.TestUnitBaselinesPerformance.test_perf_compare_throughput_baseline">[docs]</a>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.baselines.performance._perf_get_throughput&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.baselines.performance.read_baseline_file&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.baselines.performance.get_latest_cpl_logs&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_perf_compare_throughput_baseline</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">get_latest_cpl_logs</span><span class="p">,</span> <span class="n">read_baseline_file</span><span class="p">,</span> <span class="n">_perf_get_throughput</span>
+    <span class="p">):</span>
+        <span class="n">read_baseline_file</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="s2">&quot;500&quot;</span>
+
+        <span class="n">_perf_get_throughput</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;504&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tempdir</span><span class="p">:</span>
+            <span class="n">case</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">baseline_root</span> <span class="o">=</span> <span class="n">create_mock_case</span><span class="p">(</span><span class="n">tempdir</span><span class="p">,</span> <span class="n">get_latest_cpl_logs</span><span class="p">)</span>
+
+            <span class="k">case</span><span class="o">.</span><span class="n">get_baseline_dir</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span>
+                <span class="n">baseline_root</span> <span class="o">/</span> <span class="s2">&quot;master&quot;</span> <span class="o">/</span> <span class="s2">&quot;ERIO.ne30_g16_rx1.A.docker_gnu&quot;</span>
+            <span class="p">)</span>
+
+            <span class="k">case</span><span class="o">.</span><span class="n">get_value</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;/tmp/components/cpl&quot;</span><span class="p">,</span>
+                <span class="mf">0.05</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="p">(</span><span class="n">below_tolerance</span><span class="p">,</span> <span class="n">comment</span><span class="p">)</span> <span class="o">=</span> <span class="n">performance</span><span class="o">.</span><span class="n">perf_compare_throughput_baseline</span><span class="p">(</span>
+                <span class="k">case</span>
+            <span class="p">)</span>
+
+        <span class="k">assert</span> <span class="n">below_tolerance</span>
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="n">comment</span>
+            <span class="o">==</span> <span class="s2">&quot;TPUTCOMP: Throughput changed by -0.80%: baseline=500.000 sypd, tolerance=5%, current=504.000 sypd&quot;</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestUnitBaselinesPerformance.test_perf_compare_memory_baseline_no_baseline">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_baselines_performance.TestUnitBaselinesPerformance.test_perf_compare_memory_baseline_no_baseline">[docs]</a>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.baselines.performance.get_cpl_mem_usage&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.baselines.performance.read_baseline_file&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.baselines.performance.get_latest_cpl_logs&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_perf_compare_memory_baseline_no_baseline</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">get_latest_cpl_logs</span><span class="p">,</span> <span class="n">read_baseline_file</span><span class="p">,</span> <span class="n">get_cpl_mem_usage</span>
+    <span class="p">):</span>
+        <span class="n">read_baseline_file</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="n">get_cpl_mem_usage</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">),</span>
+            <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mf">1001.0</span><span class="p">),</span>
+            <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mf">1002.0</span><span class="p">),</span>
+            <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mf">1003.0</span><span class="p">),</span>
+        <span class="p">]</span>
+
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tempdir</span><span class="p">:</span>
+            <span class="n">case</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">baseline_root</span> <span class="o">=</span> <span class="n">create_mock_case</span><span class="p">(</span><span class="n">tempdir</span><span class="p">,</span> <span class="n">get_latest_cpl_logs</span><span class="p">)</span>
+
+            <span class="k">case</span><span class="o">.</span><span class="n">get_baseline_dir</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span>
+                <span class="n">baseline_root</span> <span class="o">/</span> <span class="s2">&quot;master&quot;</span> <span class="o">/</span> <span class="s2">&quot;ERIO.ne30_g16_rx1.A.docker_gnu&quot;</span>
+            <span class="p">)</span>
+
+            <span class="k">case</span><span class="o">.</span><span class="n">get_value</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;/tmp/components/cpl&quot;</span><span class="p">,</span>
+                <span class="mf">0.05</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="p">(</span><span class="n">below_tolerance</span><span class="p">,</span> <span class="n">comment</span><span class="p">)</span> <span class="o">=</span> <span class="n">performance</span><span class="o">.</span><span class="n">perf_compare_memory_baseline</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="n">below_tolerance</span>
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="n">comment</span>
+            <span class="o">==</span> <span class="s2">&quot;MEMCOMP: Memory usage highwater changed by 0.00%: baseline=0.000 MB, tolerance=5%, current=1003.000 MB&quot;</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestUnitBaselinesPerformance.test_perf_compare_memory_baseline_not_enough_samples">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_baselines_performance.TestUnitBaselinesPerformance.test_perf_compare_memory_baseline_not_enough_samples">[docs]</a>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.baselines.performance.get_cpl_mem_usage&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.baselines.performance.read_baseline_file&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.baselines.performance.get_latest_cpl_logs&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_perf_compare_memory_baseline_not_enough_samples</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">get_latest_cpl_logs</span><span class="p">,</span> <span class="n">read_baseline_file</span><span class="p">,</span> <span class="n">get_cpl_mem_usage</span>
+    <span class="p">):</span>
+        <span class="n">read_baseline_file</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;1000.0&quot;</span><span class="p">]</span>
+
+        <span class="n">get_cpl_mem_usage</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">),</span>
+            <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mf">1001.0</span><span class="p">),</span>
+        <span class="p">]</span>
+
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tempdir</span><span class="p">:</span>
+            <span class="n">case</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">baseline_root</span> <span class="o">=</span> <span class="n">create_mock_case</span><span class="p">(</span><span class="n">tempdir</span><span class="p">,</span> <span class="n">get_latest_cpl_logs</span><span class="p">)</span>
+
+            <span class="k">case</span><span class="o">.</span><span class="n">get_value</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">baseline_root</span><span class="p">),</span>
+                <span class="s2">&quot;master/ERIO.ne30_g16_rx1.A.docker_gnu&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;/tmp/components/cpl&quot;</span><span class="p">,</span>
+                <span class="mf">0.05</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="p">(</span><span class="n">below_tolerance</span><span class="p">,</span> <span class="n">comment</span><span class="p">)</span> <span class="o">=</span> <span class="n">performance</span><span class="o">.</span><span class="n">perf_compare_memory_baseline</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="n">below_tolerance</span> <span class="ow">is</span> <span class="kc">None</span>
+        <span class="k">assert</span> <span class="n">comment</span> <span class="o">==</span> <span class="s2">&quot;Found 2 memory usage samples, need atleast 4&quot;</span></div>
+
+
+<div class="viewcode-block" id="TestUnitBaselinesPerformance.test_perf_compare_memory_baseline_no_baseline_file">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_baselines_performance.TestUnitBaselinesPerformance.test_perf_compare_memory_baseline_no_baseline_file">[docs]</a>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.baselines.performance.get_cpl_mem_usage&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.baselines.performance.read_baseline_file&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.baselines.performance.get_latest_cpl_logs&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_perf_compare_memory_baseline_no_baseline_file</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">get_latest_cpl_logs</span><span class="p">,</span> <span class="n">read_baseline_file</span><span class="p">,</span> <span class="n">get_cpl_mem_usage</span>
+    <span class="p">):</span>
+        <span class="n">read_baseline_file</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="ne">FileNotFoundError</span>
+
+        <span class="n">get_cpl_mem_usage</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">),</span>
+            <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mf">1001.0</span><span class="p">),</span>
+            <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mf">1002.0</span><span class="p">),</span>
+            <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mf">1003.0</span><span class="p">),</span>
+        <span class="p">]</span>
+
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tempdir</span><span class="p">:</span>
+            <span class="n">case</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">baseline_root</span> <span class="o">=</span> <span class="n">create_mock_case</span><span class="p">(</span><span class="n">tempdir</span><span class="p">,</span> <span class="n">get_latest_cpl_logs</span><span class="p">)</span>
+
+            <span class="k">case</span><span class="o">.</span><span class="n">get_value</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">baseline_root</span><span class="p">),</span>
+                <span class="s2">&quot;master/ERIO.ne30_g16_rx1.A.docker_gnu&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;/tmp/components/cpl&quot;</span><span class="p">,</span>
+                <span class="mf">0.05</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">FileNotFoundError</span><span class="p">):</span>
+                <span class="n">performance</span><span class="o">.</span><span class="n">perf_compare_memory_baseline</span><span class="p">(</span><span class="n">case</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestUnitBaselinesPerformance.test_perf_compare_memory_baseline_no_tolerance">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_baselines_performance.TestUnitBaselinesPerformance.test_perf_compare_memory_baseline_no_tolerance">[docs]</a>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.baselines.performance.get_cpl_mem_usage&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.baselines.performance.read_baseline_file&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.baselines.performance.get_latest_cpl_logs&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_perf_compare_memory_baseline_no_tolerance</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">get_latest_cpl_logs</span><span class="p">,</span> <span class="n">read_baseline_file</span><span class="p">,</span> <span class="n">get_cpl_mem_usage</span>
+    <span class="p">):</span>
+        <span class="n">read_baseline_file</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="s2">&quot;1000.0&quot;</span>
+
+        <span class="n">get_cpl_mem_usage</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">),</span>
+            <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mf">1001.0</span><span class="p">),</span>
+            <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mf">1002.0</span><span class="p">),</span>
+            <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mf">1003.0</span><span class="p">),</span>
+        <span class="p">]</span>
+
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tempdir</span><span class="p">:</span>
+            <span class="n">case</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">baseline_root</span> <span class="o">=</span> <span class="n">create_mock_case</span><span class="p">(</span><span class="n">tempdir</span><span class="p">,</span> <span class="n">get_latest_cpl_logs</span><span class="p">)</span>
+
+            <span class="k">case</span><span class="o">.</span><span class="n">get_baseline_dir</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span>
+                <span class="n">baseline_root</span> <span class="o">/</span> <span class="s2">&quot;master&quot;</span> <span class="o">/</span> <span class="s2">&quot;ERIO.ne30_g16_rx1.A.docker_gnu&quot;</span>
+            <span class="p">)</span>
+
+            <span class="k">case</span><span class="o">.</span><span class="n">get_value</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;/tmp/components/cpl&quot;</span><span class="p">,</span>
+                <span class="kc">None</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="p">(</span><span class="n">below_tolerance</span><span class="p">,</span> <span class="n">comment</span><span class="p">)</span> <span class="o">=</span> <span class="n">performance</span><span class="o">.</span><span class="n">perf_compare_memory_baseline</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="n">below_tolerance</span>
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="n">comment</span>
+            <span class="o">==</span> <span class="s2">&quot;MEMCOMP: Memory usage highwater changed by 0.30%: baseline=1000.000 MB, tolerance=10%, current=1003.000 MB&quot;</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestUnitBaselinesPerformance.test_perf_compare_memory_baseline_above_threshold">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_baselines_performance.TestUnitBaselinesPerformance.test_perf_compare_memory_baseline_above_threshold">[docs]</a>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.baselines.performance.get_cpl_mem_usage&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.baselines.performance.read_baseline_file&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.baselines.performance.get_latest_cpl_logs&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_perf_compare_memory_baseline_above_threshold</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">get_latest_cpl_logs</span><span class="p">,</span> <span class="n">read_baseline_file</span><span class="p">,</span> <span class="n">get_cpl_mem_usage</span>
+    <span class="p">):</span>
+        <span class="n">read_baseline_file</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="s2">&quot;1000.0&quot;</span>
+
+        <span class="n">get_cpl_mem_usage</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mf">2000.0</span><span class="p">),</span>
+            <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mf">2001.0</span><span class="p">),</span>
+            <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mf">2002.0</span><span class="p">),</span>
+            <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mf">2003.0</span><span class="p">),</span>
+        <span class="p">]</span>
+
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tempdir</span><span class="p">:</span>
+            <span class="n">case</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">baseline_root</span> <span class="o">=</span> <span class="n">create_mock_case</span><span class="p">(</span><span class="n">tempdir</span><span class="p">,</span> <span class="n">get_latest_cpl_logs</span><span class="p">)</span>
+
+            <span class="k">case</span><span class="o">.</span><span class="n">get_baseline_dir</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span>
+                <span class="n">baseline_root</span> <span class="o">/</span> <span class="s2">&quot;master&quot;</span> <span class="o">/</span> <span class="s2">&quot;ERIO.ne30_g16_rx1.A.docker_gnu&quot;</span>
+            <span class="p">)</span>
+
+            <span class="k">case</span><span class="o">.</span><span class="n">get_value</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;/tmp/components/cpl&quot;</span><span class="p">,</span>
+                <span class="mf">0.05</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="p">(</span><span class="n">below_tolerance</span><span class="p">,</span> <span class="n">comment</span><span class="p">)</span> <span class="o">=</span> <span class="n">performance</span><span class="o">.</span><span class="n">perf_compare_memory_baseline</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="ow">not</span> <span class="n">below_tolerance</span>
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="n">comment</span>
+            <span class="o">==</span> <span class="s2">&quot;Error: MEMCOMP: Memory usage highwater changed by 100.30%: baseline=1000.000 MB, tolerance=5%, current=2003.000 MB&quot;</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestUnitBaselinesPerformance.test_perf_compare_memory_baseline">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_baselines_performance.TestUnitBaselinesPerformance.test_perf_compare_memory_baseline">[docs]</a>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.baselines.performance.get_cpl_mem_usage&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.baselines.performance.read_baseline_file&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;CIME.baselines.performance.get_latest_cpl_logs&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_perf_compare_memory_baseline</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">get_latest_cpl_logs</span><span class="p">,</span> <span class="n">read_baseline_file</span><span class="p">,</span> <span class="n">get_cpl_mem_usage</span>
+    <span class="p">):</span>
+        <span class="n">read_baseline_file</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="s2">&quot;1000.0&quot;</span>
+
+        <span class="n">get_cpl_mem_usage</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">),</span>
+            <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mf">1001.0</span><span class="p">),</span>
+            <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mf">1002.0</span><span class="p">),</span>
+            <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mf">1003.0</span><span class="p">),</span>
+        <span class="p">]</span>
+
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tempdir</span><span class="p">:</span>
+            <span class="n">case</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">baseline_root</span> <span class="o">=</span> <span class="n">create_mock_case</span><span class="p">(</span><span class="n">tempdir</span><span class="p">,</span> <span class="n">get_latest_cpl_logs</span><span class="p">)</span>
+
+            <span class="k">case</span><span class="o">.</span><span class="n">get_baseline_dir</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span>
+                <span class="n">baseline_root</span> <span class="o">/</span> <span class="s2">&quot;master&quot;</span> <span class="o">/</span> <span class="s2">&quot;ERIO.ne30_g16_rx1.A.docker_gnu&quot;</span>
+            <span class="p">)</span>
+
+            <span class="k">case</span><span class="o">.</span><span class="n">get_value</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;/tmp/components/cpl&quot;</span><span class="p">,</span>
+                <span class="mf">0.05</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="p">(</span><span class="n">below_tolerance</span><span class="p">,</span> <span class="n">comment</span><span class="p">)</span> <span class="o">=</span> <span class="n">performance</span><span class="o">.</span><span class="n">perf_compare_memory_baseline</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="n">below_tolerance</span>
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="n">comment</span>
+            <span class="o">==</span> <span class="s2">&quot;MEMCOMP: Memory usage highwater changed by 0.30%: baseline=1000.000 MB, tolerance=5%, current=1003.000 MB&quot;</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestUnitBaselinesPerformance.test_get_latest_cpl_logs_found_multiple">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_baselines_performance.TestUnitBaselinesPerformance.test_get_latest_cpl_logs_found_multiple">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_get_latest_cpl_logs_found_multiple</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tempdir</span><span class="p">:</span>
+            <span class="n">run_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">tempdir</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;run&quot;</span>
+            <span class="n">run_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+            <span class="n">cpl_log_path</span> <span class="o">=</span> <span class="n">run_dir</span> <span class="o">/</span> <span class="s2">&quot;cpl.log.gz&quot;</span>
+            <span class="n">cpl_log_path</span><span class="o">.</span><span class="n">touch</span><span class="p">()</span>
+
+            <span class="n">cpl_log_2_path</span> <span class="o">=</span> <span class="n">run_dir</span> <span class="o">/</span> <span class="s2">&quot;cpl-2023-01-01.log.gz&quot;</span>
+            <span class="n">cpl_log_2_path</span><span class="o">.</span><span class="n">touch</span><span class="p">()</span>
+
+            <span class="n">case</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
+            <span class="k">case</span><span class="o">.</span><span class="n">get_value</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">run_dir</span><span class="p">),</span>
+                <span class="s2">&quot;mct&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="n">latest_cpl_logs</span> <span class="o">=</span> <span class="n">performance</span><span class="o">.</span><span class="n">get_latest_cpl_logs</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">latest_cpl_logs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
+        <span class="k">assert</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">latest_cpl_logs</span><span class="p">)</span> <span class="o">==</span> <span class="nb">sorted</span><span class="p">(</span>
+            <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">cpl_log_path</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">cpl_log_2_path</span><span class="p">)]</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestUnitBaselinesPerformance.test_get_latest_cpl_logs_found_single">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_baselines_performance.TestUnitBaselinesPerformance.test_get_latest_cpl_logs_found_single">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_get_latest_cpl_logs_found_single</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tempdir</span><span class="p">:</span>
+            <span class="n">run_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">tempdir</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;run&quot;</span>
+            <span class="n">run_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+            <span class="n">cpl_log_path</span> <span class="o">=</span> <span class="n">run_dir</span> <span class="o">/</span> <span class="s2">&quot;cpl.log.gz&quot;</span>
+            <span class="n">cpl_log_path</span><span class="o">.</span><span class="n">touch</span><span class="p">()</span>
+
+            <span class="n">case</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
+            <span class="k">case</span><span class="o">.</span><span class="n">get_value</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">run_dir</span><span class="p">),</span>
+                <span class="s2">&quot;mct&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="n">latest_cpl_logs</span> <span class="o">=</span> <span class="n">performance</span><span class="o">.</span><span class="n">get_latest_cpl_logs</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">latest_cpl_logs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="k">assert</span> <span class="n">latest_cpl_logs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="nb">str</span><span class="p">(</span><span class="n">cpl_log_path</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestUnitBaselinesPerformance.test_get_latest_cpl_logs">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_baselines_performance.TestUnitBaselinesPerformance.test_get_latest_cpl_logs">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_get_latest_cpl_logs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">case</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
+        <span class="k">case</span><span class="o">.</span><span class="n">get_value</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;/tmp/run&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;mct&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">latest_cpl_logs</span> <span class="o">=</span> <span class="n">performance</span><span class="o">.</span><span class="n">get_latest_cpl_logs</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">latest_cpl_logs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
+     
+<script>var version_json_loc = "../../../../../versions.json";</script>
+
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+
+  <script type="text/javascript">
+    let baseUriRegex = /(.*\/cime)\/.*/g;
+    let parsedUri = baseUriRegex.exec(document.baseURI);
+
+    if (parsedUri != null && parsedUri.length == 2) {
+      let baseUri = parsedUri[1];
+
+      $.get(`${baseUri}/versions/versions.json`, function(data) {
+        let versionElement = $("#versions");
+
+        Object.keys(data).forEach(function(key) {
+          let value = data[key];
+
+          let item = `<dd><a href="${baseUri}/versions/${key}/html/">${value}</a></dd>`
+
+          versionElement.append(item);
+        });
+      });
+    }
+  </script>
+  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      <span class="fa fa-book"> Read the Docs</span>
+      v: master
+      <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+      
+      <dl id="versions">
+        <dt>Versions</dt>
+      </dl>
+      
+      
+    </div>
+  </div>
+<script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

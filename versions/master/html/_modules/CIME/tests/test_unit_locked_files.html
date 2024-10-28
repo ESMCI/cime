@@ -1,0 +1,574 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CIME.tests.test_unit_locked_files &mdash; CIME master documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=30d551ce"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            CIME
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../what_cime/index.html">What is CIME?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../users_guide/index.html">Using the Case Control System</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../users_guide/index.html#configuring-the-case-control-system">Configuring the Case Control System</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../build_cpl/index.html">Building a Coupled Model with CIME</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../misc_tools/index.html">Miscellaneous Tools</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../glossary/index.html">Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Tools_user/index.html">User Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../xml_files/index.html">XML Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../CIME_api/modules.html">CIME</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Tools_api/modules.html">Tools</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">CIME</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">CIME.tests.test_unit_locked_files</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for CIME.tests.test_unit_locked_files</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">tempfile</span>
+<span class="kn">import</span> <span class="nn">unittest</span>
+<span class="kn">from</span> <span class="nn">unittest</span> <span class="kn">import</span> <span class="n">mock</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">from</span> <span class="nn">CIME</span> <span class="kn">import</span> <span class="n">locked_files</span>
+<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="n">CIMEError</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.entry_id</span> <span class="kn">import</span> <span class="n">EntryID</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.env_batch</span> <span class="kn">import</span> <span class="n">EnvBatch</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.files</span> <span class="kn">import</span> <span class="n">Files</span>
+
+
+<div class="viewcode-block" id="create_batch_system">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_locked_files.create_batch_system">[docs]</a>
+<span class="k">def</span> <span class="nf">create_batch_system</span><span class="p">(</span><span class="n">env_batch</span><span class="p">,</span> <span class="n">batch_submit_value</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">batch_system</span> <span class="o">=</span> <span class="n">env_batch</span><span class="o">.</span><span class="n">make_child</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;batch_system&quot;</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;slurm&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+    <span class="n">env_batch</span><span class="o">.</span><span class="n">make_child</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;batch_query&quot;</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;args&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">},</span> <span class="n">root</span><span class="o">=</span><span class="n">batch_system</span><span class="p">)</span>
+    <span class="n">batch_submit</span> <span class="o">=</span> <span class="n">env_batch</span><span class="o">.</span><span class="n">make_child</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;batch_submit&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">batch_system</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="n">batch_submit_value</span>
+    <span class="p">)</span>
+    <span class="n">env_batch</span><span class="o">.</span><span class="n">make_child</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;batch_cancel&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">batch_system</span><span class="p">)</span>
+    <span class="n">env_batch</span><span class="o">.</span><span class="n">make_child</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;batch_redirect&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">batch_system</span><span class="p">)</span>
+    <span class="n">env_batch</span><span class="o">.</span><span class="n">make_child</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;batch_directive&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">batch_system</span><span class="p">)</span>
+    <span class="n">directives</span> <span class="o">=</span> <span class="n">env_batch</span><span class="o">.</span><span class="n">make_child</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;directives&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">batch_system</span><span class="p">)</span>
+    <span class="n">env_batch</span><span class="o">.</span><span class="n">make_child</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;directive&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">directives</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">batch_system</span></div>
+
+
+
+<div class="viewcode-block" id="create_fake_env">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_locked_files.create_fake_env">[docs]</a>
+<span class="k">def</span> <span class="nf">create_fake_env</span><span class="p">(</span><span class="n">tempdir</span><span class="p">):</span>
+    <span class="n">locked_files_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">tempdir</span><span class="p">,</span> <span class="n">locked_files</span><span class="o">.</span><span class="n">LOCKED_DIR</span><span class="p">)</span>
+
+    <span class="n">locked_files_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">locked_file_path</span> <span class="o">=</span> <span class="n">locked_files_dir</span> <span class="o">/</span> <span class="s2">&quot;env_batch.xml&quot;</span>
+
+    <span class="n">env_batch</span> <span class="o">=</span> <span class="n">EnvBatch</span><span class="p">(</span><span class="n">tempdir</span><span class="p">)</span>
+
+    <span class="n">env_batch</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">force_write</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">batch_system</span> <span class="o">=</span> <span class="n">create_batch_system</span><span class="p">(</span><span class="n">env_batch</span><span class="p">,</span> <span class="s2">&quot;sbatch&quot;</span><span class="p">)</span>
+
+    <span class="n">env_batch</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">locked_file_path</span><span class="p">),</span> <span class="n">force_write</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">env_batch</span><span class="o">.</span><span class="n">remove_child</span><span class="p">(</span><span class="n">batch_system</span><span class="p">)</span>
+
+    <span class="n">batch_system</span> <span class="o">=</span> <span class="n">create_batch_system</span><span class="p">(</span><span class="n">env_batch</span><span class="p">)</span>
+
+    <span class="n">env_batch</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">force_write</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">env_batch</span></div>
+
+
+
+<div class="viewcode-block" id="TestLockedFiles">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_locked_files.TestLockedFiles">[docs]</a>
+<span class="k">class</span> <span class="nc">TestLockedFiles</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestLockedFiles.test_check_diff_reset_and_rebuild">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_locked_files.TestLockedFiles.test_check_diff_reset_and_rebuild">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_check_diff_reset_and_rebuild</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">case</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
+
+        <span class="c1"># reset triggered by env_mach_pes</span>
+        <span class="c1"># rebuild triggered by REBUILD_TRIGGER_ATM and REBUILD_TRIGGER_LND</span>
+        <span class="c1"># COMP_CLASSES, REBUILD_TRIGGER_CPL, REBUILD_TRIGGER_ATM, REBUILD_TRIGGER_LND</span>
+        <span class="k">case</span><span class="o">.</span><span class="n">get_values</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">(</span><span class="s2">&quot;CPL&quot;</span><span class="p">,</span> <span class="s2">&quot;ATM&quot;</span><span class="p">,</span> <span class="s2">&quot;LND&quot;</span><span class="p">),</span>
+            <span class="p">(),</span>
+            <span class="p">(</span><span class="s2">&quot;NTASKS&quot;</span><span class="p">,),</span>
+            <span class="p">(</span><span class="s2">&quot;NTASKS&quot;</span><span class="p">,),</span>
+        <span class="p">)</span>
+
+        <span class="n">diff</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;NTASKS&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;32&quot;</span><span class="p">,</span> <span class="s2">&quot;16&quot;</span><span class="p">),</span>
+        <span class="p">}</span>
+
+        <span class="n">expected_msg</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;ERROR: For your changes to take effect, run:</span>
+<span class="s2">./case.setup --reset</span>
+<span class="s2">./case.build --clean atm lnd</span>
+<span class="s2">./case.build&quot;&quot;&quot;</span>
+
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaisesRegex</span><span class="p">(</span><span class="n">CIMEError</span><span class="p">,</span> <span class="n">expected_msg</span><span class="p">):</span>
+            <span class="n">locked_files</span><span class="o">.</span><span class="n">check_diff</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="s2">&quot;env_mach_pes.xml&quot;</span><span class="p">,</span> <span class="s2">&quot;env_mach_pes&quot;</span><span class="p">,</span> <span class="n">diff</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestLockedFiles.test_check_diff_reset_and_rebuild_single">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_locked_files.TestLockedFiles.test_check_diff_reset_and_rebuild_single">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_check_diff_reset_and_rebuild_single</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">case</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
+
+        <span class="c1"># reset triggered by env_mach_pes</span>
+        <span class="c1"># rebuild triggered only by REBUILD_TRIGGER_ATM</span>
+        <span class="c1"># COMP_CLASSES, REBUILD_TRIGGER_CPL, REBUILD_TRIGGER_ATM, REBUILD_TRIGGER_LND</span>
+        <span class="k">case</span><span class="o">.</span><span class="n">get_values</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="p">((</span><span class="s2">&quot;CPL&quot;</span><span class="p">,</span> <span class="s2">&quot;ATM&quot;</span><span class="p">,</span> <span class="s2">&quot;LND&quot;</span><span class="p">),</span> <span class="p">(),</span> <span class="p">(</span><span class="s2">&quot;NTASKS&quot;</span><span class="p">,),</span> <span class="p">())</span>
+
+        <span class="n">diff</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;NTASKS&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;32&quot;</span><span class="p">,</span> <span class="s2">&quot;16&quot;</span><span class="p">),</span>
+        <span class="p">}</span>
+
+        <span class="n">expected_msg</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;ERROR: For your changes to take effect, run:</span>
+<span class="s2">./case.setup --reset</span>
+<span class="s2">./case.build --clean atm</span>
+<span class="s2">./case.build&quot;&quot;&quot;</span>
+
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaisesRegex</span><span class="p">(</span><span class="n">CIMEError</span><span class="p">,</span> <span class="n">expected_msg</span><span class="p">):</span>
+            <span class="n">locked_files</span><span class="o">.</span><span class="n">check_diff</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="s2">&quot;env_mach_pes.xml&quot;</span><span class="p">,</span> <span class="s2">&quot;env_mach_pes&quot;</span><span class="p">,</span> <span class="n">diff</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestLockedFiles.test_check_diff_env_mach_pes">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_locked_files.TestLockedFiles.test_check_diff_env_mach_pes">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_check_diff_env_mach_pes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">case</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
+
+        <span class="n">diff</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;NTASKS&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;32&quot;</span><span class="p">,</span> <span class="s2">&quot;16&quot;</span><span class="p">),</span>
+        <span class="p">}</span>
+
+        <span class="n">expected_msg</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;ERROR: For your changes to take effect, run:</span>
+<span class="s2">./case.setup --reset&quot;&quot;&quot;</span>
+
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaisesRegex</span><span class="p">(</span><span class="n">CIMEError</span><span class="p">,</span> <span class="n">expected_msg</span><span class="p">):</span>
+            <span class="n">locked_files</span><span class="o">.</span><span class="n">check_diff</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="s2">&quot;env_mach_pes.xml&quot;</span><span class="p">,</span> <span class="s2">&quot;env_mach_pes&quot;</span><span class="p">,</span> <span class="n">diff</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestLockedFiles.test_check_diff_env_build_no_diff">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_locked_files.TestLockedFiles.test_check_diff_env_build_no_diff">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_check_diff_env_build_no_diff</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">case</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
+
+        <span class="n">diff</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="n">locked_files</span><span class="o">.</span><span class="n">check_diff</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="s2">&quot;env_build.xml&quot;</span><span class="p">,</span> <span class="s2">&quot;env_build&quot;</span><span class="p">,</span> <span class="n">diff</span><span class="p">)</span>
+
+        <span class="k">case</span><span class="o">.</span><span class="n">set_value</span><span class="o">.</span><span class="n">assert_not_called</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="TestLockedFiles.test_check_diff_env_build_pio_version">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_locked_files.TestLockedFiles.test_check_diff_env_build_pio_version">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_check_diff_env_build_pio_version</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">case</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
+
+        <span class="n">diff</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;some_key&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;value1&quot;</span><span class="p">,</span> <span class="s2">&quot;value2&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;PIO_VERSION&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="s2">&quot;2&quot;</span><span class="p">),</span>
+        <span class="p">}</span>
+
+        <span class="n">expected_msg</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;ERROR: For your changes to take effect, run:</span>
+<span class="s2">./case.build --clean-all</span>
+<span class="s2">./case.build&quot;&quot;&quot;</span>
+
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaisesRegex</span><span class="p">(</span><span class="n">CIMEError</span><span class="p">,</span> <span class="n">expected_msg</span><span class="p">):</span>
+            <span class="n">locked_files</span><span class="o">.</span><span class="n">check_diff</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="s2">&quot;env_build.xml&quot;</span><span class="p">,</span> <span class="s2">&quot;env_build&quot;</span><span class="p">,</span> <span class="n">diff</span><span class="p">)</span>
+
+        <span class="k">case</span><span class="o">.</span><span class="n">set_value</span><span class="o">.</span><span class="n">assert_any_call</span><span class="p">(</span><span class="s2">&quot;BUILD_COMPLETE&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="k">case</span><span class="o">.</span><span class="n">set_value</span><span class="o">.</span><span class="n">assert_any_call</span><span class="p">(</span><span class="s2">&quot;BUILD_STATUS&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestLockedFiles.test_check_diff_env_build">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_locked_files.TestLockedFiles.test_check_diff_env_build">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_check_diff_env_build</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">case</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
+
+        <span class="n">diff</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;some_key&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;value1&quot;</span><span class="p">,</span> <span class="s2">&quot;value2&quot;</span><span class="p">),</span>
+        <span class="p">}</span>
+
+        <span class="n">expected_msg</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;ERROR: For your changes to take effect, run:</span>
+<span class="s2">./case.build --clean-all</span>
+<span class="s2">./case.build&quot;&quot;&quot;</span>
+
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaisesRegex</span><span class="p">(</span><span class="n">CIMEError</span><span class="p">,</span> <span class="n">expected_msg</span><span class="p">):</span>
+            <span class="n">locked_files</span><span class="o">.</span><span class="n">check_diff</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="s2">&quot;env_build.xml&quot;</span><span class="p">,</span> <span class="s2">&quot;env_build&quot;</span><span class="p">,</span> <span class="n">diff</span><span class="p">)</span>
+
+        <span class="k">case</span><span class="o">.</span><span class="n">set_value</span><span class="o">.</span><span class="n">assert_any_call</span><span class="p">(</span><span class="s2">&quot;BUILD_COMPLETE&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="k">case</span><span class="o">.</span><span class="n">set_value</span><span class="o">.</span><span class="n">assert_any_call</span><span class="p">(</span><span class="s2">&quot;BUILD_STATUS&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestLockedFiles.test_check_diff_env_batch">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_locked_files.TestLockedFiles.test_check_diff_env_batch">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_check_diff_env_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">case</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
+
+        <span class="n">diff</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;some_key&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;value1&quot;</span><span class="p">,</span> <span class="s2">&quot;value2&quot;</span><span class="p">),</span>
+        <span class="p">}</span>
+
+        <span class="n">expected_msg</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;ERROR: For your changes to take effect, run:</span>
+<span class="s2">./case.setup --reset&quot;&quot;&quot;</span>
+
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaisesRegex</span><span class="p">(</span><span class="n">CIMEError</span><span class="p">,</span> <span class="n">expected_msg</span><span class="p">):</span>
+            <span class="n">locked_files</span><span class="o">.</span><span class="n">check_diff</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="s2">&quot;env_batch.xml&quot;</span><span class="p">,</span> <span class="s2">&quot;env_batch&quot;</span><span class="p">,</span> <span class="n">diff</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestLockedFiles.test_check_diff_env_case">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_locked_files.TestLockedFiles.test_check_diff_env_case">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_check_diff_env_case</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">case</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
+
+        <span class="n">diff</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;some_key&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;value1&quot;</span><span class="p">,</span> <span class="s2">&quot;value2&quot;</span><span class="p">),</span>
+        <span class="p">}</span>
+
+        <span class="n">expected_msg</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;ERROR: Cannot change `env_case.xml`, please restore origin &#39;env_case.xml&#39;&quot;</span>
+        <span class="p">)</span>
+
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaisesRegex</span><span class="p">(</span><span class="n">CIMEError</span><span class="p">,</span> <span class="n">expected_msg</span><span class="p">):</span>
+            <span class="n">locked_files</span><span class="o">.</span><span class="n">check_diff</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="s2">&quot;env_case.xml&quot;</span><span class="p">,</span> <span class="s2">&quot;env_case&quot;</span><span class="p">,</span> <span class="n">diff</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestLockedFiles.test_diff_lockedfile_detect_difference">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_locked_files.TestLockedFiles.test_diff_lockedfile_detect_difference">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_diff_lockedfile_detect_difference</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">case</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
+
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tempdir</span><span class="p">:</span>
+            <span class="k">case</span><span class="o">.</span><span class="n">get_value</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="p">(</span><span class="n">tempdir</span><span class="p">,)</span>
+
+            <span class="n">env_batch</span> <span class="o">=</span> <span class="n">create_fake_env</span><span class="p">(</span><span class="n">tempdir</span><span class="p">)</span>
+
+            <span class="k">case</span><span class="o">.</span><span class="n">get_env</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">env_batch</span>
+
+            <span class="n">_</span><span class="p">,</span> <span class="n">diff</span> <span class="o">=</span> <span class="n">locked_files</span><span class="o">.</span><span class="n">diff_lockedfile</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">tempdir</span><span class="p">,</span> <span class="s2">&quot;env_batch.xml&quot;</span><span class="p">)</span>
+
+            <span class="k">assert</span> <span class="n">diff</span>
+            <span class="k">assert</span> <span class="n">diff</span><span class="p">[</span><span class="s2">&quot;batch_submit&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;sbatch&quot;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="TestLockedFiles.test_diff_lockedfile_not_supported">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_locked_files.TestLockedFiles.test_diff_lockedfile_not_supported">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_diff_lockedfile_not_supported</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">case</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
+
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tempdir</span><span class="p">:</span>
+            <span class="k">case</span><span class="o">.</span><span class="n">get_value</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="p">(</span><span class="n">tempdir</span><span class="p">,)</span>
+
+            <span class="n">locked_file_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">tempdir</span><span class="p">,</span> <span class="n">locked_files</span><span class="o">.</span><span class="n">LOCKED_DIR</span><span class="p">,</span> <span class="s2">&quot;env_new.xml&quot;</span><span class="p">)</span>
+
+            <span class="n">locked_file_path</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="n">locked_file_path</span><span class="o">.</span><span class="n">touch</span><span class="p">()</span>
+
+            <span class="n">_</span><span class="p">,</span> <span class="n">diff</span> <span class="o">=</span> <span class="n">locked_files</span><span class="o">.</span><span class="n">diff_lockedfile</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">tempdir</span><span class="p">,</span> <span class="s2">&quot;env_new.xml&quot;</span><span class="p">)</span>
+
+            <span class="k">assert</span> <span class="ow">not</span> <span class="n">diff</span></div>
+
+
+<div class="viewcode-block" id="TestLockedFiles.test_diff_lockedfile_does_not_exist">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_locked_files.TestLockedFiles.test_diff_lockedfile_does_not_exist">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_diff_lockedfile_does_not_exist</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">case</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
+
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tempdir</span><span class="p">:</span>
+            <span class="k">case</span><span class="o">.</span><span class="n">get_value</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="p">(</span><span class="n">tempdir</span><span class="p">,)</span>
+
+            <span class="n">locked_files</span><span class="o">.</span><span class="n">diff_lockedfile</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">tempdir</span><span class="p">,</span> <span class="s2">&quot;env_batch.xml&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestLockedFiles.test_diff_lockedfile">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_locked_files.TestLockedFiles.test_diff_lockedfile">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_diff_lockedfile</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">case</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
+
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tempdir</span><span class="p">:</span>
+            <span class="k">case</span><span class="o">.</span><span class="n">get_value</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="p">(</span><span class="n">tempdir</span><span class="p">,)</span>
+
+            <span class="n">create_fake_env</span><span class="p">(</span><span class="n">tempdir</span><span class="p">)</span>
+
+            <span class="n">locked_files</span><span class="o">.</span><span class="n">diff_lockedfile</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">tempdir</span><span class="p">,</span> <span class="s2">&quot;env_batch.xml&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestLockedFiles.test_check_lockedfile">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_locked_files.TestLockedFiles.test_check_lockedfile">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_check_lockedfile</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">case</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
+
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tempdir</span><span class="p">:</span>
+            <span class="k">case</span><span class="o">.</span><span class="n">get_value</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="p">(</span><span class="n">tempdir</span><span class="p">,)</span>
+
+            <span class="n">create_fake_env</span><span class="p">(</span><span class="n">tempdir</span><span class="p">)</span>
+
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">CIMEError</span><span class="p">):</span>
+                <span class="n">locked_files</span><span class="o">.</span><span class="n">check_lockedfile</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="s2">&quot;env_batch.xml&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestLockedFiles.test_check_lockedfiles_skip">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_locked_files.TestLockedFiles.test_check_lockedfiles_skip">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_check_lockedfiles_skip</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">case</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
+
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tempdir</span><span class="p">:</span>
+            <span class="k">case</span><span class="o">.</span><span class="n">get_value</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="p">(</span><span class="n">tempdir</span><span class="p">,)</span>
+
+            <span class="n">create_fake_env</span><span class="p">(</span><span class="n">tempdir</span><span class="p">)</span>
+
+            <span class="n">locked_files</span><span class="o">.</span><span class="n">check_lockedfiles</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">skip</span><span class="o">=</span><span class="s2">&quot;env_batch.xml&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestLockedFiles.test_check_lockedfiles">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_locked_files.TestLockedFiles.test_check_lockedfiles">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_check_lockedfiles</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">case</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
+
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tempdir</span><span class="p">:</span>
+            <span class="k">case</span><span class="o">.</span><span class="n">get_value</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="p">(</span><span class="n">tempdir</span><span class="p">,)</span>
+
+            <span class="n">create_fake_env</span><span class="p">(</span><span class="n">tempdir</span><span class="p">)</span>
+
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">CIMEError</span><span class="p">):</span>
+                <span class="n">locked_files</span><span class="o">.</span><span class="n">check_lockedfiles</span><span class="p">(</span><span class="n">case</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestLockedFiles.test_check_lockedfiles_quiet">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_locked_files.TestLockedFiles.test_check_lockedfiles_quiet">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_check_lockedfiles_quiet</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">case</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
+
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tempdir</span><span class="p">:</span>
+            <span class="k">case</span><span class="o">.</span><span class="n">get_value</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="p">(</span><span class="n">tempdir</span><span class="p">,)</span>
+
+            <span class="n">create_fake_env</span><span class="p">(</span><span class="n">tempdir</span><span class="p">)</span>
+
+            <span class="c1"># Should not raise exception</span>
+            <span class="n">locked_files</span><span class="o">.</span><span class="n">check_lockedfiles</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestLockedFiles.test_is_locked">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_locked_files.TestLockedFiles.test_is_locked">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_is_locked</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tempdir</span><span class="p">:</span>
+            <span class="n">src_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">tempdir</span><span class="p">,</span> <span class="n">locked_files</span><span class="o">.</span><span class="n">LOCKED_DIR</span><span class="p">,</span> <span class="s2">&quot;env_case.xml&quot;</span><span class="p">)</span>
+
+            <span class="n">src_path</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="n">src_path</span><span class="o">.</span><span class="n">touch</span><span class="p">()</span>
+
+            <span class="k">assert</span> <span class="n">locked_files</span><span class="o">.</span><span class="n">is_locked</span><span class="p">(</span><span class="s2">&quot;env_case.xml&quot;</span><span class="p">,</span> <span class="n">tempdir</span><span class="p">)</span>
+
+            <span class="n">src_path</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span>
+
+            <span class="k">assert</span> <span class="ow">not</span> <span class="n">locked_files</span><span class="o">.</span><span class="n">is_locked</span><span class="p">(</span><span class="s2">&quot;env_case.xml&quot;</span><span class="p">,</span> <span class="n">tempdir</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestLockedFiles.test_unlock_file_error_path">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_locked_files.TestLockedFiles.test_unlock_file_error_path">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_unlock_file_error_path</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tempdir</span><span class="p">:</span>
+            <span class="n">src_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">tempdir</span><span class="p">,</span> <span class="n">locked_files</span><span class="o">.</span><span class="n">LOCKED_DIR</span><span class="p">,</span> <span class="s2">&quot;env_case.xml&quot;</span><span class="p">)</span>
+
+            <span class="n">src_path</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="n">src_path</span><span class="o">.</span><span class="n">touch</span><span class="p">()</span>
+
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">CIMEError</span><span class="p">):</span>
+                <span class="n">locked_files</span><span class="o">.</span><span class="n">unlock_file</span><span class="p">(</span><span class="s2">&quot;/env_case.xml&quot;</span><span class="p">,</span> <span class="n">tempdir</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestLockedFiles.test_unlock_file">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_locked_files.TestLockedFiles.test_unlock_file">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_unlock_file</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tempdir</span><span class="p">:</span>
+            <span class="n">src_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">tempdir</span><span class="p">,</span> <span class="n">locked_files</span><span class="o">.</span><span class="n">LOCKED_DIR</span><span class="p">,</span> <span class="s2">&quot;env_case.xml&quot;</span><span class="p">)</span>
+
+            <span class="n">src_path</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="n">src_path</span><span class="o">.</span><span class="n">touch</span><span class="p">()</span>
+
+            <span class="n">locked_files</span><span class="o">.</span><span class="n">unlock_file</span><span class="p">(</span><span class="s2">&quot;env_case.xml&quot;</span><span class="p">,</span> <span class="n">tempdir</span><span class="p">)</span>
+
+            <span class="k">assert</span> <span class="ow">not</span> <span class="n">src_path</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="TestLockedFiles.test_lock_file_newname">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_locked_files.TestLockedFiles.test_lock_file_newname">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_lock_file_newname</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tempdir</span><span class="p">:</span>
+            <span class="n">src_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">tempdir</span><span class="p">,</span> <span class="s2">&quot;env_case.xml&quot;</span><span class="p">)</span>
+
+            <span class="n">src_path</span><span class="o">.</span><span class="n">touch</span><span class="p">()</span>
+
+            <span class="n">locked_files</span><span class="o">.</span><span class="n">lock_file</span><span class="p">(</span><span class="s2">&quot;env_case.xml&quot;</span><span class="p">,</span> <span class="n">tempdir</span><span class="p">,</span> <span class="n">newname</span><span class="o">=</span><span class="s2">&quot;env_case-old.xml&quot;</span><span class="p">)</span>
+
+            <span class="n">dst_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">tempdir</span><span class="p">,</span> <span class="n">locked_files</span><span class="o">.</span><span class="n">LOCKED_DIR</span><span class="p">,</span> <span class="s2">&quot;env_case-old.xml&quot;</span><span class="p">)</span>
+
+            <span class="k">assert</span> <span class="n">dst_path</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="TestLockedFiles.test_lock_file_error_path">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_locked_files.TestLockedFiles.test_lock_file_error_path">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_lock_file_error_path</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tempdir</span><span class="p">:</span>
+            <span class="n">src_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">tempdir</span><span class="p">,</span> <span class="s2">&quot;env_case.xml&quot;</span><span class="p">)</span>
+
+            <span class="n">src_path</span><span class="o">.</span><span class="n">touch</span><span class="p">()</span>
+
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">CIMEError</span><span class="p">):</span>
+                <span class="n">locked_files</span><span class="o">.</span><span class="n">lock_file</span><span class="p">(</span><span class="s2">&quot;/env_case.xml&quot;</span><span class="p">,</span> <span class="n">tempdir</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestLockedFiles.test_lock_file">
+<a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_unit_locked_files.TestLockedFiles.test_lock_file">[docs]</a>
+    <span class="k">def</span> <span class="nf">test_lock_file</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tempdir</span><span class="p">:</span>
+            <span class="n">src_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">tempdir</span><span class="p">,</span> <span class="s2">&quot;env_case.xml&quot;</span><span class="p">)</span>
+
+            <span class="n">src_path</span><span class="o">.</span><span class="n">touch</span><span class="p">()</span>
+
+            <span class="n">locked_files</span><span class="o">.</span><span class="n">lock_file</span><span class="p">(</span><span class="s2">&quot;env_case.xml&quot;</span><span class="p">,</span> <span class="n">tempdir</span><span class="p">)</span>
+
+            <span class="n">dst_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">tempdir</span><span class="p">,</span> <span class="n">locked_files</span><span class="o">.</span><span class="n">LOCKED_DIR</span><span class="p">,</span> <span class="s2">&quot;env_case.xml&quot;</span><span class="p">)</span>
+
+            <span class="k">assert</span> <span class="n">dst_path</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
+     
+<script>var version_json_loc = "../../../../../versions.json";</script>
+
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+
+  <script type="text/javascript">
+    let baseUriRegex = /(.*\/cime)\/.*/g;
+    let parsedUri = baseUriRegex.exec(document.baseURI);
+
+    if (parsedUri != null && parsedUri.length == 2) {
+      let baseUri = parsedUri[1];
+
+      $.get(`${baseUri}/versions/versions.json`, function(data) {
+        let versionElement = $("#versions");
+
+        Object.keys(data).forEach(function(key) {
+          let value = data[key];
+
+          let item = `<dd><a href="${baseUri}/versions/${key}/html/">${value}</a></dd>`
+
+          versionElement.append(item);
+        });
+      });
+    }
+  </script>
+  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      <span class="fa fa-book"> Read the Docs</span>
+      v: master
+      <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+      
+      <dl id="versions">
+        <dt>Versions</dt>
+      </dl>
+      
+      
+    </div>
+  </div>
+<script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

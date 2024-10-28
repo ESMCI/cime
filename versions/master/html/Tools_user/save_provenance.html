@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../">
 <head>
@@ -6,19 +8,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>save_provenance &mdash; CIME master documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
       <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../_static/jquery.js?v=5d32c60e"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=30d551ce"></script>
-        <script src="../_static/doctools.js?v=9a2dae69"></script>
-        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=30d551ce"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -37,9 +38,6 @@
           <a href="../index.html" class="icon icon-home">
             CIME
           </a>
-              <div class="version">
-                master
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -148,14 +146,38 @@
 <div class="toctree-wrapper compound">
 </div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ ./save_provenance --help
-Traceback (most recent call last):
-  File &quot;/home/runner/work/cime/cime/CIME/Tools/./save_provenance&quot;, line 7, in &lt;module&gt;
-    from standard_script_setup import *
-  File &quot;/home/runner/work/cime/cime/CIME/Tools/standard_script_setup.py&quot;, line 42, in &lt;module&gt;
-    import CIME.utils
-  File &quot;/home/runner/work/cime/cime/CIME/utils.py&quot;, line 15, in &lt;module&gt;
-    from distutils import file_util
-ModuleNotFoundError: No module named &#39;distutils&#39;
+usage: 
+save_provenance &lt;MODE&gt; [&lt;casedir&gt;] [--verbose]
+OR
+save_provenance --help
+
+[1mEXAMPLES:[0m
+    [1;32m# Save run (timing) provenance for current case [0m
+    &gt; save_provenance postrun
+
+This tool provide command-line access to provenance-saving functionality
+
+positional arguments:
+  {build,prerun,postrun}
+                        Phase for which to save provenance. prerun is mostly
+                        for infrastructure testing; it does not make sense to
+                        store this information manually otherwise
+  caseroot              Case directory (default:
+                        /home/runner/work/cime/cime/CIME/Tools)
+
+options:
+  -h, --help            show this help message and exit
+  -l LID, --lid LID     Force system to save provenance with this LID
+                        (default: None)
+
+Logging options:
+  -d, --debug           Print debug information (very verbose) to file /home/r
+                        unner/work/cime/cime/CIME/Tools/save_provenance.log
+                        (default: False)
+  -v, --verbose         Add additional context (time and file) to log messages
+                        (default: False)
+  -s, --silent          Print only warnings and error messages (default:
+                        False)
 </pre></div>
 </div>
 </section>
