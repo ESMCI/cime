@@ -298,10 +298,14 @@ class EnvBatch(EnvBase):
             fd.write(output_text)
 
         # make sure batch script is exectuble
-        os.chmod(
-            output_name,
-            os.stat(output_name).st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH,
-        )
+        if not os.access(output_name, os.X_OK):
+            os.chmod(
+                output_name,
+                os.stat(output_name).st_mode
+                | stat.S_IXUSR
+                | stat.S_IXGRP
+                | stat.S_IXOTH,
+            )
 
     def set_job_defaults(self, batch_jobs, case):
         if self._batchtype is None:
