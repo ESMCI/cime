@@ -350,7 +350,12 @@ def stage_refcase(self, input_data_root=None, data_list_dir=None):
 
         for rcfile in glob.iglob(os.path.join(refdir, "*")):
             rcbaseline = os.path.basename(rcfile)
-            if not os.path.exists("{}/{}".format(rundir, rcbaseline)):
+            skipfiles = (
+                "timing" in rcbaseline
+                or "spio_stats" in rcbaseline
+                or "memory." in rcbaseline
+            )
+            if not os.path.exists("{}/{}".format(rundir, rcbaseline)) and not skipfiles:
                 logger.info("Staging file {}".format(rcfile))
                 os.symlink(rcfile, "{}/{}".format(rundir, rcbaseline))
         # Backward compatibility, some old refcases have cam2 in the name
