@@ -36,6 +36,24 @@ class _Element(
     def __deepcopy__(self, _):
         return _Element(deepcopy(self.xml_element))
 
+    def __str__(self):
+        return str(self.xml_element)
+
+    def __repr__(self):
+        return repr(self.xml_element)
+
+    @property
+    def name(self):
+        return self.xml_element.tag
+
+    @property
+    def text(self):
+        return self.xml_element.text
+
+    @property
+    def attrib(self):
+        return dict(self.xml_element.attrib)
+
 
 class GenericXML(object):
 
