@@ -1864,7 +1864,7 @@ directory, NOT in this subdirectory."""
                 continue
             comp_grid = "{}_GRID".format(component_class)
             grid_val = self.get_value(comp_grid)
-            if grid_val is not "null":
+            if grid_val != "null":
                 append_status(
                     "{} is {}".format(comp_grid, self.get_value(comp_grid)),
                     "README.case",
