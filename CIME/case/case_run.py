@@ -477,7 +477,7 @@ def case_run(self, skip_pnl=False, set_continue_run=False, submit_resubmits=Fals
         and len(data_assimilation_script) > 0
         and os.path.isfile(data_assimilation_script)
     )
-
+    drv_restart_pointer = self.get_value("DRV_RESTART_POINTER")
     for cycle in range(data_assimilation_cycles):
         # After the first DA cycle, runs are restart runs
         if cycle > 0:
@@ -496,6 +496,15 @@ def case_run(self, skip_pnl=False, set_continue_run=False, submit_resubmits=Fals
             "{} RUN_MODEL BEGINS HERE".format(time.strftime("%Y-%m-%d %H:%M:%S")),
         )
         lid = _run_model(self, lid, skip_pnl, da_cycle=cycle)
+
+        # get the most recent cpl restart pointer file
+        rundir = self.get_value("RUNDIR")
+        if drv_restart_pointer:
+            pattern = os.path.join(rundir, "rpointer.cpl*")
+            files = glob.glob(pattern)
+            files.sort(key=(os.path.getmtime(x) for x in files))
+            drv_ptr = os.path.basename(files[-1])
+            self.set_value("DRV_RESTART_POINTER", drv_ptr)
         model_log(
             "e3sm",
             logger,

@@ -399,7 +399,13 @@ class SystemTestsCommon(object):
         """
         success = True
         start_time = time.time()
-        self._skip_pnl = skip_pnl
+        wav_comp = self._case.get_value("COMP_WAV")
+        # WW3 requires pnl to be run again after the build phase.
+        if wav_comp and wav_comp == "ww3":
+            self._skip_pnl = False
+        else:
+            self._skip_pnl = skip_pnl
+
         try:
             self._resetup_case(RUN_PHASE)
             do_baseline_ops = True
