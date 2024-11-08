@@ -29,6 +29,7 @@ def create_complex_case(
         "MVK.f19_g16.S.docker_gnu",  # CASEBASEID
         "mct",  # COMP_INTERFACE
         "mct",  # COMP_INTERFACE
+        False,  # DRV_RESTART_POINTER
     ]
 
     # single extra call for _compare_baseline
@@ -93,6 +94,7 @@ def create_simple_case(model="e3sm", resubmit=0, generate_baseline=False):
         "/tmp/case",  # CASEROOT
         "MVK.f19_g16.S.docker_gnu",  # CASEBASEID
         "mct",  # COMP_INTERFACE
+        False,  # DRV_RESTART_POINTER
         "MVK.f19_g16.S.docker_gnu",  # CASEBASEID
         model,
         resubmit,
@@ -439,6 +441,7 @@ test_case = "Default"
             n = 7
             side_effect.insert(n, 8)
             side_effect.insert(n, 16)
+            side_effect.insert(n, None)
 
             case.get_value.side_effect = side_effect
 
@@ -481,6 +484,7 @@ test_case = "Default"
 
             side_effect.extend(
                 [
+                    None,
                     str(baseline_dir),
                     "MVK.f19_g16.S",
                     str(run_dir),
