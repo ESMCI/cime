@@ -501,8 +501,7 @@ def case_run(self, skip_pnl=False, set_continue_run=False, submit_resubmits=Fals
         rundir = self.get_value("RUNDIR")
         if drv_restart_pointer:
             pattern = os.path.join(rundir, "rpointer.cpl*")
-            files = glob.glob(pattern)
-            files.sort(key=(os.path.getmtime(x) for x in files))
+            files = sorted(glob.glob(pattern), key=os.path.getmtime)
             drv_ptr = os.path.basename(files[-1])
             self.set_value("DRV_RESTART_POINTER", drv_ptr)
         model_log(
