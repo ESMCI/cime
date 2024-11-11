@@ -1487,8 +1487,7 @@ class EnvBatch(EnvBase):
             else:
                 xmldiffs.update(self._compare_node(node1, node2))
 
-        f1groups = self.get_children("group")
-        for node in f1groups:
+        for node in self.get_children("group"):
             group = self.get(node, "id")
             f2group = other.get_child("group", attributes={"id": group})
             xmldiffs.update(
