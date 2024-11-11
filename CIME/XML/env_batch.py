@@ -1469,25 +1469,23 @@ class EnvBatch(EnvBase):
                     elif (x is not None and x.name == "argument") or (
                         y is not None and y.name == "argument"
                     ):
-                        xmldiffs.update(self._compare_argument(i, x, y))
+                        xmldiffs.update(self._compare_node(x, y, i))
             elif node1.name == "directives":
                 self_nodes = self.get_children(root=node1)
                 other_nodes = other.get_children(root=node2)
                 for i, (x, y) in enumerate(
                     zip_longest(self_nodes, other_nodes, fillvalue=None)
                 ):
-                    if x is None:
-                        xmldiffs[f"directive{i}"] = ["", y.text]
-                    elif y is None:
-                        xmldiffs[f"directive{i}"] = [x.text, ""]
-                    elif x.text != y.text:
-                        xmldiffs[f"directive{i}"] = [x.text, y.text]
-            elif (
-                node1.name != node2.name
-                or node1.attrib != node2.attrib
-                or node1.text != node2.text
-            ):
-                xmldiffs[node1.name] = [node1.text, node2.text]
+                    xmldiffs.update(self._compare_node(x, y, i))
+            elif node1.name == "queues":
+                self_nodes = self.get_children(root=node1)
+                other_nodes = other.get_children(root=node2)
+                for i, (x, y) in enumerate(
+                    zip_longest(self_nodes, other_nodes, fillvalue=None)
+                ):
+                    xmldiffs.update(self._compare_node(x, y, i))
+            else:
+                xmldiffs.update(self._compare_node(node1, node2))
 
         f1groups = self.get_children("group")
         for node in f1groups:
@@ -1497,6 +1495,36 @@ class EnvBatch(EnvBase):
                 super(EnvBatch, self).compare_xml(other, root=node, otherroot=f2group)
             )
         return xmldiffs
+
+    def _compare_node(self, x, y, index=None):
+        """Compares two XML nodes and returns diff.
+
+        Compares the attributes and text of two XML nodes. Handles the case when either node is `None`.
+
+        The `index` argument can be used to append the nodes tag. This can be useful when comparing a list
+        of XML nodes that all have the same tag to differentiate which nodes are different.
+
+        Args:
+            x (:obj:`CIME.XML.generic_xml._Element`): First node.
+            y (:obj:`CIME.XML.generic_xml._Element`): Second node.
+            index (int, optional): Index of the nodes.
+
+        Returns:
+            dict: Key is the tag and value is the difference.
+        """
+        diff = {}
+
+        if index is None:
+            index = ""
+
+        if x is None:
+            diff[f"{y.name}{index}"] = ["", y.text]
+        elif y is None:
+            diff[f"{x.name}{index}"] = [x.text, ""]
+        elif x.text != y.text or x.attrib != y.attrib:
+            diff[f"{x.name}{index}"] = [x.text, y.text]
+
+        return diff
 
     def make_all_batch_files(self, case):
         machdir = case.get_value("MACHDIR")

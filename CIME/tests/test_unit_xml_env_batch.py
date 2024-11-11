@@ -61,8 +61,9 @@ XML_BASE = b"""<?xml version="1.0"?>
       <argument>-w docker</argument>
     </submit_args>
     <queues>
-      <queue walltimemax="01:00:00" nodemax="1">long</queue>
-      <queue walltimemax="00:30:00" nodemax="1" default="true">short</queue>
+      <queue walltimemax="00:15:00" nodemax="1">debug</queue>
+      <queue walltimemax="24:00:00" nodemax="20" nodemin="5">big</queue>
+      <queue walltimemax="00:30:00" nodemax="5" default="true">smallfast</queue>
     </queues>
   </batch_system>
 </file>"""
@@ -119,8 +120,8 @@ XML_DIFF = b"""<?xml version="1.0"?>
       <argument>-w docker</argument>
     </submit_args>
     <queues>
-      <queue walltimemax="01:00:00" nodemax="1">long</queue>
-      <queue walltimemax="00:30:00" nodemax="1" default="true">short</queue>
+      <queue walltimemax="00:15:00" nodemax="1">debug</queue>
+      <queue walltimemax="24:00:00" nodemax="20" nodemin="10">big</queue>
     </queues>
   </batch_system>
 </file>"""
@@ -155,6 +156,8 @@ class TestXMLEnvBatch(unittest.TestCase):
             "batch_submit": ["batch", "sbatch"],
             "directive1": [" --nodes=10", " --nodes={{ num_nodes }}"],
             "directive4": [" --qos=high ", ""],
+            "queue1": ["big", "big"],
+            "queue2": ["", "smallfast"],
         }
 
         assert diff == expected_diff
@@ -166,6 +169,8 @@ class TestXMLEnvBatch(unittest.TestCase):
             "batch_submit": ["sbatch", "batch"],
             "directive1": [" --nodes={{ num_nodes }}", " --nodes=10"],
             "directive4": ["", " --qos=high "],
+            "queue1": ["big", "big"],
+            "queue2": ["smallfast", ""],
         }
 
         assert diff2 == expected_diff2
