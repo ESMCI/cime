@@ -934,6 +934,6 @@ def get_timing(case, lid):
     append_case_status(
         "",
         "",
-        msg="Timing files created for run at {}".format(lid),
+        msg="Timing files created for run {}".format(lid),
         gitinterface=case._gitinterface,
     )

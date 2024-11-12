@@ -565,7 +565,7 @@ def case_setup(self, clean=False, test_mode=False, reset=False, keep=None):
             caseroot=caseroot,
             is_batch=is_batch,
         )
-    self._create_case_repo(caseroot)
+        self._create_case_repo(caseroot)
 
 
 def _create_case_repo(self, caseroot):
