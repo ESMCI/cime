@@ -1409,10 +1409,14 @@ def safe_copy(src_path, tgt_path, preserve_meta=True):
 
         if owner_uid == os.getuid():
             # I am the owner, copy file contents, permissions, and metadata
-            shutil.copy2(
-                src_path,
-                tgt_path,
-            )
+            try:
+                shutil.copy2(
+                    src_path,
+                    tgt_path,
+                )
+            # ignore same file error
+            except shutil.SameFileError:
+                pass
         else:
             # I am not the owner, just copy file contents
             shutil.copyfile(src_path, tgt_path)
