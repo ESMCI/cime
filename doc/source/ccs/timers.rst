@@ -1,8 +1,7 @@
 .. _timers:
 
-===================
 Timers and timing
-===================
+=================
 
 CIME includes a copy of the General Purpose Timing Library (GPTL) and timers are placed throughout the CIME driver.  CIME-driven models typically
 also have GPTL timers in their code and very detailed timing information can be obtained.
@@ -172,9 +171,11 @@ a job to run. On some machines, you may need to leave as much as 20%
 buffer time in your run to guarantee that jobs finish reliably before
 the time limit. For that reason, set your model to run only one model
 year/job. In this example, set your wallclock at 12 hours and invoke
-`xmlchange <../Tools_user/xmlchange.html>`_  in ``CASEROOT`` as shown here: ::
+``xmlchange`` in ``CASEROOT`` as shown here: 
 
-  >./xmlchange STOP_OPTION=nyears
-  >./xmlchange STOP_N=1
-  >./xmlchange REST_OPTION=nyears
-  >./xmlchange REST_N=1
+::
+
+  ./xmlchange STOP_OPTION=nyears
+  ./xmlchange STOP_N=1
+  ./xmlchange REST_OPTION=nyears
+  ./xmlchange REST_N=1

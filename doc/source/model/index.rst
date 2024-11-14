@@ -17,3 +17,4 @@ Integration Guide
     multi-instance.rst
     workflows.rst
     cime-dir.rst
+    cime-customize.rst

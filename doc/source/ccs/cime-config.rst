@@ -1,8 +1,5 @@
-.. _customizing-cime:
-
-===============================
 CIME user config directory
-===============================
+==========================
 
 CIME recognizes a user-created custom configuration directory, ``$HOME/.cime``. The contents of this directory may include any of the following files:
 

@@ -6,12 +6,13 @@ Troubleshooting
 Troubleshooting case creation
 -----------------------------
 
-Generally, `create_newcase  <../Tools_user/create_newcase.html>`_ errors are reported to the terminal and should provide some guidance about what caused them.
+Generally, ``create_newcase`` errors are reported to the terminal and should provide some guidance about what caused them.
 
-If `create_newcase  <../Tools_user/create_newcase.html>`_ fails on a relatively generic error, first check to make sure the command-line arguments match the interface's specification. See the help text to review usage.
+If ``create_newcase`` fails on a relatively generic error, first check to make sure the command-line arguments match the interface's specification. See the help text to review usage.
+
 ::
 
-   > create_newcase --help
+     create_newcase --help
 
 Troubleshooting problems in cime scripts
 ----------------------------------------
@@ -22,13 +23,13 @@ Troubleshooting job submission
 -------------------------------
 
 Most problems associated with submission or launch are site-specific.
-The batch and run aspects of the `case.submit  <../Tools_user/case.submit.html>`_ script are created by parsing the variables in **$CASEROOT/env_batch.xml** file.
+The batch and run aspects of the ``case.submit`` script are created by parsing the variables in **$CASEROOT/env_batch.xml** file.
 
 Take these steps to check for problems:
 
 1. Review the batch submission options in **$CASEROOT/env_batch.xml**. Confirm that they are consistent with the site-specific batch environment, and that the queue names, time limits, and hardware processor request make sense and are consistent with the case.
 
-2. Make sure that `case.submit  <../Tools_user/case.submit.html>`_ uses the correct batch job tool for submitting the `case.submit  <../Tools_user/case.submit.html>`_ script. Depending on the batch environment, it might be **bsub**, **qsub** or another command. Also confirm if a redirection "<" character is required. The information for how **case.submit** submits jobs appears at the end of the standard output stream.
+2. Make sure that ``case.submit`` uses the correct batch job tool for submitting the ``case.submit`` script. Depending on the batch environment, it might be **bsub**, **qsub** or another command. Also confirm if a redirection "<" character is required. The information for how **case.submit** submits jobs appears at the end of the standard output stream.
 
 Troubleshooting runtime problems
 ---------------------------------
@@ -77,13 +78,14 @@ Another error that can cause a timeout is a slow or intermittently slow node.
 The **cpl.log** file normally outputs the time used for every model simulation day. To review that data, grep the **cpl.log** file for the string ``tStamp`` as shown here:
 ::
 
-     > grep tStamp cpl.log.* | more
+    grep tStamp cpl.log.* | more
 
 The output looks like this:
+
 ::
 
-  tStamp_write: model date = 10120 0 wall clock = 2009-09-28 09:10:46 avg dt = 58.58 dt = 58.18
-  tStamp_write: model date = 10121 0 wall clock = 2009-09-28 09:12:32 avg dt = 60.10 dt = 105.90
+    tStamp_write: model date = 10120 0 wall clock = 2009-09-28 09:10:46 avg dt = 58.58 dt = 58.18
+    tStamp_write: model date = 10121 0 wall clock = 2009-09-28 09:12:32 avg dt = 60.10 dt = 105.90
 
 
 Review the run times at the end of each line for each model day.

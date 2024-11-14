@@ -20,6 +20,7 @@ The following key terms and concepts are ingrained in the CCS and used frequentl
 See the :ref:`glossary` for a more complete list of terms.
 
 Components
+::::::::::
     In CIME, a coupled earth system model is made up of *components* that interact through a coupler and are all controlled by a driver.
 
     In the current version of CIME, there are 7 physical components allowed.
@@ -45,6 +46,7 @@ Components
     * integrated assessment component (iac)
 
 Component Types
+:::::::::::::::
    For each of the 7 physical components (models), there can be three different implementations in a CIME-driven coupled model.
 
    active
@@ -62,6 +64,7 @@ Component Types
        you would only need a stub for the land model.
 
 Component set (compset)
+:::::::::::::::::::::::
    The particular combination of active, data and stub versions of the 7 components is referred to
    as a *component set* or  *compset*.  The Case Control System allows one to define
    several possible compsets and configure and run them on supported platforms.
@@ -73,6 +76,7 @@ Component set (compset)
 
 
 Compset alias
+:::::::::::::
    Typing a compset longname like the above can be exhausting so the CCS allows defining a shorter *compset alias*
    which is a short string that substitutes for the longname. In E3SM, the above longname can be reffered to as "WCYCL1850".
 
@@ -99,22 +103,26 @@ Compset alias
     ===  ========================================================================================
 
 Grid set
+::::::::
    Each active model must solve its equations on a numerical grid. CIME allows models within the system to have
    different grids. The resulting set of all numerical grids is called the *grid set* or usually just the *grid*. Like
    the compset longnamme, the CCS allows one to define an alias to represent a grid set.  This alias is also referred to
    as the *grid* or sometimes the *resolution*.
 
 Machine and Compilers
+:::::::::::::::::::::
    The *machine* is the computer you are using to run CIME to build and run the climate model. It could be a workstation
    or a national supercomputer. The exact name of  *machine* is typically the UNIX hostname but it could be any string.  A machine
    may have one more more versions of Fortran, C and C++ *compilers* that are needed to compile the model's source code.
 
 Case
+::::
     To build and execute a CIME-enabled climate model, you have to make choices of compset, model grid,
     machine and compiler. The collection of these choices, and any additional
     customizations you may make, is called the *case*.
 
 Out-of-the-box
+::::::::::::::
    Any case that can be defined by the coupled model's CIME configuration files and built with only basic commands in the
    CIME Case Control System is an "out-of-the-box" case.  Since CIME and its configuration files are kept with
    the model source code and version-controlled together, its possible to match supported out-of-the-box cases with specific
@@ -122,7 +130,6 @@ Out-of-the-box
 
 CCS and your environment
 `````````````````````````
-
 Before using any CCS commands, set the ``CIME_MODEL`` environment variable. In bash, use **export** as shown and replace
 **<model>** with the appropriate text. Current possibilities are "e3sm" or "cesm."
 ::
@@ -133,22 +140,18 @@ There are a number of possible ways to set CIME variables.
 For variables that can be set in more than one way, the order of precedence is:
 
 - variable appears in a command line argument to a CIME command
-
 - variable is set as an environment variable
-
 - variable is set in ``$HOME/.cime/config`` as explained further :ref:`here<customizing-cime>`.
-
 - variable is set in a ``$CASEROOT`` xml file
 
 Quick start
-``````````````````
+```````````
 
 To see an example of how a case is created, configured, built and run with CIME, execute the following commands. (This assumes that CIME has been ported to your current machine).
 
 ::
 
-   cd cime/scripts
-   ./create_newcase --case mycase --compset X --res f19_g16
+   ./scripts/create_newcase --case mycase --compset X --res f19_g16
    cd mycase
    ./case.setup
    ./case.build
@@ -171,17 +174,23 @@ Discovering available pre-defined compsets
 Your CIME-driven model likely has many compset and gridset aliases defined for cases that are widely used by the
 model developers.
 
-Use the utility `query_config <../Tools_user/query_config.html>`_  to see which out-of-the-box compsets, components, grids and machines are available for your model.
+Use the utility ``query_config`` to see which out-of-the-box compsets, components, grids and machines are available for your model.
 
-To see lists of available compsets, components, grids and machines, look at the **help** text::
+To see lists of available compsets, components, grids and machines, look at the **help** text
+
+::
 
   ./scripts/query_config --help
 
-To see all available component sets, try::
+To see all available component sets, try
+
+::
 
   ./scripts/query_config --compsets all
 
-To see compset information where **drv** is the component name::
+To see compset information where **drv** is the component name
+
+::
 
   ./scripts/query_config --compsets drv
 
@@ -241,6 +250,5 @@ For more details on how CIME determines the output for query_config, see :ref:`C
     cloning-a-case.rst
     cime-change-namelist.rst
     cime-config.rst
-    cime-customize.rst
     timers.rst
     troubleshooting.rst

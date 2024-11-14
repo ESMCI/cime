@@ -1,14 +1,15 @@
 .. _customizing-cime:
 
-===========================
 CIME config and hooks
-===========================
+=====================
+
+.. contents::
+   :local:
 
 CIME provides the ability to define model specific config and hooks.
 
 The config alters CIME's runtime and the hooks are triggered during their event.
 
------------------------------------
 How does CIME load customizations?
 -----------------------------------
 
@@ -16,9 +17,8 @@ CIME will search ``cime_config/customize`` and load any python found under this 
 
 Any variables, functions or classes loaded are available from the ``CIME.customize`` module.
 
----------------------------
 CIME config
----------------------------
+-----------
 
 Available config and descriptions.
 
