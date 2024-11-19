@@ -7,6 +7,7 @@ information from a run.
 
 from CIME.XML.standard_module_setup import *
 from CIME.utils import safe_copy
+from CIME.status import append_case_status
 
 import datetime, re
 
@@ -928,3 +929,11 @@ class _TimingParser:
 def get_timing(case, lid):
     parser = _TimingParser(case, lid)
     parser.getTiming()
+    if case._gitinterface:
+        case._gitinterface._git_command("add", "*." + lid)
+    append_case_status(
+        "",
+        "",
+        msg="Timing files created for run {}".format(lid),
+        gitinterface=case._gitinterface,
+    )
