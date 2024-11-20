@@ -20,6 +20,7 @@ from CIME.utils import (
 from collections import OrderedDict
 import stat, re, math
 import pathlib
+from itertools import zip_longest
 
 logger = logging.getLogger(__name__)
 
@@ -1412,40 +1413,117 @@ class EnvBatch(EnvBase):
             else:
                 return True
 
+    def zip(self, other, name):
+        for self_pnode in self.get_children(name):
+            try:
+                other_pnode = other.get_children(name, attributes=self_pnode.attrib)[0]
+            except (TypeError, IndexError):
+                other_pnode = None
+
+            for node1 in self.get_children(root=self_pnode):
+                for node2 in other.scan_children(
+                    node1.name, attributes=node1.attrib, root=other_pnode
+                ):
+                    yield node1, node2
+
+    def _compare_arg(self, index, arg1, arg2):
+        try:
+            flag1 = arg1.attrib["flag"]
+            name1 = arg1.attrib.get("name", "")
+        except AttributeError:
+            flag2, name2 = arg2.attrib["flag"], arg2.attrib["name"]
+
+            return {f"arg{index}": ["", f"{flag2} {name2}"]}
+
+        try:
+            flag2 = arg2.attrib["flag"]
+            name2 = arg2.attrib.get("name", "")
+        except AttributeError:
+            return {f"arg{index}": [f"{flag1} {name1}", ""]}
+
+        if flag1 != flag2 or name1 != name2:
+            return {f"arg{index}": [f"{flag1} {name1}", f"{flag2} {name2}"]}
+
+        return {}
+
+    def _compare_argument(self, index, arg1, arg2):
+        if arg1.text != arg2.text:
+            return {f"argument{index}": [arg1.text, arg2.text]}
+
+        return {}
+
     def compare_xml(self, other):
         xmldiffs = {}
-        f1batchnodes = self.get_children("batch_system")
-        for bnode in f1batchnodes:
-            f2bnodes = other.get_children("batch_system", attributes=self.attrib(bnode))
-            f2bnode = None
-            if len(f2bnodes):
-                f2bnode = f2bnodes[0]
-            f1batchnodes = self.get_children(root=bnode)
-            for node in f1batchnodes:
-                name = self.name(node)
-                text1 = self.text(node)
-                text2 = ""
-                attribs = self.attrib(node)
-                f2matches = other.scan_children(name, attributes=attribs, root=f2bnode)
-                foundmatch = False
-                for chkmatch in f2matches:
-                    name2 = other.name(chkmatch)
-                    attribs2 = other.attrib(chkmatch)
-                    text2 = other.text(chkmatch)
-                    if name == name2 and attribs == attribs2 and text1 == text2:
-                        foundmatch = True
-                        break
-                if not foundmatch:
-                    xmldiffs[name] = [text1, text2]
 
-        f1groups = self.get_children("group")
-        for node in f1groups:
+        for node1, node2 in self.zip(other, "batch_system"):
+            if node1.name == "submit_args":
+                self_nodes = self.get_children(root=node1)
+                other_nodes = other.get_children(root=node2)
+                for i, (x, y) in enumerate(
+                    zip_longest(self_nodes, other_nodes, fillvalue=None)
+                ):
+                    if (x is not None and x.name == "arg") or (
+                        y is not None and y.name == "arg"
+                    ):
+                        xmldiffs.update(self._compare_arg(i, x, y))
+                    elif (x is not None and x.name == "argument") or (
+                        y is not None and y.name == "argument"
+                    ):
+                        xmldiffs.update(self._compare_node(x, y, i))
+            elif node1.name == "directives":
+                self_nodes = self.get_children(root=node1)
+                other_nodes = other.get_children(root=node2)
+                for i, (x, y) in enumerate(
+                    zip_longest(self_nodes, other_nodes, fillvalue=None)
+                ):
+                    xmldiffs.update(self._compare_node(x, y, i))
+            elif node1.name == "queues":
+                self_nodes = self.get_children(root=node1)
+                other_nodes = other.get_children(root=node2)
+                for i, (x, y) in enumerate(
+                    zip_longest(self_nodes, other_nodes, fillvalue=None)
+                ):
+                    xmldiffs.update(self._compare_node(x, y, i))
+            else:
+                xmldiffs.update(self._compare_node(node1, node2))
+
+        for node in self.get_children("group"):
             group = self.get(node, "id")
             f2group = other.get_child("group", attributes={"id": group})
             xmldiffs.update(
                 super(EnvBatch, self).compare_xml(other, root=node, otherroot=f2group)
             )
         return xmldiffs
+
+    def _compare_node(self, x, y, index=None):
+        """Compares two XML nodes and returns diff.
+
+        Compares the attributes and text of two XML nodes. Handles the case when either node is `None`.
+
+        The `index` argument can be used to append the nodes tag. This can be useful when comparing a list
+        of XML nodes that all have the same tag to differentiate which nodes are different.
+
+        Args:
+            x (:obj:`CIME.XML.generic_xml._Element`): First node.
+            y (:obj:`CIME.XML.generic_xml._Element`): Second node.
+            index (int, optional): Index of the nodes.
+
+        Returns:
+            dict: Key is the tag and value is the difference.
+        """
+        diff = {}
+
+        if index is None:
+            index = ""
+
+        if x is None:
+            diff[f"{y.name}{index}"] = ["", y.text]
+        elif y is None:
+            diff[f"{x.name}{index}"] = [x.text, ""]
+        elif x.text != y.text or x.attrib != y.attrib:
+            diff[f"{x.name}{index}"] = [x.text, y.text]
+
+        return diff
 
     def make_all_batch_files(self, case):
         machdir = case.get_value("MACHDIR")

@@ -3,15 +3,178 @@
 import os
 import unittest
 import tempfile
+from contextlib import ExitStack
 from unittest import mock
 
-from CIME.utils import CIMEError
+from CIME.utils import CIMEError, expect
 from CIME.XML.env_batch import EnvBatch, get_job_deps
 
 # pylint: disable=unused-argument
 
+XML_BASE = b"""<?xml version="1.0"?>
+<file id="env_batch.xml" version="2.0">
+  <header>
+      These variables may be changed anytime during a run, they
+      control arguments to the batch submit command.
+    </header>
+  <group id="config_batch">
+    <entry id="BATCH_SYSTEM" value="slurm">
+      <type>char</type>
+      <valid_values>miller_slurm,nersc_slurm,lc_slurm,moab,pbs,lsf,slurm,cobalt,cobalt_theta,none</valid_values>
+      <desc>The batch system type to use for this machine.</desc>
+    </entry>
+  </group>
+  <group id="job_submission">
+    <entry id="PROJECT_REQUIRED" value="FALSE">
+      <type>logical</type>
+      <valid_values>TRUE,FALSE</valid_values>
+      <desc>whether the PROJECT value is required on this machine</desc>
+    </entry>
+  </group>
+  <batch_system type="slurm">
+    <batch_query per_job_arg="-j">squeue</batch_query>
+    <batch_submit>sbatch</batch_submit>
+    <batch_cancel>scancel</batch_cancel>
+    <batch_directive>#SBATCH</batch_directive>
+    <jobid_pattern>(\\d+)$</jobid_pattern>
+    <depend_string>--dependency=afterok:jobid</depend_string>
+    <depend_allow_string>--dependency=afterany:jobid</depend_allow_string>
+    <depend_separator>:</depend_separator>
+    <walltime_format>%H:%M:%S</walltime_format>
+    <batch_mail_flag>--mail-user</batch_mail_flag>
+    <batch_mail_type_flag>--mail-type</batch_mail_type_flag>
+    <batch_mail_type>none, all, begin, end, fail</batch_mail_type>
+    <submit_args>
+      <arg flag="--time" name="$JOB_WALLCLOCK_TIME"/>
+      <arg flag="-p" name="$JOB_QUEUE"/>
+      <arg flag="--account" name="$PROJECT"/>
+    </submit_args>
+    <directives>
+      <directive> --job-name={{ job_id }}</directive>
+      <directive> --nodes={{ num_nodes }}</directive>
+      <directive> --output={{ job_id }}.%j </directive>
+      <directive> --exclusive </directive>
+    </directives>
+  </batch_system>
+  <batch_system MACH="docker" type="slurm">
+    <submit_args>
+      <argument>-w docker</argument>
+    </submit_args>
+    <queues>
+      <queue walltimemax="00:15:00" nodemax="1">debug</queue>
+      <queue walltimemax="24:00:00" nodemax="20" nodemin="5">big</queue>
+      <queue walltimemax="00:30:00" nodemax="5" default="true">smallfast</queue>
+    </queues>
+  </batch_system>
+</file>"""
+
+XML_DIFF = b"""<?xml version="1.0"?>
+<file id="env_batch.xml" version="2.0">
+  <header>
+      These variables may be changed anytime during a run, they
+      control arguments to the batch submit command.
+    </header>
+  <group id="config_batch">
+    <entry id="BATCH_SYSTEM" value="pbs">
+      <type>char</type>
+      <valid_values>miller_slurm,nersc_slurm,lc_slurm,moab,pbs,lsf,slurm,cobalt,cobalt_theta,none</valid_values>
+      <desc>The batch system type to use for this machine.</desc>
+    </entry>
+  </group>
+  <group id="job_submission">
+    <entry id="PROJECT_REQUIRED" value="FALSE">
+      <type>logical</type>
+      <valid_values>TRUE,FALSE</valid_values>
+      <desc>whether the PROJECT value is required on this machine</desc>
+    </entry>
+  </group>
+  <batch_system type="slurm">
+    <batch_query per_job_arg="-j">squeue</batch_query>
+    <batch_submit>batch</batch_submit>
+    <batch_cancel>scancel</batch_cancel>
+    <batch_directive>#SBATCH</batch_directive>
+    <jobid_pattern>(\\d+)$</jobid_pattern>
+    <depend_string>--dependency=afterok:jobid</depend_string>
+    <depend_allow_string>--dependency=afterany:jobid</depend_allow_string>
+    <depend_separator>:</depend_separator>
+    <walltime_format>%H:%M:%S</walltime_format>
+    <batch_mail_flag>--mail-user</batch_mail_flag>
+    <batch_mail_type_flag>--mail-type</batch_mail_type_flag>
+    <batch_mail_type>none, all, begin, end, fail</batch_mail_type>
+    <submit_args>
+      <arg flag="--time" name="$JOB_WALLCLOCK_TIME"/>
+      <arg flag="-p" name="pbatch"/>
+      <arg flag="--account" name="$PROJECT"/>
+      <arg flag="-m" name="plane"/>
+    </submit_args>
+    <directives>
+      <directive> --job-name={{ job_id }}</directive>
+      <directive> --nodes=10</directive>
+      <directive> --output={{ job_id }}.%j </directive>
+      <directive> --exclusive </directive>
+      <directive> --qos=high </directive>
+    </directives>
+  </batch_system>
+  <batch_system MACH="docker" type="slurm">
+    <submit_args>
+      <argument>-w docker</argument>
+    </submit_args>
+    <queues>
+      <queue walltimemax="00:15:00" nodemax="1">debug</queue>
+      <queue walltimemax="24:00:00" nodemax="20" nodemin="10">big</queue>
+    </queues>
+  </batch_system>
+</file>"""
+
+
+def _open_temp_file(stack, data):
+    tfile = stack.enter_context(tempfile.NamedTemporaryFile())
+
+    tfile.write(data)
+
+    tfile.seek(0)
+
+    return tfile
+
 
 class TestXMLEnvBatch(unittest.TestCase):
+    def test_compare_xml(self):
+        with ExitStack() as stack:
+            file1 = _open_temp_file(stack, XML_DIFF)
+            batch1 = EnvBatch(infile=file1.name)
+
+            file2 = _open_temp_file(stack, XML_BASE)
+            batch2 = EnvBatch(infile=file2.name)
+
+            diff = batch1.compare_xml(batch2)
+            diff2 = batch2.compare_xml(batch1)
+
+        expected_diff = {
+            "BATCH_SYSTEM": ["pbs", "slurm"],
+            "arg1": ["-p pbatch", "-p $JOB_QUEUE"],
+            "arg3": ["-m plane", ""],
+            "batch_submit": ["batch", "sbatch"],
+            "directive1": [" --nodes=10", " --nodes={{ num_nodes }}"],
+            "directive4": [" --qos=high ", ""],
+            "queue1": ["big", "big"],
+            "queue2": ["", "smallfast"],
+        }
+
+        assert diff == expected_diff
+
+        expected_diff2 = {
+            "BATCH_SYSTEM": ["slurm", "pbs"],
+            "arg1": ["-p $JOB_QUEUE", "-p pbatch"],
+            "arg3": ["", "-m plane"],
+            "batch_submit": ["sbatch", "batch"],
+            "directive1": [" --nodes={{ num_nodes }}", " --nodes=10"],
+            "directive4": ["", " --qos=high "],
+            "queue1": ["big", "big"],
+            "queue2": ["smallfast", ""],
+        }
+
+        assert diff2 == expected_diff2
+
     @mock.patch("CIME.XML.env_batch.EnvBatch._submit_single_job")
     def test_submit_jobs(self, _submit_single_job):
         case = mock.MagicMock()
@@ -273,7 +436,7 @@ class TestXMLEnvBatch(unittest.TestCase):
     <batch_submit>sbatch</batch_submit>
     <batch_cancel>scancel</batch_cancel>
     <batch_directive>#SBATCH</batch_directive>
-    <jobid_pattern>(\d+)$</jobid_pattern>
+    <jobid_pattern>(\\d+)$</jobid_pattern>
     <depend_string>--dependency=afterok:jobid</depend_string>
     <depend_allow_string>--dependency=afterany:jobid</depend_allow_string>
     <depend_separator>:</depend_separator>
