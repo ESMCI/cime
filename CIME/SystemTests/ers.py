@@ -36,7 +36,13 @@ class ERS(SystemTestsCommon):
                 pfile,
                 os.path.join(os.path.dirname(pfile), "run1." + os.path.basename(pfile)),
             )
+        ninst = self._case.get_value("NINST")
+        drvrest = "rpointer.cpl"
+        if ninst > 1:
+            drvrest += "_0001"
+        drvrest += self._rest_time
 
+        self._set_drv_restart_pointer(drvrest)
         self._case.set_value("HIST_N", stop_n)
         self._case.set_value("STOP_N", stop_new)
         self._case.set_value("CONTINUE_RUN", True)

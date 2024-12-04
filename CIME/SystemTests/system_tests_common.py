@@ -37,8 +37,9 @@ from CIME.baselines.performance import (
     load_coupler_customization,
 )
 import CIME.build as build
+from datetime import datetime, timedelta
+import glob, gzip, time, traceback, os, math, calendar
 
-import glob, gzip, time, traceback, os, math
 from contextlib import ExitStack
 
 logger = logging.getLogger(__name__)
@@ -111,6 +112,7 @@ class SystemTestsCommon(object):
         self._init_environment(caseroot)
         self._init_locked_files(caseroot, expected)
         self._skip_pnl = False
+        self._rest_time = None
         self._cpllog = (
             "med" if self._case.get_value("COMP_INTERFACE") == "nuopc" else "cpl"
         )
@@ -119,10 +121,22 @@ class SystemTestsCommon(object):
         self._user_separate_builds = False
         self._expected_num_cmp = None
         self._rest_n = None
+        # Does the model support this variable?
+        self._drv_restart_pointer = self._case.get_value("DRV_RESTART_POINTER")
 
-    def _set_restart_interval(self):
-        stop_n = self._case.get_value("STOP_N")
-        stop_option = self._case.get_value("STOP_OPTION")
+    def _set_drv_restart_pointer(self, value):
+        if self._drv_restart_pointer:
+            logger.info("setting DRV_RESTART_POINTER={}".format(value))
+            self._case.set_value("DRV_RESTART_POINTER", value)
+
+    def _set_restart_interval(
+        self, stop_n=None, stop_option=None, startdate=None, starttime=None
+    ):
+        if not stop_n:
+            stop_n = self._case.get_value("STOP_N")
+        if not stop_option:
+            stop_option = self._case.get_value("STOP_OPTION")
+
         self._case.set_value("REST_OPTION", stop_option)
         # We need to make sure the run is long enough and to set REST_N to a
         # value that makes sense for all components
@@ -172,19 +186,68 @@ class SystemTestsCommon(object):
             factor = 315360000
         else:
             expect(False, f"stop_option {stop_option} not available for this test")
-
         stop_n = int(stop_n * factor // coupling_secs)
         rest_n = math.ceil((stop_n // 2 + 1) * coupling_secs / factor)
-
         expect(stop_n > 0, "Bad STOP_N: {:d}".format(stop_n))
-
         expect(stop_n > 2, "ERROR: stop_n value {:d} too short".format(stop_n))
+        if not starttime:
+            starttime = self._case.get_value("START_TOD")
+        if not startdate:
+            startdate = self._case.get_value("RUN_STARTDATE")
+        if "-" in startdate:
+            startdatetime = datetime.fromisoformat(startdate) + timedelta(
+                seconds=int(starttime)
+            )
+        else:
+            startdatetime = datetime.strptime(startdate, "%Y%m%d") + timedelta(
+                seconds=int(starttime)
+            )
+
+        cal = self._case.get_value("CALENDAR")
+
+        if stop_option == "nsteps":
+            rtd = timedelta(seconds=rest_n * factor)
+        elif stop_option == "nminutes":
+            rtd = timedelta(minutes=rest_n)
+        elif stop_option == "nhours":
+            rtd = timedelta(hours=rest_n)
+        elif stop_option == "ndays":
+            rtd = timedelta(days=rest_n)
+        elif stop_option == "nyears":
+            rtd = timedelta(days=rest_n * 365)
+        else:
+            expect(False, f"stop_option {stop_option} not available for this test")
+
+        restdatetime = startdatetime + rtd
+        if cal == "NO_LEAP":
+            dayscorrected = 0
+            syr = startdatetime.year
+            smon = startdatetime.month
+            ryr = restdatetime.year
+            rmon = restdatetime.month
+            while ryr > syr:
+                if rmon > 2 and calendar.isleap(ryr):
+                    dayscorrected += 1
+                ryr = ryr - 1
+            if rmon > 2 and smon <= 2:
+                if calendar.isleap(syr):
+                    dayscorrected += 1
+            restdatetime = restdatetime + timedelta(days=dayscorrected)
+        self._rest_time = (
+            f".{restdatetime.year:04d}-{restdatetime.month:02d}-{restdatetime.day:02d}-"
+        )
+        h = restdatetime.hour
+        m = restdatetime.minute
+        s = restdatetime.second
+        self._rest_time += f"{(h*3600+m*60+s):05d}"
+
         logger.info(
             "doing an {0} {1} initial test with restart file at {2} {1}".format(
                 str(stop_n), stop_option, str(rest_n)
             )
         )
         self._case.set_value("REST_N", rest_n)
+
         return rest_n
 
     def _init_environment(self, caseroot):
@@ -261,7 +324,9 @@ class SystemTestsCommon(object):
                         sharedlib_only=(phase_name == SHAREDLIB_BUILD_PHASE),
                         model_only=(phase_name == MODEL_BUILD_PHASE),
                     )
-                except BaseException as e:  # We want KeyboardInterrupts to generate FAIL status
+                except (
+                    BaseException
+                ) as e:  # We want KeyboardInterrupts to generate FAIL status
                     success = False
                     if isinstance(e, CIMEError):
                         # Don't want to print stacktrace for a build failure since that
@@ -334,7 +399,13 @@ class SystemTestsCommon(object):
         """
         success = True
         start_time = time.time()
-        self._skip_pnl = skip_pnl
+        wav_comp = self._case.get_value("COMP_WAV")
+        # WW3 requires pnl to be run again after the build phase.
+        if wav_comp and wav_comp == "ww3":
+            self._skip_pnl = False
+        else:
+            self._skip_pnl = skip_pnl
+
         try:
             self._resetup_case(RUN_PHASE)
             do_baseline_ops = True

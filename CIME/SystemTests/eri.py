@@ -83,7 +83,7 @@ class ERI(SystemTestsCommon):
         start_1 = run_startdate
 
         stop_n2 = stop_n - stop_n1
-        rest_n2 = int(stop_n2 / 2 + 1)
+
         hist_n = stop_n2
 
         start_1_year, start_1_month, start_1_day = [
@@ -93,10 +93,28 @@ class ERI(SystemTestsCommon):
         start_2 = "{:04d}-{:02d}-{:02d}".format(
             start_2_year, start_1_month, start_1_day
         )
+        rest_n2 = self._set_restart_interval(
+            stop_n=stop_n2,
+            stop_option=stop_option,
+            startdate=start_2,
+            starttime=start_tod,
+        )
 
         stop_n3 = stop_n2 - rest_n2
-        rest_n3 = int(stop_n3 / 2 + 1)
 
+        ninst = self._case.get_value("NINST")
+        drvrest = "rpointer.cpl"
+        if ninst > 1:
+            drvrest += "_0001"
+        drvrest += self._rest_time
+        self._set_drv_restart_pointer(drvrest)
+
+        rest_n3 = self._set_restart_interval(
+            stop_n=stop_n3,
+            stop_option=stop_option,
+            startdate=start_2,
+            starttime=start_tod,
+        )
         stop_n4 = stop_n3 - rest_n3
 
         expect(stop_n4 >= 1 and stop_n1 >= 1, "Run length too short")
@@ -223,8 +241,10 @@ class ERI(SystemTestsCommon):
         self._case.set_value("GET_REFCASE", False)
         self._case.set_value("CONTINUE_RUN", False)
         self._case.set_value("STOP_N", stop_n3)
-        self._case.set_value("REST_OPTION", stop_option)
-        self._case.set_value("REST_N", rest_n3)
+        self._set_restart_interval(
+            stop_n=stop_n3, startdate=refdate_3, starttime=refsec_3
+        )
+
         self._case.set_value("HIST_OPTION", stop_option)
         self._case.set_value("HIST_N", stop_n2)
         self._case.set_value("DOUT_S", False)
@@ -266,6 +286,12 @@ class ERI(SystemTestsCommon):
         self._case.set_value("DOUT_S", False)
         self._case.set_value("HIST_OPTION", stop_option)
         self._case.set_value("HIST_N", hist_n)
+        drvrest = "rpointer.cpl"
+        if ninst > 1:
+            drvrest += "_0001"
+        drvrest += self._rest_time
+
+        self._set_drv_restart_pointer(drvrest)
         self._case.flush()
 
         # do the restart run (short term archiving is off)
