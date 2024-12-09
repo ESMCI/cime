@@ -34,8 +34,8 @@ def _helper(dout_sr, refdate, refsec, rundir):
             os.mkdir(rundir)
         elif os.path.exists(dst):
             os.remove(dst)
-
-        os.symlink(item, dst)
+        if not 'rpointer' in item:
+            os.symlink(item, dst)
 
     for item in glob.glob("{}/*rpointer*".format(rest_path)):
         safe_copy(item, rundir)
