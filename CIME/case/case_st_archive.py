@@ -172,19 +172,12 @@ def _archive_rpointer_files(
         rpointers = glob.glob(
             os.path.join(rundir, "rpointer.*" + _datetime_str(datename))
         )
-        # If timestamped rpointers exist use them
-        if rpointers:
-            for rpointer in rpointers:
-                safe_copy(
-                    rpointer, os.path.join(archive_restdir, os.path.basename(rpointer))
-                )
-        else:
-            # Copy of all rpointer files for latest restart date
-            rpointers = glob.glob(os.path.join(rundir, "rpointer.*"))
-            for rpointer in rpointers:
-                safe_copy(
-                    rpointer, os.path.join(archive_restdir, os.path.basename(rpointer))
-                )
+        # Copy of all rpointer files for latest restart date
+        rpointers = glob.glob(os.path.join(rundir, "rpointer.*"))
+        for rpointer in rpointers:
+            safe_copy(
+                rpointer, os.path.join(archive_restdir, os.path.basename(rpointer))
+            )
     else:
         # Generate rpointer file(s) for interim restarts for the one datename and each
         # possible value of ninst_strings
