@@ -4,6 +4,7 @@ Libraries for checking python code with pylint
 
 import os
 import json
+from shutil import which
 
 from CIME.XML.standard_module_setup import *
 
@@ -19,16 +20,13 @@ from CIME.utils import (
 
 from multiprocessing.dummy import Pool as ThreadPool
 
-# pylint: disable=import-error
-from distutils.spawn import find_executable
-
 logger = logging.getLogger(__name__)
 
 
 ###############################################################################
 def _run_pylint(all_files, interactive):
     ###############################################################################
-    pylint = find_executable("pylint")
+    pylint = which("pylint")
 
     cmd_options = (
         " --disable=I,C,R,logging-not-lazy,wildcard-import,unused-wildcard-import"
