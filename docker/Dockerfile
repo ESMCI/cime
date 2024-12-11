@@ -1,4 +1,4 @@
-ARG BASE_TAG=24.3.0-0
+ARG BASE_TAG=24.11.0-0
 FROM condaforge/miniforge3:${BASE_TAG} AS base
 
 SHELL ["/bin/bash", "-c"]
@@ -19,7 +19,7 @@ RUN mamba env update -f /cime.yaml && \
     ln -sf /opt/conda/bin/x86_64-conda-linux-gnu-ar /opt/conda/bin/ar && \
     ln -sf /opt/conda/bin/x86_64-conda-linux-gnu-ranlib /opt/conda/bin/ranlib && \
     # need compilers
-    cpan install XML::LibXML
+    cpan install Alien::Build::Plugin XML::LibXML
     # I think switch was only needed for pop
     #cpan install Switch
 
