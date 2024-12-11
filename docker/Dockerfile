@@ -17,9 +17,7 @@ COPY cime.yaml /cime.yaml
 RUN mamba env update -f /cime.yaml && \
     rm -rf /opt/conda/pkgs/* && \
     ln -sf /opt/conda/bin/x86_64-conda-linux-gnu-ar /opt/conda/bin/ar && \
-    ln -sf /opt/conda/bin/x86_64-conda-linux-gnu-ranlib /opt/conda/bin/ranlib && \
-    # need compilers
-    cpan install XML::LibXML Switch
+    ln -sf /opt/conda/bin/x86_64-conda-linux-gnu-ranlib /opt/conda/bin/ranlib
 
 ARG PNETCDF_VERSION=1.12.3
 ENV PNETCDF_VERSION=${PNETCDF_VERSION}
@@ -81,7 +79,7 @@ RUN apt-get update && \
             apt-get install -y --no-install-recommends \
             curl ca-certificates software-properties-common \
             gcc make libtool libhwloc-dev libx11-dev libxt-dev libedit-dev \
-            libical-dev ncurses-dev perl python-dev tcl-dev tk-dev swig libexpat-dev libssl-dev \
+            libical-dev ncurses-dev python-dev tcl-dev tk-dev swig libexpat-dev libssl-dev \
             libxext-dev libxft-dev autoconf automake \
             postgresql-12 postgresql-server-dev-all postgresql-contrib \
             expat libedit2 python3 sendmail-bin sudo tcl tk && \

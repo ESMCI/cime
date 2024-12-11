@@ -8,6 +8,7 @@ dependencies:
   - curl
   - subversion
   - m4
+  - pkg-config
   - pytest
   - pytest-cov
   - pyyaml
