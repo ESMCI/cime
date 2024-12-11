@@ -8,11 +8,16 @@ import contextlib
 import sysconfig
 from pathlib import Path
 from unittest import mock
-
-from CIME.SystemTests.mvk import MVK
-from CIME.SystemTests.mvk import MVKConfig
 from CIME.tests.utils import chdir
 
+evv4esm = False
+try:
+    from CIME.SystemTests.mvk import MVK
+except:
+    unittest.SkipTest("Skipping mvk tests. E3SM feature")
+else:
+    from CIME.SystemTests.mvk import MVKConfig
+    evv4esm = True
 
 def create_complex_case(
     case_name,
@@ -114,6 +119,7 @@ class TestSystemTestsMVK(unittest.TestCase):
 
     @mock.patch("CIME.SystemTests.mvk.test_mods.find_test_mods")
     @mock.patch("CIME.SystemTests.mvk.evv")
+    @unittest.skipUnless(evv4esm, "evv4esm module not found")
     def test_testmod_complex(self, evv, find_test_mods):
         with contextlib.ExitStack() as stack:
             temp_dir = stack.enter_context(tempfile.TemporaryDirectory())
@@ -210,6 +216,7 @@ def evv_test_config(case, config):
 
     @mock.patch("CIME.SystemTests.mvk.append_testlog")
     @mock.patch("CIME.SystemTests.mvk.Machines")
+    @unittest.skipUnless(evv4esm, "evv4esm module not found")
     def test_update_testlog(self, machines, append_testlog):
         with contextlib.ExitStack() as stack:
             temp_dir = stack.enter_context(tempfile.TemporaryDirectory())
@@ -248,6 +255,7 @@ def evv_test_config(case, config):
     @mock.patch("CIME.SystemTests.mvk.utils.get_urlroot")
     @mock.patch("CIME.SystemTests.mvk.append_testlog")
     @mock.patch("CIME.SystemTests.mvk.Machines")
+    @unittest.skipUnless(evv4esm, "evv4esm module not found")
     def test_update_testlog_urlroot_None(self, machines, append_testlog, get_urlroot):
         with contextlib.ExitStack() as stack:
             temp_dir = stack.enter_context(tempfile.TemporaryDirectory())
@@ -289,6 +297,7 @@ def evv_test_config(case, config):
     @mock.patch("CIME.SystemTests.mvk.utils.get_htmlroot")
     @mock.patch("CIME.SystemTests.mvk.append_testlog")
     @mock.patch("CIME.SystemTests.mvk.Machines")
+    @unittest.skipUnless(evv4esm, "evv4esm module not found")
     def test_update_testlog_htmlroot(self, machines, append_testlog, get_htmlroot):
         with contextlib.ExitStack() as stack:
             temp_dir = stack.enter_context(tempfile.TemporaryDirectory())
@@ -329,6 +338,7 @@ def evv_test_config(case, config):
 
     @mock.patch("CIME.SystemTests.mvk.test_mods.find_test_mods")
     @mock.patch("CIME.SystemTests.mvk.evv")
+    @unittest.skipUnless(evv4esm, "evv4esm module not found")
     def test_testmod_simple(self, evv, find_test_mods):
         with contextlib.ExitStack() as stack:
             temp_dir = stack.enter_context(tempfile.TemporaryDirectory())
@@ -417,6 +427,7 @@ test_case = "Default"
 
     @mock.patch("CIME.SystemTests.mvk.case_setup")
     @mock.patch("CIME.SystemTests.mvk.MVK.build_indv")
+    @unittest.skipUnless(evv4esm, "evv4esm module not found")
     def test_build_phase(self, build_indv, case_setup):
         with contextlib.ExitStack() as stack:
             temp_dir = stack.enter_context(tempfile.TemporaryDirectory())
@@ -462,6 +473,7 @@ test_case = "Default"
     @mock.patch("CIME.SystemTests.mvk.SystemTestsCommon._generate_baseline")
     @mock.patch("CIME.SystemTests.mvk.append_testlog")
     @mock.patch("CIME.SystemTests.mvk.evv")
+    @unittest.skipUnless(evv4esm, "evv4esm module not found")
     def test__generate_baseline(self, evv, append_testlog, _generate_baseline):
         with contextlib.ExitStack() as stack:
             temp_dir = stack.enter_context(tempfile.TemporaryDirectory())
@@ -531,6 +543,7 @@ test_case = "Default"
 
     @mock.patch("CIME.SystemTests.mvk.append_testlog")
     @mock.patch("CIME.SystemTests.mvk.evv")
+    @unittest.skipUnless(evv4esm, "evv4esm module not found")
     def test__compare_baseline_resubmit(self, evv, append_testlog):
         with contextlib.ExitStack() as stack:
             temp_dir = stack.enter_context(tempfile.TemporaryDirectory())
@@ -563,6 +576,7 @@ test_case = "Default"
 
     @mock.patch("CIME.SystemTests.mvk.append_testlog")
     @mock.patch("CIME.SystemTests.mvk.evv")
+    @unittest.skipUnless(evv4esm, "evv4esm module not found")
     def test__compare_baseline(self, evv, append_testlog):
         with contextlib.ExitStack() as stack:
             temp_dir = stack.enter_context(tempfile.TemporaryDirectory())
@@ -617,6 +631,7 @@ test_case = "Default"
                 expected_comments, str(temp_dir)
             ), append_testlog.call_args.args
 
+    @unittest.skipUnless(evv4esm, "evv4esm module not found")
     def test_generate_namelist_multiple_components(self):
         with contextlib.ExitStack() as stack:
             temp_dir = stack.enter_context(tempfile.TemporaryDirectory())
@@ -647,6 +662,7 @@ test_case = "Default"
                 "seed_custom = 1\n",
             ]
 
+    @unittest.skipUnless(evv4esm, "evv4esm module not found")
     def test_generate_namelist(self):
         with contextlib.ExitStack() as stack:
             temp_dir = stack.enter_context(tempfile.TemporaryDirectory())
@@ -675,6 +691,7 @@ test_case = "Default"
                 "seed_custom = 1\n",
             ]
 
+    @unittest.skipUnless(evv4esm, "evv4esm module not found")
     def test_compare_baseline(self):
         case = create_simple_case()
 
@@ -694,6 +711,7 @@ test_case = "Default"
 
         case.set_value.assert_any_call("COMPARE_BASELINE", False)
 
+    @unittest.skipUnless(evv4esm, "evv4esm module not found")
     def test_mvk(self):
         case = create_simple_case()
 
