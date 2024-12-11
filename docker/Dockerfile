@@ -17,11 +17,7 @@ COPY cime.yaml /cime.yaml
 RUN mamba env update -f /cime.yaml && \
     rm -rf /opt/conda/pkgs/* && \
     ln -sf /opt/conda/bin/x86_64-conda-linux-gnu-ar /opt/conda/bin/ar && \
-    ln -sf /opt/conda/bin/x86_64-conda-linux-gnu-ranlib /opt/conda/bin/ranlib && \
-    # need compilers
-    # cpan install Alien::Base::Wrapper Alien::Build::Plugin XML::LibXML
-    # I think switch was only needed for pop
-    #cpan install Switch
+    ln -sf /opt/conda/bin/x86_64-conda-linux-gnu-ranlib /opt/conda/bin/ranlib
 
 ARG PNETCDF_VERSION=1.12.3
 ENV PNETCDF_VERSION=${PNETCDF_VERSION}
