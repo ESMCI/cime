@@ -19,7 +19,9 @@ RUN mamba env update -f /cime.yaml && \
     ln -sf /opt/conda/bin/x86_64-conda-linux-gnu-ar /opt/conda/bin/ar && \
     ln -sf /opt/conda/bin/x86_64-conda-linux-gnu-ranlib /opt/conda/bin/ranlib && \
     # need compilers
-    cpan install XML::LibXML Switch
+    cpan install XML::LibXML
+    # I think switch was only needed for pop
+    #cpan install Switch
 
 ARG PNETCDF_VERSION=1.12.3
 ENV PNETCDF_VERSION=${PNETCDF_VERSION}
