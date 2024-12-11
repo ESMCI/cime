@@ -17,7 +17,9 @@ except:
     unittest.SkipTest("Skipping mvk tests. E3SM feature")
 else:
     from CIME.SystemTests.mvk import MVKConfig
+
     evv4esm = True
+
 
 def create_complex_case(
     case_name,
