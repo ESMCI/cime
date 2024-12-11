@@ -19,7 +19,7 @@ RUN mamba env update -f /cime.yaml && \
     ln -sf /opt/conda/bin/x86_64-conda-linux-gnu-ar /opt/conda/bin/ar && \
     ln -sf /opt/conda/bin/x86_64-conda-linux-gnu-ranlib /opt/conda/bin/ranlib && \
     # need compilers
-    cpan install Alien::Base::Wrapper Alien::Build::Plugin XML::LibXML
+    # cpan install Alien::Base::Wrapper Alien::Build::Plugin XML::LibXML
     # I think switch was only needed for pop
     #cpan install Switch
 
@@ -83,7 +83,7 @@ RUN apt-get update && \
             apt-get install -y --no-install-recommends \
             curl ca-certificates software-properties-common \
             gcc make libtool libhwloc-dev libx11-dev libxt-dev libedit-dev \
-            libical-dev ncurses-dev perl python-dev tcl-dev tk-dev swig libexpat-dev libssl-dev \
+            libical-dev ncurses-dev python-dev tcl-dev tk-dev swig libexpat-dev libssl-dev \
             libxext-dev libxft-dev autoconf automake \
             postgresql-12 postgresql-server-dev-all postgresql-contrib \
             expat libedit2 python3 sendmail-bin sudo tcl tk && \
