@@ -19,7 +19,7 @@ RUN mamba env update -f /cime.yaml && \
     ln -sf /opt/conda/bin/x86_64-conda-linux-gnu-ar /opt/conda/bin/ar && \
     ln -sf /opt/conda/bin/x86_64-conda-linux-gnu-ranlib /opt/conda/bin/ranlib && \
     # need compilers
-    cpan install Alien::Build::Plugin XML::LibXML
+    cpan install Alien::Base::Wrapper Alien::Build::Plugin XML::LibXML
     # I think switch was only needed for pop
     #cpan install Switch
 
