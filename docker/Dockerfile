@@ -1,4 +1,4 @@
-ARG BASE_TAG=24.11.0-0
+ARG BASE_TAG=24.3.0-0
 FROM condaforge/miniforge3:${BASE_TAG} AS base
 
 SHELL ["/bin/bash", "-c"]
