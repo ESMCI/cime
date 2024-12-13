@@ -663,7 +663,10 @@ def literal_to_python_value(literal, type_=None):
     >>> literal_to_python_value("")
     >>> literal_to_python_value("-1.D+10")
     -10000000000.0
-    >>> shouldRaise(ValueError, literal_to_python_value, "nan(1234)")
+    >>> literal_to_python_value("nan(1234)")
+    Traceback (most recent call last):
+    ...
+    ValueError: could not convert string to float: 'nan(1234)'
     """
     expect(
         FORTRAN_REPEAT_PREFIX_REGEX.search(literal) is None,
@@ -884,21 +887,6 @@ def parse(in_file=None, text=None, groupless=False, convert_tab_to_space=True):
         return namelist_dict
     else:
         return Namelist(namelist_dict)
-
-
-# def shouldRaise(eclass, method, *args, **kw):
-#    """
-#    A helper function to make doctests py3 compatible
-#    http://python3porting.com/problems.html#running-doctests
-#    """
-#    try:
-#        method(*args, **kw)
-#    except BaseException:
-#        e = sys.exc_info()[1]
-#        if not isinstance(e, eclass):
-#            raise
-#        return
-#    raise Exception("Expected exception %s not raised" % str(eclass))
 
 
 class Namelist(object):
@@ -1451,8 +1439,10 @@ class _NamelistParser(object):  # pylint:disable=too-few-public-methods
     def _next(self):
         """Return the character at the next position.
 
-        >>> shouldRaise(_NamelistEOF, _NamelistParser(' ')._next)
-
+        >>> _NamelistParser(' ')._next()
+        Traceback (most recent call last):
+        ...
+        namelist._NamelistEOF: Unexpected end of file encountered in namelist.
         """
         # If at the end of the file, we should raise _NamelistEOF. The easiest
         # way to do this is to just advance.
@@ -1491,10 +1481,14 @@ class _NamelistParser(object):  # pylint:disable=too-few-public-methods
         >>> x._advance(3)
         >>> (x._pos, x._line, x._col)
         (7, 3, 1)
-        >>> shouldRaise(_NamelistEOF, x._advance, 1)
-
-        >>> shouldRaise(_NamelistEOF, _NamelistParser('abc\n')._advance, 4)
-
+        >>> x._advance(1)
+        Traceback (most recent call last):
+        ...
+        namelist._NamelistEOF: Unexpected end of file encountered in namelist.
+        >>> _NamelistParser('abc\n')._advance(4)
+        Traceback (most recent call last):
+        ...
+        namelist._NamelistEOF: Unexpected end of file encountered in namelist.
         >>> x = _NamelistParser('ab')
         >>> x._advance(check_eof=True)
         False
@@ -1536,8 +1530,10 @@ class _NamelistParser(object):  # pylint:disable=too-few-public-methods
         >>> x._eat_whitespace()
         False
         >>> x._advance()
-        >>> shouldRaise(_NamelistEOF, x._eat_whitespace)
-
+        >>> x._eat_whitespace()
+        Traceback (most recent call last):
+        ...
+        namelist._NamelistEOF: Unexpected end of file encountered in namelist.
         >>> x = _NamelistParser(' \n! blah\n ! blah\n a')
         >>> x._eat_whitespace()
         True
@@ -1591,11 +1587,15 @@ class _NamelistParser(object):  # pylint:disable=too-few-public-methods
         >>> x._curr()
         'a'
         >>> x._advance(2)
-        >>> shouldRaise(_NamelistEOF, x._eat_comment)
-
+        >>> x._eat_comment()
+        Traceback (most recent call last):
+        ...
+        namelist._NamelistEOF: Unexpected end of file encountered in namelist.
         >>> x = _NamelistParser('! foo\n')
-        >>> shouldRaise(_NamelistEOF, x._eat_comment)
-
+        >>> x._eat_comment()
+        Traceback (most recent call last):
+        ...
+        namelist._NamelistEOF: Unexpected end of file encountered in namelist.
         """
         if self._curr() != "!":
             return False
@@ -1619,8 +1619,10 @@ class _NamelistParser(object):  # pylint:disable=too-few-public-methods
         >>> x = _NamelistParser('ab')
         >>> x._expect_char('a')
         >>> x._advance()
-        >>> shouldRaise(_NamelistParseError, x._expect_char, 'a')
-
+        >>> x._expect_char('a')
+        Traceback (most recent call last):
+        ...
+        namelist._NamelistParseError: Error in parsing namelist: expected 'a' but found 'b'
         >>> x._expect_char('ab')
         """
         if self._curr() not in chars:
@@ -1635,20 +1637,30 @@ class _NamelistParser(object):  # pylint:disable=too-few-public-methods
     def _parse_namelist_group_name(self):
         r"""Parses and returns a namelist group name at the current position.
 
-        >>> shouldRaise(_NamelistParseError, _NamelistParser('abc')._parse_namelist_group_name)
-
-        >>> shouldRaise(_NamelistEOF, _NamelistParser('&abc')._parse_namelist_group_name)
-
+        >>> _NamelistParser('abc')._parse_namelist_group_name()
+        Traceback (most recent call last):
+        ...
+        namelist._NamelistParseError: Error in parsing namelist: expected '&' but found 'a'
+        >>> _NamelistParser('&abc')._parse_namelist_group_name()
+        Traceback (most recent call last):
+        ...
+        namelist._NamelistEOF: Unexpected end of file encountered in namelist.
         >>> _NamelistParser('&abc ')._parse_namelist_group_name()
         'abc'
         >>> _NamelistParser('&abc\n')._parse_namelist_group_name()
         'abc'
-        >>> shouldRaise(_NamelistParseError, _NamelistParser('&abc/ ')._parse_namelist_group_name)
-
-        >>> shouldRaise(_NamelistParseError, _NamelistParser('&abc= ')._parse_namelist_group_name)
-
-        >>> shouldRaise(_NamelistParseError, _NamelistParser('& ')._parse_namelist_group_name)
-
+        >>> _NamelistParser('&abc/ ')._parse_namelist_group_name()
+        Traceback (most recent call last):
+        ...
+        namelist._NamelistParseError: Error in parsing namelist: 'abc/' is not a valid variable name
+        >>> _NamelistParser('&abc= ')._parse_namelist_group_name()
+        Traceback (most recent call last):
+        ...
+        namelist._NamelistParseError: Error in parsing namelist: 'abc=' is not a valid variable name
+        >>> _NamelistParser('& ')._parse_namelist_group_name()
+        Traceback (most recent call last):
+        ...
+        namelist._NamelistParseError: Error in parsing namelist: '' is not a valid variable name
         """
         self._expect_char("&")
         self._advance()
@@ -1661,8 +1673,10 @@ class _NamelistParser(object):  # pylint:disable=too-few-public-methods
         variable name; if it is `False`, only white space can be used for this
         purpose.
 
-        >>> shouldRaise(_NamelistEOF, _NamelistParser('abc')._parse_variable_name)
-
+        >>> _NamelistParser('abc')._parse_variable_name()
+        Traceback (most recent call last):
+        ...
+        namelist._NamelistEOF: Unexpected end of file encountered in namelist.
         >>> _NamelistParser('foo(2)= ')._parse_variable_name()
         'foo(2)'
         >>> _NamelistParser('abc ')._parse_variable_name()
@@ -1733,14 +1747,18 @@ class _NamelistParser(object):  # pylint:disable=too-few-public-methods
         Position on return is the last character of the string; we avoid
         advancing past that in order to avoid potential EOF errors.
 
-        >>> shouldRaise(_NamelistEOF, _NamelistParser('"abc')._parse_character_literal)
-
+        >>> _NamelistParser('"abc')._parse_character_literal()
+        Traceback (most recent call last):
+        ...
+        namelist._NamelistEOF: Unexpected end of file encountered in namelist.
         >>> _NamelistParser('"abc" ')._parse_character_literal()
         '"abc"'
         >>> _NamelistParser("'abc' ")._parse_character_literal()
         "'abc'"
-        >>> shouldRaise(_NamelistParseError, _NamelistParser("*abc* ")._parse_character_literal)
-
+        >>> _NamelistParser("*abc* ")._parse_character_literal()
+        Traceback (most recent call last):
+        ...
+        namelist._NamelistParseError: Error in parsing namelist: *abc* is not a valid character literal
         >>> _NamelistParser("'abc''def' ")._parse_character_literal()
         "'abc''def'"
         >>> _NamelistParser("'abc''' ")._parse_character_literal()
@@ -1775,12 +1793,16 @@ class _NamelistParser(object):  # pylint:disable=too-few-public-methods
         Position on return is the last character of the string; we avoid
         advancing past that in order to avoid potential EOF errors.
 
-        >>> shouldRaise(_NamelistEOF, _NamelistParser('(1.,2.')._parse_complex_literal)
-
+        >>> _NamelistParser('(1.,2.')._parse_complex_literal()
+        Traceback (most recent call last):
+        ...
+        namelist._NamelistEOF: Unexpected end of file encountered in namelist.
         >>> _NamelistParser('(1.,2.) ')._parse_complex_literal()
         '(1.,2.)'
-        >>> shouldRaise(_NamelistParseError, _NamelistParser("(A,B) ")._parse_complex_literal)
-
+        >>> _NamelistParser("(A,B) ")._parse_complex_literal()
+        Traceback (most recent call last):
+        ...
+        namelist._NamelistParseError: Error in parsing namelist: '(A,B)' is not a valid complex literal
         """
         old_pos = self._pos
         while self._curr() != ")":
@@ -1861,14 +1883,18 @@ class _NamelistParser(object):  # pylint:disable=too-few-public-methods
         '"abc"'
         >>> _NamelistParser("'abc' ")._parse_literal()
         "'abc'"
-        >>> shouldRaise(_NamelistEOF, _NamelistParser('"abc"')._parse_literal)
-
+        >>> _NamelistParser('"abc"')._parse_literal()
+        Traceback (most recent call last):
+        ...
+        namelist._NamelistEOF: Unexpected end of file encountered in namelist.
         >>> _NamelistParser('"abc"')._parse_literal(allow_eof_end=True)
         '"abc"'
         >>> _NamelistParser('(1.,2.) ')._parse_literal()
         '(1.,2.)'
-        >>> shouldRaise(_NamelistEOF, _NamelistParser('(1.,2.)')._parse_literal)
-
+        >>> _NamelistParser('(1.,2.)')._parse_literal()
+        Traceback (most recent call last):
+        ...
+        namelist._NamelistEOF: Unexpected end of file encountered in namelist.
         >>> _NamelistParser('(1.,2.)')._parse_literal(allow_eof_end=True)
         '(1.,2.)'
         >>> _NamelistParser('5 ')._parse_literal()
@@ -1881,8 +1907,10 @@ class _NamelistParser(object):  # pylint:disable=too-few-public-methods
         'nan(booga)'
         >>> _NamelistParser('.FLORIDA$ ')._parse_literal()
         '.FLORIDA$'
-        >>> shouldRaise(_NamelistParseError, _NamelistParser('hamburger ')._parse_literal)
-
+        >>> _NamelistParser('hamburger ')._parse_literal()
+        Traceback (most recent call last):
+        ...
+        namelist._NamelistParseError: Error in parsing namelist: expected literal value, but got 'hamburger'
         >>> _NamelistParser('5,')._parse_literal()
         '5'
         >>> _NamelistParser('5\n')._parse_literal()
@@ -1897,14 +1925,20 @@ class _NamelistParser(object):  # pylint:disable=too-few-public-methods
         '6*(1., 2.)'
         >>> _NamelistParser('6*"a" ')._parse_literal()
         '6*"a"'
-        >>> shouldRaise(_NamelistEOF, _NamelistParser('6*')._parse_literal)
-
+        >>> _NamelistParser('6*')._parse_literal()
+        Traceback (most recent call last):
+        ...
+        namelist._NamelistEOF: Unexpected end of file encountered in namelist.
         >>> _NamelistParser('6*')._parse_literal(allow_eof_end=True)
         '6*'
-        >>> shouldRaise(_NamelistParseError, _NamelistParser('foo= ')._parse_literal)
-
-        >>> shouldRaise(_NamelistParseError, _NamelistParser('foo+= ')._parse_literal)
-
+        >>> _NamelistParser('foo= ')._parse_literal()
+        Traceback (most recent call last):
+        ...
+        namelist._NamelistParseError: Error in parsing namelist: expected literal value, but got 'foo='
+        >>> _NamelistParser('foo+= ')._parse_literal()
+        Traceback (most recent call last):
+        ...
+        namelist._NamelistParseError: Error in parsing namelist: expected literal value, but got 'foo+='
         >>> _NamelistParser('5,')._parse_literal(allow_name=True)
         '5'
         >>> x = _NamelistParser('foo= ')
@@ -1915,10 +1949,14 @@ class _NamelistParser(object):  # pylint:disable=too-few-public-methods
         >>> x._parse_literal(allow_name=True)
         >>> x._curr()
         'f'
-        >>> shouldRaise(_NamelistParseError, _NamelistParser('6*foo= ')._parse_literal, allow_name=True)
-
-        >>> shouldRaise(_NamelistParseError, _NamelistParser('6*foo+= ')._parse_literal, allow_name=True)
-
+        >>> _NamelistParser('6*foo= ')._parse_literal(allow_name=True)
+        Traceback (most recent call last):
+        ...
+        namelist._NamelistParseError: Error in parsing namelist: expected literal value, but got '6*foo='
+        >>> _NamelistParser('6*foo+= ')._parse_literal(allow_name=True)
+        Traceback (most recent call last):
+        ...
+        namelist._NamelistParseError: Error in parsing namelist: expected literal value, but got '6*foo+='
         >>> x = _NamelistParser('foo = ')
         >>> x._parse_literal(allow_name=True)
         >>> x._curr()
@@ -2024,8 +2062,10 @@ class _NamelistParser(object):  # pylint:disable=too-few-public-methods
         >>> x._curr()
         '/'
         >>> x = _NamelistParser("a")
-        >>> shouldRaise(_NamelistParseError, x._expect_separator)
-
+        >>> x._expect_separator()
+        Traceback (most recent call last):
+        ...
+        namelist._NamelistParseError: Error in parsing namelist: expected one of the characters in ' \n,/' but found 'a'
         >>> x = _NamelistParser(" , a")
         >>> x._expect_separator()
         True
@@ -2055,8 +2095,10 @@ class _NamelistParser(object):  # pylint:disable=too-few-public-methods
         >>> x._expect_separator(allow_eof=True)
         True
         >>> x = _NamelistParser(" / ")
-        >>> shouldRaise(_NamelistParseError, x._expect_separator, allow_eof=True)
-
+        >>> x._expect_separator(allow_eof=True)
+        Traceback (most recent call last):
+        ...
+        namelist._NamelistParseError: Error in parsing namelist: found group-terminating '/' in file without group names
         """
         errstring = "found group-terminating '/' in file without group names"
         # Deal with the possibility that we are already at EOF.
@@ -2105,8 +2147,10 @@ class _NamelistParser(object):  # pylint:disable=too-few-public-methods
         ('foo', ["'bar'"], False)
         >>> _NamelistParser("foo=\n'bar' /")._parse_name_and_values()
         ('foo', ["'bar'"], False)
-        >>> shouldRaise(_NamelistParseError, _NamelistParser("foo 'bar' /")._parse_name_and_values)
-
+        >>> _NamelistParser("foo 'bar' /")._parse_name_and_values()
+        Traceback (most recent call last):
+        ...
+        namelist._NamelistParseError: Error in parsing namelist: expected '=' but found "'"
         >>> _NamelistParser("foo='bar','bazz' /")._parse_name_and_values()
         ('foo', ["'bar'", "'bazz'"], False)
         >>> _NamelistParser("foo=,,'bazz',6*/")._parse_name_and_values()
@@ -2115,14 +2159,18 @@ class _NamelistParser(object):  # pylint:disable=too-few-public-methods
         ('foo', ["'bar'", "'bazz'"], False)
         >>> _NamelistParser("foo='bar' 'bazz' foo2(2)='ban'")._parse_name_and_values()
         ('foo', ["'bar'", "'bazz'"], False)
-        >>> shouldRaise(_NamelistParseError, _NamelistParser("foo= foo2='ban' ")._parse_name_and_values)
-
+        >>> _NamelistParser("foo= foo2='ban' ")._parse_name_and_values()
+        Traceback (most recent call last):
+        ...
+        namelist._NamelistParseError: Error in parsing namelist: expected literal value, but got "foo2='ban'"
         >>> _NamelistParser("foo=,,'bazz',6* ")._parse_name_and_values(allow_eof_end=True)
         ('foo', ['', '', "'bazz'", '6*'], False)
         >>> _NamelistParser("foo(3)='bazz'")._parse_name_and_values(allow_eof_end=True)
         ('foo(3)', ["'bazz'"], False)
-        >>> shouldRaise(_NamelistEOF, _NamelistParser("foo=")._parse_name_and_values)
-
+        >>> _NamelistParser("foo=")._parse_name_and_values()
+        Traceback (most recent call last):
+        ...
+        namelist._NamelistEOF: Unexpected end of file encountered in namelist.
         >>> _NamelistParser("foo=")._parse_name_and_values(allow_eof_end=True)
         ('foo', [''], False)
         >>> _NamelistParser("foo= ")._parse_name_and_values(allow_eof_end=True)
@@ -2202,8 +2250,10 @@ class _NamelistParser(object):  # pylint:disable=too-few-public-methods
         >>> x = _NamelistParser("&group /&group /")
         >>> x._parse_namelist_group()
         >>> x._advance()
-        >>> shouldRaise(_NamelistParseError, x._parse_namelist_group)
-
+        >>> x._parse_namelist_group()
+        Traceback (most recent call last):
+        ...
+        namelist._NamelistParseError: Error in parsing namelist: Namelist group 'group' encountered twice.
         >>> x = _NamelistParser("&group foo='bar', foo='bazz' /")
         >>> x._parse_namelist_group()
         >>> x._settings
@@ -2215,7 +2265,7 @@ class _NamelistParser(object):  # pylint:disable=too-few-public-methods
         >>> x = _NamelistParser("&group foo='bar', foo= /", groupless=True)
         >>> x._parse_namelist_group()
         >>> x._settings
-        {'foo': ["'bar'"}
+        {'foo': ["'bar'"]}
         >>> x = _NamelistParser("&group foo='bar', foo+='baz' /", groupless=True)
         >>> x._parse_namelist_group()
         >>> x._settings
@@ -2270,41 +2320,41 @@ class _NamelistParser(object):  # pylint:disable=too-few-public-methods
         first by namelist group name, then by variable name.
 
         >>> _NamelistParser("").parse_namelist()
-        OrderedDict()
+        {}
         >>> _NamelistParser(" \n!Comment").parse_namelist()
-        OrderedDict()
+        {}
         >>> _NamelistParser(" &group /").parse_namelist()
-        OrderedDict([('group', {})])
+        {'group': {}}
         >>> _NamelistParser("! Comment \n &group /! Comment\n ").parse_namelist()
-        OrderedDict([('group', {})])
+        {'group': {}}
         >>> _NamelistParser("! Comment \n &group /! Comment ").parse_namelist()
-        OrderedDict([('group', {})])
+        {'group': {}}
         >>> _NamelistParser("&group1\n foo='bar','bazz'\n,, foo2=2*5\n / &group2 /").parse_namelist()
-        OrderedDict([('group1', {'foo': ["'bar'", "'bazz'", ''], 'foo2': ['5', '5']}), ('group2', {})])
+        {'group1': {'foo': ["'bar'", "'bazz'", ''], 'foo2': ['5', '5']}, 'group2': {}}
         >>> _NamelistParser("!blah \n foo='bar','bazz'\n,, foo2=2*5\n ", groupless=True).parse_namelist()
-        OrderedDict([('foo', ["'bar'", "'bazz'", '']), ('foo2', ['2*5'])])
+        {'foo': ["'bar'", "'bazz'", ''], 'foo2': ['2*5']}
         >>> _NamelistParser("!blah \n foo='bar','bazz'\n,, foo2=2*5,6\n ", groupless=True).parse_namelist()
-        OrderedDict([('foo', ["'bar'", "'bazz'", '']), ('foo2', ['2*5', '6'])])
+        {'foo': ["'bar'", "'bazz'", ''], 'foo2': ['2*5', '6']}
         >>> _NamelistParser("!blah \n foo='bar'", groupless=True).parse_namelist()
-        OrderedDict([('foo', ["'bar'"])])
+        {'foo': ["'bar'"]}
         >>> _NamelistParser("foo='bar', foo(3)='bazz'", groupless=True).parse_namelist()
-        OrderedDict([('foo', ["'bar'"]), ('foo(3)', ["'bazz'"])])
+        {'foo': ["'bar'"], 'foo(3)': ["'bazz'"]}
         >>> _NamelistParser("foo(2)='bar'", groupless=True).parse_namelist()
-        OrderedDict([('foo(2)', ["'bar'"])])
+        {'foo(2)': ["'bar'"]}
         >>> _NamelistParser("foo(2)='bar', foo(3)='bazz'", groupless=True).parse_namelist()
-        OrderedDict([('foo(2)', ["'bar'"]), ('foo(3)', ["'bazz'"])])
+        {'foo(2)': ["'bar'"], 'foo(3)': ["'bazz'"]}
         >>> _NamelistParser("foo='bar', foo='bazz'", groupless=True).parse_namelist()
-        OrderedDict([('foo', ["'bazz'"])])
+        {'foo': ["'bazz'"]}
         >>> _NamelistParser("foo='bar'\n foo+='bazz'", groupless=True).parse_namelist()
-        OrderedDict([('foo', ["'bar'", "'bazz'"])])
+        {'foo': ["'bar'", "'bazz'"]}
         >>> _NamelistParser("foo='bar', foo='bazz'", groupless=True).parse_namelist()
-        OrderedDict([('foo', ["'bazz'"])])
+        {'foo': ["'bazz'"]}
         >>> _NamelistParser("foo='bar', foo=", groupless=True).parse_namelist()
-        OrderedDict([('foo', ["'bar'"])])
+        {'foo': ["'bar'"]}
         >>> _NamelistParser("foo='bar', 'bazz'\n foo+='ban'", groupless=True).parse_namelist()
-        OrderedDict([('foo', ["'bar'", "'bazz'", "'ban'"])])
+        {'foo': ["'bar'", "'bazz'", "'ban'"]}
         >>> _NamelistParser("foo+='bar'", groupless=True).parse_namelist()
-        OrderedDict([('foo', ["'bar'"])])
+        {'foo': ["'bar'"]}
         """
         # Return empty dictionary for empty files.
         if self._len == 0:
