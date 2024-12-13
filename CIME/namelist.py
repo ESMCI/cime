@@ -101,7 +101,6 @@ groups are separated by (optional) whitespace and comments, and nothing else.
 # pylint: disable=line-too-long,too-many-lines,invalid-name
 
 import re
-import collections
 from contextlib import contextmanager
 
 # Disable these because this is our standard setup
@@ -887,19 +886,19 @@ def parse(in_file=None, text=None, groupless=False, convert_tab_to_space=True):
         return Namelist(namelist_dict)
 
 
-def shouldRaise(eclass, method, *args, **kw):
-    """
-    A helper function to make doctests py3 compatible
-    http://python3porting.com/problems.html#running-doctests
-    """
-    try:
-        method(*args, **kw)
-    except BaseException:
-        e = sys.exc_info()[1]
-        if not isinstance(e, eclass):
-            raise
-        return
-    raise Exception("Expected exception %s not raised" % str(eclass))
+# def shouldRaise(eclass, method, *args, **kw):
+#    """
+#    A helper function to make doctests py3 compatible
+#    http://python3porting.com/problems.html#running-doctests
+#    """
+#    try:
+#        method(*args, **kw)
+#    except BaseException:
+#        e = sys.exc_info()[1]
+#        if not isinstance(e, eclass):
+#            raise
+#        return
+#    raise Exception("Expected exception %s not raised" % str(eclass))
 
 
 class Namelist(object):
@@ -932,7 +931,7 @@ class Namelist(object):
         if groups is not None:
             for group_name in groups:
                 expect(group_name is not None, " Got None in groups {}".format(groups))
-                self._groups[group_name] = collections.OrderedDict()
+                self._groups[group_name] = {}
                 for variable_name in groups[group_name]:
                     self._groups[group_name][variable_name] = groups[group_name][
                         variable_name
@@ -946,7 +945,7 @@ class Namelist(object):
             self.write(filename)
 
     def clean_groups(self):
-        self._groups = collections.OrderedDict()
+        self._groups = {}
 
     def get_group_names(self):
         """Return a list of all groups in the namelist.
@@ -1429,7 +1428,7 @@ class _NamelistParser(object):  # pylint:disable=too-few-public-methods
         # Dictionary with group names as keys, and dictionaries of variable
         # name-value pairs as values. (Or a single flat dictionary if
         # `groupless=True`.)
-        self._settings = collections.OrderedDict()
+        self._settings = {}
         # Fortran allows setting a particular index of an array
         # such as foo(2)='k'
         # this dict is set to that value if used.
@@ -2187,17 +2186,17 @@ class _NamelistParser(object):  # pylint:disable=too-few-public-methods
         >>> x = _NamelistParser("&group /")
         >>> x._parse_namelist_group()
         >>> x._settings
-        OrderedDict([('group', {})])
+        {'group': {}}
         >>> x._curr()
         '/'
         >>> x = _NamelistParser("&group\n foo='bar','bazz'\n,, foo2=2*5\n /")
         >>> x._parse_namelist_group()
         >>> x._settings
-        OrderedDict([('group', {'foo': ["'bar'", "'bazz'", ''], 'foo2': ['5', '5']})])
+        {'group': {'foo': ["'bar'", "'bazz'", ''], 'foo2': ['5', '5']}}
         >>> x = _NamelistParser("&group\n foo='bar','bazz'\n,, foo2=2*5\n /", groupless=True)
         >>> x._parse_namelist_group()
         >>> x._settings
-        OrderedDict([('foo', ["'bar'", "'bazz'", '']), ('foo2', ['5', '5'])])
+        {'foo': ["'bar'", "'bazz'", ''], 'foo2': ['5', '5']}
         >>> x._curr()
         '/'
         >>> x = _NamelistParser("&group /&group /")
@@ -2208,31 +2207,31 @@ class _NamelistParser(object):  # pylint:disable=too-few-public-methods
         >>> x = _NamelistParser("&group foo='bar', foo='bazz' /")
         >>> x._parse_namelist_group()
         >>> x._settings
-        OrderedDict([('group', {'foo': ["'bazz'"]})])
+        {'group': {'foo': ["'bazz'"]}}
         >>> x = _NamelistParser("&group foo='bar', foo= /")
         >>> x._parse_namelist_group()
         >>> x._settings
-        OrderedDict([('group', {'foo': ["'bar'"]})])
+        {'group': {'foo': ["'bar'"]}}
         >>> x = _NamelistParser("&group foo='bar', foo= /", groupless=True)
         >>> x._parse_namelist_group()
         >>> x._settings
-        OrderedDict([('foo', ["'bar'"])])
+        {'foo': ["'bar'"}
         >>> x = _NamelistParser("&group foo='bar', foo+='baz' /", groupless=True)
         >>> x._parse_namelist_group()
         >>> x._settings
-        OrderedDict([('foo', ["'bar'", "'baz'"])])
+        {'foo': ["'bar'", "'baz'"]}
         >>> x = _NamelistParser("&group foo+='bar' /", groupless=True)
         >>> x._parse_namelist_group()
         >>> x._settings
-        OrderedDict([('foo', ["'bar'"])])
+        {'foo': ["'bar'"]}
         >>> x = _NamelistParser("&group foo='bar', foo+='baz' /")
         >>> x._parse_namelist_group()
         >>> x._settings
-        OrderedDict([('group', {'foo': ["'bar'", "'baz'"]})])
+        {'group': {'foo': ["'bar'", "'baz'"]}}
         >>> x = _NamelistParser("&group foo+='bar' /")
         >>> x._parse_namelist_group()
         >>> x._settings
-        OrderedDict([('group', {'foo': ["'bar'"]})])
+        {'group': {'foo': ["'bar'"]}}
         """
         group_name = self._parse_namelist_group_name()
         if not self._groupless:
