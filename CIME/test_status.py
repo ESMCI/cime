@@ -269,7 +269,7 @@ class TestStatus(object):
         return self._phase_statuses[phase][0] if phase in self._phase_statuses else None
 
     def get_comment(self, phase):
-        return self._phase_statuses[phase][1] if phase in self._phase_statuses else None
+        return self._phase_statuses[phase][1] if phase in self._phase_statuses else ""
 
     def current_is(self, phase, status):
         try:
