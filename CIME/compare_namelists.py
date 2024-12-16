@@ -1,6 +1,4 @@
 import os, re, logging
-
-from collections import OrderedDict
 from CIME.utils import expect, CIMEError
 
 logger = logging.getLogger(__name__)
@@ -73,11 +71,11 @@ def _interpret_value(value_str, filename):
     >>> _interpret_value("3*1.0", "foo")
     ['1.0', '1.0', '1.0']
     >>> _interpret_value("'DMS -> value.nc'", "foo")
-    OrderedDict([('DMS', 'value.nc')])
+    {'DMS': 'value.nc'}
     >>> _interpret_value("'DMS -> 1.0 * value.nc'", "foo")
-    OrderedDict([('DMS', '1.0*value.nc')])
+    {'DMS': '1.0*value.nc'}
     >>> _interpret_value("'DMS -> 1.0* value.nc'", "foo")
-    OrderedDict([('DMS', '1.0*value.nc')])
+    {'DMS': '1.0*value.nc'}
     """
     comma_re = re.compile(r"\s*,\s*")
     dict_re = re.compile(r"^'(\S+)\s*->\s*(\S+|(?:\S+\s*\*\s*\S+))\s*'")
@@ -87,7 +85,7 @@ def _interpret_value(value_str, filename):
     tokens = [item.strip() for item in comma_re.split(value_str) if item.strip() != ""]
     if "->" in value_str:
         # dict
-        rv = OrderedDict()
+        rv = {}
         for token in tokens:
             m = dict_re.match(token)
             expect(
@@ -151,7 +149,7 @@ def _parse_namelists(namelist_lines, filename):
     ... /
     ... '''
     >>> _parse_namelists(teststr.splitlines(), 'foo')
-    OrderedDict([('nml', OrderedDict([('val', "'foo'"), ('aval', ["'one'", "'two'", "'three'"]), ('maval', ["'one'", "'two'", "'three'", "'four'"]), ('dval', OrderedDict([('one', 'two'), ('three', 'four')])), ('mdval', OrderedDict([('one', 'two'), ('three', 'four'), ('five', 'six')])), ('nval', '1850')])), ('nml2', OrderedDict([('val2', '.false.')]))])
+    {'nml': {'val': "'foo'", 'aval': ["'one'", "'two'", "'three'"], 'maval': ["'one'", "'two'", "'three'", "'four'"], 'dval': {'one': 'two', 'three': 'four'}, 'mdval': {'one': 'two', 'three': 'four', 'five': 'six'}, 'nval': '1850'}, 'nml2': {'val2': '.false.'}}
 
     >>> teststr = '''&fire_emis_nl
     ... fire_emis_factors_file = 'fire_emis_factors_c140116.nc'
@@ -159,7 +157,7 @@ def _parse_namelists(namelist_lines, filename):
     ... /
     ... '''
     >>> _parse_namelists(teststr.splitlines(), 'foo')
-    OrderedDict([('fire_emis_nl', OrderedDict([('fire_emis_factors_file', "'fire_emis_factors_c140116.nc'"), ('fire_emis_specifier', ["'bc_a1 = BC'", "'pom_a1 = 1.4*OC'", "'pom_a2 = A*B*C'", "'SO2 = SO2'"])]))])
+    {'fire_emis_nl': {'fire_emis_factors_file': "'fire_emis_factors_c140116.nc'", 'fire_emis_specifier': ["'bc_a1 = BC'", "'pom_a1 = 1.4*OC'", "'pom_a2 = A*B*C'", "'SO2 = SO2'"]}}
 
     >>> _parse_namelists('blah', 'foo') # doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
@@ -196,19 +194,19 @@ def _parse_namelists(namelist_lines, filename):
     ... val = 2, 2*13
     ... /'''
     >>> _parse_namelists(teststr.splitlines(), 'foo')
-    OrderedDict([('nml', OrderedDict([('val', ['2', '13', '13'])]))])
+    {'nml': {'val': ['2', '13', '13']}}
 
     >>> teststr = '''&nml
     ... val = 2 2 3
     ... /'''
     >>> _parse_namelists(teststr.splitlines(), 'foo')
-    OrderedDict([('nml', OrderedDict([('val', ['2', '2', '3'])]))])
+    {'nml': {'val': ['2', '2', '3']}}
 
     >>> teststr = '''&nml
     ... val =  'a brown cow' 'a red hen'
     ... /'''
     >>> _parse_namelists(teststr.splitlines(), 'foo')
-    OrderedDict([('nml', OrderedDict([('val', ["'a brown cow'", "'a red hen'"])]))])
+    {'nml': {'val': ["'a brown cow'", "'a red hen'"]}}
     """
 
     comment_re = re.compile(r"^[#!]")
@@ -216,7 +214,7 @@ def _parse_namelists(namelist_lines, filename):
     name_re = re.compile(r"^([^\s=']+)\s*=\s*(.+)$")
     rcline_re = re.compile(r"^([^&\s':]+)\s*:\s*(.+)$")
 
-    rv = OrderedDict()
+    rv = {}
     current_namelist = None
     multiline_variable = None  # (name, value)
     for line in namelist_lines:
@@ -238,7 +236,7 @@ def _parse_namelists(namelist_lines, filename):
             logger.debug("  Parsing variable '{}' with data '{}'".format(name, value))
 
             if "seq_maps.rc" not in rv:
-                rv["seq_maps.rc"] = OrderedDict()
+                rv["seq_maps.rc"] = {}
 
             expect(
                 name not in rv["seq_maps.rc"],
@@ -261,7 +259,7 @@ def _parse_namelists(namelist_lines, filename):
             # to signify this event
             if namelist_re.match(line) is None:
                 expect(
-                    rv != OrderedDict(),
+                    rv != {},
                     "File '{}' does not appear to be a namelist file, skipping".format(
                         filename
                     ),
@@ -281,7 +279,7 @@ def _parse_namelists(namelist_lines, filename):
                 ),
             )
 
-            rv[current_namelist] = OrderedDict()
+            rv[current_namelist] = {}
 
             logger.debug("  Starting namelist '{}'".format(current_namelist))
 
@@ -342,7 +340,7 @@ def _parse_namelists(namelist_lines, filename):
             real_value = _interpret_value(line, filename)
             if type(current_value) is list:
                 expect(
-                    type(real_value) is not OrderedDict,
+                    type(real_value) is not dict,
                     "In file '{}', multiline list variable '{}' had dict entries".format(
                         filename, multiline_variable[0]
                     ),
@@ -350,9 +348,9 @@ def _parse_namelists(namelist_lines, filename):
                 real_value = real_value if type(real_value) is list else [real_value]
                 current_value.extend(real_value)
 
-            elif type(current_value) is OrderedDict:
+            elif type(current_value) is dict:
                 expect(
-                    type(real_value) is OrderedDict,
+                    type(real_value) is dict,
                     "In file '{}', multiline dict variable '{}' had non-dict entries".format(
                         filename, multiline_variable[0]
                     ),
@@ -459,7 +457,7 @@ def _compare_values(name, gold_value, comp_value, case):
                     name, comp_value_list_item
                 )
 
-    elif type(gold_value) is OrderedDict:
+    elif type(gold_value) is dict:
         for key, gold_value_dict_item in gold_value.items():
             if key in comp_value:
                 comments += _compare_values(
@@ -639,7 +637,7 @@ def _compare_namelists(gold_namelists, comp_namelists, case):
       COMP: csw_specifier dict item DMS = 1.0*other.nc
     <BLANKLINE>
     """
-    different_namelists = OrderedDict()
+    different_namelists = {}
     for namelist, gold_names in gold_namelists.items():
         if namelist not in comp_namelists:
             different_namelists[namelist] = ["Missing namelist: {}\n".format(namelist)]

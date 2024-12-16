@@ -24,9 +24,6 @@ Additional important design decisions:
 """
 
 from CIME.XML.standard_module_setup import *
-
-from collections import OrderedDict
-
 import os, itertools
 from CIME import expected_fails
 
@@ -151,7 +148,7 @@ class TestStatus(object):
         """
         test_dir = os.getcwd() if test_dir is None else test_dir
         self._filename = os.path.join(test_dir, TEST_STATUS_FILENAME)
-        self._phase_statuses = OrderedDict()  # {name -> (status, comments)}
+        self._phase_statuses = {}  # {name -> (status, comments)}
         self._test_name = test_name
         self._ok_to_modify = False
         self._no_io = no_io
@@ -202,8 +199,7 @@ class TestStatus(object):
         ...     ts.set_status("{}_base_rest".format(COMPARE_PHASE), "FAIL")
         ...     ts.set_status(SHAREDLIB_BUILD_PHASE, "PASS", comments='Time=42')
         >>> ts._phase_statuses
-        OrderedDict([('CREATE_NEWCASE', ('PASS', '')), ('XML', ('PASS', '')), ('SETUP', ('PASS', '')), ('SHAREDLIB_BUILD', ('PASS', 'Time=42')), ('COMPARE_base_rest', ('FAIL', '')), ('MODEL_BUILD', ('PEND', ''))])
-
+        {'CREATE_NEWCASE': ('PASS', ''), 'XML': ('PASS', ''), 'SETUP': ('PASS', ''), 'SHAREDLIB_BUILD': ('PASS', 'Time=42'), 'COMPARE_base_rest': ('FAIL', ''), 'MODEL_BUILD': ('PEND', '')}
         >>> with TestStatus(test_dir="/", test_name="ERS.foo.A", no_io=True) as ts:
         ...     ts.set_status(CREATE_NEWCASE_PHASE, "PASS")
         ...     ts.set_status(XML_PHASE, "PASS")
@@ -214,12 +210,11 @@ class TestStatus(object):
         ...     ts.set_status(SHAREDLIB_BUILD_PHASE, "PASS", comments='Time=42')
         ...     ts.set_status(SETUP_PHASE, "PASS")
         >>> ts._phase_statuses
-        OrderedDict([('CREATE_NEWCASE', ('PASS', '')), ('XML', ('PASS', '')), ('SETUP', ('PASS', '')), ('SHAREDLIB_BUILD', ('PEND', ''))])
-
+        {'CREATE_NEWCASE': ('PASS', ''), 'XML': ('PASS', ''), 'SETUP': ('PASS', ''), 'SHAREDLIB_BUILD': ('PEND', '')}
         >>> with TestStatus(test_dir="/", test_name="ERS.foo.A", no_io=True) as ts:
         ...     ts.set_status(CREATE_NEWCASE_PHASE, "FAIL")
         >>> ts._phase_statuses
-        OrderedDict([('CREATE_NEWCASE', ('FAIL', ''))])
+        {'CREATE_NEWCASE': ('FAIL', '')}
         """
         expect(
             self._ok_to_modify,
@@ -274,7 +269,7 @@ class TestStatus(object):
         return self._phase_statuses[phase][0] if phase in self._phase_statuses else None
 
     def get_comment(self, phase):
-        return self._phase_statuses[phase][1] if phase in self._phase_statuses else None
+        return self._phase_statuses[phase][1] if phase in self._phase_statuses else ""
 
     def current_is(self, phase, status):
         try:
@@ -355,7 +350,7 @@ class TestStatus(object):
         ... PASS ERS.foo.A SHAREDLIB_BUILD Time=42
         ... '''
         >>> _test_helper1(contents)
-        OrderedDict([('CREATE_NEWCASE', ('PASS', '')), ('XML', ('PASS', '')), ('SETUP', ('FAIL', '')), ('COMPARE_base_rest', ('PASS', '')), ('SHAREDLIB_BUILD', ('PASS', 'Time=42'))])
+        {'CREATE_NEWCASE': ('PASS', ''), 'XML': ('PASS', ''), 'SETUP': ('FAIL', ''), 'COMPARE_base_rest': ('PASS', ''), 'SHAREDLIB_BUILD': ('PASS', 'Time=42')}
         """
         for line in file_contents.splitlines():
             line = line.strip()
