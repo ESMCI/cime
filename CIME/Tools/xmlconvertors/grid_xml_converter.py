@@ -25,7 +25,7 @@ sys.path.insert(
 from CIME import utils
 from CIME.Tools.standard_script_setup import *
 from CIME.utils import run_cmd_no_fail
-from distutils.spawn import find_executable
+from shutil import which
 import xml.etree.ElementTree as ET
 import operator
 
@@ -307,6 +307,7 @@ class DataTree(object):
         self.n = 0
         self.nodes = []
         self.populate()
+        self._xmllint = which(xmllint)
 
     def next(self):
         if self.index >= len(self.nodes):
@@ -358,10 +359,9 @@ class GridTree(DataTree):
 
             if a is not None:
                 grids.append(a.to_cime5())
-        xmllint = find_executable("xmllint")
-        if xmllint is not None:
+        if self._xmllint is not None:
             run_cmd_no_fail(
-                "{} --format --output {} -".format(xmllint, newfilename),
+                "{} --format --output {} -".format(self._xmllint, newfilename),
                 input_str=ET.tostring(root),
             )
 
@@ -392,10 +392,10 @@ class DomainTree(DataTree):
                 domains.append(ET.Element("WITH"))
             if a is not None:
                 domains.append(a.to_cime5())
-        xmllint = find_executable("xmllint")
-        if xmllint is not None:
+
+        if self._xmllint is not None:
             run_cmd_no_fail(
-                "{} --format --output {} -".format(xmllint, newfilename),
+                "{} --format --output {} -".format(self._xmllint, newfilename),
                 input_str=ET.tostring(root),
             )
 
@@ -422,10 +422,9 @@ class GridmapTree(DataTree):
                 gridmaps.append(ET.Element("WITH"))
             if a is not None:
                 gridmaps.append(a.to_cime5())
-        xmllint = find_executable("xmllint")
-        if xmllint is not None:
+        if self._xmllint is not None:
             run_cmd_no_fail(
-                "{} --format --output {} -".format(xmllint, newfilename),
+                "{} --format --output {} -".format(self._xmllint, newfilename),
                 input_str=ET.tostring(root),
             )
 
