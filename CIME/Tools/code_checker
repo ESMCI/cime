@@ -12,7 +12,7 @@ from CIME.code_checker import check_code, expect
 import argparse, sys, os
 
 # pylint: disable=import-error
-from shutils import which
+from shutil import which
 
 logger = logging.getLogger(__name__)
 
