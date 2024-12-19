@@ -225,14 +225,15 @@ class SystemTestsCommon(object):
             smon = startdatetime.month
             ryr = restdatetime.year
             rmon = restdatetime.month
-            while ryr > syr:
-                if rmon > 2 and calendar.isleap(ryr):
+            while ryr > syr and (ryr < restdatetime.year or rmon > 2):
+                if calendar.isleap(ryr):
                     dayscorrected += 1
                 ryr = ryr - 1
-            if rmon > 2 and smon <= 2:
+            if rmon > 2 and smon <= 2 or restdatetime.year > syr:
                 if calendar.isleap(syr):
                     dayscorrected += 1
             restdatetime = restdatetime + timedelta(days=dayscorrected)
+            logger.info("correcting calendar for no leap {}".format(dayscorrected))
         self._rest_time = (
             f".{restdatetime.year:04d}-{restdatetime.month:02d}-{restdatetime.day:02d}-"
         )
