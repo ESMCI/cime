@@ -219,20 +219,13 @@ class SystemTestsCommon(object):
             expect(False, f"stop_option {stop_option} not available for this test")
 
         restdatetime = startdatetime + rtd
+        # We are working with python datatime and the model uses a NO_LEAP 365 day calendar
+        # so we need to correct for leap years
         if cal == "NO_LEAP":
-            dayscorrected = 0
-            syr = startdatetime.year
-            smon = startdatetime.month
-            ryr = restdatetime.year
-            rmon = restdatetime.month
-            while ryr > syr:
-                if rmon > 2 and calendar.isleap(ryr):
-                    dayscorrected += 1
-                ryr = ryr - 1
-            if rmon > 2 and smon <= 2:
-                if calendar.isleap(syr):
-                    dayscorrected += 1
-            restdatetime = restdatetime + timedelta(days=dayscorrected)
+            restdatetime = restdatetime + self._leap_year_correction(
+                startdatetime, restdatetime
+            )
+
         self._rest_time = (
             f".{restdatetime.year:04d}-{restdatetime.month:02d}-{restdatetime.day:02d}-"
         )
@@ -249,6 +242,35 @@ class SystemTestsCommon(object):
         self._case.set_value("REST_N", rest_n)
 
         return rest_n
+
+    @staticmethod
+    def _leap_year_correction(startdatetime, restdatetime):
+        """
+        Compute correction needed for restdate time if model is using NO_LEAP calendar
+
+        >>> SystemTestsCommon._leap_year_correction(datetime.strptime("20000225","%Y%m%d"), datetime.strptime("20000301","%Y%m%d"))
+        datetime.timedelta(days=1)
+        >>> SystemTestsCommon._leap_year_correction(datetime.strptime("20010225","%Y%m%d"), datetime.strptime("20010301","%Y%m%d"))
+        datetime.timedelta(0)
+        >>> SystemTestsCommon._leap_year_correction(datetime.strptime("20010225","%Y%m%d"), datetime.strptime("20050301","%Y%m%d"))
+        datetime.timedelta(days=1)
+        >>> SystemTestsCommon._leap_year_correction(datetime.strptime("18500101","%Y%m%d"), datetime.strptime("20201231","%Y%m%d"))
+        datetime.timedelta(days=42)
+        """
+        dayscorrected = 0
+        syr = startdatetime.year
+        smon = startdatetime.month
+        ryr = syr
+        rmon = restdatetime.month
+        while ryr < restdatetime.year:
+            if calendar.isleap(ryr):
+                dayscorrected += 1
+            ryr = ryr + 1
+        if rmon > 2 and smon <= 2 or restdatetime.year > syr:
+            if calendar.isleap(ryr):
+                dayscorrected += 1
+        logger.info("correcting calendar for no leap {}".format(dayscorrected))
+        return timedelta(days=dayscorrected)
 
     def _init_environment(self, caseroot):
         """
