@@ -1,39 +1,36 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_INIT(MCT, 2.8)
+AC_INIT([MCT],[2.8])
 
 # PROCESS THE FOLLOWING MAKEFILES
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_FILES(Makefile.conf)
-AC_CONFIG_HEADER(config.h)
+AC_CONFIG_HEADERS([config.h])
 
 # DECLARE PACKAGE OPTIONS
 
 AC_ARG_ENABLE(mpiserial,
-AC_HELP_STRING([--enable-mpiserial],
-[Use the included MPI replacement library for single processor]),
+AS_HELP_STRING([--enable-mpiserial],[Use the included MPI replacement library for single processor]),
 [DONOTCHECKMPI="DONOTCHECKMPI"]
 )
 
 AC_ARG_ENABLE(debugging,
-AC_HELP_STRING([--enable-debugging],
-[Use the debugging flag and disable the optimization flag]),
+AS_HELP_STRING([--enable-debugging],[Use the debugging flag and disable the optimization flag]),
 [DEBUGGING="ENABLED"]
 )
 
 AC_ARG_ENABLE(selectedrealkind,
-AC_HELP_STRING([--enable-selectedrealkind],
-[define single precision and double precision numbers using the selected_real_kind function. Default uses the kind inquiry function.]),
+AS_HELP_STRING([--enable-selectedrealkind],[define single precision and double precision numbers using the selected_real_kind function. Default uses the kind inquiry function.]),
 [SRKDEF="SELECTEDREALKIND"]
 )
 
 AC_ARG_ENABLE(sequence,
-AC_HELP_STRING([--enable-sequence],[Modify MCT types to make them contiguous in memory.]),
+AS_HELP_STRING([--enable-sequence],[Modify MCT types to make them contiguous in memory.]),
 [SRKDEF="SEQUENCE"],)
 
 AC_ARG_ENABLE(babel,
-AC_HELP_STRING([--enable-babel],[Supply this option if you plan on building the Babel bindings to MCT]),
+AS_HELP_STRING([--enable-babel],[Supply this option if you plan on building the Babel bindings to MCT]),
 [SRKDEF="SEQUENCE"],)
 
 

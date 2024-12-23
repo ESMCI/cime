@@ -996,7 +996,7 @@ This allows using a different mpirun command to launch unit tests
     <DESC>NCAR AMD EPYC </DESC>
     <NODENAME_REGEX>de.*.hpc.ucar.edu</NODENAME_REGEX>
     <OS>CNL</OS>
-    <COMPILERS>intel,gnu</COMPILERS>
+    <COMPILERS>intel,gnu,nvhpc</COMPILERS>
 <!--    <COMPILERS>intel,gnu,cray,nvhpc,intel-oneapi,intel-classic</COMPILERS> -->
     <MPILIBS>mpich</MPILIBS>
     <CIME_OUTPUT_ROOT>$ENV{SCRATCH}</CIME_OUTPUT_ROOT>
@@ -1030,43 +1030,35 @@ This allows using a different mpirun command to launch unit tests
       <cmd_path lang="csh">module</cmd_path>
       <modules>
 	<command name="load">cesmdev/1.0</command>
-	<command name="load">ncarenv/23.09</command>
+	<command name="load">ncarenv/24.12</command>
 	<command name="purge"/>
 	<command name="load">craype</command>
       </modules>
       <modules compiler="intel">
-	<command name="load">intel/2023.2.1</command>
+	<command name="load">intel/2024.2.1</command>
 	<command name="load">mkl</command>
-	<command name="load">spherepack/3.2</command>
-      </modules>
-      <modules compiler="intel-oneapi">
-	<command name="load">intel-oneapi/2023.2.1</command>
-	<command name="load">mkl</command>
-      </modules>
-      <modules compiler="intel-classic">
-	<command name="load">intel-classic/2023.2.1</command>
-	<command name="load">mkl</command>
+<!--	<command name="load">spherepack/3.2</command> -->
       </modules>
       <modules compiler="cray">
-	<command name="load">cce/15.0.1</command>
-	<command name="load">cray-libsci/23.02.1.1</command>
+	<command name="load">cce/17.0.1</command>
+	<command name="load">cray-libsci/24.03.0</command>
       </modules>
       <modules compiler="gnu">
-	<command name="load">gcc/12.2.0</command>
-	<command name="load">cray-libsci/23.02.1.1</command>
+	<command name="load">gcc/12.4.0</command>
+	<command name="load">cray-libsci/24.03.0</command>
       </modules>
       <modules compiler="nvhpc">
-	<command name="load">nvhpc/23.7</command>
+	<command name="load">nvhpc/24.11</command>
       </modules>
       <modules>
 	<command name="load">ncarcompilers/1.0.0</command>
 	<command name="load">cmake</command>
       </modules>
       <modules mpilib="mpich">
-	<command name="load">cray-mpich/8.1.27</command>
+	<command name="load">cray-mpich/8.1.29</command>
       </modules>
       <modules mpilib="mpi-serial">
-	<command name="load">mpi-serial/2.3.0</command>
+	<command name="load">mpi-serial/2.5.0</command>
       </modules>
 
       <modules mpilib="mpi-serial">
@@ -1075,11 +1067,11 @@ This allows using a different mpirun command to launch unit tests
 
       <modules mpilib="!mpi-serial">
 	<command name="load">netcdf-mpi/4.9.2</command>
-	<command name="load">parallel-netcdf/1.12.3</command>
+	<command name="load">parallel-netcdf/1.14.0</command>
       </modules>
 
       <modules>
-        <command name="load">esmf/8.6.0</command>
+        <command name="load">esmf/8.7.0</command>
       </modules>
 
     </module_system>
@@ -1088,7 +1080,7 @@ This allows using a different mpirun command to launch unit tests
       <env name="OMP_STACKSIZE">64M</env>
       <env name="FI_CXI_RX_MATCH_MODE">hybrid</env>
       <env name="FI_MR_CACHE_MONITOR">memhooks</env>
-      <env name="SPHEREPACK_LIBDIR">$ENV{NCAR_ROOT_SPHEREPACK}/lib</env>
+<!--      <env name="SPHEREPACK_LIBDIR">$ENV{NCAR_ROOT_SPHEREPACK}/lib</env> -->
     </environment_variables>
 
   </machine>
