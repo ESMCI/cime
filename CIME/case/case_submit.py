@@ -64,7 +64,7 @@ def _submit(
         )
         # only checks for the first instance in a multidriver case
         if case.get_value("COMP_INTERFACE") == "nuopc":
-            rpointer = self.get_value("DRV_RESTART_POINTER")
+            rpointer = case.get_value("DRV_RESTART_POINTER")
             if not rpointer:
                 rpointer = "rpointer.cpl"
                 if case.get_value("NINST") > 1:
