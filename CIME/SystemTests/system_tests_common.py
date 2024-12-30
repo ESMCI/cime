@@ -248,6 +248,8 @@ class SystemTestsCommon(object):
         """
         Compute correction needed for restdate time if model is using NO_LEAP calendar
 
+        >>> SystemTestsCommon._leap_year_correction(datetime.strptime("00031231","%Y%m%d"), datetime.strptime("00040101","%Y%m%d"))
+        datetime.timedelta(0)
         >>> SystemTestsCommon._leap_year_correction(datetime.strptime("20000225","%Y%m%d"), datetime.strptime("20000301","%Y%m%d"))
         datetime.timedelta(days=1)
         >>> SystemTestsCommon._leap_year_correction(datetime.strptime("20010225","%Y%m%d"), datetime.strptime("20010301","%Y%m%d"))
@@ -266,7 +268,7 @@ class SystemTestsCommon(object):
             if calendar.isleap(ryr):
                 dayscorrected += 1
             ryr = ryr + 1
-        if rmon > 2 and smon <= 2 or restdatetime.year > syr:
+        if rmon > 2 and (smon <= 2 or restdatetime.year > syr):
             if calendar.isleap(ryr):
                 dayscorrected += 1
         logger.info("correcting calendar for no leap {}".format(dayscorrected))
