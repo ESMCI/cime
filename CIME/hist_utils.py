@@ -759,6 +759,9 @@ def get_ts_synopsis(comments):
     if comments == "" or "\n" not in comments:
         return comments
 
+    if comments.endswith("PASS"):
+        return ""
+
     # Empty synopsis when files are identicial
     if re.search(IDENTICAL, comments) is not None:
         return ""
