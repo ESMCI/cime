@@ -21,6 +21,7 @@ SLEEP_INTERVAL_SEC = 0.1
 ###############################################################################
 def signal_handler(*_):
     ###############################################################################
+    logging.warning("RECEIVED SIGNAL!")
     global SIGNAL_RECEIVED
     SIGNAL_RECEIVED = True
 

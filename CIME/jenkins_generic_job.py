@@ -432,12 +432,13 @@ def jenkins_generic_job(
         update_success=update_success,
     )
 
-    logging.info("TEST ARCHIVER: Waiting for archiver thread")
-    archiver_thread.join()
-    logging.info("TEST ARCHIVER: Waiting for archiver finished")
-
     if use_batch and CIME.wait_for_tests.SIGNAL_RECEIVED:
         # Cleanup
         cleanup_queue(test_root, test_id)
+
+    if not CIME.wait_for_tests.SIGNAL_RECEIVED:
+        logging.info("TEST ARCHIVER: Waiting for archiver thread")
+        archiver_thread.join()
+        logging.info("TEST ARCHIVER: Waiting for archiver finished")
 
     return tests_passed
