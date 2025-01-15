@@ -38,7 +38,7 @@ class ERS(SystemTestsCommon):
             )
         ninst = self._case.get_value("NINST")
         drvrest = "rpointer.cpl"
-        if ninst > 1:
+        if ninst is not None and ninst > 1:
             drvrest += "_0001"
         drvrest += self._rest_time
 
