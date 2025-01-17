@@ -635,7 +635,7 @@ def _generate_baseline_impl(case, baseline_dir=None, allow_baseline_overwrite=Fa
 
     if os.path.isdir(os.path.join(basegen_dir, testcase)):
         if allow_baseline_skip:
-            return False, " Skipping"
+            return True, " Skipping"
         if not allow_baseline_overwrite:
             expect(False, " Cowardly refusing to overwrite existing baseline directory")
 
