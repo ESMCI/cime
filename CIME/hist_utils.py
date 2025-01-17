@@ -609,13 +609,14 @@ def generate_teststatus(testdir, baseline_dir):
         )
 
 
-def _generate_baseline_impl(case, baseline_dir=None, allow_baseline_overwrite=False):
+def _generate_baseline_impl(case, baseline_dir=None, allow_baseline_overwrite=False, allow_baseline_skip=False):
     """
     copy the current test output to baseline result
 
     case - The case containing the hist files to be copied into baselines
     baseline_dir - Optionally, specify a specific baseline dir, otherwise it will be computed from case config
-    allow_baseline_overwrite must be true to generate baselines to an existing directory.
+    allow_baseline_overwrite must be true to generate baselines to an existing directory. allow_baseline_skip
+    will result in tests with existing baselines being skipped
 
     returns (SUCCESS, comments)
     """
@@ -632,11 +633,11 @@ def _generate_baseline_impl(case, baseline_dir=None, allow_baseline_overwrite=Fa
     if not os.path.isdir(basegen_dir):
         os.makedirs(basegen_dir)
 
-    if (
-        os.path.isdir(os.path.join(basegen_dir, testcase))
-        and not allow_baseline_overwrite
-    ):
-        expect(False, " Cowardly refusing to overwrite existing baseline directory")
+    if os.path.isdir(os.path.join(basegen_dir, testcase)):
+        if allow_baseline_skip:
+            return False, " Skipping"
+        if not allow_baseline_overwrite:
+            expect(False, " Cowardly refusing to overwrite existing baseline directory")
 
     comments = "Generating baselines into '{}'\n".format(basegen_dir)
     num_gen = 0
@@ -710,12 +711,13 @@ def _generate_baseline_impl(case, baseline_dir=None, allow_baseline_overwrite=Fa
     return True, comments
 
 
-def generate_baseline(case, baseline_dir=None, allow_baseline_overwrite=False):
+def generate_baseline(case, baseline_dir=None, allow_baseline_overwrite=False, allow_baseline_skip=False):
     with SharedArea():
         return _generate_baseline_impl(
             case,
             baseline_dir=baseline_dir,
             allow_baseline_overwrite=allow_baseline_overwrite,
+            allow_baseline_skip=allow_baseline_skip,
         )
 
 

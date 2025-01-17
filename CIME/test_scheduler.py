@@ -196,6 +196,7 @@ class TestScheduler(object):
         save_timing=False,
         queue=None,
         allow_baseline_overwrite=False,
+        allow_baseline_skip=False,
         output_root=None,
         force_procs=None,
         force_threads=None,
@@ -227,6 +228,7 @@ class TestScheduler(object):
         self._input_dir = input_dir
         self._pesfile = pesfile
         self._allow_baseline_overwrite = allow_baseline_overwrite
+        self._allow_baseline_skip = allow_baseline_skip
         self._single_exe = single_exe
         if self._single_exe:
             self._allow_pnl = True
@@ -358,9 +360,9 @@ class TestScheduler(object):
                             else:
                                 clear_folder(test_baseline)
                 expect(
-                    allow_baseline_overwrite or len(existing_baselines) == 0,
+                    allow_baseline_overwrite or len(existing_baselines) == 0 or allow_baseline_skip,
                     "Baseline directories already exists {}\n"
-                    "Use -o to avoid this error".format(existing_baselines),
+                    "Use -o or --allow-baseline-skip to avoid this error".format(existing_baselines),
                 )
 
         if self._config.sort_tests:

@@ -260,6 +260,7 @@ def _read_cime_config_file():
         "walltime",
         "job_queue",
         "allow_baseline_overwrite",
+        "allow_baseline_skip",
         "wait",
         "force_procs",
         "force_threads",

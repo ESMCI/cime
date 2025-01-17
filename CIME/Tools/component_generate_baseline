@@ -44,20 +44,28 @@ OR
         "existing baseline directories to be silently overwritten.",
     )
 
+    parser.add_argument(
+        "--allow-baseline-skip",
+        action="store_true",
+        help="By default an attempt to overwrite an existing baseline directory "
+        "will raise an error. Specifying this option allows tests with "
+        "existing baseline directories to be silently skipped.",
+    )
+
     args = CIME.utils.parse_args_and_handle_standard_logging_options(args, parser)
 
-    return args.caseroot, args.baseline_dir, args.allow_baseline_overwrite
+    return args.caseroot, args.baseline_dir, args.allow_baseline_overwrite, args.allow_baseline_skip
 
 
 ###############################################################################
 def _main_func(description):
     ###############################################################################
-    caseroot, baseline_dir, allow_baseline_overwrite = parse_command_line(
+    caseroot, baseline_dir, allow_baseline_overwrite, allow_baseline_skip = parse_command_line(
         sys.argv, description
     )
     with Case(caseroot) as case:
         success, comments = generate_baseline(
-            case, baseline_dir, allow_baseline_overwrite
+            case, baseline_dir, allow_baseline_overwrite, allow_baseline_skip
         )
         print(comments)
 
