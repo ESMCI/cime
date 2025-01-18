@@ -362,7 +362,8 @@ def parse_command_line(args, description):
         default=default,
         help="If the --generate option is given, then an attempt to overwrite "
         "\nan existing baseline directory will raise an error. WARNING: Specifying this "
-        "\noption will allow existing baseline directories to be silently overwritten.",
+        "\noption will allow existing baseline directories to be silently overwritten. "
+        "\nIncompatible with --allow-baseline-skip.",
     )
 
     parser.add_argument(
@@ -371,7 +372,8 @@ def parse_command_line(args, description):
         default=default,
         help="If the --generate option is given, then an attempt to overwrite "
         "\nan existing baseline directory will raise an error. WARNING: Specifying this "
-        "\noption will allow tests with existing baseline directories to be silently skipped.",
+        "\noption will allow tests with existing baseline directories to be silently skipped. "
+        "\nIncompatible with -o/--allow-baseline-overwrite.",
     )
 
     default = get_default_setting(config, "WAIT", False, check_main=False)
