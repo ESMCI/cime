@@ -350,6 +350,8 @@ class TestScheduler(object):
                     self._baseline_root, self._baseline_gen_name
                 )
                 existing_baselines = []
+                if allow_baseline_skip:
+                    tests_to_skip = []
                 for test_name in test_names:
                     test_baseline = os.path.join(full_baseline_dir, test_name)
                     if os.path.isdir(test_baseline):
@@ -359,11 +361,15 @@ class TestScheduler(object):
                                 clear_folder(os.path.join(test_baseline, "CaseDocs"))
                             else:
                                 clear_folder(test_baseline)
+                        elif allow_baseline_skip:
+                            tests_to_skip.append(test_name)
                 expect(
                     allow_baseline_overwrite or len(existing_baselines) == 0 or allow_baseline_skip,
                     "Baseline directories already exists {}\n"
                     "Use -o or --allow-baseline-skip to avoid this error".format(existing_baselines),
                 )
+                if allow_baseline_skip:
+                    test_names = [test for test in test_names if test not in tests_to_skip]
 
         if self._config.sort_tests:
             _order_tests_by_runtime(test_names, self._baseline_root)
