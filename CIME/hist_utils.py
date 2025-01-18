@@ -632,9 +632,11 @@ def _generate_baseline_impl(case, baseline_dir=None, allow_baseline_overwrite=Fa
     if not os.path.isdir(basegen_dir):
         os.makedirs(basegen_dir)
 
-    if os.path.isdir(os.path.join(basegen_dir, testcase)):
-        if not allow_baseline_overwrite:
-            expect(False, " Cowardly refusing to overwrite existing baseline directory")
+    if (
+        os.path.isdir(os.path.join(basegen_dir, testcase))
+        and not allow_baseline_overwrite
+    ):
+        expect(False, " Cowardly refusing to overwrite existing baseline directory")
 
     comments = "Generating baselines into '{}'\n".format(basegen_dir)
     num_gen = 0
