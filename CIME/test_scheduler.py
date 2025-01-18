@@ -359,9 +359,6 @@ class TestScheduler(object):
                                 clear_folder(os.path.join(test_baseline, "CaseDocs"))
                             else:
                                 clear_folder(test_baseline)
-                print(f"allow_baseline_overwrite: {allow_baseline_overwrite}")
-                print(f"len(existing_baselines): {len(existing_baselines)}")
-                print(f"allow_baseline_skip: {allow_baseline_skip}")
                 expect(
                     allow_baseline_overwrite or len(existing_baselines) == 0 or allow_baseline_skip,
                     "Baseline directories already exists {}\n"
