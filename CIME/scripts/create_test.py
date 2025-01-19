@@ -355,7 +355,10 @@ def parse_command_line(args, description):
         config, "ALLOW_BASELINE_SKIP", False, check_main=False
     )
 
-    parser.add_argument(
+    # Don't allow -o/--allow-baseline-overwrite AND --allow-baseline-skip
+    existing_baseline_group = parser.add_mutually_exclusive_group()
+
+    existing_baseline_group.add_argument(
         "-o",
         "--allow-baseline-overwrite",
         action="store_true",
@@ -366,7 +369,7 @@ def parse_command_line(args, description):
         "\nIncompatible with --allow-baseline-skip.",
     )
 
-    parser.add_argument(
+    existing_baseline_group.add_argument(
         "--allow-baseline-skip",
         action="store_true",
         default=default,
@@ -517,12 +520,6 @@ def parse_command_line(args, description):
             args.use_existing and args.test_id,
             "Cannot force a rebuild without 'use-existing' and 'test-id'",
         )
-
-    # baseline overwrite and skip can't be simultaneously specified
-    expect(
-        not (args.allow_baseline_overwrite and args.allow_baseline_skip),
-        "Cannot skip and overwrite baselines at the same time",
-    )
 
     # generate and compare flags may not point to the same directory
     if model_config.create_test_flag_mode == "cesm":
