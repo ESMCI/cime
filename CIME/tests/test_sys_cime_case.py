@@ -762,7 +762,8 @@ class TestCimeCase(base.BaseTestCase):
         )
         self._testroot = os.path.join(orig_testroot, "case1")
         casedir_1 = self._create_test(
-            ["--output-root", "case1", "--skip-tests-with-existing-baselines"] + create_test_extra_args,
+            ["--output-root", "case1", "--skip-tests-with-existing-baselines"]
+            + create_test_extra_args,
             test_id=self._baseline_name,
             expect_cases_made=False,
         )

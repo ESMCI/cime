@@ -264,7 +264,10 @@ class BaseTestCase(unittest.TestCase):
         if expect_cases_made:
             self.assertTrue(len(cases) > 0, "create_test made no cases")
         else:
-            self.assertTrue(len(cases) == 0, "create_test unexpectedly made {} case(s)".format(len(cases)))
+            self.assertTrue(
+                len(cases) == 0,
+                "create_test unexpectedly made {} case(s)".format(len(cases)),
+            )
 
         return cases[0] if len(cases) == 1 else cases
 

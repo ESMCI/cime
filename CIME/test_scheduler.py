@@ -364,12 +364,18 @@ class TestScheduler(object):
                         elif skip_tests_with_existing_baselines:
                             tests_to_skip.append(test_name)
                 expect(
-                    allow_baseline_overwrite or len(existing_baselines) == 0 or skip_tests_with_existing_baselines,
+                    allow_baseline_overwrite
+                    or len(existing_baselines) == 0
+                    or skip_tests_with_existing_baselines,
                     "Baseline directories already exists {}\n"
-                    "Use -o or --skip-tests-with-existing-baselines to avoid this error".format(existing_baselines),
+                    "Use -o or --skip-tests-with-existing-baselines to avoid this error".format(
+                        existing_baselines
+                    ),
                 )
                 if skip_tests_with_existing_baselines:
-                    test_names = [test for test in test_names if test not in tests_to_skip]
+                    test_names = [
+                        test for test in test_names if test not in tests_to_skip
+                    ]
 
         if self._config.sort_tests:
             _order_tests_by_runtime(test_names, self._baseline_root)
