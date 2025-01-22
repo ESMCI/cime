@@ -748,3 +748,22 @@ class TestCimeCase(base.BaseTestCase):
         self.run_cmd_assert_result("./case.setup --clean", from_dir=casedir)
         self.run_cmd_assert_result("./case.setup --clean", from_dir=casedir)
         self.run_cmd_assert_result("./case.setup", from_dir=casedir)
+
+    def test_skip_run_with_existing_baseline(self):
+        test_name = "TESTRUNPASS_P1.f19_g16_rx1.A"
+        create_test_extra_args = ["--generate", "baseline", "--no-build", test_name]
+
+        orig_testroot = self._testroot
+        self._testroot = os.path.join(orig_testroot, "case0")
+        casedir_0 = self._create_test(
+            ["--output-root", "case0"] + create_test_extra_args,
+            test_id=self._baseline_name,
+            expect_cases_made=True,
+        )
+        self._testroot = os.path.join(orig_testroot, "case1")
+        casedir_1 = self._create_test(
+            ["--output-root", "case1", "--skip-tests-with-existing-baselines"] + create_test_extra_args,
+            test_id=self._baseline_name,
+            expect_cases_made=False,
+        )
+        self._testroot = orig_testroot
