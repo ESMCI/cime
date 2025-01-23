@@ -751,7 +751,11 @@ class TestCimeCase(base.BaseTestCase):
 
     def test_skip_run_with_existing_baseline(self):
         test_name = "TESTRUNPASS_P1.f19_g16_rx1.A"
-        create_test_extra_args = ["--generate", "baseline", "--no-build", test_name]
+
+        if self._config.test_mode == "cesm":
+            create_test_extra_args = ["--generate", "baseline", "--no-build", test_name]
+        else:
+            create_test_extra_args = ["-g", "--no-build", test_name]
 
         orig_testroot = self._testroot
         self._testroot = os.path.join(orig_testroot, "case0")
