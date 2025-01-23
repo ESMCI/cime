@@ -359,8 +359,8 @@ def parse_command_line(args, description):
     existing_baseline_group = parser.add_mutually_exclusive_group()
 
     existing_baseline_group.add_argument(
-        "-o",
         "--allow-baseline-overwrite",
+        "-o",
         action="store_true",
         default=default,
         help="If the --generate option is given, then an attempt to overwrite "
