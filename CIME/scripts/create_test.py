@@ -351,14 +351,32 @@ def parse_command_line(args, description):
         config, "ALLOW_BASELINE_OVERWRITE", False, check_main=False
     )
 
-    parser.add_argument(
-        "-o",
+    default = get_default_setting(
+        config, "SKIP_TESTS_WITH_EXISTING_BASELINES", False, check_main=False
+    )
+
+    # Don't allow -o/--allow-baseline-overwrite AND --skip-tests-with-existing-baselines
+    existing_baseline_group = parser.add_mutually_exclusive_group()
+
+    existing_baseline_group.add_argument(
         "--allow-baseline-overwrite",
+        "-o",
         action="store_true",
         default=default,
         help="If the --generate option is given, then an attempt to overwrite "
         "\nan existing baseline directory will raise an error. WARNING: Specifying this "
-        "\noption will allow existing baseline directories to be silently overwritten.",
+        "\noption will allow existing baseline directories to be silently overwritten. "
+        "\nIncompatible with --skip-tests-with-existing-baselines.",
+    )
+
+    existing_baseline_group.add_argument(
+        "--skip-tests-with-existing-baselines",
+        action="store_true",
+        default=default,
+        help="If the --generate option is given, then an attempt to overwrite "
+        "\nan existing baseline directory will raise an error. WARNING: Specifying this "
+        "\noption will allow tests with existing baseline directories to be silently skipped. "
+        "\nIncompatible with -o/--allow-baseline-overwrite.",
     )
 
     default = get_default_setting(config, "WAIT", False, check_main=False)
@@ -759,6 +777,7 @@ def parse_command_line(args, description):
         args.save_timing,
         args.queue,
         args.allow_baseline_overwrite,
+        args.skip_tests_with_existing_baselines,
         args.output_root,
         args.wait,
         args.force_procs,
@@ -921,6 +940,7 @@ def create_test(
     save_timing,
     queue,
     allow_baseline_overwrite,
+    skip_tests_with_existing_baselines,
     output_root,
     wait,
     force_procs,
@@ -969,6 +989,7 @@ def create_test(
         save_timing=save_timing,
         queue=queue,
         allow_baseline_overwrite=allow_baseline_overwrite,
+        skip_tests_with_existing_baselines=skip_tests_with_existing_baselines,
         output_root=output_root,
         force_procs=force_procs,
         force_threads=force_threads,
@@ -1068,6 +1089,7 @@ def _main_func(description=None):
         save_timing,
         queue,
         allow_baseline_overwrite,
+        skip_tests_with_existing_baselines,
         output_root,
         wait,
         force_procs,
@@ -1122,6 +1144,7 @@ def _main_func(description=None):
             save_timing,
             queue,
             allow_baseline_overwrite,
+            skip_tests_with_existing_baselines,
             output_root,
             wait,
             force_procs,
