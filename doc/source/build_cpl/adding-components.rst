@@ -1,6 +1,5 @@
-.. _adding-components:
+.. _adding-component-cime:
 
-====================================
 Adding a New Component Model to CIME
 ====================================
 
@@ -99,28 +98,32 @@ CIME requires each component model to adhere to a standard interface for communi
 3. Register the Component
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-1. **Define Component Source Paths:**
-   Each Earth system model must define its component model source paths in its ``config_files.xml`` file. For example, in CESM, these paths are specified in ``cime/CIME/data/config/cesm/config_files.xml``. Add an entry for your new component model here:
+1. **Define Component Root Directory:**
+   Each component model must define its root directory using the variable ``COMP_ROOT_DIR_XXX`` in the ``config_files.xml`` file, where ``XXX`` represents the component class (e.g., ATM, LND, ICE). For example:
 
    .. code-block:: xml
 
-      <entry id="<model_name>">
-          <type>char</type>
-          <default>components/<model_name>/src</default>
-      </entry>
+      <entry id="COMP_ROOT_DIR_ATM">
+    <type>char</type>
+    <values>
+      <value component="datm"  >$SRCROOT/components/cdeps/datm</value>
+      <value component="satm"  >$CIMEROOT/CIME/non_py/src/components/stub_comps_$COMP_INTERFACE/satm</value>
+      <value component="xatm"  >$CIMEROOT/CIME/non_py/src/components/xcpl_comps_$COMP_INTERFACE/xatm</value>
+
+      <value component="cam"                         >$SRCROOT/components/cam/</value>
+      <value component="ufsatm"                      >$SRCROOT/components/fv3/</value>
+      <value component="myatm"                      >$SRCROOT/components/myatm/</value>
+    </values>
+    <group>case_comps</group>
+    <file>env_case.xml</file>
+    <desc>Root directory of the case atmospheric component  </desc>
+    <schema>$CIMEROOT/CIME/data/config/xml_schemas/config_compsets.xsd</schema>
+  </entry>
 
 2. **Update ``config_compsets.xml``:**
-   Add the new component to a compset definition:
+   The ``config_compsets.xml`` file can be used to define aliases for long compset names, easing the burden of specifying full names. However, aliases are optional. 
 
-   .. code-block:: xml
-
-      <compset>
-          <name>COMPSETNAME</name>
-          <alias>ALIASNAME</alias>
-          <components>
-              <entry><model_name></entry>
-          </components>
-      </compset>
+   The component name in the long compset name must match the name used in the ``description`` section of the ``config_component.xml`` file. Additionally, the ``config_component.xml`` file must include a variable ``COMP_XXX`` (where ``XXX`` is the component class, e.g., ATM, LND, ICE). This variable is essential for defining the component in the context of CIME.
 
 ---
 
@@ -194,10 +197,8 @@ Adding a New Land Model (``MyLandModel``)
 
 1. Create ``components/mylandmodel/`` with the required directory structure.
 2. Implement the interface routines (``mylandmodel_init``, ``mylandmodel_run``, ``mylandmodel_finalize``).
-3. Define the component's source paths in ``config_files.xml``.
+3. Define the component's root directory in ``config_files.xml`` using the variable ``COMP_ROOT_DIR_LND``.
 4. Register ``MyLandModel`` in ``config_compsets.xml``.
 5. Define flux mappings in the coupler configuration files.
 6. Test the integration using predefined compsets and submit results for validation.
-
----
 
