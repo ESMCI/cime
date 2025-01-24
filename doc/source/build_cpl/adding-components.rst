@@ -1,36 +1,203 @@
 .. _adding-components:
 
-===================
-Adding components
-===================
+====================================
+Adding a New Component Model to CIME
+====================================
 
-Here are the steps to add prognostic components to CIME models.
+Overview
+--------
 
-There are a couple of aspects of a component interface to CIME, the
-scripts interface which controls setting up component inputs and
-building the component and the run interface which controls connecting
-the component to the coupler and through the coupler, the other
-components of the CIME based model.
+CIME’s modular design allows for seamless integration of new component models into its infrastructure. To add a new component model, you must ensure compatibility with CIME’s interfaces and follow the defined setup for component registration, coupling, and testing.
 
-The component should have a subdirectory **cime_config** and this
-subdirectory should have two files **buildnml** and **buildlib** The
-**buildnml** script is used to build the components instructional,
-runtime inputs.  These have traditionally been in the form of fortran
-namelists but may also follow other formats.  The **buildnml** may
-either be called from the command line or as a python subroutine.  If
-buildnml is called from the command line it will be passed the
-caseroot directory on the command line.  If it is called as a
-subroutine, the subroutine name must be buildnml and it will take
-three arguments, a Case object, a caseroot directory and a component
-name.  The **buildlib** script will always be called from the command
-line, it is called in the case.build step and is expected to build the
-the buildlib script will be called with three arguments in order they
-are caseroot, libroot (the location of the installed library,
-typically EXEROOT/lib) and bldroot, the location of the component
-build directory.  Look at the cime internal components such as datm
-for an example.
+This guide covers the essential steps to integrate a new component model into CIME.
 
-The coupler interface is dependent on which coupler is used, for the mct coupler in cime
-the component model must provide NNN_INIT_MCT, NNN_RUN_MCT, NNN_FINAL_MCT where NNN is the
-component type of the particular component (eg ATM for an atmosphere, LND for a land model)
-these subroutines are expected to be in the component library.
+---
+
+Prerequisites
+-------------
+
+- Familiarity with the CIME framework and component model architecture.
+- A working implementation of the new component model, including its source code, build scripts, and runtime configuration files.
+- Access to the CIME source code repository.
+
+---
+
+Steps to Add a New Component Model
+----------------------------------
+
+1. Directory Structure
+~~~~~~~~~~~~~~~~~~~~~
+
+Each component model requires a dedicated directory under the ``components/`` directory in the CIME source tree. Follow these steps:
+
+1. **Create the Directory:**
+
+   .. code-block:: bash
+
+      mkdir components/<model_name>
+
+2. **Add Source Code:**
+   Place the source code, configuration files, and necessary scripts for the new model into the directory.
+
+3. **Follow Naming Conventions:**
+   Although not required, it is recommended to use consistent naming conventions for directory names and files. It is also conventional to define a subdirectory ``cime_config`` within the component directory. This subdirectory contains all files linking CIME to the component model. Three files are required:
+
+   - **``config_component.xml``:** Describes the component and its input options.
+   - **``buildlib``:** A Python script providing the interface to build the model.
+   - **``buildnml``:** A Python script to stage the component's inputs.
+
+   Additionally, other optional interface files may be provided in ``cime_config`` to support advanced functionality:
+
+   - **``config_archive.xml``:** Defines archiving rules for model outputs.
+   - **``config_compsets.xml``:** Defines compsets specific to the component.
+   - **``config_tests.xml``:** Describes test configurations.
+   - **``config_pes.xml``:** Specifies processor layout and scaling.
+
+   If the component includes system tests, it is conventional to add a subdirectory, typically named ``SystemTests``, to house these tests. This name is configurable via ``config_files.xml``.
+
+   Example structure:
+
+   .. code-block:: text
+
+      components/<model_name>/
+      ├── src/         # Source code
+      ├── build/       # Build scripts
+      ├── cime_config/ # CIME interface files
+      │   ├── config_component.xml
+      │   ├── buildlib
+      │   ├── buildnml
+      │   ├── config_archive.xml (optional)
+      │   ├── config_compsets.xml (optional)
+      │   ├── config_tests.xml (optional)
+      │   └── config_pes.xml (optional)
+      ├── SystemTests/ # System tests (optional)
+      └── README.md    # Documentation for the component
+
+---
+
+2. Configure the Component Interface
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+CIME requires each component model to adhere to a standard interface for communication with the coupler. Implement the following:
+
+1. **Component-Specific Interface File:**
+   Each component is required to have a file named ``<class>_comp_nuopc.F90``, where ``<class>`` specifies the component type (e.g., ``atm``, ``lnd``, ``ice``, ``rof``, ``glc``, ``wav``, ``cpl``, ``esp``). This file must define a public routine ``SetServices`` that sets pointers to the model's phase routines (``initialize``, ``run``, and ``finalize``).
+
+   CESM uses the NUOPC (National Unified Operational Prediction Capability) system as the underlying framework for component interaction. For detailed guidance on implementing and configuring the NUOPC-based interfaces, refer to the `NUOPC Layer Documentation <https://www.earthsystemcog.org/projects/nuopc>`_.
+
+2. **Initialize the Component:**
+   Include an initialization routine (``<model_name>_init``) that defines initial conditions and grid mappings.
+
+3. **Run and Finalize Routines:**
+   Ensure the model includes ``run`` and ``finalize`` routines to handle time-stepping and cleanup.
+
+4. **Data Exchange:**
+   Define the variables exchanged with the coupler (e.g., fluxes, states) in the component's ``nuopc`` or ``drv`` directory.
+
+---
+
+3. Register the Component
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+1. **Define Component Source Paths:**
+   Each Earth system model must define its component model source paths in its ``config_files.xml`` file. For example, in CESM, these paths are specified in ``cime/CIME/data/config/cesm/config_files.xml``. Add an entry for your new component model here:
+
+   .. code-block:: xml
+
+      <entry id="<model_name>">
+          <type>char</type>
+          <default>components/<model_name>/src</default>
+      </entry>
+
+2. **Update ``config_compsets.xml``:**
+   Add the new component to a compset definition:
+
+   .. code-block:: xml
+
+      <compset>
+          <name>COMPSETNAME</name>
+          <alias>ALIASNAME</alias>
+          <components>
+              <entry><model_name></entry>
+          </components>
+      </compset>
+
+---
+
+4. Modify the Coupler Configuration
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+1. **Edit ``cime_config/config_files.xml``:**
+   Add entries specifying how the new component interfaces with the coupler.
+
+2. **Define Flux Mappings:**
+   Ensure fluxes exchanged between the new model and other components (e.g., atmosphere, land, ocean) are well-defined.
+
+3. **Grid Compatibility:**
+   Verify the model supports the necessary grid resolutions and that mappings are registered.
+
+---
+
+5. Test the Integration
+~~~~~~~~~~~~~~~~~~~~~~
+
+1. **Create Test Cases:**
+   Write test cases in the ``tests/`` directory to validate the integration of the new component.
+
+2. **Run Validation Tests:**
+   Use CIME’s testing framework to ensure the new component functions correctly:
+
+   .. code-block:: bash
+
+      ./create_test --xml-testlist-file <test_list.xml>
+
+3. **Debug Errors:**
+   Review log files in the ``CaseDocs`` and ``Logs`` directories for issues.
+
+---
+
+6. Document the New Component
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+1. **Write Documentation:**
+   Provide a README file in the ``components/<model_name>/`` directory describing:
+
+   - The component's purpose.
+   - Input and output data requirements.
+   - Build and runtime instructions.
+
+2. **Update Central Documentation:**
+   Add details about the new component to CIME’s central documentation files.
+
+---
+
+7. Submit Changes
+~~~~~~~~~~~~~~~~~
+
+1. **Commit the Changes:**
+
+   .. code-block:: bash
+
+      git add components/<model_name>
+      git commit -m "Add new component model: <model_name>"
+
+2. **Submit a Pull Request:**
+   Push the changes to the CIME repository and submit a pull request for review.
+
+---
+
+Example
+-------
+
+Adding a New Land Model (``MyLandModel``)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+1. Create ``components/mylandmodel/`` with the required directory structure.
+2. Implement the interface routines (``mylandmodel_init``, ``mylandmodel_run``, ``mylandmodel_finalize``).
+3. Define the component's source paths in ``config_files.xml``.
+4. Register ``MyLandModel`` in ``config_compsets.xml``.
+5. Define flux mappings in the coupler configuration files.
+6. Test the integration using predefined compsets and submit results for validation.
+
+---
+
