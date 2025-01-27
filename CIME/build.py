@@ -22,7 +22,6 @@ from CIME.utils import (
 from CIME.config import Config
 from CIME.locked_files import lock_file, unlock_file
 from CIME.XML.files import Files
-import sys
 
 logger = logging.getLogger(__name__)
 
