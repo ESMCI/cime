@@ -250,8 +250,8 @@ def get_standard_cmake_args(case, sharedpath, shared_lib=False):
         os.path.join(case.get_value("EXEROOT"), sharedpath)
     )
 
+    cmake_args += " -DUSE_KOKKOS={} ".format(stringify_bool(uses_kokkos(case)))
     if not shared_lib:
-        cmake_args += " -DUSE_KOKKOS={} ".format(stringify_bool(uses_kokkos(case)))
         comps = _get_compset_comps(case)
         cmake_args += " -DCOMP_NAMES='{}' ".format(";".join(comps))
 
