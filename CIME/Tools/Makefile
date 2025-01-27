@@ -575,7 +575,6 @@ endif
 
 endif
 
-
 # System libraries (netcdf, mpi, pnetcdf, esmf, trilinos, etc.)
 ifeq (,$(findstring lnetcdf,$(SLIBS)))
   ifeq ($(NETCDF_SEPARATE), FALSE)
@@ -678,6 +677,12 @@ ifneq ($(COMP_INTERFACE), nuopc)
 endif
 
 ULIBS += -lcsm_share -L$(INSTALL_SHAREDPATH)/lib $(PIOLIBNAME) -lgptl -lmct -lmpeu
+
+# Add Kokkos header files and libraries for SE-NH dycore
+CAM_TARGET ?= $(shell $(CASEROOT)/xmlquery --caseroot $(CASEROOT) CAM_TARGET --value)
+ifeq ($(filter $(CAM_TARGET),theta-l theta-l_kokkos),$(CAM_TARGET)) 
+  ULIBS += -L$(INSTALL_SHAREDPATH)/lib64 -lkokkoscontainers  -lkokkoscore -lkokkossimd
+endif
 
 #------------------------------------------------------------------------------
 # Drive cmake script for cism and pio

@@ -741,6 +741,12 @@ def _build_libraries(
     if uses_kokkos(case):
         libs.append("kokkos")
 
+    # Enable Kokkos library build for StormSPEED (SE-NH dycore in CAM)
+    cam_target = case.get_value("CAM_TARGET")
+    cime_model = case.get_value("MODEL")
+    if cime_model == "cesm" and cam_target in ("theta-l","theta-l_kokkos"):
+        libs.append("kokkos")
+
     # Build shared code of CDEPS nuopc data models
     build_script = {}
     if comp_interface == "nuopc" and (not ufs_driver or ufs_driver != "nems"):
