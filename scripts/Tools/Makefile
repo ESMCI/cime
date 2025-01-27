@@ -97,6 +97,14 @@ ifneq ($(strip $(DEBUG)),TRUE)
    CPPDEFS += -DNDEBUG
 endif
 
+ifeq ($(USE_FTORCH), TRUE)
+  CPPDEFS += -DUSE_FTORCH
+  INCLDIR += -I$(FTORCH_PREFIX)/include/ftorch
+  SLIBS += -L$(FTORCH_PREFIX)/lib64 -lftorch
+  LDFLAGS += -Wl,-rpath,$(FTORCH_PREFIX)/lib64
+endif
+
+
 # USE_ESMF_LIB is currently only defined in env_build.xml
 ifeq ($(USE_ESMF_LIB), TRUE)
    CPPDEFS += -DUSE_ESMF_LIB
