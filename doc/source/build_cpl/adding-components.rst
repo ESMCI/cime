@@ -79,20 +79,18 @@ Each component model requires a dedicated directory under the ``components/`` di
 
 CIME requires each component model to adhere to a standard interface for communication with the coupler. Implement the following:
 
-1. **Component-Specific Interface File:** Each component is required to have a file named <class>_comp_<driver>.F90, where <class> specifies the component type (e.g., atm, lnd, ice, rof, glc, wav, cpl, esp) and driver specifies the model driver (nuopc or mct). For nuopc this file must define a public routine SetServices that sets pointers to the model's phase routines, for mct the phase routine names (initialize, run, and finalize) are assumed and must be present.
+**Component-Specific Interface File:**
+For components, the interface file should be named <class>_comp_<driver>.F90, where <class> specifies the component type (e.g., atm, lnd, ice, rof, glc, wav, cpl, esp) and <driver> specifies the coupling framework (nuopc or mct).
 
-CESM uses the NUOPC (National Unified Operational Prediction Capability) system as the underlying framework for component interaction. For detailed guidance on implementing and configuring the NUOPC-based interfaces, refer to the NUOPC Layer Documentation <https://www.earthsystemcog.org/projects/nuopc>_.
+**NUOPC:** For components using the NUOPC (National Unified Operational Prediction Capability) system, the file <class>_comp_nuopc.F90 must define a public routine SetServices that sets pointers to the model's phase routines (initialize, run, and finalize).
 
-E3SM uses the MCT (Model Coupling Toolkit) system as the framework.   Detailed guidance on implementing and configuring the MCT-based interfaces can be found in <https://www.mcs.anl.gov/research/projects/mct/mct_APIs.pdf>_.
+**MCT:** For components using the MCT (Model Coupling Toolkit) system, phase routines must be explicitly named as initialize, run, and finalize.
 
 2. **Initialize the Component:**
    Include an initialization routine (``<model_name>_init``) that defines initial conditions and grid mappings.
 
 3. **Run and Finalize Routines:**
    Ensure the model includes ``run`` and ``finalize`` routines to handle time-stepping and cleanup.
-
-4. **Data Exchange:**
-   Define the variables exchanged with the coupler (e.g., fluxes, states) in the component's ``nuopc`` or ``drv`` directory.
 
 ---
 
