@@ -22,6 +22,7 @@ from CIME.utils import (
 from CIME.config import Config
 from CIME.locked_files import lock_file, unlock_file
 from CIME.XML.files import Files
+import sys
 
 logger = logging.getLogger(__name__)
 
@@ -209,10 +210,11 @@ def generate_makefile_macro(case, caseroot):
 def get_standard_makefile_args(case, shared_lib=False):
     make_args = "CIME_MODEL={} ".format(case.get_value("MODEL"))
     make_args += " SMP={} ".format(stringify_bool(case.get_build_threaded()))
-    expect(
-        not (uses_kokkos(case) and not shared_lib),
-        "Kokkos is not supported for classic Makefile build system",
-    )
+    if case.get_value("MODEL") != "cesm":
+        expect(
+            not (uses_kokkos(case) and not shared_lib),
+            "Kokkos is not supported for classic Makefile build system",
+        )
     for var in _CMD_ARGS_FOR_BUILD:
         make_args += xml_to_make_variable(case, var)
 
@@ -248,9 +250,6 @@ def get_standard_cmake_args(case, sharedpath, shared_lib=False):
     cmake_args += " -DINSTALL_SHAREDPATH={} ".format(
         os.path.join(case.get_value("EXEROOT"), sharedpath)
     )
-
-    if case.get_value("MODEL") == "cesm" and case.get_value("CAM_TARGET") in ("theta-l", "theta-l_kokkos"):
-        cmake_args += " -DCAM_TARGET={} ".format(case.get_value("CAM_TARGET"))
 
     if not shared_lib:
         cmake_args += " -DUSE_KOKKOS={} ".format(stringify_bool(uses_kokkos(case)))
@@ -742,12 +741,6 @@ def _build_libraries(
         libs.insert(0, mpilib)
 
     if uses_kokkos(case):
-        libs.append("kokkos")
-
-    # Enable Kokkos library build for StormSPEED (SE-NH dycore in CAM)
-    cam_target = case.get_value("CAM_TARGET")
-    cime_model = case.get_value("MODEL")
-    if cime_model == "cesm" and cam_target in ("theta-l","theta-l_kokkos"):
         libs.append("kokkos")
 
     # Build shared code of CDEPS nuopc data models
