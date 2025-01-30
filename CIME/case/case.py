@@ -29,6 +29,7 @@ from CIME.XML.compsets import Compsets
 from CIME.XML.grids import Grids
 from CIME.XML.batch import Batch
 from CIME.XML.workflow import Workflow
+from CIME.XML.postprocessing import Postprocessing
 from CIME.XML.pio import PIO
 from CIME.XML.archive import Archive
 from CIME.XML.env_test import EnvTest
@@ -40,6 +41,7 @@ from CIME.XML.env_run import EnvRun
 from CIME.XML.env_archive import EnvArchive
 from CIME.XML.env_batch import EnvBatch
 from CIME.XML.env_workflow import EnvWorkflow
+from CIME.XML.env_postprocessing import EnvPostprocessing
 from CIME.XML.generic_xml import GenericXML
 from CIME.user_mod_support import apply_user_mods
 from CIME.aprun import get_aprun_cmd_for_case
@@ -355,6 +357,9 @@ class Case(object):
         )
         self._env_entryid_files.append(
             EnvWorkflow(self._caseroot, read_only=self._force_read_only)
+        )
+        self._env_entryid_files.append(
+            EnvPostprocessing(self._caseroot, read_only=self._force_read_only)
         )
 
         if os.path.isfile(os.path.join(self._caseroot, "env_test.xml")):
@@ -1577,6 +1582,10 @@ class Case(object):
 
         workflow = Workflow(files=files)
 
+        env_postprocessing = self.get_env("postprocessing")
+        postprocessing = Postprocessing(files=files)
+        env_postprocessing.add_elements_by_group(srcobj=postprocessing)
+
         env_batch.set_batch_system(batch, batch_system_type=batch_system_type)
 
         bjobs = workflow.get_workflow_jobs(machine=machine_name, workflowid=workflowid)
@@ -2216,6 +2225,8 @@ directory, NOT in this subdirectory."""
                     new_env_file = EnvBatch(infile=xmlfile)
                 elif ftype == "env_workflow.xml":
                     new_env_file = EnvWorkflow(infile=xmlfile)
+                elif ftype == "env_postprocessing.xml":
+                    new_env_file = EnvPostprocessing(infile=xmlfile)
                 elif ftype == "env_test.xml":
                     new_env_file = EnvTest(infile=xmlfile)
                 elif ftype == "env_archive.xml":
