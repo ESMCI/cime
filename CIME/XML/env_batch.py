@@ -1421,10 +1421,24 @@ class EnvBatch(EnvBase):
                 other_pnode = None
 
             for node1 in self.get_children(root=self_pnode):
-                for node2 in other.scan_children(
+                other_children = other.scan_children(
                     node1.name, attributes=node1.attrib, root=other_pnode
-                ):
-                    yield node1, node2
+                )
+                real_other_children = []
+                if not node1.attrib:
+                    # Only keep elements that had no attributes. If node1 has no attributes
+                    # scan_children will return ALL elements with matching name.
+                    for other_child in other_children:
+                        if node1.attrib == other_child.attrib:
+                            real_other_children.append(other_child)
+                else:
+                    real_other_children = other_children
+
+                expect(
+                    len(real_other_children) == 1,
+                    "Multiple matches in zip for single node",
+                )
+                yield node1, real_other_children[0]
 
     def _compare_arg(self, index, arg1, arg2):
         try:
