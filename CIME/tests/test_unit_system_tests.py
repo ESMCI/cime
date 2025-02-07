@@ -485,6 +485,7 @@ class TestUnitSystemTests(unittest.TestCase):
                 str(baseline_root),
                 "master/ERIO.ne30_g16_rx1.A.docker_gnu",
                 "ERIO.ne30_g16_rx1.A.docker_gnu.G.20230919_193255_z9hg2w",
+                "ERIO",
                 "mct",
                 str(run_dir),
                 "ERIO",
