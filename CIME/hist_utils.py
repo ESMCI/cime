@@ -49,6 +49,7 @@ COMPARISON_FAILURE_COMMENT_OPTIONS = COMPARISON_COMMENT_OPTIONS - set(
 )
 
 NO_HIST_TESTS = ["IRT", "PFS", "TSC"]
+ALL_HIST_TESTS = ["MVK", "MVKO", "PGN", "TSC"]
 
 
 def _iter_model_file_substrs(case):
@@ -643,11 +644,16 @@ def _generate_baseline_impl(case, baseline_dir=None, allow_baseline_overwrite=Fa
     for model in _iter_model_file_substrs(case):
 
         comments += "  generating for model '{}'\n".format(model)
-
-        hists = archive.get_latest_hist_files(
-            testcase, model, rundir, ref_case=ref_case
-        )
-        logger.debug("latest_files: {}".format(hists))
+        if case.get_value("TESTCASE") in ALL_HIST_TESTS:
+            hists = archive.get_all_hist_files(
+                testcase, model, rundir, ref_case=ref_case
+            )
+            logger.debug("all_files: {}".format(hists))
+        else:
+            hists = archive.get_latest_hist_files(
+                testcase, model, rundir, ref_case=ref_case
+            )
+            logger.debug("latest_files: {}".format(hists))
         num_gen += len(hists)
 
         for hist in hists:
