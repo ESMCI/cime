@@ -1,13 +1,19 @@
-.. _grids:
+.. _model_config_grids:
 
-========================
-Model grids
-========================
+Grids
+===============
+
+.. contents::
+   :local:
 
 CIME looks at the xml node ``GRIDS_SPEC_FILE`` in  **$CIMEROOT/config/$models/config_files.xml** file to identify supported out-of-the-box model grids for the target model.
 
-The node has the following contents:
-::
+Entry
+-----
+
+This is an example entry for ``config_files.xml``.
+
+.. code-block:: xml
 
    <entry id="GRIDS_SPEC_FILE">
      <type>char</type>
@@ -17,6 +23,164 @@ The node has the following contents:
      <desc>file containing specification of all supported model grids, domains and mapping files (for documentation only - DO NOT EDIT)</desc>
      <schema>$CIMEROOT/cime_config/xml_schemas/config_grids_v2.xsd</schema>
    </entry>
+
+Definition
+----------
+
+Schema
+```````
+
+Version 2.2
+:::::::::::::
+
+.. code-block:: xml
+
+    <!-- Generated with doc/generate_xmlschema.py CIME/data/config/xml_schemas/config_grids_v2.2.xsd grid_data on 2025-02-11 -->
+
+    <!-- Attributes 'version' is required-->
+    <!-- Occurences min: 1 max: 1-->
+    <grid_data version="">
+        <!-- Occurences min: 1 max: 1-->
+        <help></help>
+        <!-- Occurences min: 1 max: 1-->
+        <grids>
+            <!-- Occurences min: 1 max: 1-->
+            <model_grid_defaults>
+                <!-- Attributes 'compset' is optional,'name' is required-->
+                <!-- Occurences min: 1 max: Unlimited-->
+                <grid compset="" name=""></grid>
+            </model_grid_defaults>
+            <!-- Attributes 'alias' is required,'compset' is optional,'not_compset' is optional-->
+            <!-- Occurences min: 1 max: Unlimited-->
+            <model_grid alias="" compset="" not_compset="">
+                <!-- Attributes 'compset' is optional,'name' is required-->
+                <!-- Occurences min: 1 max: Unlimited-->
+                <grid compset="" name=""></grid>
+                <!-- Occurences min: 0 max: 1-->
+                <support></support>
+                <!-- Occurences min: 0 max: 1-->
+                <mask></mask>
+            </model_grid>
+        </grids>
+        <!-- Occurences min: 1 max: 3-->
+        <domains>
+            <!-- Attributes 'name' is required-->
+            <!-- Occurences min: 1 max: Unlimited-->
+            <domain name="">
+                <!-- Occurences min: 0 max: 1-->
+                <nx></nx>
+                <!-- Occurences min: 0 max: 1-->
+                <ny></ny>
+                <!-- Occurences min: 0 max: 1-->
+                <lat></lat>
+                <!-- Occurences min: 0 max: 1-->
+                <lon></lon>
+                <!-- Attributes 'grid' is optional,'lnd_mask' is optional,'mask' is optional,'ocn_mask' is optional-->
+                <!-- Occurences min: 0 max: Unlimited-->
+                <file grid="" lnd_mask="" mask="" ocn_mask="">
+                </file>
+                <!-- Attributes 'driver' is optional,'mask' is optional-->
+                <!-- Occurences min: 0 max: 1-->
+                <mesh driver="" mask="">
+                </mesh>
+                <!-- Occurences min: 1 max: 1-->
+                <desc></desc>
+                <!-- Occurences min: 0 max: 1-->
+                <support></support>
+            </domain>
+        </domains>
+        <!-- Occurences min: 1 max: 1-->
+        <required_gridmaps>
+            <!-- Attributes 'grid1' is required,'grid2' is required,'compset' is optional,'not_compset' is optional-->
+            <!-- Occurences min: 1 max: Unlimited-->
+            <required_gridmap grid1="" grid2="" compset="" not_compset=""></required_gridmap>
+        </required_gridmaps>
+        <!-- Occurences min: 1 max: 3-->
+        <gridmaps>
+            <!-- Attributes 'atm_grid' is optional,'glc_grid' is optional,'lnd_grid' is optional,'ocn_grid' is optional,'rof_grid' is optional,'wav_grid' is optional-->
+            <!-- Occurences min: 0 max: Unlimited-->
+            <gridmap atm_grid="" glc_grid="" lnd_grid="" ocn_grid="" rof_grid="" wav_grid="">
+                <!-- Attributes 'name' is optional-->
+                <!-- Occurences min: 1 max: Unlimited-->
+                <map name="">
+                </map>
+            </gridmap>
+        </gridmaps>
+    </grid_data>
+
+Version 2.0
+::::::::::::
+
+.. code-block:: xml
+
+    <!-- Generated with doc/generate_xmlschema.py CIME/data/config/xml_schemas/config_grids_v2.xsd grid_data on 2025-02-11 -->
+
+    <!-- Attributes 'version' is required-->
+    <!-- Occurences min: 1 max: 1-->
+    <grid_data version="">
+        <!-- Occurences min: 1 max: 1-->
+        <help></help>
+        <!-- Occurences min: 1 max: 1-->
+        <grids>
+            <!-- Occurences min: 1 max: 1-->
+            <model_grid_defaults>
+                <!-- Attributes 'compset' is optional,'name' is required-->
+                <!-- Occurences min: 1 max: Unlimited-->
+                <grid compset="" name=""></grid>
+            </model_grid_defaults>
+            <!-- Attributes 'alias' is required,'compset' is optional,'not_compset' is optional-->
+            <!-- Occurences min: 1 max: Unlimited-->
+            <model_grid alias="" compset="" not_compset="">
+                <!-- Attributes 'compset' is optional,'name' is required-->
+                <!-- Occurences min: 1 max: Unlimited-->
+                <grid compset="" name=""></grid>
+                <!-- Occurences min: 0 max: 1-->
+                <support></support>
+                <!-- Occurences min: 0 max: 1-->
+                <mask></mask>
+            </model_grid>
+        </grids>
+        <!-- Occurences min: 1 max: 1-->
+        <domains>
+            <!-- Attributes 'name' is required-->
+            <!-- Occurences min: 1 max: Unlimited-->
+            <domain name="">
+                <!-- Occurences min: 1 max: 1-->
+                <nx></nx>
+                <!-- Occurences min: 1 max: 1-->
+                <ny></ny>
+                <!-- Attributes 'grid' is optional,'lnd_mask' is optional,'mask' is optional,'ocn_mask' is optional-->
+                <!-- Occurences min: 0 max: Unlimited-->
+                <file grid="" lnd_mask="" mask="" ocn_mask="">
+                </file>
+                <!-- Attributes 'driver' is optional,'mask' is optional-->
+                <!-- Occurences min: 0 max: 1-->
+                <mesh driver="" mask="">
+                </mesh>
+                <!-- Occurences min: 1 max: 1-->
+                <desc></desc>
+                <!-- Occurences min: 0 max: 1-->
+                <support></support>
+            </domain>
+        </domains>
+        <!-- Occurences min: 1 max: 1-->
+        <required_gridmaps>
+            <!-- Attributes 'grid1' is required,'grid2' is required,'compset' is optional,'not_compset' is optional-->
+            <!-- Occurences min: 1 max: Unlimited-->
+            <required_gridmap grid1="" grid2="" compset="" not_compset=""></required_gridmap>
+        </required_gridmaps>
+        <!-- Occurences min: 1 max: 1-->
+        <gridmaps>
+            <!-- Attributes 'atm_grid' is optional,'glc_grid' is optional,'lnd_grid' is optional,'ocn_grid' is optional,'rof_grid' is optional,'wav_grid' is optional-->
+            <!-- Occurences min: 1 max: Unlimited-->
+            <gridmap atm_grid="" glc_grid="" lnd_grid="" ocn_grid="" rof_grid="" wav_grid="">
+                <!-- Attributes 'name' is optional-->
+                <!-- Occurences min: 1 max: Unlimited-->
+                <map name="">
+                </map>
+            </gridmap>
+        </gridmaps>
+    </grid_data>
 
 Grid longname
 -------------

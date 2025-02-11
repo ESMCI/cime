@@ -18,6 +18,7 @@
 #
 import os
 import sys
+from pathlib import Path
 
 # Note that we need a specific version of sphinx_rtd_theme. This can be obtained with:
 # pip install git+https://github.com/esmci/sphinx_rtd_theme.git@version-dropdown-with-fixes
@@ -44,6 +45,7 @@ extensions = [
     "sphinx.ext.linkcode",
     "sphinx_rtd_theme",
     "sphinx_copybutton",
+    "sphinx_toolbox.code",
 ]
 
 def linkcode_resolve(domain, info):

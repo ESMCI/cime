@@ -1,4 +1,4 @@
-.. _testing:
+.. _system_tests:
 
 ==============
 System Testing

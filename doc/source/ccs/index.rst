@@ -237,7 +237,7 @@ The output will be similar to this::
        _DOCN%SOMAQP : docn aquaplanet slab ocean mode
        _DOCN%SST_AQUAP : docn aquaplanet mode:
 
-For more details on how CIME determines the output for query_config, see :ref:`Component Sets<compsets>`.
+For more details on how CIME determines the output for query_config, see :ref:`Component Sets<model_config_compsets>`.
 
 .. toctree::
     :maxdepth: 2
@@ -252,3 +252,5 @@ For more details on how CIME determines the output for query_config, see :ref:`C
     cime-config.rst
     timers.rst
     troubleshooting.rst
+    model/index.rst
+    multi-instance

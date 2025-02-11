@@ -593,6 +593,17 @@ directory.  If the script is written in python and contains a
 subroutine with the same name as the script, it will be called as a
 subroutine rather than as an external shell script.
 
+CIME provides the ability to execute user-defined scripts during
+the execution of ``case.run``. These user-defined scripts can be
+invoked either before and/or after the model is run. The xml variables that controls this capability are:
+
+* ``PRERUN_SCRIPT``: points to an external script to be run before model execution.
+
+* ``POSTRUN_SCRIPT``: points to an external script to be run after successful model completion.
+
+Note, that when these scripts are called, the full processor allocation for the job will be used - even if only 1 processor actually is invoked for the external script.
+
+
 Data Assimilation scripts
 `````````````````````````
 
@@ -622,3 +633,27 @@ A simple example pre run script.
     if __name__ == "__main__":
       caseroot = sys.argv[1]
       myprerun(caseroot)
+
+CIME provides the ability to hook in a data assimilation utility via a set of xml variables:
+
+* ``DATA_ASSIMILATION_SCRIPT``:  points to an external script to be run **after** model completion
+
+* ``DATA_ASSIMILATION_CYCLES``: integer that controls the number of data assimilation cycles. The run script
+  will loop over these number of data assimilation cycles and for each cycle will run the model and subsequently run the data assimilation script.
+
+* ``DATA_ASSIMILATION``: if set to TRUE for a given component, then
+  a resume signal will be sent to that component at
+  initialization. If set, the component will execute special post
+  data assimilation logic on initialization.  See the component
+  documentation for details. This flag is a bit subtle in that it is a per-component flag, not a model wide flag.
+
+  ::
+
+      To see what the component flags are call
+      > ./xmlquery DATA_ASSIMILATION
+
+      The output will look like
+    >   DATA_ASSIMILATION: ['CPL:FALSE', 'ATM:TRUE', 'LND:FALSE', 'ICE:FALSE', 'OCN:FALSE', 'ROF:FALSE', 'GLC:FALSE', 'WAV:FALSE']
+
+To change the LND value to TRUE issue
+> ./xmlchange DATA_ASSIMILATION_LND=TRUE

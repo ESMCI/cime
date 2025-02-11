@@ -1,20 +1,28 @@
-.. _machine:
+.. _model_config_machines:
 
-========================
-Defining the machine
-========================
+Machines
+==================
+
+.. contents::
+  :local:
 
 CIME looks at the xml node ``MACHINE_SPEC_FILE`` in the **config_files.xml** file to identify supported out-of-the-box machines for the target model. The node has the following contents:
-::
 
-   <entry id="MACHINES_SPEC_FILE">
-     <type>char</type>
-     <default_value>$CIMEROOT/cime_config/$MODEL/machines/config_machines.xml</default_value>
-     <group>case_last</group>
-     <file>env_case.xml</file>
-     <desc>file containing machine specifications for target model primary component (for documentation only - DO NOT EDIT)</desc>
-     <schema>$CIMEROOT/cime_config/xml_schemas/config_machines.xsd</schema>
-   </entry>
+Entry
+-----
+
+This is an example entry for ``config_files.xml``.
+
+.. code-block:: xml
+
+    <entry id="MACHINES_SPEC_FILE">
+        <type>char</type>
+        <default_value>$CIMEROOT/cime_config/$MODEL/machines/config_machines.xml</default_value>
+        <group>case_last</group>
+        <file>env_case.xml</file>
+        <desc>file containing machine specifications for target model primary component (for documentation only - DO NOT EDIT)</desc>
+        <schema>$CIMEROOT/cime_config/xml_schemas/config_machines.xsd</schema>
+    </entry>
 
 You can supplement what is in the MACHINES_SPEC_FILE by adding a config_machines.xml file to your CIME config directory.
 
@@ -103,111 +111,3 @@ Each ``<machine>`` tag requires the following input:
       <env name="OMP_STACKSIZE"></env>
 
    .. note:: These changes are **ONLY** activated for the CIME build and run environment, **BUT NOT** for your login shell. To activate them for your login shell, source either **$CASEROOT/.env_mach_specific.sh** or **$CASEROOT/.env_mach_specific.csh**, depending on your shell.
-
-
-
-Batch system definition
------------------------
-
-CIME looks at the xml node ``BATCH_SPEC_FILE`` in the **config_files.xml** file to identify supported out-of-the-box batch system details for the target model. The node has the following contents:
-::
-
-   <entry id="BATCH_SPEC_FILE">
-     <type>char</type>
-     <default_value>$CIMEROOT/cime_config/$MODEL/machines/config_batch.xml</default_value>
-     <group>case_last</group>
-     <file>env_case.xml</file>
-     <desc>file containing batch system details for target system  (for documentation only - DO NOT EDIT)</desc>
-     <schema>$CIMEROOT/cime_config/xml_schemas/config_batch.xsd</schema>
-   </entry>
-
-.. _batchfile:
-
-config_batch.xml - batch directives
--------------------------------------------------
-
-The **config_batch.xml** schema is defined in **$CIMEROOT/config/xml_schemas/config_batch.xsd**.
-
-CIME supports these batch systems: pbs, cobalt, lsf and slurm.
-
-The entries in **config_batch.xml** are hierarchical.
-
-#. General configurations for each system are provided at the top of the file.
-
-#. Specific modifications for a given machine are provided below.  In particular each machine should define its own queues.
-
-#. Following is a machine-specific queue section.  This section details the parameters for each queue on the target machine.
-
-#. The last section describes several things:
-
-   - each job that will be submitted to the queue for a CIME workflow,
-
-   - the template file that will be used to generate that job,
-
-   - the prerequisites that must be met before the job is submitted, and
-
-   - the dependencies that must be satisfied before the job is run.
-
-By default the CIME workflow consists of two jobs (**case.run**, **case.st_archive**).
-
-In addition, there is **case.test** job that is used by the CIME system test workflow.
-
-
-.. _defining-compiler-settings:
-
-Compiler settings
------------------
-
-CIME looks at the xml element ``CMAKE_MACROS_DIR`` in the **config_files.xml** file to identify supported out-of-the-box compiler details for the target model. The node has the following contents:
-::
-
-  <entry id="CMAKE_MACROS_DIR">
-    <type>char</type>
-    <default_value>$CIMEROOT/config/$MODEL/machines/cmake_macros</default_value>
-    <group>case_last</group>
-    <file>env_case.xml</file>
-    <desc>Directory containing cmake macros (for documentation only - DO NOT EDIT)</desc>
-  </entry>
-
-Additional compilers are made avilable by adding cmake macros files to the directory pointed to by CMAKE_MACROS_DIR or to your $HOME/.cime directory.
-
-.. _compilerfile:
-
-config_compilers.xml - compiler paths and options **DEPRECATED use cmake_macros**
--------------------------------------------------
-The **config_compilers.xml** file defines compiler flags for building CIME (and also CESM and E3SM prognostic CIME-driven components).
-
-#. General compiler flags (e.g., for the gnu compiler) that are machine- and componen-independent are listed first.
-
-#. Compiler flags specific to a particular operating system are listed next.
-
-#. Compiler flags that are specific to particular machines are listed next.
-
-#. Compiler flags that are specific to particular CIME-driven components are listed last.
-
-The order of listing is a convention and not a requirement.
-
-The possible elements and attributes that can exist in the file are documented in **$CIME/config/xml_schemas/config_compilers_v2.xsd**.
-
-To clarify several conventions:
-
-- The ``<append>`` element implies that any previous definition of that element's parent will be appended with the new element value.
-  As an example, the following entry in **config_compilers.xml** would append the value of ``CPPDEFS`` with ``-D $OS`` where ``$OS`` is the environment value of ``OS``.
-
-  ::
-
-     <compiler>
-        <CPPDEFS>
-            <append> -D<env>OS</env> </append>
-        </CPPDEFS>
-     </compiler>
-
-- The ``<base>`` element overwrites its parent element's value. For example, the following entry would overwrite the ``CONFIG_ARGS`` for machine ``melvin`` with a ``gnu`` compiler to be ``--host=Linux``.
-
-  ::
-
-     <compiler MACH="melvin" COMPILER="gnu">
-        <CONFIG_ARGS>
-           <base> --host=Linux </base>
-        </CONFIG_ARGS>
-     </compiler>

@@ -18,6 +18,12 @@ There are three components that make the Case Control System.
 2. Python module that provides tools for users to create cases, configure their model, build and submit jobs.
 3. Addition stand-alone tools useful for Earth System Modeling.
 
+Model configuration
+````````````````````
+Every model that uses CIME will need to provide it's own configuration.
+
+To add or update a model, review the :ref:`model configuration<model_config>` documentation.
+
 System Testing
 --------------
 CIME provides tooling to run system testing on an Earth System Model. Each test type is defined to exercise a specific behavior
@@ -35,7 +41,6 @@ CIME does **not** contain the source code for any Earth System Model drivers or 
 
     ccs/index
     system_testing
-    model/index
     tools/index
     glossary
 

@@ -1,3 +1,5 @@
+.. _ccs_create_newcase:
+
 Creating a Case
 ===============
 

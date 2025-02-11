@@ -1,6 +1,6 @@
 .. _multi-instance:
 
-Multi-instance component functionality
+Multi-instance
 ======================================
 
 The CIME coupling infrastructure is capable of running multiple
@@ -29,7 +29,7 @@ multiple-instance code involves the following steps:
    > create_newcase --case Fmulti --compset F2000_DEV --res f19_f19_mg17
    > cd Fmulti
 
-2. Assume this is the out-of-the-box pe-layout:
+1. Assume this is the out-of-the-box pe-layout:
 ::
 
    Comp  NTASKS  NTHRDS  ROOTPE
